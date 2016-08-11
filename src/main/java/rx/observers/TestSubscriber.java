@@ -328,19 +328,22 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
 
         for (int i = 0; i < items.size(); i++) {
-            T expected = items.get(i);
-            T actual = values.get(i);
-            if (expected == null) {
-                // check for null equality
-                if (actual != null) {
-                    assertionError("Value at index: " + i + " expected to be [null] but was: [" + actual + "]\n");
-                }
-            } else if (!expected.equals(actual)) {
-                assertionError("Value at index: " + i 
-                        + " expected to be [" + expected + "] (" + expected.getClass().getSimpleName() 
-                        + ") but was: [" + actual + "] (" + (actual != null ? actual.getClass().getSimpleName() : "null") + ")\n");
-
+            assertItem(items.get(i), i);
+        }
+    }
+    
+    private void assertItem(T expected, int i) {
+        T actual = values.get(i);
+        if (expected == null) {
+            // check for null equality
+            if (actual != null) {
+                assertionError("Value at index: " + i + " expected to be [null] but was: [" + actual + "]\n");
             }
+        } else if (!expected.equals(actual)) {
+            assertionError("Value at index: " + i 
+                    + " expected to be [" + expected + "] (" + expected.getClass().getSimpleName() 
+                    + ") but was: [" + actual + "] (" + (actual != null ? actual.getClass().getSimpleName() : "null") + ")\n");
+
         }
     }
 
@@ -669,5 +672,36 @@ public class TestSubscriber<T> extends Subscriber<T> {
             }
         }
         throw ae;
+    }
+    
+    /**
+     * Assert that the TestSubscriber contains the given first and optional rest values exactly
+     * and if so, clears the internal list of values.
+     * <p>
+     * <code><pre>
+     * TestSubscriber ts = new TestSubscriber();
+     * 
+     * ts.onNext(1);
+     * 
+     * ts.assertValuesAndClear(1);
+     * 
+     * ts.onNext(2);
+     * ts.onNext(3);
+     * 
+     * ts.assertValuesAndClear(2, 3); // no mention of 1
+     * </pre></code>
+     * @param expectedFirstValue the expected first value
+     * @param expectedRestValues the optional rest values
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final void assertValuesAndClear(T expectedFirstValue, T... expectedRestValues) {
+        int n = 1 + expectedRestValues.length;
+        assertValueCount(n);
+        assertItem(expectedFirstValue, 0);
+        for (int i = 0; i < expectedRestValues.length; i++) {
+            assertItem(expectedRestValues[i], i + 1);
+        }
+        values.clear();
     }
 }
