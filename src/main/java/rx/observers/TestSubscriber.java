@@ -692,7 +692,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * </pre></code>
      * @param expectedFirstValue the expected first value
      * @param expectedRestValues the optional rest values
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
+    @Experimental
     public final void assertValuesAndClear(T expectedFirstValue, T... expectedRestValues) {
         int n = 1 + expectedRestValues.length;
         assertValueCount(n);
