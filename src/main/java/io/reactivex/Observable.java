@@ -628,7 +628,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         Objects.requireNonNull(v5, "The fifth value is null");
         Objects.requireNonNull(v6, "The sixth value is null");
         Objects.requireNonNull(v7, "The seventh value is null");
-        Objects.requireNonNull(v8, "The eigth value is null");
+        Objects.requireNonNull(v8, "The eighth value is null");
         
         return fromArray(v1, v2, v3, v4, v5, v6, v7, v8);
     }
@@ -643,7 +643,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         Objects.requireNonNull(v5, "The fifth value is null");
         Objects.requireNonNull(v6, "The sixth value is null");
         Objects.requireNonNull(v7, "The seventh value is null");
-        Objects.requireNonNull(v8, "The eigth value is null");
+        Objects.requireNonNull(v8, "The eighth value is null");
         Objects.requireNonNull(v9, "The ninth is null");
         
         return fromArray(v1, v2, v3, v4, v5, v6, v7, v8, v9);
