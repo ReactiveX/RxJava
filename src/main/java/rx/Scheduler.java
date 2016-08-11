@@ -18,11 +18,10 @@ package rx;
 import java.util.concurrent.TimeUnit;
 
 import rx.annotations.Experimental;
-import rx.functions.Action0;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.internal.schedulers.SchedulerWhen;
+import rx.internal.subscriptions.SequentialSubscription;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.MultipleAssignmentSubscription;
 
 /**
  * A {@code Scheduler} is an object that schedules units of work. You can find common implementations of this
@@ -126,7 +125,9 @@ public abstract class Scheduler {
             final long firstNowNanos = TimeUnit.MILLISECONDS.toNanos(now());
             final long firstStartInNanos = firstNowNanos + unit.toNanos(initialDelay);
 
-            final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
+            final SequentialSubscription first = new SequentialSubscription();
+            final SequentialSubscription mas = new SequentialSubscription(first);
+            
             final Action0 recursiveAction = new Action0() {
                 long count;
                 long lastNowNanos = firstNowNanos;
@@ -155,14 +156,11 @@ public abstract class Scheduler {
                         lastNowNanos = nowNanos;
                         
                         long delay = nextTick - nowNanos;
-                        mas.set(schedule(this, delay, TimeUnit.NANOSECONDS));
+                        mas.replace(schedule(this, delay, TimeUnit.NANOSECONDS));
                     }
                 }
             };
-            MultipleAssignmentSubscription s = new MultipleAssignmentSubscription();
-            // Should call `mas.set` before `schedule`, or the new Subscription may replace the old one.
-            mas.set(s);
-            s.set(schedule(recursiveAction, initialDelay, unit));
+            first.replace(schedule(recursiveAction, initialDelay, unit));
             return mas;
         }
 

@@ -15,15 +15,11 @@
  */
 package rx.subscriptions;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static rx.subscriptions.Subscriptions.create;
-import org.junit.Assert;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import rx.Subscription;
 import rx.functions.Action0;
@@ -72,6 +68,7 @@ public class MultipleAssignmentSubscriptionTest {
     }
 
     @Test
+    @Ignore("This is prone to leaks")
     public void testSubscriptionRemainsAfterUnsubscribe() {
         MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
 
@@ -80,4 +77,16 @@ public class MultipleAssignmentSubscriptionTest {
 
         Assert.assertEquals(true, mas.get() == s);
     }
+
+    @Test
+    public void subscriptionDoesntRemainAfterUnsubscribe() {
+        MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
+
+        mas.set(s);
+        mas.unsubscribe();
+
+        assertNotEquals(s, mas.get());
+        assertSame(mas.get(), Subscriptions.unsubscribed());
+    }
+
 }
