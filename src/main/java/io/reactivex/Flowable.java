@@ -49,7 +49,7 @@ import io.reactivex.subscribers.*;
  * <p>
  * The Flowable hosts the default buffer size of 128 elements for operators, accessible via {@link #bufferSize()},
  * that can be overridden globally via the system parameter {@code rx2.buffer-size}. Most operators, however, have
- * overloads that allow setting their internal buffer size explicity.
+ * overloads that allow setting their internal buffer size explicitly.
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
  * <p>
@@ -2688,7 +2688,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(v5, "The fifth value is null");
         Objects.requireNonNull(v6, "The sixth value is null");
         Objects.requireNonNull(v7, "The seventh value is null");
-        Objects.requireNonNull(v8, "The eigth value is null");
+        Objects.requireNonNull(v8, "The eighth value is null");
         
         return fromArray(v1, v2, v3, v4, v5, v6, v7, v8);
     }
@@ -2738,7 +2738,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(v5, "The fifth value is null");
         Objects.requireNonNull(v6, "The sixth value is null");
         Objects.requireNonNull(v7, "The seventh value is null");
-        Objects.requireNonNull(v8, "The eigth value is null");
+        Objects.requireNonNull(v8, "The eighth value is null");
         Objects.requireNonNull(v9, "The ninth is null");
         
         return fromArray(v1, v2, v3, v4, v5, v6, v7, v8, v9);
@@ -2791,7 +2791,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(v5, "The fifth value is null");
         Objects.requireNonNull(v6, "The sixth value is null");
         Objects.requireNonNull(v7, "The seventh value is null");
-        Objects.requireNonNull(v8, "The eigth value is null");
+        Objects.requireNonNull(v8, "The eighth value is null");
         Objects.requireNonNull(v9, "The ninth is null");
         Objects.requireNonNull(v10, "The tenth is null");
         
@@ -5060,7 +5060,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an unbounded manner
-     *  (i.e., no backkpressure applied to it).</dd>
+     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code exists} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6042,7 +6042,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param <R> the type of the inner Publisher sources and thus the ouput type
+     * @param <R> the type of the inner Publisher sources and thus the output type
      * @param mapper
      *            a function that, when applied to an item emitted by the source Publisher, returns an
      *            Publisher
@@ -6073,7 +6073,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param <R> the type of the inner Publisher sources and thus the ouput type
+     * @param <R> the type of the inner Publisher sources and thus the output type
      * @param mapper
      *            a function that, when applied to an item emitted by the source Publisher, returns an
      *            Publisher
@@ -7281,7 +7281,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Calls the appropriate onXXX method (shared between all Subscribers) for the lifecylce events of
+     * Calls the appropriate onXXX method (shared between all Subscribers) for the lifecylcle events of
      * the sequence (subscription, cancellation, requesting).
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
@@ -7431,7 +7431,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an unbounded manner
-     *  (i.e., no backkpressure applied to it).</dd>
+     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7463,7 +7463,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an unbounded manner
-     *  (i.e., no backkpressure applied to it).</dd>
+     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAtOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7969,7 +7969,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            if true, exceptions from the current Flowable and all inner Publishers are delayed until all of them terminate
      *            if false, the first one signalling an exception will terminate the whole sequence immediately
      * @param bufferSize
-     *            the numer of elements to prefetch from the innner Publishers.
+     *            the number of elements to prefetch from the innner Publishers.
      * @return a Flowable that emits the results of applying a function to a pair of values emitted by the
      *         source Publisher and the collection Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -8081,7 +8081,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that returns an Iterable sequence of values for when given an item emitted by the
      *            source Publisher
      * @param bufferSize
-     *            the numer of elements to prefetch from the current Flowable
+     *            the number of elements to prefetch from the current Flowable
      * @return a Flowable that emits the results of merging the items emitted by the source Publisher with
      *         the values in the Iterables corresponding to those items, as generated by {@code collectionSelector}
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -8159,7 +8159,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that returns an item based on the item emitted by the source Publisher and the
      *            Iterable returned for that item by the {@code collectionSelector}
      * @param prefetch
-     *            the numer of elements to prefetch from the current Flowable
+     *            the number of elements to prefetch from the current Flowable
      * @return a Flowable that emits the results of merging the items emitted by the source Publisher with
      *         the values in the Iterables corresponding to those items, as generated by {@code collectionSelector}
      * @throws IllegalArgumentException
@@ -9813,7 +9813,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <R> the accumulator and output value type
      * @param seedSupplier
-     *            the Callbable that provides the initial (seed) accumulator value for each individual Subscriber
+     *            the Callable that provides the initial (seed) accumulator value for each individual Subscriber
      * @param reducer
      *            an accumulator function to be invoked on each item emitted by the source Publisher, the
      *            result of which will be used in the next accumulator call
