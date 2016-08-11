@@ -1006,7 +1006,7 @@ public class FlowableBufferTest {
             }
         };
         
-        Flowable.range(1, 1).delay(1, TimeUnit.SECONDS).buffer(2, TimeUnit.SECONDS).unsafeSubscribe(s);
+        Flowable.range(1, 1).delay(1, TimeUnit.SECONDS).buffer(2, TimeUnit.SECONDS).subscribe(s);
         
         cdl.await();
         

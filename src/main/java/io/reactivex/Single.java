@@ -454,7 +454,7 @@ public abstract class Single<T> implements SingleSource<T> {
                 };
             }
         };
-        return Flowable.zipIterable(zipper, false, 1, it).toSingle();
+        return Flowable.zipIterable(it, zipper, false, 1).toSingle();
     }
 
     @SuppressWarnings("unchecked")
@@ -870,7 +870,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
     
     public final void unsafeSubscribe(Subscriber<? super T> s) {
-        toFlowable().unsafeSubscribe(s);
+        toFlowable().subscribe(s);
     }
     
     public final <U, R> Single<R> zipWith(SingleSource<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {

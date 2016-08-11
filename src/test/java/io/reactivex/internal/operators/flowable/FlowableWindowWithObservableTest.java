@@ -291,7 +291,7 @@ public class FlowableWindowWithObservableTest {
         };
         
         TestSubscriber<Flowable<Integer>> ts = new TestSubscriber<Flowable<Integer>>();
-        source.window(boundary).unsafeSubscribe(ts);
+        source.window(boundary).subscribe(ts);
         
         assertFalse(ts.isCancelled());
     }

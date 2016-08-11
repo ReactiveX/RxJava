@@ -30,7 +30,7 @@ public class FlowableAsObservableTest {
     public void testHiding() {
         PublishProcessor<Integer> src = PublishProcessor.create();
         
-        Flowable<Integer> dst = src.asObservable();
+        Flowable<Integer> dst = src.hide();
         
         assertFalse(dst instanceof PublishProcessor);
         
@@ -49,7 +49,7 @@ public class FlowableAsObservableTest {
     public void testHidingError() {
         PublishProcessor<Integer> src = PublishProcessor.create();
         
-        Flowable<Integer> dst = src.asObservable();
+        Flowable<Integer> dst = src.hide();
         
         assertFalse(dst instanceof PublishProcessor);
         

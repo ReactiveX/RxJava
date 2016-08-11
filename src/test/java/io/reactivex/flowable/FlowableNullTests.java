@@ -496,23 +496,23 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void mergeIterableNull() {
-        Flowable.merge(128, 128, (Iterable<Publisher<Object>>)null);
+        Flowable.merge((Iterable<Publisher<Object>>)null, 128, 128);
     }
     
     @Test(expected = NullPointerException.class)
     public void mergeIterableIteratorNull() {
-        Flowable.merge(128, 128, new Iterable<Publisher<Object>>() {
+        Flowable.merge(new Iterable<Publisher<Object>>() {
             @Override
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }, 128, 128).toBlocking().lastOption();
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeIterableOneIsNull() {
-        Flowable.merge(128, 128, Arrays.asList(just1, null)).toBlocking().lastOption();
+        Flowable.merge(Arrays.asList(just1, null), 128, 128).toBlocking().lastOption();
     }
     
     @Test(expected = NullPointerException.class)
@@ -707,44 +707,44 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2Null() {
-        Flowable.zipIterable(new Function<Object[], Object>() {
+        Flowable.zipIterable((Iterable<Publisher<Object>>)null, new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
                 return 1;
             }
-        }, true, 128, (Iterable<Publisher<Object>>)null);
+        }, true, 128);
     }
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2IteratorNull() {
-        Flowable.zipIterable(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return 1;
-            }
-        }, true, 128, new Iterable<Publisher<Object>>() {
+        Flowable.zipIterable(new Iterable<Publisher<Object>>() {
             @Override
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) {
+                return 1;
+            }
+        }, true, 128).toBlocking().lastOption();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionNull() {
-        Flowable.zipIterable(null, true, 128, Arrays.asList(just1, just1));
+        Flowable.zipIterable(Arrays.asList(just1, just1), null, true, 128);
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionReturnsNull() {
-        Flowable.zipIterable(new Function<Object[], Object>() {
+        Flowable.zipIterable(Arrays.asList(just1, just1), new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
                 return null;
             }
-        }, true, 128, Arrays.asList(just1, just1)).toBlocking().lastOption();
+        }, true, 128).toBlocking().lastOption();
     }
 
     //*************************************************************
@@ -1067,7 +1067,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void delaySubscriptionSupplierNull() {
-        just1.delaySubscription((Callable<Publisher<Object>>)null);
+        just1.delaySubscription((Publisher<Object>)null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1087,12 +1087,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void delayBothInitialSupplierReturnsNull() {
-        just1.delay(new Callable<Publisher<Object>>() {
-            @Override
-            public Publisher<Object> call() {
-                return null;
-            }
-        }, new Function<Integer, Publisher<Integer>>() {
+        just1.delay(null, new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
                 return just1;
@@ -1102,22 +1097,12 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void delayBothItemSupplierNull() {
-        just1.delay(new Callable<Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> call() {
-                return just1;
-            }
-        }, null);
+        just1.delay(just1, null);
     }
     
     @Test(expected = NullPointerException.class)
     public void delayBothItemSupplierReturnsNull() {
-        just1.delay(new Callable<Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> call() {
-                return just1;
-            }
-        }, new Function<Integer, Publisher<Object>>() {
+        just1.delay(just1, new Function<Integer, Publisher<Object>>() {
             @Override
             public Publisher<Object> apply(Integer v) {
                 return null;
@@ -1266,46 +1251,6 @@ public class FlowableNullTests {
     @Test(expected = NullPointerException.class)
     public void elementAtNull() {
         just1.elementAt(1, null);
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithIterableNull() {
-        just1.endWith((Iterable<Integer>)null);
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithIterableIteratorNull() {
-        just1.endWith(new Iterable<Integer>() {
-            @Override
-            public Iterator<Integer> iterator() {
-                return null;
-            }
-        }).toBlocking().run();
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithIterableOneIsNull() {
-        just1.endWith(Arrays.asList(1, null)).toBlocking().run();
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithPublisherNull() {
-        just1.endWith((Publisher<Integer>)null);
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithNull() {
-        just1.endWith((Integer)null);
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithArrayNull() {
-        just1.endWithArray((Integer[])null);
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithArrayOneIsNull() {
-        just1.endWithArray(1, null).toBlocking().run();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2628,11 +2573,6 @@ public class FlowableNullTests {
                 return null;
             }
         }).toBlocking().run();
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void unsafeSubscribeNull() {
-        just1.unsafeSubscribe(null);
     }
     
     @Test(expected = NullPointerException.class)

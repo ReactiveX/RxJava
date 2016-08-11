@@ -48,7 +48,7 @@ public final class FlowableAutoConnect<T> extends Flowable<T> {
     
     @Override
     public void subscribeActual(Subscriber<? super T> child) {
-        source.unsafeSubscribe(child);
+        source.subscribe(child);
         if (clients.incrementAndGet() == numberOfSubscribers) {
             source.connect(connection);
         }

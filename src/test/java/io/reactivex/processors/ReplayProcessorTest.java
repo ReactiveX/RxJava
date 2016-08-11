@@ -404,7 +404,7 @@ public class ReplayProcessorTest {
         
         final Subscriber<Integer> o = TestHelper.mockSubscriber();
         
-        source.unsafeSubscribe(new DefaultSubscriber<Integer>() {
+        source.subscribe(new DefaultSubscriber<Integer>() {
 
             @Override
             public void onNext(Integer t) {

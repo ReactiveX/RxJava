@@ -367,12 +367,6 @@ public class FlowableDelayTest {
     public void testDelayWithObservableSubscriptionNormal() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
-        Callable<Flowable<Integer>> subFunc = new Callable<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> call() {
-                return delay;
-            }
-        };
         Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
 
             @Override
@@ -384,7 +378,7 @@ public class FlowableDelayTest {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.delay(delay, delayFunc).subscribe(o);
 
         source.onNext(1);
         delay.onNext(1);
@@ -419,7 +413,7 @@ public class FlowableDelayTest {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.delay(Flowable.defer(subFunc), delayFunc).subscribe(o);
 
         source.onNext(1);
         delay.onNext(1);
@@ -453,7 +447,7 @@ public class FlowableDelayTest {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.delay(Flowable.defer(subFunc), delayFunc).subscribe(o);
 
         source.onNext(1);
         delay.onError(new TestException());
@@ -513,7 +507,7 @@ public class FlowableDelayTest {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.delay(Flowable.defer(subFunc), delayFunc).subscribe(o);
 
         source.onNext(1);
         sdelay.onComplete();
@@ -733,13 +727,13 @@ public class FlowableDelayTest {
     public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.range(1, Flowable.bufferSize() * 2)
-                .delay(new Callable<Flowable<Long>>() {
+                .delay(Flowable.defer(new Callable<Flowable<Long>>() {
 
                     @Override
                     public Flowable<Long> call() {
                         return Flowable.timer(500, TimeUnit.MILLISECONDS);
                     }
-                }, new Function<Integer, Flowable<Long>>() {
+                }), new Function<Integer, Flowable<Long>>() {
 
                     @Override
                     public Flowable<Long> apply(Integer i) {
@@ -799,12 +793,12 @@ public class FlowableDelayTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        source.delaySubscription(new Callable<Publisher<Integer>>() {
+        source.delaySubscription(Flowable.defer(new Callable<Publisher<Integer>>() {
             @Override
             public Publisher<Integer> call() {
                 return ps;
             }
-        }).subscribe(ts);
+        })).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -825,12 +819,12 @@ public class FlowableDelayTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        source.delaySubscription(new Callable<Publisher<Integer>>() {
+        source.delaySubscription(Flowable.defer(new Callable<Publisher<Integer>>() {
             @Override
             public Publisher<Integer> call() {
                 return ps;
             }
-        }).subscribe(ts);
+        })).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -852,12 +846,12 @@ public class FlowableDelayTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        source.delaySubscription(new Callable<Publisher<Integer>>() {
+        source.delaySubscription(Flowable.defer(new Callable<Publisher<Integer>>() {
             @Override
             public Publisher<Integer> call() {
                 return ps;
             }
-        }).subscribe(ts);
+        })).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();

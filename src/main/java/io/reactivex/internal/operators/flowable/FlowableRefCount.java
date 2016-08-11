@@ -175,7 +175,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
         
         ConnectionSubscriber s = new ConnectionSubscriber(subscriber, currentBase, d);
         
-        source.unsafeSubscribe(s);
+        source.subscribe(s);
     }
 
     private Disposable disconnect(final CompositeDisposable current) {

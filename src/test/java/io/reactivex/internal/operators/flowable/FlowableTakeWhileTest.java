@@ -245,7 +245,7 @@ public class FlowableTakeWhileTest {
         });
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        source.unsafeSubscribe(ts);
+        source.subscribe(ts);
         
         ts.assertNoErrors();
         ts.assertValue(1);

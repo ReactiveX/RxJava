@@ -280,7 +280,7 @@ public class FlowableCacheTest {
             }
         };
         
-        source.unsafeSubscribe(ts);
+        source.subscribe(ts);
         
         Assert.assertEquals(100, count.get());
 
