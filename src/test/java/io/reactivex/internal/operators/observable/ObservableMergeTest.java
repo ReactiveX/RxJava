@@ -1054,7 +1054,7 @@ public class ObservableMergeTest {
     Function<Integer, Observable<Integer>> toHiddenScalar = new Function<Integer, Observable<Integer>>() {
         @Override
         public Observable<Integer> apply(Integer t) {
-            return Observable.just(t).asObservable();
+            return Observable.just(t).hide();
         }
     };
     ;

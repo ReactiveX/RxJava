@@ -114,7 +114,7 @@ public class ObservableRetryTest {
         Observer<String> NbpObserver = TestHelper.mockObserver();
         int NUM_RETRIES = 20;
         Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
-        origin.retry().unsafeSubscribe(new TestObserver<String>(NbpObserver));
+        origin.retry().subscribe(new TestObserver<String>(NbpObserver));
 
         InOrder inOrder = inOrder(NbpObserver);
         // should show 3 attempts
@@ -666,7 +666,7 @@ public class ObservableRetryTest {
                 Observer<String> NbpObserver = TestHelper.mockObserver();
                 Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
                 TestObserver<String> ts = new TestObserver<String>(NbpObserver);
-                origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+                origin.retry().observeOn(Schedulers.computation()).subscribe(ts);
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
                 
                 InOrder inOrder = inOrder(NbpObserver);
@@ -710,7 +710,7 @@ public class ObservableRetryTest {
                                 Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
                                 TestObserver<String> ts = new TestObserver<String>();
                                 origin.retry()
-                                .observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+                                .observeOn(Schedulers.computation()).subscribe(ts);
                                 ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
                                 List<String> onNextEvents = new ArrayList<String>(ts.values());
                                 if (onNextEvents.size() != NUM_RETRIES + 2) {
@@ -809,7 +809,7 @@ public class ObservableRetryTest {
                 return t1.take(1);
             }
         })
-        .unsafeSubscribe(new TestObserver<String>(NbpObserver));
+        .subscribe(new TestObserver<String>(NbpObserver));
         
         InOrder inOrder = inOrder(NbpObserver);
         // should show 3 attempts
@@ -853,7 +853,7 @@ public class ObservableRetryTest {
                 return t1.take(1);
             }
         })
-        .unsafeSubscribe(new TestObserver<String>(NbpObserver));
+        .subscribe(new TestObserver<String>(NbpObserver));
         
         InOrder inOrder = inOrder(NbpObserver);
         // should show 3 attempts

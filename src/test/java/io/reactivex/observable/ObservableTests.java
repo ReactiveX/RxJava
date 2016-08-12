@@ -591,7 +591,7 @@ public class ObservableTests {
                     }
                 }).start();
             }
-        }).cache(1);
+        }).cacheWithInitialCapacity(1);
 
         // we then expect the following 2 subscriptions to get that same value
         final CountDownLatch latch = new CountDownLatch(2);

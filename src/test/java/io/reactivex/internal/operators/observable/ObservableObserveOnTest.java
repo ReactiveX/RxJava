@@ -113,7 +113,7 @@ public class ObservableObserveOnTest {
                 assertTrue(correctThreadName);
             }
 
-        }).finallyDo(new Runnable() {
+        }).doAfterTerminate(new Runnable() {
 
             @Override
             public void run() {

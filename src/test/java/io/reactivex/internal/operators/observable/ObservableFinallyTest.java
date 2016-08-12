@@ -32,7 +32,7 @@ public class ObservableFinallyTest {
     }
 
     private void checkActionCalled(Observable<String> input) {
-        input.finallyDo(aAction0).subscribe(NbpObserver);
+        input.doAfterTerminate(aAction0).subscribe(NbpObserver);
         verify(aAction0, times(1)).run();
     }
 

@@ -206,7 +206,7 @@ public class ObservableWindowWithStartEndObservableTest {
             public Observable<Integer> apply(Integer t) {
                 return close;
             }
-        }).unsafeSubscribe(ts);
+        }).subscribe(ts);
         
         open.onNext(1);
         source.onNext(1);
@@ -243,7 +243,7 @@ public class ObservableWindowWithStartEndObservableTest {
             public Observable<Integer> apply(Integer t) {
                 return close;
             }
-        }).unsafeSubscribe(ts);
+        }).subscribe(ts);
         
         open.onNext(1);
         

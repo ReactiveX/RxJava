@@ -189,7 +189,7 @@ public class ObservableTakeUntilTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        source.takeUntil(until).unsafeSubscribe(ts);
+        source.takeUntil(until).subscribe(ts);
 
         assertTrue(source.hasSubscribers());
         assertTrue(until.hasSubscribers());
@@ -214,7 +214,7 @@ public class ObservableTakeUntilTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        source.takeUntil(until).unsafeSubscribe(ts);
+        source.takeUntil(until).subscribe(ts);
 
         assertTrue(source.hasSubscribers());
         assertTrue(until.hasSubscribers());
@@ -237,7 +237,7 @@ public class ObservableTakeUntilTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        source.takeUntil(until).take(1).unsafeSubscribe(ts);
+        source.takeUntil(until).take(1).subscribe(ts);
 
         assertTrue(source.hasSubscribers());
         assertTrue(until.hasSubscribers());

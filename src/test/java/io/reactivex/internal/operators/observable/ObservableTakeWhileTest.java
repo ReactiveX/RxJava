@@ -224,7 +224,7 @@ public class ObservableTakeWhileTest {
         });
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        source.unsafeSubscribe(ts);
+        source.subscribe(ts);
         
         ts.assertNoErrors();
         ts.assertValue(1);

@@ -295,7 +295,7 @@ public class ObservablePublishTest {
 
         TestObserver<Integer> ts1 = new TestObserver<Integer>();
 
-        source.unsafeSubscribe(ts1);
+        source.subscribe(ts1);
 
         ts1.assertNoValues();
         ts1.assertNoErrors();

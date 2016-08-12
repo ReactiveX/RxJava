@@ -192,7 +192,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
          * Make sure this is called only once.
          */
         public void connect() {
-            source.unsafeSubscribe(this);
+            source.subscribe(this);
             isConnected = true;
         }
         @Override

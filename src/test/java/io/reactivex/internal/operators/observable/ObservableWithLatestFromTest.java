@@ -245,7 +245,7 @@ public class ObservableWithLatestFromTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        result.unsafeSubscribe(ts);
+        result.subscribe(ts);
         
         source.onComplete();
         

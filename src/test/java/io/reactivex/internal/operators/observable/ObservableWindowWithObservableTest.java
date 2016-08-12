@@ -292,7 +292,7 @@ public class ObservableWindowWithObservableTest {
         };
         
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
-        source.window(boundary).unsafeSubscribe(ts);
+        source.window(boundary).subscribe(ts);
         
         assertFalse(ts.isCancelled());
     }

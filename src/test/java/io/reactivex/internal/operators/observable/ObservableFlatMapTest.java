@@ -482,7 +482,7 @@ public class ObservableFlatMapTest {
                 public Observable<Integer> apply(Integer t) {
                     Observable<Integer> r = Observable.just(t);
                     if (rnd.nextBoolean()) {
-                        r = r.asObservable();
+                        r = r.hide();
                     }
                     return r;
                 }

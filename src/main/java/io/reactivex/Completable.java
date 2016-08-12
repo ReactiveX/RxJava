@@ -837,7 +837,7 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <T> Observable<T> endWith(ObservableSource<T> next) {
-        return this.<T>toObservable().endWith(next);
+        return this.<T>toObservable().concatWith(next);
     }
     
     /**
@@ -1102,7 +1102,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Observable<T> startWith(Observable<T> other) {
         Objects.requireNonNull(other, "other is null");
-        return other.endWith(this.<T>toObservable());
+        return other.concatWith(this.<T>toObservable());
     }
     /**
      * Returns an Observable which first delivers the events

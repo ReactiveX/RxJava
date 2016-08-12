@@ -188,7 +188,7 @@ public class ObservableSubscribeOnTest {
         
         TestObserver<Integer> to = new TestObserver<Integer>();
         
-        Observable.just(1).asObservable()
+        Observable.just(1).hide()
                 .subscribeOn(test).subscribe(to);
         
         to.dispose();
