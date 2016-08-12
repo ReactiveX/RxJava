@@ -1,5 +1,44 @@
 # RxJava Releases #
 
+### Version 1.1.9 - August 12, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.9%7C))
+
+This release contains mostly internal cleanups, reinforced Observable-protocol adherence and minor javadoc fixes.
+
+**Warning**: the backpressure-behavior of `PublishSubject` has been changed. In earlier versions, when you called `PublishSubject.onNext` too frequently, that usually triggered a `MissingBackpressureException` in some downstream operator (`observeOn`, `zip`, etc.) and often it was not obvious who to blame for it. With 1.1.9, `PublishSubject` now tracks the request amounts of each of its children and refuses to overflow them, signalling a `MissingBackpressureException` to them instead which now points to the right operator.
+
+#### API enhancements
+
+  - [Pull 4226](https://github.com/ReactiveX/RxJava/pull/4226): Add `Single.flatMapCompletable`. 
+  - [Pull 4225](https://github.com/ReactiveX/RxJava/pull/4225): `PublishSubject` now signals `MissingBackpressureException` when backpressured.
+  - [Pull 4264](https://github.com/ReactiveX/RxJava/pull/4264): Add `Observable.sorted()` + overloads: sorts and re-emits each element of a finite sequence.
+  - [Pull 4261](https://github.com/ReactiveX/RxJava/pull/4261): Add `concatDelayError` multiple arguments.
+  - [Pull 4330](https://github.com/ReactiveX/RxJava/pull/4330): Add `Observable.concat(Iterable)` overload.
+  - [Pull 4322](https://github.com/ReactiveX/RxJava/pull/4322): Add `TestSubscriber.assertValuesAndClear` 
+
+#### Performance enhancements
+
+  - [Pull 4232](https://github.com/ReactiveX/RxJava/pull/4232): Less allocation in operator `amb`.
+  - [Pull 4233](https://github.com/ReactiveX/RxJava/pull/4233): Less allocation in `autoConnect`.
+  - [Pull 4236](https://github.com/ReactiveX/RxJava/pull/4236): Less allocation in `join`.
+  - [Pull 4237](https://github.com/ReactiveX/RxJava/pull/4237): Less allocation in `groupJoin` .
+  - [Pull 4239](https://github.com/ReactiveX/RxJava/pull/4239): Less allocation in `skip` with time.
+  - [Pull 4262](https://github.com/ReactiveX/RxJava/pull/4262): Less allocation in `doOnEach`. 
+  - [Pull 4328](https://github.com/ReactiveX/RxJava/pull/4328): Compact `MultipleAssignmentSubscription` and `SerialSubscription`
+
+#### Bugfixes
+
+  - [Pull 4231](https://github.com/ReactiveX/RxJava/pull/4213): `Schedulers.io()` workers now wait until a blocking task finishes before becoming available again.
+  - [Pull 4244](https://github.com/ReactiveX/RxJava/pull/4244): Fix `all` multiple terminal events.
+  - [Pull 4241](https://github.com/ReactiveX/RxJava/pull/4241): Fix reentrancy bug in `repeatWhen` and `retryWhen` when the resubscription happens.
+  - [Pull 4225](https://github.com/ReactiveX/RxJava/pull/4225): `PublishSubject` now checks for unsubscribed child while dispatching events.
+  - [Pull 4245](https://github.com/ReactiveX/RxJava/pull/4245): Fix `any` multiple terminal events.
+  - [Pull 4246](https://github.com/ReactiveX/RxJava/pull/4246): Fix `reduce` multiple terminal events.
+  - [Pull 4250](https://github.com/ReactiveX/RxJava/pull/4250): Fix `onBackpressureDrop` multiple terminal events.
+  - [Pull 4252](https://github.com/ReactiveX/RxJava/pull/4252): Fix `collect` multiple terminal events.
+  - [Pull 4251](https://github.com/ReactiveX/RxJava/pull/4251): Fix `toMap` multiple terminal events and backpressure behavior.
+  - [Pull 4270](https://github.com/ReactiveX/RxJava/pull/4270): Fix `toMultimap` multiple terminal events .
+  - [Pull 4311](https://github.com/ReactiveX/RxJava/pull/4311): Fix `Schedulers.from()` to call `RxJavaHooks.onScheduleAction`.
+  
 ### Version 1.1.8 - July 23, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.8%7C))
 
 #### Bugfixes
