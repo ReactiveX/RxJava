@@ -46,7 +46,7 @@ public final class ObservableAutoConnect<T> extends Observable<T> {
     
     @Override
     public void subscribeActual(Observer<? super T> child) {
-        source.unsafeSubscribe(child);
+        source.subscribe(child);
         if (clients.incrementAndGet() == numberOfSubscribers) {
             source.connect(connection);
         }

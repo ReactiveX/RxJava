@@ -56,7 +56,7 @@ public class ObservableSubscriberTest {
     @Test
     public void testOnStartCalledOnceViaUnsafeSubscribe() {
         final AtomicInteger c = new AtomicInteger();
-        Observable.just(1, 2, 3, 4).take(2).unsafeSubscribe(new DefaultObserver<Integer>() {
+        Observable.just(1, 2, 3, 4).take(2).subscribe(new DefaultObserver<Integer>() {
 
             @Override
             public void onStart() {

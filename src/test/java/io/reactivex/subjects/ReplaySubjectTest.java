@@ -403,7 +403,7 @@ public class ReplaySubjectTest {
         
         final Observer<Integer> o = TestHelper.mockObserver();
         
-        source.unsafeSubscribe(new DefaultObserver<Integer>() {
+        source.subscribe(new DefaultObserver<Integer>() {
 
             @Override
             public void onNext(Integer t) {

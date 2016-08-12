@@ -384,7 +384,7 @@ public class ObservableDelayTest {
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.delay(Observable.defer(subFunc), delayFunc).subscribe(o);
 
         source.onNext(1);
         delay.onNext(1);
@@ -419,7 +419,7 @@ public class ObservableDelayTest {
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.delay(Observable.defer(subFunc), delayFunc).subscribe(o);
 
         source.onNext(1);
         delay.onNext(1);
@@ -453,7 +453,7 @@ public class ObservableDelayTest {
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.delay(Observable.defer(subFunc), delayFunc).subscribe(o);
 
         source.onNext(1);
         delay.onError(new TestException());
@@ -513,7 +513,7 @@ public class ObservableDelayTest {
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
-        source.delay(subFunc, delayFunc).subscribe(o);
+        source.delay(Observable.defer(subFunc), delayFunc).subscribe(o);
 
         source.onNext(1);
         sdelay.onComplete();
@@ -733,13 +733,8 @@ public class ObservableDelayTest {
     public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         Observable.range(1, Flowable.bufferSize() * 2)
-                .delay(new Callable<Observable<Long>>() {
-
-                    @Override
-                    public Observable<Long> call() {
-                        return Observable.timer(500, TimeUnit.MILLISECONDS);
-                    }
-                }, new Function<Integer, Observable<Long>>() {
+                .delay(Observable.timer(500, TimeUnit.MILLISECONDS)
+                , new Function<Integer, Observable<Long>>() {
 
                     @Override
                     public Observable<Long> apply(Integer i) {
@@ -800,12 +795,7 @@ public class ObservableDelayTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        source.delaySubscription(new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return ps;
-            }
-        }).subscribe(ts);
+        source.delaySubscription(ps).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -826,12 +816,7 @@ public class ObservableDelayTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        source.delaySubscription(new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return ps;
-            }
-        }).subscribe(ts);
+        source.delaySubscription(ps).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -853,12 +838,7 @@ public class ObservableDelayTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        source.delaySubscription(new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return ps;
-            }
-        }).subscribe(ts);
+        source.delaySubscription(ps).subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNoErrors();

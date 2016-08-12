@@ -109,7 +109,7 @@ public class ObservableDematerializeTest {
         
         Observer<Integer> o = TestHelper.mockObserver();
         
-        result.unsafeSubscribe(o);
+        result.subscribe(o);
         
         verify(o).onNext(1);
         verify(o).onComplete();
@@ -124,7 +124,7 @@ public class ObservableDematerializeTest {
         
         Observer<Integer> o = TestHelper.mockObserver();
         
-        result.unsafeSubscribe(o);
+        result.subscribe(o);
         
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onComplete();

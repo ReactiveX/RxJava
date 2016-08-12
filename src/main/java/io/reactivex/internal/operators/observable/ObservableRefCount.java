@@ -111,7 +111,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
         
         ConnectionSubscriber s = new ConnectionSubscriber(subscriber, currentBase, d);
         
-        source.unsafeSubscribe(s);
+        source.subscribe(s);
     }
 
     private Disposable disconnect(final CompositeDisposable current) {

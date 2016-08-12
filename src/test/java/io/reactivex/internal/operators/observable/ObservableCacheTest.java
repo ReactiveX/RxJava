@@ -255,7 +255,7 @@ public class ObservableCacheTest {
             }
         };
         
-        source.unsafeSubscribe(ts);
+        source.subscribe(ts);
         
         Assert.assertEquals(100, count.get());
 

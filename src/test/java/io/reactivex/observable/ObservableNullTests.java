@@ -21,7 +21,6 @@ import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableOperator;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
 import io.reactivex.disposables.Disposable;
@@ -81,7 +80,7 @@ public class ObservableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, true, 128, (Observable<Object>[])null);
+        }, 128, (Observable<Object>[])null);
     }
     
     @SuppressWarnings("unchecked")
@@ -92,7 +91,7 @@ public class ObservableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, true, 128, Observable.never(), null).toBlocking().lastOption();
+        }, 128, Observable.never(), null).toBlocking().lastOption();
     }
 
     @Test(expected = NullPointerException.class)
@@ -102,7 +101,7 @@ public class ObservableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, true, 128);
+        }, 128);
     }
     
     @Test(expected = NullPointerException.class)
@@ -117,7 +116,7 @@ public class ObservableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, true, 128).toBlocking().lastOption();
+        }, 128).toBlocking().lastOption();
     }
     
     @SuppressWarnings("unchecked")
@@ -128,13 +127,13 @@ public class ObservableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, true, 128).toBlocking().lastOption();
+        }, 128).toBlocking().lastOption();
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestVarargsFunctionNull() {
-        Observable.combineLatest(null, true, 128, Observable.never());
+        Observable.combineLatest(null, 128, Observable.never());
     }
 
     @SuppressWarnings("unchecked")
@@ -145,13 +144,13 @@ public class ObservableNullTests {
             public Object apply(Object[] v) {
                 return null;
             }
-        }, true, 128, just1).toBlocking().lastOption();
+        }, 128, just1).toBlocking().lastOption();
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionNull() {
-        Observable.combineLatest(Arrays.asList(just1), null, true, 128);
+        Observable.combineLatest(Arrays.asList(just1), null, 128);
     }
 
     @SuppressWarnings("unchecked")
@@ -162,9 +161,100 @@ public class ObservableNullTests {
             public Object apply(Object[] v) {
                 return null;
             }
-        }, true, 128).toBlocking().lastOption();
+        }, 128).toBlocking().lastOption();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorVarargsNull() {
+        Observable.combineLatestDelayError(new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        }, 128, (Observable<Object>[])null);
     }
     
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorVarargsOneIsNull() {
+        Observable.combineLatestDelayError(new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        }, 128, Observable.never(), null).toBlocking().lastOption();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorIterableNull() {
+        Observable.combineLatestDelayError((Iterable<Observable<Object>>)null, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        }, 128);
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorIterableIteratorNull() {
+        Observable.combineLatestDelayError(new Iterable<Observable<Object>>() {
+            @Override
+            public Iterator<Observable<Object>> iterator() {
+                return null;
+            }
+        }, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        }, 128).toBlocking().lastOption();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorIterableOneIsNull() {
+        Observable.combineLatestDelayError(Arrays.asList(Observable.never(), null), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        }, 128).toBlocking().lastOption();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorVarargsFunctionNull() {
+        Observable.combineLatestDelayError(null, 128, Observable.never());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorVarargsFunctionReturnsNull() {
+        Observable.combineLatestDelayError(new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return null;
+            }
+        }, 128, just1).toBlocking().lastOption();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorIterableFunctionNull() {
+        Observable.combineLatestDelayError(Arrays.asList(just1), null, 128);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorIterableFunctionReturnsNull() {
+        Observable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return null;
+            }
+        }, 128).toBlocking().lastOption();
+    }
+
     @Test(expected = NullPointerException.class)
     public void concatIterableNull() {
         Observable.concat((Iterable<Observable<Object>>)null);
@@ -493,23 +583,23 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void mergeIterableNull() {
-        Observable.merge(128, 128, (Iterable<Observable<Object>>)null);
+        Observable.merge((Iterable<Observable<Object>>)null, 128, 128);
     }
     
     @Test(expected = NullPointerException.class)
     public void mergeIterableIteratorNull() {
-        Observable.merge(128, 128, new Iterable<Observable<Object>>() {
+        Observable.merge(new Iterable<Observable<Object>>() {
             @Override
             public Iterator<Observable<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }, 128, 128).toBlocking().lastOption();
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeIterableOneIsNull() {
-        Observable.merge(128, 128, Arrays.asList(just1, null)).toBlocking().lastOption();
+        Observable.merge(Arrays.asList(just1, null), 128, 128).toBlocking().lastOption();
     }
     
     @Test(expected = NullPointerException.class)
@@ -525,23 +615,23 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableNull() {
-        Observable.mergeDelayError(128, 128, (Iterable<Observable<Object>>)null);
+        Observable.mergeDelayError((Iterable<Observable<Object>>)null, 128, 128);
     }
     
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableIteratorNull() {
-        Observable.mergeDelayError(128, 128, new Iterable<Observable<Object>>() {
+        Observable.mergeDelayError(new Iterable<Observable<Object>>() {
             @Override
             public Iterator<Observable<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }, 128, 128).toBlocking().lastOption();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableOneIsNull() {
-        Observable.mergeDelayError(128, 128, Arrays.asList(just1, null)).toBlocking().lastOption();
+        Observable.mergeDelayError(Arrays.asList(just1, null), 128, 128).toBlocking().lastOption();
     }
     
     @Test(expected = NullPointerException.class)
@@ -713,44 +803,44 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2Null() {
-        Observable.zipIterable(new Function<Object[], Object>() {
+        Observable.zipIterable((Iterable<Observable<Object>>)null, new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
                 return 1;
             }
-        }, true, 128, (Iterable<Observable<Object>>)null);
+        }, true, 128);
     }
 
     @Test(expected = NullPointerException.class)
     public void zipIterable2IteratorNull() {
-        Observable.zipIterable(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return 1;
-            }
-        }, true, 128, new Iterable<Observable<Object>>() {
+        Observable.zipIterable(new Iterable<Observable<Object>>() {
             @Override
             public Iterator<Observable<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) {
+                return 1;
+            }
+        }, true, 128).toBlocking().lastOption();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionNull() {
-        Observable.zipIterable(null, true, 128, Arrays.asList(just1, just1));
+        Observable.zipIterable(Arrays.asList(just1, just1), null, true, 128);
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionReturnsNull() {
-        Observable.zipIterable(new Function<Object[], Object>() {
+        Observable.zipIterable(Arrays.asList(just1, just1), new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
                 return null;
             }
-        }, true, 128, Arrays.asList(just1, just1)).toBlocking().lastOption();
+        }, true, 128).toBlocking().lastOption();
     }
 
     //*************************************************************
@@ -1078,7 +1168,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void delaySubscriptionFunctionNull() {
-        just1.delaySubscription((Callable<Observable<Object>>)null);
+        just1.delaySubscription((Observable<Object>)null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1093,12 +1183,7 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void delayBothInitialSupplierReturnsNull() {
-        just1.delay(new Callable<Observable<Object>>() {
-            @Override
-            public Observable<Object> call() {
-                return null;
-            }
-        }, new Function<Integer, Observable<Integer>>() {
+        just1.delay(null, new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer v) {
                 return just1;
@@ -1108,22 +1193,13 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void delayBothItemSupplierNull() {
-        just1.delay(new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return just1;
-            }
-        }, null);
+        just1.delay(just1, null);
     }
     
     @Test(expected = NullPointerException.class)
     public void delayBothItemSupplierReturnsNull() {
-        just1.delay(new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return just1;
-            }
-        }, new Function<Integer, Observable<Object>>() {
+        just1.delay(just1
+        , new Function<Integer, Observable<Object>>() {
             @Override
             public Observable<Object> apply(Integer v) {
                 return null;
@@ -1173,7 +1249,12 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void distinctUntilChangedFunctionNull() {
-        just1.distinctUntilChanged(null);
+        just1.distinctUntilChanged((Function<Object, Object>)null);
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void distinctUntilChangedBiPredicateNull() {
+        just1.distinctUntilChanged((BiPredicate<Object, Object>)null);
     }
     
     @Test(expected = NullPointerException.class)
@@ -1245,53 +1326,13 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void endWithIterableNull() {
-        just1.endWith((Iterable<Integer>)null);
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithIterableIteratorNull() {
-        just1.endWith(new Iterable<Integer>() {
-            @Override
-            public Iterator<Integer> iterator() {
-                return null;
-            }
-        }).toBlocking().run();
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithIterableOneIsNull() {
-        just1.endWith(Arrays.asList(1, null)).toBlocking().run();
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithNbpObservableNull() {
-        just1.endWith((Observable<Integer>)null);
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithNull() {
-        just1.endWith((Integer)null);
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithArrayNull() {
-        just1.endWithArray((Integer[])null);
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void endWithArrayOneIsNull() {
-        just1.endWithArray(1, null).toBlocking().run();
-    }
-    
-    @Test(expected = NullPointerException.class)
     public void filterNull() {
         just1.filter(null);
     }
     
     @Test(expected = NullPointerException.class)
     public void finallyDoNull() {
-        just1.finallyDo(null);
+        just1.doAfterTerminate(null);
     }
     
     @Test(expected = NullPointerException.class)
@@ -2613,7 +2654,7 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void unsafeSubscribeNull() {
-        just1.unsafeSubscribe(null);
+        just1.subscribe((Observer<Object>)null);
     }
     
     @Test(expected = NullPointerException.class)

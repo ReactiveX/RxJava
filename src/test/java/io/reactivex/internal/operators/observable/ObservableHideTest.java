@@ -28,7 +28,7 @@ public class ObservableHideTest {
     public void testHiding() {
         PublishSubject<Integer> src = PublishSubject.create();
         
-        Observable<Integer> dst = src.asObservable();
+        Observable<Integer> dst = src.hide();
         
         assertFalse(dst instanceof PublishSubject);
         
@@ -47,7 +47,7 @@ public class ObservableHideTest {
     public void testHidingError() {
         PublishSubject<Integer> src = PublishSubject.create();
         
-        Observable<Integer> dst = src.asObservable();
+        Observable<Integer> dst = src.hide();
         
         assertFalse(dst instanceof PublishSubject);
         

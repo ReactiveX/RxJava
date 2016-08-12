@@ -452,7 +452,7 @@ public class ObservableMergeDelayErrorTest {
         final Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
         
-        result.unsafeSubscribe(new DefaultObserver<Integer>() {
+        result.subscribe(new DefaultObserver<Integer>() {
             int calls;
             @Override
             public void onNext(Integer t) {

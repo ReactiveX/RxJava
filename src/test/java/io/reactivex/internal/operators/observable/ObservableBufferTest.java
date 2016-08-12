@@ -780,7 +780,7 @@ public class ObservableBufferTest {
             }
         };
         
-        Observable.range(1, 1).delay(1, TimeUnit.SECONDS).buffer(2, TimeUnit.SECONDS).unsafeSubscribe(s);
+        Observable.range(1, 1).delay(1, TimeUnit.SECONDS).buffer(2, TimeUnit.SECONDS).subscribe(s);
         
         cdl.await();
         
