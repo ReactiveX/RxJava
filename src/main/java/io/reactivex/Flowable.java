@@ -7281,7 +7281,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Calls the appropriate onXXX method (shared between all Subscribers) for the lifecylcle events of
+     * Calls the appropriate onXXX method (shared between all Subscribers) for the lifecycle events of
      * the sequence (subscription, cancellation, requesting).
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
