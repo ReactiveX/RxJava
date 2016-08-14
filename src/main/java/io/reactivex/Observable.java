@@ -5330,7 +5330,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<U> collect(Callable<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
-        Objects.requireNonNull(initialValueSupplier, "initalValueSupplier is null");
+        Objects.requireNonNull(initialValueSupplier, "initialValueSupplier is null");
         Objects.requireNonNull(collector, "collector is null");
         return new ObservableCollect<T, U>(this, initialValueSupplier, collector);
     }
@@ -6468,7 +6468,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Calls the appropriate onXXX method (shared between all Subscribers) for the lifecylcle events of
+     * Calls the appropriate onXXX method (shared between all Subscribers) for the lifecycle events of
      * the sequence (subscription, cancellation, requesting).
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
@@ -7041,7 +7041,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            if true, exceptions from the current Observable and all inner ObservableSources are delayed until all of them terminate
      *            if false, the first one signalling an exception will terminate the whole sequence immediately
      * @param bufferSize
-     *            the number of elements to prefetch from the innner ObservableSources.
+     *            the number of elements to prefetch from the inner ObservableSources.
      * @return a Observable that emits the results of applying a function to a pair of values emitted by the
      *         source ObservableSource and the collection ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -7869,7 +7869,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <U> the output type
      * @param clazz
      *            the class type to filter the items emitted by the source ObservableSource
-     * @return a Observable that emits items from the source ObservableSource of type {@code klass}
+     * @return a Observable that emits items from the source ObservableSource of type {@code clazz}
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
