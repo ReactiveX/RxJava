@@ -2884,7 +2884,7 @@ public class CompletableTest {
             public Object call() {
                 return 1;
             }
-        }).get());
+        }).blockingGet());
     }
 
     @Test(timeout = 1000, expected = TestException.class)
@@ -2894,7 +2894,7 @@ public class CompletableTest {
             public Object call() {
                 return 1;
             }
-        }).get();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2909,7 +2909,7 @@ public class CompletableTest {
             public Object call() {
                 return null;
             }
-        }).get();
+        }).blockingGet();
     }
 
     @Test(expected = TestException.class)
@@ -2917,17 +2917,17 @@ public class CompletableTest {
         normal.completable.toSingle(new Callable<Object>() {
             @Override
             public Object call() { throw new TestException(); }
-        }).get();
+        }).blockingGet();
     }
 
     @Test(timeout = 1000, expected = TestException.class)
     public void toSingleDefaultError() {
-        error.completable.toSingleDefault(1).get();
+        error.completable.toSingleDefault(1).blockingGet();
     }
     
     @Test(timeout = 1000)
     public void toSingleDefaultNormal() {
-        Assert.assertEquals((Integer)1, normal.completable.toSingleDefault(1).get());
+        Assert.assertEquals((Integer)1, normal.completable.toSingleDefault(1).blockingGet());
     }
     
     @Test(expected = NullPointerException.class)
@@ -3866,13 +3866,13 @@ public class CompletableTest {
         final AtomicBoolean hasRun = new AtomicBoolean(false);
         final Exception e = new Exception();
         Completable.error(e)
-            .andThen(Single.<String>unsafeCreate(new Single<String>() {
+            .andThen(new Single<String>() {
                 @Override
                 public void subscribeActual(SingleObserver<? super String> s) {
                     hasRun.set(true);
                     s.onSuccess("foo");
                 }
-            }))
+            })
             .subscribe(ts);
         ts.assertNoValues();
         ts.assertError(e);
