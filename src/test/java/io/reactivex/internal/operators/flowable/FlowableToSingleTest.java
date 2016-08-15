@@ -79,7 +79,7 @@ public class FlowableToSingleTest {
             public void run() {
                 unsubscribed.set(true);
             }}).toSingle();
-        single.unsafeSubscribe(subscriber);
+        single.subscribe(subscriber);
         subscriber.assertComplete();
         Assert.assertFalse(unsubscribed.get());
     }

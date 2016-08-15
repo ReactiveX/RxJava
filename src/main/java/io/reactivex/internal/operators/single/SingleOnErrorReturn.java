@@ -13,20 +13,20 @@
 
 package io.reactivex.internal.operators.single;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
+import io.reactivex.functions.Function;
 
 public final class SingleOnErrorReturn<T> extends Single<T> {
     final SingleSource<? extends T> source;
 
-    final Callable<? extends T> valueSupplier;
+    final Function<? super Throwable, ? extends T> valueSupplier;
     
     final T value;
     
-    public SingleOnErrorReturn(SingleSource<? extends T> source, Callable<? extends T> valueSupplier, T value) {
+    public SingleOnErrorReturn(SingleSource<? extends T> source, 
+            Function<? super Throwable, ? extends T> valueSupplier, T value) {
         this.source = source;
         this.valueSupplier = valueSupplier;
         this.value = value;
@@ -45,7 +45,7 @@ public final class SingleOnErrorReturn<T> extends Single<T> {
 
                 if (valueSupplier != null) {
                     try {
-                        v = valueSupplier.call();
+                        v = valueSupplier.apply(e);
                     } catch (Throwable ex) {
                         s.onError(new CompositeException(ex, e));
                         return;
