@@ -14,18 +14,14 @@
 package io.reactivex.functions;
 
 /**
- * A functional interface that takes a value and returns another value, possibly with a
- * different type and allows throwing a checked exception.
- *
- * @param <T> the input value type
- * @param <R> the output value type
+ * A functional interface that has a single cancel method
+ * that can throw.
  */
-public interface Function<T, R> {
+public interface Cancellable {
+    
     /**
-     * Apply some calculation to the input value and return some other value.
-     * @param t the input value
-     * @return the output value
+     * Cancel the action or free a resource.
      * @throws Exception on error
      */
-    R apply(T t) throws Exception;
+    void cancel() throws Exception;
 }

@@ -26,9 +26,11 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.*;
@@ -633,4 +635,37 @@ public class FlowableSwitchTest {
         assertEquals(Long.MAX_VALUE, (long) requests.get(requests.size()-1));
     }
 
+    @Test
+    public void delayErrors() {
+        PublishProcessor<Publisher<Integer>> source = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = source.switchMapDelayError(Functions.<Publisher<Integer>>identity())
+        .test();
+        
+        ts.assertNoValues()
+        .assertNoErrors()
+        .assertNotComplete();
+        
+        source.onNext(Flowable.just(1));
+        
+        source.onNext(Flowable.<Integer>error(new TestException("Forced failure 1")));
+        
+        source.onNext(Flowable.just(2, 3, 4));
+        
+        source.onNext(Flowable.<Integer>error(new TestException("Forced failure 2")));
+        
+        source.onNext(Flowable.just(5));
+        
+        source.onError(new TestException("Forced failure 3"));
+        
+        ts.assertValues(1, 2, 3, 4, 5)
+        .assertNotComplete()
+        .assertError(CompositeException.class);
+        
+        List<Throwable> errors = ExceptionHelper.flatten(ts.errors().get(0));
+        
+        TestHelper.assertError(errors, 0, TestException.class, "Forced failure 1");
+        TestHelper.assertError(errors, 1, TestException.class, "Forced failure 2");
+        TestHelper.assertError(errors, 2, TestException.class, "Forced failure 3");
+    }
 }

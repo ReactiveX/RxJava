@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableIgnoreElementsTest {
@@ -80,7 +80,7 @@ public class FlowableIgnoreElementsTest {
     @Test
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Flowable.range(1, 10).doOnCancel(new Runnable() {
+        Flowable.range(1, 10).doOnCancel(new Action() {
             @Override
             public void run() {
                 unsub.set(true);

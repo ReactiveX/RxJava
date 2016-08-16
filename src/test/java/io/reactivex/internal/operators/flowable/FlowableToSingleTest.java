@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.*;
 
 import io.reactivex.*;
+import io.reactivex.functions.Action;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableToSingleTest {
@@ -73,7 +74,7 @@ public class FlowableToSingleTest {
     public void testShouldUseUnsafeSubscribeInternallyNotSubscribe() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Single<String> single = Flowable.just("Hello World!").doOnCancel(new Runnable() {
+        Single<String> single = Flowable.just("Hello World!").doOnCancel(new Action() {
 
             @Override
             public void run() {

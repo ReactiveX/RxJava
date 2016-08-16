@@ -187,7 +187,7 @@ public class ObservableWindowWithTimeTest {
         ObservableWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
-        .doOnComplete(new Runnable() {
+        .doOnComplete(new Action() {
             @Override
             public void run() {
                 System.out.println("Main done!");
@@ -197,7 +197,7 @@ public class ObservableWindowWithTimeTest {
             @Override
             public Observable<Integer> apply(Observable<Integer> w) {
                 return w.startWith(indicator)
-                        .doOnComplete(new Runnable() {
+                        .doOnComplete(new Action() {
                             @Override
                             public void run() {
                                 System.out.println("inner done: " + wip.incrementAndGet());

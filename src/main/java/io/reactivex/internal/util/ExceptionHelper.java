@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.util;
 
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.exceptions.CompositeException;
@@ -55,5 +56,31 @@ public enum ExceptionHelper {
             current = field.getAndSet(TERMINATED);
         }
         return current;
+    }
+    
+    /**
+     * Returns a flattened list of Throwables from tree-like CompositeException chain
+     * @param t the starting throwable
+     * @return the list of Throwables flattened in a depth-first manner
+     */
+    public static List<Throwable> flatten(Throwable t) {
+        List<Throwable> list = new ArrayList<Throwable>();
+        ArrayDeque<Throwable> deque = new ArrayDeque<Throwable>();
+        deque.offer(t);
+        
+        while (!deque.isEmpty()) {
+            Throwable e = deque.removeFirst();
+            if (e instanceof CompositeException) {
+                CompositeException ce = (CompositeException) e;
+                List<Throwable> exceptions = ce.getExceptions();
+                for (int i = exceptions.size() - 1; i >= 0; i--) {
+                    deque.offerFirst(exceptions.get(i));
+                }
+            } else {
+                list.add(e);
+            }
+        }
+        
+        return list;
     }
 }

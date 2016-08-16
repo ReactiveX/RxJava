@@ -1200,7 +1200,7 @@ public class FlowableNullTests {
         just1.doOnLifecycle(null, new LongConsumer() {
             @Override
             public void accept(long v) { }
-        }, new Runnable() {
+        }, new Action() {
             @Override
             public void run() { }
         });
@@ -1211,7 +1211,7 @@ public class FlowableNullTests {
         just1.doOnLifecycle(new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) { }
-        }, null, new Runnable() {
+        }, null, new Action() {
             @Override
             public void run() { }
         });
@@ -2132,7 +2132,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void subscribeOnSubscribeNull() {
-        just1.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_RUNNABLE, null);
+        just1.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_ACTION, null);
     }
     
     @Test(expected = NullPointerException.class)

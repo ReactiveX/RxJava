@@ -20,9 +20,11 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Cancellable;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 
@@ -74,13 +76,13 @@ public final class FlowableFromSource<T> extends Flowable<T> {
     }
     
     static final class CancellableSubscription 
-    extends AtomicReference<FlowableEmitter.Cancellable>
+    extends AtomicReference<Cancellable>
     implements Disposable {
         
         /** */
         private static final long serialVersionUID = 5718521705281392066L;
 
-        public CancellableSubscription(FlowableEmitter.Cancellable cancellable) {
+        public CancellableSubscription(Cancellable cancellable) {
             super(cancellable);
         }
         
@@ -92,7 +94,7 @@ public final class FlowableFromSource<T> extends Flowable<T> {
         @Override
         public void dispose() {
             if (get() != null) {
-                FlowableEmitter.Cancellable c = getAndSet(null);
+                Cancellable c = getAndSet(null);
                 if (c != null) {
                     try {
                         c.cancel();
@@ -102,6 +104,165 @@ public final class FlowableFromSource<T> extends Flowable<T> {
                     }
                 }
             }
+        }
+    }
+    
+    /**
+     * Serializes calls to onNext, onError and onComplete.
+     *
+     * @param <T> the value type
+     */
+    static final class SerializedEmitter<T> 
+    extends AtomicInteger
+    implements FlowableEmitter<T> {
+        /** */
+        private static final long serialVersionUID = 4883307006032401862L;
+
+        final BaseEmitter<T> emitter;
+        
+        final AtomicThrowable error;
+        
+        final SimpleQueue<T> queue;
+        
+        volatile boolean done;
+        
+        public SerializedEmitter(BaseEmitter<T> emitter) {
+            this.emitter = emitter;
+            this.error = new AtomicThrowable();
+            this.queue = new SpscLinkedArrayQueue<T>(16);
+        }
+
+        @Override
+        public void onNext(T t) {
+            if (emitter.isCancelled() || done) {
+                return;
+            }
+            if (t == null) {
+                onError(new NullPointerException("t is null"));
+                return;
+            }
+            if (get() == 0 && compareAndSet(0, 1)) {
+                emitter.onNext(t);
+                if (decrementAndGet() == 0) {
+                    return;
+                }
+            } else {
+                SimpleQueue<T> q = queue;
+                synchronized (q) {
+                    q.offer(t);
+                }
+                if (getAndIncrement() != 0) {
+                    return;
+                }
+            }
+            drainLoop();
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            if (emitter.isCancelled() || done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            if (t == null) {
+                t = new NullPointerException("t is null");
+            }
+            if (error.addThrowable(t)) {
+                done = true;
+                drain();
+            } else {
+                RxJavaPlugins.onError(t);
+            }
+        }
+
+        @Override
+        public void onComplete() {
+            if (emitter.isCancelled() || done) {
+                return;
+            }
+            done = true;
+            drain();
+        }
+        
+        void drain() {
+            if (getAndIncrement() == 0) {
+                drainLoop();
+            }
+        }
+        
+        void drainLoop() {
+            BaseEmitter<T> e = emitter;
+            SimpleQueue<T> q = queue;
+            AtomicThrowable error = this.error;
+            int missed = 1;
+            for (;;) {
+                
+                for (;;) {
+                    if (e.isCancelled()) {
+                        q.clear();
+                        return;
+                    }
+
+                    if (error.get() != null) {
+                        q.clear();
+                        e.onError(error.terminate());
+                        return;
+                    }
+                    
+                    boolean d = done;
+                    T v;
+                    
+                    try {
+                        v = q.poll();
+                    } catch (Throwable ex) {
+                        // should never happen
+                        v = null;
+                    }
+                    
+                    boolean empty = v == null;
+                    
+                    if (d && empty) {
+                        e.onComplete();
+                        return;
+                    }
+                    
+                    if (empty) {
+                        break;
+                    }
+                    
+                    e.onNext(v);
+                }
+                
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void setDisposable(Disposable s) {
+            emitter.setDisposable(s);
+        }
+
+        @Override
+        public void setCancellation(Cancellable c) {
+            emitter.setCancellation(c);
+        }
+
+        @Override
+        public long requested() {
+            return emitter.requested();
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return emitter.isCancelled();
+        }
+
+        @Override
+        public FlowableEmitter<T> serialize() {
+            return this;
         }
     }
     
@@ -177,13 +338,18 @@ public final class FlowableFromSource<T> extends Flowable<T> {
         }
 
         @Override
-        public final void setCancellation(FlowableEmitter.Cancellable c) {
+        public final void setCancellation(Cancellable c) {
             setDisposable(new CancellableSubscription(c));
         }
 
         @Override
         public final long requested() {
             return get();
+        }
+        
+        @Override
+        public final FlowableEmitter<T> serialize() {
+            return new SerializedEmitter<T>(this);
         }
     }
     

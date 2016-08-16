@@ -90,7 +90,7 @@ public class ObservablePublishTest {
     public void testBackpressureFastSlow() {
         ConnectableObservable<Integer> is = Observable.range(1, Flowable.bufferSize() * 2).publish();
         Observable<Integer> fast = is.observeOn(Schedulers.computation())
-        .doOnComplete(new Runnable() {
+        .doOnComplete(new Action() {
             @Override
             public void run() {
                 System.out.println("^^^^^^^^^^^^^ completed FAST");
@@ -112,7 +112,7 @@ public class ObservablePublishTest {
                 return i;
             }
 
-        }).doOnComplete(new Runnable() {
+        }).doOnComplete(new Action() {
 
             @Override
             public void run() {
@@ -193,7 +193,7 @@ public class ObservablePublishTest {
                         sourceEmission.incrementAndGet();
                     }
                 })
-                .doOnCancel(new Runnable() {
+                .doOnCancel(new Action() {
                     @Override
                     public void run() {
                         sourceUnsubscribed.set(true);
@@ -210,7 +210,7 @@ public class ObservablePublishTest {
             @Override
             public void onNext(Integer t) {
                 if (valueCount() == 2) {
-                    source.doOnCancel(new Runnable() {
+                    source.doOnCancel(new Action() {
                         @Override
                         public void run() {
                             child2Unsubscribed.set(true);
@@ -221,7 +221,7 @@ public class ObservablePublishTest {
             }
         };
         
-        source.doOnCancel(new Runnable() {
+        source.doOnCancel(new Action() {
             @Override
             public void run() {
                 child1Unsubscribed.set(true);

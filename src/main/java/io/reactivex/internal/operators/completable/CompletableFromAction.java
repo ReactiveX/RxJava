@@ -15,12 +15,13 @@ package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.functions.Action;
 
-public final class CompletableFromRunnable extends Completable {
+public final class CompletableFromAction extends Completable {
 
-    final Runnable run;
+    final Action run;
 
-    public CompletableFromRunnable(Runnable run) {
+    public CompletableFromAction(Action run) {
         this.run = run;
     }
 

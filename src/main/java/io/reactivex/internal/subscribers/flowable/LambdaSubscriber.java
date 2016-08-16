@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -28,11 +28,11 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
     private static final long serialVersionUID = -7251123623727029452L;
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;
-    final Runnable onComplete;
+    final Action onComplete;
     final Consumer<? super Subscription> onSubscribe;
     
     public LambdaSubscriber(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
-            Runnable onComplete,
+            Action onComplete,
             Consumer<? super Subscription> onSubscribe) {
         super();
         this.onNext = onNext;

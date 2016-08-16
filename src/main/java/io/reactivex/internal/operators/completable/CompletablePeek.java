@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.completable;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -25,17 +25,17 @@ public final class CompletablePeek extends Completable {
     final CompletableSource source;
     final Consumer<? super Disposable> onSubscribe; 
     final Consumer<? super Throwable> onError;
-    final Runnable onComplete;
-    final Runnable onTerminate;
-    final Runnable onAfterTerminate;
-    final Runnable onDisposed;
+    final Action onComplete;
+    final Action onTerminate;
+    final Action onAfterTerminate;
+    final Action onDisposed;
     
     public CompletablePeek(CompletableSource source, Consumer<? super Disposable> onSubscribe,
                            Consumer<? super Throwable> onError,
-                           Runnable onComplete,
-                           Runnable onTerminate,
-                           Runnable onAfterTerminate,
-                           Runnable onDisposed) {
+                           Action onComplete,
+                           Action onTerminate,
+                           Action onAfterTerminate,
+                           Action onDisposed) {
         this.source = source;
         this.onSubscribe = onSubscribe;
         this.onError = onError;

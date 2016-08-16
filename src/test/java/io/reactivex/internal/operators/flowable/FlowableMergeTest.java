@@ -1241,7 +1241,7 @@ public class FlowableMergeTest {
                     // log count
                     .doOnNext(printCount())
                     // release latch
-                    .doOnComplete(new Runnable() {
+                    .doOnComplete(new Action() {
                         @Override
                         public void run() {
                                 latch.countDown();

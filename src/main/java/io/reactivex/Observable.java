@@ -1425,7 +1425,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      * @see FlowableSource
      * @see FlowableEmitter.BackpressureMode
-     * @see FlowableEmitter.Cancellable
+     * @see Cancellable
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     // FIXME update API, cancellation still needs support
@@ -6268,7 +6268,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Registers an {@link Runnable} to be called when this ObservableSource invokes either
+     * Registers an {@link Action} to be called when this ObservableSource invokes either
      * {@link Subscriber#onComplete onComplete} or {@link Subscriber#onError onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
@@ -6278,20 +6278,20 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param onFinally
-     *            an {@link Runnable} to be invoked when the source ObservableSource finishes
+     *            an {@link Action} to be invoked when the source ObservableSource finishes
      * @return a Observable that emits the same items as the source ObservableSource, then invokes the
-     *         {@link Runnable}
+     *         {@link Action}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @see #doOnTerminate(Runnable)
+     * @see #doOnTerminate(Action)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doAfterTerminate(Runnable onFinally) {
+    public final Observable<T> doAfterTerminate(Action onFinally) {
         Objects.requireNonNull(onFinally, "onFinally is null");
-        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_RUNNABLE, onFinally);
+        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_ACTION, onFinally);
     }
     
     /**
-     * Calls the unsubscribe {@code Runnable} if the downstream unsubscribes the sequence.
+     * Calls the unsubscribe {@code Action} if the downstream unsubscribes the sequence.
      * <p>
      * The action is shared between subscriptions and thus may be called concurrently from multiple
      * threads; the action must be thread safe.
@@ -6313,7 +6313,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnCancel(Runnable onCancel) {
+    public final Observable<T> doOnCancel(Action onCancel) {
         return doOnLifecycle(Functions.emptyConsumer(), onCancel);
     }
 
@@ -6332,8 +6332,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnComplete(Runnable onComplete) {
-        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.EMPTY_RUNNABLE);
+    public final Observable<T> doOnComplete(Action onComplete) {
+        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -6350,7 +6350,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    private Observable<T> doOnEach(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Runnable onComplete, Runnable onAfterTerminate) {
+    private Observable<T> doOnEach(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete, Action onAfterTerminate) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
@@ -6388,19 +6388,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
                         onNotification.accept(Try.<Optional<T>>ofError(e));
                     }
                 },
-                new Runnable() {
+                new Action() {
                     @Override
-                    public void run() {
-                        // TODO throwing Runnable?
-                        try {
-                            onNotification.accept(Try.ofValue(Optional.<T>empty()));
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            Exceptions.propagate(ex);
-                        }
+                    public void run() throws Exception {
+                        onNotification.accept(Try.ofValue(Optional.<T>empty()));
                     }
                 },
-                Functions.EMPTY_RUNNABLE
+                Functions.EMPTY_ACTION
                 );
     }
 
@@ -6437,12 +6431,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
             public void accept(Throwable e) {
                 observer.onError(e);
             }
-        }, new Runnable() {
+        }, new Action() {
             @Override
             public void run() {
                 observer.onComplete();
             }
-        }, Functions.EMPTY_RUNNABLE);
+        }, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -6464,7 +6458,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> doOnError(Consumer<? super Throwable> onError) {
-        return doOnEach(Functions.emptyConsumer(), onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+        return doOnEach(Functions.emptyConsumer(), onError, Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -6485,7 +6479,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnLifecycle(final Consumer<? super Disposable> onSubscribe, final Runnable onCancel) {
+    public final Observable<T> doOnLifecycle(final Consumer<? super Disposable> onSubscribe, final Action onCancel) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         Objects.requireNonNull(onCancel, "onCancel is null");
         return new ObservableDoOnLifecycle<T>(this, onSubscribe, onCancel);
@@ -6507,7 +6501,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> doOnNext(Consumer<? super T> onNext) {
-        return doOnEach(onNext, Functions.emptyConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+        return doOnEach(onNext, Functions.emptyConsumer(), Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -6529,7 +6523,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
-        return doOnLifecycle(onSubscribe, Functions.EMPTY_RUNNABLE);
+        return doOnLifecycle(onSubscribe, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -6549,16 +6543,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the action to invoke when the source ObservableSource calls {@code onCompleted} or {@code onError}
      * @return the source ObservableSource with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @see #doAfterTerminate(Runnable)
+     * @see #doAfterTerminate(Action)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnTerminate(final Runnable onTerminate) {
+    public final Observable<T> doOnTerminate(final Action onTerminate) {
         return doOnEach(Functions.emptyConsumer(), new Consumer<Throwable>() {
             @Override
-            public void accept(Throwable e) {
+            public void accept(Throwable e) throws Exception {
                 onTerminate.run();
             }
-        }, onTerminate, Functions.EMPTY_RUNNABLE);
+        }, onTerminate, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7240,7 +7234,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext) {
-        return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE);
+        return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7264,7 +7258,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext, Consumer<? super Throwable> onError) {
-        return forEachWhile(onNext, onError, Functions.EMPTY_RUNNABLE);
+        return forEachWhile(onNext, onError, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7280,7 +7274,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onError
      *            {@link Consumer} to execute when an error is emitted.
      * @param onComplete
-     *            {@link Runnable} to execute when completion is signalled.
+     *            {@link Action} to execute when completion is signalled.
      * @return 
      *            a Disposable that allows cancelling an asynchronous sequence
      * @throws NullPointerException
@@ -7291,7 +7285,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(final Predicate<? super T> onNext, Consumer<? super Throwable> onError,
-            final Runnable onComplete) {
+            final Action onComplete) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
@@ -9909,7 +9903,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.emptyConsumer());
+        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION, Functions.emptyConsumer());
     }
 
     /**
@@ -9931,7 +9925,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
-        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, Functions.emptyConsumer());
+        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION, Functions.emptyConsumer());
     }
 
     /**
@@ -9943,9 +9937,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param onNext
-     *             the {@code Action1<T>} you have designed to accept emissions from the ObservableSource
+     *             the {@code Consumer<T>} you have designed to accept emissions from the ObservableSource
      * @param onError
-     *             the {@code Action1<Throwable>} you have designed to accept any error notification from the
+     *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *             ObservableSource
      * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
      *         the ObservableSource has finished sending them
@@ -9956,7 +9950,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
-        return subscribe(onNext, onError, Functions.EMPTY_RUNNABLE, Functions.emptyConsumer());
+        return subscribe(onNext, onError, Functions.EMPTY_ACTION, Functions.emptyConsumer());
     }
 
     /**
@@ -9968,12 +9962,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param onNext
-     *             the {@code Action1<T>} you have designed to accept emissions from the ObservableSource
+     *             the {@code Consumer<T>} you have designed to accept emissions from the ObservableSource
      * @param onError
-     *             the {@code Action1<Throwable>} you have designed to accept any error notification from the
+     *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *             ObservableSource
      * @param onComplete
-     *             the {@code Runnable} you have designed to accept a completion notification from the
+     *             the {@code Action} you have designed to accept a completion notification from the
      *             ObservableSource
      * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
      *         the ObservableSource has finished sending them
@@ -9985,7 +9979,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
-            Runnable onComplete) {
+            Action onComplete) {
         return subscribe(onNext, onError, onComplete, Functions.emptyConsumer());
     }
 
@@ -9998,12 +9992,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param onNext
-     *             the {@code Action1<T>} you have designed to accept emissions from the ObservableSource
+     *             the {@code Consumer<T>} you have designed to accept emissions from the ObservableSource
      * @param onError
-     *             the {@code Action1<Throwable>} you have designed to accept any error notification from the
+     *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *             ObservableSource
      * @param onComplete
-     *             the {@code Runnable} you have designed to accept a completion notification from the
+     *             the {@code Action} you have designed to accept a completion notification from the
      *             ObservableSource
      * @param onSubscribe
      *             the {@code Consumer} that receives the upstream's Subscription
@@ -10017,7 +10011,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
-            Runnable onComplete, Consumer<? super Disposable> onSubscribe) {
+            Action onComplete, Consumer<? super Disposable> onSubscribe) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");

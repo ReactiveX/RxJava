@@ -169,7 +169,7 @@ public class FlowableRefCountTest {
                             subscribeCount.incrementAndGet();
                     }
                 })
-                .doOnCancel(new Runnable() {
+                .doOnCancel(new Action() {
                     @Override
                     public void run() {
                             System.out.println("******************************* Unsubscribe received");
@@ -214,7 +214,7 @@ public class FlowableRefCountTest {
                             subscribeLatch.countDown();
                     }
                 })
-                .doOnCancel(new Runnable() {
+                .doOnCancel(new Action() {
                     @Override
                     public void run() {
                             System.out.println("******************************* Unsubscribe received");
@@ -252,7 +252,7 @@ public class FlowableRefCountTest {
     public void testConnectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
         Flowable<Long> o = synchronousInterval()
-                .doOnCancel(new Runnable() {
+                .doOnCancel(new Action() {
                     @Override
                     public void run() {
                             System.out.println("******************************* Unsubscribe received");

@@ -910,8 +910,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(Iterable<? extends Publisher<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
-        // FIXME provide an inlined implementation?!
-        return fromIterable(sources).concatMap((Function)Functions.identity());
+        // unlike general sources, fromIterable can only throw on a boundary because it is consumed only there
+        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), 2, false);
     }
 
     /**
@@ -1447,7 +1447,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatDelayError(Iterable<? extends Publisher<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
-        // FIXME inlined implementation?!
         return fromIterable(sources).concatMapDelayError((Function)Functions.identity());
     }
 
@@ -1643,7 +1642,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new Flowable instance
      * @see FlowableSource
      * @see FlowableEmitter.BackpressureMode
-     * @see FlowableEmitter.Cancellable
+     * @see Cancellable
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3916,8 +3915,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> switchOnNextDelayError(Publisher<? extends Publisher<? extends T>> sources, int prefetch) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return fromPublisher(sources).switchMapDelayError(Functions.<Publisher<? extends T>>identity(), bufferSize());
     }
 
     /**
@@ -6615,7 +6613,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> delay(final Function<? super T, ? extends Publisher<U>> itemDelay) {
         Objects.requireNonNull(itemDelay, "itemDelay is null");
-        // TODO a more efficient implementation if necessary
         return flatMap(new Function<T, Publisher<T>>() {
             @Override
             public Publisher<T> apply(final T v) throws Exception {
@@ -7055,7 +7052,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     /**
-     * Registers an {@link Runnable} to be called when this Publisher invokes either
+     * Registers an {@link Action} to be called when this Publisher invokes either
      * {@link Subscriber#onComplete onComplete} or {@link Subscriber#onError onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
@@ -7068,20 +7065,21 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param onFinally
-     *            an {@link Runnable} to be invoked when the source Publisher finishes
+     *            an {@link Action} to be invoked when the source Publisher finishes
      * @return a Flowable that emits the same items as the source Publisher, then invokes the
-     *         {@link Runnable}
+     *         {@link Action}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @see #doOnTerminate(Runnable)
+     * @see #doOnTerminate(Action)
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doAfterTerminate(Runnable onFinally) {
-        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_RUNNABLE, onFinally);
+    public final Flowable<T> doAfterTerminate(Action onFinally) {
+        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), 
+                Functions.EMPTY_ACTION, onFinally);
     }
 
     /**
-     * Calls the unsubscribe {@code Runnable} if the downstream unsubscribes the sequence.
+     * Calls the unsubscribe {@code Action} if the downstream unsubscribes the sequence.
      * <p>
      * The action is shared between subscriptions and thus may be called concurrently from multiple
      * threads; the action must be thread safe.
@@ -7107,7 +7105,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doOnCancel(Runnable onCancel) {
+    public final Flowable<T> doOnCancel(Action onCancel) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.EMPTY_LONGCONSUMER, onCancel);
     }
 
@@ -7130,8 +7128,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doOnComplete(Runnable onComplete) {
-        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), onComplete, Functions.EMPTY_RUNNABLE);
+    public final Flowable<T> doOnComplete(Action onComplete) {
+        return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), 
+                onComplete, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7152,7 +7151,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    private Flowable<T> doOnEach(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Runnable onComplete, Runnable onAfterTerminate) {
+    private Flowable<T> doOnEach(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
+            Action onComplete, Action onAfterTerminate) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
@@ -7194,18 +7194,13 @@ public abstract class Flowable<T> implements Publisher<T> {
                         onNotification.accept(Try.<Optional<T>>ofError(e));
                     }
                 },
-                new Runnable() {
+                new Action() {
                     @Override
-                    public void run() {
-                        // TODO introduce throwing Runnable?
-                        try {
-                            onNotification.accept(Try.ofValue(Optional.<T>empty()));
-                        } catch (Throwable ex) {
-                            throw Exceptions.propagate(ex);
-                        }
+                    public void run() throws Exception {
+                        onNotification.accept(Try.ofValue(Optional.<T>empty()));
                     }
                 },
-                Functions.EMPTY_RUNNABLE
+                Functions.EMPTY_ACTION
             );
     }
 
@@ -7246,12 +7241,12 @@ public abstract class Flowable<T> implements Publisher<T> {
             public void accept(Throwable e) {
                 observer.onError(e);
             }
-        }, new Runnable() {
+        }, new Action() {
             @Override
             public void run() {
                 observer.onComplete();
             }
-        }, Functions.EMPTY_RUNNABLE);
+        }, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7277,7 +7272,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnError(Consumer<? super Throwable> onError) {
-        return doOnEach(Functions.emptyConsumer(), onError, Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+        return doOnEach(Functions.emptyConsumer(), onError, 
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7305,7 +7301,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnLifecycle(final Consumer<? super Subscription> onSubscribe, 
-            final LongConsumer onRequest, final Runnable onCancel) {
+            final LongConsumer onRequest, final Action onCancel) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         Objects.requireNonNull(onRequest, "onRequest is null");
         Objects.requireNonNull(onCancel, "onCancel is null");
@@ -7332,7 +7328,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnNext(Consumer<? super T> onNext) {
-        return doOnEach(onNext, Functions.emptyConsumer(), Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+        return doOnEach(onNext, Functions.emptyConsumer(), 
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7361,7 +7358,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnRequest(LongConsumer onRequest) {
-        return doOnLifecycle(Functions.emptyConsumer(), onRequest, Functions.EMPTY_RUNNABLE);
+        return doOnLifecycle(Functions.emptyConsumer(), onRequest, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7387,7 +7384,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnSubscribe(Consumer<? super Subscription> onSubscribe) {
-        return doOnLifecycle(onSubscribe, Functions.EMPTY_LONGCONSUMER, Functions.EMPTY_RUNNABLE);
+        return doOnLifecycle(onSubscribe, Functions.EMPTY_LONGCONSUMER, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7410,17 +7407,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the action to invoke when the source Publisher calls {@code onCompleted} or {@code onError}
      * @return the source Publisher with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @see #doAfterTerminate(Runnable)
+     * @see #doAfterTerminate(Action)
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doOnTerminate(final Runnable onTerminate) {
+    public final Flowable<T> doOnTerminate(final Action onTerminate) {
         return doOnEach(Functions.emptyConsumer(), new Consumer<Throwable>() {
             @Override
-            public void accept(Throwable e) {
+            public void accept(Throwable e) throws Exception {
                 onTerminate.run();
             }
-        }, onTerminate, Functions.EMPTY_RUNNABLE);
+        }, onTerminate, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -8233,7 +8230,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext) {
-        return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE);
+        return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION);
     }
 
     /**
@@ -8261,7 +8258,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext, Consumer<? super Throwable> onError) {
-        return forEachWhile(onNext, onError, Functions.EMPTY_RUNNABLE);
+        return forEachWhile(onNext, onError, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -8280,7 +8277,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param onError
      *            {@link Consumer} to execute when an error is emitted.
      * @param onComplete
-     *            {@link Runnable} to execute when completion is signalled.
+     *            {@link Action} to execute when completion is signalled.
      * @return 
      *            a Disposable that allows cancelling an asynchronous sequence
      * @throws NullPointerException
@@ -8292,7 +8289,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(final Predicate<? super T> onNext, final Consumer<? super Throwable> onError,
-            final Runnable onComplete) {
+            final Action onComplete) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
@@ -9121,7 +9118,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int capacity, boolean delayError, boolean unbounded) {
         validateBufferSize(capacity, "bufferSize");
-        return new FlowableOnBackpressureBuffer<T>(this, capacity, unbounded, delayError, Functions.EMPTY_RUNNABLE);
+        return new FlowableOnBackpressureBuffer<T>(this, capacity, unbounded, delayError, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -9153,7 +9150,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> onBackpressureBuffer(int capacity, boolean delayError, boolean unbounded, Runnable onOverflow) {
+    public final Flowable<T> onBackpressureBuffer(int capacity, boolean delayError, boolean unbounded, 
+            Action onOverflow) {
         Objects.requireNonNull(onOverflow, "onOverflow is null");
         return new FlowableOnBackpressureBuffer<T>(this, capacity, unbounded, delayError, onOverflow);
     }
@@ -9181,7 +9179,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> onBackpressureBuffer(int capacity, Runnable onOverflow) {
+    public final Flowable<T> onBackpressureBuffer(int capacity, Action onOverflow) {
         return onBackpressureBuffer(capacity, false, false, onOverflow);
     }
 
@@ -9219,7 +9217,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
-    public final Publisher<T> onBackpressureBuffer(long capacity, Runnable onOverflow, BackpressureOverflow.Strategy overflowStrategy) {
+    public final Publisher<T> onBackpressureBuffer(long capacity, Action onOverflow, BackpressureOverflow.Strategy overflowStrategy) {
         // TODO implement
         throw new UnsupportedOperationException();
     }
@@ -11673,7 +11671,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, new Consumer<Subscription>() {
+        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION, new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) {
                 s.request(Long.MAX_VALUE);
@@ -11704,7 +11702,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
-        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_RUNNABLE, new Consumer<Subscription>() {
+        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION, new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) {
                 s.request(Long.MAX_VALUE);
@@ -11724,9 +11722,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param onNext
-     *             the {@code Action1<T>} you have designed to accept emissions from the Publisher
+     *             the {@code Consumer<T>} you have designed to accept emissions from the Publisher
      * @param onError
-     *             the {@code Action1<Throwable>} you have designed to accept any error notification from the
+     *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *             Publisher
      * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
      *         the Publisher has finished sending them
@@ -11738,7 +11736,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
-        return subscribe(onNext, onError, Functions.EMPTY_RUNNABLE, new Consumer<Subscription>() {
+        return subscribe(onNext, onError, Functions.EMPTY_ACTION, new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) {
                 s.request(Long.MAX_VALUE);
@@ -11758,12 +11756,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param onNext
-     *             the {@code Action1<T>} you have designed to accept emissions from the Publisher
+     *             the {@code Consumer<T>} you have designed to accept emissions from the Publisher
      * @param onError
-     *             the {@code Action1<Throwable>} you have designed to accept any error notification from the
+     *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *             Publisher
      * @param onComplete
-     *             the {@code Runnable} you have designed to accept a completion notification from the
+     *             the {@code Action} you have designed to accept a completion notification from the
      *             Publisher
      * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
      *         the Publisher has finished sending them
@@ -11776,7 +11774,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
-            Runnable onComplete) {
+            Action onComplete) {
         return subscribe(onNext, onError, onComplete, new Consumer<Subscription>() {
             @Override
             public void accept(Subscription s) {
@@ -11797,12 +11795,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param onNext
-     *             the {@code Action1<T>} you have designed to accept emissions from the Publisher
+     *             the {@code Consumer<T>} you have designed to accept emissions from the Publisher
      * @param onError
-     *             the {@code Action1<Throwable>} you have designed to accept any error notification from the
+     *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *             Publisher
      * @param onComplete
-     *             the {@code Runnable} you have designed to accept a completion notification from the
+     *             the {@code Action} you have designed to accept a completion notification from the
      *             Publisher
      * @param onSubscribe
      *             the {@code Consumer} that receives the upstream's Subscription
@@ -11817,7 +11815,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
-            Runnable onComplete, Consumer<? super Subscription> onSubscribe) {
+            Action onComplete, Consumer<? super Subscription> onSubscribe) {
         Objects.requireNonNull(onNext, "onNext is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
@@ -11994,7 +11992,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             return ScalarXMap.scalarXMap(v, mapper);
         }
         validateBufferSize(bufferSize, "bufferSize");
-        return new FlowableSwitchMap<T, R>(this, mapper, bufferSize);
+        return new FlowableSwitchMap<T, R>(this, mapper, bufferSize, false);
     }
     
     /**
@@ -12062,8 +12060,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     public final <R> Flowable<R> switchMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (this instanceof ScalarCallable) {
+            @SuppressWarnings("unchecked")
+            T v = ((ScalarCallable<T>)this).call();
+            if (v == null) {
+                return empty();
+            }
+            return ScalarXMap.scalarXMap(v, mapper);
+        }
+        validateBufferSize(bufferSize, "bufferSize");
+        return new FlowableSwitchMap<T, R>(this, mapper, bufferSize, true);
     }
 
     /**

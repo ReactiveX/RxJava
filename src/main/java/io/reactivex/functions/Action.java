@@ -14,18 +14,12 @@
 package io.reactivex.functions;
 
 /**
- * A functional interface that takes a value and returns another value, possibly with a
- * different type and allows throwing a checked exception.
- *
- * @param <T> the input value type
- * @param <R> the output value type
+ * A functional interface similar to Runnable but allows throwing a checked exception.
  */
-public interface Function<T, R> {
+public interface Action {
     /**
-     * Apply some calculation to the input value and return some other value.
-     * @param t the input value
-     * @return the output value
-     * @throws Exception on error
+     * Runs the action and optionally throws a checked exception
+     * @throws Exception if the implementation wishes to throw a checked exception
      */
-    R apply(T t) throws Exception;
+    void run() throws Exception;
 }

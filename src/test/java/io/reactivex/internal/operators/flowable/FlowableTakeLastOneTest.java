@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableTakeLastOneTest {
@@ -62,7 +62,7 @@ public class FlowableTakeLastOneTest {
     @Test
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Runnable unsubscribeAction = new Runnable() {
+        Action unsubscribeAction = new Action() {
             @Override
             public void run() {
                 unsubscribed.set(true);
