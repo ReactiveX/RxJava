@@ -275,9 +275,16 @@ public class ObservableRefCountTest {
         System.out.println("send unsubscribe");
         // now immediately unsubscribe while subscribeOn is racing to subscribe
         s.dispose();
+        
         // this generally will mean it won't even subscribe as it is already unsubscribed by the time connect() gets scheduled
         // give time to the counter to update
         Thread.sleep(10);
+
+        // make sure we wait a bit in case the counter is still nonzero
+        int counter = 200;
+        while (subUnsubCount.get() != 0 && counter-- != 0) {
+            Thread.sleep(10);
+        }
         // either we subscribed and then unsubscribed, or we didn't ever even subscribe
         assertEquals(0, subUnsubCount.get());
 
