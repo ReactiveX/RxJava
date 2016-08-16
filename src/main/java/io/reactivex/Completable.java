@@ -323,13 +323,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable fromFuture(final Future<?> future) {
         Objects.requireNonNull(future, "future is null");
-        return fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                future.get();
-                return null;
-            }
-        });
+        return fromAction(Functions.futureAction(future));
     }
     
     /**
