@@ -698,7 +698,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @param values the expected values, asserted in order
      * @return this
      */
-    public final TestObserver<T> assertFailure(Class<Throwable> error, T... values) {
+    public final TestObserver<T> assertFailure(Class<? extends Throwable> error, T... values) {
         return assertValues(values)
                 .assertError(error)
                 .assertNotComplete();
