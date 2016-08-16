@@ -329,19 +329,19 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     }
     
     /**
-     * Returns a shared list of received onNext values.
+     * Returns a snapshot list of received onNext values.
      * @return a list of received onNext values
      */
     public final List<T> values() {
-        return values;
+        return Collections.unmodifiableList(new ArrayList<T>(values));
     }
     
     /**
-     * Returns a shared list of received onError exceptions.
+     * Returns a snapshot list of received onError exceptions.
      * @return a list of received events onError exceptions
      */
     public final List<Throwable> errors() {
-        return errors;
+        return Collections.unmodifiableList(new ArrayList<Throwable>(errors));
     }
     
     /**
