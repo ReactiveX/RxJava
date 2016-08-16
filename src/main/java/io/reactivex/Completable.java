@@ -275,6 +275,24 @@ public abstract class Completable implements CompletableSource {
         return new CompletableError(error);
     }
     
+    
+    /**
+     * Returns a Completable instance that runs the given Action for each subscriber and
+     * emits either an unchecked exception or simply completes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromAction} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param run the runnable to run for each subscriber
+     * @return the new Completable instance
+     * @throws NullPointerException if run is null
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Completable fromAction(final Action run) {
+        Objects.requireNonNull(run, "run is null");
+        return new CompletableFromAction(run);
+    }
+
     /**
      * Returns a Completable which when subscribed, executes the callable function, ignores its
      * normal result and emits onError or onCompleted only.
@@ -289,24 +307,6 @@ public abstract class Completable implements CompletableSource {
     public static Completable fromCallable(final Callable<?> callable) {
         Objects.requireNonNull(callable, "callable is null");
         return new CompletableFromCallable(callable);
-    }
-    
-    /**
-     * Returns a Completable instance that subscribes to the given publisher, ignores all values and
-     * emits only the terminal event.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code fromPublisher} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the type of the publisher
-     * @param publisher the Publisher instance to subscribe to, not null
-     * @return the new Completable instance
-     * @throws NullPointerException if publisher is null
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Completable fromPublisher(final Publisher<T> publisher) {
-        Objects.requireNonNull(publisher, "publisher is null");
-        return new CompletableFromPublisher<T>(publisher);
     }
     
     /**
@@ -349,25 +349,25 @@ public abstract class Completable implements CompletableSource {
         Objects.requireNonNull(observable, "observable is null");
         return new CompletableFromObservable<T>(observable);
     }
-
     
     /**
-     * Returns a Completable instance that runs the given Runnable for each subscriber and
-     * emits either an unchecked exception or simply completes.
+     * Returns a Completable instance that subscribes to the given publisher, ignores all values and
+     * emits only the terminal event.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code fromPublisher} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param run the runnable to run for each subscriber
+     * @param <T> the type of the publisher
+     * @param publisher the Publisher instance to subscribe to, not null
      * @return the new Completable instance
-     * @throws NullPointerException if run is null
+     * @throws NullPointerException if publisher is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable fromRunnable(final Runnable run) {
-        Objects.requireNonNull(run, "run is null");
-        return new CompletableFromRunnable(run);
+    public static <T> Completable fromPublisher(final Publisher<T> publisher) {
+        Objects.requireNonNull(publisher, "publisher is null");
+        return new CompletableFromPublisher<T>(publisher);
     }
-    
+
     /**
      * Returns a Completable instance that when subscribed to, subscribes to the Single instance and
      * emits a completion event if the single emits onSuccess or forwards any onError events.
@@ -944,10 +944,10 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if onComplete is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnComplete(Runnable onComplete) {
+    public final Completable doOnComplete(Action onComplete) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
-                onComplete, Functions.EMPTY_RUNNABLE,
-                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+                onComplete, Functions.EMPTY_ACTION,
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
     
     /**
@@ -962,10 +962,10 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if onDispose is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnDispose(Runnable onDispose) {
+    public final Completable doOnDispose(Action onDispose) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
-                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE,
-                Functions.EMPTY_RUNNABLE, onDispose);
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION,
+                Functions.EMPTY_ACTION, onDispose);
     }
     
     /**
@@ -981,8 +981,8 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnError(Consumer<? super Throwable> onError) {
         return doOnLifecycle(Functions.emptyConsumer(), onError,
-                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE,
-                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION,
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -1003,10 +1003,10 @@ public abstract class Completable implements CompletableSource {
     private Completable doOnLifecycle(
             final Consumer<? super Disposable> onSubscribe, 
             final Consumer<? super Throwable> onError, 
-            final Runnable onComplete, 
-            final Runnable onTerminate,
-            final Runnable onAfterTerminate,
-            final Runnable onDisposed) {
+            final Action onComplete, 
+            final Action onTerminate,
+            final Action onAfterTerminate,
+            final Action onDisposed) {
         Objects.requireNonNull(onSubscribe, "onSubscribe is null");
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
@@ -1030,8 +1030,8 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
         return doOnLifecycle(onSubscribe, Functions.emptyConsumer(),
-                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE,
-                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION,
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
     
     /**
@@ -1045,10 +1045,10 @@ public abstract class Completable implements CompletableSource {
      * @return the new Completable instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doOnTerminate(final Runnable onTerminate) {
+    public final Completable doOnTerminate(final Action onTerminate) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
-                Functions.EMPTY_RUNNABLE, onTerminate,
-                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+                Functions.EMPTY_ACTION, onTerminate,
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -1062,10 +1062,10 @@ public abstract class Completable implements CompletableSource {
      * @return the new Completable instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable doAfterTerminate(final Runnable onAfterTerminate) {
+    public final Completable doAfterTerminate(final Action onAfterTerminate) {
         return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
-                onAfterTerminate, Functions.EMPTY_RUNNABLE,
-                Functions.EMPTY_RUNNABLE, Functions.EMPTY_RUNNABLE);
+                onAfterTerminate, Functions.EMPTY_ACTION,
+                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -1414,7 +1414,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if either callback is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(final Runnable onComplete, final Consumer<? super Throwable> onError) {
+    public final Disposable subscribe(final Action onComplete, final Consumer<? super Throwable> onError) {
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
         
@@ -1443,7 +1443,7 @@ public abstract class Completable implements CompletableSource {
     }
     
     /**
-     * Subscribes to this Completable and calls the given Runnable when this Completable
+     * Subscribes to this Completable and calls the given Action when this Completable
      * completes normally.
      * <p>
      * If this Completable emits an error, it is sent to RxJavaPlugins.onError and gets swallowed.
@@ -1455,7 +1455,7 @@ public abstract class Completable implements CompletableSource {
      * @return the Disposable that allows cancelling the subscription
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Disposable subscribe(final Runnable onComplete) {
+    public final Disposable subscribe(final Action onComplete) {
         Objects.requireNonNull(onComplete, "onComplete is null");
         
         CallbackCompletableObserver s = new CallbackCompletableObserver(onComplete);

@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.LongConsumer;
+import io.reactivex.functions.*;
 import io.reactivex.subscribers.DefaultSubscriber;
 
 public class FlowableDoOnRequestTest {
@@ -31,7 +31,7 @@ public class FlowableDoOnRequestTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
         Flowable.just(1)
         //
-                .doOnCancel(new Runnable() {
+                .doOnCancel(new Action() {
                     @Override
                     public void run() {
                         unsubscribed.set(true);

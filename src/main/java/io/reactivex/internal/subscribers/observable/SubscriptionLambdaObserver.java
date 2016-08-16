@@ -15,20 +15,20 @@ package io.reactivex.internal.subscribers.observable;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SubscriptionLambdaObserver<T> implements Observer<T>, Disposable {
     final Observer<? super T> actual;
     final Consumer<? super Disposable> onSubscribe;
-    final Runnable onCancel;
+    final Action onCancel;
     
     Disposable s;
     
     public SubscriptionLambdaObserver(Observer<? super T> actual, 
             Consumer<? super Disposable> onSubscribe,
-            Runnable onCancel) {
+            Action onCancel) {
         this.actual = actual;
         this.onSubscribe = onSubscribe;
         this.onCancel = onCancel;

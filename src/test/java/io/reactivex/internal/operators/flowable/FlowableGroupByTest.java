@@ -635,7 +635,7 @@ public class FlowableGroupByTest {
 
                     })
                             // must take(2) so an onCompleted + unsubscribe happens on these first 2 groups
-                            .take(2).doOnComplete(new Runnable() {
+                            .take(2).doOnComplete(new Action() {
 
                                 @Override
                                 public void run() {
@@ -714,7 +714,7 @@ public class FlowableGroupByTest {
 
                     })
                             // must take(2) so an onCompleted + unsubscribe happens on these first 2 groups
-                            .take(2).doOnComplete(new Runnable() {
+                            .take(2).doOnComplete(new Action() {
 
                                 @Override
                                 public void run() {
@@ -806,7 +806,7 @@ public class FlowableGroupByTest {
 
                     })
                             // must take(2) so an onCompleted + unsubscribe happens on these first 2 groups
-                            .take(2).doOnComplete(new Runnable() {
+                            .take(2).doOnComplete(new Action() {
 
                                 @Override
                                 public void run() {
@@ -1253,7 +1253,7 @@ public class FlowableGroupByTest {
 
             @Override
             public Flowable<String> apply(final GroupedFlowable<Boolean, Integer> g) {
-                return g.doOnComplete(new Runnable() {
+                return g.doOnComplete(new Action() {
 
                     @Override
                     public void run() {
@@ -1279,7 +1279,7 @@ public class FlowableGroupByTest {
                         }
                     }
 
-                }).doOnComplete(new Runnable() {
+                }).doOnComplete(new Action() {
 
                     @Override
                     public void run() {

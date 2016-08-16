@@ -18,22 +18,28 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Action;
 
 public class ObservableFinallyTest {
 
-    private Runnable aAction0;
-    private Observer<String> NbpObserver;
+    private Action aAction0;
+    private Observer<String> observer;
 
     // mocking has to be unchecked, unfortunately
     @Before
     public void before() {
-        aAction0 = mock(Runnable.class);
-        NbpObserver = TestHelper.mockObserver();
+        aAction0 = mock(Action.class);
+        observer = TestHelper.mockObserver();
     }
 
     private void checkActionCalled(Observable<String> input) {
-        input.doAfterTerminate(aAction0).subscribe(NbpObserver);
-        verify(aAction0, times(1)).run();
+        input.doAfterTerminate(aAction0).subscribe(observer);
+        try {
+            verify(aAction0, times(1)).run();
+        } catch (Throwable e) {
+            throw Exceptions.propagate(e);
+        }
     }
 
     @Test

@@ -23,22 +23,28 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Action;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableDoAfterTerminateTest {
 
-    private Runnable aAction0;
+    private Action aAction0;
     private Subscriber<String> observer;
 
     @Before
     public void before() {
-        aAction0 = Mockito.mock(Runnable.class);
+        aAction0 = Mockito.mock(Action.class);
         observer = TestHelper.mockSubscriber();
     }
 
     private void checkActionCalled(Flowable<String> input) {
         input.doAfterTerminate(aAction0).subscribe(observer);
-        verify(aAction0, times(1)).run();
+        try {
+            verify(aAction0, times(1)).run();
+        } catch (Throwable ex) {
+            throw Exceptions.propagate(ex);
+        }
     }
 
     @Test
@@ -75,8 +81,8 @@ public class FlowableDoAfterTerminateTest {
     }
 
     @Test
-    public void ifFinallyActionThrowsExceptionShouldNotBeSwallowedAndActionShouldBeCalledOnce() {
-        Runnable finallyAction = Mockito.mock(Runnable.class);
+    public void ifFinallyActionThrowsExceptionShouldNotBeSwallowedAndActionShouldBeCalledOnce() throws Exception {
+        Action finallyAction = Mockito.mock(Action.class);
         doThrow(new IllegalStateException()).when(finallyAction).run();
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();

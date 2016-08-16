@@ -279,8 +279,8 @@ public class ObservableUsingTest {
     public void testUsingDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
-        final Runnable completion = createOnCompletedAction(events);
-        final Runnable unsub =createUnsubAction(events);
+        final Action completion = createOnCompletedAction(events);
+        final Action unsub = createUnsubAction(events);
 
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
             @Override
@@ -306,8 +306,8 @@ public class ObservableUsingTest {
     public void testUsingDoesNotDisposesEagerlyBeforeCompletion() {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
-        final Runnable completion = createOnCompletedAction(events);
-        final Runnable unsub = createUnsubAction(events);
+        final Action completion = createOnCompletedAction(events);
+        final Action unsub = createUnsubAction(events);
 
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
             @Override
@@ -336,7 +336,7 @@ public class ObservableUsingTest {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
-        final Runnable unsub = createUnsubAction(events);
+        final Action unsub = createUnsubAction(events);
         
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
             @Override
@@ -364,7 +364,7 @@ public class ObservableUsingTest {
         final List<String> events = new ArrayList<String>();
         final Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
-        final Runnable unsub = createUnsubAction(events);
+        final Action unsub = createUnsubAction(events);
         
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
             @Override
@@ -386,8 +386,8 @@ public class ObservableUsingTest {
         assertEquals(Arrays.asList("error", "unsub", "disposed"), events);
     }
 
-    private static Runnable createUnsubAction(final List<String> events) {
-        return new Runnable() {
+    private static Action createUnsubAction(final List<String> events) {
+        return new Action() {
             @Override
             public void run() {
                 events.add("unsub");
@@ -424,8 +424,8 @@ public class ObservableUsingTest {
         };
     }
     
-    private static Runnable createOnCompletedAction(final List<String> events) {
-        return new Runnable() {
+    private static Action createOnCompletedAction(final List<String> events) {
+        return new Action() {
             @Override
             public void run() {
                 events.add("completed");

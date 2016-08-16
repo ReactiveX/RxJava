@@ -2061,7 +2061,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
-    public final Single<T> doOnCancel(final Runnable onCancel) {
+    public final Single<T> doOnCancel(final Action onCancel) {
         Objects.requireNonNull(onCancel, "onCancel is null");
         return new SingleDoOnCancel<T>(this, onCancel);
     }

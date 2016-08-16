@@ -492,7 +492,7 @@ public class FlowableReplayTest {
                     t1.printStackTrace();
                 }
             }, 
-            new Runnable() {
+            new Action() {
                 @Override
                 public void run() {
                     System.out.println("Done");
@@ -511,8 +511,8 @@ public class FlowableReplayTest {
     public void testIssue2191_UnsubscribeSource() throws Exception {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
-        Runnable sourceCompleted = mock(Runnable.class);
-        Runnable sourceUnsubscribed = mock(Runnable.class);
+        Action sourceCompleted = mock(Action.class);
+        Action sourceUnsubscribed = mock(Action.class);
         Subscriber<Integer> spiedSubscriberBeforeConnect = TestHelper.mockSubscriber();
         Subscriber<Integer> spiedSubscriberAfterConnect = TestHelper.mockSubscriber();
 
@@ -561,8 +561,8 @@ public class FlowableReplayTest {
     public void testIssue2191_SchedulerUnsubscribe() throws Exception {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
-        Runnable sourceCompleted = mock(Runnable.class);
-        Runnable sourceUnsubscribed = mock(Runnable.class);
+        Action sourceCompleted = mock(Action.class);
+        Action sourceUnsubscribed = mock(Action.class);
         final Scheduler mockScheduler = mock(Scheduler.class);
         final Disposable mockSubscription = mock(Disposable.class);
         Worker spiedWorker = workerSpy(mockSubscription);
@@ -623,9 +623,9 @@ public class FlowableReplayTest {
     public void testIssue2191_SchedulerUnsubscribeOnError() throws Exception {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
-        Runnable sourceCompleted = mock(Runnable.class);
+        Action sourceCompleted = mock(Action.class);
         Consumer<Throwable> sourceError = mock(Consumer.class);
-        Runnable sourceUnsubscribed = mock(Runnable.class);
+        Action sourceUnsubscribed = mock(Action.class);
         final Scheduler mockScheduler = mock(Scheduler.class);
         final Disposable mockSubscription = mock(Disposable.class);
         Worker spiedWorker = workerSpy(mockSubscription);
@@ -948,8 +948,8 @@ public class FlowableReplayTest {
     }
 
     @Test
-    public void testUnsubscribeSource() {
-        Runnable unsubscribe = mock(Runnable.class);
+    public void testUnsubscribeSource() throws Exception {
+        Action unsubscribe = mock(Action.class);
         Flowable<Integer> o = Flowable.just(1).doOnCancel(unsubscribe).cache();
         o.subscribe();
         o.subscribe();

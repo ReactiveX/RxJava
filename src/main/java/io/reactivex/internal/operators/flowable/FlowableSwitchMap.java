@@ -20,18 +20,21 @@ import org.reactivestreams.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<T, R> {
     final Function<? super T, ? extends Publisher<? extends R>> mapper;
     final int bufferSize;
+    final boolean delayErrors;
 
     public FlowableSwitchMap(Publisher<T> source, 
-            Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
+            Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize,
+                    boolean delayErrors) {
         super(source);
         this.mapper = mapper;
         this.bufferSize = bufferSize;
+        this.delayErrors = delayErrors;
     }
     
     @Override
@@ -39,7 +42,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         if (ScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
             return;
         }
-        source.subscribe(new SwitchMapSubscriber<T, R>(s, mapper, bufferSize));
+        source.subscribe(new SwitchMapSubscriber<T, R>(s, mapper, bufferSize, delayErrors));
     }
     
     static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements Subscriber<T>, Subscription {
@@ -48,10 +51,11 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         final Subscriber<? super R> actual;
         final Function<? super T, ? extends Publisher<? extends R>> mapper;
         final int bufferSize;
+        final boolean delayErrors;
         
         
         volatile boolean done;
-        Throwable error;
+        final AtomicThrowable error;
         
         volatile boolean cancelled;
         
@@ -69,10 +73,14 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         
         volatile long unique;
         
-        public SwitchMapSubscriber(Subscriber<? super R> actual, Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
+        public SwitchMapSubscriber(Subscriber<? super R> actual, 
+                Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize,
+                        boolean delayErrors) {
             this.actual = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
+            this.delayErrors = delayErrors;
+            this.error = new AtomicThrowable();
         }
         
         @Override
@@ -128,9 +136,15 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                 RxJavaPlugins.onError(t);
                 return;
             }
-            error = t;
-            done = true;
-            drain();
+            if (error.addThrowable(t)) {
+                if (!delayErrors) {
+                    disposeInner();
+                }
+                done = true;
+                drain();
+            } else {
+                RxJavaPlugins.onError(t);
+            }
         }
         
         @Override
@@ -191,16 +205,28 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                 }
                 
                 if (done) {
-                    Throwable err = error;
-                    if (err != null) {
-                        disposeInner();
-                        s.cancel();
-                        a.onError(err);
-                        return;
-                    } else
-                    if (active.get() == null) {
-                        a.onComplete();
-                        return;
+                    if (delayErrors) {
+                        if (active.get() == null) {
+                            Throwable err = error.get();
+                            if (err != null) {
+                                a.onError(error.terminate());
+                            } else {
+                                a.onComplete();
+                            }
+                            return;
+                        }
+                    } else {
+                        Throwable err = error.get();
+                        if (err != null) {
+                            disposeInner();
+                            s.cancel();
+                            a.onError(error.terminate());
+                            return;
+                        } else
+                        if (active.get() == null) {
+                            a.onComplete();
+                            return;
+                        }
                     }
                 }
                 
@@ -210,16 +236,23 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                     SpscArrayQueue<R> q = inner.queue;
 
                     if (inner.done) {
-                        Throwable err = inner.error;
-                        if (err != null) {
-                            s.cancel();
-                            disposeInner();
-                            a.onError(err);
-                            return;
-                        } else
-                        if (q.isEmpty()) {
-                            active.compareAndSet(inner, null);
-                            continue;
+                        if (!delayErrors) {
+                            Throwable err = error.get();
+                            if (err != null) {
+                                s.cancel();
+                                disposeInner();
+                                a.onError(error.terminate());
+                                return;
+                            } else
+                            if (q.isEmpty()) {
+                                active.compareAndSet(inner, null);
+                                continue;
+                            }
+                        } else {
+                            if (q.isEmpty()) {
+                                active.compareAndSet(inner, null);
+                                continue;
+                            }
                         }
                     }
                     
@@ -242,16 +275,24 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                         }
                         
                         if (d) {
-                            Throwable err = inner.error;
-                            if (err != null) {
-                                s.cancel();
-                                a.onError(err);
-                                return;
-                            } else
-                            if (empty) {
-                                active.compareAndSet(inner, null);
-                                retry = true;
-                                break;
+                            if (!delayErrors) {
+                                Throwable err = error.get();
+                                if (err != null) {
+                                    s.cancel();
+                                    a.onError(error.terminate());
+                                    return;
+                                } else
+                                if (empty) {
+                                    active.compareAndSet(inner, null);
+                                    retry = true;
+                                    break;
+                                }
+                            } else {
+                                if (empty) {
+                                    active.compareAndSet(inner, null);
+                                    retry = true;
+                                    break;
+                                }
                             }
                         }
                         
@@ -291,11 +332,11 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                 return true;
             }
             if (d) {
-                Throwable e = error;
+                Throwable e = error.get();
                 if (e != null) {
                     cancelled = true;
                     s.cancel();
-                    a.onError(e);
+                    a.onError(error.terminate());
                     return true;
                 } else
                 if (empty) {
@@ -317,7 +358,6 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         final SpscArrayQueue<R> queue;
         
         volatile boolean done;
-        Throwable error;
 
         public SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
@@ -350,8 +390,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
         @Override
         public void onError(Throwable t) {
-            if (index == parent.unique) {
-                error = t;
+            if (index == parent.unique && parent.error.addThrowable(t)) {
                 done = true;
                 parent.drain();
             } else {

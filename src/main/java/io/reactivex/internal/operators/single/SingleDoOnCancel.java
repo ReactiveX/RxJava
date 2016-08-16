@@ -15,13 +15,17 @@ package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Action;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleDoOnCancel<T> extends Single<T> {
     final SingleSource<T> source;
 
-    final Runnable onCancel;
+    final Action onCancel;
 
-    public SingleDoOnCancel(SingleSource<T> source, Runnable onCancel) {
+    public SingleDoOnCancel(SingleSource<T> source, Action onCancel) {
         this.source = source;
         this.onCancel = onCancel;
     }
@@ -29,26 +33,54 @@ public final class SingleDoOnCancel<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        source.subscribe(new SingleObserver<T>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                CompositeDisposable set = new CompositeDisposable();
-                set.add(Disposables.from(onCancel));
-                set.add(d);
-                s.onSubscribe(set);
-            }
+        source.subscribe(new DoOnCancelObserver<T>(s, onCancel));
+    }
+    
+    static final class DoOnCancelObserver<T> implements SingleObserver<T>, Disposable {
+        final SingleObserver<? super T> actual;
+        
+        final Action onCancel;
 
-            @Override
-            public void onSuccess(T value) {
-                s.onSuccess(value);
-            }
+        Disposable d;
+        
+        public DoOnCancelObserver(SingleObserver<? super T> actual, Action onCancel) {
+            this.actual = actual;
+            this.onCancel = onCancel;
+        }
 
-            @Override
-            public void onError(Throwable e) {
-                s.onError(e);
+        @Override
+        public void dispose() {
+            try {
+                onCancel.run();
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                RxJavaPlugins.onError(ex);
             }
-            
-        });
+            d.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return d.isDisposed();
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.d, d)) {
+                this.d = d;
+                actual.onSubscribe(this);
+            }
+        }
+
+        @Override
+        public void onSuccess(T value) {
+            actual.onSuccess(value);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            actual.onError(e);
+        }
     }
 
 }

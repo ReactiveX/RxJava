@@ -162,6 +162,11 @@ public enum Functions {
         public void run() { }
     };
 
+    public static final Action EMPTY_ACTION = new Action() {
+        @Override
+        public void run() { }
+    };
+
     static final Consumer<Object> EMPTY_CONSUMER = new Consumer<Object>() {
         @Override
         public void accept(Object v) { }

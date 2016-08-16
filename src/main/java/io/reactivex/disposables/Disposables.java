@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 
 import org.reactivestreams.Subscription;
 
+import io.reactivex.functions.Action;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
 
@@ -32,6 +33,10 @@ public final class Disposables {
     
     public static Disposable from(Runnable run) {
         return new RunnableDisposable(run);
+    }
+
+    public static Disposable from(Action run) {
+        return new ActionDisposable(run);
     }
 
     public static Disposable from(Future<?> future) {

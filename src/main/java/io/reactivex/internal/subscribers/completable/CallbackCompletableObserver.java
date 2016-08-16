@@ -18,34 +18,32 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CallbackCompletableObserver
-extends AtomicReference<Disposable> implements CompletableObserver, Disposable {
+extends AtomicReference<Disposable> implements CompletableObserver, Disposable, Consumer<Throwable> {
 
     /** */
     private static final long serialVersionUID = -4361286194466301354L;
 
     final Consumer<? super Throwable> onError;
-    final Runnable onComplete;
+    final Action onComplete;
     
-    static final Consumer<? super Throwable> DEFAULT_ON_ERROR = new Consumer<Throwable>() {
-        @Override
-        public void accept(Throwable e) {
-            RxJavaPlugins.onError(e);
-        }
-    };
-
-    public CallbackCompletableObserver(Runnable onComplete) {
-        this.onError = DEFAULT_ON_ERROR;
+    public CallbackCompletableObserver(Action onComplete) {
+        this.onError = this;
         this.onComplete = onComplete;
     }
 
-    public CallbackCompletableObserver(Consumer<? super Throwable> onError, Runnable onComplete) {
+    public CallbackCompletableObserver(Consumer<? super Throwable> onError, Action onComplete) {
         this.onError = onError;
         this.onComplete = onComplete;
+    }
+
+    @Override
+    public void accept(Throwable e) {
+        RxJavaPlugins.onError(e);
     }
 
     @Override

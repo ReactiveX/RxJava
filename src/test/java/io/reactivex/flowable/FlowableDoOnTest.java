@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 
 public class FlowableDoOnTest {
 
@@ -62,7 +62,7 @@ public class FlowableDoOnTest {
     @Test
     public void testDoOnCompleted() {
         final AtomicBoolean r = new AtomicBoolean();
-        String output = Flowable.just("one").doOnComplete(new Runnable() {
+        String output = Flowable.just("one").doOnComplete(new Action() {
             @Override
             public void run() {
                 r.set(true);

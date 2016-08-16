@@ -493,7 +493,7 @@ public class ObservableReplayTest {
                     t1.printStackTrace();
                 }
             }, 
-            new Runnable() {
+            new Action() {
                 @Override
                 public void run() {
                     System.out.println("Done");
@@ -512,8 +512,8 @@ public class ObservableReplayTest {
     public void testIssue2191_UnsubscribeSource() throws Exception {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
-        Runnable sourceCompleted = mock(Runnable.class);
-        Runnable sourceUnsubscribed = mock(Runnable.class);
+        Action sourceCompleted = mock(Action.class);
+        Action sourceUnsubscribed = mock(Action.class);
         Observer<Integer> spiedSubscriberBeforeConnect = TestHelper.mockObserver();
         Observer<Integer> spiedSubscriberAfterConnect = TestHelper.mockObserver();
 
@@ -562,8 +562,8 @@ public class ObservableReplayTest {
     public void testIssue2191_SchedulerUnsubscribe() throws Exception {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
-        Runnable sourceCompleted = mock(Runnable.class);
-        Runnable sourceUnsubscribed = mock(Runnable.class);
+        Action sourceCompleted = mock(Action.class);
+        Action sourceUnsubscribed = mock(Action.class);
         final TestScheduler mockScheduler = Schedulers.test();
         
         Observer<Integer> mockObserverBeforeConnect = TestHelper.mockObserver();
@@ -615,9 +615,9 @@ public class ObservableReplayTest {
     public void testIssue2191_SchedulerUnsubscribeOnError() throws Exception {
         // setup mocks
         Consumer<Integer> sourceNext = mock(Consumer.class);
-        Runnable sourceCompleted = mock(Runnable.class);
+        Action sourceCompleted = mock(Action.class);
         Consumer<Throwable> sourceError = mock(Consumer.class);
-        Runnable sourceUnsubscribed = mock(Runnable.class);
+        Action sourceUnsubscribed = mock(Action.class);
         final TestScheduler mockScheduler = new TestScheduler();
         Observer<Integer> mockObserverBeforeConnect = TestHelper.mockObserver();
         Observer<Integer> mockObserverAfterConnect = TestHelper.mockObserver();
@@ -848,8 +848,8 @@ public class ObservableReplayTest {
     }
 
     @Test
-    public void testUnsubscribeSource() {
-        Runnable unsubscribe = mock(Runnable.class);
+    public void testUnsubscribeSource() throws Exception {
+        Action unsubscribe = mock(Action.class);
         Observable<Integer> o = Observable.just(1).doOnCancel(unsubscribe).cache();
         o.subscribe();
         o.subscribe();

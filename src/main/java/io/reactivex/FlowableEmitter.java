@@ -14,6 +14,7 @@
 package io.reactivex;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Cancellable;
 
 /**
  * Abstraction over a RxJava Subscriber that allows associating
@@ -21,8 +22,9 @@ import io.reactivex.disposables.Disposable;
  * requested amount.
  * <p>
  * The onNext, onError and onComplete methods should be called 
- * in a sequential manner, just like the Subscriber's methods. The
- * other methods are threadsafe.
+ * in a sequential manner, just like the Subscriber's methods.
+ * Use {@link #serialize()} if you want to ensure this. 
+ * The other methods are threadsafe.
  *
  * @param <T> the value type to emit
  */
@@ -72,30 +74,36 @@ public interface FlowableEmitter<T> {
     boolean isCancelled();
     
     /**
-     * A functional interface that has a single close method
-     * that can throw.
+     * Ensures that calls to onNext, onError and onComplete are properly serialized.
+     * @return the serialized FlowableEmitter
      */
-    interface Cancellable {
-        
-        /**
-         * Cancel the action or free a resource.
-         * @throws Exception on error
-         */
-        void cancel() throws Exception;
-    }
-    
+    FlowableEmitter<T> serialize();
     /**
      * Options to handle backpressure in the emitter.
      */
     enum BackpressureMode {
+        /** 
+         * OnNext events are written without any buffering or dropping. 
+         * Downstream has to deal with any overflow.
+         * <p>Useful when one applies one of the custom-parameter onBackpressureXXX operators.
+         */
         NONE,
-        
+        /**
+         * Signals a MissingBackpressureException in case the downstream can't keep up.
+         */
         ERROR,
-        
+        /**
+         * Buffers <em>all</em> onNext values until the downstream consumes it.
+         */
         BUFFER,
-        
+        /**
+         * Drops the most recent onNext value if the downstream can't keep up.
+         */
         DROP,
-        
+        /**
+         * Keeps only the latest onNext value, overwriting any previous value if the 
+         * downstream can't keep up.
+         */
         LATEST
     }
 }

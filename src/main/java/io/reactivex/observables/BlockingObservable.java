@@ -23,7 +23,7 @@ import io.reactivex.Observer;
 import io.reactivex.Optional;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.subscribers.flowable.BlockingSubscriber;
@@ -75,7 +75,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
                     queue.offer(NotificationLite.error(e));
                 }
             },
-            new Runnable() {
+            new Action() {
                 @Override
                 public void run() {
                     queue.offer(NotificationLite.complete());
@@ -354,7 +354,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
                     error[0] = e;
                     cdl.countDown();
                 }
-            }, new Runnable() {
+            }, new Action() {
                 @Override
                 public void run() {
                     cdl.countDown();

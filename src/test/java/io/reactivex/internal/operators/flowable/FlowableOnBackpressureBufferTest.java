@@ -22,6 +22,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.functions.Action;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
@@ -122,7 +123,7 @@ public class FlowableOnBackpressureBufferTest {
 
         ts.request(100);
         infinite.subscribeOn(Schedulers.computation())
-             .onBackpressureBuffer(500, new Runnable() {
+             .onBackpressureBuffer(500, new Action() {
                  @Override
                  public void run() {
                      backpressureCallback.countDown();

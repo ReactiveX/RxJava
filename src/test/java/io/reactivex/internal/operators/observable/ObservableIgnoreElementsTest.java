@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 
 public class ObservableIgnoreElementsTest {
@@ -80,7 +80,7 @@ public class ObservableIgnoreElementsTest {
     @Test
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Observable.range(1, 10).doOnCancel(new Runnable() {
+        Observable.range(1, 10).doOnCancel(new Action() {
             @Override
             public void run() {
                 unsub.set(true);

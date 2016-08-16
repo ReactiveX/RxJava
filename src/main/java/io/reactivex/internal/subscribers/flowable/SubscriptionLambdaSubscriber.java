@@ -23,14 +23,14 @@ public final class SubscriptionLambdaSubscriber<T> implements Subscriber<T>, Sub
     final Subscriber<? super T> actual;
     final Consumer<? super Subscription> onSubscribe;
     final LongConsumer onRequest;
-    final Runnable onCancel;
+    final Action onCancel;
     
     Subscription s;
     
     public SubscriptionLambdaSubscriber(Subscriber<? super T> actual, 
             Consumer<? super Subscription> onSubscribe,
             LongConsumer onRequest,
-            Runnable onCancel) {
+            Action onCancel) {
         this.actual = actual;
         this.onSubscribe = onSubscribe;
         this.onCancel = onCancel;

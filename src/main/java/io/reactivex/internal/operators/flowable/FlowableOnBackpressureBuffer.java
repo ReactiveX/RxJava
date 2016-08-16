@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Action;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -27,9 +28,10 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
     final int bufferSize;
     final boolean unbounded;
     final boolean delayError;
-    final Runnable onOverflow;
+    final Action onOverflow;
     
-    public FlowableOnBackpressureBuffer(Publisher<T> source, int bufferSize, boolean unbounded, boolean delayError, Runnable onOverflow) {
+    public FlowableOnBackpressureBuffer(Publisher<T> source, int bufferSize, boolean unbounded, 
+            boolean delayError, Action onOverflow) {
         super(source);
         this.bufferSize = bufferSize;
         this.unbounded = unbounded;
@@ -48,7 +50,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         final Subscriber<? super T> actual;
         final SimpleQueue<T> queue;
         final boolean delayError;
-        final Runnable onOverflow;
+        final Action onOverflow;
         
         Subscription s;
         
@@ -60,7 +62,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         final AtomicLong requested = new AtomicLong();
         
         public BackpressureBufferSubscriber(Subscriber<? super T> actual, int bufferSize, 
-                boolean unbounded, boolean delayError, Runnable onOverflow) {
+                boolean unbounded, boolean delayError, Action onOverflow) {
             this.actual = actual;
             this.onOverflow = onOverflow;
             this.delayError = delayError;

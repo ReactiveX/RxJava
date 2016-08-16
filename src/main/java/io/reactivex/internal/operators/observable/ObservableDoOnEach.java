@@ -16,20 +16,20 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<T, T> {
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;
-    final Runnable onComplete;
-    final Runnable onAfterTerminate;
+    final Action onComplete;
+    final Action onAfterTerminate;
     
     public ObservableDoOnEach(ObservableSource<T> source, Consumer<? super T> onNext,
                               Consumer<? super Throwable> onError,
-                              Runnable onComplete,
-                              Runnable onAfterTerminate) {
+                              Action onComplete,
+                              Action onAfterTerminate) {
         super(source);
         this.onNext = onNext;
         this.onError = onError;
@@ -46,8 +46,8 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
         final Observer<? super T> actual;
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
-        final Runnable onComplete;
-        final Runnable onAfterTerminate;
+        final Action onComplete;
+        final Action onAfterTerminate;
         
         Disposable s;
         
@@ -57,8 +57,8 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 Observer<? super T> actual,
                 Consumer<? super T> onNext, 
                 Consumer<? super Throwable> onError, 
-                Runnable onComplete,
-                Runnable onAfterTerminate) {
+                Action onComplete,
+                Action onAfterTerminate) {
             this.actual = actual;
             this.onNext = onNext;
             this.onError = onError;

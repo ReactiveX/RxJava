@@ -310,7 +310,7 @@ public class FlowableFlatMapTest {
                         Assert.fail("Too many subscriptions! " + (n + 1));
                     }
             }
-        }).doOnComplete(new Runnable() {
+        }).doOnComplete(new Action() {
             @Override
             public void run() {
                     int n = subscriptionCount.decrementAndGet();

@@ -26,7 +26,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -106,8 +106,8 @@ public class ObservableCacheTest {
     }
 
     @Test
-    public void testUnsubscribeSource() {
-        Runnable unsubscribe = mock(Runnable.class);
+    public void testUnsubscribeSource() throws Exception {
+        Action unsubscribe = mock(Action.class);
         Observable<Integer> o = Observable.just(1).doOnCancel(unsubscribe).cache();
         o.subscribe();
         o.subscribe();

@@ -28,6 +28,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Action;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -146,7 +147,7 @@ public class TestSubscriberTest {
         final AtomicBoolean unsub = new AtomicBoolean(false);
         Flowable.just(1)
         //
-                .doOnCancel(new Runnable() {
+                .doOnCancel(new Action() {
                     @Override
                     public void run() {
                         unsub.set(true);

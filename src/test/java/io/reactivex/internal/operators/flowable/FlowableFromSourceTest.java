@@ -18,6 +18,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Cancellable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
 
@@ -658,7 +659,7 @@ public class FlowableFromSourceTest {
             
             subject.subscribe(as);
             
-            t.setCancellation(new FlowableEmitter.Cancellable() {
+            t.setCancellation(new Cancellable() {
                 @Override
                 public void cancel() throws Exception {
                     as.dispose();

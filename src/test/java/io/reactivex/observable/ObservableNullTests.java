@@ -1294,7 +1294,7 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void doOnLifecycleOnSubscribeNull() {
-        just1.doOnLifecycle(null, Functions.EMPTY_RUNNABLE);
+        just1.doOnLifecycle(null, Functions.EMPTY_ACTION);
     }
     
     @Test(expected = NullPointerException.class)
@@ -2209,7 +2209,7 @@ public class ObservableNullTests {
         }, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) { }
-        }, Functions.EMPTY_RUNNABLE, null);
+        }, Functions.EMPTY_ACTION, null);
     }
     
     @Test(expected = NullPointerException.class)

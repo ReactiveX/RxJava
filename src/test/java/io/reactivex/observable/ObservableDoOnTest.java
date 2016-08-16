@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 
 public class ObservableDoOnTest {
 
@@ -62,7 +62,7 @@ public class ObservableDoOnTest {
     @Test
     public void testDoOnCompleted() {
         final AtomicBoolean r = new AtomicBoolean();
-        String output = Observable.just("one").doOnComplete(new Runnable() {
+        String output = Observable.just("one").doOnComplete(new Action() {
             @Override
             public void run() {
                 r.set(true);

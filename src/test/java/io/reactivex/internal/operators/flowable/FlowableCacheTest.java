@@ -25,7 +25,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -131,8 +131,8 @@ public class FlowableCacheTest {
     }
 
     @Test
-    public void testUnsubscribeSource() {
-        Runnable unsubscribe = mock(Runnable.class);
+    public void testUnsubscribeSource() throws Exception {
+        Action unsubscribe = mock(Action.class);
         Flowable<Integer> o = Flowable.just(1).doOnCancel(unsubscribe).cache();
         o.subscribe();
         o.subscribe();
