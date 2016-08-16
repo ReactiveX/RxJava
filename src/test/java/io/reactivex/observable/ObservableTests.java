@@ -143,6 +143,7 @@ public class ObservableTests {
         verify(w, times(1)).onError(any(RuntimeException.class));
     }
 
+    @Test
     public void testTakeFirstWithPredicateOfSome() {
         Observable<Integer> o = Observable.just(1, 3, 5, 4, 6, 3);
         o.takeFirst(IS_EVEN).subscribe(w);
