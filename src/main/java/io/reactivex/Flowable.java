@@ -9070,9 +9070,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
-    public final Publisher<T> onBackpressureBuffer(long capacity, Action onOverflow, BackpressureOverflow.Strategy overflowStrategy) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    public final Publisher<T> onBackpressureBuffer(long capacity, Action onOverflow, BackpressureOverflowStrategy overflowStrategy) {
+        Objects.requireNonNull(overflowStrategy, "starategy is null");
+        if (capacity <= 0L) {
+            throw new IllegalArgumentException("capacity > 0 required but it was " + capacity);
+        }
+        return new FlowableOnBackpressureBufferStrategy<T>(this, capacity, onOverflow, overflowStrategy);
     }
 
     /**
@@ -9464,17 +9467,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that can use the multicasted source sequence as many times as needed, without
      *            causing multiple subscriptions to the source sequence. Subscribers to the given source will
      *            receive all notifications of the source from the time of the subscription forward.
-     * @param bufferSize
+     * @param prefetch
      *            the number of elements to prefetch from the current Flowable
      * @return a Flowable that emits the results of invoking the selector on the items emitted by a {@link ConnectableFlowable} that shares a single subscription to the underlying sequence
      * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> publish(Function<? super Flowable<T>, ? extends Publisher<R>> selector, int bufferSize) {
-        validateBufferSize(bufferSize, "bufferSize");
+    public final <R> Flowable<R> publish(Function<? super Flowable<T>, ? extends Publisher<? extends R>> selector, int prefetch) {
         Objects.requireNonNull(selector, "selector is null");
-        return FlowablePublish.create(this, selector, bufferSize);
+        validateBufferSize(prefetch, "prefetch");
+        return new FlowablePublishMulticast<T, R>(this, selector, prefetch, false);
     }
 
     /**
@@ -9773,7 +9776,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeatWhen(final Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
         Objects.requireNonNull(handler, "handler is null");
-        return new FlowableRedo<T>(this, FlowableInternalHelper.repeatWhenHandler(handler));
+        return new FlowableRepeatWhen<T>(this, handler);
     }
     
     /**
@@ -10537,7 +10540,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             final Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler) {
         Objects.requireNonNull(handler, "handler is null");
         
-        return new FlowableRedo<T>(this, FlowableInternalHelper.retryWhenHandler(handler));
+        return new FlowableRetryWhen<T>(this, handler);
     }
     
     /**
@@ -11835,11 +11838,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> take(long count) {
         if (count < 0) {
             throw new IllegalArgumentException("n >= required but it was " + count);
-        } else
-        if (count == 0) {
-         // FIXME may want to subscribe an cancel immediately
-//            return lift(s -> CancelledSubscriber.INSTANCE);
-            return empty(); 
         }
         return new FlowableTake<T>(this, count);
     }

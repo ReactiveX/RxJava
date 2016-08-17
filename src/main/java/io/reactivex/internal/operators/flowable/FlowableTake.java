@@ -13,12 +13,11 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
     final long limit;
@@ -32,7 +31,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
         source.subscribe(new TakeSubscriber<T>(s, limit));
     }
     
-    static final class TakeSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
+    static final class TakeSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -5636543848937116287L;
         boolean done;
@@ -49,7 +48,13 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.subscription, s)) {
                 subscription = s;
-                actual.onSubscribe(this);
+                if (limit == 0L) {
+                    s.cancel();
+                    done = true;
+                    EmptySubscription.complete(actual);
+                } else {
+                    actual.onSubscribe(this);
+                }
             }
         }
         @Override
@@ -83,21 +88,13 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
             if (!SubscriptionHelper.validate(n)) {
                 return;
             }
-            for (;;) {
-                long r = get();
-                if (r >= limit) {
-                    return;
-                }
-                long u = BackpressureHelper.addCap(r, n);
-                if (compareAndSet(r, u)) {
-                    if (u >= limit) {
-                        subscription.request(Long.MAX_VALUE);
-                    } else {
-                        subscription.request(n);
-                    }
+            if (!get() && compareAndSet(false, true)) {
+                if (n >= limit) {
+                    subscription.request(Long.MAX_VALUE);
                     return;
                 }
             }
+            subscription.request(n);
         }
         @Override
         public void cancel() {

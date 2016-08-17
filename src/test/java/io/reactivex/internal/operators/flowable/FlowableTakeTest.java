@@ -298,8 +298,7 @@ public class FlowableTakeTest {
     
     @Test
     public void testProducerRequestThroughTake() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(3);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3);
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -320,14 +319,12 @@ public class FlowableTakeTest {
             }
 
         }).take(3).subscribe(ts);
-        // FIXME take triggers fast-path
         assertEquals(Long.MAX_VALUE, requested.get());
     }
     
     @Test
     public void testProducerRequestThroughTakeIsModified() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(3);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3);
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -400,8 +397,7 @@ public class FlowableTakeTest {
         ts.awaitTerminalEvent();
         ts.assertComplete();
         ts.assertNoErrors();
-        // FIXME take triggers fast-path and the addition above turns into Long.MIN_VALUE
-        assertEquals(Long.MIN_VALUE, requests.get());
+        assertEquals(3, requests.get());
     }
     
     @Test

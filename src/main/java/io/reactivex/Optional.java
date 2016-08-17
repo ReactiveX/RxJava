@@ -76,5 +76,8 @@ public final class Optional<T> {
         return true;
     }
     
-    
+    @Override
+    public String toString() {
+        return "Optional[" + value + "]";
+    }
 }

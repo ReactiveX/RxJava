@@ -13,15 +13,16 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
@@ -150,5 +151,32 @@ public class FlowableOnBackpressureDropTest {
     
         });
     }
-    
+
+    private static final Consumer<Long> THROW_NON_FATAL = new Consumer<Long>() {
+        @Override
+        public void accept(Long n) {
+            throw new RuntimeException();
+        }
+    }; 
+
+    @Test
+    public void testNonFatalExceptionFromOverflowActionIsNotReportedFromUpstreamOperator() {
+        final AtomicBoolean errorOccurred = new AtomicBoolean(false);
+        //request 0 
+        TestSubscriber<Long> ts = TestSubscriber.create(0);
+        //range method emits regardless of requests so should trigger onBackpressureDrop action
+        range(2)
+          // if haven't caught exception in onBackpressureDrop operator then would incorrectly
+          // be picked up by this call to doOnError
+          .doOnError(new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable t) {
+                    errorOccurred.set(true);
+                }
+            })
+          .onBackpressureDrop(THROW_NON_FATAL)
+          .subscribe(ts);
+        
+        assertFalse(errorOccurred.get());
+    }
 }

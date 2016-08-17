@@ -16,13 +16,14 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.MissingBackpressureException;
-import io.reactivex.functions.Action;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
@@ -159,5 +160,60 @@ public class FlowableOnBackpressureBufferTest {
         }
 
     });
+
+    private static final Action THROWS_NON_FATAL = new Action() {
+
+        @Override
+        public void run() {
+            throw new RuntimeException();
+        }
+    }; 
+
+    @Test
+    public void nonFatalExceptionThrownByOnOverflowIsNotReportedByUpstream() {
+         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
+         TestSubscriber<Long> ts = TestSubscriber.create(0);
+         infinite
+           .subscribeOn(Schedulers.computation())
+           .doOnError(new Consumer<Throwable>() {
+                 @Override
+                 public void accept(Throwable t) {
+                     errorOccurred.set(true);
+                 }
+             })
+           .onBackpressureBuffer(1, THROWS_NON_FATAL)
+           .subscribe(ts);
+         ts.awaitTerminalEvent();
+         assertFalse(errorOccurred.get());
+    }
+    
+    @Test
+    public void maxSize() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        Flowable.range(1, 10).onBackpressureBuffer(1).subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(MissingBackpressureException.class);
+        ts.assertNotComplete();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void fixBackpressureBufferNegativeCapacity() throws InterruptedException {
+        Flowable.empty().onBackpressureBuffer(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void fixBackpressureBufferZeroCapacity() throws InterruptedException {
+        Flowable.empty().onBackpressureBuffer(0);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void fixBackpressureBufferNullStrategy() throws InterruptedException {
+        Flowable.empty().onBackpressureBuffer(10, new Action() {
+            @Override
+            public void run() { }
+        }, null);
+    }
 
 }
