@@ -13,7 +13,6 @@
 
 package io.reactivex;
 
-import java.util.*;
 import java.util.concurrent.*;
 
 import org.reactivestreams.*;
@@ -21,8 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
-import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.completable.CompletableFromSingle;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.flowable.FlowableConcatMap.ErrorMode;
@@ -87,12 +85,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SuppressWarnings("unchecked")
     public static <T> Single<T> amb(final SingleSource<? extends T>... sources) {
         if (sources.length == 0) {
-            return error(new Callable<Throwable>() {
-                @Override
-                public Throwable call() {
-                    return new NoSuchElementException();
-                }
-            });
+            return error(SingleInternalHelper.<T>emptyThrower());
         }
         if (sources.length == 1) {
             return wrap((SingleSource<T>)sources[0]);
@@ -130,13 +123,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Flowable<T> concat(Publisher<? extends SingleSource<? extends T>> sources) {
-        return new FlowableConcatMap(sources, 
-            new Function<SingleSource<? extends T>, Publisher<? extends T>>() {
-                @Override 
-                public Publisher<? extends T> apply(SingleSource<? extends T> v){
-                    return new SingleToFlowable<T>(v);
-                }
-            }, 2, ErrorMode.IMMEDIATE);
+        return new FlowableConcatMap(sources, SingleInternalHelper.toFlowable(), 2, ErrorMode.IMMEDIATE);
     }
     
     /**
@@ -520,12 +507,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public static <T> Single<T> error(final Throwable exception) {
         Objects.requireNonNull(exception, "error is null");
-        return error(new Callable<Throwable>() {
-            @Override
-            public Throwable call() {
-                return exception;
-            }
-        });
+        return error(Functions.justCallable(exception));
     }
     
     /**
@@ -740,13 +722,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Flowable<T> merge(Publisher<? extends SingleSource<? extends T>> sources) {
-        return new FlowableFlatMap(sources, 
-            new Function<SingleSource<? extends T>, Publisher<? extends T>>() {
-                @Override 
-                public Publisher<? extends T> apply(SingleSource<? extends T> v){
-                    return new SingleToFlowable<T>(v);
-                }
-            }, false, Integer.MAX_VALUE, Flowable.bufferSize());
+        return new FlowableFlatMap(sources, SingleInternalHelper.toFlowable(), false, Integer.MAX_VALUE, Flowable.bufferSize());
     }
     
     /**
@@ -1289,31 +1265,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public static <T, R> Single<R> zip(final Iterable<? extends SingleSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(sources, "sources is null");
-        
-        Iterable<? extends Flowable<T>> it = new Iterable<Flowable<T>>() {
-            @Override
-            public Iterator<Flowable<T>> iterator() {
-                final Iterator<? extends SingleSource<? extends T>> sit = sources.iterator();
-                return new Iterator<Flowable<T>>() {
-
-                    @Override
-                    public boolean hasNext() {
-                        return sit.hasNext();
-                    }
-
-                    @Override
-                    public Flowable<T> next() {
-                        return new SingleToFlowable<T>(sit.next());
-                    }
-                    
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
-            }
-        };
-        return Flowable.zipIterable(it, zipper, false, 1).toSingle();
+        return Flowable.zipIterable(SingleInternalHelper.iterableToFlowable(sources), zipper, false, 1).toSingle();
     }
 
     /**
@@ -1826,12 +1778,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public final <U> Single<U> cast(final Class<? extends U> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        return map(new Function<T, U>() {
-            @Override
-            public U apply(T v) {
-                return clazz.cast(v);
-            }
-        });
+        return map(Functions.castFunction(clazz));
     }
     
     /**
@@ -2345,12 +2292,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public final Single<T> onErrorResumeNext(final Single<? extends T> resumeSingleInCaseOfError) {
         Objects.requireNonNull(resumeSingleInCaseOfError, "resumeSingleInCaseOfError is null");
-        return onErrorResumeNext(new Function<Throwable, Single<? extends T>>() {
-            @Override
-            public Single<? extends T> apply(Throwable t) throws Exception {
-                return resumeSingleInCaseOfError;
-            }
-        });
+        return onErrorResumeNext(Functions.justFunction(resumeSingleInCaseOfError));
     }
     
     /**

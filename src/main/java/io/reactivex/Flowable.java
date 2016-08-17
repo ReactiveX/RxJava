@@ -12,10 +12,8 @@
  */
 package io.reactivex;
 
-
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
@@ -33,7 +31,7 @@ import io.reactivex.internal.operators.flowable.FlowableConcatMap.ErrorMode;
 import io.reactivex.internal.operators.observable.ObservableFromPublisher;
 import io.reactivex.internal.operators.single.SingleFromPublisher;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
-import io.reactivex.internal.subscribers.flowable.LambdaSubscriber;
+import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
@@ -1760,12 +1758,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> error(final Throwable exception) {
         Objects.requireNonNull(exception, "e is null");
-        return error(new Callable<Throwable>() {
-            @Override
-            public Throwable call() {
-                return exception;
-            }
-        });
+        return error(Functions.justCallable(exception));
     }
 
     /**
@@ -1863,9 +1856,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future) {
         Objects.requireNonNull(future, "future is null");
-        Flowable<T> o = new FlowableFromFuture<T>(future, 0L, null);
-        
-        return o;
+        return new FlowableFromFuture<T>(future, 0L, null);
     }
 
     /**
@@ -1947,8 +1938,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        Flowable<T> o = fromFuture(future, timeout, unit); 
-        return o.subscribeOn(scheduler);
+        return fromFuture(future, timeout, unit).subscribeOn(scheduler);
     }
 
     /**
@@ -1984,8 +1974,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        Flowable<T> o = fromFuture(future);
-        return o.subscribeOn(scheduler);
+        return fromFuture(future).subscribeOn(scheduler);
     }
 
     /**
@@ -2064,13 +2053,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T> Flowable<T> generate(final Consumer<Subscriber<T>> generator) {
         Objects.requireNonNull(generator, "generator is null");
         return generate(Functions.nullSupplier(), 
-        new BiFunction<Object, Subscriber<T>, Object>() {
-            @Override
-            public Object apply(Object s, Subscriber<T> o) throws Exception {
-                generator.accept(o);
-                return s;
-            }
-        }, Functions.emptyConsumer());
+                FlowableInternalHelper.<T, Object>simpleGenerator(generator), 
+                Functions.emptyConsumer());
     }
 
     /**
@@ -2096,13 +2080,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Subscriber<T>> generator) {
         Objects.requireNonNull(generator, "generator is null");
-        return generate(initialState, new BiFunction<S, Subscriber<T>, S>() {
-            @Override
-            public S apply(S s, Subscriber<T> o) throws Exception {
-                generator.accept(s, o);
-                return s;
-            }
-        }, Functions.emptyConsumer());
+        return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), 
+                Functions.emptyConsumer());
     }
 
     /**
@@ -2131,13 +2110,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Subscriber<T>> generator, 
             Consumer<? super S> disposeState) {
         Objects.requireNonNull(generator, "generator is null");
-        return generate(initialState, new BiFunction<S, Subscriber<T>, S>() {
-            @Override
-            public S apply(S s, Subscriber<T> o) throws Exception {
-                generator.accept(s, o);
-                return s;
-            }
-        }, disposeState);
+        return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), 
+                disposeState);
     }
 
     /**
@@ -4190,12 +4164,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T, R> Flowable<R> zip(Publisher<? extends Publisher<? extends T>> sources, 
             final Function<? super Object[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
-        return fromPublisher(sources).toList().flatMap(new Function<List<Publisher<? extends T>>, Publisher<? extends R>>() {
-            @Override
-            public Publisher<? extends R> apply(List<Publisher<? extends T>> list) {
-                return zipIterable(list, zipper, false, bufferSize());
-            }
-        });
+        return fromPublisher(sources).toList().flatMap(FlowableInternalHelper.<T, R>zipIterable(zipper));
     }
 
     /**
@@ -5659,12 +5628,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<List<T>> buffer(Publisher<B> boundary, final int initialCapacity) {
-        return buffer(boundary, new Callable<List<T>>() {
-            @Override
-            public List<T> call() {
-                return new ArrayList<T>(initialCapacity);
-            }
-        });
+        return buffer(boundary, Functions.<T>createArrayList(initialCapacity));
     }
 
     /**
@@ -5917,12 +5881,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> cast(final Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        return map(new Function<T, U>() {
-            @Override
-            public U apply(T v) {
-                return clazz.cast(v);
-            }
-        });
+        return map(Functions.castFunction(clazz));
     }
 
     /**
@@ -5987,12 +5946,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> collectInto(final U initialValue, BiConsumer<? super U, ? super T> collector) {
         Objects.requireNonNull(initialValue, "initialValue is null");
-        return collect(new Callable<U>() {
-            @Override
-            public U call() {
-                return initialValue;
-            }
-        }, collector);
+        return collect(Functions.justCallable(initialValue), collector);
     }
 
     /**
@@ -6406,12 +6360,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Boolean> contains(final Object element) {
         Objects.requireNonNull(element, "o is null");
-        return any(new Predicate<T>() {
-            @Override
-            public boolean test(T v) {
-                return Objects.equals(v, element);
-            }
-        });
+        return any(Functions.equalsWith(element));
     }
 
     /**
@@ -6613,17 +6562,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> delay(final Function<? super T, ? extends Publisher<U>> itemDelay) {
         Objects.requireNonNull(itemDelay, "itemDelay is null");
-        return flatMap(new Function<T, Publisher<T>>() {
-            @Override
-            public Publisher<T> apply(final T v) throws Exception {
-                return fromPublisher(itemDelay.apply(v)).take(1).map(new Function<U, T>() {
-                    @Override
-                    public T apply(U u) {
-                        return v;
-                    }
-                }).defaultIfEmpty(v);
-            }
-        });
+        return flatMap(FlowableInternalHelper.itemDelay(itemDelay));
     }
 
     /**
@@ -6901,12 +6840,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> distinct() {
-        return distinct((Function)Functions.identity(), new Callable<Collection<T>>() {
-            @Override
-            public Collection<T> call() {
-                return new HashSet<T>();
-            }
-        });
+        return distinct((Function)Functions.identity(), Functions.<T>createHashSet());
     }
 
     /**
@@ -6932,12 +6866,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<T> distinct(Function<? super T, K> keySelector) {
-        return distinct(keySelector, new Callable<Collection<K>>() {
-            @Override
-            public Collection<K> call() {
-                return new HashSet<K>();
-            }
-        });
+        return distinct(keySelector, Functions.<K>createHashSet());
     }
 
     /**
@@ -7182,24 +7111,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> doOnEach(final Consumer<? super Try<Optional<T>>> onNotification) {
         Objects.requireNonNull(onNotification, "consumer is null");
         return doOnEach(
-                new Consumer<T>() {
-                    @Override
-                    public void accept(T v) throws Exception {
-                        onNotification.accept(Try.ofValue(Optional.of(v)));
-                    }
-                },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        onNotification.accept(Try.<Optional<T>>ofError(e));
-                    }
-                },
-                new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        onNotification.accept(Try.ofValue(Optional.<T>empty()));
-                    }
-                },
+                Functions.notificationOnNext(onNotification),
+                Functions.notificationOnError(onNotification),
+                Functions.notificationOnComplete(onNotification),
                 Functions.EMPTY_ACTION
             );
     }
@@ -7231,22 +7145,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnEach(final Subscriber<? super T> observer) {
         Objects.requireNonNull(observer, "observer is null");
-        return doOnEach(new Consumer<T>() {
-            @Override
-            public void accept(T v) {
-                observer.onNext(v);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                observer.onError(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() {
-                observer.onComplete();
-            }
-        }, Functions.EMPTY_ACTION);
+        return doOnEach(
+                FlowableInternalHelper.subscriberOnNext(observer),
+                FlowableInternalHelper.subscriberOnError(observer),
+                FlowableInternalHelper.subscriberOnComplete(observer),
+                Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7412,12 +7315,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnTerminate(final Action onTerminate) {
-        return doOnEach(Functions.emptyConsumer(), new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                onTerminate.run();
-            }
-        }, onTerminate, Functions.EMPTY_ACTION);
+        return doOnEach(Functions.emptyConsumer(), Functions.actionConsumer(onTerminate), 
+                onTerminate, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7978,18 +7877,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             final BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayErrors, int maxConcurrency, int bufferSize) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        return flatMap(new Function<T, Publisher<R>>() {
-            @Override
-            public Publisher<R> apply(final T t) throws Exception {
-                Flowable<U> u = fromPublisher(mapper.apply(t));
-                return u.map(new Function<U, R>() {
-                    @Override
-                    public R apply(U w) throws Exception {
-                        return combiner.apply(t, w);
-                    }
-                });
-            }
-        }, delayErrors, maxConcurrency, bufferSize);
+        return flatMap(FlowableInternalHelper.flatMapWithCombiner(mapper, combiner), delayErrors, maxConcurrency, bufferSize);
     }
 
     /**
@@ -8122,12 +8010,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             final BiFunction<? super T, ? super U, ? extends V> resultSelector) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(resultSelector, "resultSelector is null");
-        return flatMap(new Function<T, Publisher<U>>() {
-            @Override
-            public Publisher<U> apply(T t) throws Exception {
-                return new FlowableFromIterable<U>(mapper.apply(t));
-            }
-        }, resultSelector, false, bufferSize(), bufferSize());
+        return flatMap(FlowableInternalHelper.flatMapIntoIterable(mapper), resultSelector, false, bufferSize(), bufferSize());
     }
 
     /**
@@ -8170,12 +8053,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             final BiFunction<? super T, ? super U, ? extends V> resultSelector, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
         Objects.requireNonNull(resultSelector, "resultSelector is null");
-        return flatMap(new Function<T, Publisher<U>>() {
-            @Override
-            public Publisher<U> apply(T t) throws Exception {
-                return new FlowableFromIterable<U>(mapper.apply(t));
-            }
-        }, resultSelector, false, bufferSize(), prefetch);
+        return flatMap(FlowableInternalHelper.flatMapIntoIterable(mapper), resultSelector, false, bufferSize(), prefetch);
     }
 
     /**
@@ -8294,22 +8172,9 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(onError, "onError is null");
         Objects.requireNonNull(onComplete, "onComplete is null");
 
-        final AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
-        return subscribe(new Consumer<T>() {
-            @Override
-            public void accept(T v) throws Exception {
-                if (!onNext.test(v)) {
-                    subscription.get().cancel();
-                    onComplete.run();
-                }
-            }
-        }, onError, onComplete, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                subscription.lazySet(s);
-                s.request(Long.MAX_VALUE);
-            }
-        });
+        ForEachWhileSubscriber<T> s = new ForEachWhileSubscriber<T>(onNext, onError, onComplete);
+        subscribe(s);
+        return s;
     }
 
     /**
@@ -8578,8 +8443,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends TRight> other,
             Function<? super T, ? extends Publisher<TLeftEnd>> leftEnd,
             Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
-            BiFunction<? super T, ? super Flowable<TRight>, ? extends R> resultSelector
-                    ) {
+            BiFunction<? super T, ? super Flowable<TRight>, ? extends R> resultSelector) {
         return new FlowableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
                 this, other, leftEnd, rightEnd, resultSelector);
     }
@@ -8627,12 +8491,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Boolean> isEmpty() {
-        return all(new Predicate<T>() {
-            @Override
-            public boolean test(T v) {
-                return false;
-            }
-        });
+        return all(Functions.alwaysFalse());
     }
 
     /**
@@ -8675,8 +8534,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends TRight> other,
             Function<? super T, ? extends Publisher<TLeftEnd>> leftEnd,
             Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
-            BiFunction<? super T, ? super TRight, ? extends R> resultSelector
-                    ) {
+            BiFunction<? super T, ? super TRight, ? extends R> resultSelector) {
         return new FlowableJoin<T, TRight, TLeftEnd, TRightEnd, R>(
                 this, other, leftEnd, rightEnd, resultSelector);
     }
@@ -8977,12 +8835,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> ofType(final Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        return filter(new Predicate<T>() {
-            @Override
-            public boolean test(T c) {
-                return clazz.isInstance(c);
-            }
-        }).cast(clazz);
+        return filter(Functions.isInstanceOf(clazz)).cast(clazz);
     }
 
     /**
@@ -9389,12 +9242,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorResumeNext(final Publisher<? extends T> next) {
         Objects.requireNonNull(next, "next is null");
-        return onErrorResumeNext(new Function<Throwable, Publisher<? extends T>>() {
-            @Override
-            public Publisher<? extends T> apply(Throwable e) {
-                return next;
-            }
-        });
+        return onErrorResumeNext(Functions.justFunction(next));
     }
 
     /**
@@ -9470,12 +9318,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorReturnValue(final T value) {
         Objects.requireNonNull(value, "value is null");
-        return onErrorReturn(new Function<Throwable, T>() {
-            @Override
-            public T apply(Throwable e) {
-                return value;
-            }
-        });
+        return onErrorReturn(Functions.justFunction(value));
     }
 
     /**
@@ -9520,12 +9363,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onExceptionResumeNext(final Publisher<? extends T> next) {
         Objects.requireNonNull(next, "next is null");
-        return new FlowableOnErrorNext<T>(this, new Function<Throwable, Publisher<? extends T>>() {
-            @Override
-            public Publisher<? extends T> apply(Throwable e) {
-                return next;
-            }
-        }, true);
+        return new FlowableOnErrorNext<T>(this, Functions.justFunction(next), true);
     }
 
     /**
@@ -9935,21 +9773,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeatWhen(final Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
         Objects.requireNonNull(handler, "handler is null");
-        
-        Function<Flowable<Try<Optional<Object>>>, Publisher<?>> f = new Function<Flowable<Try<Optional<Object>>>, Publisher<?>>() {
-            @Override
-            public Publisher<?> apply(Flowable<Try<Optional<Object>>> no) throws Exception {
-                return handler.apply(no.map(new Function<Try<Optional<Object>>, Object>() {
-                    @Override
-                    public Object apply(Try<Optional<Object>> v) {
-                        return 0;
-                    }
-                }));
-            }
-        }
-        ;
-        
-        return new FlowableRedo<T>(this, f);
+        return new FlowableRedo<T>(this, FlowableInternalHelper.repeatWhenHandler(handler));
     }
     
     /**
@@ -10005,12 +9829,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector) {
         Objects.requireNonNull(selector, "selector is null");
-        return FlowableReplay.multicastSelector(new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return replay();
-            }
-        }, selector);
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replayCallable(this), selector);
     }
 
     /**
@@ -10044,12 +9863,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize) {
         Objects.requireNonNull(selector, "selector is null");
-        return FlowableReplay.multicastSelector(new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return replay(bufferSize);
-            }
-        }, selector);
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replayCallable(this, bufferSize), selector);
     }
 
     /**
@@ -10133,12 +9947,8 @@ public abstract class Flowable<T> implements Publisher<T> {
             throw new IllegalArgumentException("bufferSize < 0");
         }
         Objects.requireNonNull(selector, "selector is null");
-        return FlowableReplay.multicastSelector(new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return replay(bufferSize, time, unit, scheduler);
-            }
-        }, selector);
+        return FlowableReplay.multicastSelector(
+                FlowableInternalHelper.replayCallable(this, bufferSize, time, unit, scheduler), selector);
     }
 
     /**
@@ -10173,18 +9983,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> replay(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize, final Scheduler scheduler) {
-        return FlowableReplay.multicastSelector(new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return replay(bufferSize);
-            }
-        }, 
-        new Function<Flowable<T>, Publisher<R>>() {
-            @Override
-            public Publisher<R> apply(Flowable<T> t) throws Exception {
-                return fromPublisher(selector.apply(t)).observeOn(scheduler);
-            }
-        });
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replayCallable(this, bufferSize),
+                FlowableInternalHelper.replayFunction(selector, scheduler)
+        );
     }
     
     /**
@@ -10259,12 +10060,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(selector, "selector is null");
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return FlowableReplay.multicastSelector(new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return replay(time, unit, scheduler);
-            }
-        }, selector);
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replayCallable(this, time, unit, scheduler), selector);
     }
     
     /**
@@ -10298,18 +10094,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> replay(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
         Objects.requireNonNull(selector, "selector is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return FlowableReplay.multicastSelector(new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return replay();
-            }
-        }, 
-        new Function<Flowable<T>, Publisher<R>>() {
-            @Override
-            public Publisher<R> apply(Flowable<T> t)  throws Exception {
-                return fromPublisher(selector.apply(t)).observeOn(scheduler);
-            }
-        });
+        return FlowableReplay.multicastSelector(FlowableInternalHelper.replayCallable(this),
+                FlowableInternalHelper.replayFunction(selector, scheduler));
     }
     
     /**
@@ -10691,12 +10477,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retryUntil(final BooleanSupplier stop) {
         Objects.requireNonNull(stop, "stop is null");
-        return retry(Long.MAX_VALUE, new Predicate<Throwable>() {
-            @Override
-            public boolean test(Throwable e) throws Exception {
-                return !stop.getAsBoolean();
-            }
-        });
+        return retry(Long.MAX_VALUE, Functions.predicateReverseFor(stop));
     }
     
     /**
@@ -10756,26 +10537,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             final Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler) {
         Objects.requireNonNull(handler, "handler is null");
         
-        Function<Flowable<Try<Optional<Object>>>, Publisher<?>> f = new Function<Flowable<Try<Optional<Object>>>, Publisher<?>>() {
-            @Override
-            public Publisher<?> apply(Flowable<Try<Optional<Object>>> no) throws Exception {
-                Flowable<Throwable> map = no.takeWhile(new Predicate<Try<Optional<Object>>>() {
-                    @Override
-                    public boolean test(Try<Optional<Object>> e) {
-                        return e.hasError();
-                    }
-                }).map(new Function<Try<Optional<Object>>, Throwable>() {
-                    @Override
-                    public Throwable apply(Try<Optional<Object>> t) {
-                        return t.error();
-                    }
-                });
-                return handler.apply(map);
-            }
-        }
-        ;
-        
-        return new FlowableRedo<T>(this, f);
+        return new FlowableRedo<T>(this, FlowableInternalHelper.retryWhenHandler(handler));
     }
     
     /**
@@ -10972,12 +10734,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> scan(final R initialValue, BiFunction<R, ? super T, R> accumulator) {
         Objects.requireNonNull(initialValue, "seed is null");
-        return scanWith(new Callable<R>() {
-            @Override
-            public R call() {
-                return initialValue;
-            }
-        }, accumulator);
+        return scanWith(Functions.justCallable(initialValue), accumulator);
     }
     
     /**
@@ -11167,7 +10924,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> skip(long count) {
-        if (count <= 0) {
+        if (count <= 0L) {
             return this;
         }
         return new FlowableSkip<T>(this, count);
@@ -11260,10 +11017,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> skipLast(int count) {
         if (count < 0) {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        } else
-            if (count == 0) {
-                return this;
-            }
+        } 
+        if (count == 0) {
+            return this;
+        }
         return new FlowableSkipLast<T>(this, count);
     }
     
@@ -11671,12 +11428,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                s.request(Long.MAX_VALUE);
-            }
-        });
+        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), 
+                Functions.EMPTY_ACTION, FlowableInternalHelper.requestMax());
     }
 
     /**
@@ -11702,12 +11455,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
-        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                s.request(Long.MAX_VALUE);
-            }
-        });
+        return subscribe(onNext, RxJavaPlugins.errorConsumer(), 
+                Functions.EMPTY_ACTION, FlowableInternalHelper.requestMax());
     }
 
     /**
@@ -11736,12 +11485,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
-        return subscribe(onNext, onError, Functions.EMPTY_ACTION, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                s.request(Long.MAX_VALUE);
-            }
-        });
+        return subscribe(onNext, onError, Functions.EMPTY_ACTION, FlowableInternalHelper.requestMax());
     }
 
     /**
@@ -11775,12 +11519,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
             Action onComplete) {
-        return subscribe(onNext, onError, onComplete, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                s.request(Long.MAX_VALUE);
-            }
-        });
+        return subscribe(onNext, onError, onComplete, FlowableInternalHelper.requestMax());
     }
     
     /**
@@ -11982,17 +11721,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> switchMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        if (this instanceof ScalarCallable) {
-            @SuppressWarnings("unchecked")
-            T v = ((ScalarCallable<T>)this).call();
-            if (v == null) {
-                return empty();
-            }
-            return ScalarXMap.scalarXMap(v, mapper);
-        }
-        validateBufferSize(bufferSize, "bufferSize");
-        return new FlowableSwitchMap<T, R>(this, mapper, bufferSize, false);
+        return switchMap0(mapper, bufferSize, false);
     }
     
     /**
@@ -12060,6 +11789,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     public final <R> Flowable<R> switchMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
+        return switchMap0(mapper, bufferSize, true);
+    }
+
+    <R> Flowable<R> switchMap0(Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize, boolean delayError) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (this instanceof ScalarCallable) {
             @SuppressWarnings("unchecked")
@@ -12070,9 +11803,9 @@ public abstract class Flowable<T> implements Publisher<T> {
             return ScalarXMap.scalarXMap(v, mapper);
         }
         validateBufferSize(bufferSize, "bufferSize");
-        return new FlowableSwitchMap<T, R>(this, mapper, bufferSize, true);
+        return new FlowableSwitchMap<T, R>(this, mapper, bufferSize, delayError);
     }
-
+    
     /**
      * Returns a Flowable that emits only the first {@code count} items emitted by the source Publisher. If the source emits fewer than 
      * {@code count} items then all of its items are emitted.
@@ -13451,12 +13184,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<Timed<T>> timestamp(final TimeUnit unit, final Scheduler scheduler) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        return map(new Function<T, Timed<T>>() {
-            @Override
-            public Timed<T> apply(T v) {
-                return new Timed<T>(v, scheduler.now(unit), unit);
-            }
-        });
+        return map(Functions.<T>timestampWith(unit, scheduler));
     }
 
     /**
@@ -13591,12 +13319,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (capacityHint <= 0) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
         }
-        return new FlowableToList<T, List<T>>(this, new Callable<List<T>>() {
-            @Override
-            public List<T> call() {
-                return new ArrayList<T>(capacityHint);
-            }
-        });
+        return new FlowableToList<T, List<T>>(this, Functions.<T>createArrayList(capacityHint));
     }
 
     /**
@@ -13661,13 +13384,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
-        return collect(HashMapSupplier.<K, T>asCallable(), new BiConsumer<Map<K, T>, T>() {
-            @Override
-            public void accept(Map<K, T> m, T t) throws Exception {
-                K key = keySelector.apply(t);
-                m.put(key, t);
-            }
-        });
+        return collect(HashMapSupplier.<K, T>asCallable(), Functions.toMapKeySelector(keySelector));
     }
     
     /**
@@ -13701,14 +13418,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <K, V> Flowable<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
-        return collect(HashMapSupplier.<K, V>asCallable(), new BiConsumer<Map<K, V>, T>() {
-            @Override
-            public void accept(Map<K, V> m, T t) throws Exception {
-                K key = keySelector.apply(t);
-                V value = valueSelector.apply(t);
-                m.put(key, value);
-            }
-        });
+        return collect(HashMapSupplier.<K, V>asCallable(), Functions.toMapKeyValueSelector(keySelector, valueSelector));
     }
     
     /**
@@ -13743,14 +13453,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             final Callable<? extends Map<K, V>> mapSupplier) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
-        return collect(mapSupplier, new BiConsumer<Map<K, V>, T>() {
-            @Override
-            public void accept(Map<K, V> m, T t) throws Exception {
-                K key = keySelector.apply(t);
-                V value = valueSelector.apply(t);
-                m.put(key, value);
-            }
-        });
+        return collect(mapSupplier, Functions.toMapKeyValueSelector(keySelector, valueSelector));
     }
 
     /**
@@ -13843,7 +13546,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SuppressWarnings("unchecked")
     public final <K, V> Flowable<Map<K, Collection<V>>> toMultimap(
             final Function<? super T, ? extends K> keySelector, 
             final Function<? super T, ? extends V> valueSelector, 
@@ -13853,22 +13555,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         Objects.requireNonNull(valueSelector, "valueSelector is null");
         Objects.requireNonNull(mapSupplier, "mapSupplier is null");
         Objects.requireNonNull(collectionFactory, "collectionFactory is null");
-        return collect(mapSupplier, new BiConsumer<Map<K, Collection<V>>, T>() {
-            @Override
-            public void accept(Map<K, Collection<V>> m, T t) throws Exception {
-                K key = keySelector.apply(t);
-
-                Collection<V> coll = m.get(key);
-                if (coll == null) {
-                    coll = (Collection<V>)collectionFactory.apply(key);
-                    m.put(key, coll);
-                }
-
-                V value = valueSelector.apply(t);
-
-                coll.add(value);
-            }
-        });
+        return collect(mapSupplier, Functions.toMultimapKeyValueSelector(keySelector, valueSelector, collectionFactory));
     }
     
     /**
@@ -13976,14 +13663,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SuppressWarnings({ "unchecked", "rawtypes"})
     public final Flowable<List<T>> toSortedList() {
-        return toSortedList(new Comparator<T>() {
-            @Override
-            public int compare(T o1, T o2) {
-                return ((Comparable)o1).compareTo(o2);
-            }
-        });
+        return toSortedList(Functions.naturalComparator());
     }
     
     /**
@@ -14010,13 +13691,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> toSortedList(final Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return toList().map(new Function<List<T>, List<T>>() {
-            @Override
-            public List<T> apply(List<T> v) {
-                Collections.sort(v, comparator);
-                return v;
-            }
-        });
+        return toList().map(Functions.listSorter(comparator));
     }
 
     /**
@@ -14046,13 +13721,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> toSortedList(final Comparator<? super T> comparator, int capacityHint) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return toList(capacityHint).map(new Function<List<T>, List<T>>() {
-            @Override
-            public List<T> apply(List<T> v) {
-                Collections.sort(v, comparator);
-                return v;
-            }
-        });
+        return toList(capacityHint).map(Functions.listSorter(comparator));
     }
 
     /**
@@ -14081,14 +13750,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SuppressWarnings({ "unchecked", "rawtypes"})
     public final Flowable<List<T>> toSortedList(int capacityHint) {
-        return toSortedList(new Comparator<T>() {
-            @Override
-            public int compare(T o1, T o2) {
-                return ((Comparable)o1).compareTo(o2);
-            }
-        }, capacityHint);
+        return toSortedList(Functions.naturalComparator(), capacityHint);
     }
 
     /**
