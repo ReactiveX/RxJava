@@ -21,58 +21,60 @@ public class FlowableNotificationTest {
 	
 	@Test(expected = NullPointerException.class)
 	public void testOnNextIntegerNotificationDoesNotEqualNullNotification(){
-		final Try<Optional<Integer>> integerNotification = Notification.next(1);
-		final Try<Optional<Integer>> nullNotification = Notification.next(null);
+		final Notification<Integer> integerNotification = Notification.createOnNext(1);
+		final Notification<Integer> nullNotification = Notification.createOnNext(null);
 		Assert.assertFalse(integerNotification.equals(nullNotification));
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void testOnNextNullNotificationDoesNotEqualIntegerNotification(){
-		final Try<Optional<Integer>> integerNotification = Notification.next(1);
-		final Try<Optional<Integer>> nullNotification = Notification.next(null);
+		final Notification<Integer> integerNotification = Notification.createOnNext(1);
+		final Notification<Integer> nullNotification = Notification.createOnNext(null);
 		Assert.assertFalse(nullNotification.equals(integerNotification));
 	}
 	
 	@Test
 	public void testOnNextIntegerNotificationsWhenEqual(){
-		final Try<Optional<Integer>> integerNotification = Notification.next(1);
-		final Try<Optional<Integer>> integerNotification2 = Notification.next(1);
+		final Notification<Integer> integerNotification = Notification.createOnNext(1);
+		final Notification<Integer> integerNotification2 = Notification.createOnNext(1);
 		Assert.assertTrue(integerNotification.equals(integerNotification2));
 	}
 	
 	@Test
 	public void testOnNextIntegerNotificationsWhenNotEqual(){
-		final Try<Optional<Integer>> integerNotification = Notification.next(1);
-		final Try<Optional<Integer>> integerNotification2 = Notification.next(2);
+		final Notification<Integer> integerNotification = Notification.createOnNext(1);
+		final Notification<Integer> integerNotification2 = Notification.createOnNext(2);
 		Assert.assertFalse(integerNotification.equals(integerNotification2));
 	}
 	
 	@Test
+    @Ignore("Nulls are not allowed")
 	public void testOnErrorIntegerNotificationDoesNotEqualNullNotification(){
-		final Try<Optional<Integer>> integerNotification = Notification.error(new Exception());
-		final Try<Optional<Integer>> nullNotification = Notification.error(null);
+		final Notification<Integer> integerNotification = Notification.createOnError(new Exception());
+		final Notification<Integer> nullNotification = Notification.createOnError(null);
 		Assert.assertFalse(integerNotification.equals(nullNotification));
 	}
 	
 	@Test
+	@Ignore("Nulls are not allowed")
 	public void testOnErrorNullNotificationDoesNotEqualIntegerNotification(){
-		final Try<Optional<Integer>> integerNotification = Notification.error(new Exception());
-		final Try<Optional<Integer>> nullNotification = Notification.error(null);
+		final Notification<Integer> integerNotification = Notification.createOnError(new Exception());
+		final Notification<Integer> nullNotification = Notification.createOnError(null);
 		Assert.assertFalse(nullNotification.equals(integerNotification));
 	}
 
 	@Test
 	public void testOnErrorIntegerNotificationsWhenEqual(){
 		final Exception exception = new Exception();
-		final Try<Optional<Integer>> onErrorNotification = Notification.error(exception);
-		final Try<Optional<Integer>> onErrorNotification2 = Notification.error(exception);
+		final Notification<Integer> onErrorNotification = Notification.createOnError(exception);
+		final Notification<Integer> onErrorNotification2 = Notification.createOnError(exception);
 		Assert.assertTrue(onErrorNotification.equals(onErrorNotification2));
 	}
 	
 	@Test
 	public void testOnErrorIntegerNotificationWhenNotEqual(){
-		final Try<Optional<Integer>> onErrorNotification = Notification.error(new Exception());
-		final Try<Optional<Integer>> onErrorNotification2 = Notification.error(new Exception());
+		final Notification<Integer> onErrorNotification = Notification.createOnError(new Exception());
+		final Notification<Integer> onErrorNotification2 = Notification.createOnError(new Exception());
 		Assert.assertFalse(onErrorNotification.equals(onErrorNotification2));
 	}
 }

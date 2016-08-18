@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Optional;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
@@ -37,8 +36,8 @@ public class FlowableMaterializeTest {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null,
                 "three");
 
-        TestObserver observer = new TestObserver();
-        Flowable<Try<Optional<String>>> m = Flowable.unsafeCreate(o1).materialize();
+        TestNotificationSubscriber observer = new TestNotificationSubscriber();
+        Flowable<Notification<String>> m = Flowable.unsafeCreate(o1).materialize();
         m.subscribe(observer);
 
         try {
@@ -50,21 +49,24 @@ public class FlowableMaterializeTest {
         assertFalse(observer.onError);
         assertTrue(observer.onCompleted);
         assertEquals(3, observer.notifications.size());
-        assertEquals("one", observer.notifications.get(0).value().get());
-        assertTrue(Notification.isNext(observer.notifications.get(0)));
-        assertEquals("two", Notification.getValue(observer.notifications.get(1)));
-        assertTrue(Notification.isNext(observer.notifications.get(1)));
-        assertEquals(NullPointerException.class, observer.notifications.get(2).error().getClass());
-        assertTrue(Notification.isError(observer.notifications.get(2)));
+
+        assertTrue(observer.notifications.get(0).isOnNext());
+        assertEquals("one", observer.notifications.get(0).getValue());
+        
+        assertTrue(observer.notifications.get(1).isOnNext());
+        assertEquals("two", observer.notifications.get(1).getValue());
+        
+        assertTrue(observer.notifications.get(2).isOnError());
+        assertEquals(NullPointerException.class, observer.notifications.get(2).getError().getClass());
     }
 
     @Test
     public void testMaterialize2() {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
-        TestObserver Observer = new TestObserver();
-        Flowable<Try<Optional<String>>> m = Flowable.unsafeCreate(o1).materialize();
-        m.subscribe(Observer);
+        TestNotificationSubscriber subscriber = new TestNotificationSubscriber();
+        Flowable<Notification<String>> m = Flowable.unsafeCreate(o1).materialize();
+        m.subscribe(subscriber);
 
         try {
             o1.t.join();
@@ -72,23 +74,26 @@ public class FlowableMaterializeTest {
             throw new RuntimeException(e);
         }
 
-        assertFalse(Observer.onError);
-        assertTrue(Observer.onCompleted);
-        assertEquals(4, Observer.notifications.size());
-        assertEquals("one", Notification.getValue(Observer.notifications.get(0)));
-        assertTrue(Notification.isNext(Observer.notifications.get(0)));
-        assertEquals("two", Notification.getValue(Observer.notifications.get(1)));
-        assertTrue(Notification.isNext(Observer.notifications.get(1)));
-        assertEquals("three", Notification.getValue(Observer.notifications.get(2)));
-        assertTrue(Notification.isNext(Observer.notifications.get(2)));
-        assertTrue(Notification.isComplete(Observer.notifications.get(3)));
+        assertFalse(subscriber.onError);
+        assertTrue(subscriber.onCompleted);
+        assertEquals(4, subscriber.notifications.size());
+        assertTrue(subscriber.notifications.get(0).isOnNext());
+        assertEquals("one", subscriber.notifications.get(0).getValue());
+
+        assertTrue(subscriber.notifications.get(1).isOnNext());
+        assertEquals("two", subscriber.notifications.get(1).getValue());
+        
+        assertTrue(subscriber.notifications.get(2).isOnNext());
+        assertEquals("three", subscriber.notifications.get(2).getValue());
+
+        assertTrue(subscriber.notifications.get(3).isOnComplete());
     }
 
     @Test
     public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
-        Flowable<Try<Optional<String>>> m = Flowable.unsafeCreate(o).materialize();
+        Flowable<Notification<String>> m = Flowable.unsafeCreate(o).materialize();
 
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());
@@ -96,18 +101,18 @@ public class FlowableMaterializeTest {
 
     @Test
     public void testBackpressureOnEmptyStream() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
         Flowable.<Integer> empty().materialize().subscribe(ts);
         ts.assertNoValues();
         ts.request(1);
         ts.assertValueCount(1);
-        assertTrue(Notification.isComplete(ts.values().get(0)));
+        assertTrue(ts.values().get(0).isOnComplete());
         ts.assertComplete();
     }
 
     @Test
     public void testBackpressureNoError() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
         Flowable.just(1, 2, 3).materialize().subscribe(ts);
         ts.assertNoValues();
         ts.request(1);
@@ -121,7 +126,7 @@ public class FlowableMaterializeTest {
     
     @Test
     public void testBackpressureNoErrorAsync() throws InterruptedException {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
         Flowable.just(1, 2, 3)
             .materialize()
             .subscribeOn(Schedulers.computation())
@@ -142,7 +147,7 @@ public class FlowableMaterializeTest {
 
     @Test
     public void testBackpressureWithError() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
         Flowable.<Integer> error(new IllegalArgumentException()).materialize().subscribe(ts);
         ts.assertNoValues();
         ts.request(1);
@@ -152,24 +157,24 @@ public class FlowableMaterializeTest {
 
     @Test
     public void testBackpressureWithEmissionThenError() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
         IllegalArgumentException ex = new IllegalArgumentException();
         Flowable.fromIterable(Arrays.asList(1)).concatWith(Flowable.<Integer> error(ex)).materialize()
                 .subscribe(ts);
         ts.assertNoValues();
         ts.request(1);
         ts.assertValueCount(1);
-        assertTrue(Notification.isNext(ts.values().get(0)));
+        assertTrue(ts.values().get(0).isOnNext());
         ts.request(1);
         ts.assertValueCount(2);
-        assertTrue(Notification.isError(ts.values().get(1)));
-        assertTrue(ex == ts.values().get(1).error());
+        assertTrue(ts.values().get(1).isOnError());
+        assertEquals(ex, ts.values().get(1).getError());
         ts.assertComplete();
     }
 
     @Test
     public void testWithCompletionCausingError() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>();
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>();
         final RuntimeException ex = new RuntimeException("boo");
         Flowable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
             @Override
@@ -184,7 +189,7 @@ public class FlowableMaterializeTest {
     
     @Test
     public void testUnsubscribeJustBeforeCompletionNotificationShouldPreventThatNotificationArriving() {
-        TestSubscriber<Try<Optional<Integer>>> ts = new TestSubscriber<Try<Optional<Integer>>>(0L);
+        TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
 
         Flowable.<Integer>empty().materialize()
                 .subscribe(ts);
@@ -196,11 +201,11 @@ public class FlowableMaterializeTest {
 //        ts.assertUnsubscribed();
     }
 
-    private static class TestObserver extends DefaultSubscriber<Try<Optional<String>>> {
+    private static class TestNotificationSubscriber extends DefaultSubscriber<Notification<String>> {
 
         boolean onCompleted = false;
         boolean onError = false;
-        List<Try<Optional<String>>> notifications = new Vector<Try<Optional<String>>>();
+        List<Notification<String>> notifications = new Vector<Notification<String>>();
 
         @Override
         public void onComplete() {
@@ -213,7 +218,7 @@ public class FlowableMaterializeTest {
         }
 
         @Override
-        public void onNext(Try<Optional<String>> value) {
+        public void onNext(Notification<String> value) {
             this.notifications.add(value);
         }
 

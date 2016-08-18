@@ -16,7 +16,6 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import io.reactivex.*;
-import io.reactivex.Optional;
 import io.reactivex.functions.*;
 import io.reactivex.schedulers.Timed;
 
@@ -377,53 +376,53 @@ public enum Functions {
     }
     
     static final class NotificationOnNext<T> implements Consumer<T> {
-        final Consumer<? super Try<Optional<T>>> onNotification;
+        final Consumer<? super Notification<T>> onNotification;
         
-        public NotificationOnNext(Consumer<? super Try<Optional<T>>> onNotification) {
+        public NotificationOnNext(Consumer<? super Notification<T>> onNotification) {
             this.onNotification = onNotification;
         }
         
         @Override
         public void accept(T v) throws Exception {
-            onNotification.accept(Try.ofValue(Optional.of(v)));
+            onNotification.accept(Notification.createOnNext(v));
         }
     }
     
     static final class NotificationOnError<T> implements Consumer<Throwable> {
-        final Consumer<? super Try<Optional<T>>> onNotification;
+        final Consumer<? super Notification<T>> onNotification;
         
-        public NotificationOnError(Consumer<? super Try<Optional<T>>> onNotification) {
+        public NotificationOnError(Consumer<? super Notification<T>> onNotification) {
             this.onNotification = onNotification;
         }
         
         @Override
         public void accept(Throwable v) throws Exception {
-            onNotification.accept(Try.<Optional<T>>ofError(v));
+            onNotification.accept(Notification.<T>createOnError(v));
         }
     }
     
     static final class NotificationOnComplete<T> implements Action {
-        final Consumer<? super Try<Optional<T>>> onNotification;
+        final Consumer<? super Notification<T>> onNotification;
         
-        public NotificationOnComplete(Consumer<? super Try<Optional<T>>> onNotification) {
+        public NotificationOnComplete(Consumer<? super Notification<T>> onNotification) {
             this.onNotification = onNotification;
         }
         
         @Override
         public void run() throws Exception {
-            onNotification.accept(Try.ofValue(Optional.<T>empty()));
+            onNotification.accept(Notification.<T>createOnComplete());
         }
     }
     
-    public static <T> Consumer<T> notificationOnNext(Consumer<? super Try<Optional<T>>> onNotification) {
+    public static <T> Consumer<T> notificationOnNext(Consumer<? super Notification<T>> onNotification) {
         return new NotificationOnNext<T>(onNotification);
     }
     
-    public static <T> Consumer<Throwable> notificationOnError(Consumer<? super Try<Optional<T>>> onNotification) {
+    public static <T> Consumer<Throwable> notificationOnError(Consumer<? super Notification<T>> onNotification) {
         return new NotificationOnError<T>(onNotification);
     }
 
-    public static <T> Action notificationOnComplete(Consumer<? super Try<Optional<T>>> onNotification) {
+    public static <T> Action notificationOnComplete(Consumer<? super Notification<T>> onNotification) {
         return new NotificationOnComplete<T>(onNotification);
     }
     

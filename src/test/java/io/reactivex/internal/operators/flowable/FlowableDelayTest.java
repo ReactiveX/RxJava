@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Optional;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
@@ -616,10 +615,10 @@ public class FlowableDelayTest {
     public void testDelayEmitsEverything() {
         Flowable<Integer> source = Flowable.range(1, 5);
         Flowable<Integer> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
-        delayed = delayed.doOnEach(new Consumer<Try<Optional<Integer>>>() {
+        delayed = delayed.doOnEach(new Consumer<Notification<Integer>>() {
 
             @Override
-            public void accept(Try<Optional<Integer>> t1) {
+            public void accept(Notification<Integer> t1) {
                 System.out.println(t1);
             }
 

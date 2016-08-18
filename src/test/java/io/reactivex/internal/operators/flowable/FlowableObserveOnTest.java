@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Optional;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -678,19 +677,19 @@ public class FlowableObserveOnTest {
     @Test
     public void testErrorPropagatesWhenNoOutstandingRequests() {
         Flowable<Long> timer = Flowable.interval(0, 1, TimeUnit.MICROSECONDS)
-                .doOnEach(new Consumer<Try<Optional<Long>>>() {
+                .doOnEach(new Consumer<Notification<Long>>() {
 
                     @Override
-                    public void accept(Try<Optional<Long>> n) {
+                    public void accept(Notification<Long> n) {
 //                        System.out.println("BEFORE " + n);
                     }
 
                 })
                 .observeOn(Schedulers.newThread())
-                .doOnEach(new Consumer<Try<Optional<Long>>>() {
+                .doOnEach(new Consumer<Notification<Long>>() {
 
                     @Override
-                    public void accept(Try<Optional<Long>> n) {
+                    public void accept(Notification<Long> n) {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {

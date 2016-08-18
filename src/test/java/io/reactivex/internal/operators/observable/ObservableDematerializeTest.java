@@ -26,17 +26,17 @@ public class ObservableDematerializeTest {
 
     @Test
     public void testDematerialize1() {
-        Observable<Try<Optional<Integer>>> notifications = Observable.just(1, 2).materialize();
+        Observable<Notification<Integer>> notifications = Observable.just(1, 2).materialize();
         Observable<Integer> dematerialize = notifications.dematerialize();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
         
-        dematerialize.subscribe(NbpObserver);
+        dematerialize.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext(1);
-        verify(NbpObserver, times(1)).onNext(2);
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, times(1)).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test

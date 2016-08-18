@@ -19,9 +19,9 @@ import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableDematerialize<T> extends AbstractFlowableWithUpstream<Try<Optional<T>>, T> {
+public final class FlowableDematerialize<T> extends AbstractFlowableWithUpstream<Notification<T>, T> {
 
-    public FlowableDematerialize(Publisher<Try<Optional<T>>> source) {
+    public FlowableDematerialize(Publisher<Notification<T>> source) {
         super(source);
     }
 
@@ -30,7 +30,7 @@ public final class FlowableDematerialize<T> extends AbstractFlowableWithUpstream
         source.subscribe(new DematerializeSubscriber<T>(s));
     }
     
-    static final class DematerializeSubscriber<T> implements Subscriber<Try<Optional<T>>>, Subscription {
+    static final class DematerializeSubscriber<T> implements Subscriber<Notification<T>>, Subscription {
         final Subscriber<? super T> actual;
         
         boolean done;
@@ -50,21 +50,19 @@ public final class FlowableDematerialize<T> extends AbstractFlowableWithUpstream
         }
         
         @Override
-        public void onNext(Try<Optional<T>> t) {
+        public void onNext(Notification<T> t) {
             if (done) {
                 return;
             }
-            if (t.hasError()) {
+            if (t.isOnError()) {
                 s.cancel();
-                onError(t.error());
+                onError(t.getError());
+            } 
+            else if (t.isOnComplete()) {
+                s.cancel();
+                onComplete();
             } else {
-                Optional<T> o = t.value();
-                if (o.isPresent()) {
-                    actual.onNext(o.get());
-                } else {
-                    s.cancel();
-                    onComplete();
-                }
+                actual.onNext(t.getValue());
             }
         }
         

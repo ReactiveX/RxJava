@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.Optional;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
@@ -70,11 +69,6 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
         return it;
     }
     
-    public Optional<T> firstOption() {
-        T v = first(o);
-        return v != null ? Optional.of(v) : Optional.<T>empty();
-    }
-    
     static <T> T first(Publisher<? extends T> o) {
         BlockingFirstSubscriber<T> s = new BlockingFirstSubscriber<T>();
         o.subscribe(s);
@@ -95,11 +89,6 @@ public final class BlockingFlowable<T> implements Publisher<T>, Iterable<T> {
             return v;
         }
         return defaultValue;
-    }
-    
-    public Optional<T> lastOption() {
-        T v = last(o);
-        return v != null ? Optional.of(v) : Optional.<T>empty();
     }
     
     static <T> T last(Publisher<? extends T> o) {

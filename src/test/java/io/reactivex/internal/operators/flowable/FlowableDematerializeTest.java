@@ -27,7 +27,7 @@ public class FlowableDematerializeTest {
 
     @Test
     public void testDematerialize1() {
-        Flowable<Try<Optional<Integer>>> notifications = Flowable.just(1, 2).materialize();
+        Flowable<Notification<Integer>> notifications = Flowable.just(1, 2).materialize();
         Flowable<Integer> dematerialize = notifications.dematerialize();
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();

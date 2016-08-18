@@ -6816,7 +6816,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T2> Flowable<T2> dematerialize() {
         @SuppressWarnings("unchecked")
-        Flowable<Try<Optional<T2>>> m = (Flowable<Try<Optional<T2>>>)this;
+        Flowable<Notification<T2>> m = (Flowable<Notification<T2>>)this;
         return new FlowableDematerialize<T2>(m);
     }
 
@@ -7108,7 +7108,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doOnEach(final Consumer<? super Try<Optional<T>>> onNotification) {
+    public final Flowable<T> doOnEach(final Consumer<? super Notification<T>> onNotification) {
         Objects.requireNonNull(onNotification, "consumer is null");
         return doOnEach(
                 Functions.notificationOnNext(onNotification),
@@ -8670,7 +8670,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<Try<Optional<T>>> materialize() {
+    public final Flowable<Notification<T>> materialize() {
         return new FlowableMaterialize<T>(this);
     }
 

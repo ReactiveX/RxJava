@@ -26,7 +26,6 @@ import org.mockito.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.Optional;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
@@ -773,9 +772,9 @@ public class FlowableCombineLatestTest {
         final int SIZE = 2000;
         Flowable<Long> timer = Flowable.interval(0, 1, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.newThread())
-                .doOnEach(new Consumer<Try<Optional<Long>>>() {
+                .doOnEach(new Consumer<Notification<Long>>() {
                     @Override
-                    public void accept(Try<Optional<Long>> n) {
+                    public void accept(Notification<Long> n) {
                             //                        System.out.println(n);
                             if (count.incrementAndGet() >= SIZE) {
                                 latch.countDown();

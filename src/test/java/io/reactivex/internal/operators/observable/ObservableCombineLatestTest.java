@@ -27,7 +27,6 @@ import org.mockito.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Optional;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
@@ -743,9 +742,9 @@ public class ObservableCombineLatestTest {
         final int SIZE = 2000;
         Observable<Long> timer = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.newThread())
-                .doOnEach(new Consumer<Try<Optional<Long>>>() {
+                .doOnEach(new Consumer<Notification<Long>>() {
                     @Override
-                    public void accept(Try<Optional<Long>> n) {
+                    public void accept(Notification<Long> n) {
                             //                        System.out.println(n);
                             if (count.incrementAndGet() >= SIZE) {
                                 latch.countDown();

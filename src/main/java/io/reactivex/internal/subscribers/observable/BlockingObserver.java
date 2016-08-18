@@ -50,7 +50,7 @@ public final class BlockingObserver<T> extends AtomicReference<Disposable> imple
     
     @Override
     public void onComplete() {
-        queue.offer(Notification.complete());
+        queue.offer(NotificationLite.complete());
     }
     
     @Override

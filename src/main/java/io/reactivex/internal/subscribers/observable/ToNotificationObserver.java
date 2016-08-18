@@ -21,11 +21,11 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ToNotificationObserver<T> implements Observer<T> {
-    final Consumer<? super Try<Optional<Object>>> consumer;
+    final Consumer<? super Notification<Object>> consumer;
     
     Disposable s;
     
-    public ToNotificationObserver(Consumer<? super Try<Optional<Object>>> consumer) {
+    public ToNotificationObserver(Consumer<? super Notification<Object>> consumer) {
         this.consumer = consumer;
     }
     
@@ -43,7 +43,7 @@ public final class ToNotificationObserver<T> implements Observer<T> {
             onError(new NullPointerException());
         } else {
             try {
-                consumer.accept(Try.ofValue(Optional.<Object>of(t)));
+                consumer.accept(Notification.<Object>createOnNext(t));
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.dispose();
@@ -55,7 +55,7 @@ public final class ToNotificationObserver<T> implements Observer<T> {
     @Override
     public void onError(Throwable t) {
         try {
-            consumer.accept(Try.<Optional<Object>>ofError(t));
+            consumer.accept(Notification.<Object>createOnError(t));
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaPlugins.onError(ex);
@@ -65,7 +65,7 @@ public final class ToNotificationObserver<T> implements Observer<T> {
     @Override
     public void onComplete() {
         try {
-            consumer.accept(Notification.complete());
+            consumer.accept(Notification.createOnComplete());
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaPlugins.onError(ex);

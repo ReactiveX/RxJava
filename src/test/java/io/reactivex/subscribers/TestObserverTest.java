@@ -139,7 +139,7 @@ public class TestObserverTest {
         to.onComplete();
         
         assertEquals(Arrays.<Object>asList(Arrays.asList(1, 2), Collections.emptyList(),
-                Collections.singletonList(Notification.complete())), to.getEvents());
+                Collections.singletonList(Notification.createOnComplete())), to.getEvents());
         
         TestException ex = new TestException();
         TestSubscriber<Integer> to2 = new TestSubscriber<Integer>();

@@ -17,9 +17,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.Notification;
 import io.reactivex.Observable;
-import io.reactivex.Optional;
-import io.reactivex.Try;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.observers.DisposableObserver;
 
@@ -96,20 +95,20 @@ public enum BlockingObservableNext {
                     nbpObservable.materialize().subscribe(observer);
                 }
                 
-                Try<Optional<T>> nextNotification = observer.takeNext();
-                if (isOnNext(nextNotification)) {
+                Notification<T> nextNotification = observer.takeNext();
+                if (nextNotification.isOnNext()) {
                     isNextConsumed = false;
-                    next = nextNotification.value().get();
+                    next = nextNotification.getValue();
                     return true;
                 }
                 // If an observable is completed or fails,
                 // hasNext() always return false.
                 hasNext = false;
-                if (isOnComplete(nextNotification)) {
+                if (nextNotification.isOnComplete()) {
                     return false;
                 }
-                if (nextNotification.hasError()) {
-                    error = nextNotification.error();
+                if (nextNotification.isOnError()) {
+                    error = nextNotification.getError();
                     throw Exceptions.propagate(error);
                 }
                 throw new IllegalStateException("Should not reach here");
@@ -142,8 +141,8 @@ public enum BlockingObservableNext {
         }
     }
 
-    static final class NextObserver<T> extends DisposableObserver<Try<Optional<T>>> {
-        private final BlockingQueue<Try<Optional<T>>> buf = new ArrayBlockingQueue<Try<Optional<T>>>(1);
+    static final class NextObserver<T> extends DisposableObserver<Notification<T>> {
+        private final BlockingQueue<Notification<T>> buf = new ArrayBlockingQueue<Notification<T>>(1);
         final AtomicInteger waiting = new AtomicInteger();
 
         @Override
@@ -157,15 +156,15 @@ public enum BlockingObservableNext {
         }
 
         @Override
-        public void onNext(Try<Optional<T>> args) {
+        public void onNext(Notification<T> args) {
 
-            if (waiting.getAndSet(0) == 1 || !isOnNext(args)) {
-                Try<Optional<T>> toOffer = args;
+            if (waiting.getAndSet(0) == 1 || !args.isOnNext()) {
+                Notification<T> toOffer = args;
                 while (!buf.offer(toOffer)) {
-                    Try<Optional<T>> concurrentItem = buf.poll();
+                    Notification<T> concurrentItem = buf.poll();
 
                     // in case if we won race condition with onComplete/onError method
-                    if (concurrentItem != null && !isOnNext(concurrentItem)) {
+                    if (concurrentItem != null && !concurrentItem.isOnNext()) {
                         toOffer = concurrentItem;
                     }
                 }
@@ -173,7 +172,7 @@ public enum BlockingObservableNext {
 
         }
         
-        public Try<Optional<T>> takeNext() throws InterruptedException {
+        public Notification<T> takeNext() throws InterruptedException {
             setWaiting(1);
             return buf.take();
         }
@@ -181,13 +180,4 @@ public enum BlockingObservableNext {
             waiting.set(value);
         }
     }
-    
-    static <T> boolean isOnNext(Try<Optional<T>> notification) {
-        return notification.hasValue() && notification.value().isPresent();
-    }
-    
-    static <T> boolean isOnComplete(Try<Optional<T>> notification) {
-        return notification.hasValue() && !notification.value().isPresent();
-    }
-
 }

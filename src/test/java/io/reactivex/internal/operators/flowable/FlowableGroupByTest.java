@@ -26,7 +26,6 @@ import org.mockito.Matchers;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Optional;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.*;
@@ -730,10 +729,10 @@ public class FlowableGroupByTest {
                             return "last group: " + t1;
                         }
 
-                    }).doOnEach(new Consumer<Try<Optional<String>>>() {
+                    }).doOnEach(new Consumer<Notification<String>>() {
 
                         @Override
-                        public void accept(Try<Optional<String>> t1) {
+                        public void accept(Notification<String> t1) {
                             System.err.println("subscribeOn notification => " + t1);
                         }
 
@@ -741,10 +740,10 @@ public class FlowableGroupByTest {
                 }
             }
 
-        }).doOnEach(new Consumer<Try<Optional<String>>>() {
+        }).doOnEach(new Consumer<Notification<String>>() {
 
             @Override
-            public void accept(Try<Optional<String>> t1) {
+            public void accept(Notification<String> t1) {
                 System.err.println("outer notification => " + t1);
             }
 
@@ -876,10 +875,10 @@ public class FlowableGroupByTest {
                 });
             }
 
-        }).doOnEach(new Consumer<Try<Optional<String>>>() {
+        }).doOnEach(new Consumer<Notification<String>>() {
 
             @Override
-            public void accept(Try<Optional<String>> t1) {
+            public void accept(Notification<String> t1) {
                 System.out.println("notification => " + t1);
             }
 
@@ -1289,10 +1288,10 @@ public class FlowableGroupByTest {
                 });
             }
 
-        }).doOnEach(new Consumer<Try<Optional<String>>>() {
+        }).doOnEach(new Consumer<Notification<String>>() {
 
             @Override
-            public void accept(Try<Optional<String>> t1) {
+            public void accept(Notification<String> t1) {
                 System.out.println("NEXT: " + t1);
             }
 

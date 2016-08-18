@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Optional;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
@@ -622,10 +621,10 @@ public class ObservableDelayTest {
     public void testDelayEmitsEverything() {
         Observable<Integer> source = Observable.range(1, 5);
         Observable<Integer> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
-        delayed = delayed.doOnEach(new Consumer<Try<Optional<Integer>>>() {
+        delayed = delayed.doOnEach(new Consumer<Notification<Integer>>() {
 
             @Override
-            public void accept(Try<Optional<Integer>> t1) {
+            public void accept(Notification<Integer> t1) {
                 System.out.println(t1);
             }
 

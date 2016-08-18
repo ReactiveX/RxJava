@@ -241,20 +241,6 @@ public enum FlowableInternalHelper {
         };
     }
     
-    enum ErrorMapperFilter implements Function<Try<Optional<Object>>, Throwable>, Predicate<Try<Optional<Object>>> {
-        INSTANCE;
-        
-        @Override
-        public Throwable apply(Try<Optional<Object>> t) throws Exception {
-            return t.error();
-        }
-        
-        @Override
-        public boolean test(Try<Optional<Object>> t) throws Exception {
-            return t.hasError();
-        }
-    }
-
     enum RequestMax implements Consumer<Subscription> {
         INSTANCE;
         @Override

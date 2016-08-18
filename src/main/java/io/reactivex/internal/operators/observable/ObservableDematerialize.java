@@ -18,9 +18,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableDematerialize<T> extends AbstractObservableWithUpstream<Try<Optional<T>>, T> {
+public final class ObservableDematerialize<T> extends AbstractObservableWithUpstream<Notification<T>, T> {
     
-    public ObservableDematerialize(ObservableSource<Try<Optional<T>>> source) {
+    public ObservableDematerialize(ObservableSource<Notification<T>> source) {
         super(source);
     }
 
@@ -29,7 +29,7 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
         source.subscribe(new DematerializeSubscriber<T>(t));
     }
     
-    static final class DematerializeSubscriber<T> implements Observer<Try<Optional<T>>>, Disposable {
+    static final class DematerializeSubscriber<T> implements Observer<Notification<T>>, Disposable {
         final Observer<? super T> actual;
         
         boolean done;
@@ -62,21 +62,19 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
 
         
         @Override
-        public void onNext(Try<Optional<T>> t) {
+        public void onNext(Notification<T> t) {
             if (done) {
                 return;
             }
-            if (t.hasError()) {
+            if (t.isOnError()) {
                 s.dispose();
-                onError(t.error());
+                onError(t.getError());
+            } 
+            else if (t.isOnComplete()) { 
+                s.dispose();
+                onComplete();
             } else {
-                Optional<T> o = t.value();
-                if (o.isPresent()) {
-                    actual.onNext(o.get());
-                } else {
-                    s.dispose();
-                    onComplete();
-                }
+                actual.onNext(t.getValue());
             }
         }
         
