@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class ObservableDefer<T> extends Observable<T> {
@@ -29,6 +30,7 @@ public final class ObservableDefer<T> extends Observable<T> {
         try {
             pub = supplier.call();
         } catch (Throwable t) {
+            Exceptions.throwIfFatal(t);
             EmptyDisposable.error(t, s);
             return;
         }

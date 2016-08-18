@@ -27,7 +27,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposable {
+public final class ObserverFullArbiter<T> extends FullArbiterPad1 implements Disposable {
     final Observer<? super T> actual;
     final SpscLinkedArrayQueue<Object> queue;
 
@@ -37,7 +37,7 @@ public final class NbpFullArbiter<T> extends FullArbiterPad1 implements Disposab
 
     volatile boolean cancelled;
 
-    public NbpFullArbiter(Observer<? super T> actual, Disposable resource, int capacity) {
+    public ObserverFullArbiter(Observer<? super T> actual, Disposable resource, int capacity) {
         this.actual = actual;
         this.resource = resource;
         this.queue = new SpscLinkedArrayQueue<Object>(capacity);

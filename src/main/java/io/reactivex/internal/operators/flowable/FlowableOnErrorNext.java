@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -93,6 +93,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
             try {
                 p = nextSupplier.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(e, t));
                 return;
             }

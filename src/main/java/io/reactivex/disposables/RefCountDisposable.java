@@ -18,6 +18,10 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Objects;
 
+/**
+ * Keeps track of the sub-subscriptions and unsubscribes the underlying subscription once all sub-subscriptions
+ * have unsubscribed.
+ */
 public final class RefCountDisposable implements Disposable {
 
     final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
@@ -26,6 +30,14 @@ public final class RefCountDisposable implements Disposable {
 
     final AtomicBoolean once = new AtomicBoolean();
 
+    /**
+     * Creates a {@code RefCountDisposable} by wrapping the given non-null {@code Subscription}.
+     * 
+     * @param resource
+     *          the {@link Disposable} to wrap
+     * @throws NullPointerException
+     *          if {@code s} is {@code null}
+     */
     public RefCountDisposable(Disposable resource) {
         Objects.requireNonNull(resource, "resource is null");
         this.resource.lazySet(resource);
@@ -39,6 +51,11 @@ public final class RefCountDisposable implements Disposable {
         }
     }
 
+    /**
+     * Returns a new sub-Disposable
+     *
+     * @return a new sub-Disposable.
+     */
     public Disposable get() {
         count.getAndIncrement();
         return new InnerDisposable(this);

@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import org.reactivestreams.*;
 
 import io.reactivex.FlowableOperator;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -60,7 +61,7 @@ public final class FlowableLift<R, T> extends AbstractFlowableWithUpstream<T, R>
         } catch (NullPointerException e) { // NOPMD
             throw e;
         } catch (Throwable e) {
-            // TODO throw if fatal?
+            Exceptions.throwIfFatal(e);
             // can't call onError because no way to know if a Subscription has been set or not
             // can't call onSubscribe because the call might have set a Subscription already
             RxJavaPlugins.onError(e);

@@ -19,6 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 
@@ -211,7 +212,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 sourceDone = true;
                 Object o = NotificationLite.error(e);
                 add(o);
-                SubscriptionHelper.dispose(connection);
+                SubscriptionHelper.cancel(connection);
                 dispatch();
             }
         }
@@ -221,7 +222,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 sourceDone = true;
                 Object o = NotificationLite.complete();
                 add(o);
-                SubscriptionHelper.dispose(connection);
+                SubscriptionHelper.cancel(connection);
                 dispatch();
             }
         }
@@ -396,6 +397,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                                         return;
                                     }
                                 } catch (Throwable err) {
+                                    Exceptions.throwIfFatal(err);
                                     skipFinal = true;
                                     dispose();
                                     if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {

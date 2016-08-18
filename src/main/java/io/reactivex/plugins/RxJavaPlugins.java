@@ -177,6 +177,7 @@ public final class RxJavaPlugins {
                 f.accept(error);
                 return;
             } catch (Throwable e) {
+                // Exceptions.throwIfFatal(e); TODO decide
                 if (error == null) {
                     error = new NullPointerException();
                 }
@@ -541,6 +542,7 @@ public final class RxJavaPlugins {
         try {
             return f.apply(t);
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             throw Exceptions.propagate(ex);
         }
     }
@@ -560,6 +562,7 @@ public final class RxJavaPlugins {
         try {
             return f.apply(t, u);
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             throw Exceptions.propagate(ex);
         }
     }

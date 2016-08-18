@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -61,15 +62,14 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
             try {
                 u = function.apply(t);
             } catch (Throwable e) {
-                done = true;
+                Exceptions.throwIfFatal(e);
                 subscription.dispose();
-                actual.onError(e);
+                onError(e);
                 return;
             }
             if (u == null) {
-                done = true;
                 subscription.dispose();
-                actual.onError(new NullPointerException("Value returned by the function is null"));
+                onError(new NullPointerException("Value returned by the function is null"));
                 return;
             }
             actual.onNext(u);

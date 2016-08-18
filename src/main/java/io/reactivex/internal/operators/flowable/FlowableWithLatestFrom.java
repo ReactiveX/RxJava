@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -93,6 +94,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
                 try {
                     r = combiner.apply(t, u);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     cancel();
                     actual.onError(e);
                     return;
@@ -103,13 +105,13 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         
         @Override
         public void onError(Throwable t) {
-            SubscriptionHelper.dispose(other);
+            SubscriptionHelper.cancel(other);
             actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            SubscriptionHelper.dispose(other);
+            SubscriptionHelper.cancel(other);
             actual.onComplete();
         }
         
@@ -121,7 +123,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         @Override
         public void cancel() {
             s.get().cancel();
-            SubscriptionHelper.dispose(other);
+            SubscriptionHelper.cancel(other);
         }
 
         public boolean setOther(Subscription o) {

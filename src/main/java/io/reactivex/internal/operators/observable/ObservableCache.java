@@ -16,7 +16,9 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.util.*;
 
 /**
@@ -117,7 +119,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         /** The source observable to connect to. */
         final Observable<? extends T> source;
         /** Holds onto the subscriber connected to source. */
-        final SerialDisposable connection;
+        final SequentialDisposable connection;
         /** Guarded by connection (not this). */
         volatile ReplaySubscription<?>[] producers;
         /** The default empty array of producers. */
@@ -135,7 +137,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
             super(capacityHint);
             this.source = source;
             this.producers = EMPTY;
-            this.connection = new SerialDisposable();
+            this.connection = new SequentialDisposable();
         }
         /**
          * Adds a ReplayProducer to the producers array atomically.
@@ -184,7 +186,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         
         @Override
         public void onSubscribe(Disposable s) {
-            connection.set(s);
+            connection.update(s);
         }
         
         /**
@@ -341,6 +343,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                                     return;
                                 }
                             } catch (Throwable err) {
+                                Exceptions.throwIfFatal(err);
                                 skipFinal = true;
                                 dispose();
                                 if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {

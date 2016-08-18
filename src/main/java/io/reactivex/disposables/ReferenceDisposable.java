@@ -17,6 +17,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.internal.functions.Objects;
 
+/**
+ * Base class for Disposable containers that manage some other type that
+ * has to be run when the container is disposed.
+ *
+ * @param <T> the type contained
+ */
 abstract class ReferenceDisposable<T> extends AtomicReference<T> implements Disposable {
     /** */
     private static final long serialVersionUID = 6537757548749041217L;

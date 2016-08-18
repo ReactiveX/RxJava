@@ -111,7 +111,7 @@ public abstract class ResourceSubscriber<T> implements Subscriber<T>, Disposable
      * case the Subscription will be immediately cancelled.
      */
     protected final void cancel() {
-        if (SubscriptionHelper.dispose(s)) {
+        if (SubscriptionHelper.cancel(s)) {
             resources.dispose();
         }
     }

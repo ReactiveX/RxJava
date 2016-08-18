@@ -17,27 +17,61 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.internal.disposables.DisposableHelper;
 
+/**
+ * A Disposable container that allows atomically updating/replacing the contained
+ * Disposable with another Disposable, disposing the old one when updating plus
+ * handling the disposition when the container itself is disposed.
+ */
 public final class SerialDisposable implements Disposable {
     final AtomicReference<Disposable> resource;
     
+    /**
+     * Constructs an empty SerialDisposable.
+     */
     public SerialDisposable() {
         this.resource = new AtomicReference<Disposable>();
     }
     
+    /**
+     * Constructs a SerialDisposable with the given initial Disposable instance.
+     * @param initialDisposable the initial Disposable instance to use, null allowed
+     */
     public SerialDisposable(Disposable initialDisposable) {
         this.resource = new AtomicReference<Disposable>(initialDisposable);
     }
 
-    public void set(Disposable d) {
-        DisposableHelper.set(resource, d);
+    /**
+     * Atomically: set the next disposable on this container and dispose the previous
+     * one (if any) or dispose next if the container has been disposed.
+     * @param next the Disposable to set, may be null
+     * @return true if the operation succeeded, false if the container has been disposed
+     * @see #replace(Disposable)
+     */
+    public boolean set(Disposable next) {
+        return DisposableHelper.set(resource, next);
     }
 
-    public void replace(Disposable d) {
-        DisposableHelper.replace(resource, d);
+    /**
+     * Atomically: set the next disposable on this container but don't dispose the previous
+     * one (if any) or dispose next if the container has been disposed.
+     * @param next the Disposable to set, may be null
+     * @return true if the operation succeeded, false if the container has been disposed
+     * @see #set(Disposable)
+     */
+    public boolean replace(Disposable next) {
+        return DisposableHelper.replace(resource, next);
     }
     
+    /**
+     * Returns the currently contained Disposable or null if this container is empty.
+     * @return the current Disposable, may be null
+     */
     public Disposable get() {
-        return resource.get();
+        Disposable d = resource.get();
+        if (d == DisposableHelper.DISPOSED) {
+            return Disposables.disposed();
+        }
+        return d;
     }
     
     @Override

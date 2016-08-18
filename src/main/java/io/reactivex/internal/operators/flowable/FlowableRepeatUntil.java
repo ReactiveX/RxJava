@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BooleanSupplier;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
@@ -73,6 +74,7 @@ public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T
             try {
                 b = stop.getAsBoolean();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }

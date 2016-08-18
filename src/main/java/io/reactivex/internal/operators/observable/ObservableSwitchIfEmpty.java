@@ -14,7 +14,8 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpstream<T, T> {
     final ObservableSource<? extends T> other;
@@ -33,7 +34,7 @@ public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpst
     static final class SwitchIfEmptySubscriber<T> implements Observer<T> {
         final Observer<? super T> actual;
         final ObservableSource<? extends T> other;
-        final SerialDisposable arbiter;
+        final SequentialDisposable arbiter;
         
         boolean empty;
         
@@ -41,12 +42,12 @@ public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpst
             this.actual = actual;
             this.other = other;
             this.empty = true;
-            this.arbiter = new SerialDisposable();
+            this.arbiter = new SequentialDisposable();
         }
         
         @Override
         public void onSubscribe(Disposable s) {
-            arbiter.set(s);
+            arbiter.update(s);
         }
         
         @Override

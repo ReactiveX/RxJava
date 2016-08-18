@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -47,6 +47,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
         try {
             resource = resourceSupplier.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);
             return;
         }
@@ -55,9 +56,11 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
         try {
             source = sourceSupplier.apply(resource);
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             try {
                 disposer.accept(resource);
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 EmptySubscription.error(new CompositeException(ex, e), s);
                 return;
             }
@@ -109,6 +112,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                     try {
                         disposer.accept(resource);
                     } catch (Throwable e) {
+                        Exceptions.throwIfFatal(e);
                         innerError = e;
                     }
                 }
@@ -133,6 +137,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                     try {
                         disposer.accept(resource);
                     } catch (Throwable e) {
+                        Exceptions.throwIfFatal(e);
                         actual.onError(e);
                         return;
                     }
@@ -163,6 +168,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                 try {
                     disposer.accept(resource);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     // can't call actual.onError unless it is serialized, which is expensive
                     RxJavaPlugins.onError(e);
                 }

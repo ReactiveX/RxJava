@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -43,6 +44,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         try {
             state = stateSupplier.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);
             return;
         }
@@ -108,6 +110,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                     try {
                         s = f.apply(s, this);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         cancelled = true;
                         actual.onError(ex);
                         return;
@@ -151,6 +154,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
             try {
                 disposeState.accept(s);
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 RxJavaPlugins.onError(ex);
             }
         }

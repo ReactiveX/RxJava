@@ -19,6 +19,7 @@ import java.util.concurrent.Callable;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.*;
@@ -72,6 +73,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 cancelled = true;
                 s.cancel();
                 EmptySubscription.error(e, actual);
@@ -157,6 +159,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             try {
                 next = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
                 return;

@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -86,9 +87,9 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
                 try {
                     onDrop.accept(t);
                 } catch (Throwable e) {
-                    done = true;
+                    Exceptions.throwIfFatal(e);
                     cancel();
-                    actual.onError(e);
+                    onError(e);
                 }
             }
         }

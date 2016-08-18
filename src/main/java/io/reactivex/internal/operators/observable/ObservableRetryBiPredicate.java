@@ -16,9 +16,10 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.BiPredicate;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithUpstream<T, T> {
     final BiPredicate<? super Integer, ? super Throwable> predicate;
@@ -31,7 +32,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
     
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        SerialDisposable sa = new SerialDisposable();
+        SequentialDisposable sa = new SequentialDisposable();
         s.onSubscribe(sa);
         
         RetryBiSubscriber<T> rs = new RetryBiSubscriber<T>(s, predicate, sa, source);
@@ -43,12 +44,12 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
         private static final long serialVersionUID = -7098360935104053232L;
         
         final Observer<? super T> actual;
-        final SerialDisposable sa;
+        final SequentialDisposable sa;
         final ObservableSource<? extends T> source;
         final BiPredicate<? super Integer, ? super Throwable> predicate;
         int retries;
         public RetryBiSubscriber(Observer<? super T> actual, 
-                BiPredicate<? super Integer, ? super Throwable> predicate, SerialDisposable sa, ObservableSource<? extends T> source) {
+                BiPredicate<? super Integer, ? super Throwable> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;
@@ -57,7 +58,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
         
         @Override
         public void onSubscribe(Disposable s) {
-            sa.set(s);
+            sa.update(s);
         }
         
         @Override
@@ -70,6 +71,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
             try {
                 b = predicate.test(++retries, t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(e, t));
                 return;
             }

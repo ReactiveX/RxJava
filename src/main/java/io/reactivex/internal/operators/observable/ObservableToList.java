@@ -19,6 +19,7 @@ import java.util.concurrent.Callable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
 
 public final class ObservableToList<T, U extends Collection<? super T>> 
@@ -48,6 +49,7 @@ extends AbstractObservableWithUpstream<T, U> {
         try {
             coll = collectionSupplier.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
             return;
         }

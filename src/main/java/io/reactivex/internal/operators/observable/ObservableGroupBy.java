@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -87,6 +88,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             try {
                 key = keySelector.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.dispose();
                 onError(e);
                 return;
@@ -113,6 +115,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             try {
                 v = valueSelector.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.dispose();
                 onError(e);
                 return;

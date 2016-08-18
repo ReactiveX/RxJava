@@ -14,7 +14,8 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -34,14 +35,14 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
     
     @Override
     public void subscribeActual(final Observer<? super T> child) {
-        final SerialDisposable serial = new SerialDisposable();
+        final SequentialDisposable serial = new SequentialDisposable();
         child.onSubscribe(serial);
         
         Observer<U> otherSubscriber = new Observer<U>() {
             boolean done;
             @Override
             public void onSubscribe(Disposable d) {
-                serial.set(d);
+                serial.update(d);
             }
             
             @Override
@@ -69,7 +70,7 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
                 main.subscribe(new Observer<T>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        serial.set(d);
+                        serial.update(d);
                     }
                     
                     @Override

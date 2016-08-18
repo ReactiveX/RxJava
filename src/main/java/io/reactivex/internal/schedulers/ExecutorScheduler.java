@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.schedulers.ExecutorScheduler.ExecutorWorker.BooleanRunnable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -69,9 +69,9 @@ public final class ExecutorScheduler extends Scheduler {
                 return EmptyDisposable.INSTANCE;
             }
         }
-        SerialDisposable first = new SerialDisposable();
+        SequentialDisposable first = new SequentialDisposable();
 
-        final SerialDisposable mar = new SerialDisposable(first);
+        final SequentialDisposable mar = new SequentialDisposable(first);
 
         Disposable delayed = HELPER.scheduleDirect(new Runnable() {
             @Override
@@ -151,9 +151,9 @@ public final class ExecutorScheduler extends Scheduler {
             }
             
 
-            SerialDisposable first = new SerialDisposable();
+            SequentialDisposable first = new SequentialDisposable();
 
-            final SerialDisposable mar = new SerialDisposable(first);
+            final SequentialDisposable mar = new SequentialDisposable(first);
             
             final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             
@@ -167,7 +167,7 @@ public final class ExecutorScheduler extends Scheduler {
             
             if (executor instanceof ScheduledExecutorService) {
                 try {
-                    Future<?> f = ((ScheduledExecutorService)executor).schedule(sr, delay, unit);
+                    Future<?> f = ((ScheduledExecutorService)executor).schedule((Callable<Object>)sr, delay, unit);
                     sr.setFuture(f);
                 } catch (RejectedExecutionException ex) {
                     disposed = true;

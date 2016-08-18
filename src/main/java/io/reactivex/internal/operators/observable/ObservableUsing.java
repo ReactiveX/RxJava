@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -46,6 +46,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
         try {
             resource = resourceSupplier.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, s);
             return;
         }
@@ -54,9 +55,11 @@ public final class ObservableUsing<T, D> extends Observable<T> {
         try {
             source = sourceSupplier.apply(resource);
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             try {
                 disposer.accept(resource);
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 EmptyDisposable.error(new CompositeException(ex, e), s);
                 return;
             }
@@ -107,6 +110,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                     try {
                         disposer.accept(resource);
                     } catch (Throwable e) {
+                        Exceptions.throwIfFatal(e);
                         t = new CompositeException(e, t);
                     }
                 }
@@ -127,6 +131,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                     try {
                         disposer.accept(resource);
                     } catch (Throwable e) {
+                        Exceptions.throwIfFatal(e);
                         actual.onError(e);
                         return;
                     }
@@ -157,6 +162,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                 try {
                     disposer.accept(resource);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     // can't call actual.onError unless it is serialized, which is expensive
                     RxJavaPlugins.onError(e);
                 }

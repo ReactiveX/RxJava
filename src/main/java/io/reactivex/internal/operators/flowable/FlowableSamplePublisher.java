@@ -75,13 +75,13 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         
         @Override
         public void onError(Throwable t) {
-            SubscriptionHelper.dispose(other);
+            SubscriptionHelper.cancel(other);
             actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            SubscriptionHelper.dispose(other);
+            SubscriptionHelper.cancel(other);
             actual.onComplete();
         }
 
@@ -104,7 +104,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         
         @Override
         public void cancel() {
-            SubscriptionHelper.dispose(other);
+            SubscriptionHelper.cancel(other);
             s.cancel();
         }
         

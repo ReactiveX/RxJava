@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscribers.observable.*;
@@ -86,6 +87,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                     try {
                         p = firstTimeoutSelector.call();
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         dispose();
                         EmptyDisposable.error(ex, a);
                         return;
@@ -126,6 +128,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             try {
                 p = timeoutSelector.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
                 return;
@@ -228,7 +231,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         final Callable<? extends ObservableSource<U>> firstTimeoutSelector;
         final Function<? super T, ? extends ObservableSource<V>> timeoutSelector;
         final ObservableSource<? extends T> other;
-        final NbpFullArbiter<T> arbiter;
+        final ObserverFullArbiter<T> arbiter;
         
         Disposable s;
         
@@ -243,7 +246,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             this.firstTimeoutSelector = firstTimeoutSelector;
             this.timeoutSelector = timeoutSelector;
             this.other = other;
-            this.arbiter = new NbpFullArbiter<T>(actual, this, 8);
+            this.arbiter = new ObserverFullArbiter<T>(actual, this, 8);
         }
         
         @Override
@@ -262,6 +265,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                     try {
                         p = firstTimeoutSelector.call();
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         dispose();
                         EmptyDisposable.error(ex, a);
                         return;
@@ -307,6 +311,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             try {
                 p = timeoutSelector.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }

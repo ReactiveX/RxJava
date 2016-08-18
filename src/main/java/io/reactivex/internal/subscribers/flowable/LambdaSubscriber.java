@@ -58,6 +58,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
         try {
             onNext.accept(t);
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             onError(e);
         }
     }
@@ -68,6 +69,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
         try {
             onError.accept(t);
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             RxJavaPlugins.onError(e);
             RxJavaPlugins.onError(t);
         }
@@ -79,6 +81,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
         try {
             onComplete.run();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             RxJavaPlugins.onError(e);
         }
     }
@@ -100,6 +103,6 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
     
     @Override
     public void cancel() {
-        SubscriptionHelper.dispose(this);
+        SubscriptionHelper.cancel(this);
     }
 }

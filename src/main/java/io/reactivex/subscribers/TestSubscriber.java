@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -169,6 +169,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
                         }
                         completions++;
                     } catch (Throwable ex) {
+                        // Exceptions.throwIfFatal(e); TODO add fatals?
                         errors.add(ex);
                     }
                     return;
@@ -218,6 +219,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
                     values.add(t);
                 }
             } catch (Throwable ex) {
+                // Exceptions.throwIfFatal(e); TODO add fatals?
                 errors.add(ex);
             }
             return;
@@ -296,7 +298,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final void cancel() {
         if (!cancelled) {
             cancelled = true;
-            SubscriptionHelper.dispose(subscription);
+            SubscriptionHelper.cancel(subscription);
         }
     }
     

@@ -77,11 +77,11 @@ public enum SubscriptionHelper {
     }
     /**
      * Check if the given subscription is the common cancelled subscription.
-     * @param d the subscription to check
+     * @param s the subscription to check
      * @return true if the subscription is the common cancelled subscription
      */
-    public static boolean isCancelled(Subscription d) {
-        return d == CANCELLED;
+    public static boolean isCancelled(Subscription s) {
+        return s == CANCELLED;
     }
     
     /**
@@ -135,21 +135,21 @@ public enum SubscriptionHelper {
      * Atomically sets the subscription on the field but does not
      * cancel the previouls subscription.
      * @param field the target field to set the new subscription on
-     * @param d the new subscription
+     * @param s the new subscription
      * @return true if the operation succeeded, false if the target field
      * holds the {@link #CANCELLED} instance.
      * @see #set(AtomicReference, Subscription)
      */
-    public static boolean replace(AtomicReference<Subscription> field, Subscription d) {
+    public static boolean replace(AtomicReference<Subscription> field, Subscription s) {
         for (;;) {
             Subscription current = field.get();
             if (current == CANCELLED) {
-                if (d != null) {
-                    d.cancel();
+                if (s != null) {
+                    s.cancel();
                 }
                 return false;
             }
-            if (field.compareAndSet(current, d)) {
+            if (field.compareAndSet(current, s)) {
                 return true;
             }
         }
@@ -163,7 +163,7 @@ public enum SubscriptionHelper {
      * common cancelled instance happened in the caller's thread (allows
      * further one-time actions).
      */
-    public static boolean dispose(AtomicReference<Subscription> field) {
+    public static boolean cancel(AtomicReference<Subscription> field) {
         Subscription current = field.get();
         if (current != CANCELLED) {
             current = field.getAndSet(CANCELLED);
@@ -196,7 +196,8 @@ public enum SubscriptionHelper {
         
     }
     
-    public static void deferredSetOnce(AtomicReference<Subscription> field, AtomicLong requested, Subscription s) {
+    public static void deferredSetOnce(AtomicReference<Subscription> field, AtomicLong requested, 
+            Subscription s) {
         if (SubscriptionHelper.setOnce(field, s)) {
             long r = requested.getAndSet(0L);
             if (r != 0L) {

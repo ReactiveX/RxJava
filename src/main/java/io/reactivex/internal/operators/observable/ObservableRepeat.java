@@ -16,7 +16,8 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T, T> {
     final long count;
@@ -27,7 +28,7 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
     
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        SerialDisposable sd = new SerialDisposable();
+        SequentialDisposable sd = new SequentialDisposable();
         s.onSubscribe(sd);
         
         RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sd, source);
@@ -39,10 +40,10 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
         private static final long serialVersionUID = -7098360935104053232L;
         
         final Observer<? super T> actual;
-        final SerialDisposable sd;
+        final SequentialDisposable sd;
         final ObservableSource<? extends T> source;
         long remaining;
-        public RepeatSubscriber(Observer<? super T> actual, long count, SerialDisposable sd, ObservableSource<? extends T> source) {
+        public RepeatSubscriber(Observer<? super T> actual, long count, SequentialDisposable sd, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sd = sd;
             this.source = source;

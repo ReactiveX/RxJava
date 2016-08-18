@@ -67,6 +67,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                     co = connectableFactory.call();
                     observable = selector.apply(co);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     EmptyDisposable.error(e, child);
                     return;
                 }
@@ -646,6 +647,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                             return;
                         }
                     } catch (Throwable err) {
+                        Exceptions.throwIfFatal(err);
                         output.dispose();
                         if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {
                             child.onError(err);
@@ -797,6 +799,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                                 return;
                             }
                         } catch (Throwable err) {
+                            Exceptions.throwIfFatal(err);
                             output.index = null;
                             output.dispose();
                             if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {

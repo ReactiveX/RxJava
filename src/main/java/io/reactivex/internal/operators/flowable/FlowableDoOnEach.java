@@ -111,6 +111,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 RxJavaPlugins.onError(e);
             }
         }
@@ -133,6 +134,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 RxJavaPlugins.onError(e);
             }
         }
@@ -245,6 +247,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 RxJavaPlugins.onError(e);
             }
         }
@@ -267,6 +270,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 RxJavaPlugins.onError(e);
             }
         }

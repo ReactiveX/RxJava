@@ -125,7 +125,7 @@ implements Subscriber<T>, Subscription {
     
     @Override
     public void cancel() {
-        SubscriptionHelper.dispose(this);
+        SubscriptionHelper.cancel(this);
     }
     
     public boolean isDone() {

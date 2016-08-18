@@ -18,7 +18,7 @@ import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.subscriptions.*;
@@ -107,6 +107,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
         try {
             coll = predicateSupplier.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);
             return;
         }
@@ -147,6 +148,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             try {
                 key = keySelector.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.cancel();
                 actual.onError(e);
                 return;
@@ -163,6 +165,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             try {
                 b = predicate.test(key);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.cancel();
                 actual.onError(e);
                 return;
@@ -180,6 +183,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             try {
                 predicate.test(null); // special case: poison pill
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(e, t));
                 return;
             }
@@ -191,6 +195,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             try {
                 predicate.test(null); // special case: poison pill
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }

@@ -74,6 +74,7 @@ public enum SchedulerPoolFactory {
                                 }
                             }
                         } catch (Throwable e) {
+                            // Exceptions.throwIfFatal(e); nowhere to go
                             RxJavaPlugins.onError(e);
                         }
                     }

@@ -14,6 +14,7 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.*;
 
@@ -61,9 +62,9 @@ public final class FlowableAny<T> extends AbstractFlowableWithUpstream<T, Boolea
             try {
                 b = predicate.test(t);
             } catch (Throwable e) {
-                done = true;
+                Exceptions.throwIfFatal(e);
                 s.cancel();
-                actual.onError(e);
+                onError(e);
                 return;
             }
             if (b) {

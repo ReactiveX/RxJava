@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -183,6 +184,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
                     try {
                         v = zipper.apply(os.clone());
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         clear();
                         a.onError(ex);
                         return;

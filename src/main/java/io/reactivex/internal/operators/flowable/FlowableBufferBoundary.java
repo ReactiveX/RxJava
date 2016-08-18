@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -174,6 +175,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 onError(e);
                 return;
             }
@@ -188,6 +190,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             try {
                 p = bufferClose.apply(window);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 onError(e);
                 return;
             }

@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.completable;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class CompletableDefer extends Completable {
@@ -33,8 +34,8 @@ public final class CompletableDefer extends Completable {
         try {
             c = completableSupplier.call();
         } catch (Throwable e) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(e);
+            Exceptions.throwIfFatal(e);
+            EmptyDisposable.error(e, s);
             return;
         }
         

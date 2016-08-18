@@ -27,10 +27,10 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
@@ -1175,7 +1175,7 @@ public class CompletableTest {
     public void timerCancel() throws InterruptedException {
         Completable c = Completable.timer(250, TimeUnit.MILLISECONDS);
         
-        final SerialDisposable sd = new SerialDisposable();
+        final SequentialDisposable sd = new SequentialDisposable();
         final AtomicInteger calls = new AtomicInteger();
         
         c.subscribe(new CompletableObserver() {

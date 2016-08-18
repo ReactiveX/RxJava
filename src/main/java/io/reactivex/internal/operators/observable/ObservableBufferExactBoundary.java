@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
@@ -69,6 +70,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 try {
                     b = bufferSupplier.call();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     cancelled = true;
                     s.dispose();
                     EmptyDisposable.error(e, actual);
@@ -153,6 +155,7 @@ extends AbstractObservableWithUpstream<T, U> {
             try {
                 next = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
                 return;

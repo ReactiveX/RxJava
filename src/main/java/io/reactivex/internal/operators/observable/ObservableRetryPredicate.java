@@ -16,9 +16,10 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Predicate;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class ObservableRetryPredicate<T> extends AbstractObservableWithUpstream<T, T> {
     final Predicate<? super Throwable> predicate;
@@ -33,7 +34,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
     
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        SerialDisposable sa = new SerialDisposable();
+        SequentialDisposable sa = new SequentialDisposable();
         s.onSubscribe(sa);
         
         RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, count, predicate, sa, source);
@@ -45,12 +46,12 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
         private static final long serialVersionUID = -7098360935104053232L;
         
         final Observer<? super T> actual;
-        final SerialDisposable sa;
+        final SequentialDisposable sa;
         final ObservableSource<? extends T> source;
         final Predicate<? super Throwable> predicate;
         long remaining;
         public RepeatSubscriber(Observer<? super T> actual, long count, 
-                Predicate<? super Throwable> predicate, SerialDisposable sa, ObservableSource<? extends T> source) {
+                Predicate<? super Throwable> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;
@@ -60,7 +61,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
         
         @Override
         public void onSubscribe(Disposable s) {
-            sa.set(s);
+            sa.update(s);
         }
         
         @Override
@@ -80,6 +81,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
                 try {
                     b = predicate.test(t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     actual.onError(new CompositeException(e, t));
                     return;
                 }

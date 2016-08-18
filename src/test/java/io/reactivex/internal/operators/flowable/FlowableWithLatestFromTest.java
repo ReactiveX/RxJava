@@ -17,13 +17,15 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.*;
+
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -290,4 +292,365 @@ public class FlowableWithLatestFromTest {
 
         ts.assertNoErrors();
     }
+    
+    static final Function<Object[], String> toArray = new Function<Object[], String>() {
+        @Override
+        public String apply(Object[] args) {
+            return Arrays.toString(args);
+        }
+    };
+
+    @Test
+    public void manySources() {
+        PublishProcessor<String> ps1 = PublishProcessor.create();
+        PublishProcessor<String> ps2 = PublishProcessor.create();
+        PublishProcessor<String> ps3 = PublishProcessor.create();
+        PublishProcessor<String> main = PublishProcessor.create();
+        
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        
+        main.withLatestFrom(new Flowable[] { ps1, ps2, ps3 }, toArray)
+        .subscribe(ts);
+        
+        main.onNext("1");
+        ts.assertNoValues();
+        ps1.onNext("a");
+        ts.assertNoValues();
+        ps2.onNext("A");
+        ts.assertNoValues();
+        ps3.onNext("=");
+        ts.assertNoValues();
+        
+        main.onNext("2");
+        ts.assertValues("[2, a, A, =]");
+        
+        ps2.onNext("B");
+        
+        ts.assertValues("[2, a, A, =]");
+        
+        ps3.onComplete();
+        ts.assertValues("[2, a, A, =]");
+        
+        ps1.onNext("b");
+        
+        main.onNext("3");
+        
+        ts.assertValues("[2, a, A, =]", "[3, b, B, =]");
+        
+        main.onComplete();
+        ts.assertValues("[2, a, A, =]", "[3, b, B, =]");
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
+        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
+        assertFalse("ps3 has subscribers?", ps3.hasSubscribers());
+    }
+    
+    @Test
+    public void manySourcesIterable() {
+        PublishProcessor<String> ps1 = PublishProcessor.create();
+        PublishProcessor<String> ps2 = PublishProcessor.create();
+        PublishProcessor<String> ps3 = PublishProcessor.create();
+        PublishProcessor<String> main = PublishProcessor.create();
+        
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        
+        main.withLatestFrom(Arrays.<Flowable<?>>asList(ps1, ps2, ps3), toArray)
+        .subscribe(ts);
+        
+        main.onNext("1");
+        ts.assertNoValues();
+        ps1.onNext("a");
+        ts.assertNoValues();
+        ps2.onNext("A");
+        ts.assertNoValues();
+        ps3.onNext("=");
+        ts.assertNoValues();
+        
+        main.onNext("2");
+        ts.assertValues("[2, a, A, =]");
+        
+        ps2.onNext("B");
+        
+        ts.assertValues("[2, a, A, =]");
+        
+        ps3.onComplete();
+        ts.assertValues("[2, a, A, =]");
+        
+        ps1.onNext("b");
+        
+        main.onNext("3");
+        
+        ts.assertValues("[2, a, A, =]", "[3, b, B, =]");
+        
+        main.onComplete();
+        ts.assertValues("[2, a, A, =]", "[3, b, B, =]");
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
+        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
+        assertFalse("ps3 has subscribers?", ps3.hasSubscribers());
+    }
+    
+    @Test
+    public void manySourcesIterableSweep() {
+        for (String val : new String[] { "1" /*, null*/ }) {
+            int n = 35;
+            for (int i = 0; i < n; i++) {
+                List<Flowable<?>> sources = new ArrayList<Flowable<?>>();
+                List<String> expected = new ArrayList<String>();
+                expected.add(val);
+                
+                for (int j = 0; j < i; j++) {
+                    sources.add(Flowable.just(val));
+                    expected.add(String.valueOf(val));
+                }
+                
+                TestSubscriber<String> ts = new TestSubscriber<String>();
+                
+                PublishProcessor<String> main = PublishProcessor.create();
+                
+                main.withLatestFrom(sources, toArray).subscribe(ts);
+                
+                ts.assertNoValues();
+                
+                main.onNext(val);
+                main.onComplete();
+                
+                ts.assertValue(expected.toString());
+                ts.assertNoErrors();
+                ts.assertComplete();
+            }
+        }
+    }
+    
+    @Test
+    public void backpressureNoSignal() {
+        PublishProcessor<String> ps1 = PublishProcessor.create();
+        PublishProcessor<String> ps2 = PublishProcessor.create();
+        
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        
+        Flowable.range(1, 10).withLatestFrom(new Flowable<?>[] { ps1, ps2 }, toArray)
+        .subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ts.request(1);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
+        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
+    }
+    
+    @Test
+    public void backpressureWithSignal() {
+        PublishProcessor<String> ps1 = PublishProcessor.create();
+        PublishProcessor<String> ps2 = PublishProcessor.create();
+        
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        
+        Flowable.range(1, 3).withLatestFrom(new Flowable<?>[] { ps1, ps2 }, toArray)
+        .subscribe(ts);
+        
+        ts.assertNoValues();
+        
+        ps1.onNext("1");
+        ps2.onNext("1");
+        
+        ts.request(1);
+        
+        ts.assertValue("[1, 1, 1]");
+        
+        ts.request(1);
+
+        ts.assertValues("[1, 1, 1]", "[2, 1, 1]");
+
+        ts.request(1);
+        
+        ts.assertValues("[1, 1, 1]", "[2, 1, 1]", "[3, 1, 1]");
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
+        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
+    }
+    
+    @Test
+    public void withEmpty() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        
+        Flowable.range(1, 3).withLatestFrom(
+                new Flowable<?>[] { Flowable.just(1), Flowable.empty() }, toArray)
+        .subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @Test
+    public void withError() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        
+        Flowable.range(1, 3).withLatestFrom(
+                new Flowable<?>[] { Flowable.just(1), Flowable.error(new TestException()) }, toArray)
+        .subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+
+    @Test
+    public void withMainError() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(0);
+        
+        Flowable.error(new TestException()).withLatestFrom(
+                new Flowable<?>[] { Flowable.just(1), Flowable.just(1) }, toArray)
+        .subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+
+    @Test
+    public void with2Others() {
+        Flowable<Integer> just = Flowable.just(1);
+        
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        
+        just.withLatestFrom(just, just, new Function3<Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c) {
+                return Arrays.asList(a, b, c);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void with3Others() {
+        Flowable<Integer> just = Flowable.just(1);
+        
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, new Function4<Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d) {
+                return Arrays.asList(a, b, c, d);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void with4Others() {
+        Flowable<Integer> just = Flowable.just(1);
+        
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, just, new Function5<Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e) {
+                return Arrays.asList(a, b, c, d, e);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void with5Others() {
+        Flowable<Integer> just = Flowable.just(1);
+        
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, just, just, new Function6<Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f) {
+                return Arrays.asList(a, b, c, d, e, f);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void with6Others() {
+        Flowable<Integer> just = Flowable.just(1);
+        
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, just, just, just, new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g) {
+                return Arrays.asList(a, b, c, d, e, f, g);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void with7Others() {
+        Flowable<Integer> just = Flowable.just(1);
+        
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, just, just, just, just, new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g, Integer i) {
+                return Arrays.asList(a, b, c, d, e, f, g, i);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1, 1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @Test
+    public void with8Others() {
+        Flowable<Integer> just = Flowable.just(1);
+        
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, just, just, just, just, just, new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g, Integer i, Integer j) {
+                return Arrays.asList(a, b, c, d, e, f, g, i, j);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1, 1, 1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
 }

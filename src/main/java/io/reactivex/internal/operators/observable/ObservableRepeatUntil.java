@@ -16,8 +16,10 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BooleanSupplier;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstream<T, T> {
     final BooleanSupplier until;
@@ -28,7 +30,7 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
     
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        SerialDisposable sd = new SerialDisposable();
+        SequentialDisposable sd = new SequentialDisposable();
         s.onSubscribe(sd);
         
         RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, until, sd, source);
@@ -40,10 +42,10 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
         private static final long serialVersionUID = -7098360935104053232L;
         
         final Observer<? super T> actual;
-        final SerialDisposable sd;
+        final SequentialDisposable sd;
         final ObservableSource<? extends T> source;
         final BooleanSupplier stop;
-        public RepeatSubscriber(Observer<? super T> actual, BooleanSupplier until, SerialDisposable sd, ObservableSource<? extends T> source) {
+        public RepeatSubscriber(Observer<? super T> actual, BooleanSupplier until, SequentialDisposable sd, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sd = sd;
             this.source = source;
@@ -70,6 +72,7 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
             try {
                 b = stop.getAsBoolean();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }

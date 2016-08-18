@@ -17,6 +17,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -40,6 +41,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         try {
             state = stateSupplier.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, s);
             return;
         }
@@ -91,6 +93,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                 try {
                     s = f.apply(s, this);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     cancelled = true;
                     actual.onError(ex);
                     return;
@@ -109,6 +112,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
             try {
                 disposeState.accept(s);
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 RxJavaPlugins.onError(ex);
             }
         }

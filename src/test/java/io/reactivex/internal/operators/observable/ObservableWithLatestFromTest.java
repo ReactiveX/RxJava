@@ -17,12 +17,16 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.Test;
+import java.util.*;
+
+import org.junit.*;
 import org.mockito.InOrder;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 
@@ -251,4 +255,368 @@ public class ObservableWithLatestFromTest {
         
         assertFalse(ts.isCancelled());
     }
+    
+    
+    static final Function<Object[], String> toArray = new Function<Object[], String>() {
+        @Override
+        public String apply(Object[] args) {
+            return Arrays.toString(args);
+        }
+    };
+
+    @Test
+    public void manySources() {
+        PublishSubject<String> ps1 = PublishSubject.create();
+        PublishSubject<String> ps2 = PublishSubject.create();
+        PublishSubject<String> ps3 = PublishSubject.create();
+        PublishSubject<String> main = PublishSubject.create();
+        
+        TestObserver<String> ts = new TestObserver<String>();
+        
+        main.withLatestFrom(new Observable[] { ps1, ps2, ps3 }, toArray)
+        .subscribe(ts);
+        
+        main.onNext("1");
+        ts.assertNoValues();
+        ps1.onNext("a");
+        ts.assertNoValues();
+        ps2.onNext("A");
+        ts.assertNoValues();
+        ps3.onNext("=");
+        ts.assertNoValues();
+        
+        main.onNext("2");
+        ts.assertValues("[2, a, A, =]");
+        
+        ps2.onNext("B");
+        
+        ts.assertValues("[2, a, A, =]");
+        
+        ps3.onComplete();
+        ts.assertValues("[2, a, A, =]");
+        
+        ps1.onNext("b");
+        
+        main.onNext("3");
+        
+        ts.assertValues("[2, a, A, =]", "[3, b, B, =]");
+        
+        main.onComplete();
+        ts.assertValues("[2, a, A, =]", "[3, b, B, =]");
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
+        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
+        assertFalse("ps3 has subscribers?", ps3.hasSubscribers());
+    }
+    
+    @Test
+    public void manySourcesIterable() {
+        PublishSubject<String> ps1 = PublishSubject.create();
+        PublishSubject<String> ps2 = PublishSubject.create();
+        PublishSubject<String> ps3 = PublishSubject.create();
+        PublishSubject<String> main = PublishSubject.create();
+        
+        TestObserver<String> ts = new TestObserver<String>();
+        
+        main.withLatestFrom(Arrays.<Observable<?>>asList(ps1, ps2, ps3), toArray)
+        .subscribe(ts);
+        
+        main.onNext("1");
+        ts.assertNoValues();
+        ps1.onNext("a");
+        ts.assertNoValues();
+        ps2.onNext("A");
+        ts.assertNoValues();
+        ps3.onNext("=");
+        ts.assertNoValues();
+        
+        main.onNext("2");
+        ts.assertValues("[2, a, A, =]");
+        
+        ps2.onNext("B");
+        
+        ts.assertValues("[2, a, A, =]");
+        
+        ps3.onComplete();
+        ts.assertValues("[2, a, A, =]");
+        
+        ps1.onNext("b");
+        
+        main.onNext("3");
+        
+        ts.assertValues("[2, a, A, =]", "[3, b, B, =]");
+        
+        main.onComplete();
+        ts.assertValues("[2, a, A, =]", "[3, b, B, =]");
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
+        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
+        assertFalse("ps3 has subscribers?", ps3.hasSubscribers());
+    }
+    
+    @Test
+    public void manySourcesIterableSweep() {
+        for (String val : new String[] { "1" /*, null*/ }) {
+            int n = 35;
+            for (int i = 0; i < n; i++) {
+                List<Observable<?>> sources = new ArrayList<Observable<?>>();
+                List<String> expected = new ArrayList<String>();
+                expected.add(val);
+                
+                for (int j = 0; j < i; j++) {
+                    sources.add(Observable.just(val));
+                    expected.add(String.valueOf(val));
+                }
+                
+                TestObserver<String> ts = new TestObserver<String>();
+                
+                PublishSubject<String> main = PublishSubject.create();
+                
+                main.withLatestFrom(sources, toArray).subscribe(ts);
+                
+                ts.assertNoValues();
+                
+                main.onNext(val);
+                main.onComplete();
+                
+                ts.assertValue(expected.toString());
+                ts.assertNoErrors();
+                ts.assertComplete();
+            }
+        }
+    }
+    
+    @Test
+    @Ignore("Observable doesn't support backpressure")
+    public void backpressureNoSignal() {
+//        PublishSubject<String> ps1 = PublishSubject.create();
+//        PublishSubject<String> ps2 = PublishSubject.create();
+//        
+//        TestObserver<String> ts = new TestObserver<String>();
+//        
+//        Observable.range(1, 10).withLatestFrom(new Observable<?>[] { ps1, ps2 }, toArray)
+//        .subscribe(ts);
+//        
+//        ts.assertNoValues();
+//        
+//        ts.request(1);
+//        
+//        ts.assertNoValues();
+//        ts.assertNoErrors();
+//        ts.assertComplete();
+//        
+//        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
+//        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
+    }
+    
+    @Test
+    @Ignore("Observable doesn't support backpressure")
+    public void backpressureWithSignal() {
+//        PublishSubject<String> ps1 = PublishSubject.create();
+//        PublishSubject<String> ps2 = PublishSubject.create();
+//        
+//        TestObserver<String> ts = new TestObserver<String>();
+//        
+//        Observable.range(1, 3).withLatestFrom(new Observable<?>[] { ps1, ps2 }, toArray)
+//        .subscribe(ts);
+//        
+//        ts.assertNoValues();
+//        
+//        ps1.onNext("1");
+//        ps2.onNext("1");
+//        
+//        ts.request(1);
+//        
+//        ts.assertValue("[1, 1, 1]");
+//        
+//        ts.request(1);
+//
+//        ts.assertValues("[1, 1, 1]", "[2, 1, 1]");
+//
+//        ts.request(1);
+//        
+//        ts.assertValues("[1, 1, 1]", "[2, 1, 1]", "[3, 1, 1]");
+//        ts.assertNoErrors();
+//        ts.assertComplete();
+//        
+//        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
+//        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
+    }
+    
+    @Test
+    public void withEmpty() {
+        TestObserver<String> ts = new TestObserver<String>();
+        
+        Observable.range(1, 3).withLatestFrom(
+                new Observable<?>[] { Observable.just(1), Observable.empty() }, toArray)
+        .subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @Test
+    public void withError() {
+        TestObserver<String> ts = new TestObserver<String>();
+        
+        Observable.range(1, 3).withLatestFrom(
+                new Observable<?>[] { Observable.just(1), Observable.error(new TestException()) }, toArray)
+        .subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+
+    @Test
+    public void withMainError() {
+        TestObserver<String> ts = new TestObserver<String>();
+        
+        Observable.error(new TestException()).withLatestFrom(
+                new Observable<?>[] { Observable.just(1), Observable.just(1) }, toArray)
+        .subscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
+    }
+
+    @Test
+    public void with2Others() {
+        Observable<Integer> just = Observable.just(1);
+        
+        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+        
+        just.withLatestFrom(just, just, new Function3<Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c) {
+                return Arrays.asList(a, b, c);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void with3Others() {
+        Observable<Integer> just = Observable.just(1);
+        
+        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, new Function4<Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d) {
+                return Arrays.asList(a, b, c, d);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void with4Others() {
+        Observable<Integer> just = Observable.just(1);
+        
+        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, just, new Function5<Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e) {
+                return Arrays.asList(a, b, c, d, e);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void with5Others() {
+        Observable<Integer> just = Observable.just(1);
+        
+        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, just, just, new Function6<Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f) {
+                return Arrays.asList(a, b, c, d, e, f);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void with6Others() {
+        Observable<Integer> just = Observable.just(1);
+        
+        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, just, just, just, new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g) {
+                return Arrays.asList(a, b, c, d, e, f, g);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void with7Others() {
+        Observable<Integer> just = Observable.just(1);
+        
+        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, just, just, just, just, new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g, Integer i) {
+                return Arrays.asList(a, b, c, d, e, f, g, i);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1, 1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @Test
+    public void with8Others() {
+        Observable<Integer> just = Observable.just(1);
+        
+        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+        
+        just.withLatestFrom(just, just, just, just, just, just, just, just, new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g, Integer i, Integer j) {
+                return Arrays.asList(a, b, c, d, e, f, g, i, j);
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue(Arrays.asList(1, 1, 1, 1, 1, 1, 1, 1, 1));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
 }

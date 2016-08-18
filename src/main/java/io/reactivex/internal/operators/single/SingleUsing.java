@@ -17,7 +17,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -48,8 +48,8 @@ public final class SingleUsing<T, U> extends Single<T> {
         try {
             resource = resourceSupplier.call();
         } catch (Throwable ex) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(ex);
+            Exceptions.throwIfFatal(ex);
+            EmptyDisposable.error(ex, s);
             return;
         }
         
@@ -58,8 +58,8 @@ public final class SingleUsing<T, U> extends Single<T> {
         try {
             s1 = singleFunction.apply(resource);
         } catch (Throwable ex) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(ex);
+            Exceptions.throwIfFatal(ex);
+            EmptyDisposable.error(ex, s);
             return;
         }
         
@@ -82,6 +82,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                             try {
                                 disposer.accept(resource);
                             } catch (Throwable e) {
+                                Exceptions.throwIfFatal(e);
                                 RxJavaPlugins.onError(e);
                             }
                         }
@@ -97,6 +98,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                     try {
                         disposer.accept(resource);
                     } catch (Throwable e) {
+                        Exceptions.throwIfFatal(e);
                         s.onError(e);
                         return;
                     }
@@ -106,6 +108,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                     try {
                         disposer.accept(resource);
                     } catch (Throwable e) {
+                        Exceptions.throwIfFatal(e);
                         RxJavaPlugins.onError(e);
                     }
                 }
@@ -117,6 +120,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                     try {
                         disposer.accept(resource);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         e = new CompositeException(ex, e);
                     }
                 }
@@ -125,6 +129,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                     try {
                         disposer.accept(resource);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                     }
                 }

@@ -15,8 +15,10 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableTakeUntilPredicate<T> extends AbstractObservableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
@@ -66,9 +68,9 @@ public final class ObservableTakeUntilPredicate<T> extends AbstractObservableWit
                 try {
                     b = predicate.test(t);
                 } catch (Throwable e) {
-                    done = true;
+                    Exceptions.throwIfFatal(e);
                     s.dispose();
-                    actual.onError(e);
+                    onError(e);
                     return;
                 }
                 if (b) {
@@ -84,6 +86,8 @@ public final class ObservableTakeUntilPredicate<T> extends AbstractObservableWit
             if (!done) {
                 done = true;
                 actual.onError(t);
+            } else {
+                RxJavaPlugins.onError(t);
             }
         }
         

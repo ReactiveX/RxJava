@@ -16,7 +16,8 @@ package io.reactivex.internal.operators.single;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class SingleDelay<T> extends Single<T> {
 
@@ -36,7 +37,7 @@ public final class SingleDelay<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        final SerialDisposable sd = new SerialDisposable();
+        final SequentialDisposable sd = new SequentialDisposable();
         s.onSubscribe(sd);
         source.subscribe(new SingleObserver<T>() {
             @Override

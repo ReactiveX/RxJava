@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -40,6 +41,7 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
                 try {
                     onSubscribe.accept(d);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     done = true;
                     d.dispose();
                     s.onSubscribe(EmptyDisposable.INSTANCE);

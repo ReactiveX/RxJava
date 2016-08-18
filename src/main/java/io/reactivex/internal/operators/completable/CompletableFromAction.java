@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Action;
 
 public final class CompletableFromAction extends Completable {
@@ -32,6 +33,7 @@ public final class CompletableFromAction extends Completable {
         try {
             run.run();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
                 s.onError(e);
             }

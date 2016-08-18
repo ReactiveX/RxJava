@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -41,6 +42,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
         try {
             it = other.iterator();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
             return;
         }
@@ -55,6 +57,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
         try {
             b = it.hasNext();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
             return;
         }
@@ -114,6 +117,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
             try {
                 u = iterator.next();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 error(e);
                 return;
             }
@@ -127,6 +131,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
             try {
                 v = zipper.apply(t, u);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 error(new NullPointerException("The iterator returned a null value"));
                 return;
             }
@@ -143,6 +148,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
             try {
                 b = iterator.hasNext();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 error(e);
                 return;
             }

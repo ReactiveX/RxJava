@@ -18,9 +18,10 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Cancellable;
+import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -215,6 +216,7 @@ public final class FlowableFromSource<T> extends Flowable<T> {
                     try {
                         v = q.poll();
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         // should never happen
                         v = null;
                     }
@@ -274,11 +276,11 @@ public final class FlowableFromSource<T> extends Flowable<T> {
 
         final Subscriber<? super T> actual;
         
-        final SerialDisposable serial;
+        final SequentialDisposable serial;
 
         public BaseEmitter(Subscriber<? super T> actual) {
             this.actual = actual;
-            this.serial = new SerialDisposable();
+            this.serial = new SequentialDisposable();
         }
 
         @Override
@@ -334,7 +336,7 @@ public final class FlowableFromSource<T> extends Flowable<T> {
         
         @Override
         public final void setDisposable(Disposable s) {
-            serial.set(s);
+            serial.update(s);
         }
 
         @Override

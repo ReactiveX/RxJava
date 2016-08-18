@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.Iterator;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.subscribers.observable.BaseQueueDisposable;
@@ -32,6 +33,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
         try {
             it = source.iterator();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, s);
             return;
         }
@@ -39,6 +41,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
         try {
             hasNext = it.hasNext();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, s);
             return;
         }
@@ -86,6 +89,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
                 try {
                     v = Objects.requireNonNull(it.next(), "The iterator returned a null value");
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     actual.onError(e);
                     return;
                 }
@@ -98,6 +102,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
                 try {
                     hasNext = it.hasNext();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     actual.onError(e);
                     return;
                 }

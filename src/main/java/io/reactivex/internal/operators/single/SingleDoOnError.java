@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Consumer;
 
 public final class SingleDoOnError<T> extends Single<T> {
@@ -48,6 +48,7 @@ public final class SingleDoOnError<T> extends Single<T> {
                 try {
                     onError.accept(e);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     e = new CompositeException(ex, e);
                 }
                 s.onError(e);

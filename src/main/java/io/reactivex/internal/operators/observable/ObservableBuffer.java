@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
 
 public final class ObservableBuffer<T, U extends Collection<? super T>> extends AbstractObservableWithUpstream<T, U> {
@@ -67,6 +68,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
             try {
                 b = bufferSupplier.call();
             } catch (Throwable t) {
+                Exceptions.throwIfFatal(t);
                 buffer = null;
                 if (s == null) {
                     EmptyDisposable.error(t, actual);

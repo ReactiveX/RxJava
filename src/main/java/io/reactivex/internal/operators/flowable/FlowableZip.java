@@ -421,7 +421,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         @Override
         public void cancel() {
-            SubscriptionHelper.dispose(this);
+            SubscriptionHelper.cancel(this);
         }
 
         @Override

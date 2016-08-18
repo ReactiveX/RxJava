@@ -16,7 +16,8 @@ package io.reactivex.internal.operators.completable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class CompletableConcatArray extends Completable {
     final CompletableSource[] sources;
@@ -41,17 +42,17 @@ public final class CompletableConcatArray extends Completable {
         
         int index;
         
-        final SerialDisposable sd;
+        final SequentialDisposable sd;
         
         public ConcatInnerObserver(CompletableObserver actual, CompletableSource[] sources) {
             this.actual = actual;
             this.sources = sources;
-            this.sd = new SerialDisposable();
+            this.sd = new SequentialDisposable();
         }
         
         @Override
         public void onSubscribe(Disposable d) {
-            sd.set(d);
+            sd.update(d);
         }
         
         @Override

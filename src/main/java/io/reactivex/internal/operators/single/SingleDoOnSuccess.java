@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
 
 public class SingleDoOnSuccess<T> extends Single<T> {
@@ -42,6 +43,7 @@ public class SingleDoOnSuccess<T> extends Single<T> {
                 try {
                     onSuccess.accept(value);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     s.onError(ex);
                     return;
                 }

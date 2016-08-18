@@ -131,7 +131,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
         
         @Override
         public void cancel() {
-            SubscriptionHelper.dispose(s);
+            SubscriptionHelper.cancel(s);
             worker.dispose();
         }
     }

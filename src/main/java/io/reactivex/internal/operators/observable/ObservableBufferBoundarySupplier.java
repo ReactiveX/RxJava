@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.*;
@@ -73,6 +74,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 try {
                     b = bufferSupplier.call();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     cancelled = true;
                     s.dispose();
                     EmptyDisposable.error(e, actual);
@@ -92,6 +94,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 try {
                     boundary = boundarySupplier.call();
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     cancelled = true;
                     s.dispose();
                     EmptyDisposable.error(ex, actual);
@@ -179,6 +182,7 @@ extends AbstractObservableWithUpstream<T, U> {
             try {
                 next = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
                 return;
@@ -195,6 +199,7 @@ extends AbstractObservableWithUpstream<T, U> {
             try {
                 boundary = boundarySupplier.call();
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 cancelled = true;
                 s.dispose();
                 actual.onError(ex);

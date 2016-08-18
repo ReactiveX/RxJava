@@ -23,11 +23,11 @@ import io.reactivex.internal.disposables.*;
  * @param <T> the value type
  */
 public final class FullArbiterObserver<T> implements Observer<T> {
-    final NbpFullArbiter<T> arbiter;
+    final ObserverFullArbiter<T> arbiter;
 
     Disposable s;
 
-    public FullArbiterObserver(NbpFullArbiter<T> arbiter) {
+    public FullArbiterObserver(ObserverFullArbiter<T> arbiter) {
         this.arbiter = arbiter;
     }
 

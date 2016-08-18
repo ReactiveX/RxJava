@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -83,6 +83,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
             try {
                 v = valueSupplier.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 state.lazySet(HAS_REQUEST_HAS_VALUE);
                 actual.onError(new CompositeException(e, t));
                 return;

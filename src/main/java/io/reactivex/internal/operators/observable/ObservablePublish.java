@@ -575,14 +575,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                                 // this eager behavior will skip unsubscribed children in case
                                 // multiple values are available in the queue
                                 if (!ip.cancelled) {
-                                    try {
-                                        ip.child.onNext(value);
-                                    } catch (Throwable t) {
-                                        // we bounce back exceptions and kick out the child subscriber
-                                        ip.dispose();
-                                        ip.child.onError(t);
-                                        continue;
-                                    }
+                                    ip.child.onNext(value);
                                 }
                             }
                         }

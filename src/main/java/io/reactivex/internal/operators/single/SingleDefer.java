@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.single;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 public final class SingleDefer<T> extends Single<T> {
@@ -33,8 +34,8 @@ public final class SingleDefer<T> extends Single<T> {
         try {
             next = singleSupplier.call();
         } catch (Throwable e) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(e);
+            Exceptions.throwIfFatal(e);
+            EmptyDisposable.error(e, s);
             return;
         }
         

@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
@@ -77,6 +78,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 cancelled = true;
                 s.cancel();
                 EmptySubscription.error(e, actual);
@@ -96,6 +98,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             try {
                 boundary = boundarySupplier.call();
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 cancelled = true;
                 s.cancel();
                 EmptySubscription.error(ex, actual);
@@ -184,6 +187,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             try {
                 next = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
                 return;
@@ -200,6 +204,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             try {
                 boundary = boundarySupplier.call();
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 cancelled = true;
                 s.cancel();
                 actual.onError(ex);

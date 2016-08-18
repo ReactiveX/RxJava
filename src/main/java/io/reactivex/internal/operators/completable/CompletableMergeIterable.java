@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableMergeIterable extends Completable {
@@ -38,6 +39,7 @@ public final class CompletableMergeIterable extends Completable {
         try {
             iterator = sources.iterator();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             s.onError(e);
             return;
         }
@@ -59,6 +61,7 @@ public final class CompletableMergeIterable extends Completable {
             try {
                 b = iterator.hasNext();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 set.dispose();
                 if (once.compareAndSet(false, true)) {
                     s.onError(e);
@@ -81,6 +84,7 @@ public final class CompletableMergeIterable extends Completable {
             try {
                 c = iterator.next();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 set.dispose();
                 if (once.compareAndSet(false, true)) {
                     s.onError(e);

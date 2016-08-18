@@ -12,6 +12,9 @@
  */
 package io.reactivex.disposables;
 
+/**
+ * A disposable container that manages a Runnable instance.
+ */
 final class RunnableDisposable extends ReferenceDisposable<Runnable> {
     /** */
     private static final long serialVersionUID = -8219729196779211169L;

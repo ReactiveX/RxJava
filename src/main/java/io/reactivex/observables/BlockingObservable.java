@@ -21,9 +21,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Optional;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
+import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.subscribers.flowable.BlockingSubscriber;
@@ -53,6 +54,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
             try {
                 action.accept(it.next());
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 it.dispose();
                 Exceptions.propagate(e);
             }
@@ -243,7 +245,7 @@ public final class BlockingObservable<T> implements Iterable<T> {
         final CountDownLatch cdl = new CountDownLatch(1);
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        final SerialDisposable sd = new SerialDisposable();
+        final SequentialDisposable sd = new SequentialDisposable();
         
         o.subscribe(new Observer<T>() {
 

@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
@@ -46,6 +47,7 @@ public final class ObservableJust<T> extends Observable<T> {
                 try {
                     other = mapper.apply(value);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     EmptyDisposable.error(e, s);
                     return;
                 }

@@ -16,6 +16,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -37,6 +38,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
         try {
             r = seedSupplier.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
             return;
         }
@@ -96,6 +98,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
             try {
                 u = accumulator.apply(v, t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.dispose();
                 onError(e);
                 return;

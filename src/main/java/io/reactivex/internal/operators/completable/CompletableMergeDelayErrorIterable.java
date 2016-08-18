@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 
@@ -39,6 +40,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
         try {
             iterator = sources.iterator();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             s.onError(e);
             return;
         }
@@ -61,6 +63,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
             try {
                 b = iterator.hasNext();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 queue.offer(e);
                 if (wip.decrementAndGet() == 0) {
                     if (queue.isEmpty()) {
@@ -85,6 +88,7 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
             try {
                 c = iterator.next();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 queue.offer(e);
                 if (wip.decrementAndGet() == 0) {
                     if (queue.isEmpty()) {

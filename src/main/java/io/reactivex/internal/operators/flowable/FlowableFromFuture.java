@@ -18,6 +18,7 @@ import java.util.concurrent.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 
 public final class FlowableFromFuture<T> extends Flowable<T> {
@@ -40,6 +41,7 @@ public final class FlowableFromFuture<T> extends Flowable<T> {
         try {
             v = unit != null ? future.get(timeout, unit) : future.get();
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             if (!deferred.isCancelled()) {
                 s.onError(ex);
             }

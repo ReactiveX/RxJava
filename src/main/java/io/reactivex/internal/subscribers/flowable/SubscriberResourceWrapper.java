@@ -81,7 +81,7 @@ public final class SubscriberResourceWrapper<T> extends AtomicReference<Disposab
     
     @Override
     public void dispose() {
-        SubscriptionHelper.dispose(subscription);
+        SubscriptionHelper.cancel(subscription);
 
         DisposableHelper.dispose(this);
     }

@@ -13,14 +13,15 @@
 
 package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableContainer;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ScheduledRunnable extends AtomicReferenceArray<Object> implements Runnable, Disposable {
+public final class ScheduledRunnable extends AtomicReferenceArray<Object> 
+implements Runnable, Callable<Object>, Disposable {
     /** */
     private static final long serialVersionUID = -6120223772001106981L;
     final Runnable actual;
@@ -45,10 +46,18 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
     }
     
     @Override
+    public Object call() throws Exception {
+        // Being Callable saves an allocation in ThreadPoolExecutor
+        run();
+        return null;
+    }
+    
+    @Override
     public void run() {
         try {
             actual.run();
         } catch (Throwable e) {
+            // Exceptions.throwIfFatal(e); nowhere to go
             RxJavaPlugins.onError(e);
         } finally {
             Object o = get(PARENT_INDEX);

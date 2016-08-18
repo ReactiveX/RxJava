@@ -126,7 +126,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         
         @Override
         public void cancel() {
-            SubscriptionHelper.dispose(subscription);
+            SubscriptionHelper.cancel(subscription);
         }
     }
     
