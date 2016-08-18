@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Optional;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -881,33 +880,32 @@ public class FlowableZipTest {
     }
     
     @SuppressWarnings("rawtypes")
-    static String kind(Try notification) {
-        if (notification.hasError()) {
+    static String kind(Notification notification) {
+        if (notification.isOnError()) {
             return "OnError";
         }
-        if (((Optional<?>)notification.value()).isPresent()) {
+        if (notification.isOnNext()) {
             return "OnNext";
         }
         return "OnComplete";
     }
     
     @SuppressWarnings("rawtypes")
-    static String value(Try notification) {
-        Optional<?> optional = (Optional<?>)notification.value();
-        if (optional.isPresent()) {
-            return String.valueOf(optional.get());
+    static String value(Notification notification) {
+        if (notification.isOnNext()) {
+            return String.valueOf(notification.getValue());
         }
         return "null";
     }
 
     @Test
     public void testEmitMaterializedNotifications() {
-        Flowable<Try<Optional<Integer>>> oi = Flowable.just(1, 2, 3).materialize();
-        Flowable<Try<Optional<String>>> os = Flowable.just("a", "b", "c").materialize();
-        Flowable<String> o = Flowable.zip(oi, os, new BiFunction<Try<Optional<Integer>>, Try<Optional<String>>, String>() {
+        Flowable<Notification<Integer>> oi = Flowable.just(1, 2, 3).materialize();
+        Flowable<Notification<String>> os = Flowable.just("a", "b", "c").materialize();
+        Flowable<String> o = Flowable.zip(oi, os, new BiFunction<Notification<Integer>, Notification<String>, String>() {
 
             @Override
-            public String apply(Try<Optional<Integer>> t1, Try<Optional<String>> t2) {
+            public String apply(Notification<Integer> t1, Notification<String> t2) {
                 return kind(t1) + "_" + value(t1) + "-" + kind(t2) + "_" + value(t2);
             }
 

@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
-import io.reactivex.Optional;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.subscribers.DisposableSubscriber;
 
@@ -53,16 +52,16 @@ public enum BlockingFlowableLatest {
     }
 
     /** Observer of source, iterator for output. */
-    static final class LatestObserverIterator<T> extends DisposableSubscriber<Try<Optional<T>>> implements Iterator<T> {
+    static final class LatestObserverIterator<T> extends DisposableSubscriber<Notification<T>> implements Iterator<T> {
         final Semaphore notify = new Semaphore(0);
         // observer's notification
-        final AtomicReference<Try<Optional<T>>> value = new AtomicReference<Try<Optional<T>>>();
+        final AtomicReference<Notification<T>> value = new AtomicReference<Notification<T>>();
 
         // iterator's notification
-        Try<Optional<T>> iNotif;
+        Notification<T> iNotif;
 
         @Override
-        public void onNext(Try<Optional<T>> args) {
+        public void onNext(Notification<T> args) {
             boolean wasntAvailable = value.getAndSet(args) == null;
             if (wasntAvailable) {
                 notify.release();
@@ -81,35 +80,35 @@ public enum BlockingFlowableLatest {
 
         @Override
         public boolean hasNext() {
-            if (iNotif != null && iNotif.hasError()) {
-                throw Exceptions.propagate(iNotif.error());
+            if (iNotif != null && iNotif.isOnError()) {
+                throw Exceptions.propagate(iNotif.getError());
             }
-            if (iNotif == null || iNotif.value().isPresent()) {
+            if (iNotif == null || iNotif.isOnNext()) {
                 if (iNotif == null) {
                     try {
                         notify.acquire();
                     } catch (InterruptedException ex) {
                         dispose();
                         Thread.currentThread().interrupt();
-                        iNotif = Notification.error(ex);
+                        iNotif = Notification.createOnError(ex);
                         throw Exceptions.propagate(ex);
                     }
 
-                    Try<Optional<T>> n = value.getAndSet(null);
+                    Notification<T> n = value.getAndSet(null);
                     iNotif = n;
-                    if (iNotif.hasError()) {
-                        throw Exceptions.propagate(iNotif.error());
+                    if (iNotif.isOnError()) {
+                        throw Exceptions.propagate(iNotif.getError());
                     }
                 }
             }
-            return iNotif.value().isPresent();
+            return iNotif.isOnNext();
         }
 
         @Override
         public T next() {
             if (hasNext()) {
-                if (iNotif.value().isPresent()) {
-                    T v = iNotif.value().get();
+                if (iNotif.isOnNext()) {
+                    T v = iNotif.getValue();
                     iNotif = null;
                     return v;
                 }

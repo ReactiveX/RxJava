@@ -6043,7 +6043,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T2> Observable<T2> dematerialize() {
         @SuppressWarnings("unchecked")
-        Observable<Try<Optional<T2>>> m = (Observable<Try<Optional<T2>>>)this;
+        Observable<Notification<T2>> m = (Observable<Notification<T2>>)this;
         return new ObservableDematerialize<T2>(m);
     }
     
@@ -6288,7 +6288,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnEach(final Consumer<? super Try<Optional<T>>> onNotification) {
+    public final Observable<T> doOnEach(final Consumer<? super Notification<T>> onNotification) {
         Objects.requireNonNull(onNotification, "consumer is null");
         return doOnEach(
                 Functions.notificationOnNext(onNotification),
@@ -7576,7 +7576,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Materialize</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Try<Optional<T>>> materialize() {
+    public final Observable<Notification<T>> materialize() {
         return new ObservableMaterialize<T>(this);
     }
 

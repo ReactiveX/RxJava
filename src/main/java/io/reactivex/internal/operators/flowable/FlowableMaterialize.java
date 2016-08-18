@@ -21,14 +21,14 @@ import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
-public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T, Try<Optional<T>>> {
+public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T, Notification<T>> {
 
     public FlowableMaterialize(Publisher<T> source) {
         super(source);
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super Try<Optional<T>>> s) {
+    protected void subscribeActual(Subscriber<? super Notification<T>> s) {
         source.subscribe(new MaterializeSubscriber<T>(s));
     }
     
@@ -36,13 +36,13 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
     static final class MaterializeSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -3740826063558713822L;
-        final Subscriber<? super Try<Optional<T>>> actual;
+        final Subscriber<? super Notification<T>> actual;
         
         Subscription s;
         
         final AtomicInteger state = new AtomicInteger();
         
-        Try<Optional<T>> value;
+        Notification<T> value;
         
         volatile boolean done;
         
@@ -51,7 +51,7 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
         static final int HAS_REQUEST_NO_VALUE = 2;
         static final int HAS_REQUEST_HAS_VALUE = 3;
         
-        public MaterializeSubscriber(Subscriber<? super Try<Optional<T>>> actual) {
+        public MaterializeSubscriber(Subscriber<? super Notification<T>> actual) {
             this.actual = actual;
         }
         
@@ -65,14 +65,14 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
         
         @Override
         public void onNext(T t) {
-            actual.onNext(Notification.next(t));
+            actual.onNext(Notification.createOnNext(t));
             
             if (get() != Long.MAX_VALUE) {
                 decrementAndGet();
             }
         }
         
-        void tryEmit(Try<Optional<T>> v) {
+        void tryEmit(Notification<T> v) {
             if (get() != 0L) {
                 state.lazySet(HAS_REQUEST_HAS_VALUE);
                 actual.onNext(v);
@@ -106,14 +106,14 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
         
         @Override
         public void onError(Throwable t) {
-            Try<Optional<T>> v = Notification.error(t);
+            Notification<T> v = Notification.createOnError(t);
             
             tryEmit(v);
         }
         
         @Override
         public void onComplete() {
-            Try<Optional<T>> v = Notification.complete();
+            Notification<T> v = Notification.createOnComplete();
             
             tryEmit(v);
         }
@@ -129,7 +129,7 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
                     int s = state.get();
                     if (s == NO_REQUEST_HAS_VALUE) {
                         if (state.compareAndSet(s, HAS_REQUEST_HAS_VALUE)) {
-                            Try<Optional<T>> v = value;
+                            Notification<T> v = value;
                             value = null;
                             actual.onNext(v);
                             actual.onComplete();

@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Optional;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
@@ -165,11 +164,6 @@ public final class BlockingObservable<T> implements Iterable<T> {
         }
     }
 
-    public Optional<T> firstOption() {
-        T v = first(o);
-        return v != null ? Optional.of(v) : Optional.<T>empty();
-    }
-    
     static <T> T first(Observable<? extends T> o) {
         BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
         o.subscribe(s);
@@ -190,11 +184,6 @@ public final class BlockingObservable<T> implements Iterable<T> {
             return v;
         }
         return defaultValue;
-    }
-    
-    public Optional<T> lastOption() {
-        T v = last(o);
-        return v != null ? Optional.of(v) : Optional.<T>empty();
     }
     
     static <T> T last(Observable<? extends T> o) {

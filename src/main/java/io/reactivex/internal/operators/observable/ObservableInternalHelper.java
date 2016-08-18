@@ -196,7 +196,7 @@ public enum ObservableInternalHelper {
     }
     
     static final class RepeatWhenOuterHandler
-    implements Function<Observable<Try<Optional<Object>>>, ObservableSource<?>> {
+    implements Function<Observable<Notification<Object>>, ObservableSource<?>> {
         private final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler;
 
         RepeatWhenOuterHandler(Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
@@ -204,12 +204,12 @@ public enum ObservableInternalHelper {
         }
 
         @Override
-        public ObservableSource<?> apply(Observable<Try<Optional<Object>>> no) throws Exception {
+        public ObservableSource<?> apply(Observable<Notification<Object>> no) throws Exception {
             return handler.apply(no.map(MapToInt.INSTANCE));
         }
     }
 
-    public static Function<Observable<Try<Optional<Object>>>, ObservableSource<?>> repeatWhenHandler(final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
+    public static Function<Observable<Notification<Object>>, ObservableSource<?>> repeatWhenHandler(final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
         return new RepeatWhenOuterHandler(handler);
     }
     
@@ -258,22 +258,22 @@ public enum ObservableInternalHelper {
         };
     }
     
-    enum ErrorMapperFilter implements Function<Try<Optional<Object>>, Throwable>, Predicate<Try<Optional<Object>>> {
+    enum ErrorMapperFilter implements Function<Notification<Object>, Throwable>, Predicate<Notification<Object>> {
         INSTANCE;
         
         @Override
-        public Throwable apply(Try<Optional<Object>> t) throws Exception {
-            return t.error();
+        public Throwable apply(Notification<Object> t) throws Exception {
+            return t.getError();
         }
         
         @Override
-        public boolean test(Try<Optional<Object>> t) throws Exception {
-            return t.hasError();
+        public boolean test(Notification<Object> t) throws Exception {
+            return t.isOnError();
         }
     }
 
     static final class RetryWhenInner
-    implements Function<Observable<Try<Optional<Object>>>, ObservableSource<?>> {
+    implements Function<Observable<Notification<Object>>, ObservableSource<?>> {
         private final Function<? super Observable<? extends Throwable>, ? extends ObservableSource<?>> handler;
 
         RetryWhenInner(
@@ -282,7 +282,7 @@ public enum ObservableInternalHelper {
         }
 
         @Override
-        public ObservableSource<?> apply(Observable<Try<Optional<Object>>> no) throws Exception {
+        public ObservableSource<?> apply(Observable<Notification<Object>> no) throws Exception {
             Observable<Throwable> map = no
                     .takeWhile(ErrorMapperFilter.INSTANCE)
                     .map(ErrorMapperFilter.INSTANCE);
@@ -290,7 +290,7 @@ public enum ObservableInternalHelper {
         }
     }
 
-    public static <T> Function<Observable<Try<Optional<Object>>>, ObservableSource<?>> retryWhenHandler(final Function<? super Observable<? extends Throwable>, ? extends ObservableSource<?>> handler) {
+    public static <T> Function<Observable<Notification<Object>>, ObservableSource<?>> retryWhenHandler(final Function<? super Observable<? extends Throwable>, ? extends ObservableSource<?>> handler) {
         return new RetryWhenInner(handler);
     }
 

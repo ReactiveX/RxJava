@@ -21,8 +21,6 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.FlowableOperator;
-import io.reactivex.Optional;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -49,7 +47,7 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void ambVarargsOneIsNull() {
-        Flowable.amb(Flowable.never(), null).toBlocking().lastOption();
+        Flowable.amb(Flowable.never(), null).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -64,13 +62,13 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void ambIterableOneIsNull() {
-        Flowable.amb(Arrays.asList(Flowable.never(), null)).toBlocking().lastOption();
+        Flowable.amb(Arrays.asList(Flowable.never(), null)).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -91,7 +89,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, Flowable.never(), null).toBlocking().lastOption();
+        }, Flowable.never(), null).toBlocking().last();
     }
 
     @Test(expected = NullPointerException.class)
@@ -116,7 +114,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
     
     @SuppressWarnings("unchecked")
@@ -127,7 +125,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
 
     @SuppressWarnings("unchecked")
@@ -144,7 +142,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return null;
             }
-        }, just1).toBlocking().lastOption();
+        }, just1).toBlocking().last();
     }
 
     @SuppressWarnings("unchecked")
@@ -161,7 +159,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -176,13 +174,13 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatIterableOneIsNull() {
-        Flowable.concat(Arrays.asList(just1, null)).toBlocking().lastOption();
+        Flowable.concat(Arrays.asList(just1, null)).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -199,7 +197,7 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatArrayOneIsNull() {
-        Flowable.concatArray(just1, null).toBlocking().lastOption();
+        Flowable.concatArray(just1, null).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -219,7 +217,7 @@ public class FlowableNullTests {
             public Publisher<Object> call() {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -249,7 +247,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void fromArrayOneIsNull() {
-        Flowable.fromArray(1, null).toBlocking().lastOption();
+        Flowable.fromArray(1, null).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -264,7 +262,7 @@ public class FlowableNullTests {
             public Object call() throws Exception {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -303,7 +301,7 @@ public class FlowableNullTests {
     public void fromFutureTimedReturnsNull() {
       FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
         f.run();
-        Flowable.fromFuture(f, 1, TimeUnit.SECONDS).toBlocking().lastOption();
+        Flowable.fromFuture(f, 1, TimeUnit.SECONDS).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -323,12 +321,12 @@ public class FlowableNullTests {
             public Iterator<Object> iterator() {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
     public void fromIterableValueNull() {
-        Flowable.fromIterable(Arrays.asList(1, null)).toBlocking().lastOption();
+        Flowable.fromIterable(Arrays.asList(1, null)).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -348,7 +346,7 @@ public class FlowableNullTests {
             public void accept(Subscriber<Object> s) {
                 s.onNext(null);
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -393,7 +391,7 @@ public class FlowableNullTests {
             public Integer call() {
                 return null;
             }
-        }, generator).toBlocking().lastOption();
+        }, generator).toBlocking().subscribe();
     }
 
     @Test
@@ -406,7 +404,7 @@ public class FlowableNullTests {
         }, new BiFunction<Object, Subscriber<Object>, Object>() {
             @Override
             public Object apply(Object s, Subscriber<Object> o) { o.onComplete(); return s; }
-        }).toBlocking().lastOption();
+        }).toBlocking().subscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -506,13 +504,13 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }, 128, 128).toBlocking().lastOption();
+        }, 128, 128).toBlocking().last();
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeIterableOneIsNull() {
-        Flowable.merge(Arrays.asList(just1, null), 128, 128).toBlocking().lastOption();
+        Flowable.merge(Arrays.asList(just1, null), 128, 128).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -523,7 +521,7 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeArrayOneIsNull() {
-        Flowable.merge(128, 128, just1, null).toBlocking().lastOption();
+        Flowable.merge(128, 128, just1, null).toBlocking().last();
     }
 
     @Test(expected = NullPointerException.class)
@@ -538,13 +536,13 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }, 128, 128).toBlocking().lastOption();
+        }, 128, 128).toBlocking().last();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableOneIsNull() {
-        Flowable.mergeDelayError(Arrays.asList(just1, null), 128, 128).toBlocking().lastOption();
+        Flowable.mergeDelayError(Arrays.asList(just1, null), 128, 128).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -555,7 +553,7 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorArrayOneIsNull() {
-        Flowable.mergeDelayError(128, 128, just1, null).toBlocking().lastOption();
+        Flowable.mergeDelayError(128, 128, just1, null).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -620,7 +618,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Object d) {
                 return null;
             }
-        }, Functions.emptyConsumer()).toBlocking().lastOption();
+        }, Functions.emptyConsumer()).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -660,7 +658,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
     
     @SuppressWarnings("unchecked")
@@ -677,7 +675,7 @@ public class FlowableNullTests {
             public Object apply(Object[] a) {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
     
     @Test(expected = NullPointerException.class)
@@ -702,7 +700,7 @@ public class FlowableNullTests {
             public Object apply(Object[] a) {
                 return null;
             }
-        }).toBlocking().lastOption();
+        }).toBlocking().last();
     }
 
     @Test(expected = NullPointerException.class)
@@ -727,7 +725,7 @@ public class FlowableNullTests {
             public Object apply(Object[] a) {
                 return 1;
             }
-        }, true, 128).toBlocking().lastOption();
+        }, true, 128).toBlocking().last();
     }
     
     @SuppressWarnings("unchecked")
@@ -744,7 +742,7 @@ public class FlowableNullTests {
             public Object apply(Object[] a) {
                 return null;
             }
-        }, true, 128).toBlocking().lastOption();
+        }, true, 128).toBlocking().last();
     }
 
     //*************************************************************
@@ -1182,7 +1180,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void doOnEachSupplierNull() {
-        just1.doOnEach((Consumer<Try<Optional<Integer>>>)null);
+        just1.doOnEach((Consumer<Notification<Integer>>)null);
     }
     
     @Test(expected = NullPointerException.class)

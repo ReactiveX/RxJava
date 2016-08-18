@@ -24,10 +24,10 @@ import io.reactivex.internal.subscribers.observable.ToNotificationObserver;
 import io.reactivex.subjects.BehaviorSubject;
 
 public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T> {
-    final Function<? super Observable<Try<Optional<Object>>>, ? extends ObservableSource<?>> manager;
+    final Function<? super Observable<Notification<Object>>, ? extends ObservableSource<?>> manager;
 
     public ObservableRedo(ObservableSource<T> source,
-            Function<? super Observable<Try<Optional<Object>>>, ? extends ObservableSource<?>> manager) {
+            Function<? super Observable<Notification<Object>>, ? extends ObservableSource<?>> manager) {
         super(source);
         this.manager = manager;
     }
@@ -36,7 +36,7 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
     public void subscribeActual(Observer<? super T> s) {
         
         // FIXE use BehaviorSubject? (once available)
-        BehaviorSubject<Try<Optional<Object>>> subject = BehaviorSubject.create();
+        BehaviorSubject<Notification<Object>> subject = BehaviorSubject.create();
         
         final RedoSubscriber<T> parent = new RedoSubscriber<T>(s, subject, source);
 
@@ -52,28 +52,28 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
             return;
         }
         
-        action.subscribe(new ToNotificationObserver<Object>(new Consumer<Try<Optional<Object>>>() {
+        action.subscribe(new ToNotificationObserver<Object>(new Consumer<Notification<Object>>() {
             @Override
-            public void accept(Try<Optional<Object>> o) {
+            public void accept(Notification<Object> o) {
                 parent.handle(o);
             }
         }));
         
         // trigger first subscription
-        parent.handle(Notification.<Object>next(0));
+        parent.handle(Notification.<Object>createOnNext(0));
     }
     
     static final class RedoSubscriber<T> extends AtomicBoolean implements Observer<T> {
         /** */
         private static final long serialVersionUID = -1151903143112844287L;
         final Observer<? super T> actual;
-        final BehaviorSubject<Try<Optional<Object>>> subject;
+        final BehaviorSubject<Notification<Object>> subject;
         final ObservableSource<? extends T> source;
         final SequentialDisposable arbiter;
         
         final AtomicInteger wip = new AtomicInteger();
         
-        public RedoSubscriber(Observer<? super T> actual, BehaviorSubject<Try<Optional<Object>>> subject, ObservableSource<? extends T> source) {
+        public RedoSubscriber(Observer<? super T> actual, BehaviorSubject<Notification<Object>> subject, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.subject = subject;
             this.source = source;
@@ -94,27 +94,24 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
         @Override
         public void onError(Throwable t) {
             if (compareAndSet(false, true)) {
-                subject.onNext(Try.<Optional<Object>>ofError(t));
+                subject.onNext(Notification.createOnError(t));
             }
         }
         
         @Override
         public void onComplete() {
             if (compareAndSet(false, true)) {
-                subject.onNext(Notification.complete());
+                subject.onNext(Notification.createOnComplete());
             }
         }
         
-        void handle(Try<Optional<Object>> notification) {
+        void handle(Notification<Object> notification) {
             if (compareAndSet(true, false)) {
-                if (notification.hasError()) {
+                if (notification.isOnError()) {
                     arbiter.dispose();
-                    actual.onError(notification.error());
+                    actual.onError(notification.getError());
                 } else {
-                    Optional<?> o = notification.value();
-                    
-                    if (o.isPresent()) {
-                        
+                    if (notification.isOnNext()) {
                         if (wip.getAndIncrement() == 0) {
                             int missed = 1;
                             for (;;) {
@@ -129,7 +126,6 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
                                 }
                             }
                         }
-                        
                     } else {
                         arbiter.dispose();
                         actual.onComplete();

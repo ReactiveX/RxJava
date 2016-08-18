@@ -27,7 +27,6 @@ import org.mockito.Matchers;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Optional;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -731,10 +730,10 @@ public class ObservableGroupByTest {
                             return "last group: " + t1;
                         }
 
-                    }).doOnEach(new Consumer<Try<Optional<String>>>() {
+                    }).doOnEach(new Consumer<Notification<String>>() {
 
                         @Override
-                        public void accept(Try<Optional<String>> t1) {
+                        public void accept(Notification<String> t1) {
                             System.err.println("subscribeOn notification => " + t1);
                         }
 
@@ -742,10 +741,10 @@ public class ObservableGroupByTest {
                 }
             }
 
-        }).doOnEach(new Consumer<Try<Optional<String>>>() {
+        }).doOnEach(new Consumer<Notification<String>>() {
 
             @Override
-            public void accept(Try<Optional<String>> t1) {
+            public void accept(Notification<String> t1) {
                 System.err.println("outer notification => " + t1);
             }
 
@@ -877,10 +876,10 @@ public class ObservableGroupByTest {
                 });
             }
 
-        }).doOnEach(new Consumer<Try<Optional<String>>>() {
+        }).doOnEach(new Consumer<Notification<String>>() {
 
             @Override
-            public void accept(Try<Optional<String>> t1) {
+            public void accept(Notification<String> t1) {
                 System.out.println("notification => " + t1);
             }
 
@@ -1290,10 +1289,10 @@ public class ObservableGroupByTest {
                 });
             }
 
-        }).doOnEach(new Consumer<Try<Optional<String>>>() {
+        }).doOnEach(new Consumer<Notification<String>>() {
 
             @Override
-            public void accept(Try<Optional<String>> t1) {
+            public void accept(Notification<String> t1) {
                 System.out.println("NEXT: " + t1);
             }
 

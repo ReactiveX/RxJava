@@ -17,7 +17,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableMaterialize<T> extends AbstractObservableWithUpstream<T, Try<Optional<T>>> {
+public final class ObservableMaterialize<T> extends AbstractObservableWithUpstream<T, Notification<T>> {
     
     
     public ObservableMaterialize(ObservableSource<T> source) {
@@ -25,18 +25,18 @@ public final class ObservableMaterialize<T> extends AbstractObservableWithUpstre
     }
 
     @Override
-    public void subscribeActual(Observer<? super Try<Optional<T>>> t) {
+    public void subscribeActual(Observer<? super Notification<T>> t) {
         source.subscribe(new MaterializeSubscriber<T>(t));
     }
     
     static final class MaterializeSubscriber<T> implements Observer<T>, Disposable {
-        final Observer<? super Try<Optional<T>>> actual;
+        final Observer<? super Notification<T>> actual;
         
         Disposable s;
         
         volatile boolean done;
         
-        public MaterializeSubscriber(Observer<? super Try<Optional<T>>> actual) {
+        public MaterializeSubscriber(Observer<? super Notification<T>> actual) {
             this.actual = actual;
         }
         
@@ -61,23 +61,19 @@ public final class ObservableMaterialize<T> extends AbstractObservableWithUpstre
 
         @Override
         public void onNext(T t) {
-            actual.onNext(Notification.next(t));
-        }
-        
-        void tryEmit(Try<Optional<T>> v) {
-                
+            actual.onNext(Notification.createOnNext(t));
         }
         
         @Override
         public void onError(Throwable t) {
-            Try<Optional<T>> v = Notification.error(t);
+            Notification<T> v = Notification.createOnError(t);
             actual.onNext(v);
             actual.onComplete();
         }
         
         @Override
         public void onComplete() {
-            Try<Optional<T>> v = Notification.complete();
+            Notification<T> v = Notification.createOnComplete();
             
             actual.onNext(v);
             actual.onComplete();

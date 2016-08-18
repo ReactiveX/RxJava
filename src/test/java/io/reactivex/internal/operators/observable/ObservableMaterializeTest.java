@@ -23,7 +23,6 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Optional;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
@@ -37,9 +36,9 @@ public class ObservableMaterializeTest {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null,
                 "three");
 
-        TestLocalObserver NbpObserver = new TestLocalObserver();
-        Observable<Try<Optional<String>>> m = Observable.unsafeCreate(o1).materialize();
-        m.subscribe(NbpObserver);
+        TestLocalObserver observer = new TestLocalObserver();
+        Observable<Notification<String>> m = Observable.unsafeCreate(o1).materialize();
+        m.subscribe(observer);
 
         try {
             o1.t.join();
@@ -47,24 +46,27 @@ public class ObservableMaterializeTest {
             throw new RuntimeException(e);
         }
 
-        assertFalse(NbpObserver.onError);
-        assertTrue(NbpObserver.onCompleted);
-        assertEquals(3, NbpObserver.notifications.size());
-        assertEquals("one", NbpObserver.notifications.get(0).value().get());
-        assertTrue(Notification.isNext(NbpObserver.notifications.get(0)));
-        assertEquals("two", Notification.getValue(NbpObserver.notifications.get(1)));
-        assertTrue(Notification.isNext(NbpObserver.notifications.get(1)));
-        assertEquals(NullPointerException.class, NbpObserver.notifications.get(2).error().getClass());
-        assertTrue(Notification.isError(NbpObserver.notifications.get(2)));
+        assertFalse(observer.onError);
+        assertTrue(observer.onCompleted);
+        assertEquals(3, observer.notifications.size());
+        
+        assertTrue(observer.notifications.get(0).isOnNext());
+        assertEquals("one", observer.notifications.get(0).getValue());
+        
+        assertTrue(observer.notifications.get(1).isOnNext());
+        assertEquals("two", observer.notifications.get(1).getValue());
+        
+        assertTrue(observer.notifications.get(2).isOnError());
+        assertEquals(NullPointerException.class, observer.notifications.get(2).getError().getClass());
     }
 
     @Test
     public void testMaterialize2() {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
-        TestLocalObserver NbpObserver = new TestLocalObserver();
-        Observable<Try<Optional<String>>> m = Observable.unsafeCreate(o1).materialize();
-        m.subscribe(NbpObserver);
+        TestLocalObserver observer = new TestLocalObserver();
+        Observable<Notification<String>> m = Observable.unsafeCreate(o1).materialize();
+        m.subscribe(observer);
 
         try {
             o1.t.join();
@@ -72,23 +74,26 @@ public class ObservableMaterializeTest {
             throw new RuntimeException(e);
         }
 
-        assertFalse(NbpObserver.onError);
-        assertTrue(NbpObserver.onCompleted);
-        assertEquals(4, NbpObserver.notifications.size());
-        assertEquals("one", Notification.getValue(NbpObserver.notifications.get(0)));
-        assertTrue(Notification.isNext(NbpObserver.notifications.get(0)));
-        assertEquals("two", Notification.getValue(NbpObserver.notifications.get(1)));
-        assertTrue(Notification.isNext(NbpObserver.notifications.get(1)));
-        assertEquals("three", Notification.getValue(NbpObserver.notifications.get(2)));
-        assertTrue(Notification.isNext(NbpObserver.notifications.get(2)));
-        assertTrue(Notification.isComplete(NbpObserver.notifications.get(3)));
+        assertFalse(observer.onError);
+        assertTrue(observer.onCompleted);
+        assertEquals(4, observer.notifications.size());
+        assertTrue(observer.notifications.get(0).isOnNext());
+        assertEquals("one", observer.notifications.get(0).getValue());
+
+        assertTrue(observer.notifications.get(1).isOnNext());
+        assertEquals("two", observer.notifications.get(1).getValue());
+        
+        assertTrue(observer.notifications.get(2).isOnNext());
+        assertEquals("three", observer.notifications.get(2).getValue());
+
+        assertTrue(observer.notifications.get(3).isOnComplete());
     }
 
     @Test
     public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
-        Observable<Try<Optional<String>>> m = Observable.unsafeCreate(o).materialize();
+        Observable<Notification<String>> m = Observable.unsafeCreate(o).materialize();
 
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());
@@ -96,7 +101,7 @@ public class ObservableMaterializeTest {
 
     @Test
     public void testWithCompletionCausingError() {
-        TestObserver<Try<Optional<Integer>>> ts = new TestObserver<Try<Optional<Integer>>>();
+        TestObserver<Notification<Integer>> ts = new TestObserver<Notification<Integer>>();
         final RuntimeException ex = new RuntimeException("boo");
         Observable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
             @Override
@@ -109,11 +114,11 @@ public class ObservableMaterializeTest {
         ts.assertTerminated();
     }
     
-    private static class TestLocalObserver extends DefaultObserver<Try<Optional<String>>> {
+    private static class TestLocalObserver extends DefaultObserver<Notification<String>> {
 
         boolean onCompleted = false;
         boolean onError = false;
-        List<Try<Optional<String>>> notifications = new Vector<Try<Optional<String>>>();
+        List<Notification<String>> notifications = new Vector<Notification<String>>();
 
         @Override
         public void onComplete() {
@@ -126,7 +131,7 @@ public class ObservableMaterializeTest {
         }
 
         @Override
-        public void onNext(Try<Optional<String>> value) {
+        public void onNext(Notification<String> value) {
             this.notifications.add(value);
         }
 

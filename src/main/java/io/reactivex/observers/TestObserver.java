@@ -670,7 +670,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         
         List<Object> completeList = new ArrayList<Object>();
         for (long i = 0; i < completions; i++) {
-            completeList.add(Notification.complete());
+            completeList.add(Notification.createOnComplete());
         }
         result.add(completeList);
         

@@ -807,7 +807,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         
         List<Object> completeList = new ArrayList<Object>();
         for (long i = 0; i < completions; i++) {
-            completeList.add(Notification.complete());
+            completeList.add(Notification.createOnComplete());
         }
         result.add(completeList);
         
