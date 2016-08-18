@@ -92,7 +92,7 @@ public class FlowableTakeLastOneTest {
             public void accept(Integer t) {
                 upstreamCount.incrementAndGet();
             }})
-            .takeLast(0).count().toBlocking().single();
+            .takeLast(0).count().blockingSingle();
         assertEquals(num, upstreamCount.get());
         assertEquals(0L, count);
     }

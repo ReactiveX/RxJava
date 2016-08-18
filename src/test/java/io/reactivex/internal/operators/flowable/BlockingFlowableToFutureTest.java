@@ -31,11 +31,11 @@ public class BlockingFlowableToFutureTest {
     @Ignore("No separate file")
     @Test
     public void constructorShouldBePrivate() {
-//        TestHelper.checkUtilityClass(BlockingFlowableToFuture.class);
+//        TestHelper.checkUtilityClass(FlowableToFuture.class);
     }
 
     static <T> Future<T> toFuture(Flowable<T> f) {
-        return f.toBlocking().toFuture();
+        return f.toFuture();
     }
     
     @Test
@@ -109,7 +109,7 @@ public class BlockingFlowableToFutureTest {
     @Test(expected = NoSuchElementException.class)
     public void testGetWithEmptyFlowable() throws Throwable {
         Flowable<String> obs = Flowable.empty();
-        Future<String> f = obs.toBlocking().toFuture();
+        Future<String> f = obs.toFuture();
         try {
             f.get();
         }
@@ -122,7 +122,7 @@ public class BlockingFlowableToFutureTest {
     @Test
     public void testGetWithASingleNullItem() throws Exception {
         Flowable<String> obs = Flowable.just((String)null);
-        Future<String> f = obs.toBlocking().toFuture();
+        Future<String> f = obs.toFuture();
         assertEquals(null, f.get());
     }
 }

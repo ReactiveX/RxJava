@@ -29,7 +29,7 @@ public class BlockingObservableToIteratorTest {
     public void testToIterator() {
         Observable<String> obs = Observable.just("one", "two", "three");
 
-        Iterator<String> it = obs.toBlocking().iterator();
+        Iterator<String> it = obs.blockingIterable().iterator();
 
         assertEquals(true, it.hasNext());
         assertEquals("one", it.next());
@@ -56,7 +56,7 @@ public class BlockingObservableToIteratorTest {
             }
         });
 
-        Iterator<String> it = obs.toBlocking().iterator();
+        Iterator<String> it = obs.blockingIterable().iterator();
 
         assertEquals(true, it.hasNext());
         assertEquals("one", it.next());
@@ -73,7 +73,7 @@ public class BlockingObservableToIteratorTest {
             public void subscribe(Observer<? super String> NbpSubscriber) {
                 throw new TestException("intentional");
             }
-        }).toBlocking();
+        }).blockingIterable();
         for (String string : strings) {
             // never reaches here
             System.out.println(string);

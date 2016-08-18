@@ -71,7 +71,7 @@ public class FlowableTakeTest {
             public Integer apply(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
-        }).toBlocking().single();
+        }).blockingSingle();
     }
 
     @Test
@@ -216,7 +216,7 @@ public class FlowableTakeTest {
                 }
             }
 
-        }).take(100).take(1).toBlocking().forEach(new Consumer<Integer>() {
+        }).take(100).take(1).blockingForEach(new Consumer<Integer>() {
 
             @Override
             public void accept(Integer t1) {

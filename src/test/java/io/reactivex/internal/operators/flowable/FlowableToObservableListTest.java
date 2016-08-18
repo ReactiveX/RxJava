@@ -92,7 +92,7 @@ public class FlowableToObservableListTest {
     @Test
     public void testListWithBlockingFirst() {
         Flowable<String> o = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
-        List<String> actual = o.toList().toBlocking().first();
+        List<String> actual = o.toList().blockingFirst();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
     @Test

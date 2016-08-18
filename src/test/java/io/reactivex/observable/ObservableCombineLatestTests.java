@@ -33,11 +33,11 @@ public class ObservableCombineLatestTests {
         Observable<HorrorMovie> horrors = Observable.just(new HorrorMovie());
         Observable<CoolRating> ratings = Observable.just(new CoolRating());
 
-        Observable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).toBlocking().forEach(action);
-        Observable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).toBlocking().forEach(action);
-        Observable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).toBlocking().forEach(extendedAction);
-        Observable.<Media, Rating, Result> combineLatest(horrors, ratings, combine).toBlocking().forEach(action);
-        Observable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).toBlocking().forEach(action);
+        Observable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Observable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Observable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).blockingForEach(extendedAction);
+        Observable.<Media, Rating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Observable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).blockingForEach(action);
 
         Observable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine);
     }

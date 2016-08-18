@@ -31,20 +31,20 @@ public class FlowableLastTest {
     @Test
     public void testLastWithElements() {
         Flowable<Integer> last = Flowable.just(1, 2, 3).last();
-        assertEquals(3, last.toBlocking().single().intValue());
+        assertEquals(3, last.blockingSingle().intValue());
     }
 
     @Test(expected = NoSuchElementException.class)
     public void testLastWithNoElements() {
         Flowable<?> last = Flowable.empty().last();
-        last.toBlocking().single();
+        last.blockingSingle();
     }
 
     @Test
     public void testLastMultiSubscribe() {
         Flowable<Integer> last = Flowable.just(1, 2, 3).last();
-        assertEquals(3, last.toBlocking().single().intValue());
-        assertEquals(3, last.toBlocking().single().intValue());
+        assertEquals(3, last.blockingSingle().intValue());
+        assertEquals(3, last.blockingSingle().intValue());
     }
 
     @Test

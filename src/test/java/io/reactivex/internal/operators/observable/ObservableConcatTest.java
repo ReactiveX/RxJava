@@ -652,7 +652,7 @@ public class ObservableConcatTest {
                 (int) Observable.<Integer> empty()
                         .concatWith(Observable.just(1))
                         .take(1)
-                        .toBlocking().single());
+                        .blockingSingle());
     }
     
     // https://github.com/ReactiveX/RxJava/issues/1818

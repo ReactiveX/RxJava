@@ -147,7 +147,7 @@ public class FlowableGroupByTest {
 
         final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-        observable.toBlocking().forEach(new Consumer<GroupedFlowable<K, V>>() {
+        observable.blockingForEach(new Consumer<GroupedFlowable<K, V>>() {
 
             @Override
             public void accept(final GroupedFlowable<K, V> o) {
@@ -654,7 +654,7 @@ public class FlowableGroupByTest {
                 }
             }
 
-        }).toBlocking().forEach(new Consumer<String>() {
+        }).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -747,7 +747,7 @@ public class FlowableGroupByTest {
                 System.err.println("outer notification => " + t1);
             }
 
-        }).toBlocking().forEach(new Consumer<String>() {
+        }).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -825,7 +825,7 @@ public class FlowableGroupByTest {
                 }
             }
 
-        }).toBlocking().forEach(new Consumer<String>() {
+        }).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -882,7 +882,7 @@ public class FlowableGroupByTest {
                 System.out.println("notification => " + t1);
             }
 
-        }).toBlocking().forEach(new Consumer<String>() {
+        }).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -931,7 +931,7 @@ public class FlowableGroupByTest {
                 });
             }
 
-        }).toBlocking().forEach(new Consumer<String>() {
+        }).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -1516,7 +1516,7 @@ public class FlowableGroupByTest {
                         }
                     })
                     .observeOn(Schedulers.computation())
-            ).toBlocking().last();
+            ).blockingLast();
         }
     }
     

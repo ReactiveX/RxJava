@@ -664,7 +664,7 @@ public class FlowableConcatTest {
                 (int) Flowable.<Integer> empty()
                         .concatWith(Flowable.just(1))
                         .take(1)
-                        .toBlocking().single());
+                        .blockingSingle());
     }
     
     @Test

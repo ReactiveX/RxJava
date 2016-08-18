@@ -65,7 +65,7 @@ public class FlowableToObservableSortedListTest {
     @Test
     public void testWithFollowingFirst() {
         Flowable<Integer> o = Flowable.just(1, 3, 2, 5, 4);
-        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().toBlocking().first());
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().blockingFirst());
     }
     @Test
     public void testBackpressureHonored() {

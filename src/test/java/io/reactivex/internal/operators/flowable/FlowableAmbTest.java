@@ -299,7 +299,7 @@ public class FlowableAmbTest {
                         //
                     }
             }
-        }).ambWith(Flowable.just(2)).toBlocking().single();
+        }).ambWith(Flowable.just(2)).blockingSingle();
         assertEquals(1, result);
     }
  

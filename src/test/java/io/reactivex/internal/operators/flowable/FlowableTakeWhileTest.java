@@ -114,7 +114,7 @@ public class FlowableTakeWhileTest {
             public boolean test(String s) {
                 return false;
             }
-        }).toBlocking().last("");
+        }).blockingLast("");
     }
 
     @Test

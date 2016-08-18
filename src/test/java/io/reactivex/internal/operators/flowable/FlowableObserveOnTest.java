@@ -221,7 +221,7 @@ public class FlowableObserveOnTest {
             }
 
         }).observeOn(Schedulers.newThread())
-        .toBlocking().forEach(new Consumer<Integer>() {
+        .blockingForEach(new Consumer<Integer>() {
 
             @Override
             public void accept(Integer t1) {
@@ -251,7 +251,7 @@ public class FlowableObserveOnTest {
             }
 
         }).observeOn(Schedulers.computation())
-        .toBlocking().forEach(new Consumer<Integer>() {
+        .blockingForEach(new Consumer<Integer>() {
 
             @Override
             public void accept(Integer t1) {
@@ -293,7 +293,7 @@ public class FlowableObserveOnTest {
             }
 
         }).observeOn(Schedulers.computation())
-        .toBlocking().forEach(new Consumer<Integer>() {
+        .blockingForEach(new Consumer<Integer>() {
 
             @Override
             public void accept(Integer t1) {

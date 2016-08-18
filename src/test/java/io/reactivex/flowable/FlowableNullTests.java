@@ -47,7 +47,7 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void ambVarargsOneIsNull() {
-        Flowable.amb(Flowable.never(), null).toBlocking().last();
+        Flowable.amb(Flowable.never(), null).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -62,13 +62,13 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void ambIterableOneIsNull() {
-        Flowable.amb(Arrays.asList(Flowable.never(), null)).toBlocking().last();
+        Flowable.amb(Arrays.asList(Flowable.never(), null)).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -89,7 +89,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, Flowable.never(), null).toBlocking().last();
+        }, Flowable.never(), null).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -114,7 +114,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
     
     @SuppressWarnings("unchecked")
@@ -125,7 +125,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
 
     @SuppressWarnings("unchecked")
@@ -142,7 +142,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return null;
             }
-        }, just1).toBlocking().last();
+        }, just1).blockingLast();
     }
 
     @SuppressWarnings("unchecked")
@@ -159,7 +159,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return null;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -174,13 +174,13 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatIterableOneIsNull() {
-        Flowable.concat(Arrays.asList(just1, null)).toBlocking().last();
+        Flowable.concat(Arrays.asList(just1, null)).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -197,7 +197,7 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatArrayOneIsNull() {
-        Flowable.concatArray(just1, null).toBlocking().last();
+        Flowable.concatArray(just1, null).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -217,7 +217,7 @@ public class FlowableNullTests {
             public Publisher<Object> call() {
                 return null;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -232,7 +232,7 @@ public class FlowableNullTests {
             public Throwable call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -247,7 +247,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void fromArrayOneIsNull() {
-        Flowable.fromArray(1, null).toBlocking().last();
+        Flowable.fromArray(1, null).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -262,7 +262,7 @@ public class FlowableNullTests {
             public Object call() throws Exception {
                 return null;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -301,7 +301,7 @@ public class FlowableNullTests {
     public void fromFutureTimedReturnsNull() {
       FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
         f.run();
-        Flowable.fromFuture(f, 1, TimeUnit.SECONDS).toBlocking().last();
+        Flowable.fromFuture(f, 1, TimeUnit.SECONDS).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -321,12 +321,12 @@ public class FlowableNullTests {
             public Iterator<Object> iterator() {
                 return null;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
     public void fromIterableValueNull() {
-        Flowable.fromIterable(Arrays.asList(1, null)).toBlocking().last();
+        Flowable.fromIterable(Arrays.asList(1, null)).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -346,7 +346,7 @@ public class FlowableNullTests {
             public void accept(Subscriber<Object> s) {
                 s.onNext(null);
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -391,7 +391,7 @@ public class FlowableNullTests {
             public Integer call() {
                 return null;
             }
-        }, generator).toBlocking().subscribe();
+        }, generator).blockingSubscribe();
     }
 
     @Test
@@ -404,7 +404,7 @@ public class FlowableNullTests {
         }, new BiFunction<Object, Subscriber<Object>, Object>() {
             @Override
             public Object apply(Object s, Subscriber<Object> o) { o.onComplete(); return s; }
-        }).toBlocking().subscribe();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -504,13 +504,13 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }, 128, 128).toBlocking().last();
+        }, 128, 128).blockingLast();
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeIterableOneIsNull() {
-        Flowable.merge(Arrays.asList(just1, null), 128, 128).toBlocking().last();
+        Flowable.merge(Arrays.asList(just1, null), 128, 128).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -521,7 +521,7 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeArrayOneIsNull() {
-        Flowable.merge(128, 128, just1, null).toBlocking().last();
+        Flowable.merge(128, 128, just1, null).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -536,13 +536,13 @@ public class FlowableNullTests {
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }, 128, 128).toBlocking().last();
+        }, 128, 128).blockingLast();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorIterableOneIsNull() {
-        Flowable.mergeDelayError(Arrays.asList(just1, null), 128, 128).toBlocking().last();
+        Flowable.mergeDelayError(Arrays.asList(just1, null), 128, 128).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -553,7 +553,7 @@ public class FlowableNullTests {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorArrayOneIsNull() {
-        Flowable.mergeDelayError(128, 128, just1, null).toBlocking().last();
+        Flowable.mergeDelayError(128, 128, just1, null).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -618,7 +618,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Object d) {
                 return null;
             }
-        }, Functions.emptyConsumer()).toBlocking().last();
+        }, Functions.emptyConsumer()).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -658,7 +658,7 @@ public class FlowableNullTests {
             public Object apply(Object[] v) {
                 return 1;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
     
     @SuppressWarnings("unchecked")
@@ -675,7 +675,7 @@ public class FlowableNullTests {
             public Object apply(Object[] a) {
                 return null;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -700,7 +700,7 @@ public class FlowableNullTests {
             public Object apply(Object[] a) {
                 return null;
             }
-        }).toBlocking().last();
+        }).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -725,7 +725,7 @@ public class FlowableNullTests {
             public Object apply(Object[] a) {
                 return 1;
             }
-        }, true, 128).toBlocking().last();
+        }, true, 128).blockingLast();
     }
     
     @SuppressWarnings("unchecked")
@@ -742,7 +742,7 @@ public class FlowableNullTests {
             public Object apply(Object[] a) {
                 return null;
             }
-        }, true, 128).toBlocking().last();
+        }, true, 128).blockingLast();
     }
 
     //*************************************************************
@@ -776,7 +776,7 @@ public class FlowableNullTests {
             public Collection<Integer> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -801,7 +801,7 @@ public class FlowableNullTests {
             public Collection<Integer> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -826,7 +826,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -846,7 +846,7 @@ public class FlowableNullTests {
             public Collection<Integer> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -861,7 +861,7 @@ public class FlowableNullTests {
             public Publisher<Object> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -886,7 +886,7 @@ public class FlowableNullTests {
             public Collection<Integer> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -912,7 +912,7 @@ public class FlowableNullTests {
         }, new BiConsumer<Object, Integer>() {
             @Override
             public void accept(Object a, Integer b) { }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -955,7 +955,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -970,7 +970,7 @@ public class FlowableNullTests {
             public Iterable<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -985,7 +985,7 @@ public class FlowableNullTests {
                     }
                 };
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1010,7 +1010,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1040,7 +1040,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1090,7 +1090,7 @@ public class FlowableNullTests {
             public Publisher<Integer> apply(Integer v) {
                 return just1;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1105,7 +1105,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1135,7 +1135,7 @@ public class FlowableNullTests {
             public Collection<Object> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1145,7 +1145,7 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1165,7 +1165,7 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1278,7 +1278,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1313,7 +1313,7 @@ public class FlowableNullTests {
             public Publisher<Integer> call() {
                 return just1;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1348,7 +1348,7 @@ public class FlowableNullTests {
             public Publisher<Integer> call() {
                 return just1;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1383,7 +1383,7 @@ public class FlowableNullTests {
             public Publisher<Integer> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1408,7 +1408,7 @@ public class FlowableNullTests {
             public Object apply(Integer a, Object b) {
                 return 1;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1433,7 +1433,7 @@ public class FlowableNullTests {
             public Object apply(Integer a, Integer b) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1448,7 +1448,7 @@ public class FlowableNullTests {
             public Iterable<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1463,7 +1463,7 @@ public class FlowableNullTests {
                     }
                 };
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1473,7 +1473,7 @@ public class FlowableNullTests {
             public Iterable<Integer> apply(Integer v) {
                 return Arrays.asList(1, null);
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1498,7 +1498,7 @@ public class FlowableNullTests {
             public Object apply(Integer a, Integer b) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1545,7 +1545,7 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1570,7 +1570,7 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1590,7 +1590,7 @@ public class FlowableNullTests {
             public Subscriber<? super Integer> apply(Subscriber<? super Object> s) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1605,7 +1605,7 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1645,7 +1645,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Throwable e) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1670,7 +1670,7 @@ public class FlowableNullTests {
             public Object apply(Throwable e) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1690,7 +1690,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Flowable<Integer> v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1705,7 +1705,7 @@ public class FlowableNullTests {
             public Integer apply(Integer a, Integer b) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1730,7 +1730,7 @@ public class FlowableNullTests {
             public Integer apply(Integer a, Integer b) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1755,7 +1755,7 @@ public class FlowableNullTests {
             public Object apply(Object a, Integer b) {
                 return 1;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1775,7 +1775,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Flowable<Object> v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1790,7 +1790,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Flowable<Integer> o) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1805,7 +1805,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Flowable<Integer> v) {
                 return null;
             }
-        }, 1, 1, TimeUnit.SECONDS).toBlocking().run();
+        }, 1, 1, TimeUnit.SECONDS).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1820,7 +1820,7 @@ public class FlowableNullTests {
             public Publisher<Integer> apply(Flowable<Integer> v) {
                 return v;
             }
-        }, 1, 1, null).toBlocking().run();
+        }, 1, 1, null).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1830,7 +1830,7 @@ public class FlowableNullTests {
             public Publisher<Integer> apply(Flowable<Integer> v) {
                 return v;
             }
-        }, 1, 1, TimeUnit.SECONDS, null).toBlocking().run();
+        }, 1, 1, TimeUnit.SECONDS, null).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1845,7 +1845,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Flowable<Integer> v) {
                 return null;
             }
-        }, 1, TimeUnit.SECONDS, Schedulers.single()).toBlocking().run();
+        }, 1, TimeUnit.SECONDS, Schedulers.single()).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1920,7 +1920,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Flowable<? extends Throwable> f) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1960,7 +1960,7 @@ public class FlowableNullTests {
             public Integer apply(Integer a, Integer b) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1985,7 +1985,7 @@ public class FlowableNullTests {
             public Integer apply(Integer a, Integer b) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2010,7 +2010,7 @@ public class FlowableNullTests {
             public Object apply(Object a, Integer b) {
                 return 1;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2035,7 +2035,7 @@ public class FlowableNullTests {
             public Object apply(Object a, Integer b) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2085,12 +2085,12 @@ public class FlowableNullTests {
             public Iterator<Integer> iterator() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
     public void startWithIterableOneNull() {
-        just1.startWith(Arrays.asList(1, null)).toBlocking().run();
+        just1.startWith(Arrays.asList(1, null)).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2110,7 +2110,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void startWithArrayOneNull() {
-        just1.startWithArray(1, null).toBlocking().run();
+        just1.startWithArray(1, null).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2160,7 +2160,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2285,7 +2285,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2335,7 +2335,7 @@ public class FlowableNullTests {
             public Publisher<Integer> apply(Integer v) {
                 return just1;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2360,7 +2360,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2390,7 +2390,7 @@ public class FlowableNullTests {
             public Collection<Integer> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2425,7 +2425,7 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2460,7 +2460,7 @@ public class FlowableNullTests {
             public Map<Object, Object> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2490,7 +2490,7 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2525,7 +2525,7 @@ public class FlowableNullTests {
             public Map<Object, Collection<Object>> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2570,7 +2570,7 @@ public class FlowableNullTests {
             public Collection<Integer> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2625,7 +2625,7 @@ public class FlowableNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2640,7 +2640,7 @@ public class FlowableNullTests {
             public Publisher<Object> call() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2665,7 +2665,7 @@ public class FlowableNullTests {
             public Object apply(Integer a, Integer b) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2690,7 +2690,7 @@ public class FlowableNullTests {
             public Object apply(Integer a, Integer b) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2705,7 +2705,7 @@ public class FlowableNullTests {
             public Object apply(Integer a, Object b) {
                 return 1;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2715,7 +2715,7 @@ public class FlowableNullTests {
             public Object apply(Integer a, Integer b) {
                 return 1;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2741,7 +2741,7 @@ public class FlowableNullTests {
             public Object apply(Integer a, Integer b) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
 
     //*********************************************
@@ -2752,70 +2752,70 @@ public class FlowableNullTests {
     public void asyncSubjectOnNextNull() {
         FlowProcessor<Integer> subject = AsyncProcessor.create();
         subject.onNext(null);
-        subject.toBlocking().run();
+        subject.blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
     public void asyncSubjectOnErrorNull() {
         FlowProcessor<Integer> subject = AsyncProcessor.create();
         subject.onError(null);
-        subject.toBlocking().run();
+        subject.blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
     public void behaviorSubjectOnNextNull() {
         FlowProcessor<Integer> subject = BehaviorProcessor.create();
         subject.onNext(null);
-        subject.toBlocking().run();
+        subject.blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
     public void behaviorSubjectOnErrorNull() {
         FlowProcessor<Integer> subject = BehaviorProcessor.create();
         subject.onError(null);
-        subject.toBlocking().run();
+        subject.blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
     public void publishSubjectOnNextNull() {
         FlowProcessor<Integer> subject = PublishProcessor.create();
         subject.onNext(null);
-        subject.toBlocking().run();
+        subject.blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
     public void publishSubjectOnErrorNull() {
         FlowProcessor<Integer> subject = PublishProcessor.create();
         subject.onError(null);
-        subject.toBlocking().run();
+        subject.blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
     public void replaycSubjectOnNextNull() {
         FlowProcessor<Integer> subject = ReplayProcessor.create();
         subject.onNext(null);
-        subject.toBlocking().run();
+        subject.blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
     public void replaySubjectOnErrorNull() {
         FlowProcessor<Integer> subject = ReplayProcessor.create();
         subject.onError(null);
-        subject.toBlocking().run();
+        subject.blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
     public void serializedcSubjectOnNextNull() {
         FlowProcessor<Integer> subject = PublishProcessor.<Integer>create().toSerialized();
         subject.onNext(null);
-        subject.toBlocking().run();
+        subject.blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
     public void serializedSubjectOnErrorNull() {
         FlowProcessor<Integer> subject = PublishProcessor.<Integer>create().toSerialized();
         subject.onError(null);
-        subject.toBlocking().run();
+        subject.blockingSubscribe();
     }
 
 }

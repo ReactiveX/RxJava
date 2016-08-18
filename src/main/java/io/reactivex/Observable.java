@@ -18,10 +18,9 @@ import java.util.concurrent.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.SchedulerSupport;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.flowables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
@@ -206,7 +205,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super T[], ? extends R> combiner, int bufferSize) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
@@ -268,7 +267,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super T[], ? extends R> combiner, int bufferSize) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
@@ -717,7 +716,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Observable<R> combineLatestDelayError(ObservableSource<? extends T>[] sources, 
             Function<? super T[], ? extends R> combiner, int bufferSize) {
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         Objects.requireNonNull(combiner, "combiner is null");
         if (sources.length == 0) {
             return empty();
@@ -786,7 +785,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super T[], ? extends R> combiner, int bufferSize) {
         Objects.requireNonNull(sources, "sources is null");
         Objects.requireNonNull(combiner, "combiner is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
@@ -3284,7 +3283,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         Objects.requireNonNull(p1, "p1 is null");
         Objects.requireNonNull(p2, "p2 is null");
         Objects.requireNonNull(isEqual, "isEqual is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         return new ObservableSequenceEqual<T>(p1, p2, isEqual, bufferSize);
     }
 
@@ -3589,7 +3588,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param paramName the parameter name of the value
      * @throws IllegalArgumentException if bufferSize &lt;= 0
      */
-    private static void validateBufferSize(int bufferSize, String paramName) {
+    private static void verifyPositive(int bufferSize, String paramName) {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException(paramName + " > 0 required but it was " + bufferSize);
         }
@@ -4386,7 +4385,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             return empty();
         }
         Objects.requireNonNull(zipper, "zipper is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         return new ObservableZip<T, R>(sources, null, zipper, bufferSize, delayError);
     }
 
@@ -4441,7 +4440,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             int bufferSize) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         return new ObservableZip<T, R>(null, sources, zipper, bufferSize, delayError);
     }
 
@@ -4521,22 +4520,417 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Hides the identity of this Observable and its Subscription.
-     * <p>Allows hiding extra features such as {@link Processor}'s
-     * {@link Subscriber} methods or preventing certain identity-based 
-     * optimizations (fusion).
+     * Returns the first item emitted by this {@code BlockingObservable}, or throws
+     * {@code NoSuchElementException} if it emits no items.
      * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code hide} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return the new Observable instance
+     *
+     * @return the first item emitted by this {@code BlockingObservable}
+     * @throws NoSuchElementException
+     *             if this {@code BlockingObservable} emits no items
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final T blockingFirst() {
+        BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
+        subscribe(s);
+        T v = s.blockingGet();
+        if (v != null) {
+            return v;
+        }
+        throw new NoSuchElementException();
+    }
+
+    /**
+     * Returns the first item emitted by this {@code BlockingObservable}, or a default value if it emits no
+     * items.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param defaultValue
+     *            a default value to return if this {@code BlockingObservable} emits no items
+     * @return the first item emitted by this {@code BlockingObservable}, or the default value if it emits no
+     *         items
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final T blockingFirst(T defaultValue) {
+        BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
+        subscribe(s);
+        T v = s.blockingGet();
+        return v != null ? v : defaultValue;
+    }
+
+    /**
+     * Invokes a method on each item emitted by this {@code BlockingObservable} and blocks until the Observable
+     * completes.
+     * <p>
+     * <em>Note:</em> This will block even if the underlying Observable is asynchronous.
+     * <p>
+     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
+     * <p>
+     * This is similar to {@link Observable#subscribe(Observer)}, but it blocks. Because it blocks it does not
+     * need the {@link Observer#onComplete()} or {@link Observer#onError(Throwable)} methods. If the
+     * underlying Observable terminates with an error, rather than calling {@code onError}, this method will
+     * throw an exception.
      * 
+     * <p>The difference between this method and {@link #subscribe(Consumer)} is that the {@code onNext} action
+     * is executed on the emission thread instead of the current thread.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingForEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param onNext
+     *            the {@link Consumer} to invoke for each item emitted by the {@code BlockingObservable}
+     * @throws RuntimeException
+     *             if an error occurs
+     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX documentation: Subscribe</a>
+     * @see #subscribe(Consumer)
+     */
+    public final void blockingForEach(Consumer<? super T> onNext) {
+        Iterator<T> it = blockingIterable().iterator();
+        while (it.hasNext()) {
+            try {
+                onNext.accept(it.next());
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                ((Disposable)it).dispose();
+                throw Exceptions.propagate(e);
+            }
+        }
+    }
+    
+    /**
+     * Converts this {@code BlockingObservable} into an {@link Iterable}.
+     * <p>
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingITerable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return an {@link Iterable} version of this {@code BlockingObservable}
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
+     */
+    public final Iterable<T> blockingIterable() {
+        return blockingIterable(bufferSize());
+    }
+    
+    /**
+     * Converts this {@code BlockingObservable} into an {@link Iterable}.
+     * <p>
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param bufferSize the number of items to prefetch from the current Flowable
+     * @return an {@link Iterable} version of this {@code BlockingObservable}
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
+     */
+    public final Iterable<T> blockingIterable(int bufferSize) {
+        verifyPositive(bufferSize, "bufferSize");
+        return new BlockingObservableIterable<T>(this, bufferSize);
+    }
+    
+    /**
+     * Returns the last item emitted by this {@code BlockingObservable}, or throws
+     * {@code NoSuchElementException} if this {@code BlockingObservable} emits no items.
+     * <p>
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.last.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return the last item emitted by this {@code BlockingObservable}
+     * @throws NoSuchElementException
+     *             if this {@code BlockingObservable} emits no items
+     * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
+     */
+    public final T blockingLast() {
+        BlockingLastObserver<T> s = new BlockingLastObserver<T>();
+        subscribe(s);
+        T v = s.blockingGet();
+        if (v != null) {
+            return v;
+        }
+        throw new NoSuchElementException();
+    }
+
+    /**
+     * Returns the last item emitted by this {@code BlockingObservable}, or a default value if it emits no
+     * items.
+     * <p>
+     * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.lastOrDefault.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param defaultValue
+     *            a default value to return if this {@code BlockingObservable} emits no items
+     * @return the last item emitted by the {@code BlockingObservable}, or the default value if it emits no
+     *         items
+     * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
+     */
+    public final T blockingLast(T defaultValue) {
+        BlockingLastObserver<T> s = new BlockingLastObserver<T>();
+        subscribe(s);
+        T v = s.blockingGet();
+        if (v != null) {
+            return v;
+        }
+        return v != null ? v : defaultValue;
+    }
+    
+    /**
+     * Returns an {@link Iterable} that returns the latest item emitted by this {@code BlockingObservable},
+     * waiting if necessary for one to become available.
+     * <p>
+     * If this {@code BlockingObservable} produces items faster than {@code Iterator.next} takes them,
+     * {@code onNext} events might be skipped, but {@code onError} or {@code onCompleted} events are not.
+     * <p>
+     * Note also that an {@code onNext} directly followed by {@code onCompleted} might hide the {@code onNext}
+     * event.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return an Iterable that always returns the latest item emitted by this {@code BlockingObservable}
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final Iterable<T> blockingLatest() {
+        return BlockingObservableLatest.latest(this);
+    }
+    
+    /**
+     * Returns an {@link Iterable} that always returns the item most recently emitted by this
+     * {@code BlockingObservable}.
+     * <p>
+     * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingMostRecent} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param initialValue
+     *            the initial value that the {@link Iterable} sequence will yield if this
+     *            {@code BlockingObservable} has not yet emitted an item
+     * @return an {@link Iterable} that on each iteration returns the item that this {@code BlockingObservable}
+     *         has most recently emitted
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final Iterable<T> blockingMostRecent(T initialValue) {
+        return BlockingObservableMostRecent.mostRecent(this, initialValue);
+    }
+    
+    /**
+     * Returns an {@link Iterable} that blocks until this {@code BlockingObservable} emits another item, then
+     * returns that item.
+     * <p>
+     * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return an {@link Iterable} that blocks upon each iteration until this {@code BlockingObservable} emits
+     *         a new item, whereupon the Iterable returns that item
+     * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX documentation: TakeLast</a>
+     */
+    public final Iterable<T> blockingNext() {
+        return BlockingObservableNext.next(this);
+    }
+    
+    /**
+     * If this {@code BlockingObservable} completes after emitting a single item, return that item, otherwise
+     * throw a {@code NoSuchElementException}.
+     * <p>
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.single.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return the single item emitted by this {@code BlockingObservable}
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final T blockingSingle() {
+        return single().blockingFirst();
+    }
+    
+    /**
+     * If this {@code BlockingObservable} completes after emitting a single item, return that item; if it emits
+     * more than one item, throw an {@code IllegalArgumentException}; if it emits no items, return a default
+     * value.
+     * <p>
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.singleOrDefault.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param defaultValue
+     *            a default value to return if this {@code BlockingObservable} emits no items
+     * @return the single item emitted by this {@code BlockingObservable}, or the default value if it emits no
+     *         items
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final T blockingSingle(T defaultValue) {
+        return single(defaultValue).blockingFirst();
+    }
+    
+    /**
+     * Returns a {@link Future} representing the single value emitted by this {@code BlockingObservable}.
+     * <p>
+     * If the {@link Observable} emits more than one item, {@link java.util.concurrent.Future} will receive an
+     * {@link java.lang.IllegalArgumentException}. If the {@link Observable} is empty, {@link java.util.concurrent.Future}
+     * will receive an {@link java.util.NoSuchElementException}.
+     * <p>
+     * If the {@code BlockingObservable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
+     * <p>
+     * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a {@link Future} that expects a single item to be emitted by this {@code BlockingObservable}
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
+     */
+    public final Future<T> toFuture() {
+        return ObservableToFuture.toFuture(this);
+    }
+    
+    /**
+     * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @since 2.0
      */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> hide() {
-        // TODO hide the Disposable as well
-        return new ObservableFromUnsafeSource<T>(this);
+    public final void blockingSubscribe() {
+        ObservableBlockingSubscribe.subscribe(this);
+    }
+
+    /**
+     * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onNext the callback action for each source value
+     * @since 2.0
+     */
+    public final void blockingSubscribe(Consumer<? super T> onNext) {
+        ObservableBlockingSubscribe.subscribe(this, onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION);
+    }
+
+    /**
+     * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onNext the callback action for each source value
+     * @param onError the callback action for an error event
+     * @since 2.0
+     */
+    public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
+        ObservableBlockingSubscribe.subscribe(this, onNext, onError, Functions.EMPTY_ACTION);
+    }
+
+    
+    /**
+     * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onNext the callback action for each source value
+     * @param onError the callback action for an error event
+     * @param onComplete the callback action for the completion event.
+     * @since 2.0
+     */
+    public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete) {
+        ObservableBlockingSubscribe.subscribe(this, onNext, onError, onComplete);
+    }
+
+    /**
+     * Subscribes to the source and calls the Observer methods <strong>on the current thread</strong>.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source 
+     *  {@code Observable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * The unsubscription and backpressure is composed through.
+     * @param subscriber the subscriber to forward events and calls to in the current thread
+     * @since 2.0
+     */
+    public final void blockingSubscribe(Observer<? super T> subscriber) {
+        ObservableBlockingSubscribe.subscribe(this, subscriber);
     }
 
     /**
@@ -5135,11 +5529,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
      * <p>
      * This is useful when you want a ObservableSource to cache responses and you can't control the
-     * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
+     * subscribe/unsubscribe behavior of all the {@link Observer}s.
      * <p>
      * The operator subscribes only when the first downstream subscriber subscribes and maintains
      * a single subscription towards this ObservableSource. In contrast, the operator family of {@link #replay()}
-     * that return a {@link ConnectableFlowable} require an explicit call to {@link ConnectableFlowable#connect()}.  
+     * that return a {@link ConnectableObservable} require an explicit call to {@link ConnectableObservable#connect()}.  
      * <p>
      * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
      * Observer so be careful not to use this Observer on ObservableSources that emit an infinite or very large number
@@ -5188,11 +5582,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
      * <p>
      * This is useful when you want a ObservableSource to cache responses and you can't control the
-     * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
+     * subscribe/unsubscribe behavior of all the {@link Observer}s.
      * <p>
      * The operator subscribes only when the first downstream subscriber subscribes and maintains
      * a single subscription towards this ObservableSource. In contrast, the operator family of {@link #replay()}
-     * that return a {@link ConnectableFlowable} require an explicit call to {@link ConnectableFlowable#connect()}.  
+     * that return a {@link ConnectableObservable} require an explicit call to {@link ConnectableObservable#connect()}.  
      * <p>
      * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
      * Observer so be careful not to use this Observer on ObservableSources that emit an infinite or very large number
@@ -5226,7 +5620,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * <p>
      * <em>Note:</em> The capacity hint is not an upper bound on cache size. For that, consider
-     * {@link #replay(int)} in combination with {@link ConnectableFlowable#autoConnect()} or similar.
+     * {@link #replay(int)} in combination with {@link ConnectableObservable#autoConnect()} or similar.
      * 
      * @param initialCapacity hint for number of items to cache (for optimizing underlying data structure)
      * @return a Observable that, when first subscribed to, caches all of its items and notifications for the
@@ -5323,7 +5717,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Transform a ObservableSource by applying a particular Transformer function to it.
      * <p>
      * This method operates on the ObservableSource itself whereas {@link #lift} operates on the ObservableSource's
-     * Subscribers or Observers.
+     * Observers.
      * <p>
      * If the operator you are creating is designed to act on the individual items emitted by a source
      * ObservableSource, use {@link #lift}. If your operator is designed to transform the source ObservableSource as a whole
@@ -6679,7 +7073,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (maxConcurrency <= 0) {
             throw new IllegalArgumentException("maxConcurrency > 0 required but it was " + maxConcurrency);
         }
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         if (this instanceof ObservableJust) {
             ObservableJust<T> scalar = (ObservableJust<T>) this;
             return scalar.scalarFlatMap(mapper);
@@ -7155,14 +7549,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
-     * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedObservableSource} allows only a single 
+     * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single 
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the 
      * source terminates, the next emission by the source having the same key will trigger a new 
      * {@code GroupedObservableSource} emission.
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
      * <p>
-     * <em>Note:</em> A {@link GroupedFlowable} will cache the items it is to emit until such time as it
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
@@ -7175,7 +7569,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a function that extracts the key for each item
      * @param <K>
      *            the key type
-     * @return an {@code ObservableSource} that emits {@link GroupedFlowable}s, each of which corresponds to a
+     * @return an {@code ObservableSource} that emits {@link GroupedObservable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source ObservableSource that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
@@ -7188,14 +7582,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
-     * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedObservableSource} allows only a single 
+     * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single 
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the 
      * source terminates, the next emission by the source having the same key will trigger a new 
      * {@code GroupedObservableSource} emission.
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
      * <p>
-     * <em>Note:</em> A {@link GroupedFlowable} will cache the items it is to emit until such time as it
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
@@ -7211,7 +7605,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param delayError
      *            if true, the exception from the current Observable is delayed in each group until that specific group emitted
      *            the normal values; if false, the exception bypasses values in the groups and is reported immediately.
-     * @return an {@code ObservableSource} that emits {@link GroupedFlowable}s, each of which corresponds to a
+     * @return an {@code ObservableSource} that emits {@link GroupedObservable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source ObservableSource that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
@@ -7224,14 +7618,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
-     * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedObservableSource} allows only a single 
+     * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single 
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the 
      * source terminates, the next emission by the source having the same key will trigger a new 
      * {@code GroupedObservableSource} emission.
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
      * <p>
-     * <em>Note:</em> A {@link GroupedFlowable} will cache the items it is to emit until such time as it
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
@@ -7248,7 +7642,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the key type
      * @param <V>
      *            the element type
-     * @return an {@code ObservableSource} that emits {@link GroupedFlowable}s, each of which corresponds to a
+     * @return an {@code ObservableSource} that emits {@link GroupedObservable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source ObservableSource that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
@@ -7261,14 +7655,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
-     * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedObservableSource} allows only a single 
+     * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single 
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the 
      * source terminates, the next emission by the source having the same key will trigger a new 
      * {@code GroupedObservableSource} emission.
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
      * <p>
-     * <em>Note:</em> A {@link GroupedFlowable} will cache the items it is to emit until such time as it
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
@@ -7288,7 +7682,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param delayError
      *            if true, the exception from the current Observable is delayed in each group until that specific group emitted
      *            the normal values; if false, the exception bypasses values in the groups and is reported immediately.
-     * @return an {@code ObservableSource} that emits {@link GroupedFlowable}s, each of which corresponds to a
+     * @return an {@code ObservableSource} that emits {@link GroupedObservable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source ObservableSource that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
@@ -7301,14 +7695,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
-     * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedObservableSource} allows only a single 
+     * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single 
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the 
      * source terminates, the next emission by the source having the same key will trigger a new 
      * {@code GroupedObservableSource} emission.
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
      * <p>
-     * <em>Note:</em> A {@link GroupedFlowable} will cache the items it is to emit until such time as it
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservableSource}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #ignoreElements} to them.
@@ -7325,12 +7719,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            if true, the exception from the current Observable is delayed in each group until that specific group emitted
      *            the normal values; if false, the exception bypasses values in the groups and is reported immediately.
      * @param bufferSize
-     *            the hint for how many {@link GroupedFlowable}s and element in each {@link GroupedFlowable} should be buffered
+     *            the hint for how many {@link GroupedObservable}s and element in each {@link GroupedObservable} should be buffered
      * @param <K>
      *            the key type
      * @param <V>
      *            the element type
-     * @return an {@code ObservableSource} that emits {@link GroupedFlowable}s, each of which corresponds to a
+     * @return an {@code ObservableSource} that emits {@link GroupedObservable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source ObservableSource that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
@@ -7341,7 +7735,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             boolean delayError, int bufferSize) {
         Objects.requireNonNull(keySelector, "keySelector is null");
         Objects.requireNonNull(valueSelector, "valueSelector is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
 
         return new ObservableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError);
     }
@@ -7388,6 +7782,25 @@ public abstract class Observable<T> implements ObservableSource<T> {
                 this, other, leftEnd, rightEnd, resultSelector);
     }
     
+    /**
+     * Hides the identity of this Observable and its Subscription.
+     * <p>Allows hiding extra features such as {@link Processor}'s
+     * {@link Subscriber} methods or preventing certain identity-based 
+     * optimizations (fusion).
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code hide} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Observable instance
+     * 
+     * @since 2.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Observable<T> hide() {
+        // TODO hide the Disposable as well
+        return new ObservableFromUnsafeSource<T>(this);
+    }
+
     /**
      * Ignores all items emitted by the source ObservableSource and only calls {@code onCompleted} or {@code onError}.
      * <p>
@@ -7605,7 +8018,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Modifies a ObservableSource to perform its emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with a bounded buffer of {@link Flowable#bufferSize()} slots.
+     * asynchronously with a bounded buffer of {@link Observable#bufferSize()} slots.
      *
      * <p>Note that onError notifications will cut ahead of onNext notifications on the emission thread if Scheduler is truly
      * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, boolean)} overload.
@@ -7688,7 +8101,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
         Objects.requireNonNull(scheduler, "scheduler is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         return new ObservableObserveOn<T>(this, scheduler, delayError, bufferSize);
     }
 
@@ -7903,8 +8316,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
     
     /**
-     * Returns a {@link ConnectableFlowable}, which is a variety of ObservableSource that waits until its
-     * {@link ConnectableFlowable#connect connect} method is called before it begins emitting items to those
+     * Returns a {@link ConnectableObservable}, which is a variety of ObservableSource that waits until its
+     * {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those
      * {@link Observer}s that have subscribed to it.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.png" alt="">
@@ -7913,7 +8326,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @return a {@link ConnectableFlowable} that upon connection causes the source ObservableSource to emit items
+     * @return a {@link ConnectableObservable} that upon connection causes the source ObservableSource to emit items
      *         to its {@link Observer}s
      * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
      */
@@ -7924,7 +8337,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits the results of invoking a specified selector on items emitted by a
-     * {@link ConnectableFlowable} that shares a single subscription to the underlying sequence.
+     * {@link ConnectableObservable} that shares a single subscription to the underlying sequence.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.f.png" alt="">
      * <dl>
@@ -7938,7 +8351,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a function that can use the multicasted source sequence as many times as needed, without
      *            causing multiple subscriptions to the source sequence. Subscribers to the given source will
      *            receive all notifications of the source from the time of the subscription forward.
-     * @return a Observable that emits the results of invoking the selector on the items emitted by a {@link ConnectableFlowable} that shares a single subscription to the underlying sequence
+     * @return a Observable that emits the results of invoking the selector on the items emitted by a {@link ConnectableObservable} that shares a single subscription to the underlying sequence
      * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7948,7 +8361,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits the results of invoking a specified selector on items emitted by a
-     * {@link ConnectableFlowable} that shares a single subscription to the underlying sequence.
+     * {@link ConnectableObservable} that shares a single subscription to the underlying sequence.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.f.png" alt="">
      * <dl>
@@ -7964,19 +8377,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            receive all notifications of the source from the time of the subscription forward.
      * @param bufferSize
      *            the number of elements to prefetch from the current Observable
-     * @return a Observable that emits the results of invoking the selector on the items emitted by a {@link ConnectableFlowable} that shares a single subscription to the underlying sequence
+     * @return a Observable that emits the results of invoking the selector on the items emitted by a {@link ConnectableObservable} that shares a single subscription to the underlying sequence
      * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> publish(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, int bufferSize) {
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         Objects.requireNonNull(selector, "selector is null");
         return ObservablePublish.create(this, selector, bufferSize);
     }
 
     /**
-     * Returns a {@link ConnectableFlowable}, which is a variety of ObservableSource that waits until its
-     * {@link ConnectableFlowable#connect connect} method is called before it begins emitting items to those
+     * Returns a {@link ConnectableObservable}, which is a variety of ObservableSource that waits until its
+     * {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those
      * {@link Observer}s that have subscribed to it.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.png" alt="">
@@ -7987,13 +8400,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * 
      * @param bufferSize
      *            the number of elements to prefetch from the current Observable
-     * @return a {@link ConnectableFlowable} that upon connection causes the source ObservableSource to emit items
+     * @return a {@link ConnectableObservable} that upon connection causes the source ObservableSource to emit items
      *         to its {@link Observer}s
      * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableObservable<T> publish(int bufferSize) {
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         return ObservablePublish.create(this, bufferSize);
     }
 
@@ -8217,7 +8630,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a {@link ConnectableFlowable} that shares a single subscription to the underlying ObservableSource
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the underlying ObservableSource
      * that will replay all of its items and notifications to any future {@link Observer}. A Connectable
      * ObservableSource resembles an ordinary ObservableSource, except that it does not begin emitting items when it is
      * subscribed to, but only when its {@code connect} method is called.
@@ -8228,7 +8641,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @return a {@link ConnectableFlowable} that upon connection causes the source ObservableSource to emit its
+     * @return a {@link ConnectableObservable} that upon connection causes the source ObservableSource to emit its
      *         items to its {@link Observer}s
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
@@ -8239,7 +8652,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits items that are the results of invoking a specified selector on the items
-     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource.
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource.
      * <p>
      * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.f.png" alt="">
      * <dl>
@@ -8253,7 +8666,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the selector function, which can use the multicasted sequence as many times as needed, without
      *            causing multiple subscriptions to the ObservableSource
      * @return a Observable that emits items that are the results of invoking the selector on a
-     *         {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource
+     *         {@link ConnectableObservable} that shares a single subscription to the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -8264,7 +8677,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits items that are the results of invoking a specified selector on items
-     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource,
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying {@code bufferSize} notifications.
      * <p>
      * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fn.png" alt="">
@@ -8281,7 +8694,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param bufferSize
      *            the buffer size that limits the number of items the connectable ObservableSource can replay
      * @return a Observable that emits items that are the results of invoking the selector on items emitted by
-     *         a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource
+     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource
      *         replaying no more than {@code bufferSize} items
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
@@ -8293,7 +8706,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits items that are the results of invoking a specified selector on items
-     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource,
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnt.png" alt="">
@@ -8314,7 +8727,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param unit
      *            the time unit of {@code time}
      * @return a Observable that emits items that are the results of invoking the selector on items emitted by
-     *         a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource, and
+     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource, and
      *         replays no more than {@code bufferSize} items that were emitted within the window defined by
      *         {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
@@ -8326,7 +8739,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits items that are the results of invoking a specified selector on items
-     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource,
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="445" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnts.png" alt="">
@@ -8349,7 +8762,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param scheduler
      *            the Scheduler that is the time source for the window
      * @return a Observable that emits items that are the results of invoking the selector on items emitted by
-     *         a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource, and
+     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource, and
      *         replays no more than {@code bufferSize} items that were emitted within the window defined by
      *         {@code time}
      * @throws IllegalArgumentException
@@ -8368,7 +8781,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits items that are the results of invoking a specified selector on items
-     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource,
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying a maximum of {@code bufferSize} items.
      * <p>
      * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fns.png" alt="">
@@ -8387,7 +8800,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param scheduler
      *            the Scheduler on which the replay is observed
      * @return a Observable that emits items that are the results of invoking the selector on items emitted by
-     *         a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource,
+     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      *         replaying no more than {@code bufferSize} notifications
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
@@ -8399,7 +8812,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits items that are the results of invoking a specified selector on items
-     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource,
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying all items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="435" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ft.png" alt="">
@@ -8418,7 +8831,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param unit
      *            the time unit of {@code time}
      * @return a Observable that emits items that are the results of invoking the selector on items emitted by
-     *         a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource,
+     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      *         replaying all items that were emitted within the window defined by {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
@@ -8429,7 +8842,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits items that are the results of invoking a specified selector on items
-     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource,
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying all items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fts.png" alt="">
@@ -8450,7 +8863,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param scheduler
      *            the scheduler that is the time source for the window
      * @return a Observable that emits items that are the results of invoking the selector on items emitted by
-     *         a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource,
+     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      *         replaying all items that were emitted within the window defined by {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
@@ -8464,7 +8877,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits items that are the results of invoking a specified selector on items
-     * emitted by a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource.
+     * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource.
      * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fs.png" alt="">
      * <dl>
@@ -8480,7 +8893,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param scheduler
      *            the Scheduler where the replay is observed
      * @return a Observable that emits items that are the results of invoking the selector on items emitted by
-     *         a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource,
+     *         a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      *         replaying all items
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
@@ -8493,7 +8906,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource that
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource that
      * replays at most {@code bufferSize} items emitted by that ObservableSource. A Connectable ObservableSource resembles
      * an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to, but only
      * when its {@code connect} method is called.
@@ -8506,7 +8919,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
-     * @return a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      *         replays at most {@code bufferSize} items emitted by that ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
@@ -8516,7 +8929,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      * replays at most {@code bufferSize} items that were emitted during a specified time window. A Connectable
      * ObservableSource resembles an ordinary ObservableSource, except that it does not begin emitting items when it is
      * subscribed to, but only when its {@code connect} method is called. 
@@ -8533,7 +8946,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the duration of the window in which the replayed items must have been emitted
      * @param unit
      *            the time unit of {@code time}
-     * @return a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      *         replays at most {@code bufferSize} items that were emitted during the window defined by
      *         {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
@@ -8544,7 +8957,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      * that replays a maximum of {@code bufferSize} items that are emitted within a specified time window. A
      * Connectable ObservableSource resembles an ordinary ObservableSource, except that it does not begin emitting items
      * when it is subscribed to, but only when its {@code connect} method is called.
@@ -8563,7 +8976,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the time unit of {@code time}
      * @param scheduler
      *            the scheduler that is used as a time source for the window
-     * @return a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      *         replays at most {@code bufferSize} items that were emitted during the window defined by
      *         {@code time}
      * @throws IllegalArgumentException
@@ -8581,7 +8994,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      * replays at most {@code bufferSize} items emitted by that ObservableSource. A Connectable ObservableSource resembles
      * an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to, but only
      * when its {@code connect} method is called. 
@@ -8596,7 +9009,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the buffer size that limits the number of items that can be replayed
      * @param scheduler
      *            the scheduler on which the Observers will observe the emitted items
-     * @return a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      *         replays at most {@code bufferSize} items that were emitted by the ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
@@ -8606,7 +9019,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      * replays all items emitted by that ObservableSource within a specified time window. A Connectable ObservableSource
      * resembles an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to,
      * but only when its {@code connect} method is called. 
@@ -8621,7 +9034,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the duration of the window in which the replayed items must have been emitted
      * @param unit
      *            the time unit of {@code time}
-     * @return a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      *         replays the items that were emitted during the window defined by {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
@@ -8631,7 +9044,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      * replays all items emitted by that ObservableSource within a specified time window. A Connectable ObservableSource
      * resembles an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to,
      * but only when its {@code connect} method is called. 
@@ -8648,7 +9061,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the time unit of {@code time}
      * @param scheduler
      *            the Scheduler that is the time source for the window
-     * @return a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource and
+     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource and
      *         replays the items that were emitted during the window defined by {@code time}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
@@ -8660,7 +9073,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource that
+     * Returns a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource that
      * will replay all of its items and notifications to any future {@link Observer} on the given
      * {@link Scheduler}. A Connectable ObservableSource resembles an ordinary ObservableSource, except that it does not
      * begin emitting items when it is subscribed to, but only when its {@code connect} method is called.
@@ -8673,7 +9086,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * 
      * @param scheduler
      *            the Scheduler on which the Observers will observe the emitted items
-     * @return a {@link ConnectableFlowable} that shares a single subscription to the source ObservableSource that
+     * @return a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource that
      *         will replay all of its items and notifications to any future {@link Observer} on the given
      *         {@link Scheduler}
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
@@ -8837,7 +9250,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *          System.out.println("delay retry by " + i + " second(s)");
      *          return ObservableSource.timer(i, TimeUnit.SECONDS);
      *      });
-     *  }).toBlocking().forEach(System.out::println);
+     *  }).blockingForEach(System.out::println);
      * </code></pre>
      * 
      * Output is:
@@ -9122,7 +9535,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * there is at least one {@link Subscriber} this {@link ObservableSource} will be subscribed and emitting data. 
      * When all subscribers have unsubscribed it will unsubscribe from the source {@link ObservableSource}. 
      * <p>
-     * This is an alias for {@link #publish()}.{@link ConnectableFlowable#refCount()}.
+     * This is an alias for {@link #publish()}.{@link ConnectableObservable#refCount()}.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishRefCount.png" alt="">
      * <dl>
@@ -9435,7 +9848,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
      // the internal buffer holds pairs of (timestamp, value) so double the default buffer size
         int s = bufferSize << 1; 
         return new ObservableSkipLastTimed<T>(this, time, unit, scheduler, s, delayError);
@@ -9874,7 +10287,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> switchMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
         Objects.requireNonNull(mapper, "mapper is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         return new ObservableSwitchMap<T, R>(this, mapper, bufferSize);
     }
 
@@ -10161,7 +10574,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> takeLast(long count, long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
         Objects.requireNonNull(unit, "unit is null");
         Objects.requireNonNull(scheduler, "scheduler is null");
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         if (count < 0) {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         }
@@ -11140,21 +11553,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Converts a ObservableSource into a {@link BlockingFlowable} (a ObservableSource with blocking operators).
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toBlocking} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @return a {@code BlockingObservableSource} version of this ObservableSource
-     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final BlockingObservable<T> toBlocking() {
-        return BlockingObservable.from(this);
-    }
-    
-    /**
      * Returns a Completable that discards all onNext emissions (similar to
      * {@code ignoreAllElements()}) and calls onCompleted when this source ObservableSource calls
      * onCompleted. Error terminal events are propagated.
@@ -11488,7 +11886,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator applies the chosen backpressure strategy of {@link BackpressureStrategy} enum.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code toObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param strategy the backpressure strategy to apply
@@ -11734,7 +12132,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (count <= 0) {
             throw new IllegalArgumentException("count > 0 required but it was " + count);
         }
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         return new ObservableWindow<T>(this, count, skip, bufferSize);
     }
 
@@ -11822,7 +12220,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<Observable<T>> window(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, int bufferSize) {
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         Objects.requireNonNull(scheduler, "scheduler is null");
         Objects.requireNonNull(unit, "unit is null");
         return new ObservableWindowTimed<T>(this, timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false);
@@ -12050,7 +12448,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<Observable<T>> window(
             long timespan, TimeUnit unit, Scheduler scheduler, 
             long count, boolean restart, int bufferSize) {
-        validateBufferSize(bufferSize, "bufferSize");
+        verifyPositive(bufferSize, "bufferSize");
         Objects.requireNonNull(scheduler, "scheduler is null");
         Objects.requireNonNull(unit, "unit is null");
         if (count <= 0) {

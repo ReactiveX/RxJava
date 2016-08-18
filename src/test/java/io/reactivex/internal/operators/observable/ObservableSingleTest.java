@@ -242,7 +242,7 @@ public class ObservableSingleTest {
             }
         });
 
-        Integer r = reduced.toBlocking().first();
+        Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());
     }
 }

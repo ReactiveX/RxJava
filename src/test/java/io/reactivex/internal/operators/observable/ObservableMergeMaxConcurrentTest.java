@@ -47,7 +47,7 @@ public class ObservableMergeMaxConcurrentTest {
             os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
 
             List<String> expected = Arrays.asList("one", "two", "three", "four", "five", "one", "two", "three", "four", "five", "one", "two", "three", "four", "five");
-            Iterator<String> iter = Observable.merge(os, 1).toBlocking().iterator();
+            Iterator<String> iter = Observable.merge(os, 1).blockingIterable().iterator();
             List<String> actual = new ArrayList<String>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
@@ -72,7 +72,7 @@ public class ObservableMergeMaxConcurrentTest {
                 os.add(Observable.unsafeCreate(sco));
             }
 
-            Iterator<String> iter = Observable.merge(os, maxConcurrent).toBlocking().iterator();
+            Iterator<String> iter = Observable.merge(os, maxConcurrent).blockingIterable().iterator();
             List<String> actual = new ArrayList<String>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
@@ -129,7 +129,7 @@ public class ObservableMergeMaxConcurrentTest {
         for (int i = 0; i < n; i++) {
             sourceList.add(Observable.just(i));
         }
-        Iterator<Integer> it = Observable.merge(Observable.fromIterable(sourceList), 1).toBlocking().iterator();
+        Iterator<Integer> it = Observable.merge(Observable.fromIterable(sourceList), 1).blockingIterable().iterator();
         int j = 0;
         while (it.hasNext()) {
             assertEquals((Integer)j, it.next());
@@ -144,7 +144,7 @@ public class ObservableMergeMaxConcurrentTest {
         for (int i = 0; i < n; i++) {
             sourceList.add(Observable.just(i));
         }
-        Iterator<Integer> it = Observable.merge(Observable.fromIterable(sourceList), 1).take(n / 2).toBlocking().iterator();
+        Iterator<Integer> it = Observable.merge(Observable.fromIterable(sourceList), 1).take(n / 2).blockingIterable().iterator();
         int j = 0;
         while (it.hasNext()) {
             assertEquals((Integer)j, it.next());

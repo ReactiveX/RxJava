@@ -54,9 +54,9 @@ public class ObservableTests {
     @Test
     public void fromArray() {
         String[] items = new String[] { "one", "two", "three" };
-        assertEquals((Long)3L, Observable.fromArray(items).count().toBlocking().single());
-        assertEquals("two", Observable.fromArray(items).skip(1).take(1).toBlocking().single());
-        assertEquals("three", Observable.fromArray(items).takeLast(1).toBlocking().single());
+        assertEquals((Long)3L, Observable.fromArray(items).count().blockingSingle());
+        assertEquals("two", Observable.fromArray(items).skip(1).take(1).blockingSingle());
+        assertEquals("three", Observable.fromArray(items).takeLast(1).blockingSingle());
     }
 
     @Test
@@ -66,26 +66,26 @@ public class ObservableTests {
         items.add("two");
         items.add("three");
 
-        assertEquals((Long)3L, Observable.fromIterable(items).count().toBlocking().single());
-        assertEquals("two", Observable.fromIterable(items).skip(1).take(1).toBlocking().single());
-        assertEquals("three", Observable.fromIterable(items).takeLast(1).toBlocking().single());
+        assertEquals((Long)3L, Observable.fromIterable(items).count().blockingSingle());
+        assertEquals("two", Observable.fromIterable(items).skip(1).take(1).blockingSingle());
+        assertEquals("three", Observable.fromIterable(items).takeLast(1).blockingSingle());
     }
 
     @Test
     public void fromArityArgs3() {
         Observable<String> items = Observable.just("one", "two", "three");
 
-        assertEquals((Long)3L, items.count().toBlocking().single());
-        assertEquals("two", items.skip(1).take(1).toBlocking().single());
-        assertEquals("three", items.takeLast(1).toBlocking().single());
+        assertEquals((Long)3L, items.count().blockingSingle());
+        assertEquals("two", items.skip(1).take(1).blockingSingle());
+        assertEquals("three", items.takeLast(1).blockingSingle());
     }
 
     @Test
     public void fromArityArgs1() {
         Observable<String> items = Observable.just("one");
 
-        assertEquals((Long)1L, items.count().toBlocking().single());
-        assertEquals("one", items.takeLast(1).toBlocking().single());
+        assertEquals((Long)1L, items.count().blockingSingle());
+        assertEquals("one", items.takeLast(1).blockingSingle());
     }
 
     @Test
@@ -226,7 +226,7 @@ public class ObservableTests {
                 return t1 + t2;
             }
         })
-        .toBlocking().forEach(new Consumer<Integer>() {
+        .blockingForEach(new Consumer<Integer>() {
             @Override
             public void accept(Integer t1) {
                 // do nothing ... we expect an exception instead
@@ -250,7 +250,7 @@ public class ObservableTests {
                 return t1 + t2;
             }
         })
-                .toBlocking().last();
+                .blockingLast();
 
         assertEquals(1, value);
     }
@@ -902,7 +902,7 @@ public class ObservableTests {
             }
         });
         
-        List<Integer> list =  o.toBlocking().last();
+        List<Integer> list =  o.blockingLast();
 
         assertEquals(3, list.size());
         assertEquals(1, list.get(0).intValue());
@@ -910,7 +910,7 @@ public class ObservableTests {
         assertEquals(3, list.get(2).intValue());
         
         // test multiple subscribe
-        List<Integer> list2 =  o.toBlocking().last();
+        List<Integer> list2 =  o.blockingLast();
 
         assertEquals(3, list2.size());
         assertEquals(1, list2.get(0).intValue());
@@ -934,7 +934,7 @@ public class ObservableTests {
                 }
                 sb.append(v);
       }
-            }).toBlocking().last().toString();
+            }).blockingLast().toString();
 
         assertEquals("1-2-3", value);
     }
@@ -1027,7 +1027,7 @@ public class ObservableTests {
             .subscribe(subject);
 
         subject.subscribe();
-        subject.materialize().toBlocking().first();
+        subject.materialize().blockingFirst();
 
         System.out.println("Done");
     }

@@ -87,7 +87,7 @@ public class FlowableRangeTest {
 
     @Test
     public void testRangeWithOverflow5() {
-        assertFalse(Flowable.range(Integer.MIN_VALUE, 0).toBlocking().iterator().hasNext());
+        assertFalse(Flowable.range(Integer.MIN_VALUE, 0).blockingIterable().iterator().hasNext());
     }
 
     @Test

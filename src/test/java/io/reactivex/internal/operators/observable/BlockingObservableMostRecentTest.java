@@ -23,14 +23,13 @@ import org.junit.*;
 
 import io.reactivex.Observable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.observables.BlockingObservable;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.*;
 
 public class BlockingObservableMostRecentTest {
     @Test
     public void testMostRecentNull() {
-        assertEquals(null, Observable.<Void>never().toBlocking().mostRecent(null).iterator().next());
+        assertEquals(null, Observable.<Void>never().blockingMostRecent(null).iterator().next());
     }
 
     @Test
@@ -77,9 +76,9 @@ public class BlockingObservableMostRecentTest {
     @Test(timeout = 1000)
     public void testSingleSourceManyIterators() {
         TestScheduler scheduler = new TestScheduler();
-        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
+        Observable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 
-        Iterable<Long> iter = source.mostRecent(-1L);
+        Iterable<Long> iter = source.blockingMostRecent(-1L);
 
         for (int j = 0; j < 3; j++) {
             Iterator<Long> it = iter.iterator();

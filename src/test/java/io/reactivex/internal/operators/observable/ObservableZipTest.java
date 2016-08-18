@@ -993,7 +993,7 @@ public class ObservableZipTest {
             }
         });
 
-        o.toBlocking().last();
+        o.blockingLast();
     }
 
     @Test
@@ -1122,7 +1122,7 @@ public class ObservableZipTest {
         for (int i = 0; i < 1026; i++) {
             expected.add(i * 3);
         }
-        assertEquals(expected, zip2.toList().toBlocking().single());
+        assertEquals(expected, zip2.toList().blockingSingle());
     }
 
     @Test(timeout = 10000)
@@ -1140,7 +1140,7 @@ public class ObservableZipTest {
                 public Integer apply(Integer t1, Integer t2) {
                     return t1 + t2 * 10;
                 }
-            }).toBlocking().single(0);
+            }).blockingSingle(0);
             
             Assert.assertEquals(11, value);
         }

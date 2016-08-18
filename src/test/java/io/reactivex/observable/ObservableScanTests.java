@@ -34,8 +34,7 @@ public class ObservableScanTests {
             }
         })
         .take(10)
-        .toBlocking()
-        .forEach(new Consumer<HashMap<String, String>>() {
+        .blockingForEach(new Consumer<HashMap<String, String>>() {
             @Override
             public void accept(HashMap<String, String> pv) {
                 System.out.println(pv);

@@ -45,7 +45,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
             }
         });
 
-        o.subscribeOn(Schedulers.io()).toBlocking().forEach(new Consumer<String>() {
+        o.subscribeOn(Schedulers.io()).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String t) {

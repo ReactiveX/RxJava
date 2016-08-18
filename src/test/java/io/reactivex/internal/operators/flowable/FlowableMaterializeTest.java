@@ -95,8 +95,8 @@ public class FlowableMaterializeTest {
 
         Flowable<Notification<String>> m = Flowable.unsafeCreate(o).materialize();
 
-        assertEquals(3, m.toList().toBlocking().toFuture().get().size());
-        assertEquals(3, m.toList().toBlocking().toFuture().get().size());
+        assertEquals(3, m.toList().toFuture().get().size());
+        assertEquals(3, m.toList().toFuture().get().size());
     }
 
     @Test

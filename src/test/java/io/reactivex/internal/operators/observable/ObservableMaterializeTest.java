@@ -95,8 +95,8 @@ public class ObservableMaterializeTest {
 
         Observable<Notification<String>> m = Observable.unsafeCreate(o).materialize();
 
-        assertEquals(3, m.toList().toBlocking().toFuture().get().size());
-        assertEquals(3, m.toList().toBlocking().toFuture().get().size());
+        assertEquals(3, m.toList().toFuture().get().size());
+        assertEquals(3, m.toList().toFuture().get().size());
     }
 
     @Test

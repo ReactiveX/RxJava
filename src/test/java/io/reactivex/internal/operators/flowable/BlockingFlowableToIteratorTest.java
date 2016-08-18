@@ -30,7 +30,7 @@ public class BlockingFlowableToIteratorTest {
     public void testToIterator() {
         Flowable<String> obs = Flowable.just("one", "two", "three");
 
-        Iterator<String> it = obs.toBlocking().iterator();
+        Iterator<String> it = obs.blockingIterable().iterator();
 
         assertEquals(true, it.hasNext());
         assertEquals("one", it.next());
@@ -57,7 +57,7 @@ public class BlockingFlowableToIteratorTest {
             }
         });
 
-        Iterator<String> it = obs.toBlocking().iterator();
+        Iterator<String> it = obs.blockingIterable().iterator();
 
         assertEquals(true, it.hasNext());
         assertEquals("one", it.next());
@@ -74,7 +74,8 @@ public class BlockingFlowableToIteratorTest {
             public void subscribe(Subscriber<? super String> subscriber) {
                 throw new TestException("intentional");
             }
-        }).toBlocking();
+        }).blockingIterable();
+        
         for (String string : strings) {
             // never reaches here
             System.out.println(string);
@@ -98,7 +99,7 @@ public class BlockingFlowableToIteratorTest {
             }
         });
 
-        Iterator<Integer> it = obs.toBlocking().iterator();
+        Iterator<Integer> it = obs.blockingIterable().iterator();
         while (it.hasNext()) {
             // Correct backpressure should cause this interleaved behavior.
             // We first request RxRingBuffer.SIZE. Then in increments of

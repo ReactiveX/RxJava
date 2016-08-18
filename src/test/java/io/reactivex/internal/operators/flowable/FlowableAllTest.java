@@ -118,7 +118,7 @@ public class FlowableAllTest {
             }
         });
         
-        assertFalse(allOdd.toBlocking().first());
+        assertFalse(allOdd.blockingFirst());
     }
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
@@ -136,7 +136,7 @@ public class FlowableAllTest {
                 }
             });
         
-        assertEquals((Object)2, source.toBlocking().first());
+        assertEquals((Object)2, source.blockingFirst());
     }
     
     @Test

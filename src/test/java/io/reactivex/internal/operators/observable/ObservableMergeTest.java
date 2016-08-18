@@ -162,7 +162,7 @@ public class ObservableMergeTest {
         });
 
         final AtomicInteger count = new AtomicInteger();
-        Observable.merge(source).take(6).toBlocking().forEach(new Consumer<Long>() {
+        Observable.merge(source).take(6).blockingForEach(new Consumer<Long>() {
 
             @Override
             public void accept(Long v) {

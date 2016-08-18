@@ -55,7 +55,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         });
         source.start();
 
-        long v = replay.toBlocking().last();
+        long v = replay.blockingLast();
         assertEquals(10000, v);
 
         // it's been played through once so now it will all be replays
@@ -183,7 +183,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
 
                 @Override
                 public void run() {
-                    List<Long> values = replay.toList().toBlocking().last();
+                    List<Long> values = replay.toList().blockingLast();
                     listOfListsOfValues.add(values);
                     System.out.println("Finished thread: " + count);
                 }
@@ -315,7 +315,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         public void run() {
             try {
                 // a timeout exception will happen if we don't get a terminal state 
-                String v = subject.timeout(2000, TimeUnit.MILLISECONDS).toBlocking().single();
+                String v = subject.timeout(2000, TimeUnit.MILLISECONDS).blockingSingle();
                 value.set(v);
             } catch (Exception e) {
                 e.printStackTrace();

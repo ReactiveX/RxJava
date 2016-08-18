@@ -23,7 +23,7 @@ public class FlowableElementAtTest {
 
     @Test
     public void testElementAt() {
-        assertEquals(2, Flowable.fromArray(1, 2).elementAt(1).toBlocking().single()
+        assertEquals(2, Flowable.fromArray(1, 2).elementAt(1).blockingSingle()
                 .intValue());
     }
 
@@ -34,19 +34,17 @@ public class FlowableElementAtTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testElementAtWithIndexOutOfBounds() {
-        Flowable.fromArray(1, 2).elementAt(2).toBlocking().single();
+        Flowable.fromArray(1, 2).elementAt(2).blockingSingle();
     }
 
     @Test
     public void testElementAtOrDefault() {
-        assertEquals(2, Flowable.fromArray(1, 2).elementAt(1, 0).toBlocking()
-                .single().intValue());
+        assertEquals(2, Flowable.fromArray(1, 2).elementAt(1, 0).blockingSingle().intValue());
     }
 
     @Test
     public void testElementAtOrDefaultWithIndexOutOfBounds() {
-        assertEquals(0, Flowable.fromArray(1, 2).elementAt(2, 0).toBlocking()
-                .single().intValue());
+        assertEquals(0, Flowable.fromArray(1, 2).elementAt(2, 0).blockingSingle().intValue());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

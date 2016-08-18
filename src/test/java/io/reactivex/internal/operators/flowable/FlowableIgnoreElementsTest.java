@@ -28,12 +28,12 @@ public class FlowableIgnoreElementsTest {
 
     @Test
     public void testWithEmpty() {
-        assertTrue(Flowable.empty().ignoreElements().isEmpty().toBlocking().single());
+        assertTrue(Flowable.empty().ignoreElements().isEmpty().blockingSingle());
     }
 
     @Test
     public void testWithNonEmpty() {
-        assertTrue(Flowable.just(1, 2, 3).ignoreElements().isEmpty().toBlocking().single());
+        assertTrue(Flowable.just(1, 2, 3).ignoreElements().isEmpty().blockingSingle());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class FlowableIgnoreElementsTest {
                     }
                 })
                 .ignoreElements()
-                .count().toBlocking().single();
+                .count().blockingSingle();
         assertEquals(num, upstreamCount.get());
         assertEquals(0, count);
     }

@@ -188,8 +188,7 @@ public class ObservableUsingTest {
         };
 
         Observable.using(resourceFactory, observableFactory, disposeSubscription)
-        .toBlocking()
-        .last();
+        .blockingLast();
     }
 
     @Test
@@ -219,8 +218,7 @@ public class ObservableUsingTest {
         };
 
         try {
-            Observable.using(resourceFactory, observableFactory, disposeSubscription).toBlocking()
-                    .last();
+            Observable.using(resourceFactory, observableFactory, disposeSubscription).blockingLast();
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {
             // Make sure that unsubscribe is called so that users can close
@@ -265,7 +263,7 @@ public class ObservableUsingTest {
         try {
             Observable
             .using(resourceFactory, observableFactory, disposeSubscription, disposeEagerly)
-            .toBlocking().last();
+            .blockingLast();
             
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {

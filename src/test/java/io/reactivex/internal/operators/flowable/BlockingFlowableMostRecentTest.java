@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static io.reactivex.internal.operators.flowable.BlockingFlowableMostRecent.mostRecent;
 import static org.junit.Assert.*;
 
 import java.util.Iterator;
@@ -23,21 +22,20 @@ import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowables.BlockingFlowable;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.TestScheduler;
 
 public class BlockingFlowableMostRecentTest {
     @Test
     public void testMostRecentNull() {
-        assertEquals(null, Flowable.<Void>never().toBlocking().mostRecent(null).iterator().next());
+        assertEquals(null, Flowable.<Void>never().blockingMostRecent(null).iterator().next());
     }
 
     @Test
     public void testMostRecent() {
         FlowProcessor<String> s = PublishProcessor.create();
 
-        Iterator<String> it = mostRecent(s, "default").iterator();
+        Iterator<String> it = s.blockingMostRecent("default").iterator();
 
         assertTrue(it.hasNext());
         assertEquals("default", it.next());
@@ -62,7 +60,7 @@ public class BlockingFlowableMostRecentTest {
     public void testMostRecentWithException() {
         FlowProcessor<String> s = PublishProcessor.create();
 
-        Iterator<String> it = mostRecent(s, "default").iterator();
+        Iterator<String> it = s.blockingMostRecent("default").iterator();
 
         assertTrue(it.hasNext());
         assertEquals("default", it.next());
@@ -77,9 +75,9 @@ public class BlockingFlowableMostRecentTest {
     @Test(timeout = 1000)
     public void testSingleSourceManyIterators() {
         TestScheduler scheduler = new TestScheduler();
-        BlockingFlowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
+        Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 
-        Iterable<Long> iter = source.mostRecent(-1L);
+        Iterable<Long> iter = source.blockingMostRecent(-1L);
 
         for (int j = 0; j < 3; j++) {
             Iterator<Long> it = iter.iterator();
@@ -99,7 +97,7 @@ public class BlockingFlowableMostRecentTest {
 
     }
 
-    @Ignore("THe target is an enum")
+    @Ignore("The target is an enum")
     @Test
     public void constructorshouldbeprivate() {
         TestHelper.checkUtilityClass(BlockingFlowableMostRecent.class);

@@ -121,7 +121,7 @@ public abstract class AbstractSchedulerTests {
 
         });
 
-        List<String> strings = m.toList().toBlocking().last();
+        List<String> strings = m.toList().blockingLast();
 
         assertEquals(4, strings.size());
         // because flatMap does a merge there is no guarantee of order
@@ -352,7 +352,7 @@ public abstract class AbstractSchedulerTests {
         });
 
         final AtomicInteger lastValue = new AtomicInteger();
-        obs.toBlocking().forEach(new Consumer<Integer>() {
+        obs.blockingForEach(new Consumer<Integer>() {
 
             @Override
             public void accept(Integer v) {

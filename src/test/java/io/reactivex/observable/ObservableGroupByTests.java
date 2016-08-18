@@ -36,8 +36,7 @@ public class ObservableGroupByTests {
             }
         })
         .take(1)
-        .toBlocking()
-        .forEach(new Consumer<GroupedObservable<String, Event>>() {
+        .blockingForEach(new Consumer<GroupedObservable<String, Event>>() {
             @Override
             public void accept(GroupedObservable<String, Event> v) {
                 System.out.println(v);
@@ -73,8 +72,7 @@ public class ObservableGroupByTests {
             }
         })
         .take(20)
-        .toBlocking()
-        .forEach(new Consumer<Object>() {
+        .blockingForEach(new Consumer<Object>() {
             @Override
             public void accept(Object pv) {
                 System.out.println(pv);

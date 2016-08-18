@@ -13,19 +13,24 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import org.junit.*;
+import java.util.Iterator;
 
-import io.reactivex.Flowable;
+import org.reactivestreams.Publisher;
 
-public class FlowableCountTest {
-    @Test
-    public void simple() {
-        Assert.assertEquals(0, Flowable.empty().count().blockingLast().intValue());
-
-        Assert.assertEquals(1, Flowable.just(1).count().blockingLast().intValue());
-
-        Assert.assertEquals(10, Flowable.range(1, 10).count().blockingLast().intValue());
-
+public final class BlockingFlowableIterable<T> implements Iterable<T> {
+    final Publisher<? extends T> source;
+    
+    final int bufferSize;
+    
+    public BlockingFlowableIterable(Publisher<? extends T> source, int bufferSize) {
+        this.source = source;
+        this.bufferSize = bufferSize;
     }
 
+    @Override
+    public Iterator<T> iterator() {
+        BlockingFlowableIterator<T> it = new BlockingFlowableIterator<T>(bufferSize);
+        source.subscribe(it);
+        return it;
+    }
 }
