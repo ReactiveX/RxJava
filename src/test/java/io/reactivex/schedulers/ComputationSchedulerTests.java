@@ -100,7 +100,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             }
         });
 
-        o.subscribeOn(Schedulers.computation()).toBlocking().forEach(new Consumer<String>() {
+        o.subscribeOn(Schedulers.computation()).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String t) {
@@ -127,7 +127,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             }
         });
 
-        o.toBlocking().forEach(new Consumer<String>() {
+        o.blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String t) {

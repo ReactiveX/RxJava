@@ -56,7 +56,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
             }
         });
 
-        o.toBlocking().forEach(new Consumer<String>() {
+        o.blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String t) {

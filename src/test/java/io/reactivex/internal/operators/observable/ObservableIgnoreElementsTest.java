@@ -28,12 +28,12 @@ public class ObservableIgnoreElementsTest {
 
     @Test
     public void testWithEmpty() {
-        assertTrue(Observable.empty().ignoreElements().isEmpty().toBlocking().single());
+        assertTrue(Observable.empty().ignoreElements().isEmpty().blockingSingle());
     }
 
     @Test
     public void testWithNonEmpty() {
-        assertTrue(Observable.just(1, 2, 3).ignoreElements().isEmpty().toBlocking().single());
+        assertTrue(Observable.just(1, 2, 3).ignoreElements().isEmpty().blockingSingle());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class ObservableIgnoreElementsTest {
                     }
                 })
                 .ignoreElements()
-                .count().toBlocking().single();
+                .count().blockingSingle();
         assertEquals(num, upstreamCount.get());
         assertEquals(0, count);
     }

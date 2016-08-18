@@ -124,7 +124,7 @@ public class ObservableReduceTest {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Observable<Integer> reduced = source.reduce(sum);
 
-        Integer r = reduced.toBlocking().first();
+        Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());
     }
 
@@ -133,7 +133,7 @@ public class ObservableReduceTest {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Observable<Integer> reduced = source.reduce(0, sum);
 
-        Integer r = reduced.toBlocking().first();
+        Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());
     }
 

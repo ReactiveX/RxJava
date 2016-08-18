@@ -27,7 +27,6 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.observables.BlockingObservable;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
@@ -297,9 +296,9 @@ public class BlockingObservableNextTest {
     public void testSingleSourceManyIterators() throws InterruptedException {
         Observable<Long> o = Observable.interval(100, TimeUnit.MILLISECONDS);
         PublishSubject<Integer> terminal = PublishSubject.create();
-        BlockingObservable<Long> source = o.takeUntil(terminal).toBlocking();
+        Observable<Long> source = o.takeUntil(terminal);
 
-        Iterable<Long> iter = source.next();
+        Iterable<Long> iter = source.blockingNext();
 
         for (int j = 0; j < 3; j++) {
             BlockingObservableNext.NextIterator<Long> it = (BlockingObservableNext.NextIterator<Long>)iter.iterator();
@@ -314,8 +313,8 @@ public class BlockingObservableNextTest {
     
     @Test
     public void testSynchronousNext() {
-        assertEquals(1, BehaviorProcessor.createDefault(1).take(1).toBlocking().single().intValue());
-        assertEquals(2, BehaviorProcessor.createDefault(2).toBlocking().iterator().next().intValue());
-        assertEquals(3, BehaviorProcessor.createDefault(3).toBlocking().next().iterator().next().intValue());
+        assertEquals(1, BehaviorProcessor.createDefault(1).take(1).blockingSingle().intValue());
+        assertEquals(2, BehaviorProcessor.createDefault(2).blockingIterable().iterator().next().intValue());
+        assertEquals(3, BehaviorProcessor.createDefault(3).blockingNext().iterator().next().intValue());
     }
 }

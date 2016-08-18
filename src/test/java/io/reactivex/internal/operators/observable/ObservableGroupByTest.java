@@ -148,7 +148,7 @@ public class ObservableGroupByTest {
 
         final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-        NbpObservable.toBlocking().forEach(new Consumer<GroupedObservable<K, V>>() {
+        NbpObservable.blockingForEach(new Consumer<GroupedObservable<K, V>>() {
 
             @Override
             public void accept(final GroupedObservable<K, V> o) {
@@ -655,7 +655,7 @@ public class ObservableGroupByTest {
                 }
             }
 
-        }).toBlocking().forEach(new Consumer<String>() {
+        }).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -748,7 +748,7 @@ public class ObservableGroupByTest {
                 System.err.println("outer notification => " + t1);
             }
 
-        }).toBlocking().forEach(new Consumer<String>() {
+        }).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -826,7 +826,7 @@ public class ObservableGroupByTest {
                 }
             }
 
-        }).toBlocking().forEach(new Consumer<String>() {
+        }).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -883,7 +883,7 @@ public class ObservableGroupByTest {
                 System.out.println("notification => " + t1);
             }
 
-        }).toBlocking().forEach(new Consumer<String>() {
+        }).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -932,7 +932,7 @@ public class ObservableGroupByTest {
                 });
             }
 
-        }).toBlocking().forEach(new Consumer<String>() {
+        }).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String s) {

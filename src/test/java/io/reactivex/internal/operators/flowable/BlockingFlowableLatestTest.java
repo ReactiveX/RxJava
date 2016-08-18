@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.flowables.BlockingFlowable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 
@@ -28,9 +27,9 @@ public class BlockingFlowableLatestTest {
     public void testSimple() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingFlowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
+        Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
 
         Iterator<Long> it = iter.iterator();
 
@@ -52,9 +51,9 @@ public class BlockingFlowableLatestTest {
     public void testSameSourceMultipleIterators() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingFlowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
+        Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
 
         for (int j = 0; j < 3; j++) {
             Iterator<Long> it = iter.iterator();
@@ -76,9 +75,9 @@ public class BlockingFlowableLatestTest {
 
     @Test(timeout = 1000, expected = NoSuchElementException.class)
     public void testEmpty() {
-        BlockingFlowable<Long> source = Flowable.<Long> empty().toBlocking();
+        Flowable<Long> source = Flowable.<Long> empty();
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
 
         Iterator<Long> it = iter.iterator();
 
@@ -91,9 +90,9 @@ public class BlockingFlowableLatestTest {
     public void testSimpleJustNext() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingFlowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
+        Flowable<Long> source = Flowable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
 
         Iterator<Long> it = iter.iterator();
 
@@ -110,9 +109,9 @@ public class BlockingFlowableLatestTest {
     public void testHasNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingFlowable<Long> source = Flowable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler).toBlocking();
+        Flowable<Long> source = Flowable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler);
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
 
         Iterator<Long> it = iter.iterator();
 
@@ -125,9 +124,9 @@ public class BlockingFlowableLatestTest {
     public void testNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingFlowable<Long> source = Flowable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler).toBlocking();
+        Flowable<Long> source = Flowable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler);
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
         Iterator<Long> it = iter.iterator();
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -138,9 +137,9 @@ public class BlockingFlowableLatestTest {
     @Test(timeout = 1000)
     public void testFasterSource() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        BlockingFlowable<Integer> blocker = source.toBlocking();
+        Flowable<Integer> blocker = source;
 
-        Iterable<Integer> iter = blocker.latest();
+        Iterable<Integer> iter = blocker.blockingLatest();
         Iterator<Integer> it = iter.iterator();
 
         source.onNext(1);

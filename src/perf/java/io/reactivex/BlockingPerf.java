@@ -18,9 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
 
-import io.reactivex.flowables.BlockingFlowable;
-import io.reactivex.observables.BlockingObservable;
-
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
 @Measurement(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
@@ -33,11 +30,7 @@ public class BlockingPerf {
     
     Flowable<Integer> flowable;
     
-    BlockingFlowable<Integer> flowableBlocking;
-    
     Observable<Integer> observable;
-
-    BlockingObservable<Integer> observableBlocking;
 
     @Setup
     public void setup() {
@@ -46,50 +39,26 @@ public class BlockingPerf {
         
         flowable = Flowable.fromArray(array);
         
-        flowableBlocking = flowable.toBlocking();
-        
         observable = Observable.fromArray(array);
-        
-        observableBlocking = observable.toBlocking();
     }
     
     @Benchmark
-    public Object flowableFirst() {
-        return flowable.toBlocking().first();
-    }
-
-    @Benchmark
-    public Object flowableLast() {
-        return flowable.toBlocking().last();
-    }
-
-    @Benchmark
     public Object flowableBlockingFirst() {
-        return flowableBlocking.first();
+        return flowable.blockingFirst();
     }
 
     @Benchmark
     public Object flowableBlockingLast() {
-        return flowableBlocking.last();
+        return flowable.blockingLast();
     }
     
     @Benchmark
-    public Object observableFirst() {
-        return observable.toBlocking().first();
-    }
-
-    @Benchmark
-    public Object observableLast() {
-        return observable.toBlocking().last();
+    public Object observableBlockingLast() {
+        return observable.blockingLast();
     }
 
     @Benchmark
     public Object observableBlockingFirst() {
-        return observableBlocking.first();
-    }
-
-    @Benchmark
-    public Object observableBlockingLast() {
-        return observableBlocking.last();
+        return observable.blockingFirst();
     }
 }

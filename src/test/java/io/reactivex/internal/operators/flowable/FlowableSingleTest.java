@@ -77,7 +77,7 @@ public class FlowableSingleTest {
             public void accept(long n) {
                 request.addAndGet(n);
             }
-        }).toBlocking().single();
+        }).blockingSingle();
         // FIXME single now triggers fast-path
         assertEquals(Long.MAX_VALUE, request.get());
     }
@@ -91,7 +91,7 @@ public class FlowableSingleTest {
                 public void accept(long n) {
                     request.addAndGet(n);
                 }
-            }).toBlocking().single();
+            }).blockingSingle();
         } catch (NoSuchElementException e) {
             // FIXME single now triggers fast-path
             assertEquals(Long.MAX_VALUE, request.get());
@@ -107,7 +107,7 @@ public class FlowableSingleTest {
                 public void accept(long n) {
                     request.addAndGet(n);
                 }
-            }).toBlocking().single();
+            }).blockingSingle();
         } catch (IllegalArgumentException e) {
             // FIXME single now triggers fast-path
             assertEquals(Long.MAX_VALUE, request.get());
@@ -442,7 +442,7 @@ public class FlowableSingleTest {
             }
         });
 
-        Integer r = reduced.toBlocking().first();
+        Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());
     }
 }

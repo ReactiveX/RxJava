@@ -46,7 +46,7 @@ public class ObservableRepeatTest {
                 o.onComplete();
             }
         }).repeat().subscribeOn(Schedulers.computation())
-        .take(NUM).toBlocking().last();
+        .take(NUM).blockingLast();
 
         assertEquals(NUM, value);
     }
@@ -54,13 +54,13 @@ public class ObservableRepeatTest {
     @Test(timeout = 2000)
     public void testRepeatTake() {
         Observable<Integer> xs = Observable.just(1, 2);
-        Object[] ys = xs.repeat().subscribeOn(Schedulers.newThread()).take(4).toList().toBlocking().last().toArray();
+        Object[] ys = xs.repeat().subscribeOn(Schedulers.newThread()).take(4).toList().blockingLast().toArray();
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
     @Test(timeout = 20000)
     public void testNoStackOverFlow() {
-        Observable.just(1).repeat().subscribeOn(Schedulers.newThread()).take(100000).toBlocking().last();
+        Observable.just(1).repeat().subscribeOn(Schedulers.newThread()).take(100000).blockingLast();
     }
 
     @Test
@@ -91,7 +91,7 @@ public class ObservableRepeatTest {
                 return t1;
             }
 
-        }).take(4).toList().toBlocking().last().toArray();
+        }).take(4).toList().blockingLast().toArray();
 
         assertEquals(2, counter.get());
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);

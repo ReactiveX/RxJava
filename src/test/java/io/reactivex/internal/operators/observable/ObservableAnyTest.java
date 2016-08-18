@@ -222,7 +222,7 @@ public class ObservableAnyTest {
             }
         });
         
-        assertTrue(anyEven.toBlocking().first());
+        assertTrue(anyEven.blockingFirst());
     }
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
@@ -234,7 +234,7 @@ public class ObservableAnyTest {
                 }
             });
         
-        assertEquals((Object)2, source.toBlocking().first());
+        assertEquals((Object)2, source.blockingFirst());
     }
     
     @Test

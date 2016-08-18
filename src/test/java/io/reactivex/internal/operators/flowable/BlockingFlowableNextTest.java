@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static io.reactivex.internal.operators.flowable.BlockingFlowableNext.next;
 import static org.junit.Assert.*;
 
 import java.util.*;
@@ -25,7 +24,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.flowables.BlockingFlowable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
@@ -63,7 +61,7 @@ public class BlockingFlowableNextTest {
     @Test
     public void testNext() {
         FlowProcessor<String> obs = PublishProcessor.create();
-        Iterator<String> it = next(obs).iterator();
+        Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
         assertEquals("one", it.next());
@@ -99,7 +97,7 @@ public class BlockingFlowableNextTest {
     @Test
     public void testNextWithError() {
         FlowProcessor<String> obs = PublishProcessor.create();
-        Iterator<String> it = next(obs).iterator();
+        Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
         assertEquals("one", it.next());
@@ -117,7 +115,7 @@ public class BlockingFlowableNextTest {
     @Test
     public void testNextWithEmpty() {
         Flowable<String> obs = Flowable.<String> empty().observeOn(Schedulers.newThread());
-        Iterator<String> it = next(obs).iterator();
+        Iterator<String> it = obs.blockingNext().iterator();
 
         assertFalse(it.hasNext());
         try {
@@ -138,7 +136,7 @@ public class BlockingFlowableNextTest {
     @Test
     public void testOnError() throws Throwable {
         FlowProcessor<String> obs = PublishProcessor.create();
-        Iterator<String> it = next(obs).iterator();
+        Iterator<String> it = obs.blockingNext().iterator();
 
         obs.onError(new TestException());
         try {
@@ -154,7 +152,7 @@ public class BlockingFlowableNextTest {
     @Test
     public void testOnErrorInNewThread() {
         FlowProcessor<String> obs = PublishProcessor.create();
-        Iterator<String> it = next(obs).iterator();
+        Iterator<String> it = obs.blockingNext().iterator();
 
         fireOnErrorInNewThread(obs);
 
@@ -185,7 +183,7 @@ public class BlockingFlowableNextTest {
     @Test
     public void testNextWithOnlyUsingNextMethod() {
         FlowProcessor<String> obs = PublishProcessor.create();
-        Iterator<String> it = next(obs).iterator();
+        Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
         assertEquals("one", it.next());
 
@@ -203,7 +201,7 @@ public class BlockingFlowableNextTest {
     @Test
     public void testNextWithCallingHasNextMultipleTimes() {
         FlowProcessor<String> obs = PublishProcessor.create();
-        Iterator<String> it = next(obs).iterator();
+        Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
         assertTrue(it.hasNext());
@@ -259,7 +257,7 @@ public class BlockingFlowableNextTest {
 
         });
 
-        Iterator<Integer> it = next(obs).iterator();
+        Iterator<Integer> it = obs.blockingNext().iterator();
 
         assertTrue(it.hasNext());
         int a = it.next();
@@ -295,9 +293,9 @@ public class BlockingFlowableNextTest {
     public void testSingleSourceManyIterators() throws InterruptedException {
         Flowable<Long> o = Flowable.interval(100, TimeUnit.MILLISECONDS);
         PublishProcessor<Integer> terminal = PublishProcessor.create();
-        BlockingFlowable<Long> source = o.takeUntil(terminal).toBlocking();
+        Flowable<Long> source = o.takeUntil(terminal);
 
-        Iterable<Long> iter = source.next();
+        Iterable<Long> iter = source.blockingNext();
 
         for (int j = 0; j < 3; j++) {
             BlockingFlowableNext.NextIterator<Long> it = (BlockingFlowableNext.NextIterator<Long>)iter.iterator();
@@ -312,9 +310,9 @@ public class BlockingFlowableNextTest {
     
     @Test
     public void testSynchronousNext() {
-        assertEquals(1, BehaviorProcessor.createDefault(1).take(1).toBlocking().single().intValue());
-        assertEquals(2, BehaviorProcessor.createDefault(2).toBlocking().iterator().next().intValue());
-        assertEquals(3, BehaviorProcessor.createDefault(3).toBlocking().next().iterator().next().intValue());
+        assertEquals(1, BehaviorProcessor.createDefault(1).take(1).blockingSingle().intValue());
+        assertEquals(2, BehaviorProcessor.createDefault(2).blockingIterable().iterator().next().intValue());
+        assertEquals(3, BehaviorProcessor.createDefault(3).blockingNext().iterator().next().intValue());
     }
     
     @Ignore("THe target is an enum")

@@ -34,11 +34,11 @@ public class FlowableCombineLatestTests {
         Flowable<HorrorMovie> horrors = Flowable.just(new HorrorMovie());
         Flowable<CoolRating> ratings = Flowable.just(new CoolRating());
 
-        Flowable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).toBlocking().forEach(action);
-        Flowable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).toBlocking().forEach(action);
-        Flowable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).toBlocking().forEach(extendedAction);
-        Flowable.<Media, Rating, Result> combineLatest(horrors, ratings, combine).toBlocking().forEach(action);
-        Flowable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).toBlocking().forEach(action);
+        Flowable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Flowable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Flowable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).blockingForEach(extendedAction);
+        Flowable.<Media, Rating, Result> combineLatest(horrors, ratings, combine).blockingForEach(action);
+        Flowable.<Media, Rating, ExtendedResult> combineLatest(horrors, ratings, combine).blockingForEach(action);
 
         Flowable.<Movie, CoolRating, Result> combineLatest(horrors, ratings, combine);
     }

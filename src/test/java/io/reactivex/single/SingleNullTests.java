@@ -77,13 +77,13 @@ public class SingleNullTests {
             public Iterator<Single<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void concatIterableOneIsNull() {
-        Single.concat(Arrays.asList(just1, null)).toBlocking().run();
+        Single.concat(Arrays.asList(just1, null)).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -239,13 +239,13 @@ public class SingleNullTests {
             public Iterator<Single<Object>> iterator() {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeIterableOneIsNull() {
-        Single.merge(Arrays.asList(null, just1)).toBlocking().run();
+        Single.merge(Arrays.asList(null, just1)).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -629,7 +629,7 @@ public class SingleNullTests {
             public Publisher<Object> apply(Integer v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
@@ -719,7 +719,7 @@ public class SingleNullTests {
             public Publisher<Object> apply(Flowable<Object> v) {
                 return null;
             }
-        }).toBlocking().run();
+        }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)

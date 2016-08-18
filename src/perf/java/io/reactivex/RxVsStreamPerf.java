@@ -80,7 +80,7 @@ public class RxVsStreamPerf {
             }
         });
         
-        values = range.toList().toBlocking().first();
+        values = range.toList().blockingFirst();
     }
     
     @Benchmark

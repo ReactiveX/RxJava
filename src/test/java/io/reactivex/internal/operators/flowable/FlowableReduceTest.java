@@ -125,7 +125,7 @@ public class FlowableReduceTest {
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
         Flowable<Integer> reduced = source.reduce(sum);
 
-        Integer r = reduced.toBlocking().first();
+        Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());
     }
 
@@ -134,7 +134,7 @@ public class FlowableReduceTest {
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
         Flowable<Integer> reduced = source.reduce(0, sum);
 
-        Integer r = reduced.toBlocking().first();
+        Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());
     }
 

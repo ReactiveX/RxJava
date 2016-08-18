@@ -45,7 +45,7 @@ public class FlowableRepeatTest {
                 o.onComplete();
             }
         }).repeat().subscribeOn(Schedulers.computation())
-        .take(NUM).toBlocking().last();
+        .take(NUM).blockingLast();
 
         assertEquals(NUM, value);
     }
@@ -53,13 +53,13 @@ public class FlowableRepeatTest {
     @Test(timeout = 2000)
     public void testRepeatTake() {
         Flowable<Integer> xs = Flowable.just(1, 2);
-        Object[] ys = xs.repeat().subscribeOn(Schedulers.newThread()).take(4).toList().toBlocking().last().toArray();
+        Object[] ys = xs.repeat().subscribeOn(Schedulers.newThread()).take(4).toList().blockingLast().toArray();
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
     @Test(timeout = 20000)
     public void testNoStackOverFlow() {
-        Flowable.just(1).repeat().subscribeOn(Schedulers.newThread()).take(100000).toBlocking().last();
+        Flowable.just(1).repeat().subscribeOn(Schedulers.newThread()).take(100000).blockingLast();
     }
 
     @Test
@@ -90,7 +90,7 @@ public class FlowableRepeatTest {
                 return t1;
             }
 
-        }).take(4).toList().toBlocking().last().toArray();
+        }).take(4).toList().blockingLast().toArray();
 
         assertEquals(2, counter.get());
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);

@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.*;
 
 import io.reactivex.Observable;
-import io.reactivex.observables.BlockingObservable;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
@@ -28,9 +27,9 @@ public class BlockingObservableLatestTest {
     public void testSimple() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
+        Observable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
 
         Iterator<Long> it = iter.iterator();
 
@@ -52,9 +51,9 @@ public class BlockingObservableLatestTest {
     public void testSameSourceMultipleIterators() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
+        Observable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
 
         for (int j = 0; j < 3; j++) {
             Iterator<Long> it = iter.iterator();
@@ -76,9 +75,9 @@ public class BlockingObservableLatestTest {
 
     @Test(timeout = 1000, expected = NoSuchElementException.class)
     public void testEmpty() {
-        BlockingObservable<Long> source = Observable.<Long> empty().toBlocking();
+        Observable<Long> source = Observable.<Long> empty();
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
 
         Iterator<Long> it = iter.iterator();
 
@@ -91,9 +90,9 @@ public class BlockingObservableLatestTest {
     public void testSimpleJustNext() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
+        Observable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10);
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
 
         Iterator<Long> it = iter.iterator();
 
@@ -110,9 +109,9 @@ public class BlockingObservableLatestTest {
     public void testHasNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler).toBlocking();
+        Observable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler);
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
 
         Iterator<Long> it = iter.iterator();
 
@@ -125,9 +124,9 @@ public class BlockingObservableLatestTest {
     public void testNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler).toBlocking();
+        Observable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler);
 
-        Iterable<Long> iter = source.latest();
+        Iterable<Long> iter = source.blockingLatest();
         Iterator<Long> it = iter.iterator();
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -138,9 +137,9 @@ public class BlockingObservableLatestTest {
     @Test(timeout = 1000)
     public void testFasterSource() {
         PublishSubject<Integer> source = PublishSubject.create();
-        BlockingObservable<Integer> blocker = source.toBlocking();
+        Observable<Integer> blocker = source;
 
-        Iterable<Integer> iter = blocker.latest();
+        Iterable<Integer> iter = blocker.blockingLatest();
         Iterator<Integer> it = iter.iterator();
 
         source.onNext(1);

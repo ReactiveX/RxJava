@@ -40,8 +40,7 @@ public class ObservableWindowWithSizeTest {
                 return xs.toList();
             }
         }))
-                .toBlocking()
-                .forEach(new Consumer<List<T>>() {
+                .blockingForEach(new Consumer<List<T>>() {
                     @Override
                     public void accept(List<T> xs) {
                         lists.add(xs);

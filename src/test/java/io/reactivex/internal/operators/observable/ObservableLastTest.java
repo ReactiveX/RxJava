@@ -30,20 +30,20 @@ public class ObservableLastTest {
     @Test
     public void testLastWithElements() {
         Observable<Integer> last = Observable.just(1, 2, 3).last();
-        assertEquals(3, last.toBlocking().single().intValue());
+        assertEquals(3, last.blockingSingle().intValue());
     }
 
     @Test(expected = NoSuchElementException.class)
     public void testLastWithNoElements() {
         Observable<?> last = Observable.empty().last();
-        last.toBlocking().single();
+        last.blockingSingle();
     }
 
     @Test
     public void testLastMultiSubscribe() {
         Observable<Integer> last = Observable.just(1, 2, 3).last();
-        assertEquals(3, last.toBlocking().single().intValue());
-        assertEquals(3, last.toBlocking().single().intValue());
+        assertEquals(3, last.blockingSingle().intValue());
+        assertEquals(3, last.blockingSingle().intValue());
     }
 
     @Test

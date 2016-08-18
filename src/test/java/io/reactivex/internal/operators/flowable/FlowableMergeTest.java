@@ -172,7 +172,7 @@ public class FlowableMergeTest {
         });
 
         final AtomicInteger count = new AtomicInteger();
-        Flowable.merge(source).take(6).toBlocking().forEach(new Consumer<Long>() {
+        Flowable.merge(source).take(6).blockingForEach(new Consumer<Long>() {
 
             @Override
             public void accept(Long v) {

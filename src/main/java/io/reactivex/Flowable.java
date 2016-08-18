@@ -5056,28 +5056,419 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Hides the identity of this Flowable and its Subscription.
-     * <p>Allows hiding extra features such as {@link Processor}'s
-     * {@link Subscriber} methods or preventing certain identity-based 
-     * optimizations (fusion).
+     * Returns the first item emitted by this {@code BlockingObservable}, or throws
+     * {@code NoSuchElementException} if it emits no items.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator is a pass-through for backpressure, the behavior is determined by the upstream's
-     *  backpressure behavior.</dd>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code hide} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return the new Flowable instance
+     *
+     * @return the first item emitted by this {@code BlockingObservable}
+     * @throws NoSuchElementException
+     *             if this {@code BlockingObservable} emits no items
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final T blockingFirst() {
+        BlockingFirstSubscriber<T> s = new BlockingFirstSubscriber<T>();
+        subscribe(s);
+        T v = s.blockingGet();
+        if (v != null) {
+            return v;
+        }
+        throw new NoSuchElementException();
+    }
+
+    /**
+     * Returns the first item emitted by this {@code BlockingObservable}, or a default value if it emits no
+     * items.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param defaultValue
+     *            a default value to return if this {@code BlockingObservable} emits no items
+     * @return the first item emitted by this {@code BlockingObservable}, or the default value if it emits no
+     *         items
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final T blockingFirst(T defaultValue) {
+        BlockingFirstSubscriber<T> s = new BlockingFirstSubscriber<T>();
+        subscribe(s);
+        T v = s.blockingGet();
+        return v != null ? v : defaultValue;
+    }
+
+    /**
+     * Invokes a method on each item emitted by this {@code BlockingObservable} and blocks until the Observable
+     * completes.
+     * <p>
+     * <em>Note:</em> This will block even if the underlying Observable is asynchronous.
+     * <p>
+     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
+     * <p>
+     * This is similar to {@link Flowable#subscribe(Subscriber)}, but it blocks. Because it blocks it does not
+     * need the {@link Subscriber#onComplete()} or {@link Subscriber#onError(Throwable)} methods. If the
+     * underlying Observable terminates with an error, rather than calling {@code onError}, this method will
+     * throw an exception.
      * 
+     * <p>The difference between this method and {@link #subscribe(Consumer)} is that the {@code onNext} action
+     * is executed on the emission thread instead of the current thread.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingForEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param onNext
+     *            the {@link Consumer} to invoke for each item emitted by the {@code BlockingObservable}
+     * @throws RuntimeException
+     *             if an error occurs
+     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX documentation: Subscribe</a>
+     * @see #subscribe(Consumer)
+     */
+    public final void blockingForEach(Consumer<? super T> onNext) {
+        Iterator<T> it = blockingIterable().iterator();
+        while (it.hasNext()) {
+            try {
+                onNext.accept(it.next());
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                ((Disposable)it).dispose();
+                throw Exceptions.propagate(e);
+            }
+        }
+    }
+    
+    /**
+     * Converts this {@code BlockingObservable} into an {@link Iterable}.
+     * <p>
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingITerable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return an {@link Iterable} version of this {@code BlockingObservable}
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
+     */
+    public final Iterable<T> blockingIterable() {
+        return blockingIterable(bufferSize());
+    }
+    
+    /**
+     * Converts this {@code BlockingObservable} into an {@link Iterable}.
+     * <p>
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param bufferSize the number of items to prefetch from the current Flowable
+     * @return an {@link Iterable} version of this {@code BlockingObservable}
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
+     */
+    public final Iterable<T> blockingIterable(int bufferSize) {
+        verifyPositive(bufferSize, "bufferSize");
+        return new BlockingFlowableIterable<T>(this, bufferSize);
+    }
+    
+    /**
+     * Returns the last item emitted by this {@code BlockingObservable}, or throws
+     * {@code NoSuchElementException} if this {@code BlockingObservable} emits no items.
+     * <p>
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.last.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return the last item emitted by this {@code BlockingObservable}
+     * @throws NoSuchElementException
+     *             if this {@code BlockingObservable} emits no items
+     * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
+     */
+    public final T blockingLast() {
+        BlockingLastSubscriber<T> s = new BlockingLastSubscriber<T>();
+        subscribe(s);
+        T v = s.blockingGet();
+        if (v != null) {
+            return v;
+        }
+        throw new NoSuchElementException();
+    }
+
+    /**
+     * Returns the last item emitted by this {@code BlockingObservable}, or a default value if it emits no
+     * items.
+     * <p>
+     * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.lastOrDefault.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param defaultValue
+     *            a default value to return if this {@code BlockingObservable} emits no items
+     * @return the last item emitted by the {@code BlockingObservable}, or the default value if it emits no
+     *         items
+     * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
+     */
+    public final T blockingLast(T defaultValue) {
+        BlockingLastSubscriber<T> s = new BlockingLastSubscriber<T>();
+        subscribe(s);
+        T v = s.blockingGet();
+        if (v != null) {
+            return v;
+        }
+        return v != null ? v : defaultValue;
+    }
+    
+    /**
+     * Returns an {@link Iterable} that returns the latest item emitted by this {@code BlockingObservable},
+     * waiting if necessary for one to become available.
+     * <p>
+     * If this {@code BlockingObservable} produces items faster than {@code Iterator.next} takes them,
+     * {@code onNext} events might be skipped, but {@code onError} or {@code onCompleted} events are not.
+     * <p>
+     * Note also that an {@code onNext} directly followed by {@code onCompleted} might hide the {@code onNext}
+     * event.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return an Iterable that always returns the latest item emitted by this {@code BlockingObservable}
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final Iterable<T> blockingLatest() {
+        return BlockingFlowableLatest.latest(this);
+    }
+    
+    /**
+     * Returns an {@link Iterable} that always returns the item most recently emitted by this
+     * {@code BlockingObservable}.
+     * <p>
+     * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingMostRecent} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param initialValue
+     *            the initial value that the {@link Iterable} sequence will yield if this
+     *            {@code BlockingObservable} has not yet emitted an item
+     * @return an {@link Iterable} that on each iteration returns the item that this {@code BlockingObservable}
+     *         has most recently emitted
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final Iterable<T> blockingMostRecent(T initialValue) {
+        return BlockingFlowableMostRecent.mostRecent(this, initialValue);
+    }
+    
+    /**
+     * Returns an {@link Iterable} that blocks until this {@code BlockingObservable} emits another item, then
+     * returns that item.
+     * <p>
+     * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return an {@link Iterable} that blocks upon each iteration until this {@code BlockingObservable} emits
+     *         a new item, whereupon the Iterable returns that item
+     * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX documentation: TakeLast</a>
+     */
+    public final Iterable<T> blockingNext() {
+        return BlockingFlowableNext.next(this);
+    }
+    
+    /**
+     * If this {@code BlockingObservable} completes after emitting a single item, return that item, otherwise
+     * throw a {@code NoSuchElementException}.
+     * <p>
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.single.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return the single item emitted by this {@code BlockingObservable}
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final T blockingSingle() {
+        return single().blockingFirst();
+    }
+    
+    /**
+     * If this {@code BlockingObservable} completes after emitting a single item, return that item; if it emits
+     * more than one item, throw an {@code IllegalArgumentException}; if it emits no items, return a default
+     * value.
+     * <p>
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.singleOrDefault.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param defaultValue
+     *            a default value to return if this {@code BlockingObservable} emits no items
+     * @return the single item emitted by this {@code BlockingObservable}, or the default value if it emits no
+     *         items
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
+     */
+    public final T blockingSingle(T defaultValue) {
+        return single(defaultValue).blockingFirst();
+    }
+    
+    /**
+     * Returns a {@link Future} representing the single value emitted by this {@code BlockingObservable}.
+     * <p>
+     * If the {@link Flowable} emits more than one item, {@link java.util.concurrent.Future} will receive an
+     * {@link java.lang.IllegalArgumentException}. If the {@link Flowable} is empty, {@link java.util.concurrent.Future}
+     * will receive an {@link java.util.NoSuchElementException}.
+     * <p>
+     * If the {@code BlockingObservable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
+     * <p>
+     * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a {@link Future} that expects a single item to be emitted by this {@code BlockingObservable}
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
+     */
+    public final Future<T> toFuture() {
+        return FlowableToFuture.toFuture(this);
+    }
+    
+    /**
+     * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @since 2.0
      */
-    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> hide() {
-        return new FlowableHide<T>(this);
+    public final void blockingSubscribe() {
+        FlowableBlockingSubscribe.subscribe(this);
+    }
+
+    /**
+     * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onNext the callback action for each source value
+     * @since 2.0
+     */
+    public final void blockingSubscribe(Consumer<? super T> onNext) {
+        FlowableBlockingSubscribe.subscribe(this, onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION);
+    }
+
+    /**
+     * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onNext the callback action for each source value
+     * @param onError the callback action for an error event
+     * @since 2.0
+     */
+    public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
+        FlowableBlockingSubscribe.subscribe(this, onNext, onError, Functions.EMPTY_ACTION);
     }
 
     
+    /**
+     * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onNext the callback action for each source value
+     * @param onError the callback action for an error event
+     * @param onComplete the callback action for the completion event.
+     * @since 2.0
+     */
+    public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete) {
+        FlowableBlockingSubscribe.subscribe(this, onNext, onError, onComplete);
+    }
+
+    /**
+     * Subscribes to the source and calls the Subscriber methods <strong>on the current thread</strong>.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source 
+     *  {@code Flowable} in an unbounded manner
+     *  (i.e., no backpressure applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * The unsubscription and backpressure is composed through.
+     * @param subscriber the subscriber to forward events and calls to in the current thread
+     * @since 2.0
+     */
+    public final void blockingSubscribe(Subscriber<? super T> subscriber) {
+        FlowableBlockingSubscribe.subscribe(this, subscriber);
+    }
+
     /**
      * Returns a Flowable that emits buffers of items it collects from the source Publisher. The resulting
      * Publisher emits connected, non-overlapping buffers, each containing {@code count} items. When the source
@@ -8445,7 +8836,29 @@ public abstract class Flowable<T> implements Publisher<T> {
         return new FlowableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
                 this, other, leftEnd, rightEnd, resultSelector);
     }
-    
+
+    /**
+     * Hides the identity of this Flowable and its Subscription.
+     * <p>Allows hiding extra features such as {@link Processor}'s
+     * {@link Subscriber} methods or preventing certain identity-based 
+     * optimizations (fusion).
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator is a pass-through for backpressure, the behavior is determined by the upstream's
+     *  backpressure behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code hide} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Flowable instance
+     * 
+     * @since 2.0
+     */
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<T> hide() {
+        return new FlowableHide<T>(this);
+    }
+
     /**
      * Ignores all items emitted by the source Publisher and only calls {@code onCompleted} or {@code onError}.
      * <p>
@@ -9132,7 +9545,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.latest.png" alt="">
      * <p>
-     * Its behavior is logically equivalent to {@code toBlocking().latest()} with the exception that
+     * Its behavior is logically equivalent to {@code blockingLatest()} with the exception that
      * the downstream is not blocking while requesting more values.
      * <p>
      * Note that if the upstream Publisher does support backpressure, this operator ignores that capability
@@ -10500,7 +10913,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *          System.out.println("delay retry by " + i + " second(s)");
      *          return Publisher.timer(i, TimeUnit.SECONDS);
      *      });
-     *  }).toBlocking().forEach(System.out::println);
+     *  }).blockingForEach(System.out::println);
      * </code></pre>
      * 
      * Output is:
@@ -13196,25 +13609,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         }
     }
 
-    /**
-     * Converts a Publisher into a {@link BlockingFlowable} (a Publisher with blocking operators).
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
-     *  behavior.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toBlocking} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @return a {@code BlockingPublisher} version of this Publisher
-     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
-     */
-    @BackpressureSupport(BackpressureKind.SPECIAL)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final BlockingFlowable<T> toBlocking() {
-        return BlockingFlowable.from(this);
-    }
-    
     /**
      * Returns a Completable that discards all onNext emissions (similar to
      * {@code ignoreAllElements()}) and calls onCompleted when this source Publisher calls

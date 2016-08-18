@@ -44,7 +44,7 @@ public class FlowableSwitchIfEmptyTest {
                     }
                 }));
 
-        assertEquals(4, observable.toBlocking().single().intValue());
+        assertEquals(4, observable.blockingSingle().intValue());
         assertFalse(subscribed.get());
     }
 
@@ -53,7 +53,7 @@ public class FlowableSwitchIfEmptyTest {
         final Flowable<Integer> observable = Flowable.<Integer>empty()
                 .switchIfEmpty(Flowable.fromIterable(Arrays.asList(42)));
 
-        assertEquals(42, observable.toBlocking().single().intValue());
+        assertEquals(42, observable.blockingSingle().intValue());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class FlowableSwitchIfEmptyTest {
         });
 
         final Flowable<Long> observable = Flowable.<Long>empty().switchIfEmpty(withProducer);
-        assertEquals(42, observable.toBlocking().single().intValue());
+        assertEquals(42, observable.blockingSingle().intValue());
     }
 
     @Test

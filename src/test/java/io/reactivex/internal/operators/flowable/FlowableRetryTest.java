@@ -262,8 +262,7 @@ public class FlowableRetryTest {
                         });
                     }
                 })
-                .toBlocking()
-                .first();
+                .blockingFirst();
 
         assertEquals("Observer did not receive the expected output", 1, first);
         assertEquals("Subscribe was not called once", 1, inc.get());

@@ -38,8 +38,7 @@ public class FlowableGroupByTests {
             }
         })
         .take(1)
-        .toBlocking()
-        .forEach(new Consumer<GroupedFlowable<Object, Event>>() {
+        .blockingForEach(new Consumer<GroupedFlowable<Object, Event>>() {
             @Override
             public void accept(GroupedFlowable<Object, Event> v) {
                 System.out.println(v);
@@ -75,8 +74,7 @@ public class FlowableGroupByTests {
             }
         })
         .take(20)
-        .toBlocking()
-        .forEach(new Consumer<Object>() {
+        .blockingForEach(new Consumer<Object>() {
             @Override
             public void accept(Object v) {
                 System.out.println(v);

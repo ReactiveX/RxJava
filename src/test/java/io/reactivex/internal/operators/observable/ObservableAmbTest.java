@@ -194,7 +194,7 @@ public class ObservableAmbTest {
                         //
                     }
             }
-        }).ambWith(Observable.just(2)).toBlocking().single();
+        }).ambWith(Observable.just(2)).blockingSingle();
         assertEquals(1, result);
     }
 

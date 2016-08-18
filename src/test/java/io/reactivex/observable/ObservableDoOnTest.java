@@ -32,7 +32,7 @@ public class ObservableDoOnTest {
             public void accept(String v) {
                 r.set(v);
             }
-        }).toBlocking().single();
+        }).blockingSingle();
 
         assertEquals("one", output);
         assertEquals("one", r.get());
@@ -49,7 +49,7 @@ public class ObservableDoOnTest {
                 public void accept(Throwable v) {
                     r.set(v);
                 }
-            }).toBlocking().single();
+            }).blockingSingle();
             fail("expected exception, not a return value");
         } catch (Throwable e) {
             t = e;
@@ -67,7 +67,7 @@ public class ObservableDoOnTest {
             public void run() {
                 r.set(true);
             }
-        }).toBlocking().single();
+        }).blockingSingle();
 
         assertEquals("one", output);
         assertTrue(r.get());

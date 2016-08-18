@@ -38,7 +38,7 @@ public class FlowableWindowTests {
                 }
             })
         )
-        .toBlocking().forEach(new Consumer<List<Integer>>() {
+        .blockingForEach(new Consumer<List<Integer>>() {
             @Override
             public void accept(List<Integer> xs) {
                 lists.add(xs);

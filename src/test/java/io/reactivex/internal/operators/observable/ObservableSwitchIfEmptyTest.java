@@ -40,7 +40,7 @@ public class ObservableSwitchIfEmptyTest {
                     }
                 }));
 
-        assertEquals(4, o.toBlocking().single().intValue());
+        assertEquals(4, o.blockingSingle().intValue());
         assertFalse(subscribed.get());
     }
 
@@ -49,7 +49,7 @@ public class ObservableSwitchIfEmptyTest {
         final Observable<Integer> o = Observable.<Integer>empty()
                 .switchIfEmpty(Observable.fromIterable(Arrays.asList(42)));
 
-        assertEquals(42, o.toBlocking().single().intValue());
+        assertEquals(42, o.blockingSingle().intValue());
     }
 
     @Test

@@ -90,7 +90,7 @@ public class ObservableToObservableListTest {
     @Test
     public void testListWithBlockingFirst() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        List<String> actual = o.toList().toBlocking().first();
+        List<String> actual = o.toList().blockingFirst();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 

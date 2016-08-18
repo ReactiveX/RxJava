@@ -52,7 +52,7 @@ public class FlowableZipTests {
                     }
                 })
                 .take(10)
-                .toBlocking().forEach(new Consumer<HashMap<String, String>>() {
+                .blockingForEach(new Consumer<HashMap<String, String>>() {
                     @Override
                     public void accept(HashMap<String, String> v) {
                         System.out.println(v);
@@ -70,11 +70,11 @@ public class FlowableZipTests {
         Flowable<HorrorMovie> horrors = Flowable.just(new HorrorMovie());
         Flowable<CoolRating> ratings = Flowable.just(new CoolRating());
 
-        Flowable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);
-        Flowable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);
-        Flowable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlocking().forEach(extendedAction);
-        Flowable.<Media, Rating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);
-        Flowable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlocking().forEach(action);
+        Flowable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).blockingForEach(action);
+        Flowable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).blockingForEach(action);
+        Flowable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).blockingForEach(extendedAction);
+        Flowable.<Media, Rating, Result> zip(horrors, ratings, combine).blockingForEach(action);
+        Flowable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).blockingForEach(action);
 
         Flowable.<Movie, CoolRating, Result> zip(horrors, ratings, combine);
     }
@@ -101,7 +101,7 @@ public class FlowableZipTests {
             }
         });
 
-        assertSame(invoked, result.toBlocking().last());
+        assertSame(invoked, result.blockingLast());
     }
 
     BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {

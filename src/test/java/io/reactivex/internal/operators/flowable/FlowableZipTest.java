@@ -991,7 +991,7 @@ public class FlowableZipTest {
             }
         });
 
-        o.toBlocking().last();
+        o.blockingLast();
     }
 
     @Test
@@ -1218,7 +1218,7 @@ public class FlowableZipTest {
         for (int i = 0; i < 1026; i++) {
             expected.add(i * 3);
         }
-        assertEquals(expected, zip2.toList().toBlocking().single());
+        assertEquals(expected, zip2.toList().blockingSingle());
     }
     @Test
     public void testUnboundedDownstreamOverrequesting() {
@@ -1258,7 +1258,7 @@ public class FlowableZipTest {
                 public Integer apply(Integer t1, Integer t2) {
                     return t1 + t2 * 10;
                 }
-            }).toBlocking().single(0);
+            }).blockingSingle(0);
             
             Assert.assertEquals(11, value);
         }

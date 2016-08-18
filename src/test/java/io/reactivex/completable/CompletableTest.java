@@ -2780,7 +2780,7 @@ public class CompletableTest {
             }
         });
         
-        flow.toBlocking().forEach(new Consumer<Object>() {
+        flow.blockingForEach(new Consumer<Object>() {
             @Override
             public void accept(Object e) { }
         });
@@ -2793,22 +2793,22 @@ public class CompletableTest {
     
     @Test(timeout = 1000)
     public void toFlowableNormal() {
-        normal.completable.toFlowable().toBlocking().forEach(Functions.emptyConsumer());
+        normal.completable.toFlowable().blockingForEach(Functions.emptyConsumer());
     }
     
     @Test(timeout = 1000, expected = TestException.class)
     public void toFlowableError() {
-        error.completable.toFlowable().toBlocking().forEach(Functions.emptyConsumer());
+        error.completable.toFlowable().blockingForEach(Functions.emptyConsumer());
     }
 
     @Test(timeout = 1000)
     public void toNbpObservableNormal() {
-        normal.completable.toObservable().toBlocking().forEach(Functions.emptyConsumer());
+        normal.completable.toObservable().blockingForEach(Functions.emptyConsumer());
     }
     
     @Test(timeout = 1000, expected = TestException.class)
     public void toNbpObservableError() {
-        error.completable.toObservable().toBlocking().forEach(Functions.emptyConsumer());
+        error.completable.toObservable().blockingForEach(Functions.emptyConsumer());
     }
     
     @Test(timeout = 1000)
@@ -3920,7 +3920,7 @@ public class CompletableTest {
     
     @Test(timeout = 5000)
     public void toObservableNormal() {
-        normal.completable.toObservable().toBlocking().forEach(new Consumer<Object>() {
+        normal.completable.toObservable().blockingForEach(new Consumer<Object>() {
             @Override
             public void accept(Object e) { }
         });
@@ -3928,7 +3928,7 @@ public class CompletableTest {
     
     @Test(timeout = 5000, expected = TestException.class)
     public void toObservableError() {
-        error.completable.toObservable().toBlocking().forEach(new Consumer<Object>() {
+        error.completable.toObservable().blockingForEach(new Consumer<Object>() {
             @Override
             public void accept(Object e) { }
         });

@@ -51,7 +51,7 @@ public class ObservableZipTests {
                     }
                 })
                 .take(10)
-                .toBlocking().forEach(new Consumer<Object>() {
+                .blockingForEach(new Consumer<Object>() {
                     @Override
                     public void accept(Object pv) {
                         System.out.println(pv);
@@ -69,11 +69,11 @@ public class ObservableZipTests {
         Observable<HorrorMovie> horrors = Observable.just(new HorrorMovie());
         Observable<CoolRating> ratings = Observable.just(new CoolRating());
 
-        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);
-        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);
-        Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlocking().forEach(extendedAction);
-        Observable.<Media, Rating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);
-        Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlocking().forEach(action);
+        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).blockingForEach(action);
+        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).blockingForEach(action);
+        Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).blockingForEach(extendedAction);
+        Observable.<Media, Rating, Result> zip(horrors, ratings, combine).blockingForEach(action);
+        Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).blockingForEach(action);
 
         Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine);
     }
@@ -100,7 +100,7 @@ public class ObservableZipTests {
             }
         });
 
-        assertSame(invoked, result.toBlocking().last());
+        assertSame(invoked, result.blockingLast());
     }
 
     BiFunction<Media, Rating, ExtendedResult> combine = new BiFunction<Media, Rating, ExtendedResult>() {
