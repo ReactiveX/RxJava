@@ -407,7 +407,7 @@ public class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Ab
         
         @Override
         public void dispose() {
-            SubscriptionHelper.dispose(this);
+            SubscriptionHelper.cancel(this);
         }
 
         @Override
@@ -460,7 +460,7 @@ public class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Ab
         
         @Override
         public void dispose() {
-            SubscriptionHelper.dispose(this);
+            SubscriptionHelper.cancel(this);
         }
 
         @Override
@@ -477,7 +477,7 @@ public class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Ab
 
         @Override
         public void onNext(Object t) {
-            if (SubscriptionHelper.dispose(this)) {
+            if (SubscriptionHelper.cancel(this)) {
                 parent.innerClose(isLeft, this);
             }
         }

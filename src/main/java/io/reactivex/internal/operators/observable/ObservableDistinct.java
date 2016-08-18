@@ -160,6 +160,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             try {
                 key = keySelector.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.dispose();
                 actual.onError(e);
                 return;
@@ -176,6 +177,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             try {
                 b = predicate.test(key);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.dispose();
                 actual.onError(e);
                 return;
@@ -191,6 +193,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             try {
                 predicate.test(null); // special case: poison pill
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(e, t));
                 return;
             }
@@ -202,6 +205,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             try {
                 predicate.test(null); // special case: poison pill
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }

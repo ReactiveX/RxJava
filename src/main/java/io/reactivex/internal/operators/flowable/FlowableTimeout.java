@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscribers.flowable.FullArbiterSubscriber;
@@ -94,6 +95,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
                 try {
                     p = firstTimeoutSelector.call();
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     cancel();
                     EmptySubscription.error(ex, a);
                     return;
@@ -133,6 +135,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             try {
                 p = timeoutSelector.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
                 return;
@@ -271,6 +274,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
                 try {
                     p = firstTimeoutSelector.call();
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     dispose();
                     EmptySubscription.error(ex, a);
                     return;
@@ -315,6 +319,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             try {
                 p = timeoutSelector.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }

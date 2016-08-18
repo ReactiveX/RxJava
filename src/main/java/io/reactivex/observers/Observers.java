@@ -15,6 +15,7 @@ package io.reactivex.observers;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.*;
@@ -79,11 +80,13 @@ public final class Observers {
                 try {
                     onStart.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -97,11 +100,13 @@ public final class Observers {
                 try {
                     onNext.accept(t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -118,6 +123,7 @@ public final class Observers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
                     RxJavaPlugins.onError(t);
                 }
@@ -132,6 +138,7 @@ public final class Observers {
                 try {
                     onComplete.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     RxJavaPlugins.onError(e);
                 }
             }
@@ -168,11 +175,13 @@ public final class Observers {
                 try {
                     onStart.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -186,11 +195,13 @@ public final class Observers {
                 try {
                     onNext.accept(t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -207,6 +218,7 @@ public final class Observers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
                     RxJavaPlugins.onError(t);
                 }
@@ -221,6 +233,7 @@ public final class Observers {
                 try {
                     onComplete.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     RxJavaPlugins.onError(e);
                 }
             }
@@ -285,11 +298,13 @@ public final class Observers {
                 try {
                     onStart.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     dispose();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -303,11 +318,13 @@ public final class Observers {
                 try {
                     onNext.accept(t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     dispose();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -324,6 +341,7 @@ public final class Observers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
                     RxJavaPlugins.onError(t);
                 }
@@ -338,6 +356,7 @@ public final class Observers {
                 try {
                     onComplete.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     RxJavaPlugins.onError(e);
                 }
             }
@@ -365,11 +384,13 @@ public final class Observers {
                     try {
                         onStart.accept(s);
                     } catch (Throwable e) {
+                        Exceptions.throwIfFatal(e);
                         done = true;
                         s.dispose();
                         try {
                             onError.accept(e);
                         } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
                             RxJavaPlugins.onError(ex);
                             RxJavaPlugins.onError(e);
                         }
@@ -385,11 +406,13 @@ public final class Observers {
                 try {
                     onNext.accept(t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     s.dispose();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -406,6 +429,7 @@ public final class Observers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
                     RxJavaPlugins.onError(t);
                 }
@@ -420,6 +444,7 @@ public final class Observers {
                 try {
                     onComplete.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     RxJavaPlugins.onError(e);
                 }
             }

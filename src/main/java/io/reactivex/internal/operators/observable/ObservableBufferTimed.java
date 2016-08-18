@@ -21,6 +21,7 @@ import io.reactivex.*;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.observable.QueueDrainObserver;
@@ -111,6 +112,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 try {
                     b = bufferSupplier.call();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     dispose();
                     EmptyDisposable.error(e, actual);
                     return;
@@ -201,6 +203,7 @@ extends AbstractObservableWithUpstream<T, U> {
             try {
                 next = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 selfCancel = true;
                 dispose();
                 actual.onError(e);
@@ -272,6 +275,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 try {
                     b = bufferSupplier.call();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     w.dispose();
                     s.dispose();
                     EmptyDisposable.error(e, actual);
@@ -369,6 +373,7 @@ extends AbstractObservableWithUpstream<T, U> {
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
                 return;
@@ -447,6 +452,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 try {
                     b = bufferSupplier.call();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     w.dispose();
                     s.dispose();
                     EmptyDisposable.error(e, actual);
@@ -496,6 +502,7 @@ extends AbstractObservableWithUpstream<T, U> {
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
                 return;
@@ -579,6 +586,7 @@ extends AbstractObservableWithUpstream<T, U> {
             try {
                 next = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
                 return;

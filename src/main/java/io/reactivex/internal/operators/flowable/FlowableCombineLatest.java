@@ -88,6 +88,7 @@ extends Flowable<R> {
             try {
                 it = iterable.iterator();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 EmptySubscription.error(e, s);
                 return;
             }
@@ -104,6 +105,7 @@ extends Flowable<R> {
                 try {
                     b = it.hasNext();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     EmptySubscription.error(e, s);
                     return;
                 }
@@ -117,6 +119,7 @@ extends Flowable<R> {
                 try {
                     p = it.next();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     EmptySubscription.error(e, s);
                     return;
                 }
@@ -552,7 +555,7 @@ extends Flowable<R> {
         }
         
         public void cancel() {
-            SubscriptionHelper.dispose(this);
+            SubscriptionHelper.cancel(this);
         }
         
         public void requestOne() {

@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
@@ -64,6 +65,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
                 try {
                     u = accumulator.apply(v, t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     s.cancel();
                     a.onError(e);
                     return;

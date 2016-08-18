@@ -236,10 +236,11 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
             long i = index;
 
-            if (i % skip == 0L) {
+            if (i % skip == 0L) { // FIXME no need for modulo
                 try {
                     b = bufferSupplier.call();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     cancel();
 
                     onError(e);
@@ -392,7 +393,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
             long i = index;
 
-            if (i % skip == 0L) {
+            if (i % skip == 0L) { // FIXME no need for modulo
                 C b;
 
                 try {

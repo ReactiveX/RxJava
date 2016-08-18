@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 
@@ -75,6 +75,7 @@ public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpst
             try {
                 v = valueSupplier.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(e, t));
                 return;
             }

@@ -20,7 +20,7 @@ package io.reactivex.internal.util;
 
 import java.util.Arrays;
 
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -208,6 +208,7 @@ public final class OpenHashSet<T> {
                 try {
                     consumer.accept(k);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     if (ex == null) {
                         ex = new CompositeException();
                     }

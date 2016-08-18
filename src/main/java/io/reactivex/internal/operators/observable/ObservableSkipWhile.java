@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
 
@@ -69,6 +70,7 @@ public final class ObservableSkipWhile<T> extends AbstractObservableWithUpstream
                 try {
                     b = predicate.test(t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     s.dispose();
                     actual.onError(e);
                     return;

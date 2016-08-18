@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -105,6 +106,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
             try {
                 p = mapper.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.cancel();
                 onError(e);
                 return;
@@ -407,7 +409,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         }
         
         public void cancel() {
-            SubscriptionHelper.dispose(this);
+            SubscriptionHelper.cancel(this);
         }
     }
 }

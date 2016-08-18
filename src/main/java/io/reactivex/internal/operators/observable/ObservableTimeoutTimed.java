@@ -61,7 +61,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         
         Disposable s; 
         
-        final NbpFullArbiter<T> arbiter;
+        final ObserverFullArbiter<T> arbiter;
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
@@ -86,7 +86,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             this.unit = unit;
             this.worker = worker;
             this.other = other;
-            this.arbiter = new NbpFullArbiter<T>(actual, this, 8);
+            this.arbiter = new ObserverFullArbiter<T>(actual, this, 8);
         }
 
         @Override

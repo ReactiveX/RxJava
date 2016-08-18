@@ -78,6 +78,6 @@ public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposab
     
     @Override
     public final void dispose() {
-        SubscriptionHelper.dispose(s);
+        SubscriptionHelper.cancel(s);
     }
 }

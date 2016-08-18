@@ -179,6 +179,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         try {
             connection.accept(ps);
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             throw Exceptions.propagate(ex);
         }
         if (doConnect) {
@@ -232,7 +233,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 InnerProducer[] ps = producers.getAndSet(TERMINATED);
                 if (ps != TERMINATED) {
                     current.compareAndSet(PublishSubscriber.this, null);
-                    SubscriptionHelper.dispose(s);
+                    SubscriptionHelper.cancel(s);
                 }
             }
         }
@@ -559,14 +560,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                                 // this eager behavior will skip unsubscribed children in case
                                 // multiple values are available in the queue
                                 if (ip.get() > 0L) {
-                                    try {
-                                        ip.child.onNext(value);
-                                    } catch (Throwable t) {
-                                        // we bounce back exceptions and kick out the child subscriber
-                                        ip.dispose();
-                                        ip.child.onError(t);
-                                        continue;
-                                    }
+                                    ip.child.onNext(value);
                                     // indicate this child has received 1 element
                                     ip.produced(1);
                                 }

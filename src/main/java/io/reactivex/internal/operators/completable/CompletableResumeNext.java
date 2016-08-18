@@ -14,9 +14,10 @@
 package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class CompletableResumeNext extends Completable {
 
@@ -35,7 +36,7 @@ public final class CompletableResumeNext extends Completable {
     @Override
     protected void subscribeActual(final CompletableObserver s) {
 
-        final SerialDisposable sd = new SerialDisposable();
+        final SequentialDisposable sd = new SequentialDisposable();
         source.subscribe(new CompletableObserver() {
 
             @Override
@@ -50,6 +51,7 @@ public final class CompletableResumeNext extends Completable {
                 try {
                     c = errorMapper.apply(e);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     s.onError(new CompositeException(ex, e));
                     return;
                 }
@@ -75,7 +77,7 @@ public final class CompletableResumeNext extends Completable {
 
                     @Override
                     public void onSubscribe(Disposable d) {
-                        sd.set(d);
+                        sd.update(d);
                     }
                     
                 });
@@ -83,7 +85,7 @@ public final class CompletableResumeNext extends Completable {
 
             @Override
             public void onSubscribe(Disposable d) {
-                sd.set(d);
+                sd.update(d);
             }
             
         });

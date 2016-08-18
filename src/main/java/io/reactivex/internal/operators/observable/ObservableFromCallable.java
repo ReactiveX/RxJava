@@ -17,6 +17,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 
 public final class ObservableFromCallable<T> extends Observable<T> {
     final Callable<? extends T> callable;
@@ -34,6 +35,7 @@ public final class ObservableFromCallable<T> extends Observable<T> {
         try {
             value = callable.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
                 s.onError(e);
             }

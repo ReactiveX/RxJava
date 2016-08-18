@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.DisposableHelper;
 
@@ -76,6 +77,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
                 try {
                     u = accumulator.apply(v, t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     s.dispose();
                     a.onError(e);
                     return;

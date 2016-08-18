@@ -20,7 +20,8 @@ import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.util.OpenHashSet;
 
 /**
- * A disposable container that can hold onto multiple other disposables.
+ * A disposable container that can hold onto multiple other disposables and
+ * offers O(1) add and removal complexity.
  */
 public final class CompositeDisposable implements Disposable, DisposableContainer {
     
@@ -28,9 +29,16 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
 
     volatile boolean disposed;
     
+    /**
+     * Creates an empty CompositeDisposable.
+     */
     public CompositeDisposable() {
     }
     
+    /**
+     * Creates a CompositeDisposables with the given array of initial elements.
+     * @param resources the array of Disposables to start with
+     */
     public CompositeDisposable(Disposable... resources) {
         Objects.requireNonNull(resources, "resources is null");
         this.resources = new OpenHashSet<Disposable>(resources.length + 1);
@@ -40,6 +48,10 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         }
     }
     
+    /**
+     * Creates a CompositeDisposables with the given Iterable sequence of initial elements.
+     * @param resources the Iterable sequence of Disposables to start with
+     */
     public CompositeDisposable(Iterable<? extends Disposable> resources) {
         Objects.requireNonNull(resources, "resources is null");
         for (Disposable d : resources) {
@@ -91,6 +103,12 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         return false;
     }
 
+    /**
+     * Atomically adds the givel array of Disposables to the container or
+     * disposes them all if the container has been disposed.
+     * @param ds the array of Disposables
+     * @return true if the operation was successful, false if the container has been disposed
+     */
     public boolean addAll(Disposable... ds) {
         Objects.requireNonNull(ds, "ds is null");
         if (!disposed) {
@@ -143,6 +161,9 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         return true;
     }
     
+    /**
+     * Atomically clears the container, then disposes all the previously contained Disposables.
+     */
     public void clear() {
         if (disposed) {
             return;
@@ -160,6 +181,10 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         dispose(set);
     }
     
+    /**
+     * Returns the number of currently held Disposables.
+     * @return the number of currently held Disposables
+     */
     public int size() {
         if (disposed) {
             return 0;
@@ -172,6 +197,11 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         }
     }
     
+    /**
+     * Dispose the contents of the OpenHashSet by suppressing non-fatal
+     * Throwables till the end.
+     * @param set the OpenHashSet to dispose elements of
+     */
     void dispose(OpenHashSet<Disposable> set) {
         if (set == null) {
             return;
@@ -183,6 +213,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
                 try {
                     ((Disposable) o).dispose();
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     if (errors == null) {
                         errors = new ArrayList<Throwable>();
                     }

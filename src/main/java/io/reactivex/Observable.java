@@ -1207,7 +1207,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T> the value type
      * @param sources a sequence of ObservableSources that need to be eagerly concatenated
      * @return the new ObservableSource instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatArrayEager(ObservableSource<? extends T>... sources) {
@@ -1230,7 +1230,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *                       is interpreted as indication to subscribe to all sources at once
      * @param prefetch the number of elements to prefetch from each ObservableSource source
      * @return the new ObservableSource instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatArrayEager(int maxConcurrency, int prefetch, ObservableSource<? extends T>... sources) {
@@ -1311,7 +1311,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T> the value type
      * @param sources a sequence of ObservableSources that need to be eagerly concatenated
      * @return the new ObservableSource instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(ObservableSource<? extends ObservableSource<? extends T>> sources) {
@@ -1334,7 +1334,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *                       is interpreted as all inner ObservableSources can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner ObservableSource source
      * @return the new ObservableSource instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int prefetch) {
@@ -1355,7 +1355,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T> the value type
      * @param sources a sequence of ObservableSources that need to be eagerly concatenated
      * @return the new ObservableSource instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(Iterable<? extends ObservableSource<? extends T>> sources) {
@@ -1378,7 +1378,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *                       is interpreted as all inner ObservableSources can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner ObservableSource source
      * @return the new ObservableSource instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(Iterable<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int prefetch) {
@@ -1579,7 +1579,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         the type of the item emitted by the ObservableSource
      * @return a Observable whose {@link Observer}s' subscriptions trigger an invocation of the given function
      * @see #defer(Callable)
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromCallable(Callable<? extends T> supplier) {
@@ -2988,7 +2988,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits all of the items emitted by the ObservableSources emitted by the
      *         {@code source} ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3404,8 +3404,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits the items emitted by the ObservableSource most recently emitted by the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> switchOnNextDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources) {
@@ -3440,8 +3439,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits the items emitted by the ObservableSource most recently emitted by the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> switchOnNextDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch) {
@@ -3574,8 +3572,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a terminal event ({@code onComplete} or {@code onError}).
      * @return the ObservableSource whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, D> Observable<T> using(Callable<? extends D> resourceSupplier, Function<? super D, ? extends ObservableSource<? extends T>> sourceSupplier, Consumer<? super D> disposer, boolean eager) {
@@ -5463,7 +5460,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param mapper the function that maps a sequence of values into a sequence of ObservableSources that will be
      *               eagerly concatenated
      * @return the new ObservableSource instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEager(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
@@ -5488,7 +5485,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param maxConcurrency the maximum number of concurrent subscribed ObservableSources
      * @param prefetch hints about the number of expected source sequence values
      * @return the new ObservableSource instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEager(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
@@ -5515,7 +5512,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            if true, all errors from the outer and inner ObservableSource sources are delayed until the end,
      *            if false, an error from the main source is signalled when the current ObservableSource source terminates
      * @return the new ObservableSource instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEagerDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
@@ -5546,7 +5543,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *               all of them terminate, if false, exception from the current Observable is delayed until the
      *               currently running ObservableSource terminates
      * @return the new ObservableSource instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEagerDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
@@ -5974,8 +5971,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *        to this Observable.
      * @return an Observable that delays the subscription to this Observable
      *         until the other Observable emits an element or completes normally.
+     * @since 2.0
      */
-    @Experimental
     public final <U> Observable<T> delaySubscription(ObservableSource<U> other) {
         Objects.requireNonNull(other, "other is null");
         return new ObservableDelaySubscriptionOther<T, U>(this, other);
@@ -6639,7 +6636,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         by the source ObservableSource and merging the results of the ObservableSources obtained from this
      *         transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> flatMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
@@ -6673,7 +6670,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         by the source ObservableSource and merging the results of the ObservableSources obtained from this
      *         transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> flatMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper,
@@ -6751,7 +6748,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits the results of merging the ObservableSources returned from applying the
      *         specified functions to the emissions and notifications of the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> flatMap(
@@ -6787,7 +6784,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         by the source ObservableSource and merging the results of the ObservableSources obtained from this
      *         transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> flatMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int maxConcurrency) {
@@ -6889,7 +6886,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits the results of applying a function to a pair of values emitted by the
      *         source ObservableSource and the collection ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> flatMap(Function<? super T, ? extends ObservableSource<? extends U>> mapper, 
@@ -6927,7 +6924,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits the results of applying a function to a pair of values emitted by the
      *         source ObservableSource and the collection ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> flatMap(final Function<? super T, ? extends ObservableSource<? extends U>> mapper, 
@@ -6962,7 +6959,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits the results of applying a function to a pair of values emitted by the
      *         source ObservableSource and the collection ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> flatMap(Function<? super T, ? extends ObservableSource<? extends U>> mapper, 
@@ -7897,7 +7894,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * @return a Observable which out references to the upstream producer and downstream Subscriber if
      * the sequence is terminated or downstream unsubscribes
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> onTerminateDetach() {
@@ -9902,8 +9899,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            ObservableSource
      * @return a Observable that emits the items emitted by the ObservableSource returned from applying {@code func} to the most recently emitted item emitted by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     public final <R> Observable<R> switchMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
         return switchMapDelayError(mapper, bufferSize());
@@ -9932,8 +9928,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the number of elements to prefetch from the current active inner ObservableSource
      * @return a Observable that emits the items emitted by the ObservableSource returned from applying {@code func} to the most recently emitted item emitted by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     public final <R> Observable<R> switchMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
         // TODO implement
@@ -11531,7 +11526,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @throws NoSuchElementException
      *             if the source ObservableSource emits no items
      * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> toSingle() {
@@ -11602,7 +11597,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits a list that contains the items emitted by the source ObservableSource in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<List<T>> toSortedList(final Comparator<? super T> comparator, int capacityHint) {
@@ -11629,7 +11624,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             if any item emitted by the ObservableSource does not implement {@link Comparable} with respect to
      *             all other items emitted by the ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<List<T>> toSortedList(int capacityHint) {
@@ -12256,8 +12251,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that merges the specified ObservableSource into this ObservableSource by using the
      *         {@code resultSelector} function only when the source ObservableSource sequence (this instance) emits an
      *         item
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -12289,14 +12283,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param o2 the second other ObservableSource
      * @param combiner the function called with an array of values from each participating ObservableSource
      * @return the new ObservableSource instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
-    public final <T1, T2, R> Observable<R> withLatestFrom(ObservableSource<T1> o1, ObservableSource<T2> o2, 
+    public final <T1, T2, R> Observable<R> withLatestFrom(
+            ObservableSource<T1> o1, ObservableSource<T2> o2, 
             Function3<? super T, ? super T1, ? super T2, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(o1, "o1 is null");
+        Objects.requireNonNull(o2, "o2 is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new ObservableSource[] { o1, o2 }, f);
     }
 
     /**
@@ -12322,16 +12318,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param o3 the third other ObservableSource
      * @param combiner the function called with an array of values from each participating ObservableSource
      * @return the new ObservableSource instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, R> Observable<R> withLatestFrom(
             ObservableSource<T1> o1, ObservableSource<T2> o2, 
             ObservableSource<T3> o3, 
             Function4<? super T, ? super T1, ? super T2, ? super T3, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(o1, "o1 is null");
+        Objects.requireNonNull(o2, "o2 is null");
+        Objects.requireNonNull(o3, "o3 is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new ObservableSource[] { o1, o2, o3 }, f);
     }
 
     /**
@@ -12359,16 +12357,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param o4 the fourth other ObservableSource
      * @param combiner the function called with an array of values from each participating ObservableSource
      * @return the new ObservableSource instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, T4, R> Observable<R> withLatestFrom(
             ObservableSource<T1> o1, ObservableSource<T2> o2, 
             ObservableSource<T3> o3, ObservableSource<T4> o4, 
             Function5<? super T, ? super T1, ? super T2, ? super T3, ? super T4, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(o1, "o1 is null");
+        Objects.requireNonNull(o2, "o2 is null");
+        Objects.requireNonNull(o3, "o3 is null");
+        Objects.requireNonNull(o4, "o4 is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new ObservableSource[] { o1, o2, o3, o4 }, f);
     }
     /**
      * Combines the value emission from this ObservableSource with the latest emissions from the
@@ -12397,17 +12398,21 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param o5 the fifth other ObservableSource
      * @param combiner the function called with an array of values from each participating ObservableSource
      * @return the new ObservableSource instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, T4, T5, R> Observable<R> withLatestFrom(
             ObservableSource<T1> o1, ObservableSource<T2> o2, 
             ObservableSource<T1> o3, ObservableSource<T2> o4, 
             ObservableSource<T1> o5, 
             Function6<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(o1, "o1 is null");
+        Objects.requireNonNull(o2, "o2 is null");
+        Objects.requireNonNull(o3, "o3 is null");
+        Objects.requireNonNull(o4, "o4 is null");
+        Objects.requireNonNull(o5, "o5 is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new ObservableSource[] { o1, o2, o3, o4, o5 }, f);
     }
 
     /**
@@ -12439,17 +12444,22 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param o6 the sixth other ObservableSource
      * @param combiner the function called with an array of values from each participating ObservableSource
      * @return the new ObservableSource instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, T4, T5, T6, R> Observable<R> withLatestFrom(
             ObservableSource<T1> o1, ObservableSource<T2> o2, 
             ObservableSource<T1> o3, ObservableSource<T2> o4, 
             ObservableSource<T1> o5, ObservableSource<T2> o6, 
             Function7<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(o1, "o1 is null");
+        Objects.requireNonNull(o2, "o2 is null");
+        Objects.requireNonNull(o3, "o3 is null");
+        Objects.requireNonNull(o4, "o4 is null");
+        Objects.requireNonNull(o5, "o5 is null");
+        Objects.requireNonNull(o6, "o6 is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new ObservableSource[] { o1, o2, o3, o4, o5, o6 }, f);
     }
 
     /**
@@ -12483,18 +12493,24 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param o7 the seventh other ObservableSource
      * @param combiner the function called with an array of values from each participating ObservableSource
      * @return the new ObservableSource instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> withLatestFrom(
             ObservableSource<T1> o1, ObservableSource<T2> o2, 
             ObservableSource<T1> o3, ObservableSource<T2> o4, 
             ObservableSource<T1> o5, ObservableSource<T2> o6, 
             ObservableSource<T1> o7,
             Function8<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(o1, "o1 is null");
+        Objects.requireNonNull(o2, "o2 is null");
+        Objects.requireNonNull(o3, "o3 is null");
+        Objects.requireNonNull(o4, "o4 is null");
+        Objects.requireNonNull(o5, "o5 is null");
+        Objects.requireNonNull(o6, "o6 is null");
+        Objects.requireNonNull(o7, "o7 is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new ObservableSource[] { o1, o2, o3, o4, o5, o6, o7 }, f);
     }
 
     /**
@@ -12530,18 +12546,25 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param o8 the eighth other ObservableSource
      * @param combiner the function called with an array of values from each participating ObservableSource
      * @return the new ObservableSource instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> withLatestFrom(
             ObservableSource<T1> o1, ObservableSource<T2> o2, 
             ObservableSource<T1> o3, ObservableSource<T2> o4, 
             ObservableSource<T1> o5, ObservableSource<T2> o6, 
             ObservableSource<T1> o7, ObservableSource<T2> o8, 
             Function9<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(o1, "o1 is null");
+        Objects.requireNonNull(o2, "o2 is null");
+        Objects.requireNonNull(o3, "o3 is null");
+        Objects.requireNonNull(o4, "o4 is null");
+        Objects.requireNonNull(o5, "o5 is null");
+        Objects.requireNonNull(o6, "o6 is null");
+        Objects.requireNonNull(o7, "o7 is null");
+        Objects.requireNonNull(o8, "o8 is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new ObservableSource[] { o1, o2, o3, o4, o5, o6, o7, o8 }, f);
     }
 
     /**
@@ -12562,13 +12585,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param others the array of other sources
      * @param combiner the function called with an array of values from each participating ObservableSource
      * @return the new ObservableSource instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
-    public final <R> Observable<R> withLatestFrom(ObservableSource<?>[] others, Function<Object[], R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    public final <R> Observable<R> withLatestFrom(ObservableSource<?>[] others, Function<? super Object[], R> combiner) {
+        Objects.requireNonNull(others, "others is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        return new ObservableWithLatestFromMany<T, R>(this, others, combiner);
     }
 
     /**
@@ -12589,13 +12611,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param others the iterable of other sources
      * @param combiner the function called with an array of values from each participating ObservableSource
      * @return the new ObservableSource instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
-    public final <R> Observable<R> withLatestFrom(Iterable<ObservableSource<?>> others, Function<Object[], R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    public final <R> Observable<R> withLatestFrom(Iterable<? extends ObservableSource<?>> others, Function<? super Object[], R> combiner) {
+        Objects.requireNonNull(others, "others is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        return new ObservableWithLatestFromMany<T, R>(this, others, combiner);
     }
 
     /**
@@ -12711,6 +12732,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that pairs up values from the source ObservableSource and the {@code other} ObservableSource
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> zipWith(ObservableSource<? extends U> other, 
@@ -12757,6 +12779,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that pairs up values from the source ObservableSource and the {@code other} ObservableSource
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Observable<R> zipWith(ObservableSource<? extends U> other, 
@@ -12771,6 +12794,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Creates a TestObserver and subscribes
      * it to this Observable.
      * @return the new TestObserver instance
+     * @since 2.0
      */
     public final TestObserver<T> test() { // NoPMD
         TestObserver<T> ts = new TestObserver<T>();
@@ -12785,6 +12809,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
      * Observable.
      * @return the new TestObserver instance
+     * @since 2.0
      */
     public final TestObserver<T> test(int fusionMode, boolean cancelled) { // NoPMD
         TestObserver<T> ts = new TestObserver<T>();

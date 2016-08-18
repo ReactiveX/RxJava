@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
+import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.subscribers.observable.ToNotificationObserver;
 import io.reactivex.subjects.BehaviorSubject;
 
@@ -68,7 +69,7 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
         final Observer<? super T> actual;
         final BehaviorSubject<Try<Optional<Object>>> subject;
         final ObservableSource<? extends T> source;
-        final SerialDisposable arbiter;
+        final SequentialDisposable arbiter;
         
         final AtomicInteger wip = new AtomicInteger();
         
@@ -76,7 +77,7 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
             this.actual = actual;
             this.subject = subject;
             this.source = source;
-            this.arbiter = new SerialDisposable();
+            this.arbiter = new SequentialDisposable();
             this.lazySet(true);
         }
         

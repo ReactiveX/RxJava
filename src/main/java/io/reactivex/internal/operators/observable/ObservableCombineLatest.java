@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -241,6 +241,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                     try {
                         v = combiner.apply(array);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         cancelled = true;
                         cancel(q);
                         a.onError(ex);

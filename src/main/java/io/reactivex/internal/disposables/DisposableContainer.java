@@ -17,6 +17,7 @@ import io.reactivex.disposables.Disposable;
 
 /**
  * Common interface to add and remove disposables from a container.
+ * @since 2.0
  */
 public interface DisposableContainer {
     

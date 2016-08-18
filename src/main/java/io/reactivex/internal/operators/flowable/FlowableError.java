@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 
 public final class FlowableError<T> extends Flowable<T> {
@@ -31,6 +32,7 @@ public final class FlowableError<T> extends Flowable<T> {
         try {
             error = errorSupplier.call();
         } catch (Throwable t) {
+            Exceptions.throwIfFatal(t);
             error = t;
             return;
         }

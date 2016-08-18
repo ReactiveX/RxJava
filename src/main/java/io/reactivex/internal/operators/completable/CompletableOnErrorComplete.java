@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Predicate;
 
 public final class CompletableOnErrorComplete extends Completable {
@@ -46,6 +46,7 @@ public final class CompletableOnErrorComplete extends Completable {
                 try {
                     b = predicate.test(e);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     s.onError(new CompositeException(e, ex));
                     return;
                 }

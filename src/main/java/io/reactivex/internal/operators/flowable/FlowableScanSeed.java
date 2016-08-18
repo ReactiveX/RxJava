@@ -16,6 +16,7 @@ import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
@@ -39,6 +40,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
         try {
             r = seedSupplier.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);
             return;
         }
@@ -83,6 +85,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
             try {
                 u = accumulator.apply(v, t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.cancel();
                 onError(e);
                 return;

@@ -2783,6 +2783,7 @@ public abstract class Single<T> implements SingleSource<T> {
         try {
             return convert.apply(this);
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             throw Exceptions.propagate(ex);
         }
     }

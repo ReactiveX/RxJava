@@ -124,6 +124,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
             try {
                 p = mapper.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.cancel();
                 onError(e);
                 return;
@@ -134,6 +135,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 try {
                     u  = ((Callable<U>)p).call();
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     s.cancel();
                     onError(ex);
                     return;
@@ -690,7 +692,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         
         @Override
         public void dispose() {
-            SubscriptionHelper.dispose(this);
+            SubscriptionHelper.cancel(this);
         }
 
         @Override 

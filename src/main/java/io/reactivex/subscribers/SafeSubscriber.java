@@ -14,7 +14,7 @@ package io.reactivex.subscribers;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -46,6 +46,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
             try {
                 s.cancel();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 ise.initCause(e);
             }
             onError(ise);
@@ -60,11 +61,13 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
         try {
             actual.onSubscribe(s);
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             done = true;
             // can't call onError because the actual's state may be corrupt at this point
             try {
                 s.cancel();
             } catch (Throwable e1) {
+                Exceptions.throwIfFatal(e1);
                 CompositeException ce = new CompositeException(); // NOPMD
                 ce.suppress(e1);
                 ce.suppress(e);
@@ -90,6 +93,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
         try {
             actual.onNext(t);
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             onError(e);
         }
     }
@@ -107,6 +111,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
             try {
                 actual.onSubscribe(EmptySubscription.INSTANCE);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 // can't call onError because the actual's state may be corrupt at this point
                 t2.suppress(e);
                 
@@ -116,6 +121,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
             try {
                 actual.onError(t2);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 // if onError failed, all that's left is to report the error to plugins
                 t2.suppress(e);
                 
@@ -132,6 +138,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
         try {
             subscription.cancel();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             t2 = new CompositeException(e, t);
         }
 
@@ -142,6 +149,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
                 actual.onError(t);
             }
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             t2.suppress(e);
             
             RxJavaPlugins.onError(t2);
@@ -163,9 +171,11 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
         try {
             subscription.cancel();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             try {
                 actual.onError(e);
             } catch (Throwable e1) {
+                Exceptions.throwIfFatal(e1);
                 RxJavaPlugins.onError(new CompositeException(e1, e));
             }
             return;
@@ -174,6 +184,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
         try {
             actual.onComplete();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             RxJavaPlugins.onError(e);
         }
     }

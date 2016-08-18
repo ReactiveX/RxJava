@@ -18,6 +18,7 @@ import java.util.Iterator;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -42,6 +43,7 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
         try {
             it = other.iterator();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, t);
             return;
         }
@@ -56,6 +58,7 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
         try {
             b = it.hasNext();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, t);
             return;
         }
@@ -144,6 +147,7 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
         }
         
         void error(Throwable e) {
+            Exceptions.throwIfFatal(e);
             done = true;
             s.cancel();
             actual.onError(e);

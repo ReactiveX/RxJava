@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -58,7 +59,7 @@ public final class ObservableLift<R, T> extends AbstractObservableWithUpstream<T
         } catch (NullPointerException e) { // NOPMD
             throw e;
         } catch (Throwable e) {
-            // TODO throw if fatal?
+            Exceptions.throwIfFatal(e);
             // can't call onError because no way to know if a Subscription has been set or not
             // can't call onSubscribe because the call might have set a Subscription already
             RxJavaPlugins.onError(e);

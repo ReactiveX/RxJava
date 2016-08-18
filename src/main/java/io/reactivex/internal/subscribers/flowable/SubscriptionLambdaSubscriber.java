@@ -15,6 +15,7 @@ package io.reactivex.internal.subscribers.flowable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -43,6 +44,7 @@ public final class SubscriptionLambdaSubscriber<T> implements Subscriber<T>, Sub
         try {
             onSubscribe.accept(s);
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             s.cancel();
             RxJavaPlugins.onError(e);
             EmptySubscription.error(e, actual);
@@ -74,6 +76,7 @@ public final class SubscriptionLambdaSubscriber<T> implements Subscriber<T>, Sub
         try {
             onRequest.accept(n);
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             RxJavaPlugins.onError(e);
         }
         s.request(n);
@@ -84,6 +87,7 @@ public final class SubscriptionLambdaSubscriber<T> implements Subscriber<T>, Sub
         try {
             onCancel.run();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             RxJavaPlugins.onError(e);
         }
         s.cancel();

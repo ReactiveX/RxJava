@@ -131,9 +131,9 @@ public final class SingleScheduler extends Scheduler {
             try {
                 Future<?> f;
                 if (delay <= 0L) {
-                    f = executor.submit(sr);
+                    f = executor.submit((Callable<Object>)sr);
                 } else {
-                    f = executor.schedule(sr, delay, unit);
+                    f = executor.schedule((Callable<Object>)sr, delay, unit);
                 }
                 
                 sr.setFuture(f);

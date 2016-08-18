@@ -14,7 +14,7 @@ package io.reactivex.observers;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -46,11 +46,13 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
             try {
                 actual.onSubscribe(this);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 done = true;
                 // can't call onError because the actual's state may be corrupt at this point
                 try {
                     s.dispose();
                 } catch (Throwable e1) {
+                    Exceptions.throwIfFatal(e1);
                     RxJavaPlugins.onError(e1);
                 }
                 RxJavaPlugins.onError(e);
@@ -85,6 +87,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
         try {
             actual.onNext(t);
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             onError(e);
         }
     }
@@ -102,6 +105,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
             try {
                 actual.onSubscribe(EmptyDisposable.INSTANCE);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 // can't call onError because the actual's state may be corrupt at this point
                 t2.suppress(e);
                 
@@ -111,6 +115,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
             try {
                 actual.onError(t2);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 // if onError failed, all that's left is to report the error to plugins
                 t2.suppress(e);
                 
@@ -127,6 +132,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
         try {
             s.dispose();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             t2 = new CompositeException(e, t);
         }
 
@@ -137,6 +143,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
                 actual.onError(t);
             }
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             t2.suppress(e);
             
             RxJavaPlugins.onError(t2);
@@ -158,9 +165,11 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
         try {
             s.dispose();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             try {
                 actual.onError(e);
             } catch (Throwable e1) {
+                Exceptions.throwIfFatal(e1);
                 RxJavaPlugins.onError(new CompositeException(e1, e));
             }
             return;
@@ -169,6 +178,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
         try {
             actual.onComplete();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             RxJavaPlugins.onError(e);
         }
     }

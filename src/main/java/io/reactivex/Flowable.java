@@ -3842,8 +3842,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the items emitted by the Publisher most recently emitted by the source
      *         Publisher
      * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3883,8 +3882,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the items emitted by the Publisher most recently emitted by the source
      *         Publisher
      * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -4036,8 +4034,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a terminal event ({@code onComplete} or {@code onError}).
      * @return the Publisher whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -6737,8 +6734,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *        to this Publisher.
      * @return a Flowable that delays the subscription to this Publisher
      *         until the other Publisher emits an element or completes normally.
+     * @since 2.0
      */
-    @Experimental
     public final <U> Flowable<T> delaySubscription(Publisher<U> other) {
         Objects.requireNonNull(other, "other is null");
         return new FlowableDelaySubscriptionOther<T, U>(this, other);
@@ -9068,9 +9065,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param overflowStrategy how should the {@code Publisher} react to buffer overflows.  Null is not allowed.
      * @return the source {@code Publisher} modified to buffer items up to the given capacity
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final Publisher<T> onBackpressureBuffer(long capacity, Action onOverflow, BackpressureOverflowStrategy overflowStrategy) {
         Objects.requireNonNull(overflowStrategy, "strategy is null");
         verifyPositive(capacity, "capacity");
@@ -9121,7 +9117,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param onDrop the action to invoke for each item dropped. onDrop action should be fast and should never block.
      * @return the source Publisher modified to drop {@code onNext} notifications on overflow
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
-     * @Experimental The behavior of this can change at any time. 
      * @since 1.1.0
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -11752,8 +11747,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            Publisher
      * @return a Flowable that emits the items emitted by the Publisher returned from applying {@code func} to the most recently emitted item emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     public final <R> Flowable<R> switchMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper) {
         return switchMapDelayError(mapper, bufferSize());
@@ -11787,8 +11781,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of elements to prefetch from the current active inner Publisher
      * @return a Flowable that emits the items emitted by the Publisher returned from applying {@code func} to the most recently emitted item emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     public final <R> Flowable<R> switchMapDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
         return switchMap0(mapper, bufferSize, true);
@@ -13198,6 +13191,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         try {
             return converter.apply(this);
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             throw Exceptions.propagate(ex);
         }
     }
@@ -14480,8 +14474,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that merges the specified Publisher into this Publisher by using the
      *         {@code resultSelector} function only when the source Publisher sequence (this instance) emits an
      *         item
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -14514,18 +14507,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T1> the first other source's value type
      * @param <T2> the second other source's value type
      * @param <R> the result value type
-     * @param o1 the first other Publisher
-     * @param o2 the second other Publisher
+     * @param p1 the first other Publisher
+     * @param p2 the second other Publisher
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
-    public final <T1, T2, R> Flowable<R> withLatestFrom(Publisher<T1> o1, Publisher<T2> o2, 
+    public final <T1, T2, R> Flowable<R> withLatestFrom(Publisher<T1> p1, Publisher<T2> p2, 
             Function3<? super T, ? super T1, ? super T2, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new Publisher[] { p1, p2 }, f);
     }
 
     /**
@@ -14549,21 +14540,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T2> the second other source's value type
      * @param <T3> the third other source's value type
      * @param <R> the result value type
-     * @param o1 the first other Publisher
-     * @param o2 the second other Publisher
-     * @param o3 the third other Publisher
+     * @param p1 the first other Publisher
+     * @param p2 the second other Publisher
+     * @param p3 the third other Publisher
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, R> Flowable<R> withLatestFrom(
-            Publisher<T1> o1, Publisher<T2> o2, 
-            Publisher<T3> o3, 
+            Publisher<T1> p1, Publisher<T2> p2, 
+            Publisher<T3> p3, 
             Function4<? super T, ? super T1, ? super T2, ? super T3, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new Publisher[] { p1, p2, p3 }, f);
     }
 
     /**
@@ -14588,22 +14577,20 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T3> the third other source's value type
      * @param <T4> the fourth other source's value type
      * @param <R> the result value type
-     * @param o1 the first other Publisher
-     * @param o2 the second other Publisher
-     * @param o3 the third other Publisher
-     * @param o4 the fourth other Publisher
+     * @param p1 the first other Publisher
+     * @param p2 the second other Publisher
+     * @param p3 the third other Publisher
+     * @param p4 the fourth other Publisher
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, T4, R> Flowable<R> withLatestFrom(
-            Publisher<T1> o1, Publisher<T2> o2, 
-            Publisher<T3> o3, Publisher<T4> o4, 
+            Publisher<T1> p1, Publisher<T2> p2, 
+            Publisher<T3> p3, Publisher<T4> p4, 
             Function5<? super T, ? super T1, ? super T2, ? super T3, ? super T4, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new Publisher[] { p1, p2, p3, p4 }, f);
     }
     /**
      * Combines the value emission from this Publisher with the latest emissions from the
@@ -14628,24 +14615,22 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T4> the fourth other source's value type
      * @param <T5> the fifth other source's value type
      * @param <R> the result value type
-     * @param o1 the first other Publisher
-     * @param o2 the second other Publisher
-     * @param o3 the third other Publisher
-     * @param o4 the fourth other Publisher
-     * @param o5 the fifth other Publisher
+     * @param p1 the first other Publisher
+     * @param p2 the second other Publisher
+     * @param p3 the third other Publisher
+     * @param p4 the fourth other Publisher
+     * @param p5 the fifth other Publisher
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, T4, T5, R> Flowable<R> withLatestFrom(
-            Publisher<T1> o1, Publisher<T2> o2, 
-            Publisher<T1> o3, Publisher<T2> o4, 
-            Publisher<T1> o5, 
+            Publisher<T1> p1, Publisher<T2> p2, 
+            Publisher<T1> p3, Publisher<T2> p4, 
+            Publisher<T1> p5, 
             Function6<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new Publisher[] { p1, p2, p3, p4, p5 }, f);
     }
 
     /**
@@ -14672,25 +14657,23 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T5> the fifth other source's value type
      * @param <T6> the sixth other source's value type
      * @param <R> the result value type
-     * @param o1 the first other Publisher
-     * @param o2 the second other Publisher
-     * @param o3 the third other Publisher
-     * @param o4 the fourth other Publisher
-     * @param o5 the fifth other Publisher
-     * @param o6 the sixth other Publisher
+     * @param p1 the first other Publisher
+     * @param p2 the second other Publisher
+     * @param p3 the third other Publisher
+     * @param p4 the fourth other Publisher
+     * @param p5 the fifth other Publisher
+     * @param p6 the sixth other Publisher
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, T4, T5, T6, R> Flowable<R> withLatestFrom(
-            Publisher<T1> o1, Publisher<T2> o2, 
-            Publisher<T1> o3, Publisher<T2> o4, 
-            Publisher<T1> o5, Publisher<T2> o6, 
+            Publisher<T1> p1, Publisher<T2> p2, 
+            Publisher<T1> p3, Publisher<T2> p4, 
+            Publisher<T1> p5, Publisher<T2> p6, 
             Function7<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new Publisher[] { p1, p2, p3, p4, p5, p6 }, f);
     }
 
     /**
@@ -14718,27 +14701,25 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T6> the sixth other source's value type
      * @param <T7> the seventh other source's value type
      * @param <R> the result value type
-     * @param o1 the first other Publisher
-     * @param o2 the second other Publisher
-     * @param o3 the third other Publisher
-     * @param o4 the fourth other Publisher
-     * @param o5 the fifth other Publisher
-     * @param o6 the sixth other Publisher
-     * @param o7 the seventh other Publisher
+     * @param p1 the first other Publisher
+     * @param p2 the second other Publisher
+     * @param p3 the third other Publisher
+     * @param p4 the fourth other Publisher
+     * @param p5 the fifth other Publisher
+     * @param p6 the sixth other Publisher
+     * @param p7 the seventh other Publisher
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, T4, T5, T6, T7, R> Flowable<R> withLatestFrom(
-            Publisher<T1> o1, Publisher<T2> o2, 
-            Publisher<T1> o3, Publisher<T2> o4, 
-            Publisher<T1> o5, Publisher<T2> o6, 
-            Publisher<T1> o7,
+            Publisher<T1> p1, Publisher<T2> p2, 
+            Publisher<T1> p3, Publisher<T2> p4, 
+            Publisher<T1> p5, Publisher<T2> p6, 
+            Publisher<T1> p7,
             Function8<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new Publisher[] { p1, p2, p3, p4, p5, p6, p7 }, f);
     }
 
     /**
@@ -14767,28 +14748,35 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T7> the seventh other source's value type
      * @param <T8> the eighth other source's value type
      * @param <R> the result value type
-     * @param o1 the first other Publisher
-     * @param o2 the second other Publisher
-     * @param o3 the third other Publisher
-     * @param o4 the fourth other Publisher
-     * @param o5 the fifth other Publisher
-     * @param o6 the sixth other Publisher
-     * @param o7 the seventh other Publisher
-     * @param o8 the eighth other Publisher
+     * @param p1 the first other Publisher
+     * @param p2 the second other Publisher
+     * @param p3 the third other Publisher
+     * @param p4 the fourth other Publisher
+     * @param p5 the fifth other Publisher
+     * @param p6 the sixth other Publisher
+     * @param p7 the seventh other Publisher
+     * @param p8 the eighth other Publisher
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
     public final <T1, T2, T3, T4, T5, T6, T7, T8, R> Flowable<R> withLatestFrom(
-            Publisher<T1> o1, Publisher<T2> o2, 
-            Publisher<T1> o3, Publisher<T2> o4, 
-            Publisher<T1> o5, Publisher<T2> o6, 
-            Publisher<T1> o7, Publisher<T2> o8, 
+            Publisher<T1> p1, Publisher<T2> p2, 
+            Publisher<T1> p3, Publisher<T2> p4, 
+            Publisher<T1> p5, Publisher<T2> p6, 
+            Publisher<T1> p7, Publisher<T2> p8, 
             Function9<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(p1, "p1 is null");
+        Objects.requireNonNull(p2, "p2 is null");
+        Objects.requireNonNull(p3, "p3 is null");
+        Objects.requireNonNull(p4, "p4 is null");
+        Objects.requireNonNull(p5, "p5 is null");
+        Objects.requireNonNull(p6, "p6 is null");
+        Objects.requireNonNull(p7, "p7 is null");
+        Objects.requireNonNull(p8, "p8 is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        Function<Object[], R> f = Functions.toFunction(combiner);
+        return withLatestFrom(new Publisher[] { p1, p2, p3, p4, p5, p6, p7, p8 }, f);
     }
 
     /**
@@ -14812,13 +14800,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param others the array of other sources
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
-    public final <R> Flowable<R> withLatestFrom(Publisher<?>[] others, Function<Object[], R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    public final <R> Flowable<R> withLatestFrom(Publisher<?>[] others, Function<? super Object[], R> combiner) {
+        Objects.requireNonNull(others, "others is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        return new FlowableWithLatestFromMany<T, R>(this, others, combiner);
     }
 
     /**
@@ -14837,18 +14824,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This operator does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <R> the result value type
      * @param others the iterable of other sources
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
-    @Experimental
-    public final <R> Flowable<R> withLatestFrom(Iterable<Publisher<?>> others, Function<Object[], R> combiner) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    public final <R> Flowable<R> withLatestFrom(Iterable<? extends Publisher<?>> others, Function<? super Object[], R> combiner) {
+        Objects.requireNonNull(others, "others is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        return new FlowableWithLatestFromMany<T, R>(this, others, combiner);
     }
 
     /**
@@ -14977,6 +14963,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that pairs up values from the source Publisher and the {@code other} Publisher
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -15028,6 +15015,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that pairs up values from the source Publisher and the {@code other} Publisher
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -15043,6 +15031,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Creates a TestSubscriber that requests Long.MAX_VALUE and subscribes
      * it to this Flowable.
      * @return the new TestSubscriber instance
+     * @since 2.0
      */
     public final TestSubscriber<T> test() { // NoPMD
         TestSubscriber<T> ts = new TestSubscriber<T>();
@@ -15055,6 +15044,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * it to this Flowable.
      * @param initialRequest the initial request amount, positive
      * @return the new TestSubscriber instance
+     * @since 2.0
      */
     public final TestSubscriber<T> test(long initialRequest) { // NoPMD
         TestSubscriber<T> ts = new TestSubscriber<T>(initialRequest);
@@ -15070,7 +15060,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
      * Flowable.
      * @return the new TestSubscriber instance
-     */
+      * @since 2.0
+    */
     public final TestSubscriber<T> test(long initialRequest, int fusionMode, boolean cancelled) { // NoPMD
         TestSubscriber<T> ts = new TestSubscriber<T>(initialRequest);
         ts.setInitialFusionMode(fusionMode);

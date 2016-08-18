@@ -229,7 +229,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
         
         @Override
         public void cancel() {
-            SubscriptionHelper.dispose(this);
+            SubscriptionHelper.cancel(this);
         }
         
     }

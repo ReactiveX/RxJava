@@ -14,9 +14,10 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class SingleResumeNext<T> extends Single<T> {
     final SingleSource<? extends T> source;
@@ -32,7 +33,7 @@ public final class SingleResumeNext<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        final SerialDisposable sd = new SerialDisposable();
+        final SequentialDisposable sd = new SequentialDisposable();
         s.onSubscribe(sd);
         
         source.subscribe(new SingleObserver<T>() {
@@ -54,6 +55,7 @@ public final class SingleResumeNext<T> extends Single<T> {
                 try {
                     next = nextFunction.apply(e);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     s.onError(new CompositeException(ex, e));
                     return;
                 }

@@ -168,6 +168,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
             try {
                 o.dispose();
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 if (errors == null) {
                     errors = new ArrayList<Throwable>();
                 }

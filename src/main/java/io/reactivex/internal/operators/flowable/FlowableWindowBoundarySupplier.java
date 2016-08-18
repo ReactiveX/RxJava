@@ -92,6 +92,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
             try {
                 p = other.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.cancel();
                 a.onError(e);
                 return;
@@ -250,6 +251,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
                         try {
                             p = other.call();
                         } catch (Throwable e) {
+                            Exceptions.throwIfFatal(e);
                             DisposableHelper.dispose(boundary);
                             a.onError(e);
                             return;

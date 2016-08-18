@@ -17,6 +17,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 
@@ -92,6 +93,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             try {
                 p = onNextMapper.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }
@@ -111,6 +113,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             try {
                 p = onErrorMapper.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }
@@ -131,6 +134,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             try {
                 p = onCompleteSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }

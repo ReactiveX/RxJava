@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.ArrayListSupplier;
 
@@ -40,6 +41,7 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
         try {
             coll = collectionSupplier.call();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);
             return;
         }

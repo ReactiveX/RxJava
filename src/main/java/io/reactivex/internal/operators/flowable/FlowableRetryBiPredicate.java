@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
@@ -73,6 +73,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
             try {
                 b = predicate.test(++retries, t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(e, t));
                 return;
             }

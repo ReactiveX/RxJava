@@ -15,8 +15,9 @@ package io.reactivex;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public abstract class Scheduler {
@@ -106,9 +107,9 @@ public abstract class Scheduler {
         }
         
         public Disposable schedulePeriodically(Runnable run, final long initialDelay, final long period, final TimeUnit unit) {
-            final SerialDisposable first = new SerialDisposable();
+            final SequentialDisposable first = new SequentialDisposable();
 
-            final SerialDisposable sd = new SerialDisposable(first);
+            final SequentialDisposable sd = new SequentialDisposable(first);
             
             final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             
@@ -182,6 +183,7 @@ public abstract class Scheduler {
                 try {
                     run.run();
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     worker.dispose();
                     throw Exceptions.propagate(ex);
                 }

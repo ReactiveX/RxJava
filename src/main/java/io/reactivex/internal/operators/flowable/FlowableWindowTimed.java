@@ -23,6 +23,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -239,6 +240,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     try {
                         o = q.poll();
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         s.cancel();
                         dispose();
                         a.onError(ex);
@@ -526,6 +528,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     try {
                         o = q.poll();
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         s.cancel();
                         dispose();
                         a.onError(ex);
@@ -820,6 +823,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     try {
                         v = q.poll();
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         s.cancel();
                         dispose();
                         a.onError(ex);

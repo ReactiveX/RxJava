@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
@@ -193,6 +194,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                         try {
                             c = comparer.test(v1, v2);
                         } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
                             cancel(q1, q2);
                             
                             actual.onError(ex);

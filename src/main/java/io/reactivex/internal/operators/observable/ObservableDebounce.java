@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.*;
@@ -83,6 +84,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
             try {
                 p = debounceSelector.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
                 return;

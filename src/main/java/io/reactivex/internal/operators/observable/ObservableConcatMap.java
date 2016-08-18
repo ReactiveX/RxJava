@@ -15,10 +15,10 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -43,7 +43,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         /** */
         private static final long serialVersionUID = 8828587559905699186L;
         final Observer<? super U> actual;
-        final SerialDisposable sa;
+        final SequentialDisposable sa;
         final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
         final Observer<U> inner;
         final int bufferSize;
@@ -66,7 +66,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             this.mapper = mapper;
             this.bufferSize = bufferSize;
             this.inner = new InnerSubscriber<U>(actual, this);
-            this.sa = new SerialDisposable();
+            this.sa = new SequentialDisposable();
         }
         @Override
         public void onSubscribe(Disposable s) {
@@ -156,7 +156,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         }
         
         void innerSubscribe(Disposable s) {
-            sa.set(s);
+            sa.update(s);
         }
         
         void drain() {

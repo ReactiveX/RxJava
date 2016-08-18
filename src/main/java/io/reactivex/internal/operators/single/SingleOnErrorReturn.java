@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 
 public final class SingleOnErrorReturn<T> extends Single<T> {
@@ -47,6 +47,7 @@ public final class SingleOnErrorReturn<T> extends Single<T> {
                     try {
                         v = valueSupplier.apply(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         s.onError(new CompositeException(ex, e));
                         return;
                     }

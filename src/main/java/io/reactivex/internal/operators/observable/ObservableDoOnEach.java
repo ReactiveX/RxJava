@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -94,6 +94,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
             try {
                 onNext.accept(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.dispose();
                 onError(e);
                 return;
@@ -112,6 +113,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
             try {
                 onError.accept(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 t = new CompositeException(e, t);
             }
             actual.onError(t);
@@ -119,6 +121,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 RxJavaPlugins.onError(e);
             }
         }
@@ -132,6 +135,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
             try {
                 onComplete.run();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 onError(e);
                 return;
             }
@@ -141,6 +145,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 RxJavaPlugins.onError(e);
             }
         }

@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
@@ -160,6 +161,7 @@ extends AbstractObservableWithUpstream<T, U> {
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 onError(e);
                 return;
             }
@@ -174,6 +176,7 @@ extends AbstractObservableWithUpstream<T, U> {
             try {
                 p = bufferClose.apply(window);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 onError(e);
                 return;
             }

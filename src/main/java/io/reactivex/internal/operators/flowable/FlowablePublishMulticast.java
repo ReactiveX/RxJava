@@ -198,7 +198,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         
         @Override
         public void dispose() {
-            SubscriptionHelper.dispose(s);
+            SubscriptionHelper.cancel(s);
             if (wip.getAndIncrement() == 0) {
                 queue.clear();
             }
@@ -216,7 +216,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             }
             if (sourceMode == QueueSubscription.NONE) {
                 if (!queue.offer(t)) {
-                    SubscriptionHelper.dispose(s);
+                    SubscriptionHelper.cancel(s);
                     onError(new MissingBackpressureException());
                     return;
                 }
@@ -363,7 +363,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                             v = q.poll();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            SubscriptionHelper.dispose(s);
+                            SubscriptionHelper.cancel(s);
                             errorAll(ex);
                             return;
                         }

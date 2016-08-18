@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableAmbIterable extends Completable {
@@ -38,6 +39,7 @@ public final class CompletableAmbIterable extends Completable {
         try {
             it = sources.iterator();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             s.onError(e);
             return;
         }
@@ -87,6 +89,7 @@ public final class CompletableAmbIterable extends Completable {
             try {
                 b = it.hasNext();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 if (once.compareAndSet(false, true)) {
                     set.dispose();
                     s.onError(e);
@@ -114,6 +117,7 @@ public final class CompletableAmbIterable extends Completable {
             try {
                 c = it.next();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 if (once.compareAndSet(false, true)) {
                     set.dispose();
                     s.onError(e);

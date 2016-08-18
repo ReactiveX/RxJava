@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
 
@@ -72,9 +73,9 @@ public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream
             try {
                 b = predicate.test(t);
             } catch (Throwable e) {
-                done = true;
+                Exceptions.throwIfFatal(e);
                 s.dispose();
-                actual.onError(e);
+                onError(e);
                 return;
             }
             

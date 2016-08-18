@@ -17,6 +17,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 
 public final class CompletableToSingle<T> extends Single<T> {
     final CompletableSource source;
@@ -44,6 +45,7 @@ public final class CompletableToSingle<T> extends Single<T> {
                     try {
                         v = completionValueSupplier.call();
                     } catch (Throwable e) {
+                        Exceptions.throwIfFatal(e);
                         s.onError(e);
                         return;
                     }

@@ -67,7 +67,7 @@ public final class BlockingSubscriber<T> extends AtomicReference<Subscription> i
     
     @Override
     public void cancel() {
-        if (SubscriptionHelper.dispose(this)) {
+        if (SubscriptionHelper.cancel(this)) {
             queue.offer(TERMINATED);
         }
     }

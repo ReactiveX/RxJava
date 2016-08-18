@@ -28,6 +28,7 @@ final class ActionDisposable extends ReferenceDisposable<Action> {
         try {
             value.run();
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             throw Exceptions.propagate(ex);
         }
     }

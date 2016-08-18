@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.observers.SerializedObserver;
@@ -92,6 +93,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
                 try {
                     r = combiner.apply(t, u);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     dispose();
                     actual.onError(e);
                     return;

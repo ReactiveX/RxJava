@@ -15,6 +15,7 @@ package io.reactivex.subscribers;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -87,11 +88,13 @@ public final class Subscribers {
                 try {
                     onStart.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -105,11 +108,13 @@ public final class Subscribers {
                 try {
                     onNext.accept(t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -126,6 +131,7 @@ public final class Subscribers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
                     RxJavaPlugins.onError(t);
                 }
@@ -140,6 +146,7 @@ public final class Subscribers {
                 try {
                     onComplete.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     RxJavaPlugins.onError(e);
                 }
             }
@@ -197,11 +204,13 @@ public final class Subscribers {
                 try {
                     onStart.accept(s);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     s.cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -215,11 +224,13 @@ public final class Subscribers {
                 try {
                     onNext.accept(t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     s.cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -236,6 +247,7 @@ public final class Subscribers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
                     RxJavaPlugins.onError(t);
                 }
@@ -250,6 +262,7 @@ public final class Subscribers {
                 try {
                     onComplete.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     RxJavaPlugins.onError(e);
                 }
             }
@@ -291,11 +304,13 @@ public final class Subscribers {
                 try {
                     onStart.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(e);
                         RxJavaPlugins.onError(ex);
                     }
@@ -309,11 +324,13 @@ public final class Subscribers {
                 try {
                     onNext.accept(t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(e);
                         RxJavaPlugins.onError(ex);
                     }
@@ -330,6 +347,7 @@ public final class Subscribers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
                     RxJavaPlugins.onError(t);
                 }
@@ -344,6 +362,7 @@ public final class Subscribers {
                 try {
                     onComplete.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     RxJavaPlugins.onError(e);
                 }
             }
@@ -381,11 +400,13 @@ public final class Subscribers {
                 try {
                     onStart.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -399,11 +420,13 @@ public final class Subscribers {
                 try {
                     onNext.accept(t);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     done = true;
                     cancel();
                     try {
                         onError.accept(e);
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         RxJavaPlugins.onError(ex);
                         RxJavaPlugins.onError(e);
                     }
@@ -420,6 +443,7 @@ public final class Subscribers {
                 try {
                     onError.accept(t);
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
                     RxJavaPlugins.onError(t);
                 }
@@ -434,6 +458,7 @@ public final class Subscribers {
                 try {
                     onComplete.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     RxJavaPlugins.onError(e);
                 }
             }

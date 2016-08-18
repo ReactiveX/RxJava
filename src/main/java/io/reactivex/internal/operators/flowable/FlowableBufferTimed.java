@@ -22,6 +22,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
@@ -114,6 +115,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 cancel();
                 EmptySubscription.error(e, actual);
                 return;
@@ -206,6 +208,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             try {
                 next = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 selfCancel = true;
                 cancel();
                 actual.onError(e);
@@ -291,6 +294,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 w.dispose();
                 s.cancel();
                 EmptySubscription.error(e, actual);
@@ -386,6 +390,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
                 return;
@@ -467,6 +472,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 w.dispose();
                 s.cancel();
                 EmptySubscription.error(e, actual);
@@ -517,6 +523,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
                 return;
@@ -611,6 +618,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             try {
                 next = bufferSupplier.call();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
                 return;

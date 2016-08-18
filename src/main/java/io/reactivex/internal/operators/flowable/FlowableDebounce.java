@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -89,6 +90,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
             try {
                 p = debounceSelector.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
                 return;

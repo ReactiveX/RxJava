@@ -67,6 +67,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                 try {
                     co = connectableFactory.call();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     EmptySubscription.error(e, child);
                     return;
                 }
@@ -79,6 +80,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                 try {
                     observable = selector.apply(co);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     EmptySubscription.error(e, child);
                     return;
                 }
@@ -214,6 +216,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                         try {
                             buf = bufferFactory.call();
                         } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
                             throw Exceptions.propagate(ex);
                         }
                         // create a new subscriber to source
@@ -283,6 +286,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                 try {
                     buf = bufferFactory.call();
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     throw Exceptions.propagate(ex);
                 }
                 
@@ -317,6 +321,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
         try {
             connection.accept(ps);
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             throw Exceptions.propagate(ex);
         }
         if (doConnect) {
@@ -838,6 +843,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                             return;
                         }
                     } catch (Throwable err) {
+                        Exceptions.throwIfFatal(err);
                         output.dispose();
                         if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {
                             child.onError(err);
@@ -1005,6 +1011,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                                 return;
                             }
                         } catch (Throwable err) {
+                            Exceptions.throwIfFatal(err);
                             output.index = null;
                             output.dispose();
                             if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {

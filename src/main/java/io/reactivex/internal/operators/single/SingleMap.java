@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 
 public final class SingleMap<T, R> extends Single<R> {
@@ -41,6 +42,7 @@ public final class SingleMap<T, R> extends Single<R> {
                 try {
                     v = mapper.apply(value);
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     onError(e);
                     return;
                 }

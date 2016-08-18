@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.disposables.ArrayCompositeDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -181,6 +182,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                         try {
                             c = comparer.test(v1, v2);
                         } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
                             cancel(q1, q2);
                             
                             actual.onError(ex);

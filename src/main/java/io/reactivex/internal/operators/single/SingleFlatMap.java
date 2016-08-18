@@ -14,8 +14,10 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class SingleFlatMap<T, R> extends Single<R> {
     final SingleSource<? extends T> source;
@@ -38,13 +40,13 @@ public final class SingleFlatMap<T, R> extends Single<R> {
         final SingleObserver<? super R> actual;
         final Function<? super T, ? extends SingleSource<? extends R>> mapper;
         
-        final SerialDisposable sd;
+        final SequentialDisposable sd;
 
         public SingleFlatMapCallback(SingleObserver<? super R> actual,
                 Function<? super T, ? extends SingleSource<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
-            this.sd = new SerialDisposable();
+            this.sd = new SequentialDisposable();
         }
         
         @Override
@@ -59,6 +61,7 @@ public final class SingleFlatMap<T, R> extends Single<R> {
             try {
                 o = mapper.apply(value);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }

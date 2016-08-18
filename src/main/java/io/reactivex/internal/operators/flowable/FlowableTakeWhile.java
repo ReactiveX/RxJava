@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
@@ -60,9 +61,9 @@ public final class FlowableTakeWhile<T> extends AbstractFlowableWithUpstream<T, 
             try {
                 b = predicate.test(t);
             } catch (Throwable e) {
-                done = true;
+                Exceptions.throwIfFatal(e);
                 s.cancel();
-                actual.onError(e);
+                onError(e);
                 return;
             }
             

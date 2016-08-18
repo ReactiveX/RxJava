@@ -118,9 +118,9 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
         Future<?> f;
         try {
             if (delayTime <= 0) {
-                f = executor.submit(sr);
+                f = executor.submit((Callable<Object>)sr);
             } else {
-                f = executor.schedule(sr, delayTime, unit);
+                f = executor.schedule((Callable<Object>)sr, delayTime, unit);
             }
             sr.setFuture(f);
         } catch (RejectedExecutionException ex) {

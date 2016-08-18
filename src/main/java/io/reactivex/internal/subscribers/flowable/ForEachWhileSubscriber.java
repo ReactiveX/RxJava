@@ -105,7 +105,7 @@ implements Subscriber<T>, Disposable {
     
     @Override
     public void dispose() {
-        SubscriptionHelper.dispose(this);
+        SubscriptionHelper.cancel(this);
     }
     
     @Override

@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleAmbIterable<T> extends Single<T> {
@@ -38,6 +39,7 @@ public final class SingleAmbIterable<T> extends Single<T> {
         try {
             iterator = sources.iterator();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             s.onError(e);
             return;
         }
@@ -60,6 +62,7 @@ public final class SingleAmbIterable<T> extends Single<T> {
             try {
                 b = iterator.hasNext();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.onError(e);
                 return;
             }
@@ -81,6 +84,7 @@ public final class SingleAmbIterable<T> extends Single<T> {
             try {
                 s1 = iterator.next();
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 set.dispose();
                 s.onError(e);
                 return;

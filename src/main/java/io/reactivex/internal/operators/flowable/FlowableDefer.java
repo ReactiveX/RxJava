@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 
 public final class FlowableDefer<T> extends Flowable<T> {
@@ -31,6 +32,7 @@ public final class FlowableDefer<T> extends Flowable<T> {
         try {
             pub = supplier.call();
         } catch (Throwable t) {
+            Exceptions.throwIfFatal(t);
             EmptySubscription.error(t, s);
             return;
         }

@@ -188,6 +188,7 @@ public abstract class Completable implements CompletableSource {
         } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             RxJavaPlugins.onError(ex);
             throw toNpe(ex);
         }
@@ -219,6 +220,7 @@ public abstract class Completable implements CompletableSource {
         } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             RxJavaPlugins.onError(ex);
             throw toNpe(ex);
         } 
@@ -1384,6 +1386,7 @@ public abstract class Completable implements CompletableSource {
         } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             RxJavaPlugins.onError(ex);
             throw toNpe(ex);
         }
@@ -1606,6 +1609,7 @@ public abstract class Completable implements CompletableSource {
         try {
             return converter.apply(this);
         } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
             throw Exceptions.propagate(ex);
         }
     }

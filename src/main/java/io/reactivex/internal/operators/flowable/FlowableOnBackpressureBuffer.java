@@ -95,6 +95,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
                 try {
                     onOverflow.run();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     ex.initCause(e);
                 }
                 onError(ex);

@@ -14,9 +14,10 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstream<T, T> {
@@ -41,7 +42,7 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
         final Observer<? super T> actual;
         final Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
         final boolean allowFatal;
-        final SerialDisposable arbiter;
+        final SequentialDisposable arbiter;
         
         boolean once;
         
@@ -51,7 +52,7 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
             this.actual = actual;
             this.nextSupplier = nextSupplier;
             this.allowFatal = allowFatal;
-            this.arbiter = new SerialDisposable();
+            this.arbiter = new SequentialDisposable();
         }
         
         @Override
@@ -89,6 +90,7 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
             try {
                 p = nextSupplier.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 actual.onError(new CompositeException(e, t));
                 return;
             }

@@ -17,8 +17,9 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.disposables.*;
 
 public final class CompletableConcatIterable extends Completable {
     final Iterable<? extends CompletableSource> sources;
@@ -35,8 +36,8 @@ public final class CompletableConcatIterable extends Completable {
         try {
             it = sources.iterator();
         } catch (Throwable e) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(e);
+            Exceptions.throwIfFatal(e);
+            EmptyDisposable.error(e, s);
             return;
         }
         
@@ -60,17 +61,17 @@ public final class CompletableConcatIterable extends Completable {
         
         int index;
         
-        final SerialDisposable sd;
+        final SequentialDisposable sd;
         
         public ConcatInnerObserver(CompletableObserver actual, Iterator<? extends CompletableSource> sources) {
             this.actual = actual;
             this.sources = sources;
-            this.sd = new SerialDisposable();
+            this.sd = new SequentialDisposable();
         }
         
         @Override
         public void onSubscribe(Disposable d) {
-            sd.set(d);
+            sd.update(d);
         }
         
         @Override
@@ -102,6 +103,7 @@ public final class CompletableConcatIterable extends Completable {
                 try {
                     b = a.hasNext();
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     actual.onError(ex);
                     return;
                 }
@@ -116,6 +118,7 @@ public final class CompletableConcatIterable extends Completable {
                 try {
                     c = a.next();
                 } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
                     actual.onError(ex);
                     return;
                 }

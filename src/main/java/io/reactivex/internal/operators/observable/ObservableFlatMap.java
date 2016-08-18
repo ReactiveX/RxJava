@@ -113,6 +113,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             try {
                 p = mapper.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 onError(e);
                 return;
             }
@@ -472,6 +473,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 try {
                     t = q.poll();
                 } catch (Throwable exc) {
+                    Exceptions.throwIfFatal(exc);
                     if (composite == null) {
                         composite = new CompositeException(exc);
                     }

@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.single;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.*;
-import io.reactivex.disposables.SerialDisposable;
+import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class SingleTimer extends Single<Long> {
 
@@ -32,7 +32,7 @@ public final class SingleTimer extends Single<Long> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super Long> s) {
-        SerialDisposable sd = new SerialDisposable();
+        SequentialDisposable sd = new SequentialDisposable();
         
         s.onSubscribe(sd);
         

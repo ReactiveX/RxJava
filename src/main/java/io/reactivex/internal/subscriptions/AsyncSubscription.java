@@ -69,7 +69,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     
     @Override
     public void dispose() {
-        SubscriptionHelper.dispose(actual);
+        SubscriptionHelper.cancel(actual);
         DisposableHelper.dispose(resource);
     }
 

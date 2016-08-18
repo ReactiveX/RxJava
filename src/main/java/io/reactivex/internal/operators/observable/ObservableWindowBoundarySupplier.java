@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -86,6 +87,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
                 try {
                     p = other.call();
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     s.dispose();
                     a.onError(e);
                     return;
@@ -194,6 +196,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
                     try {
                         o = q.poll();
                     } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
                         DisposableHelper.dispose(boundary);
                         w.onError(ex);
                         return;
@@ -232,6 +235,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
                         try {
                             p = other.call();
                         } catch (Throwable e) {
+                            Exceptions.throwIfFatal(e);
                             DisposableHelper.dispose(boundary);
                             a.onError(e);
                             return;

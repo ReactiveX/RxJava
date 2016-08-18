@@ -127,7 +127,7 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
     @Override
     public void onNext(T t) {
         if (!queue.offer(t)) {
-            SubscriptionHelper.dispose(this);
+            SubscriptionHelper.cancel(this);
             
             onError(new IllegalStateException("Queue full?!"));
         } else {
@@ -159,7 +159,7 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
 
     @Override
     public void run() {
-        SubscriptionHelper.dispose(this);
+        SubscriptionHelper.cancel(this);
         signalConsumer();
     }
     
@@ -170,7 +170,7 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
     
     @Override
     public void dispose() {
-        SubscriptionHelper.dispose(this);
+        SubscriptionHelper.cancel(this);
     }
     
     @Override

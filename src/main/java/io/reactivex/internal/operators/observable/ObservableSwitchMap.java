@@ -19,6 +19,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscArrayQueue;
@@ -93,6 +94,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
             try {
                 p = mapper.apply(t);
             } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
                 s.dispose();
                 onError(e);
                 return;

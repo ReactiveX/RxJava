@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 
 public final class ObservableFromFuture<T> extends Observable<T> {
     final Future<? extends T> future;
@@ -38,6 +39,7 @@ public final class ObservableFromFuture<T> extends Observable<T> {
             try {
                 v = unit != null ? future.get(timeout, unit) : future.get();
             } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 if (!d.isDisposed()) {
                     s.onError(ex);
                 }

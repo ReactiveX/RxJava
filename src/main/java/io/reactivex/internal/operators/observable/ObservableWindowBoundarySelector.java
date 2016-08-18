@@ -268,6 +268,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                         try {
                             p = close.apply(wo.open);
                         } catch (Throwable e) {
+                            Exceptions.throwIfFatal(e);
                             cancelled = true;
                             a.onError(e);
                             continue;

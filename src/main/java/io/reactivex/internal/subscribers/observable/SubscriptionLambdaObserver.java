@@ -15,6 +15,7 @@ package io.reactivex.internal.subscribers.observable;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -40,6 +41,7 @@ public final class SubscriptionLambdaObserver<T> implements Observer<T>, Disposa
         try {
             onSubscribe.accept(s);
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             s.dispose();
             RxJavaPlugins.onError(e);
             
@@ -73,6 +75,7 @@ public final class SubscriptionLambdaObserver<T> implements Observer<T>, Disposa
         try {
             onCancel.run();
         } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
             RxJavaPlugins.onError(e);
         }
         s.dispose();
