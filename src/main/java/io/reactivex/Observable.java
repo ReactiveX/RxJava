@@ -7797,8 +7797,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> hide() {
-        // TODO hide the Disposable as well
-        return new ObservableFromUnsafeSource<T>(this);
+        return new ObservableHide<T>(this);
     }
 
     /**
