@@ -23,8 +23,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
-import io.reactivex.internal.subscribers.flowable.SubscriberResourceWrapper;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -119,36 +118,6 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
             }
         };
         return new FlowablePublish<T>(onSubscribe, source, curr, bufferSize);
-    }
-
-    public static <T, R> Flowable<R> create(final Flowable<T> source,
-            final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize) {
-        return unsafeCreate(new Publisher<R>() {
-            @Override
-            public void subscribe(Subscriber<? super R> sr) {
-                ConnectableFlowable<T> op = create(source, bufferSize);
-                
-                final SubscriberResourceWrapper<R> srw = new SubscriberResourceWrapper<R>(sr);
-                
-                Publisher<R> target;
-                try {
-                    target = selector.apply(op);
-                } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    EmptySubscription.error(e, srw);
-                    return;
-                }
-                
-                target.subscribe(srw);
-                
-                op.connect(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable r) {
-                        srw.setResource(r);
-                    }
-                });
-            }
-        });
     }
 
     private FlowablePublish(Publisher<T> onSubscribe, Publisher<T> source,

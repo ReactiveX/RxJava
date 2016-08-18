@@ -13,11 +13,12 @@
 
 package io.reactivex.internal.subscriptions;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
 
 import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -193,5 +194,33 @@ public enum SubscriptionHelper {
             // deliberately ignored
         }
         
+    }
+    
+    public static void deferredSetOnce(AtomicReference<Subscription> field, AtomicLong requested, Subscription s) {
+        if (SubscriptionHelper.setOnce(field, s)) {
+            long r = requested.getAndSet(0L);
+            if (r != 0L) {
+                s.request(r);
+            }
+        }
+    }
+    
+    public static void deferredRequest(AtomicReference<Subscription> field, AtomicLong requested, long n) {
+        Subscription s = field.get();
+        if (s != null) {
+            s.request(n);
+        } else {
+            if (SubscriptionHelper.validate(n)) {
+                BackpressureHelper.add(requested, n);
+                
+                s = field.get();
+                if (s != null) {
+                    long r = requested.getAndSet(0L);
+                    if (r != 0L) {
+                        s.request(r);
+                    }
+                }
+            }
+        }
     }
 }

@@ -196,24 +196,6 @@ public enum FlowableInternalHelper {
         }
     }
     
-    static final class RepeatWhenOuterHandler
-    implements Function<Flowable<Try<Optional<Object>>>, Publisher<?>> {
-        private final Function<? super Flowable<Object>, ? extends Publisher<?>> handler;
-
-        RepeatWhenOuterHandler(Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
-            this.handler = handler;
-        }
-
-        @Override
-        public Publisher<?> apply(Flowable<Try<Optional<Object>>> no) throws Exception {
-            return handler.apply(no.map(MapToInt.INSTANCE));
-        }
-    }
-
-    public static Function<Flowable<Try<Optional<Object>>>, Publisher<?>> repeatWhenHandler(final Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
-        return new RepeatWhenOuterHandler(handler);
-    }
-    
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent) {
         return new Callable<ConnectableFlowable<T>>() {
             @Override
@@ -271,28 +253,6 @@ public enum FlowableInternalHelper {
         public boolean test(Try<Optional<Object>> t) throws Exception {
             return t.hasError();
         }
-    }
-
-    static final class RetryWhenInner
-    implements Function<Flowable<Try<Optional<Object>>>, Publisher<?>> {
-        private final Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler;
-
-        RetryWhenInner(
-                Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler) {
-            this.handler = handler;
-        }
-
-        @Override
-        public Publisher<?> apply(Flowable<Try<Optional<Object>>> no) throws Exception {
-            Flowable<Throwable> map = no
-                    .takeWhile(ErrorMapperFilter.INSTANCE)
-                    .map(ErrorMapperFilter.INSTANCE);
-            return handler.apply(map);
-        }
-    }
-
-    public static <T> Function<Flowable<Try<Optional<Object>>>, Publisher<?>> retryWhenHandler(final Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler) {
-        return new RetryWhenInner(handler);
     }
 
     enum RequestMax implements Consumer<Subscription> {

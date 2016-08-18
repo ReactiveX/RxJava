@@ -193,4 +193,54 @@ public class FlowableRepeatTest {
         
         assertEquals(Arrays.asList(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), concatBase);
     }
+    
+    @Test
+    public void repeatScheduled() {
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.just(1).subscribeOn(Schedulers.computation()).repeat(5).subscribe(ts);
+        
+        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.assertValues(1, 1, 1, 1, 1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void repeatWhenDefaultScheduler() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.just(1).repeatWhen((Function)new Function<Flowable, Flowable>() {
+            @Override
+            public Flowable apply(Flowable o) {
+                return o.take(2);
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(1, 1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void repeatWhenTrampolineScheduler() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.just(1).subscribeOn(Schedulers.trampoline())
+        .repeatWhen((Function)new Function<Flowable, Flowable>() {
+            @Override
+            public Flowable apply(Flowable o) {
+                return o.take(2);
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(1, 1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
 }

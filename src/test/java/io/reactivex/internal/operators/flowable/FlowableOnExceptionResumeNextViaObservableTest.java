@@ -22,8 +22,10 @@ import org.mockito.Mockito;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -259,4 +261,30 @@ public class FlowableOnExceptionResumeNextViaObservableTest {
             System.out.println("done starting TestObservable thread");
         }
     }
+    
+    @Test
+    public void normalBackpressure() {
+        TestSubscriber<Integer> ts = TestSubscriber.create(0);
+        
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        
+        ps.onExceptionResumeNext(Flowable.range(3, 2)).subscribe(ts);
+        
+        ts.request(2);
+        
+        ps.onNext(1);
+        ps.onNext(2);
+        ps.onError(new TestException("Forced failure"));
+
+        ts.assertValues(1, 2);
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+
+        ts.request(2);
+        
+        ts.assertValues(1, 2, 3, 4);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
 }

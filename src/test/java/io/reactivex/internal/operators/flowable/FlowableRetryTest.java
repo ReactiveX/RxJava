@@ -27,6 +27,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -913,6 +914,46 @@ public class FlowableRetryTest {
         // should have a single successful onCompleted
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void retryWhenDefaultScheduler() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.just(1)
+        .concatWith(Flowable.<Integer>error(new TestException()))
+        .retryWhen((Function)new Function<Flowable, Flowable>() {
+            @Override
+            public Flowable apply(Flowable o) {
+                return o.take(2);
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(1, 1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+        
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void retryWhenTrampolineScheduler() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        Flowable.just(1)
+        .concatWith(Flowable.<Integer>error(new TestException()))
+        .subscribeOn(Schedulers.trampoline())
+        .retryWhen((Function)new Function<Flowable, Flowable>() {
+            @Override
+            public Flowable apply(Flowable o) {
+                return o.take(2);
+            }
+        }).subscribe(ts);
+        
+        ts.assertValues(1, 1);
+        ts.assertNoErrors();
+        ts.assertComplete();
     }
 
 }
