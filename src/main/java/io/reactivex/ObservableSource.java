@@ -15,14 +15,16 @@ package io.reactivex;
 /**
  * Represents a basic, non-backpressured {@link Observable} source base interface,
  * consumable via an {@link Observer}.
- * <p>
- * This class also serves the base type for custom operators wrapped into
- * Observable via {@link Observable#create(ObservableSource)}.
  * 
  * @param <T> the element type
  * @since 2.0
  */
 public interface ObservableSource<T> {
 
+    /**
+     * Subscribes the given Observer to this ObservableSource instance.
+     * @param observer the Observer, not null
+     * @throws NullPointerException if {@code observer} is null
+     */
     void subscribe(Observer<? super T> observer);
 }

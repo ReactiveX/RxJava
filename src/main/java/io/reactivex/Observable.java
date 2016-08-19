@@ -809,8 +809,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(Iterable<? extends ObservableSource<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
-        // TODO provide inlined implementation
-        return fromIterable(sources).concatMap((Function)Functions.identity());
+        return fromIterable(sources).concatMapDelayError((Function)Functions.identity(), bufferSize(), false);
     }
 
     /**
@@ -858,7 +857,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Observable<T> concat(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch) {
         Objects.requireNonNull(sources, "sources is null");
-        return new ObservableConcatMap(sources, Functions.identity(), prefetch);
+        return new ObservableConcatMap(sources, Functions.identity(), prefetch, ErrorMode.IMMEDIATE);
     }
 
     /**
@@ -1163,7 +1162,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (sources.length == 1) {
             return wrap((ObservableSource<T>)sources[0]);
         }
-        return fromArray(sources).concatMap((Function)Functions.identity());
+        return new ObservableConcatMap(fromArray(sources), Functions.identity(), bufferSize(), ErrorMode.BOUNDARY);
     }
 
     /**
@@ -1180,7 +1179,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      * @throws NullPointerException if sources is null
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatArrayDelayError(ObservableSource<? extends T>... sources) {
         if (sources.length == 0) {
@@ -1189,8 +1188,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (sources.length == 1) {
             return (Observable<T>)wrap(sources[0]);
         }
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return concatDelayError(fromArray(sources));
     }
 
     /**
@@ -1253,8 +1251,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatDelayError(Iterable<? extends ObservableSource<? extends T>> sources) {
         Objects.requireNonNull(sources, "sources is null");
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return concatDelayError(fromIterable(sources));
     }
 
     /**
@@ -1291,10 +1288,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *                   if false, exception from the outer ObservableSource is delayed till the current ObservableSource terminates
      * @return the new ObservableSource with the concatenating behavior
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Observable<T> concatDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch, boolean tillTheEnd) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return new ObservableConcatMap(sources, Functions.identity(), prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY);
     }
 
     /**
@@ -1410,24 +1407,23 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *     
      *     emitter.setCancellable(c::close);
      *     
-     * }, BackpressureMode.BUFFER);
+     * });
      * </code></pre>
      * <p>
-     * You should call the FlowableEmitter onNext, onError and onComplete methods in a serialized fashion. The
+     * You should call the ObservableEmitter's onNext, onError and onComplete methods in a serialized fashion. The
      * rest of its methods are threadsafe.
      * 
      * @param <T> the element type
-     * @param source the emitter that is called when a Subscriber subscribes to the returned {@code Observable}
+     * @param source the emitter that is called when an Observer subscribes to the returned {@code Observable}
      * @return the new Observable instance
-     * @see FlowableSource
-     * @see FlowableEmitter.BackpressureMode
+     * @see ObservableOnSubscribe
+     * @see ObservableEmitter
      * @see Cancellable
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    // FIXME update API, cancellation still needs support
-    public static <T> Observable<T> create(ObservableSource<T> source) {
+    public static <T> Observable<T> create(ObservableOnSubscribe<T> source) {
         Objects.requireNonNull(source, "source is null");
-        return new ObservableFromSource<T>(source);
+        return new ObservableCreate<T>(source);
     }
 
     /**
@@ -5785,10 +5781,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (prefetch <= 0) {
-            throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
-        }
-        return new ObservableConcatMap<T, R>(this, mapper, prefetch);
+        verifyPositive(prefetch, "prefetch");
+        return new ObservableConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE);
     }
 
     /**
@@ -5808,8 +5802,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return concatMapDelayError(mapper, bufferSize(), true);
     }
     
     /**
@@ -5835,8 +5828,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
             int prefetch, boolean tillTheEnd) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        verifyPositive(prefetch, "prefetch");
+        return new ObservableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY);
     }
 
     /**
@@ -8017,7 +8010,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Modifies a ObservableSource to perform its emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with a bounded buffer of {@link Observable#bufferSize()} slots.
+     * asynchronously with a bounded buffer of {@link Flowable#bufferSize()} slots.
      *
      * <p>Note that onError notifications will cut ahead of onNext notifications on the emission thread if Scheduler is truly
      * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, boolean)} overload.
@@ -10371,11 +10364,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> take(long count) {
         if (count < 0) {
             throw new IllegalArgumentException("count >= required but it was " + count);
-        } else
-        if (count == 0) {
-         // FIXME may want to subscribe an cancel immediately
-//            return lift(s -> CancelledSubscriber.INSTANCE);
-            return empty(); 
         }
         return new ObservableTake<T>(this, count);
     }

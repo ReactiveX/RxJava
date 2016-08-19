@@ -17,18 +17,17 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Cancellable;
 
 /**
- * Abstraction over a RxJava Subscriber that allows associating
- * a resource with it and exposes the current number of downstream
- * requested amount.
+ * Abstraction over a RxJava Observer that allows associating
+ * a resource with it.
  * <p>
  * The onNext, onError and onComplete methods should be called 
- * in a sequential manner, just like the Subscriber's methods.
+ * in a sequential manner, just like the Observer's methods.
  * Use {@link #serialize()} if you want to ensure this. 
  * The other methods are threadsafe.
  *
  * @param <T> the value type to emit
  */
-public interface FlowableEmitter<T> {
+public interface ObservableEmitter<T> {
 
     /**
      * Signal a value.
@@ -50,9 +49,9 @@ public interface FlowableEmitter<T> {
     /**
      * Sets a Disposable on this emitter; any previous Disposable
      * or Cancellation will be unsubscribed/cancelled.
-     * @param s the disposable, null is allowed
+     * @param d the disposable, null is allowed
      */
-    void setDisposable(Disposable s);
+    void setDisposable(Disposable d);
     
     /**
      * Sets a Cancellable on this emitter; any previous Disposable
@@ -60,12 +59,6 @@ public interface FlowableEmitter<T> {
      * @param c the cancellable resource, null is allowed
      */
     void setCancellable(Cancellable c);
-    /**
-     * The current outstanding request amount.
-     * <p>This method it threadsafe.
-     * @return the current outstanding request amount
-     */
-    long requested();
     
     /**
      * Returns true if the downstream cancelled the sequence.
@@ -77,33 +70,5 @@ public interface FlowableEmitter<T> {
      * Ensures that calls to onNext, onError and onComplete are properly serialized.
      * @return the serialized FlowableEmitter
      */
-    FlowableEmitter<T> serialize();
-    /**
-     * Options to handle backpressure in the emitter.
-     */
-    enum BackpressureMode {
-        /** 
-         * OnNext events are written without any buffering or dropping. 
-         * Downstream has to deal with any overflow.
-         * <p>Useful when one applies one of the custom-parameter onBackpressureXXX operators.
-         */
-        NONE,
-        /**
-         * Signals a MissingBackpressureException in case the downstream can't keep up.
-         */
-        ERROR,
-        /**
-         * Buffers <em>all</em> onNext values until the downstream consumes it.
-         */
-        BUFFER,
-        /**
-         * Drops the most recent onNext value if the downstream can't keep up.
-         */
-        DROP,
-        /**
-         * Keeps only the latest onNext value, overwriting any previous value if the 
-         * downstream can't keep up.
-         */
-        LATEST
-    }
+    ObservableEmitter<T> serialize();
 }

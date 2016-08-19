@@ -21,7 +21,6 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.SimpleQueue;
-import io.reactivex.internal.operators.flowable.FlowableConcatMap.ErrorMode;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;

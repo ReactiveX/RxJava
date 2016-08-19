@@ -27,7 +27,6 @@ import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.completable.CompletableFromPublisher;
 import io.reactivex.internal.operators.flowable.*;
-import io.reactivex.internal.operators.flowable.FlowableConcatMap.ErrorMode;
 import io.reactivex.internal.operators.observable.ObservableFromPublisher;
 import io.reactivex.internal.operators.single.SingleFromPublisher;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
@@ -1638,14 +1637,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source the emitter that is called when a Subscriber subscribes to the returned {@code Flowable}
      * @param mode the backpressure mode to apply if the downstream Subscriber doesn't request (fast) enough
      * @return the new Flowable instance
-     * @see FlowableSource
+     * @see FlowableOnSubscribe
      * @see FlowableEmitter.BackpressureMode
      * @see Cancellable
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> create(FlowableSource<T> source, FlowableEmitter.BackpressureMode mode) {
-        return new FlowableFromSource<T>(source, mode);
+    public static <T> Flowable<T> create(FlowableOnSubscribe<T> source, FlowableEmitter.BackpressureMode mode) {
+        return new FlowableCreate<T>(source, mode);
     }
 
     /**
@@ -15454,8 +15453,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
      * Flowable.
      * @return the new TestSubscriber instance
-      * @since 2.0
-    */
+     * @since 2.0
+     */
     public final TestSubscriber<T> test(long initialRequest, int fusionMode, boolean cancelled) { // NoPMD
         TestSubscriber<T> ts = new TestSubscriber<T>(initialRequest);
         ts.setInitialFusionMode(fusionMode);

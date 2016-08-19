@@ -17,7 +17,7 @@ package io.reactivex;
  * consumable via an {@link SingleObserver}.
  * <p>
  * This class also serves the base type for custom operators wrapped into
- * Single via {@link Single#create(SingleSource)}.
+ * Single via {@link Single#create(SingleOnSubscribe)}.
  * 
  * @param <T> the element type
  * @since 2.0

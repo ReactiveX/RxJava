@@ -21,7 +21,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Cancellable;
-import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -29,13 +29,13 @@ import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 
-public final class FlowableFromSource<T> extends Flowable<T> {
+public final class FlowableCreate<T> extends Flowable<T> {
 
-    final FlowableSource<T> source;
+    final FlowableOnSubscribe<T> source;
     
     final FlowableEmitter.BackpressureMode backpressure;
     
-    public FlowableFromSource(FlowableSource<T> source, FlowableEmitter.BackpressureMode backpressure) {
+    public FlowableCreate(FlowableOnSubscribe<T> source, FlowableEmitter.BackpressureMode backpressure) {
         this.source = source;
         this.backpressure = backpressure;
     }
@@ -73,38 +73,6 @@ public final class FlowableFromSource<T> extends Flowable<T> {
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             emitter.onError(ex);
-        }
-    }
-    
-    static final class CancellableSubscription 
-    extends AtomicReference<Cancellable>
-    implements Disposable {
-        
-        /** */
-        private static final long serialVersionUID = 5718521705281392066L;
-
-        public CancellableSubscription(Cancellable cancellable) {
-            super(cancellable);
-        }
-        
-        @Override
-        public boolean isDisposed() {
-            return get() == null;
-        }
-        
-        @Override
-        public void dispose() {
-            if (get() != null) {
-                Cancellable c = getAndSet(null);
-                if (c != null) {
-                    try {
-                        c.cancel();
-                    } catch (Exception ex) {
-                        Exceptions.throwIfFatal(ex);
-                        RxJavaPlugins.onError(ex);
-                    }
-                }
-            }
         }
     }
     
@@ -248,8 +216,8 @@ public final class FlowableFromSource<T> extends Flowable<T> {
         }
 
         @Override
-        public void setCancellation(Cancellable c) {
-            emitter.setCancellation(c);
+        public void setCancellable(Cancellable c) {
+            emitter.setCancellable(c);
         }
 
         @Override
@@ -340,8 +308,8 @@ public final class FlowableFromSource<T> extends Flowable<T> {
         }
 
         @Override
-        public final void setCancellation(Cancellable c) {
-            setDisposable(new CancellableSubscription(c));
+        public final void setCancellable(Cancellable c) {
+            setDisposable(new CancellableDisposable(c));
         }
 
         @Override
