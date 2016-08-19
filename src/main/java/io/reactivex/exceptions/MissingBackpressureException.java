@@ -20,14 +20,26 @@ public class MissingBackpressureException extends RuntimeException {
     /** */
     private static final long serialVersionUID = 8517344746016032542L;
 
+    /**
+     * Constructs a MissingBackpressureException without message or cause.
+     */
     public MissingBackpressureException() {
         super();
     }
     
+    /**
+     * Constructs a MissingBackpressureException with the given message but no cause.
+     * @param message the error message
+     */
     public MissingBackpressureException(String message) {
         super(message);
     }
     
+    /**
+     * Constructs a MissingBackpressureException with the given message and cause.
+     * @param message the error message
+     * @param cause the cause Throwable
+     */
     public MissingBackpressureException(String message, Throwable cause) {
         super(message, cause);
     }

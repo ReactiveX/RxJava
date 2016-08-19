@@ -389,7 +389,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
                 
                 if (!finish.await(5, TimeUnit.SECONDS)) {
                     System.out.println(o.get());
-                    System.out.println(rs.hasSubscribers());
+                    System.out.println(rs.hasObservers());
                     rs.onComplete();
                     Assert.fail("Timeout @ " + i);
                     break;

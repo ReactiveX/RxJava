@@ -27,6 +27,7 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 
@@ -35,12 +36,10 @@ public class ObservableObserveOnTest {
     /**
      * This is testing a no-op path since it uses Schedulers.immediate() which will not do scheduling.
      */
-    @SuppressWarnings("deprecation")
     @Test
-    @Ignore("immediate scheduler not supported")
     public void testObserveOn() {
         Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        Observable.just(1, 2, 3).observeOn(Schedulers.immediate()).subscribe(NbpObserver);
+        Observable.just(1, 2, 3).observeOn(ImmediateThinScheduler.INSTANCE).subscribe(NbpObserver);
 
         verify(NbpObserver, times(1)).onNext(1);
         verify(NbpObserver, times(1)).onNext(2);
@@ -131,11 +130,9 @@ public class ObservableObserveOnTest {
         verify(NbpObserver, times(1)).onComplete();
     }
 
-    @SuppressWarnings("deprecation")
     @Test
-    @Ignore("immediate scheduler not supported")
     public void observeOnTheSameSchedulerTwice() {
-        Scheduler scheduler = Schedulers.immediate();
+        Scheduler scheduler = ImmediateThinScheduler.INSTANCE;
 
         Observable<Integer> o = Observable.just(1, 2, 3);
         Observable<Integer> o2 = o.observeOn(scheduler);

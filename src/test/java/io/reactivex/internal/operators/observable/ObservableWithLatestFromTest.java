@@ -90,8 +90,8 @@ public class ObservableWithLatestFromTest {
         
         result.subscribe(ts);
 
-        assertTrue(source.hasSubscribers());
-        assertTrue(other.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(other.hasObservers());
 
         other.onNext(1);
         
@@ -101,8 +101,8 @@ public class ObservableWithLatestFromTest {
         ts.assertTerminated();
         ts.assertNoValues();
         
-        assertFalse(source.hasSubscribers());
-        assertFalse(other.hasSubscribers());
+        assertFalse(source.hasObservers());
+        assertFalse(other.hasObservers());
     }
     
     @Test
@@ -116,8 +116,8 @@ public class ObservableWithLatestFromTest {
         
         result.subscribe(ts);
 
-        assertTrue(source.hasSubscribers());
-        assertTrue(other.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(other.hasObservers());
 
         source.onNext(1);
         
@@ -127,8 +127,8 @@ public class ObservableWithLatestFromTest {
         ts.assertTerminated();
         ts.assertNoValues();
         
-        assertFalse(source.hasSubscribers());
-        assertFalse(other.hasSubscribers());
+        assertFalse(source.hasObservers());
+        assertFalse(other.hasObservers());
     }
     
     
@@ -143,8 +143,8 @@ public class ObservableWithLatestFromTest {
         
         result.subscribe(ts);
 
-        assertTrue(source.hasSubscribers());
-        assertTrue(other.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(other.hasObservers());
 
         other.onNext(1);
         source.onNext(1);
@@ -155,8 +155,8 @@ public class ObservableWithLatestFromTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
         
-        assertFalse(source.hasSubscribers());
-        assertFalse(other.hasSubscribers());
+        assertFalse(source.hasObservers());
+        assertFalse(other.hasObservers());
     }
 
     @Test
@@ -170,8 +170,8 @@ public class ObservableWithLatestFromTest {
         
         result.subscribe(ts);
 
-        assertTrue(source.hasSubscribers());
-        assertTrue(other.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(other.hasObservers());
 
         other.onNext(1);
         source.onNext(1);
@@ -183,8 +183,8 @@ public class ObservableWithLatestFromTest {
         ts.assertError(TestException.class);
         ts.assertNotComplete();
         
-        assertFalse(source.hasSubscribers());
-        assertFalse(other.hasSubscribers());
+        assertFalse(source.hasObservers());
+        assertFalse(other.hasObservers());
     }
     @Test
     public void testOtherThrows() {
@@ -197,8 +197,8 @@ public class ObservableWithLatestFromTest {
         
         result.subscribe(ts);
 
-        assertTrue(source.hasSubscribers());
-        assertTrue(other.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(other.hasObservers());
 
         other.onNext(1);
         source.onNext(1);
@@ -210,8 +210,8 @@ public class ObservableWithLatestFromTest {
         ts.assertNotComplete();
         ts.assertError(TestException.class);
         
-        assertFalse(source.hasSubscribers());
-        assertFalse(other.hasSubscribers());
+        assertFalse(source.hasObservers());
+        assertFalse(other.hasObservers());
     }
     
     @Test
@@ -225,8 +225,8 @@ public class ObservableWithLatestFromTest {
         
         result.subscribe(ts);
 
-        assertTrue(source.hasSubscribers());
-        assertTrue(other.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(other.hasObservers());
 
         other.onNext(1);
         source.onNext(1);
@@ -236,8 +236,8 @@ public class ObservableWithLatestFromTest {
         ts.assertNoValues();
         ts.assertError(TestException.class);
         
-        assertFalse(source.hasSubscribers());
-        assertFalse(other.hasSubscribers());
+        assertFalse(source.hasObservers());
+        assertFalse(other.hasObservers());
     }
     
     @Test
@@ -306,9 +306,9 @@ public class ObservableWithLatestFromTest {
         ts.assertNoErrors();
         ts.assertComplete();
         
-        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
-        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
-        assertFalse("ps3 has subscribers?", ps3.hasSubscribers());
+        assertFalse("ps1 has subscribers?", ps1.hasObservers());
+        assertFalse("ps2 has subscribers?", ps2.hasObservers());
+        assertFalse("ps3 has subscribers?", ps3.hasObservers());
     }
     
     @Test
@@ -353,9 +353,9 @@ public class ObservableWithLatestFromTest {
         ts.assertNoErrors();
         ts.assertComplete();
         
-        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
-        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
-        assertFalse("ps3 has subscribers?", ps3.hasSubscribers());
+        assertFalse("ps1 has subscribers?", ps1.hasObservers());
+        assertFalse("ps2 has subscribers?", ps2.hasObservers());
+        assertFalse("ps3 has subscribers?", ps3.hasObservers());
     }
     
     @Test

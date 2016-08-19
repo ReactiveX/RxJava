@@ -191,8 +191,8 @@ public class ObservableTakeUntilTest {
         
         source.takeUntil(until).subscribe(ts);
 
-        assertTrue(source.hasSubscribers());
-        assertTrue(until.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
 
         source.onNext(1);
         
@@ -203,8 +203,8 @@ public class ObservableTakeUntilTest {
         ts.assertNoErrors();
         ts.assertTerminated();
         
-        assertFalse("Source still has observers", source.hasSubscribers());
-        assertFalse("Until still has observers", until.hasSubscribers());
+        assertFalse("Source still has observers", source.hasObservers());
+        assertFalse("Until still has observers", until.hasObservers());
         assertFalse("NbpTestSubscriber is unsubscribed", ts.isCancelled());
     }
     @Test
@@ -216,8 +216,8 @@ public class ObservableTakeUntilTest {
         
         source.takeUntil(until).subscribe(ts);
 
-        assertTrue(source.hasSubscribers());
-        assertTrue(until.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
 
         source.onNext(1);
         source.onComplete();
@@ -226,8 +226,8 @@ public class ObservableTakeUntilTest {
         ts.assertNoErrors();
         ts.assertTerminated();
         
-        assertFalse("Source still has observers", source.hasSubscribers());
-        assertFalse("Until still has observers", until.hasSubscribers());
+        assertFalse("Source still has observers", source.hasObservers());
+        assertFalse("Until still has observers", until.hasObservers());
         assertFalse("NbpTestSubscriber is unsubscribed", ts.isCancelled());
     }
     @Test
@@ -239,8 +239,8 @@ public class ObservableTakeUntilTest {
         
         source.takeUntil(until).take(1).subscribe(ts);
 
-        assertTrue(source.hasSubscribers());
-        assertTrue(until.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
 
         source.onNext(1);
         
@@ -248,8 +248,8 @@ public class ObservableTakeUntilTest {
         ts.assertNoErrors();
         ts.assertTerminated();
         
-        assertFalse("Source still has observers", source.hasSubscribers());
-        assertFalse("Until still has observers", until.hasSubscribers());
+        assertFalse("Source still has observers", source.hasObservers());
+        assertFalse("Until still has observers", until.hasObservers());
         assertFalse("NbpTestSubscriber is unsubscribed", ts.isCancelled());
     }
 }

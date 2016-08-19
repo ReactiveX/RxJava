@@ -28,11 +28,11 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
     private static final Object[] EMPTY = new Object[0];
     
     /**
-     * Returns true if the subject has subscribers.
+     * Returns true if the subject has any Observers.
      * <p>The method is thread-safe.
-     * @return true if the subject has subscribers
+     * @return true if the subject has any Observers
      */
-    public abstract boolean hasSubscribers();
+    public abstract boolean hasObservers();
     
     /**
      * Returns true if the subject has reached a terminal state through an error event.

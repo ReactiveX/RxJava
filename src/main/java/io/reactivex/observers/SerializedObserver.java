@@ -43,14 +43,26 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
     
     volatile boolean done;
     
+    /**
+     * Construct a SerializedObserver by wrapping the given actual Observer.
+     * @param actual the actual Observer, not null (not verified)
+     */
     public SerializedObserver(Observer<? super T> actual) {
         this(actual, false);
     }
     
+    /**
+     * Construct a SerializedObserver by wrapping the given actual Observer and
+     * optionally delaying the errors till all regular values have been emitted
+     * from the internal buffer.
+     * @param actual the actual Observer, not null (not verified)
+     * @param delayError if true, errors are emitted after regular values have been emitted
+     */
     public SerializedObserver(Observer<? super T> actual, boolean delayError) {
         this.actual = actual;
         this.delayError = delayError;
     }
+    
     @Override
     public void onSubscribe(Disposable s) {
         if (DisposableHelper.validate(this.s, s)) {

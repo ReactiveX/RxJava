@@ -25,15 +25,75 @@ import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
+/**
+ * Subject that emits the most recent item it has observed and all subsequent observed items to each subscribed
+ * {@link Observer}.
+ * <p>
+ * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorSubject.png" alt="">
+ * <p>
+ * Example usage:
+ * <p>
+ * <pre> {@code
+
+  // observer will receive all events.
+  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
+  subject.subscribe(observer);
+  subject.onNext("one");
+  subject.onNext("two");
+  subject.onNext("three");
+
+  // observer will receive the "one", "two" and "three" events, but not "zero"
+  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
+  subject.onNext("zero");
+  subject.onNext("one");
+  subject.subscribe(observer);
+  subject.onNext("two");
+  subject.onNext("three");
+
+  // observer will receive only onCompleted
+  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
+  subject.onNext("zero");
+  subject.onNext("one");
+  subject.onCompleted();
+  subject.subscribe(observer);
+  
+  // observer will receive only onError
+  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
+  subject.onNext("zero");
+  subject.onNext("one");
+  subject.onError(new RuntimeException("error"));
+  subject.subscribe(observer);
+  } </pre>
+ * 
+ * @param <T>
+ *          the type of item expected to be observed by the Subject
+ */
 public final class BehaviorSubject<T> extends Subject<T> {
     final State<T> state;
 
+    /**
+     * Creates a {@link BehaviorSubject} without a default item.
+     *
+     * @param <T>
+     *            the type of item the Subject will emit
+     * @return the constructed {@link BehaviorSubject}
+     */
     public static <T> BehaviorSubject<T> create() {
         State<T> state = new State<T>();
         return new BehaviorSubject<T>(state);
     }
     
-    // A plain create(T) would create a method ambiguity with Observable.create with javac
+    /**
+     * Creates a {@link BehaviorSubject} that emits the last item it observed and all subsequent items to each
+     * {@link Observer} that subscribes to it.
+     * 
+     * @param <T>
+     *            the type of item the Subject will emit
+     * @param defaultValue
+     *            the item that will be emitted first to any {@link Observer} as long as the
+     *            {@link BehaviorSubject} has not yet observed any items from its source {@code Observable}
+     * @return the constructed {@link BehaviorSubject}
+     */
     public static <T> BehaviorSubject<T> createDefault(T defaultValue) {
         Objects.requireNonNull(defaultValue, "defaultValue is null");
         State<T> state = new State<T>();
@@ -78,7 +138,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
     }
 
     @Override
-    public boolean hasSubscribers() {
+    public boolean hasObservers() {
         return state.subscribers.get().length != 0;
     }
     

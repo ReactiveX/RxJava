@@ -209,15 +209,15 @@ public class ObservableAmbTest {
         
         Observable.amb(source1, source2, source3).subscribe(ts);
         
-        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
-        assertTrue("Source 2 doesn't have subscribers!", source2.hasSubscribers());
-        assertTrue("Source 3 doesn't have subscribers!", source3.hasSubscribers());
+        assertTrue("Source 1 doesn't have subscribers!", source1.hasObservers());
+        assertTrue("Source 2 doesn't have subscribers!", source2.hasObservers());
+        assertTrue("Source 3 doesn't have subscribers!", source3.hasObservers());
         
         source1.onNext(1);
 
-        assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
-        assertFalse("Source 2 still has subscribers!", source2.hasSubscribers());
-        assertFalse("Source 2 still has subscribers!", source3.hasSubscribers());
+        assertTrue("Source 1 doesn't have subscribers!", source1.hasObservers());
+        assertFalse("Source 2 still has subscribers!", source2.hasObservers());
+        assertFalse("Source 2 still has subscribers!", source3.hasObservers());
         
     }
 }

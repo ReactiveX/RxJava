@@ -21,8 +21,40 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
+/**
+ * Subject that, once an {@link Observer} has subscribed, emits all subsequently observed items to the
+ * subscriber.
+ * <p>
+ * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.PublishSubject.png" alt="">
+ * <p>
+ * Example usage:
+ * <p>
+ * <pre> {@code
+
+  PublishSubject<Object> subject = PublishSubject.create();
+  // observer1 will receive all onNext and onCompleted events
+  subject.subscribe(observer1);
+  subject.onNext("one");
+  subject.onNext("two");
+  // observer2 will only receive "three" and onCompleted
+  subject.subscribe(observer2);
+  subject.onNext("three");
+  subject.onCompleted();
+
+  } </pre>
+ * 
+ * @param <T>
+ *          the type of items observed and emitted by the Subject
+ */
 public final class PublishSubject<T> extends Subject<T> {
     final State<T> state;
+    
+    /**
+     * Creates and returns a new {@code PublishSubject}.
+     *
+     * @param <T> the value type
+     * @return the new {@code PublishSubject}
+     */
     public static <T> PublishSubject<T> create() {
         return new PublishSubject<T>();
     }
@@ -59,7 +91,7 @@ public final class PublishSubject<T> extends Subject<T> {
     }
     
     @Override
-    public boolean hasSubscribers() {
+    public boolean hasObservers() {
         return state.subscribers.get().length != 0;
     }
     

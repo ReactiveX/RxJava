@@ -13,8 +13,21 @@
 
 package io.reactivex;
 
+/**
+ * Represents the options for applying backpressure to a source sequence.
+ */
 public enum BackpressureStrategy {
+    /**
+     * Buffer all values (unbounded) until there is a downstream demand for it.
+     */
     BUFFER,
+    /**
+     * Drop the value if there is no current demand for it from the downstream.
+     */
     DROP,
+    /**
+     * Have a latest value always available and overwrite it with more recent ones
+     * if there is no demand for it from the downstream.
+     */
     LATEST
 }

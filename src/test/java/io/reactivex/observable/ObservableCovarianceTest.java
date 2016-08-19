@@ -77,7 +77,7 @@ public class ObservableCovarianceTest {
         .doOnNext(new Consumer<GroupedObservable<Object, Movie>>() {
             @Override
             public void accept(GroupedObservable<Object, Movie> g) {
-                System.out.println(g.key());
+                System.out.println(g.getKey());
             }
         })
         .flatMap(new Function<GroupedObservable<Object, Movie>, Observable<String>>() {

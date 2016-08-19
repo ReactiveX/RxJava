@@ -25,6 +25,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * A Subject that multicasts events to Subscribers that are currently subscribed to it.
  * 
+ * <p>
+ * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.PublishSubject.png" alt="">
+ * 
  * <p>The subject does not coordinate backpressure for its subscribers and implements a weaker onSubscribe which
  * calls requests Long.MAX_VALUE from the incoming Subscriptions. This makes it possible to subscribe the PublishSubject
  * to multiple sources (note on serialization though) unlike the standard contract on Subscriber. Child subscribers, however, are not overflown but receive an
@@ -33,9 +36,24 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
  * to them may lead to undefined state in the currently subscribed Subscribers.
  * 
- * <p>Due to the nature Observables are constructed, the PublishSubject can't be instantiated through
+ * <p>Due to the nature Flowables are constructed, the PublishProcessor can't be instantiated through
  * {@code new} but must be created via the {@link #create()} method.
  *
+ * Example usage:
+ * <p>
+ * <pre> {@code
+
+  PublishProcessor<Object> processor = PublishProcessor.create();
+  // subscriber1 will receive all onNext and onCompleted events
+  processor.subscribe(subscriber1);
+  processor.onNext("one");
+  processor.onNext("two");
+  // subscriber2 will only receive "three" and onCompleted
+  processor.subscribe(subscriber2);
+  processor.onNext("three");
+  processor.onComplete();
+
+  } </pre>
  * @param <T> the value type multicast to Subscribers.
  */
 public final class PublishProcessor<T> extends FlowProcessor<T> {
@@ -50,7 +68,7 @@ public final class PublishProcessor<T> extends FlowProcessor<T> {
     boolean done;
     
     /**
-     * Constructs a PublishSubject.
+     * Constructs a PublishProcessor.
      * @param <T> the value type
      * @return the new PublishSubject
      */

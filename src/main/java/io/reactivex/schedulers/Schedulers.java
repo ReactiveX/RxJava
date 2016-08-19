@@ -19,6 +19,9 @@ import io.reactivex.Scheduler;
 import io.reactivex.internal.schedulers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
+/**
+ * Static factory methods for returning standard Scheduler instances.
+ */
 public final class Schedulers {
     static final Scheduler SINGLE;
     
@@ -31,7 +34,6 @@ public final class Schedulers {
     static final Scheduler NEW_THREAD;
     
     static {
-        // TODO plugins and stuff
         SINGLE = RxJavaPlugins.initSingleScheduler(new SingleScheduler());
         
         COMPUTATION = RxJavaPlugins.initComputationScheduler(new ComputationScheduler());
@@ -43,56 +45,105 @@ public final class Schedulers {
         NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(NewThreadScheduler.instance());
     }
     
-    /*
-     * TODO I started to like enums for singletons and non-instantiatable
-     * utility classes, but since this is part of the public API,
-     * that would act quite unorthodoxically.
-     */
     private Schedulers() {
         throw new IllegalStateException("No instances");
     }
     
+    /**
+     * Creates and returns a {@link Scheduler} intended for computational work.
+     * <p>
+     * This can be used for event-loops, processing callbacks and other computational work.
+     * <p>
+     * Do not perform IO-bound work on this scheduler. Use {@link #io()} instead.
+     * <p>
+     * Unhandled errors will be delivered to the scheduler Thread's {@link java.lang.Thread.UncaughtExceptionHandler}.
+     *
+     * @return a {@link Scheduler} meant for computation-bound work
+     */
     public static Scheduler computation() {
         return RxJavaPlugins.onComputationScheduler(COMPUTATION);
     }
     
+    /**
+     * Creates and returns a {@link Scheduler} intended for IO-bound work.
+     * <p>
+     * The implementation is backed by an {@link Executor} thread-pool that will grow as needed.
+     * <p>
+     * This can be used for asynchronously performing blocking IO.
+     * <p>
+     * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
+     * <p>
+     * Unhandled errors will be delivered to the scheduler Thread's {@link java.lang.Thread.UncaughtExceptionHandler}.
+     *
+     * @return a {@link Scheduler} meant for IO-bound work
+     */
     public static Scheduler io() {
         return RxJavaPlugins.onIoScheduler(IO);
     }
     
-    public static TestScheduler test() {
+    /**
+     * Creates and returns a {@code TestScheduler}, which is useful for debugging. It allows you to test
+     * schedules of events by manually advancing the clock at whatever pace you choose.
+     *
+     * @return a {@code TestScheduler} meant for debugging
+     */
+    public static TestScheduler test() { // NOPMD
         return new TestScheduler();
     }
 
+    /**
+     * Creates and returns a {@link Scheduler} that queues work on the current thread to be executed after the
+     * current work completes.
+     *
+     * @return a {@link Scheduler} that queues work on the current thread
+     */
     public static Scheduler trampoline() {
         return TRAMPOLINE;
     }
 
+    /**
+     * Creates and returns a {@link Scheduler} that creates a new {@link Thread} for each unit of work.
+     * <p>
+     * Unhandled errors will be delivered to the scheduler Thread's {@link java.lang.Thread.UncaughtExceptionHandler}.
+     *
+     * @return a {@link Scheduler} that creates new threads
+     */
     public static Scheduler newThread() {
         return RxJavaPlugins.onNewThreadScheduler(NEW_THREAD);
     }
     
-    /*
-     * TODO This is a deliberately single threaded scheduler.
-     * I can see a few uses for such scheduler:
-     * - main event loop
-     * - support Schedulers.from(Executor) and from(ExecutorService) with delayed scheduling.
-     * - support benchmarks that pipeline data from the main thread to some other thread and avoid core-bashing of computation's round-robin nature. 
+    /**
+     * Returns the common, single-thread backed Scheduler instance.
+     * <p>
+     * Uses:
+     * <ul>
+     * <li>main event loop</li>
+     * <li>support Schedulers.from(Executor) and from(ExecutorService) with delayed scheduling</li>
+     * <li>support benchmarks that pipeline data from the main thread to some other thread and 
+     * avoid core-bashing of computation's round-robin nature</li>
+     * </ul>
+     * @return a {@link Scheduler} that shares a single backing thread.
+     * @since 2.0
      */
     public static Scheduler single() {
         return RxJavaPlugins.onSingleScheduler(SINGLE);
     }
     
-    // TODO I don't think immediate scheduler should be supported any further
-    @Deprecated
-    public static Scheduler immediate() {
-        throw new UnsupportedOperationException();
-    }
-    
+    /**
+     * Converts an {@link Executor} into a new Scheduler instance.
+     *
+     * @param executor
+     *          the executor to wrap
+     * @return the new Scheduler wrapping the Executor
+     */
     public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
     }
     
+    /**
+     * Shuts down those standard Schedulers which support the SchedulerLifecycle interface.
+     * <p>The operation is idempotent and threadsafe.
+     */
     public static void shutdown() {
         computation().shutdown();
         io().shutdown();
@@ -102,6 +153,10 @@ public final class Schedulers {
         SchedulerPoolFactory.shutdown();
     }
     
+    /**
+     * Starts those standard Schedulers which support the SchedulerLifecycle interface.
+     * <p>The operation is idempotent and threadsafe.
+     */
     public static void start() {
         computation().start();
         io().start();

@@ -881,7 +881,7 @@ public class ReplayProcessorTest {
     
     @Test
     public void testBackpressureHonoredTimeBound() {
-        ReplayProcessor<Integer> rs = ReplayProcessor.createWithTime(1, TimeUnit.DAYS);
+        ReplayProcessor<Integer> rs = ReplayProcessor.createWithTime(1, TimeUnit.DAYS, Schedulers.trampoline());
         rs.onNext(1);
         rs.onNext(2);
         rs.onNext(3);

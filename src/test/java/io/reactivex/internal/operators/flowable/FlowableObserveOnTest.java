@@ -28,6 +28,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
@@ -38,12 +39,10 @@ public class FlowableObserveOnTest {
     /**
      * This is testing a no-op path since it uses Schedulers.immediate() which will not do scheduling.
      */
-    @SuppressWarnings("deprecation")
     @Test
-    @Ignore("immediate scheduler not supported")
     public void testObserveOn() {
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        Flowable.just(1, 2, 3).observeOn(Schedulers.immediate()).subscribe(observer);
+        Flowable.just(1, 2, 3).observeOn(ImmediateThinScheduler.INSTANCE).subscribe(observer);
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
@@ -134,19 +133,15 @@ public class FlowableObserveOnTest {
         verify(observer, times(1)).onComplete();
     }
 
-    @SuppressWarnings("deprecation")
     @Test
-    @Ignore("immediate scheduler not supported")
     public void observeOnTheSameSchedulerTwice() {
-        Scheduler scheduler = Schedulers.immediate();
+        Scheduler scheduler = ImmediateThinScheduler.INSTANCE;
 
         Flowable<Integer> o = Flowable.just(1, 2, 3);
         Flowable<Integer> o2 = o.observeOn(scheduler);
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<Object> observer1 = mock(DefaultSubscriber.class);
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<Object> observer2 = mock(DefaultSubscriber.class);
+        Subscriber<Object> observer1 = TestHelper.mockSubscriber();
+        Subscriber<Object> observer2 = TestHelper.mockSubscriber();
 
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);

@@ -45,7 +45,7 @@ public class FlowableZipTests {
                                 @Override
                                 public HashMap<String, String> apply(HashMap<String, String> accum,
                                         Event perInstanceEvent) {
-                                            accum.put("instance", ge.key());
+                                            accum.put("instance", ge.getKey());
                                             return accum;
                                         }
                             });

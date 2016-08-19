@@ -79,7 +79,7 @@ public class FlowableCovarianceTest {
         .doOnNext(new Consumer<GroupedFlowable<Object, Movie>>() {
             @Override
             public void accept(GroupedFlowable<Object, Movie> g) {
-                System.out.println(g.key());
+                System.out.println(g.getKey());
             }
         })
         .flatMap(new Function<GroupedFlowable<Object, Movie>, Publisher<String>>() {

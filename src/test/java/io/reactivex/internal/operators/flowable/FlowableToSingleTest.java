@@ -28,7 +28,7 @@ public class FlowableToSingleTest {
     public void testJustSingleItemObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Single<String> single = Flowable.just("Hello World!").toSingle();
-        single.subscribe(subscriber);
+        single.toFlowable().subscribe(subscriber);
 
         subscriber.assertResult("Hello World!");
     }
@@ -38,7 +38,7 @@ public class FlowableToSingleTest {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         IllegalArgumentException error = new IllegalArgumentException("Error");
         Single<String> single = Flowable.<String>error(error).toSingle();
-        single.subscribe(subscriber);
+        single.toFlowable().subscribe(subscriber);
 
         subscriber.assertError(error);
     }
@@ -47,7 +47,7 @@ public class FlowableToSingleTest {
     public void testJustTwoEmissionsObservableThrowsError() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Single<String> single = Flowable.just("First", "Second").toSingle();
-        single.subscribe(subscriber);
+        single.toFlowable().subscribe(subscriber);
 
         subscriber.assertError(IndexOutOfBoundsException.class);
     }
@@ -56,7 +56,7 @@ public class FlowableToSingleTest {
     public void testEmptyObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Single<String> single = Flowable.<String>empty().toSingle();
-        single.subscribe(subscriber);
+        single.toFlowable().subscribe(subscriber);
 
         subscriber.assertError(NoSuchElementException.class);
     }
@@ -65,7 +65,7 @@ public class FlowableToSingleTest {
     public void testRepeatObservableThrowsError() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Single<String> single = Flowable.just("First", "Second").repeat().toSingle();
-        single.subscribe(subscriber);
+        single.toFlowable().subscribe(subscriber);
 
         subscriber.assertError(IndexOutOfBoundsException.class);
     }
@@ -80,7 +80,7 @@ public class FlowableToSingleTest {
             public void run() {
                 unsubscribed.set(true);
             }}).toSingle();
-        single.subscribe(subscriber);
+        single.toFlowable().subscribe(subscriber);
         subscriber.assertComplete();
         Assert.assertFalse(unsubscribed.get());
     }

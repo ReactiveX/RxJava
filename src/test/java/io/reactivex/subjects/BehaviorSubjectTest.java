@@ -348,7 +348,7 @@ public class BehaviorSubjectTest {
         verify(o, never()).onError(any(Throwable.class));
         
         assertEquals(0, source.subscriberCount());
-        assertFalse(source.hasSubscribers());
+        assertFalse(source.hasObservers());
     }
     
     // FIXME RS subscribers are not allowed to throw
@@ -450,7 +450,7 @@ public class BehaviorSubjectTest {
                 
                 if (!finish.await(5, TimeUnit.SECONDS)) {
                     System.out.println(o.get());
-                    System.out.println(rs.hasSubscribers());
+                    System.out.println(rs.hasObservers());
                     rs.onComplete();
                     Assert.fail("Timeout @ " + i);
                     break;

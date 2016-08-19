@@ -311,13 +311,13 @@ public class ObservableWindowWithObservableTest {
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
         
-        assertTrue(source.hasSubscribers());
-        assertTrue(boundary.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(boundary.hasObservers());
         
         source.onComplete();
 
-        assertFalse(source.hasSubscribers());
-        assertFalse(boundary.hasSubscribers());
+        assertFalse(source.hasObservers());
+        assertFalse(boundary.hasObservers());
         
         ts.assertComplete();
         ts.assertNoErrors();
@@ -337,14 +337,14 @@ public class ObservableWindowWithObservableTest {
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
         
-        assertTrue(source.hasSubscribers());
-        assertTrue(boundary.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(boundary.hasObservers());
         
         boundary.onComplete();
 
         // FIXME source still active because the open window
-        assertTrue(source.hasSubscribers());
-        assertFalse(boundary.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertFalse(boundary.hasObservers());
         
         ts.assertComplete();
         ts.assertNoErrors();
@@ -365,15 +365,15 @@ public class ObservableWindowWithObservableTest {
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
         
-        assertTrue(source.hasSubscribers());
-        assertTrue(boundary.hasSubscribers());
+        assertTrue(source.hasObservers());
+        assertTrue(boundary.hasObservers());
 
         ts.dispose();
 
         // FIXME source has subscribers because the open window
-        assertTrue(source.hasSubscribers());
+        assertTrue(source.hasObservers());
         // FIXME boundary has subscribers because the open window
-        assertTrue(boundary.hasSubscribers());
+        assertTrue(boundary.hasObservers());
         
         ts.assertNotComplete();
         ts.assertNoErrors();
@@ -398,15 +398,15 @@ public class ObservableWindowWithObservableTest {
         
         source.onNext(1);
         boundary.onNext(1);
-        assertTrue(boundary.hasSubscribers());
+        assertTrue(boundary.hasObservers());
 
         source.onNext(2);
         boundary.onNext(2);
-        assertTrue(boundary.hasSubscribers());
+        assertTrue(boundary.hasObservers());
 
         source.onNext(3);
         boundary.onNext(3);
-        assertTrue(boundary.hasSubscribers());
+        assertTrue(boundary.hasObservers());
         
         source.onNext(4);
         source.onComplete();
@@ -415,7 +415,7 @@ public class ObservableWindowWithObservableTest {
         ts.assertValueCount(4);
         ts.assertComplete();
 
-        assertFalse(source.hasSubscribers());
-        assertFalse(boundary.hasSubscribers());
+        assertFalse(source.hasObservers());
+        assertFalse(boundary.hasObservers());
     }
 }

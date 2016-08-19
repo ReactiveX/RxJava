@@ -32,6 +32,10 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
     /** Indicates a terminal state. */
     boolean done;
     
+    /**
+     * Constructs a SafeSubscriber by wrapping the given actual Subscriber
+     * @param actual the actual Subscriber to wrap, not null (not validated)
+     */
     public SafeSubscriber(Subscriber<? super T> actual) {
         this.actual = actual;
     }

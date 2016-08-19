@@ -40,7 +40,7 @@ public class SerializedSubjectTest {
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -57,7 +57,7 @@ public class SerializedSubjectTest {
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -75,7 +75,7 @@ public class SerializedSubjectTest {
         async.onError(te);
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
@@ -93,7 +93,7 @@ public class SerializedSubjectTest {
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -112,7 +112,7 @@ public class SerializedSubjectTest {
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -130,7 +130,7 @@ public class SerializedSubjectTest {
         async.onError(te);
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
@@ -149,7 +149,7 @@ public class SerializedSubjectTest {
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -166,7 +166,7 @@ public class SerializedSubjectTest {
         async.onNext(1);
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -182,7 +182,7 @@ public class SerializedSubjectTest {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -199,7 +199,7 @@ public class SerializedSubjectTest {
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -217,7 +217,7 @@ public class SerializedSubjectTest {
         async.onError(te);
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
@@ -236,7 +236,7 @@ public class SerializedSubjectTest {
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -253,7 +253,7 @@ public class SerializedSubjectTest {
         async.onNext(1);
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -272,7 +272,7 @@ public class SerializedSubjectTest {
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -290,7 +290,7 @@ public class SerializedSubjectTest {
         async.onNext(1);
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -306,7 +306,7 @@ public class SerializedSubjectTest {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -322,7 +322,7 @@ public class SerializedSubjectTest {
         ReplaySubject<Integer> async = ReplaySubject.create();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -340,7 +340,7 @@ public class SerializedSubjectTest {
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -358,7 +358,7 @@ public class SerializedSubjectTest {
         async.onError(te);
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
@@ -376,7 +376,7 @@ public class SerializedSubjectTest {
         async.onComplete();
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
@@ -394,7 +394,7 @@ public class SerializedSubjectTest {
         async.onError(te);
         Subject<Integer> serial = async.toSerialized();
         
-        assertFalse(serial.hasSubscribers());
+        assertFalse(serial.hasObservers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());

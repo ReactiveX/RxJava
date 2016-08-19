@@ -12,6 +12,14 @@
  */
 package io.reactivex.functions;
 
+/**
+ * A functional interface (callback) that consumes a primitive long value.
+ */
 public interface LongConsumer {
+    /**
+     * Consume a primitive long input.
+     * @param t the primitive long value
+     * @throws Exception on error
+     */
     void accept(long t) throws Exception;
 }

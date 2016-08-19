@@ -15,6 +15,12 @@ package io.reactivex;
 
 import io.reactivex.functions.Function;
 
+/**
+ * Interface to compose Observables.
+ *
+ * @param <Upstream> the upstream value type
+ * @param <Downstream> the downstream value type
+ */
 public interface ObservableTransformer<Upstream, Downstream> extends Function<Observable<Upstream>, ObservableSource<Downstream>> {
 
 }

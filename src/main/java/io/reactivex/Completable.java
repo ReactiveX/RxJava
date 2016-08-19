@@ -1431,25 +1431,6 @@ public abstract class Completable implements CompletableSource {
     }
     
     /**
-     * Subscribes a non-backpressure Observer to this Completable instance which
-     * will receive only an onError or onComplete event.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the Observer's value type
-     * @param observer the Observer instance, not null
-     * @throws NullPointerException if s is null
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <T> void subscribe(final Observer<? super T> observer) {
-        Objects.requireNonNull(observer, "s is null");
-        
-        ObserverCompletableObserver<T> os = new ObserverCompletableObserver<T>(observer);
-        subscribe(os);
-    }
-    
-    /**
      * Subscribes to this Completable and calls the given Action when this Completable
      * completes normally.
      * <p>
@@ -1468,24 +1449,6 @@ public abstract class Completable implements CompletableSource {
         CallbackCompletableObserver s = new CallbackCompletableObserver(onComplete);
         subscribe(s);
         return s;
-    }
-
-    /**
-     * Subscribes a reactive-streams Subscriber to this Completable instance which
-     * will receive only an onError or onComplete event.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param <T> the value type of the subscriber
-     * @param s the reactive-streams Subscriber, not null
-     * @throws NullPointerException if s is null
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <T> void subscribe(Subscriber<T> s) {
-        Objects.requireNonNull(s, "s is null");
-        SubscriberCompletableObserver<T> os = new SubscriberCompletableObserver<T>(s);
-        subscribe(os);
     }
 
     /**
@@ -1718,7 +1681,7 @@ public abstract class Completable implements CompletableSource {
      */
     public final TestSubscriber<Void> test() {
         TestSubscriber<Void> ts = new TestSubscriber<Void>();
-        subscribe(ts);
+        subscribe(new SubscriberCompletableObserver<Void>(ts));
         return ts;
     }
 
@@ -1732,7 +1695,7 @@ public abstract class Completable implements CompletableSource {
     public final TestSubscriber<Void> test(boolean cancelled) {
         TestSubscriber<Void> ts = new TestSubscriber<Void>();
         ts.dispose();
-        subscribe(ts);
+        subscribe(new SubscriberCompletableObserver<Void>(ts));
         return ts;
     }
 }

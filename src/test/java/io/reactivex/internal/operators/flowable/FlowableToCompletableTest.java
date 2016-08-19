@@ -31,7 +31,7 @@ public class FlowableToCompletableTest {
     public void testJustSingleItemObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Flowable.just("Hello World!").toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.<String>toFlowable().subscribe(subscriber);
 
         subscriber.assertNoValues();
         subscriber.assertComplete();
@@ -43,7 +43,7 @@ public class FlowableToCompletableTest {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         IllegalArgumentException error = new IllegalArgumentException("Error");
         Completable cmp = Flowable.<String>error(error).toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.<String>toFlowable().subscribe(subscriber);
 
         subscriber.assertError(error);
         subscriber.assertNoValues();
@@ -53,7 +53,7 @@ public class FlowableToCompletableTest {
     public void testJustTwoEmissionsObservableThrowsError() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Flowable.just("First", "Second").toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.<String>toFlowable().subscribe(subscriber);
 
         subscriber.assertNoErrors();
         subscriber.assertNoValues();
@@ -63,7 +63,7 @@ public class FlowableToCompletableTest {
     public void testEmptyObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Flowable.<String>empty().toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.<String>toFlowable().subscribe(subscriber);
 
         subscriber.assertNoErrors();
         subscriber.assertNoValues();
@@ -74,7 +74,7 @@ public class FlowableToCompletableTest {
     public void testNeverObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         Completable cmp = Flowable.<String>never().toCompletable();
-        cmp.subscribe(subscriber);
+        cmp.<String>toFlowable().subscribe(subscriber);
 
         subscriber.assertNotTerminated();
         subscriber.assertNoValues();
@@ -91,7 +91,7 @@ public class FlowableToCompletableTest {
                 unsubscribed.set(true);
             }}).toCompletable();
         
-        cmp.subscribe(subscriber);
+        cmp.<String>toFlowable().subscribe(subscriber);
         
         subscriber.assertComplete();
         

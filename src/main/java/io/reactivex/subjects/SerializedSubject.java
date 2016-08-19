@@ -171,8 +171,8 @@ import io.reactivex.plugins.RxJavaPlugins;
     }
     
     @Override
-    public boolean hasSubscribers() {
-        return actual.hasSubscribers();
+    public boolean hasObservers() {
+        return actual.hasObservers();
     }
     
     @Override

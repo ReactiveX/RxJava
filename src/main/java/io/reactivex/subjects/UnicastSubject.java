@@ -325,7 +325,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     }
     
     @Override
-    public boolean hasSubscribers() {
+    public boolean hasObservers() {
         return state.subscriber != null;
     }
     

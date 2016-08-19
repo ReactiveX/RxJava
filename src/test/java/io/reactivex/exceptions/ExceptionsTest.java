@@ -364,7 +364,7 @@ public class ExceptionsTest {
                         throw new RuntimeException();
                     }
                 })
-                .subscribe(new OnErrorFailedSubscriber());
+                .toObservable().subscribe(new OnErrorFailedSubscriber());
     }
 
     @Ignore("v2 components should not throw")
@@ -381,7 +381,7 @@ public class ExceptionsTest {
                               }).subscribe(s1);
                           }
                       }
-        ).subscribe(new OnErrorFailedSubscriber());
+        ).toObservable().subscribe(new OnErrorFailedSubscriber());
     }
 
     @Ignore("v2 components should not throw")
@@ -395,7 +395,7 @@ public class ExceptionsTest {
                                   public void subscribe(SingleObserver<? super Integer> s2) {
                                       throw new IllegalArgumentException("original exception");
                                   }
-                              }).subscribe(new Subscriber<Integer>() {
+                              }).toFlowable().subscribe(new Subscriber<Integer>() {
 
                                   @Override
                                   public void onSubscribe(Subscription s) {
@@ -419,7 +419,7 @@ public class ExceptionsTest {
                               });
                           }
                       }
-        ).subscribe(new OnErrorFailedSubscriber());
+        ).toObservable().subscribe(new OnErrorFailedSubscriber());
     }
 
     private class OnErrorFailedSubscriber implements Observer<Integer> {

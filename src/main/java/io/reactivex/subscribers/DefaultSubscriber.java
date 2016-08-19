@@ -17,6 +17,14 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
+/**
+ * Abstract base implementation of an Subscriber with support for requesting via
+ * {@link #request(long)}, cancelling via
+ * via {@link #cancel()} (both synchronously) and calls {@link #onStart()}
+ * when the subscription happens.
+ * 
+ * @param <T> the value type
+ */
 public abstract class DefaultSubscriber<T> implements Subscriber<T> {
     private Subscription s;
     @Override
@@ -27,16 +35,18 @@ public abstract class DefaultSubscriber<T> implements Subscriber<T> {
         }
     }
     
-    protected final Subscription subscription() {
-        return s;
-    }
-    
+    /**
+     * Requests from the upstream Subscription.
+     */
     protected final void request(long n) {
-        subscription().request(n);
+        s.request(n);
     }
     
+    /**
+     * Cancels the upstream's Subscription.
+     */
     protected final void cancel() {
-        subscription().cancel();
+        s.cancel();
     }
     /**
      * Called once the subscription has been set on this observer; override this

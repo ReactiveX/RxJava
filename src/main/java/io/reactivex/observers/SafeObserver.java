@@ -32,6 +32,10 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
     /** Indicates a terminal state. */
     boolean done;
     
+    /**
+     * Constructs a SafeObserver by wrapping the given actual Observer
+     * @param actual the actual Observer to wrap, not null (not validated)
+     */
     public SafeObserver(Observer<? super T> actual) {
         this.actual = actual;
     }

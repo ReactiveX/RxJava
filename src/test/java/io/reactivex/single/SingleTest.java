@@ -33,7 +33,7 @@ public class SingleTest {
     @Test
     public void testHelloWorld() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Single.just("Hello World!").subscribe(ts);
+        Single.just("Hello World!").toFlowable().subscribe(ts);
         ts.assertValueSequence(Arrays.asList("Hello World!"));
     }
 
@@ -71,7 +71,7 @@ public class SingleTest {
                         return s + "B";
                     }
                 })
-                .subscribe(ts);
+                .toFlowable().subscribe(ts);
         ts.assertValueSequence(Arrays.asList("AB"));
     }
 
@@ -87,7 +87,7 @@ public class SingleTest {
                 return a1 + b1;
             }
         })
-        .subscribe(ts);
+        .toFlowable().subscribe(ts);
         ts.assertValueSequence(Arrays.asList("AB"));
     }
 
@@ -101,7 +101,7 @@ public class SingleTest {
                 return a1 + b1;
             }
         })
-        .subscribe(ts);
+        .toFlowable().subscribe(ts);
         ts.assertValueSequence(Arrays.asList("AB"));
     }
 
@@ -133,7 +133,7 @@ public class SingleTest {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onSuccess("Hello");
             }
-        }).subscribe(ts);
+        }).toFlowable().subscribe(ts);
         
         ts.assertValueSequence(Arrays.asList("Hello"));
     }
@@ -147,7 +147,7 @@ public class SingleTest {
                 s.onSubscribe(EmptyDisposable.INSTANCE);
                 s.onError(new RuntimeException("fail"));
             }
-        }).subscribe(ts);
+        }).toFlowable().subscribe(ts);
         
         ts.assertError(RuntimeException.class);
         ts.assertErrorMessage("fail");
@@ -173,7 +173,7 @@ public class SingleTest {
                         return v;
                     }
                 })
-                .subscribe(ts);
+                .toFlowable().subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertValueSequence(Arrays.asList("Hello"));
     }
@@ -187,7 +187,7 @@ public class SingleTest {
                 return Single.just(s + " World!").subscribeOn(Schedulers.computation());
             }
         }
-        ).subscribe(ts);
+        ).toFlowable().subscribe(ts);
         if (!ts.awaitTerminalEvent(5, TimeUnit.SECONDS)) {
             ts.cancel();
             Assert.fail("TestSubscriber timed out.");
@@ -211,7 +211,7 @@ public class SingleTest {
             }
         }).subscribeOn(Schedulers.io());
 
-        s1.timeout(100, TimeUnit.MILLISECONDS).subscribe(ts);
+        s1.timeout(100, TimeUnit.MILLISECONDS).toFlowable().subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertError(TimeoutException.class);
@@ -233,7 +233,7 @@ public class SingleTest {
             }
         }).subscribeOn(Schedulers.io());
 
-        s1.timeout(100, TimeUnit.MILLISECONDS, Single.just("hello")).subscribe(ts);
+        s1.timeout(100, TimeUnit.MILLISECONDS, Single.just("hello")).toFlowable().subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
@@ -278,7 +278,7 @@ public class SingleTest {
             }
         });
 
-        s1.subscribe(ts);
+        s1.toFlowable().subscribe(ts);
 
         Thread.sleep(100);
 
@@ -435,7 +435,7 @@ public class SingleTest {
 
         TestSubscriber<String> ts = new TestSubscriber<String>(0L);
 
-        s.subscribe(ts);
+        s.toFlowable().subscribe(ts);
 
         ts.assertNoValues();
 

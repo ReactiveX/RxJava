@@ -13,7 +13,11 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class SingleSubscribeOn<T> extends Single<T> {
     final SingleSource<? extends T> source;
@@ -28,14 +32,56 @@ public final class SingleSubscribeOn<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        // FIXME cancel schedule
-        scheduler.scheduleDirect(new Runnable() {
+        final SubscribeOnObserver<T> parent = new SubscribeOnObserver<T>(s);
+        s.onSubscribe(parent);
+        
+        Disposable f = scheduler.scheduleDirect(new Runnable() {
             @Override
             public void run() {
-                source.subscribe(s);
+                source.subscribe(parent);
             }
         });
+        
+        DisposableHelper.replace(parent, f);
     
+    }
+    
+    static final class SubscribeOnObserver<T> 
+    extends AtomicReference<Disposable>
+    implements SingleObserver<T>, Disposable {
+        /** */
+        private static final long serialVersionUID = 7000911171163930287L;
+
+        final SingleObserver<? super T> actual;
+        
+        public SubscribeOnObserver(SingleObserver<? super T> actual) {
+            this.actual = actual;
+        }
+        
+        @Override
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(this, d);
+        }
+        
+        @Override
+        public void onSuccess(T value) {
+            actual.onSuccess(value);
+        }
+        
+        @Override
+        public void onError(Throwable e) {
+            actual.onError(e);
+        }
+        
+        @Override
+        public void dispose() {
+            DisposableHelper.dispose(this);
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(this);
+        }
     }
 
 }

@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
-import io.reactivex.internal.operators.completable.CompletableFromSingle;
+import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.subscribers.single.*;
@@ -2095,8 +2095,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public final Completable flatMapCompletable(final Function<? super T, ? extends Completable> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return new SingleFlatMapCompletable<T>(this, mapper);
     }
     
     /**
@@ -2588,8 +2587,21 @@ public abstract class Single<T> implements SingleSource<T> {
     @Override
     public final void subscribe(SingleObserver<? super T> subscriber) {
         Objects.requireNonNull(subscriber, "subscriber is null");
-        // TODO plugin wrapper
-        subscribeActual(subscriber);
+        
+        subscriber = RxJavaPlugins.onSubscribe(this, subscriber);
+
+        Objects.requireNonNull(subscriber, "subscriber returned by the RxJavaPlugins hook is null");
+
+        try {
+            subscribeActual(subscriber);
+        } catch (NullPointerException ex) {
+            throw ex;
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            NullPointerException npe = new NullPointerException("subscribeActual failed");
+            npe.initCause(ex);
+            throw npe;
+        }
     }
     
     /**
@@ -2597,26 +2609,6 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param observer the SingleObserver to handle, not null
      */
     protected abstract void subscribeActual(SingleObserver<? super T> observer);
-    
-    /**
-     * Subscribe the given Reactive-Streams subscriber to the current Single to receive
-     * its success or error signals.
-     * @param s the Subscriber to subscribe
-     * @see #safeSubscribe(Subscriber)
-     */
-    public final void subscribe(Subscriber<? super T> s) {
-        toFlowable().subscribe(s);
-    }
-    
-    /**
-     * Subscribe the given RxJava 2.x Observer to the current Single to receive
-     * its success or error signals.
-     * @param s the Subscriber to subscribe
-     * @see #safeSubscribe(Subscriber)
-     */
-    public final void subscribe(Observer<? super T> s) {
-        toObservable().subscribe(s);
-    }
     
     /**
      * Asynchronously subscribes subscribers to this Single on the specified {@link Scheduler}.
@@ -2656,9 +2648,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the item emitted by the source Single until such time as {@code other} terminates.
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
-    public final Single<T> takeUntil(final Completable other) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    public final Single<T> takeUntil(final CompletableSource other) {
+        return takeUntil(new CompletableToFlowable<T>(other));
     }
 
     /**
@@ -2681,9 +2672,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * its first item
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
-    public final <E> Single<T> takeUntil(final Publisher<? extends E> other) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    public final <E> Single<T> takeUntil(final Publisher<E> other) {
+        return new SingleTakeUntil<T, E>(this, other);
     }
 
     /**
@@ -2704,9 +2694,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the item emitted by the source Single until such time as {@code other} emits its item
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
-    public final <E> Single<T> takeUntil(final Single<? extends E> other) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    public final <E> Single<T> takeUntil(final SingleSource<? extends E> other) {
+        return takeUntil(new SingleToFlowable<E>(other));
     }
 
     /**
@@ -2891,7 +2880,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public final TestSubscriber<T> test() {
         TestSubscriber<T> ts = new TestSubscriber<T>();
-        subscribe(ts);
+        toFlowable().subscribe(ts);
         return ts;
     }
 
@@ -2905,7 +2894,7 @@ public abstract class Single<T> implements SingleSource<T> {
     public final TestSubscriber<T> test(boolean cancelled) {
         TestSubscriber<T> ts = new TestSubscriber<T>();
         ts.dispose();
-        subscribe(ts);
+        toFlowable().subscribe(ts);
         return ts;
     }
 }

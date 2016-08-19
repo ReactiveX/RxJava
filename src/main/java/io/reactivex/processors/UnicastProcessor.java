@@ -63,6 +63,10 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
         this(bufferSize());
     }
 
+    /**
+     * Creates an UnicastProcessor with the given capacity hint.
+     * @param capacityHint the capacity hint for the internal, unbounded queue
+     */
     public UnicastProcessor(int capacityHint) {
         this.queue = new SpscLinkedArrayQueue<T>(capacityHint);
         this.onTerminate = new AtomicReference<Runnable>();
@@ -72,6 +76,12 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
         this.requested = new AtomicLong();
     }
 
+    /**
+     * Creates an UnicastProcessor with the given capacity hint and callback
+     * for when the Processor is terminated normally or its single Subscriber cancels.
+     * @param capacityHint the capacity hint for the internal, unbounded queue
+     * @param onTerminate the callback to run when the Processor is terminated or cancelled, null allowed
+     */
     public UnicastProcessor(int capacityHint, Runnable onTerminate) {
         this.queue = new SpscLinkedArrayQueue<T>(capacityHint);
         this.onTerminate = new AtomicReference<Runnable>(Objects.requireNonNull(onTerminate, "onTerminate"));
