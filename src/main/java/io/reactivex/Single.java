@@ -23,11 +23,12 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.completable.CompletableFromSingle;
 import io.reactivex.internal.operators.flowable.*;
-import io.reactivex.internal.operators.flowable.FlowableConcatMap.ErrorMode;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.subscribers.single.*;
+import io.reactivex.internal.util.ErrorMode;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * The Single class implements the Reactive Pattern for a single value response. 
@@ -435,23 +436,44 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Creates a Single instance that calls the given callback with an abstracted
-     * instance of a SingleObserver, allows emitting a single signal and allows
-     * registerign a single resource that is disposed upon cancellation or signalling
-     * a success or error from the callback. 
+     * Provides an API (via a cold Completable) that bridges the reactive world with the callback-style world.
+     * <p>
+     * Example:
+     * <pre><code>
+     * Single.&lt;Event&gt;create(emitter -&gt; {
+     *     Callback listener = new Callback() {
+     *         &#64;Override
+     *         public void onEvent(Event e) {
+     *             emitter.onSuccess(e);
+     *         }
+     *         
+     *         &#64;Override
+     *         public void onFailure(Exception e) {
+     *             emitter.onError(e);
+     *         }
+     *     };
+     *     
+     *     AutoCloseable c = api.someMethod(listener);
+     *     
+     *     emitter.setCancellable(c::close);
+     *     
+     * });
+     * </code></pre>
+     * <p>
      * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param source the consumer that is called with a SigleEmitter instance for each
-     * underlying SingleObserver that has subscribed.
+     * @param source the emitter that is called when a Subscriber subscribes to the returned {@code Flowable}
      * @return the new Single instance
+     * @see FlowableOnSubscribe
+     * @see FlowableEmitter.BackpressureMode
+     * @see Cancellable
      */
-    public static <T> Single<T> create(SingleSource<T> source) { // FIXME SingleEmitter
+    public static <T> Single<T> create(SingleOnSubscribe<T> source) {
         Objects.requireNonNull(source, "source is null");
-        // TODO plugin wrapper
-        return new SingleFromSource<T>(source);
+        return RxJavaPlugins.onAssembly(new SingleCreate<T>(source));
     }
 
     /**
@@ -1164,8 +1186,7 @@ public abstract class Single<T> implements SingleSource<T> {
         if (source instanceof Single) {
             throw new IllegalArgumentException("unsafeCreate(Single) should be upgraded");
         }
-        // TODO plugin wrapper
-        return new SingleFromUnsafeSource<T>(source);
+        return RxJavaPlugins.onAssembly(new SingleFromUnsafeSource<T>(source));
     }
     
     /**
@@ -2857,5 +2878,34 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public final <U, R> Single<R> zipWith(SingleSource<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
         return zip(this, other, zipper);
+    }
+    
+    // -------------------------------------------------------------------------
+    // Fluent test support, super handy and reduces test preparation boilerplate
+    // -------------------------------------------------------------------------
+    /**
+     * Creates a TestSubscriber and subscribes
+     * it to this Single.
+     * @return the new TestSubscriber instance
+     * @since 2.0
+     */
+    public final TestSubscriber<T> test() {
+        TestSubscriber<T> ts = new TestSubscriber<T>();
+        subscribe(ts);
+        return ts;
+    }
+
+    /**
+     * Creates a TestSubscriber optionally in cancelled state, then subscribes it to this Single.
+     * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
+     * Completable.
+     * @return the new TestSubscriber instance
+     * @since 2.0
+     */
+    public final TestSubscriber<T> test(boolean cancelled) {
+        TestSubscriber<T> ts = new TestSubscriber<T>();
+        ts.dispose();
+        subscribe(ts);
+        return ts;
     }
 }

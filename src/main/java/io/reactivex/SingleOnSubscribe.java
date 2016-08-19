@@ -13,17 +13,19 @@
 package io.reactivex;
 
 /**
- * Represents a basic {@link Completable} source base interface,
- * consumable via an {@link CompletableObserver}.
- * 
- * @since 2.0
+ * A functional interface that has a {@code subscribe()} method that receives
+ * an instance of a {@link SingleEmitter} instance that allows pushing
+ * an event in a cancellation-safe manner.
+ *
+ * @param <T> the value type pushed
  */
-public interface CompletableSource {
+public interface SingleOnSubscribe<T> {
     
     /**
-     * Subscribes the given CompletableObserver to this CompletableSource instance.
-     * @param cs the CompletableObserver, not null
-     * @throws NullPointerException if {@code cs} is null
+     * Called for each SingleObserver that subscribes.
+     * @param e the safe emitter instance, never null
+     * @throws Exception on error
      */
-    void subscribe(CompletableObserver cs);
+    void subscribe(SingleEmitter<T> e) throws Exception;
 }
+

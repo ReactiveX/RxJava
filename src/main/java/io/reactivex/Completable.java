@@ -28,6 +28,7 @@ import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.subscribers.completable.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Represents a deferred computation without any value but only indication for completion or exception.
@@ -165,33 +166,44 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Constructs a Completable instance by wrapping the given source callback.
+     * Provides an API (via a cold Completable) that bridges the reactive world with the callback-style world.
+     * <p>
+     * Example:
+     * <pre><code>
+     * Completable.create(emitter -&gt; {
+     *     Callback listener = new Callback() {
+     *         &#64;Override
+     *         public void onEvent(Event e) {
+     *             emitter.onComplete();
+     *         }
+     *         
+     *         &#64;Override
+     *         public void onFailure(Exception e) {
+     *             emitter.onError(e);
+     *         }
+     *     };
+     *     
+     *     AutoCloseable c = api.someMethod(listener);
+     *     
+     *     emitter.setCancellable(c::close);
+     *     
+     * });
+     * </code></pre>
+     * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param source the callback which will receive the CompletableObserver instances
-     * when the Completable is subscribed to.
-     * @return the created Completable instance
-     * @throws NullPointerException if source is null
+     * @param source the emitter that is called when a Subscriber subscribes to the returned {@code Flowable}
+     * @return the new Completable instance
+     * @see FlowableOnSubscribe
+     * @see FlowableEmitter.BackpressureMode
+     * @see Cancellable
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static Completable create(CompletableSource source) {
+    public static Completable create(CompletableOnSubscribe source) {
         Objects.requireNonNull(source, "source is null");
-        if (source instanceof Completable) {
-            throw new IllegalArgumentException("Use of create(Completable)!");
-        }
-        try {
-            // TODO plugin wrapping source
-
-            return RxJavaPlugins.onAssembly(new CompletableFromSource(source));
-        } catch (NullPointerException ex) { // NOPMD
-            throw ex;
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            RxJavaPlugins.onError(ex);
-            throw toNpe(ex);
-        }
+        return RxJavaPlugins.onAssembly(new CompletableCreate(source));
     }
     
     /**
@@ -214,8 +226,6 @@ public abstract class Completable implements CompletableSource {
             throw new IllegalArgumentException("Use of unsafeCreate(Completable)!");
         }
         try {
-            // TODO plugin wrapping source
-            
             return RxJavaPlugins.onAssembly(new CompletableFromUnsafeSource(source));
         } catch (NullPointerException ex) { // NOPMD
             throw ex;
@@ -1695,5 +1705,34 @@ public abstract class Completable implements CompletableSource {
     public final Completable unsubscribeOn(final Scheduler scheduler) {
         Objects.requireNonNull(scheduler, "scheduler is null");
         return new CompletableUnsubscribeOn(this, scheduler);
+    }
+    // -------------------------------------------------------------------------
+    // Fluent test support, super handy and reduces test preparation boilerplate
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Creates a TestSubscriber and subscribes
+     * it to this Completable.
+     * @return the new TestSubscriber instance
+     * @since 2.0
+     */
+    public final TestSubscriber<Void> test() {
+        TestSubscriber<Void> ts = new TestSubscriber<Void>();
+        subscribe(ts);
+        return ts;
+    }
+
+    /**
+     * Creates a TestSubscriber optionally in cancelled state, then subscribes it to this Completable.
+     * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
+     * Completable.
+     * @return the new TestSubscriber instance
+     * @since 2.0
+     */
+    public final TestSubscriber<Void> test(boolean cancelled) {
+        TestSubscriber<Void> ts = new TestSubscriber<Void>();
+        ts.dispose();
+        subscribe(ts);
+        return ts;
     }
 }

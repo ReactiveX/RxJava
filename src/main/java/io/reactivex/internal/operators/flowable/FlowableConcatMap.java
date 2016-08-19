@@ -23,7 +23,7 @@ import io.reactivex.internal.functions.Objects;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<T, R> {
@@ -34,18 +34,6 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
     
     final ErrorMode errorMode;
     
-    /**
-     * Indicates when an error from the main source should be reported.
-     */
-    public enum ErrorMode {
-        /** Report the error immediately, cancelling the active inner source. */
-        IMMEDIATE,
-        /** Report error after an inner source terminated. */
-        BOUNDARY,
-        /** Report the error after all sources terminated. */
-        END
-    }
-
     public FlowableConcatMap(Publisher<T> source,
             Function<? super T, ? extends Publisher<? extends R>> mapper, 
             int prefetch, ErrorMode errorMode) {

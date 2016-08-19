@@ -12,8 +12,20 @@
  */
 package io.reactivex;
 
-public interface FlowableSource<T> {
+/**
+ * A functional interface that has a {@code subscribe()} method that receives
+ * an instance of a {@link ObservableEmitter} instance that allows pushing
+ * events in a cancellation-safe manner.
+ *
+ * @param <T> the value type pushed
+ */
+public interface ObservableOnSubscribe<T> {
     
-    void subscribe(FlowableEmitter<T> e);
+    /**
+     * Called for each Observer that subscribes.
+     * @param e the safe emitter instance, never null
+     * @throws Exception on error
+     */
+    void subscribe(ObservableEmitter<T> e) throws Exception;
 }
 

@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 
 public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T> {
     final long limit;
@@ -45,7 +45,13 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.subscription, s)) {
                 subscription = s;
-                actual.onSubscribe(this);
+                if (remaining == 0) {
+                    done = true;
+                    s.dispose();
+                    EmptyDisposable.complete(actual);
+                } else {
+                    actual.onSubscribe(this);
+                }
             }
         }
         @Override

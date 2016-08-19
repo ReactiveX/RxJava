@@ -10,20 +10,17 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-package io.reactivex;
+
+package io.reactivex.internal.util;
 
 /**
- * Represents a basic {@link Completable} source base interface,
- * consumable via an {@link CompletableObserver}.
- * 
- * @since 2.0
+ * Indicates when an error from the main source should be reported.
  */
-public interface CompletableSource {
-    
-    /**
-     * Subscribes the given CompletableObserver to this CompletableSource instance.
-     * @param cs the CompletableObserver, not null
-     * @throws NullPointerException if {@code cs} is null
-     */
-    void subscribe(CompletableObserver cs);
+public enum ErrorMode {
+    /** Report the error immediately, cancelling the active inner source. */
+    IMMEDIATE,
+    /** Report error after an inner source terminated. */
+    BOUNDARY,
+    /** Report the error after all sources terminated. */
+    END
 }
