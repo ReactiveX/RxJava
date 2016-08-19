@@ -40,11 +40,19 @@ public final class CompositeException extends RuntimeException {
     private final String message;
     private Throwable cause;
 
+    /**
+     * Constructs an empty CompositeException.
+     */
     public CompositeException() {
         this.exceptions = new ArrayList<Throwable>();
         this.message = null;
     }
 
+    /**
+     * Constructs a CompositeException with the given array of Throwables as the
+     * list of suppressed exceptions.
+     * @param exceptions the Throwables to have as initially suppressed exceptions
+     */
     public CompositeException(Throwable... exceptions) {
         this.exceptions = new ArrayList<Throwable>();
         if (exceptions == null) {
@@ -59,7 +67,12 @@ public final class CompositeException extends RuntimeException {
     }
     
 
-    public CompositeException(Collection<? extends Throwable> errors) {
+    /**
+     * Constructs a CompositeException with the given array of Throwables as the
+     * list of suppressed exceptions.
+     * @param errors the Throwables to have as initially suppressed exceptions
+     */
+    public CompositeException(Iterable<? extends Throwable> errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
         List<Throwable> localExceptions = new ArrayList<Throwable>();
         if (errors != null) {
@@ -281,6 +294,11 @@ public final class CompositeException extends RuntimeException {
             }
         }
     }
+    
+    /**
+     * Returns the number of suppressed exceptions.
+     * @return the number of suppressed exceptions
+     */
     public int size() {
         return exceptions.size();
     }

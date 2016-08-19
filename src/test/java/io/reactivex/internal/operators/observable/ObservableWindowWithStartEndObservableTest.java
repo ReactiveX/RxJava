@@ -211,12 +211,12 @@ public class ObservableWindowWithStartEndObservableTest {
         open.onNext(1);
         source.onNext(1);
         
-        assertTrue(open.hasSubscribers());
-        assertTrue(close.hasSubscribers());
+        assertTrue(open.hasObservers());
+        assertTrue(close.hasObservers());
 
         close.onNext(1);
         
-        assertFalse(close.hasSubscribers());
+        assertFalse(close.hasObservers());
         
         source.onComplete();
         
@@ -225,8 +225,8 @@ public class ObservableWindowWithStartEndObservableTest {
         ts.assertValueCount(1);
         
         assertFalse(ts.isCancelled());
-        assertFalse(open.hasSubscribers());
-        assertFalse(close.hasSubscribers());
+        assertFalse(open.hasObservers());
+        assertFalse(close.hasObservers());
     }
     
     @Test
@@ -247,14 +247,14 @@ public class ObservableWindowWithStartEndObservableTest {
         
         open.onNext(1);
         
-        assertTrue(open.hasSubscribers());
-        assertTrue(close.hasSubscribers());
+        assertTrue(open.hasObservers());
+        assertTrue(close.hasObservers());
 
         ts.dispose();
         
         // FIXME subject has subscribers because of the open window
-        assertTrue(open.hasSubscribers());
+        assertTrue(open.hasObservers());
         // FIXME subject has subscribers because of the open window
-        assertTrue(close.hasSubscribers());
+        assertTrue(close.hasObservers());
     }
 }

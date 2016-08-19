@@ -19,11 +19,12 @@ import org.reactivestreams.Subscription;
 
 import io.reactivex.functions.Action;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.functions.*;
 
 /**
  * Utility class to help create disposables by wrapping
  * other types.
+ * @since 2.0
  */
 public final class Disposables {
     /** Utility class. */
@@ -31,30 +32,74 @@ public final class Disposables {
         throw new IllegalStateException("No instances!");
     }
     
+    /**
+     * Construct a Disposable by wrapping a Runnable that is
+     * executed exactly once when the Disposable is disposed.
+     * @param run the Runnable to wrap
+     * @return the new Disposable instance
+     */
     public static Disposable from(Runnable run) {
+        Objects.requireNonNull(run, "run is null");
         return new RunnableDisposable(run);
     }
 
+    /**
+     * Construct a Disposable by wrapping a Action that is
+     * executed exactly once when the Disposable is disposed.
+     * @param run the Action to wrap
+     * @return the new Disposable instance
+     */
     public static Disposable from(Action run) {
+        Objects.requireNonNull(run, "run is null");
         return new ActionDisposable(run);
     }
 
+    /**
+     * Construct a Disposable by wrapping a Future that is
+     * cancelled exactly once when the Disposable is disposed.
+     * @param future the Future to wrap
+     * @return the new Disposable instance
+     */
     public static Disposable from(Future<?> future) {
+        Objects.requireNonNull(future, "future is null");
         return from(future, true);
     }
 
+    /**
+     * Construct a Disposable by wrapping a Runnable that is
+     * executed exactly once when the Disposable is disposed.
+     * @param future the Runnable to wrap
+     * @param allowInterrupt if true, the future cancel happens via Future.cancel(true)
+     * @return the new Disposable instance
+     */
     public static Disposable from(Future<?> future, boolean allowInterrupt) {
+        Objects.requireNonNull(future, "future is null");
         return new FutureDisposable(future, allowInterrupt);
     }
 
+    /**
+     * Construct a Disposable by wrapping a Subscription that is
+     * cancelled exactly once when the Disposable is disposed.
+     * @param subscription the Runnable to wrap
+     * @return the new Disposable instance
+     */
     public static Disposable from(Subscription subscription) {
+        Objects.requireNonNull(subscription, "subscription is null");
         return new SubscriptionDisposable(subscription);
     }
 
+    /**
+     * Returns a new, undisposed Disposable instance.
+     * @return a new, undisposed Disposable instance
+     */
     public static Disposable empty() {
         return from(Functions.EMPTY_RUNNABLE);
     }
 
+    /**
+     * Returns a new, disposed Disposable instance.
+     * @return a new, disposed Disposable instance
+     */
     public static Disposable disposed() {
         return EmptyDisposable.INSTANCE;
     }

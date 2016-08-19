@@ -25,8 +25,8 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 public class SerializedObserverTest {
@@ -375,18 +375,39 @@ public class SerializedObserverTest {
         AtomicInteger p2 = new AtomicInteger();
 
         o.onSubscribe(EmptySubscription.INSTANCE);
-        ResourceSubscriber<String> as1 = Subscribers.createResource(new Consumer<String>() {
+        ResourceSubscriber<String> as1 = new ResourceSubscriber<String>() {
             @Override
-            public void accept(String v) {
-                o.onNext(v);
+            public void onNext(String t) {
+                o.onNext(t);
             }
-        });
-        ResourceSubscriber<String> as2 = Subscribers.createResource(new Consumer<String>() {
+            
             @Override
-            public void accept(String v) {
-                o.onNext(v);
+            public void onError(Throwable t) {
+                RxJavaPlugins.onError(t);
             }
-        });
+            
+            @Override
+            public void onComplete() {
+                
+            }
+        };
+        
+        ResourceSubscriber<String> as2 = new ResourceSubscriber<String>() {
+            @Override
+            public void onNext(String t) {
+                o.onNext(t);
+            }
+            
+            @Override
+            public void onError(Throwable t) {
+                RxJavaPlugins.onError(t);
+            }
+            
+            @Override
+            public void onComplete() {
+                
+            }
+        };
         
         infinite(p1).subscribe(as1);
         infinite(p2).subscribe(as2);

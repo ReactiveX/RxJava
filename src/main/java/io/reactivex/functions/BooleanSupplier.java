@@ -13,6 +13,14 @@
 
 package io.reactivex.functions;
 
+/**
+ * A functional interface (callback) that returns a boolean value.
+ */
 public interface BooleanSupplier {
+    /**
+     * Returns a boolean value.
+     * @return a boolean value
+     * @throws Exception on error
+     */
     boolean getAsBoolean() throws Exception; // NOPMD
 }

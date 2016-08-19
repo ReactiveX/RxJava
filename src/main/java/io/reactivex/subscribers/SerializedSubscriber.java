@@ -43,14 +43,26 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
     
     volatile boolean done;
     
+    /**
+     * Construct a SerializedSubscriber by wrapping the given actual Subscriber.
+     * @param actual the actual Subscriber, not null (not verified)
+     */
     public SerializedSubscriber(Subscriber<? super T> actual) {
         this(actual, false);
     }
     
+    /**
+     * Construct a SerializedSubscriber by wrapping the given actual Observer and
+     * optionally delaying the errors till all regular values have been emitted
+     * from the internal buffer.
+     * @param actual the actual Subscriber, not null (not verified)
+     * @param delayError if true, errors are emitted after regular values have been emitted
+     */
     public SerializedSubscriber(Subscriber<? super T> actual, boolean delayError) {
         this.actual = actual;
         this.delayError = delayError;
     }
+    
     @Override
     public void onSubscribe(Subscription s) {
         if (SubscriptionHelper.validate(this.subscription, s)) {

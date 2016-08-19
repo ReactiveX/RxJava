@@ -87,45 +87,91 @@ public final class RxJavaPlugins {
         return lockdown;
     }
     
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static Function<Scheduler, Scheduler> getComputationSchedulerHandler() {
         return onComputationHandler;
     }
     
+    /**
+     * Returns the a hook consumer.
+     * @return the hook consumer, may be null
+     */
     public static Consumer<Throwable> getErrorHandler() {
         return errorHandler;
     }
     
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static Function<Scheduler, Scheduler> getInitComputationSchedulerHandler() {
         return onInitComputationHandler;
     }
 
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static Function<Scheduler, Scheduler> getInitIoSchedulerHandler() {
         return onInitIoHandler;
     }
 
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static Function<Scheduler, Scheduler> getInitNewThreadSchedulerHandler() {
         return onInitNewThreadHandler;
     }
 
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static Function<Scheduler, Scheduler> getInitSingleSchedulerHandler() {
         return onInitSingleHandler;
     }
 
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static Function<Scheduler, Scheduler> getIoSchedulerHandler() {
         return onIoHandler;
     }
 
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static Function<Scheduler, Scheduler> getNewThreadSchedulerHandler() {
         return onNewThreadHandler;
     }
 
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static Function<Runnable, Runnable> getScheduleHandler() {
         return onScheduleHandler;
     }
+
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static Function<Scheduler, Scheduler> getSingleSchedulerHandler() {
         return onSingleHandler;
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param defaultScheduler the hook's input value
+     * @return the value returned by the hook
+     */
     public static Scheduler initComputationScheduler(Scheduler defaultScheduler) {
         Function<Scheduler, Scheduler> f = onInitComputationHandler;
         if (f == null) {
@@ -134,6 +180,11 @@ public final class RxJavaPlugins {
         return apply(f, defaultScheduler); // JIT will skip this
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param defaultScheduler the hook's input value
+     * @return the value returned by the hook
+     */
     public static Scheduler initIoScheduler(Scheduler defaultScheduler) {
         Function<Scheduler, Scheduler> f = onInitIoHandler;
         if (f == null) {
@@ -142,6 +193,11 @@ public final class RxJavaPlugins {
         return apply(f, defaultScheduler);
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param defaultScheduler the hook's input value
+     * @return the value returned by the hook
+     */
     public static Scheduler initNewThreadScheduler(Scheduler defaultScheduler) {
         Function<Scheduler, Scheduler> f = onInitNewThreadHandler;
         if (f == null) {
@@ -150,6 +206,11 @@ public final class RxJavaPlugins {
         return apply(f, defaultScheduler);
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param defaultScheduler the hook's input value
+     * @return the value returned by the hook
+     */
     public static Scheduler initSingleScheduler(Scheduler defaultScheduler) {
         Function<Scheduler, Scheduler> f = onInitSingleHandler;
         if (f == null) {
@@ -158,6 +219,11 @@ public final class RxJavaPlugins {
         return apply(f, defaultScheduler);
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param defaultScheduler the hook's input value
+     * @return the value returned by the hook
+     */
     public static Scheduler onComputationScheduler(Scheduler defaultScheduler) {
         Function<Scheduler, Scheduler> f = onComputationHandler;
         if (f == null) {
@@ -194,6 +260,11 @@ public final class RxJavaPlugins {
         handler.uncaughtException(Thread.currentThread(), error);
     }
     
+    /**
+     * Calls the associated hook function.
+     * @param defaultScheduler the hook's input value
+     * @return the value returned by the hook
+     */
     public static Scheduler onIoScheduler(Scheduler defaultScheduler) {
         Function<Scheduler, Scheduler> f = onIoHandler;
         if (f == null) {
@@ -202,6 +273,11 @@ public final class RxJavaPlugins {
         return apply(f, defaultScheduler);
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param defaultScheduler the hook's input value
+     * @return the value returned by the hook
+     */
     public static Scheduler onNewThreadScheduler(Scheduler defaultScheduler) {
         Function<Scheduler, Scheduler> f = onNewThreadHandler;
         if (f == null) {
@@ -223,6 +299,11 @@ public final class RxJavaPlugins {
         return apply(f, run);
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param defaultScheduler the hook's input value
+     * @return the value returned by the hook
+     */
     public static Scheduler onSingleScheduler(Scheduler defaultScheduler) {
         Function<Scheduler, Scheduler> f = onSingleHandler;
         if (f == null) {
@@ -263,6 +344,10 @@ public final class RxJavaPlugins {
         setOnCompletableSubscribe(null);
     }
 
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
     public static void setComputationSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -270,6 +355,10 @@ public final class RxJavaPlugins {
         onComputationHandler = handler;
     }
 
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
     public static void setErrorHandler(Consumer<Throwable> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -277,6 +366,10 @@ public final class RxJavaPlugins {
         errorHandler = handler;
     }
 
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
     public static void setInitComputationSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -284,6 +377,10 @@ public final class RxJavaPlugins {
         onInitComputationHandler = handler;
     }
 
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
     public static void setInitIoSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -291,6 +388,10 @@ public final class RxJavaPlugins {
         onInitIoHandler = handler;
     }
 
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
     public static void setInitNewThreadSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -298,7 +399,10 @@ public final class RxJavaPlugins {
         onInitNewThreadHandler = handler;
     }
 
-    
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
     public static void setInitSingleSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -306,6 +410,10 @@ public final class RxJavaPlugins {
         onInitSingleHandler = handler;
     }
 
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
     public static void setIoSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -313,6 +421,10 @@ public final class RxJavaPlugins {
         onIoHandler = handler;
     }
 
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
     public static void setNewThreadSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -320,6 +432,10 @@ public final class RxJavaPlugins {
         onNewThreadHandler = handler;
     }
 
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
     public static void setScheduleHandler(Function<Runnable, Runnable> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -327,6 +443,10 @@ public final class RxJavaPlugins {
         onScheduleHandler = handler;
     }
 
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     */
     public static void setSingleSchedulerHandler(Function<Scheduler, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -341,44 +461,80 @@ public final class RxJavaPlugins {
         lockdown = false;
     }
 
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static Function<Completable, Completable> getOnCompletableAssembly() {
         return onCompletableAssembly;
     }
     
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     public static BiFunction<Completable, CompletableObserver, CompletableObserver> getOnCompletableSubscribe() {
         return onCompletableSubscribe;
     }
     
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     @SuppressWarnings("rawtypes")
     public static Function<Flowable, Flowable> getOnFlowableAssembly() {
         return onFlowableAssembly;
     }
     
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     @SuppressWarnings("rawtypes")
     public static BiFunction<Flowable, Subscriber, Subscriber> getOnFlowableSubscribe() {
         return onFlowableSubscribe;
     }
     
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     @SuppressWarnings("rawtypes")
     public static Function<Single, Single> getOnSingleAssembly() {
         return onSingleAssembly;
     }
     
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     @SuppressWarnings("rawtypes")
     public static BiFunction<Single, SingleObserver, SingleObserver> getOnSingleSubscribe() {
         return onSingleSubscribe;
     }
     
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     @SuppressWarnings("rawtypes")
     public static Function<Observable, Observable> getOnObservableAssembly() {
         return onObservableAssembly;
     }
     
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
     @SuppressWarnings("rawtypes")
     public static BiFunction<Observable, Observer, Observer> getOnObservableSubscribe() {
         return onObservableSubscribe;
     }
     
+    /**
+     * Sets the specific hook function.
+     * @param onCompletableAssembly the hook function to set, null allowed
+     */
     public static void setOnCompletableAssembly(Function<Completable, Completable> onCompletableAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -386,6 +542,10 @@ public final class RxJavaPlugins {
         RxJavaPlugins.onCompletableAssembly = onCompletableAssembly;
     }
     
+    /**
+     * Sets the specific hook function.
+     * @param onCompletableSubscribe the hook function to set, null allowed
+     */
     public static void setOnCompletableSubscribe(
             BiFunction<Completable, CompletableObserver, CompletableObserver> onCompletableSubscribe) {
         if (lockdown) {
@@ -394,6 +554,10 @@ public final class RxJavaPlugins {
         RxJavaPlugins.onCompletableSubscribe = onCompletableSubscribe;
     }
     
+    /**
+     * Sets the specific hook function.
+     * @param onFlowableAssembly the hook function to set, null allowed
+     */
     @SuppressWarnings("rawtypes")
     public static void setOnFlowableAssembly(Function<Flowable, Flowable> onFlowableAssembly) {
         if (lockdown) {
@@ -402,6 +566,10 @@ public final class RxJavaPlugins {
         RxJavaPlugins.onFlowableAssembly = onFlowableAssembly;
     }
     
+    /**
+     * Sets the specific hook function.
+     * @param onFlowableSubscribe the hook function to set, null allowed
+     */
     @SuppressWarnings("rawtypes")
     public static void setOnFlowableSubscribe(BiFunction<Flowable, Subscriber, Subscriber> onFlowableSubscribe) {
         if (lockdown) {
@@ -410,6 +578,10 @@ public final class RxJavaPlugins {
         RxJavaPlugins.onFlowableSubscribe = onFlowableSubscribe;
     }
     
+    /**
+     * Sets the specific hook function.
+     * @param onObservableAssembly the hook function to set, null allowed
+     */
     @SuppressWarnings("rawtypes")
     public static void setOnObservableAssembly(Function<Observable, Observable> onObservableAssembly) {
         if (lockdown) {
@@ -418,6 +590,10 @@ public final class RxJavaPlugins {
         RxJavaPlugins.onObservableAssembly = onObservableAssembly;
     }
     
+    /**
+     * Sets the specific hook function.
+     * @param onObservableSubscribe the hook function to set, null allowed
+     */
     @SuppressWarnings("rawtypes")
     public static void setOnObservableSubscribe(
             BiFunction<Observable, Observer, Observer> onObservableSubscribe) {
@@ -427,6 +603,10 @@ public final class RxJavaPlugins {
         RxJavaPlugins.onObservableSubscribe = onObservableSubscribe;
     }
     
+    /**
+     * Sets the specific hook function.
+     * @param onSingleAssembly the hook function to set, null allowed
+     */
     @SuppressWarnings("rawtypes")
     public static void setOnSingleAssembly(Function<Single, Single> onSingleAssembly) {
         if (lockdown) {
@@ -435,6 +615,10 @@ public final class RxJavaPlugins {
         RxJavaPlugins.onSingleAssembly = onSingleAssembly;
     }
     
+    /**
+     * Sets the specific hook function.
+     * @param onSingleSubscribe the hook function to set, null allowed
+     */
     @SuppressWarnings("rawtypes")
     public static void setOnSingleSubscribe(BiFunction<Single, SingleObserver, SingleObserver> onSingleSubscribe) {
         if (lockdown) {
@@ -443,6 +627,13 @@ public final class RxJavaPlugins {
         RxJavaPlugins.onSingleSubscribe = onSingleSubscribe;
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @param subscriber the subscriber
+     * @return the value returned by the hook
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Subscriber<? super T> onSubscribe(Flowable<T> source, Subscriber<? super T> subscriber) {
         BiFunction<Flowable, Subscriber, Subscriber> f = onFlowableSubscribe;
@@ -452,6 +643,13 @@ public final class RxJavaPlugins {
         return subscriber;
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @param observer the observer
+     * @return the value returned by the hook
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Observer<? super T> onSubscribe(Observable<T> source, Observer<? super T> observer) {
         BiFunction<Observable, Observer, Observer> f = onObservableSubscribe;
@@ -461,23 +659,42 @@ public final class RxJavaPlugins {
         return observer;
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @param observer the observer
+     * @return the value returned by the hook
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> SingleObserver<? super T> onSubscribe(Single<T> source, SingleObserver<? super T> subscriber) {
+    public static <T> SingleObserver<? super T> onSubscribe(Single<T> source, SingleObserver<? super T> observer) {
         BiFunction<Single, SingleObserver, SingleObserver> f = onSingleSubscribe;
         if (f != null) {
-            return apply(f, source, subscriber);
+            return apply(f, source, observer);
         }
-        return subscriber;
+        return observer;
     }
 
-    public static CompletableObserver onSubscribe(Completable source, CompletableObserver subscriber) {
+    /**
+     * Calls the associated hook function.
+     * @param source the hook's input value
+     * @param observer the observer
+     * @return the value returned by the hook
+     */
+    public static CompletableObserver onSubscribe(Completable source, CompletableObserver observer) {
         BiFunction<Completable, CompletableObserver, CompletableObserver> f = onCompletableSubscribe;
         if (f != null) {
-            return apply(f, source, subscriber);
+            return apply(f, source, observer);
         }
-        return subscriber;
+        return observer;
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @return the value returned by the hook
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Flowable<T> onAssembly(Flowable<T> source) {
         Function<Flowable, Flowable> f = onFlowableAssembly;
@@ -487,6 +704,12 @@ public final class RxJavaPlugins {
         return source;
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @return the value returned by the hook
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Observable<T> onAssembly(Observable<T> source) {
         Function<Observable, Observable> f = onObservableAssembly;
@@ -496,6 +719,12 @@ public final class RxJavaPlugins {
         return source;
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @return the value returned by the hook
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Single<T> onAssembly(Single<T> source) {
         Function<Single, Single> f = onSingleAssembly;
@@ -505,6 +734,11 @@ public final class RxJavaPlugins {
         return source;
     }
 
+    /**
+     * Calls the associated hook function.
+     * @param source the hook's input value
+     * @return the value returned by the hook
+     */
     public static Completable onAssembly(Completable source) {
         Function<Completable, Completable> f = onCompletableAssembly;
         if (f != null) {

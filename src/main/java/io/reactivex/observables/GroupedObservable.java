@@ -14,19 +14,38 @@ package io.reactivex.observables;
 
 import io.reactivex.Observable;
 
+/**
+ * An {@link Observable} that has been grouped by key, the value of which can be obtained with {@link #getKey()}.
+ * <p>
+ * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
+ * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
+ * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they
+ * may discard their buffers by applying an operator like {@link Observable#take take}{@code (0)} to them.
+ * 
+ * @param <K>
+ *            the type of the key
+ * @param <T>
+ *            the type of the items emitted by the {@code GroupedObservable}
+ * @see Observable#groupBy(io.reactivex.functions.Function)
+ * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX documentation: GroupBy</a>
+ */
 public abstract class GroupedObservable<K, T> extends Observable<T> {
     
     final K key;
     
+    /**
+     * Constructs a GroupedObservable with the given key.
+     * @param key the key
+     */
     protected GroupedObservable(K key) {
         this.key = key;
     }
     
-    // FIXME short one or long one?
-    public K key() {
-        return key;
-    }
-    
+    /**
+     * Returns the key that identifies the group of items emitted by this {@code GroupedObservable}
+     * 
+     * @return the key that the items emitted by this {@code GroupedObservable} were grouped by
+     */
     public K getKey() {
         return key;
     }

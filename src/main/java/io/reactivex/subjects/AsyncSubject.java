@@ -72,7 +72,7 @@ public final class AsyncSubject<T> extends Subject<T> {
     }
     
     @Override
-    public boolean hasSubscribers() {
+    public boolean hasObservers() {
         return state.subscribers.get().length != 0;
     }
     

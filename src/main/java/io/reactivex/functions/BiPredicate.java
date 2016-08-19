@@ -13,7 +13,19 @@
 
 package io.reactivex.functions;
 
+/**
+ * A functional interface (callback) that returns true or false for the given input values.
+ * @param <T1> the first value
+ * @param <T2> the second value
+ */
 public interface BiPredicate<T1, T2> {
     
+    /**
+     * Test the given input values and return a boolean.
+     * @param t1 the first value
+     * @param t2 the second value
+     * @return the boolean result
+     * @throws Exception on error
+     */
     boolean test(T1 t1, T2 t2) throws Exception;
 }

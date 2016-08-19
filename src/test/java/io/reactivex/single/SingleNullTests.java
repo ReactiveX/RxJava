@@ -789,7 +789,7 @@ public class SingleNullTests {
     }
     @Test(expected = NullPointerException.class)
     public void subscribeSubscriberNull() {
-        just1.subscribe((Subscriber<Integer>)null);
+        just1.toFlowable().subscribe((Subscriber<Integer>)null);
     }
     
     @Test(expected = NullPointerException.class)

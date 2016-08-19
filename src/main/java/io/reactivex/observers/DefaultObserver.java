@@ -17,6 +17,13 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
+/**
+ * Abstract base implementation of an Observer with support for cancelling a
+ * subscription via {@link #cancel()} (synchronously) and calls {@link #onStart()}
+ * when the subscription happens.
+ * 
+ * @param <T> the value type
+ */
 public abstract class DefaultObserver<T> implements Observer<T> {
     private Disposable s;
     @Override
@@ -27,6 +34,9 @@ public abstract class DefaultObserver<T> implements Observer<T> {
         }
     }
     
+    /**
+     * Cancels the upstream's disposable.
+     */
     protected final void cancel() {
         s.dispose();
     }

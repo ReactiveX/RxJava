@@ -26,24 +26,49 @@ public final class Timed<T> {
     final T value;
     final long time;
     final TimeUnit unit;
+    
+    /**
+     * Constructs a Timed instance with the given value and time information.
+     * @param value the value to hold
+     * @param time the time to hold
+     * @param unit the time unit, not null
+     * @throws NullPointerException if unit is null
+     */
     public Timed(T value, long time, TimeUnit unit) {
         this.value = value;
         this.time = time;
         this.unit = Objects.requireNonNull(unit, "unit is null");
     }
     
+    /**
+     * Returns the contained value.
+     * @return the contained value
+     */
     public T value() {
         return value;
     }
     
+    /**
+     * Returns the time unit of the contained time.
+     * @return the time unit of the contained time
+     */
     public TimeUnit unit() {
         return unit;
     }
     
+    /**
+     * Returns the time value.
+     * @return the time value
+     */
     public long time() {
         return time;
     }
     
+    /**
+     * Returns the contained time value in the time unit specified
+     * @param unit the time unt
+     * @return the converted time
+     */
     public long time(TimeUnit unit) {
         return unit.convert(time, this.unit);
     }

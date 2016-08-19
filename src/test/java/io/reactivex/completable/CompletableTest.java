@@ -2589,7 +2589,7 @@ public class CompletableTest {
     public void subscribeNbpSubscriberNormal() {
         TestObserver<Object> ts = new TestObserver<Object>();
         
-        normal.completable.subscribe(ts);
+        normal.completable.toObservable().subscribe(ts);
         
         ts.assertComplete();
         ts.assertNoValues();
@@ -2600,7 +2600,7 @@ public class CompletableTest {
     public void subscribeNbpSubscriberError() {
         TestObserver<Object> ts = new TestObserver<Object>();
         
-        error.completable.subscribe(ts);
+        error.completable.toObservable().subscribe(ts);
         
         ts.assertNotComplete();
         ts.assertNoValues();
@@ -2642,12 +2642,12 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void subscribeSubscriberNull() {
-        normal.completable.subscribe((Subscriber<Object>)null);
+        normal.completable.toFlowable().subscribe((Subscriber<Object>)null);
     }
     
     @Test(expected = NullPointerException.class)
     public void subscribeNbpSubscriberNull() {
-        normal.completable.subscribe((Observer<Object>)null);
+        normal.completable.toObservable().subscribe((Observer<Object>)null);
     }
     
     @Test(expected = NullPointerException.class)
@@ -2659,7 +2659,7 @@ public class CompletableTest {
     public void subscribeSubscriberNormal() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
-        normal.completable.subscribe(ts);
+        normal.completable.toFlowable().subscribe(ts);
         
         ts.assertComplete();
         ts.assertNoValues();
@@ -2670,7 +2670,7 @@ public class CompletableTest {
     public void subscribeSubscriberError() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         
-        error.completable.subscribe(ts);
+        error.completable.toFlowable().subscribe(ts);
         
         ts.assertNotComplete();
         ts.assertNoValues();
@@ -3521,7 +3521,7 @@ public class CompletableTest {
             public Completable apply(Integer t) {
                 return null;
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).<Integer>toFlowable().subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -3664,7 +3664,7 @@ public class CompletableTest {
     @Test
     public void andThenSingleNever() {
         TestSubscriber<String> ts = new TestSubscriber<String>(0);
-        Completable.never().andThen(Single.just("foo")).subscribe(ts);
+        Completable.never().andThen(Single.just("foo")).toFlowable().subscribe(ts);
         ts.request(1);
         ts.assertNoValues();
         ts.assertNotTerminated();
@@ -3683,7 +3683,7 @@ public class CompletableTest {
                     s.onSuccess("foo");
                 }
             })
-            .subscribe(ts);
+            .toFlowable().subscribe(ts);
         ts.assertNoValues();
         ts.assertError(e);
         Assert.assertFalse("Should not have subscribed to single when completable errors", hasRun.get());
@@ -3693,7 +3693,7 @@ public class CompletableTest {
     public void andThenSingleSubscribeOn() {
         TestSubscriber<String> ts = new TestSubscriber<String>(0);
         TestScheduler scheduler = new TestScheduler();
-        Completable.complete().andThen(Single.just("foo").delay(1, TimeUnit.SECONDS, scheduler)).subscribe(ts);
+        Completable.complete().andThen(Single.just("foo").delay(1, TimeUnit.SECONDS, scheduler)).toFlowable().subscribe(ts);
         
         ts.request(1);
         ts.assertNoValues();
@@ -4033,7 +4033,7 @@ public class CompletableTest {
             public Completable apply(Integer t) {
                 throw new TestException();
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).<Integer>toFlowable().subscribe(ts);
         
         verify(onDispose).accept(1);
         
@@ -4064,7 +4064,7 @@ public class CompletableTest {
             public Completable apply(Integer t) {
                 throw new TestException();
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).<Integer>toFlowable().subscribe(ts);
         
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -4098,7 +4098,7 @@ public class CompletableTest {
             public Completable apply(Integer t) {
                 return null;
             }
-        }, onDispose).subscribe(ts);
+        }, onDispose).<Integer>toFlowable().subscribe(ts);
         
         verify(onDispose).accept(1);
         
@@ -4203,7 +4203,7 @@ public class CompletableTest {
                 s.onComplete();
             }
         });
-        completable.subscribe(ts);
+        completable.<String>toFlowable().subscribe(ts);
 
         verify(onStart, times(1)).apply(eq(completable), any(CompletableObserver.class));
     }
@@ -4233,7 +4233,7 @@ public class CompletableTest {
             }
         };
         
-        normal.completable.subscribe(ts);
+        normal.completable.<Object>toFlowable().subscribe(ts);
         
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -4268,7 +4268,7 @@ public class CompletableTest {
             public boolean test(Throwable t) {
                 throw new TestException("Forced inner failure");
             }
-        }).subscribe(ts);
+        }).<String>toFlowable().subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNotComplete();
@@ -4457,7 +4457,7 @@ public class CompletableTest {
     @Test
     public void andThenSingle() {
         TestSubscriber<String> ts = new TestSubscriber<String>(0);
-        Completable.complete().andThen(Single.just("foo")).subscribe(ts);
+        Completable.complete().andThen(Single.just("foo")).toFlowable().subscribe(ts);
         ts.request(1);
         ts.assertValue("foo");
         ts.assertComplete();

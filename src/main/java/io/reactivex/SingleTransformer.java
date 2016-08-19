@@ -15,6 +15,12 @@ package io.reactivex;
 
 import io.reactivex.functions.Function;
 
+/**
+ * Interface to compose Singles.
+ *
+ * @param <Upstream> the upstream value type
+ * @param <Downstream> the downstream value type
+ */
 public interface SingleTransformer<Upstream, Downstream> extends Function<Single<Upstream>, SingleSource<Downstream>> {
 
 }
