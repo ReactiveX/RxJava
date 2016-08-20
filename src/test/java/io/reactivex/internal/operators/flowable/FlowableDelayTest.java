@@ -765,7 +765,7 @@ public class FlowableDelayTest {
     
     @Test
     public void testErrorRunsBeforeOnNext() {
-        TestScheduler test = Schedulers.test();
+        TestScheduler test = new TestScheduler();
         
         PublishProcessor<Integer> ps = PublishProcessor.create();
         

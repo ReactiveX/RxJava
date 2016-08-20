@@ -760,7 +760,7 @@ public class FlowableReplayTest {
     
     @Test
     public void testTimedAndSizedTruncation() {
-        TestScheduler test = Schedulers.test();
+        TestScheduler test = new TestScheduler();
         SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, TimeUnit.MILLISECONDS, test);
         List<Integer> values = new ArrayList<Integer>();
         
