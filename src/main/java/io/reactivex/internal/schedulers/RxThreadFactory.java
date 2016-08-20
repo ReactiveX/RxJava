@@ -30,10 +30,7 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
     
     @Override
     public Thread newThread(Runnable r) {
-        StringBuilder nameBuilder = new StringBuilder();
-        nameBuilder.append(prefix)
-        .append('-')
-        .append(incrementAndGet());
+        StringBuilder nameBuilder = new StringBuilder(prefix).append('-').append(incrementAndGet());
         
         if (CREATE_TRACE) {
             nameBuilder.append("\r\n");

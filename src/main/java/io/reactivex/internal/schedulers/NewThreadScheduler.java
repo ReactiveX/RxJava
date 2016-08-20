@@ -23,7 +23,7 @@ import io.reactivex.Scheduler;
  */
 public final class NewThreadScheduler extends Scheduler {
 
-    private static final String THREAD_NAME_PREFIX = "RxNewThreadScheduler-";
+    private static final String THREAD_NAME_PREFIX = "RxNewThreadScheduler";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
     private static final NewThreadScheduler INSTANCE = new NewThreadScheduler();
 

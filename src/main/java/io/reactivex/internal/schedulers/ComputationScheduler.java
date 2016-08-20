@@ -30,7 +30,7 @@ public final class ComputationScheduler extends Scheduler {
     /** This will indicate no pool is active. */
     static final FixedSchedulerPool NONE = new FixedSchedulerPool(0);
     /** Manages a fixed number of workers. */
-    private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
+    private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
     /** 
      * Key to setting the maximum number of computation scheduler threads.
@@ -55,7 +55,7 @@ public final class ComputationScheduler extends Scheduler {
         }
         MAX_THREADS = max;
 
-        SHUTDOWN_WORKER = new PoolWorker(new RxThreadFactory("RxComputationShutdown-"));
+        SHUTDOWN_WORKER = new PoolWorker(new RxThreadFactory("RxComputationShutdown"));
         SHUTDOWN_WORKER.dispose();
     }
 

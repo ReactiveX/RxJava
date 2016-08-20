@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
 
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
-    final static Executor executor = Executors.newFixedThreadPool(2, new RxThreadFactory("TestCustomPool-"));
+    final static Executor executor = Executors.newFixedThreadPool(2, new RxThreadFactory("TestCustomPool"));
     
     @Override
     protected Scheduler getScheduler() {
