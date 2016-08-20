@@ -248,7 +248,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @return true if this TestSubscriber received a subscription
      */
     public final boolean hasSubscription() {
-        return subscription != null;
+        return subscription.get() != null;
     }
     
     /**
@@ -577,7 +577,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @return this;
      */
     public final TestObserver<T> assertSubscribed() {
-        if (subscription == null) {
+        if (subscription.get() == null) {
             fail("Not subscribed!");
         }
         return this;
@@ -588,7 +588,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @return this;
      */
     public final TestObserver<T> assertNotSubscribed() {
-        if (subscription != null) {
+        if (subscription.get() != null) {
             fail("Subscribed!");
         } else
         if (!errors.isEmpty()) {
