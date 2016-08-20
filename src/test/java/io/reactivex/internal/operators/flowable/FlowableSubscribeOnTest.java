@@ -268,7 +268,7 @@ public class FlowableSubscribeOnTest {
     
     @Test
     public void cancelBeforeActualSubscribe() {
-        TestScheduler test = Schedulers.test();
+        TestScheduler test = new TestScheduler();
         
         TestSubscriber<Integer> ts = Flowable.just(1).hide()
                 .subscribeOn(test).test(Long.MAX_VALUE, 0, true);

@@ -793,7 +793,7 @@ public class FlowableObserveOnTest {
     
     @Test
     public void testErrorDelayed() {
-        TestScheduler s = Schedulers.test();
+        TestScheduler s = new TestScheduler();
         
         Flowable<Integer> source = Flowable.just(1, 2 ,3)
                 .concatWith(Flowable.<Integer>error(new TestException()));
@@ -845,8 +845,8 @@ public class FlowableObserveOnTest {
     @Test
     public void requestExactCompletesImmediately() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        
-        TestScheduler test = Schedulers.test();
+
+        TestScheduler test = new TestScheduler();
 
         Flowable.range(1, 10).observeOn(test).subscribe(ts);
 
@@ -869,7 +869,7 @@ public class FlowableObserveOnTest {
     public void fixedReplenishPattern() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        TestScheduler test = Schedulers.test();
+        TestScheduler test = new TestScheduler();
         
         final List<Long> requests = new ArrayList<Long>();
         

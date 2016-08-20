@@ -427,11 +427,11 @@ public class FlowableMergeTest {
 
     @Test
     public void testUnsubscribeAsFlowablesComplete() {
-        TestScheduler scheduler1 = Schedulers.test();
+        TestScheduler scheduler1 = new TestScheduler();
         AtomicBoolean os1 = new AtomicBoolean(false);
         Flowable<Long> o1 = createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
 
-        TestScheduler scheduler2 = Schedulers.test();
+        TestScheduler scheduler2 = new TestScheduler();
         AtomicBoolean os2 = new AtomicBoolean(false);
         Flowable<Long> o2 = createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
@@ -469,11 +469,11 @@ public class FlowableMergeTest {
     @Test
     public void testEarlyUnsubscribe() {
         for (int i = 0; i < 10; i++) {
-            TestScheduler scheduler1 = Schedulers.test();
+            TestScheduler scheduler1 = new TestScheduler();
             AtomicBoolean os1 = new AtomicBoolean(false);
             Flowable<Long> o1 = createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
 
-            TestScheduler scheduler2 = Schedulers.test();
+            TestScheduler scheduler2 = new TestScheduler();
             AtomicBoolean os2 = new AtomicBoolean(false);
             Flowable<Long> o2 = createFlowableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
@@ -1121,7 +1121,7 @@ public class FlowableMergeTest {
 
     @Test
     public void shouldNotCompleteIfThereArePendingScalarSynchronousEmissionsWhenTheLastInnerSubscriberCompletes() {
-        TestScheduler scheduler = Schedulers.test();
+        TestScheduler scheduler = new TestScheduler();
         Flowable<Long> source = Flowable.mergeDelayError(Flowable.just(1L), Flowable.timer(1, TimeUnit.SECONDS, scheduler).skip(1));
         TestSubscriber<Long> subscriber = new TestSubscriber<Long>(0L);
         source.subscribe(subscriber);

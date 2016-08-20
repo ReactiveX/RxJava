@@ -80,16 +80,6 @@ public final class Schedulers {
     public static Scheduler io() {
         return RxJavaPlugins.onIoScheduler(IO);
     }
-    
-    /**
-     * Creates and returns a {@code TestScheduler}, which is useful for debugging. It allows you to test
-     * schedules of events by manually advancing the clock at whatever pace you choose.
-     *
-     * @return a {@code TestScheduler} meant for debugging
-     */
-    public static TestScheduler test() { // NOPMD
-        return new TestScheduler();
-    }
 
     /**
      * Creates and returns a {@link Scheduler} that queues work on the current thread to be executed after the

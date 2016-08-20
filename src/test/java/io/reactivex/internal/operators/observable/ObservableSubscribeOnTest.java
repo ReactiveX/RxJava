@@ -184,7 +184,7 @@ public class ObservableSubscribeOnTest {
     
     @Test
     public void cancelBeforeActualSubscribe() {
-        TestScheduler test = Schedulers.test();
+        TestScheduler test = new TestScheduler();
         
         TestObserver<Integer> to = new TestObserver<Integer>();
         

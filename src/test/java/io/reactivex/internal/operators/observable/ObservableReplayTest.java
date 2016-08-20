@@ -564,7 +564,7 @@ public class ObservableReplayTest {
         Consumer<Integer> sourceNext = mock(Consumer.class);
         Action sourceCompleted = mock(Action.class);
         Action sourceUnsubscribed = mock(Action.class);
-        final TestScheduler mockScheduler = Schedulers.test();
+        final TestScheduler mockScheduler = new TestScheduler();
         
         Observer<Integer> mockObserverBeforeConnect = TestHelper.mockObserver();
         Observer<Integer> mockObserverAfterConnect = TestHelper.mockObserver();
@@ -742,7 +742,7 @@ public class ObservableReplayTest {
     
     @Test
     public void testTimedAndSizedTruncation() {
-        TestScheduler test = Schedulers.test();
+        TestScheduler test = new TestScheduler();
         SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, TimeUnit.MILLISECONDS, test);
         List<Integer> values = new ArrayList<Integer>();
         

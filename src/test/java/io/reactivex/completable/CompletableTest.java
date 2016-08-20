@@ -1139,7 +1139,7 @@ public class CompletableTest {
     
     @Test(timeout = 1000)
     public void timerTestScheduler() {
-        TestScheduler scheduler = Schedulers.test();
+        TestScheduler scheduler = new TestScheduler();
         
         Completable c = Completable.timer(250, TimeUnit.MILLISECONDS, scheduler);
         

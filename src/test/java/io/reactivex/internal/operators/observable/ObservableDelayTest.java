@@ -766,7 +766,7 @@ public class ObservableDelayTest {
     
     @Test
     public void testErrorRunsBeforeOnNext() {
-        TestScheduler test = Schedulers.test();
+        TestScheduler test = new TestScheduler();
         
         PublishSubject<Integer> ps = PublishSubject.create();
         

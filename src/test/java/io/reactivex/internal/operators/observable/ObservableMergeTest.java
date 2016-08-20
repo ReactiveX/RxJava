@@ -417,11 +417,11 @@ public class ObservableMergeTest {
 
     @Test
     public void testUnsubscribeAsObservablesComplete() {
-        TestScheduler scheduler1 = Schedulers.test();
+        TestScheduler scheduler1 = new TestScheduler();
         AtomicBoolean os1 = new AtomicBoolean(false);
         Observable<Long> o1 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
 
-        TestScheduler scheduler2 = Schedulers.test();
+        TestScheduler scheduler2 = new TestScheduler();
         AtomicBoolean os2 = new AtomicBoolean(false);
         Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
@@ -459,11 +459,11 @@ public class ObservableMergeTest {
     @Test
     public void testEarlyUnsubscribe() {
         for (int i = 0; i < 10; i++) {
-            TestScheduler scheduler1 = Schedulers.test();
+            TestScheduler scheduler1 = new TestScheduler();
             AtomicBoolean os1 = new AtomicBoolean(false);
             Observable<Long> o1 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
 
-            TestScheduler scheduler2 = Schedulers.test();
+            TestScheduler scheduler2 = new TestScheduler();
             AtomicBoolean os2 = new AtomicBoolean(false);
             Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
