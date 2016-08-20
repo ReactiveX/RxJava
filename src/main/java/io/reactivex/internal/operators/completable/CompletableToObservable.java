@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
-import io.reactivex.internal.subscribers.completable.ObserverCompletableObserver;
+import io.reactivex.disposables.Disposable;
 
 public class CompletableToObservable<T> extends Observable<T> {
 
@@ -25,8 +25,30 @@ public class CompletableToObservable<T> extends Observable<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        ObserverCompletableObserver<T> os = new ObserverCompletableObserver<T>(s);
-        source.subscribe(os);
+    protected void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(new ObserverCompletableObserver(observer));
+    }
+
+    static final class ObserverCompletableObserver implements CompletableObserver {
+        private final Observer<?> observer;
+
+        ObserverCompletableObserver(Observer<?> observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void onComplete() {
+            observer.onComplete();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            observer.onError(e);
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            observer.onSubscribe(d);
+        }
     }
 }
