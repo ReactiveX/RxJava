@@ -1748,18 +1748,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Converts an arbitrary Reactive-Streams ObservableSource into a Observable if not already a
-     * Observable.
+     * Converts an arbitrary Reactive-Streams Publisher into an Observable.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code fromObservableSource} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code fromPublisher} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type of the flow
-     * @param publisher the ObservableSource to convert
+     * @param publisher the Publisher to convert
      * @return the new Observable instance
      * @throws NullPointerException if publisher is null
      */
-    public static <T> Observable<T> fromObservableSource(final Publisher<? extends T> publisher) {
+    public static <T> Observable<T> fromPublisher(Publisher<? extends T> publisher) {
         Objects.requireNonNull(publisher, "publisher is null");
         return new ObservableFromPublisher<T>(publisher);
     }
