@@ -97,8 +97,8 @@ public final class Disposables {
     }
 
     /**
-     * Returns a new, disposed Disposable instance.
-     * @return a new, disposed Disposable instance
+     * Returns a disposed Disposable instance.
+     * @return a disposed Disposable instance
      */
     public static Disposable disposed() {
         return EmptyDisposable.INSTANCE;
