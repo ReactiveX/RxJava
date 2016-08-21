@@ -186,8 +186,4 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
             RxJavaPlugins.onError(e);
         }
     }
-    
-    /* test */ Observer<? super T> actual() {
-        return actual;
-    }
 }

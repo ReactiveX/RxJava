@@ -516,7 +516,7 @@ public class SafeObserverTest {
             }
         };
         SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(actual);
-        
-        assertSame(actual, s.actual());
+
+        assertSame(actual, s.actual);
     }
 }
