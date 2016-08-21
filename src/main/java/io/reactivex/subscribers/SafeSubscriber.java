@@ -192,8 +192,4 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
             RxJavaPlugins.onError(e);
         }
     }
-    
-    /* test */ Subscriber<? super T> actual() {
-        return actual;
-    }
 }
