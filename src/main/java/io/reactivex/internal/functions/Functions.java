@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
 
 /**
@@ -183,7 +184,14 @@ public enum Functions {
     public static <T> Consumer<T> emptyConsumer() {
         return (Consumer<T>)EMPTY_CONSUMER;
     }
-    
+
+    public static final Consumer<Throwable> ERROR_CONSUMER = new Consumer<Throwable>() {
+        @Override
+        public void accept(Throwable error) {
+            RxJavaPlugins.onError(error);
+        }
+    };
+
     public static final LongConsumer EMPTY_LONGCONSUMER = new LongConsumer() {
         @Override
         public void accept(long v) { }

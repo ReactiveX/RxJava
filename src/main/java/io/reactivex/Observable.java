@@ -4870,7 +4870,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @since 2.0
      */
     public final void blockingSubscribe(Consumer<? super T> onNext) {
-        ObservableBlockingSubscribe.subscribe(this, onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION);
+        ObservableBlockingSubscribe.subscribe(this, onNext, Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7478,7 +7478,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext) {
-        return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION);
+        return forEachWhile(onNext, Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -10043,7 +10043,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION, Functions.emptyConsumer());
+        return subscribe(Functions.emptyConsumer(), Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION, Functions.emptyConsumer());
     }
 
     /**
@@ -10065,7 +10065,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
-        return subscribe(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION, Functions.emptyConsumer());
+        return subscribe(onNext, Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION, Functions.emptyConsumer());
     }
 
     /**

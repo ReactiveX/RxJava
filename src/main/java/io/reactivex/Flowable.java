@@ -5410,7 +5410,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @since 2.0
      */
     public final void blockingSubscribe(Consumer<? super T> onNext) {
-        FlowableBlockingSubscribe.subscribe(this, onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION);
+        FlowableBlockingSubscribe.subscribe(this, onNext, Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -8496,7 +8496,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext) {
-        return forEachWhile(onNext, RxJavaPlugins.errorConsumer(), Functions.EMPTY_ACTION);
+        return forEachWhile(onNext, Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -11837,7 +11837,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer(), 
+        return subscribe(Functions.emptyConsumer(), Functions.ERROR_CONSUMER,
                 Functions.EMPTY_ACTION, FlowableInternalHelper.requestMax());
     }
 
@@ -11864,7 +11864,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
-        return subscribe(onNext, RxJavaPlugins.errorConsumer(), 
+        return subscribe(onNext, Functions.ERROR_CONSUMER,
                 Functions.EMPTY_ACTION, FlowableInternalHelper.requestMax());
     }
 

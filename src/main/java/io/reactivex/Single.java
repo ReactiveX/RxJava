@@ -2511,7 +2511,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), RxJavaPlugins.errorConsumer());
+        return subscribe(Functions.emptyConsumer(), Functions.ERROR_CONSUMER);
     }
     
     /**
@@ -2553,7 +2553,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Disposable subscribe(Consumer<? super T> onSuccess) {
-        return subscribe(onSuccess, RxJavaPlugins.errorConsumer());
+        return subscribe(onSuccess, Functions.ERROR_CONSUMER);
     }
     
     /**
