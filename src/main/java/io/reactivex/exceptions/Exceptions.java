@@ -52,7 +52,6 @@ public final class Exceptions {
      * Throws a particular {@code Throwable} only if it belongs to a set of "fatal" error varieties. These
      * varieties are as follows:
      * <ul>
-     * <li>{@code StackOverflowError}</li>
      * <li>{@code VirtualMachineError}</li>
      * <li>{@code ThreadDeath}</li>
      * <li>{@code LinkageError}</li>
@@ -68,9 +67,7 @@ public final class Exceptions {
      */
     public static void throwIfFatal(Throwable t) {
         // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
-        if (t instanceof StackOverflowError) {
-            throw (StackOverflowError) t;
-        } else if (t instanceof VirtualMachineError) {
+        if (t instanceof VirtualMachineError) {
             throw (VirtualMachineError) t;
         } else if (t instanceof ThreadDeath) {
             throw (ThreadDeath) t;
