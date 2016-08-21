@@ -19,6 +19,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.concurrent.TimeUnit;
 
@@ -171,5 +173,45 @@ public class OperatorThrottleFirstTest {
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
+    }
+
+    @Test
+    public void throttleWithoutAdvancingTimeOfTestScheduler() {
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        TestScheduler s = new TestScheduler();
+        PublishSubject<Integer> o = PublishSubject.create();
+        o.throttleFirst(500, TimeUnit.MILLISECONDS, s).subscribe(observer);
+
+        // send events without calling advanceTimeBy/To
+        o.onNext(1); // deliver
+        o.onNext(2); // skip
+        o.onNext(3); // skip
+        o.onCompleted();
+
+        verify(observer).onNext(1);
+        verify(observer).onCompleted();
+        verifyNoMoreInteractions(observer);
+    }
+
+    @Test
+    public void throttleWithTestSchedulerTimeOfZero() {
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        TestScheduler s = new TestScheduler();
+        PublishSubject<Integer> o = PublishSubject.create();
+        o.throttleFirst(500, TimeUnit.MILLISECONDS, s).subscribe(observer);
+
+        s.advanceTimeBy(0, TimeUnit.MILLISECONDS);
+
+        // send events while TestScheduler's time is 0
+        o.onNext(1); // deliver
+        o.onNext(2); // skip
+        o.onNext(3); // skip
+        o.onCompleted();
+
+        verify(observer).onNext(1);
+        verify(observer).onCompleted();
+        verifyNoMoreInteractions(observer);
     }
 }
