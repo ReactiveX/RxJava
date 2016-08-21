@@ -1694,7 +1694,10 @@ public abstract class Completable implements CompletableSource {
      */
     public final TestSubscriber<Void> test(boolean cancelled) {
         TestSubscriber<Void> ts = new TestSubscriber<Void>();
-        ts.dispose();
+
+        if (cancelled) {
+            ts.cancel();
+        }
         subscribe(new SubscriberCompletableObserver<Void>(ts));
         return ts;
     }
