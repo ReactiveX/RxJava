@@ -28,11 +28,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Scheduler that creates and caches a set of thread pools and reuses them if possible.
  */
 public final class IoScheduler extends Scheduler {
-    private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
+    private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler";
     private static final RxThreadFactory WORKER_THREAD_FACTORY =
             new RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
 
-    private static final String EVICTOR_THREAD_NAME_PREFIX = "RxCachedWorkerPoolEvictor-";
+    private static final String EVICTOR_THREAD_NAME_PREFIX = "RxCachedWorkerPoolEvictor";
     private static final RxThreadFactory EVICTOR_THREAD_FACTORY =
             new RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX);
 
@@ -47,7 +47,7 @@ public final class IoScheduler extends Scheduler {
         NONE = new CachedWorkerPool(0, null);
         NONE.shutdown();
 
-        SHUTDOWN_THREADWORKER = new ThreadWorker(new RxThreadFactory("RxCachedThreadSchedulerShutdown-"));
+        SHUTDOWN_THREADWORKER = new ThreadWorker(new RxThreadFactory("RxCachedThreadSchedulerShutdown"));
         SHUTDOWN_THREADWORKER.dispose();
     }
     

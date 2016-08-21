@@ -58,7 +58,7 @@ public enum SchedulerPoolFactory {
             if (curr != null && !curr.isShutdown()) {
                 return;
             }
-            ScheduledExecutorService next = Executors.newScheduledThreadPool(1, new RxThreadFactory("RxSchedulerPurge-"));
+            ScheduledExecutorService next = Executors.newScheduledThreadPool(1, new RxThreadFactory("RxSchedulerPurge"));
             if (PURGE_THREAD.compareAndSet(curr, next)) {
                 
                 next.scheduleAtFixedRate(new Runnable() {
