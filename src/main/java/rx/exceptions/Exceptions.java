@@ -65,7 +65,6 @@ public final class Exceptions {
      * <li>{@link OnErrorNotImplementedException}</li>
      * <li>{@link OnErrorFailedException}</li>
      * <li>{@link OnCompletedFailedException}</li>
-     * <li>{@code StackOverflowError}</li>
      * <li>{@code VirtualMachineError}</li>
      * <li>{@code ThreadDeath}</li>
      * <li>{@code LinkageError}</li>
@@ -88,9 +87,7 @@ public final class Exceptions {
             throw (OnCompletedFailedException) t;
         }
         // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
-        else if (t instanceof StackOverflowError) {
-            throw (StackOverflowError) t;
-        } else if (t instanceof VirtualMachineError) {
+        else if (t instanceof VirtualMachineError) {
             throw (VirtualMachineError) t;
         } else if (t instanceof ThreadDeath) {
             throw (ThreadDeath) t;
