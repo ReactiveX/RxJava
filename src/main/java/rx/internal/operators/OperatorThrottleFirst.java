@@ -38,7 +38,7 @@ public final class OperatorThrottleFirst<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         return new Subscriber<T>(subscriber) {
 
-            private long lastOnNext;
+            private long lastOnNext = -1;
 
             @Override
             public void onStart() {
@@ -48,7 +48,7 @@ public final class OperatorThrottleFirst<T> implements Operator<T, T> {
             @Override
             public void onNext(T v) {
                 long now = scheduler.now();
-                if (lastOnNext == 0 || now - lastOnNext >= timeInMilliseconds) {
+                if (lastOnNext == -1 || now - lastOnNext >= timeInMilliseconds) {
                     lastOnNext = now;
                     subscriber.onNext(v);
                 } 
