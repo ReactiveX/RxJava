@@ -13199,7 +13199,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         TestObserver<T> ts = new TestObserver<T>();
         // TODO implement ts.setInitialFusionMode(fusionMode);
         if (cancelled) {
-            ts.dispose();
+            ts.cancel();
         }
         subscribe(ts);
         return ts;
