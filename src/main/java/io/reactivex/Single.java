@@ -2893,7 +2893,11 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public final TestSubscriber<T> test(boolean cancelled) {
         TestSubscriber<T> ts = new TestSubscriber<T>();
-        ts.dispose();
+
+        if (cancelled) {
+            ts.cancel();
+        }
+
         toFlowable().subscribe(ts);
         return ts;
     }
