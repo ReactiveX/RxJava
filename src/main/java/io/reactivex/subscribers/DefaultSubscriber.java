@@ -39,7 +39,10 @@ public abstract class DefaultSubscriber<T> implements Subscriber<T> {
      * Requests from the upstream Subscription.
      */
     protected final void request(long n) {
-        s.request(n);
+        Subscription s = this.s;
+        if (s != null) {
+            s.request(n);
+        }
     }
     
     /**
@@ -47,6 +50,7 @@ public abstract class DefaultSubscriber<T> implements Subscriber<T> {
      */
     protected final void cancel() {
         s.cancel();
+        s = null;
     }
     /**
      * Called once the subscription has been set on this observer; override this
