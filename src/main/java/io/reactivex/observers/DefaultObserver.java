@@ -39,6 +39,7 @@ public abstract class DefaultObserver<T> implements Observer<T> {
      */
     protected final void cancel() {
         s.dispose();
+        s = null;
     }
     /**
      * Called once the subscription has been set on this observer; override this
