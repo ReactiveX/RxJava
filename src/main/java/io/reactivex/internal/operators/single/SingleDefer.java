@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -32,16 +33,10 @@ public final class SingleDefer<T> extends Single<T> {
         SingleSource<? extends T> next;
         
         try {
-            next = singleSupplier.call();
+            next = Objects.requireNonNull(singleSupplier.call(), "The singleSupplier returned a null SingleSource");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, s);
-            return;
-        }
-        
-        if (next == null) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(new NullPointerException("The Single supplied was null"));
             return;
         }
         

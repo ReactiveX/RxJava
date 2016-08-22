@@ -24,9 +24,9 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.Objects;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.completable.CompletableFromObservable;
-import io.reactivex.internal.operators.flowable.FlowableFromObservable;
+import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.operators.single.SingleFromObservable;
 import io.reactivex.internal.subscribers.observable.*;
@@ -115,9 +115,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
     
     /**
      * Returns the default 'island' size or capacity-increment hint for unbounded buffers.
+     * <p>Delegates to {@link Flowable#bufferSize} but is public for convenience.
+     * <p>The value can be overridden via system parameter {@code rx2.buffer-size}
+     * <em>before</em> the Flowable class is loaded.  
      * @return the default 'island' size or capacity-increment hint
      */
-    static int bufferSize() {
+    public static int bufferSize() {
         return Flowable.bufferSize();
     }
 
@@ -1229,10 +1232,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new ObservableSource instance with the specified concatenation behavior
      * @since 2.0
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatArrayEager(int maxConcurrency, int prefetch, ObservableSource<? extends T>... sources) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), maxConcurrency, prefetch, false);
     }
 
     /**
@@ -1332,10 +1335,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new ObservableSource instance with the specified concatenation behavior
      * @since 2.0
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int prefetch) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return wrap(sources).concatMapEager((Function)Functions.identity(), maxConcurrency, prefetch);
     }
 
     /**
@@ -1376,10 +1379,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new ObservableSource instance with the specified concatenation behavior
      * @since 2.0
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(Iterable<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int prefetch) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(), maxConcurrency, prefetch, false);
     }
 
     /**
@@ -3340,7 +3343,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> switchOnNext(ObservableSource<? extends ObservableSource<? extends T>> sources, int bufferSize) {
         Objects.requireNonNull(sources, "sources is null");
-        return new ObservableSwitchMap(sources, Functions.identity(), bufferSize);
+        return new ObservableSwitchMap(sources, Functions.identity(), bufferSize, false);
     }
 
     /**
@@ -3402,8 +3405,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> switchOnNextDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return switchOnNextDelayError(sources, bufferSize());
     }
     
     /**
@@ -3435,10 +3437,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
      * @since 2.0
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> switchOnNextDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(sources, "sources is null");
+        verifyPositive(prefetch, "prefetch");
+        return new ObservableSwitchMap(sources, Functions.identity(), prefetch, true);
     }
     
     /**
@@ -3605,11 +3609,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> wrap(ObservableSource<T> source) {
         Objects.requireNonNull(source, "source is null");
-        // TODO plugin wrapper?
         if (source instanceof Observable) {
             return (Observable<T>)source;
         }
-        return new ObservableFromUnsafeSource<T>(source);
+        return RxJavaPlugins.onAssembly(new ObservableFromUnsafeSource<T>(source));
     }
 
     /**
@@ -3704,7 +3707,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T, R> Observable<R> zip(ObservableSource<? extends ObservableSource<? extends T>> sources, final Function<? super T[], ? extends R> zipper) {
         Objects.requireNonNull(zipper, "zipper is null");
         Objects.requireNonNull(sources, "sources is null");
-        // FIXME don't want to fiddle with manual type inference, this will be inlined later anyway
         return new ObservableToList(sources, 16)
                 .flatMap(ObservableInternalHelper.zipIterable(zipper));
     }
@@ -5781,6 +5783,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <R> Observable<R> concatMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int prefetch) {
         Objects.requireNonNull(mapper, "mapper is null");
         verifyPositive(prefetch, "prefetch");
+        if (this instanceof ScalarCallable) {
+            @SuppressWarnings("unchecked")
+            T v = ((ScalarCallable<T>)this).call();
+            if (v == null) {
+                return empty();
+            }
+            return ObservableScalarXMap.scalarXMap(v, mapper);
+        }
         return new ObservableConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE);
     }
 
@@ -5828,6 +5838,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <R> Observable<R> concatMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
             int prefetch, boolean tillTheEnd) {
         verifyPositive(prefetch, "prefetch");
+        if (this instanceof ScalarCallable) {
+            @SuppressWarnings("unchecked")
+            T v = ((ScalarCallable<T>)this).call();
+            if (v == null) {
+                return empty();
+            }
+            return ObservableScalarXMap.scalarXMap(v, mapper);
+        }
         return new ObservableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY);
     }
 
@@ -5850,8 +5868,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEager(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return concatMapEager(mapper, Integer.MAX_VALUE, bufferSize());
     }
 
     /**
@@ -5876,8 +5893,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEager(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
             int maxConcurrency, int prefetch) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(mapper, "mapper is null");
+        verifyPositive(maxConcurrency, "maxConcurrency");
+        verifyPositive(prefetch, "prefetch");
+        return new ObservableConcatMapEager<T, R>(this, mapper, ErrorMode.IMMEDIATE, maxConcurrency, prefetch);
     }
     
     /**
@@ -5903,8 +5922,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEagerDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
             boolean tillTheEnd) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return concatMapEagerDelayError(mapper, Integer.MAX_VALUE, bufferSize(), tillTheEnd);
     }
     
     /**
@@ -5934,8 +5952,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEagerDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
             int maxConcurrency, int prefetch, boolean tillTheEnd) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return new ObservableConcatMapEager<T, R>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, maxConcurrency, prefetch);
     }
     
     /**
@@ -6203,7 +6220,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<T> delay(final Function<? super T, ? extends ObservableSource<U>> itemDelay) {
-        // TODO a more efficient implementation if necessary
         Objects.requireNonNull(itemDelay, "itemDelay is null");
         return flatMap(ObservableInternalHelper.itemDelay(itemDelay));
     }
@@ -6564,8 +6580,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> distinctUntilChanged(BiPredicate<? super T, ? super T> comparer) {
         Objects.requireNonNull(comparer, "comparer is null");
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return new ObservableDistinctUntilChanged<T>(this, comparer);
     }
 
     /**
@@ -7066,9 +7081,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
             throw new IllegalArgumentException("maxConcurrency > 0 required but it was " + maxConcurrency);
         }
         verifyPositive(bufferSize, "bufferSize");
-        if (this instanceof ObservableJust) {
-            ObservableJust<T> scalar = (ObservableJust<T>) this;
-            return scalar.scalarFlatMap(mapper);
+        if (this instanceof ScalarCallable) {
+            @SuppressWarnings("unchecked")
+            T v = ((ScalarCallable<T>)this).call();
+            if (v == null) {
+                return empty();
+            }
+            return ObservableScalarXMap.scalarXMap(v, mapper);
         }
         return new ObservableFlatMap<T, R>(this, mapper, delayErrors, maxConcurrency, bufferSize);
     }
@@ -8302,8 +8321,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> onTerminateDetach() {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return new ObservableDetach<T>(this);
     }
     
     /**
@@ -10279,7 +10297,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <R> Observable<R> switchMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
         Objects.requireNonNull(mapper, "mapper is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new ObservableSwitchMap<T, R>(this, mapper, bufferSize);
+        if (this instanceof ScalarCallable) {
+            @SuppressWarnings("unchecked")
+            T v = ((ScalarCallable<T>)this).call();
+            if (v == null) {
+                return empty();
+            }
+            return ObservableScalarXMap.scalarXMap(v, mapper);
+        }
+        return new ObservableSwitchMap<T, R>(this, mapper, bufferSize, false);
     }
 
     /**
@@ -10335,8 +10361,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @since 2.0
      */
     public final <R> Observable<R> switchMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(mapper, "mapper is null");
+        verifyPositive(bufferSize, "bufferSize");
+        if (this instanceof ScalarCallable) {
+            @SuppressWarnings("unchecked")
+            T v = ((ScalarCallable<T>)this).call();
+            if (v == null) {
+                return empty();
+            }
+            return ObservableScalarXMap.scalarXMap(v, mapper);
+        }
+        return new ObservableSwitchMap<T, R>(this, mapper, bufferSize, true);
     }
 
     /**
@@ -13197,7 +13232,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     public final TestObserver<T> test(int fusionMode, boolean cancelled) { // NoPMD
         TestObserver<T> ts = new TestObserver<T>();
-        // TODO implement ts.setInitialFusionMode(fusionMode);
+        ts.setInitialFusionMode(fusionMode);
         if (cancelled) {
             ts.dispose();
         }

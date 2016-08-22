@@ -59,9 +59,9 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
     }
     
     @Override
-    public void subscribeActual(Subscriber<? super R> s) {
+    protected void subscribeActual(Subscriber<? super R> s) {
         
-        if (ScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
+        if (FlowableScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
             return;
         }
         

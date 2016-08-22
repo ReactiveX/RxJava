@@ -395,7 +395,7 @@ public enum QueueDrainHelper {
      * spsc-linked-array if capacityHint is negative; in both cases, the
      * capacity is the absolute value of prefetch.
      * @param <T> the value type of the queue
-     * @param capacityHint the capacity hint
+     * @param capacityHint the capacity hint, negative value will create an array-based SPSC queue
      * @return the queue instance
      */
     public static <T> SimpleQueue<T> createQueue(int capacityHint) {

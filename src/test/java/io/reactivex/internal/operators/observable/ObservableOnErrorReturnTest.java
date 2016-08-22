@@ -23,8 +23,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 
@@ -187,7 +187,7 @@ public class ObservableOnErrorReturnTest {
 
         @Override
         public void subscribe(final Observer<? super String> NbpSubscriber) {
-            NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpSubscriber.onSubscribe(Disposables.empty());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

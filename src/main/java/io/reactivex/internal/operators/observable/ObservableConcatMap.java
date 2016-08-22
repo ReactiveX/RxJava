@@ -42,6 +42,11 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
     }
     @Override
     public void subscribeActual(Observer<? super U> s) {
+        
+        if (ObservableScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
+            return;
+        }
+        
         if (delayErrors == ErrorMode.IMMEDIATE) {
             SerializedObserver<U> ssub = new SerializedObserver<U>(s);
             source.subscribe(new SourceSubscriber<T, U>(ssub, mapper, bufferSize));

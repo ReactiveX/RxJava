@@ -13,7 +13,8 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import io.reactivex.*;

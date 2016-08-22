@@ -29,7 +29,6 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
@@ -84,7 +83,7 @@ public class ObservableConcatTest {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 // simulate what would happen in an NbpObservable
                 NbpObserver.onNext(odds);
                 NbpObserver.onNext(even);
@@ -347,7 +346,7 @@ public class ObservableConcatTest {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 // simulate what would happen in an NbpObservable
                 NbpObserver.onNext(Observable.unsafeCreate(w1));
                 NbpObserver.onNext(Observable.unsafeCreate(w2));
@@ -662,7 +661,7 @@ public class ObservableConcatTest {
 
             @Override
             public void subscribe(Observer<? super String> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
+                s.onSubscribe(Disposables.empty());
                 s.onNext("hello");
                 s.onComplete();
                 s.onComplete();

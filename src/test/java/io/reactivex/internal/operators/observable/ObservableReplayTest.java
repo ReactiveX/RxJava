@@ -28,10 +28,9 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.operators.observable.ObservableReplay.*;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.TestObserver;
@@ -802,7 +801,7 @@ public class ObservableReplayTest {
 
             @Override
             public void subscribe(final Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 new Thread(new Runnable() {
 
                     @Override
@@ -937,7 +936,7 @@ public class ObservableReplayTest {
         Observable<Integer> firehose = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t) {
-                t.onSubscribe(EmptyDisposable.INSTANCE);
+                t.onSubscribe(Disposables.empty());
                 for (int i = 0; i < m; i++) {
                     t.onNext(i);
                 }

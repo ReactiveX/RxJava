@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.observers.DefaultObserver;
 
 public class ObservableSerializeTest {
@@ -219,7 +219,7 @@ public class ObservableSerializeTest {
 
         @Override
         public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -270,7 +270,7 @@ public class ObservableSerializeTest {
 
         @Override
         public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             final NullPointerException npe = new NullPointerException();
             t = new Thread(new Runnable() {

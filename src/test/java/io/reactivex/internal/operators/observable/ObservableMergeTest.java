@@ -29,7 +29,6 @@ import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 
@@ -77,7 +76,7 @@ public class ObservableMergeTest {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 // simulate what would happen in an NbpObservable
                 NbpObserver.onNext(o1);
                 NbpObserver.onNext(o2);
@@ -359,7 +358,7 @@ public class ObservableMergeTest {
 
         @Override
         public void subscribe(Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             NbpObserver.onNext("hello");
             NbpObserver.onComplete();
         }
@@ -371,7 +370,7 @@ public class ObservableMergeTest {
 
         @Override
         public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -402,7 +401,7 @@ public class ObservableMergeTest {
 
         @Override
         public void subscribe(Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             for (String s : valuesToReturn) {
                 if (s == null) {
                     System.out.println("throwing exception");
@@ -562,7 +561,7 @@ public class ObservableMergeTest {
             public void subscribe(final Observer<? super Integer> s) {
                 Worker inner = Schedulers.newThread().createWorker();
                 final CompositeDisposable as = new CompositeDisposable();
-                as.add(EmptyDisposable.INSTANCE);
+                as.add(Disposables.empty());
                 as.add(inner);
                 
                 s.onSubscribe(as);
@@ -612,7 +611,7 @@ public class ObservableMergeTest {
             public void subscribe(final Observer<? super Integer> s) {
                 Worker inner = Schedulers.newThread().createWorker();
                 final CompositeDisposable as = new CompositeDisposable();
-                as.add(EmptyDisposable.INSTANCE);
+                as.add(Disposables.empty());
                 as.add(inner);
                 
                 s.onSubscribe(as);
@@ -1022,7 +1021,7 @@ public class ObservableMergeTest {
 
                     @Override
                     public void subscribe(Observer<? super Integer> s) {
-                        s.onSubscribe(EmptyDisposable.INSTANCE);
+                        s.onSubscribe(Disposables.empty());
                         if (i < 500) {
                             try {
                                 Thread.sleep(1);

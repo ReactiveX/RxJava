@@ -14,9 +14,22 @@
 package io.reactivex.internal.disposables;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.fuseable.QueueDisposable;
 
-public enum EmptyDisposable implements Disposable {
+/**
+ * Represents a stateless empty Disposable that reports being always
+ * empty and disposed.
+ * <p>It is also async-fuseable but empty all the time.
+ * <p>Since EmptyDisposable implements QueueDisposable and is empty,
+ * don't use it in tests and then signal onNext with it;
+ * use Disposables.empty() instead.
+ */
+public enum EmptyDisposable implements QueueDisposable<Object> {
+    /**
+     * Since EmptyDisposable implements QueueDisposable and is empty,
+     * don't use it in tests and then signal onNext with it;
+     * use Disposables.empty() instead.
+     */
     INSTANCE
     ;
     
@@ -27,7 +40,7 @@ public enum EmptyDisposable implements Disposable {
 
     @Override
     public boolean isDisposed() {
-        return true; // TODO is this okay?
+        return true;
     }
 
     public static void complete(Observer<?> s) {
@@ -54,5 +67,36 @@ public enum EmptyDisposable implements Disposable {
         s.onSubscribe(INSTANCE);
         s.onError(e);
     }
+
+    @Override
+    public boolean offer(Object value) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+
+    @Override
+    public boolean offer(Object v1, Object v2) {
+        throw new UnsupportedOperationException("Should not be called!");
+    }
+
+    @Override
+    public Object poll() throws Exception {
+        return null; // always empty
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return true; // always empty
+    }
+
+    @Override
+    public void clear() {
+        // nothing to do
+    }
+
+    @Override
+    public int requestFusion(int mode) {
+        return mode & ASYNC;
+    }
+    
 
 }

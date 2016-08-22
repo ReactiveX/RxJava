@@ -27,10 +27,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
@@ -328,7 +327,7 @@ public class ObservableTimeoutWithSelectorTest {
                     return Observable.unsafeCreate(new ObservableSource<Integer>() {
                         @Override
                         public void subscribe(Observer<? super Integer> NbpSubscriber) {
-                            NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
+                            NbpSubscriber.onSubscribe(Disposables.empty());
                             enteredTimeoutOne.countDown();
                             // force the timeout message be sent after NbpObserver.onNext(2)
                             while (true) {

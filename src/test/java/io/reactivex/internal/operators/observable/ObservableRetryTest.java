@@ -29,7 +29,6 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.observers.*;
@@ -49,7 +48,7 @@ public class ObservableRetryTest {
 
             @Override
             public void subscribe(Observer<? super String> t1) {
-                t1.onSubscribe(EmptyDisposable.INSTANCE);
+                t1.onSubscribe(Disposables.empty());
                 System.out.println(count.get() + " @ " + String.valueOf(last - System.currentTimeMillis()));
                 last = System.currentTimeMillis();
                 if (count.getAndDecrement() == 0) {
@@ -245,7 +244,7 @@ public class ObservableRetryTest {
         ObservableSource<Integer> onSubscribe = new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> NbpSubscriber) {
-                NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpSubscriber.onSubscribe(Disposables.empty());
                 final int emit = inc.incrementAndGet();
                 NbpSubscriber.onNext(emit);
                 NbpSubscriber.onComplete();
@@ -394,7 +393,7 @@ public class ObservableRetryTest {
 
         @Override
         public void subscribe(final Observer<? super String> o) {
-            o.onSubscribe(EmptyDisposable.INSTANCE);
+            o.onSubscribe(Disposables.empty());
             o.onNext("beginningEveryTime");
             int i = count.getAndIncrement();
             if (i < numFailures) {
@@ -488,7 +487,7 @@ public class ObservableRetryTest {
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
+                s.onSubscribe(Disposables.empty());
                 subsCount.incrementAndGet();
                 s.onError(new RuntimeException("failed"));
             }
@@ -507,7 +506,7 @@ public class ObservableRetryTest {
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
+                s.onSubscribe(Disposables.empty());
                 subsCount.incrementAndGet();
                 s.onError(new RuntimeException("failed"));
             }
@@ -831,7 +830,7 @@ public class ObservableRetryTest {
 
             @Override
             public void subscribe(Observer<? super String> o) {
-                o.onSubscribe(EmptyDisposable.INSTANCE);
+                o.onSubscribe(Disposables.empty());
                 for(int i=0; i<NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());
                 }   

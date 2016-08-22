@@ -107,8 +107,7 @@ public class CompletableTest {
             @Override
             public void subscribe(CompletableObserver s) {
                 getAndIncrement();
-                s.onSubscribe(EmptyDisposable.INSTANCE);
-                s.onComplete();
+                EmptyDisposable.complete(s);
             }
         });
         
@@ -133,8 +132,7 @@ public class CompletableTest {
             @Override
             public void subscribe(CompletableObserver s) {
                 getAndIncrement();
-                s.onSubscribe(EmptyDisposable.INSTANCE);
-                s.onError(new TestException());
+                EmptyDisposable.error(new TestException(), s);
             }
         });
         
@@ -2690,8 +2688,7 @@ public class CompletableTest {
             @Override
             public void subscribe(CompletableObserver s) {
                 name.set(Thread.currentThread().getName());
-                s.onSubscribe(EmptyDisposable.INSTANCE);
-                s.onComplete();
+                EmptyDisposable.complete(s);
             }
         }).subscribeOn(Schedulers.computation());
         
@@ -2708,8 +2705,7 @@ public class CompletableTest {
             @Override
             public void subscribe(CompletableObserver s) {
                 name.set(Thread.currentThread().getName());
-                s.onSubscribe(EmptyDisposable.INSTANCE);
-                s.onError(new TestException());
+                EmptyDisposable.error(new TestException(), s);
             }
         }).subscribeOn(Schedulers.computation());
         

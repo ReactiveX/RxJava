@@ -20,7 +20,9 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.functions.Function;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
+import io.reactivex.observers.TestObserver;
 
 public class ObservableDistinctUntilChangedTest {
 
@@ -127,5 +129,43 @@ public class ObservableDistinctUntilChangedTest {
         verify(w, times(1)).onError(any(NullPointerException.class));
         inOrder.verify(w, never()).onNext(anyString());
         inOrder.verify(w, never()).onComplete();
+    }
+    
+    @Test
+    public void customComparator() {
+        Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
+        
+        TestObserver<String> ts = TestObserver.create();
+        
+        source.distinctUntilChanged(new BiPredicate<String, String>() {
+            @Override
+            public boolean test(String a, String b) {
+                return a.compareToIgnoreCase(b) == 0;
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValues("a", "b", "A", "C");
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @Test
+    public void customComparatorThrows() {
+        Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
+        
+        TestObserver<String> ts = TestObserver.create();
+        
+        source.distinctUntilChanged(new BiPredicate<String, String>() {
+            @Override
+            public boolean test(String a, String b) {
+                throw new TestException();
+            }
+        })
+        .subscribe(ts);
+        
+        ts.assertValue("a");
+        ts.assertNotComplete();
+        ts.assertError(TestException.class);
     }
 }

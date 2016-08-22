@@ -24,10 +24,8 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
-import io.reactivex.ObservableOperator;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 
@@ -40,7 +38,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
 
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 NbpObserver.onNext("one");
                 NbpObserver.onError(new Throwable("injected failure"));
                 NbpObserver.onNext("two");
@@ -286,7 +284,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         @Override
         public void subscribe(final Observer<? super String> NbpObserver) {
             System.out.println("TestObservable subscribed to ...");
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override

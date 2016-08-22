@@ -82,7 +82,7 @@ public final class TrampolineScheduler extends Scheduler {
             return enqueue(new SleepingRunnable(action, this, execTime), execTime);
         }
         
-        private Disposable enqueue(Runnable action, long execTime) {
+        Disposable enqueue(Runnable action, long execTime) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }

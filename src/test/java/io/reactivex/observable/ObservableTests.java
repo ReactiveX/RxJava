@@ -27,9 +27,8 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
@@ -446,7 +445,7 @@ public class ObservableTests {
         ConnectableObservable<String> connectable = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                observer.onSubscribe(EmptyDisposable.INSTANCE);
+                observer.onSubscribe(Disposables.empty());
                 count.incrementAndGet();
                 new Thread(new Runnable() {
                     @Override
@@ -484,7 +483,7 @@ public class ObservableTests {
         ConnectableObservable<String> o = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                    observer.onSubscribe(EmptyDisposable.INSTANCE);
+                    observer.onSubscribe(Disposables.empty());
                     new Thread(new Runnable() {
 
                         @Override
@@ -537,7 +536,7 @@ public class ObservableTests {
         Observable<String> o = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                    observer.onSubscribe(EmptyDisposable.INSTANCE);
+                    observer.onSubscribe(Disposables.empty());
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -582,7 +581,7 @@ public class ObservableTests {
         Observable<String> o = Observable.<String>unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(final Observer<? super String> observer) {
-                observer.onSubscribe(EmptyDisposable.INSTANCE);
+                observer.onSubscribe(Disposables.empty());
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

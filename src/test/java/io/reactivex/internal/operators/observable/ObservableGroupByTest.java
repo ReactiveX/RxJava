@@ -30,7 +30,6 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
@@ -186,7 +185,7 @@ public class ObservableGroupByTest {
 
             @Override
             public void subscribe(final Observer<? super Event> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 System.out.println("*** Subscribing to EventStream ***");
                 subscribeCounter.incrementAndGet();
                 new Thread(new Runnable() {
@@ -598,7 +597,7 @@ public class ObservableGroupByTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(EmptyDisposable.INSTANCE);
+                sub.onSubscribe(Disposables.empty());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -677,7 +676,7 @@ public class ObservableGroupByTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(EmptyDisposable.INSTANCE);
+                sub.onSubscribe(Disposables.empty());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -769,7 +768,7 @@ public class ObservableGroupByTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(EmptyDisposable.INSTANCE);
+                sub.onSubscribe(Disposables.empty());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -846,7 +845,7 @@ public class ObservableGroupByTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(EmptyDisposable.INSTANCE);
+                sub.onSubscribe(Disposables.empty());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -903,7 +902,7 @@ public class ObservableGroupByTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(EmptyDisposable.INSTANCE);
+                sub.onSubscribe(Disposables.empty());
                 sub.onNext(1);
                 sub.onNext(2);
                 sub.onNext(1);
@@ -1426,7 +1425,7 @@ public class ObservableGroupByTest {
                 new ObservableSource<Integer>() {
                     @Override
                     public void subscribe(Observer<? super Integer> NbpSubscriber) {
-                        NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
+                        NbpSubscriber.onSubscribe(Disposables.empty());
                         NbpSubscriber.onNext(0);
                         NbpSubscriber.onNext(1);
                         NbpSubscriber.onError(e);

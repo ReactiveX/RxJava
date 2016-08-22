@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -56,16 +57,10 @@ public final class SingleUsing<T, U> extends Single<T> {
         SingleSource<? extends T> s1;
         
         try {
-            s1 = singleFunction.apply(resource);
+            s1 = Objects.requireNonNull(singleFunction.apply(resource), "The singleFunction returned a null SingleSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, s);
-            return;
-        }
-        
-        if (s1 == null) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(new NullPointerException("The Single supplied by the function was null"));
             return;
         }
         

@@ -26,7 +26,7 @@ import io.reactivex.internal.subscriptions.*;
 /**
  * Utility classes to work with scalar-sourced XMap operators (where X == { flat, concat, switch }).
  */
-public enum ScalarXMap {
+public enum FlowableScalarXMap {
     ;
 
     /**
@@ -40,7 +40,8 @@ public enum ScalarXMap {
      */
     @SuppressWarnings("unchecked")
     public static <T, R> boolean tryScalarXMapSubscribe(Publisher<T> source, 
-            Subscriber<? super R> subscriber, Function<? super T, ? extends Publisher<? extends R>> mapper) {
+            Subscriber<? super R> subscriber, 
+            Function<? super T, ? extends Publisher<? extends R>> mapper) {
         if (source instanceof Callable) {
             T t;
             
@@ -103,7 +104,7 @@ public enum ScalarXMap {
      * @return the new Flowable instance
      */
     public static <T, U> Flowable<U> scalarXMap(final T value, final Function<? super T, ? extends Publisher<? extends U>> mapper) {
-        return new FlowableScalarXMap<T, U>(value, mapper);
+        return new ScalarXMapFlowable<T, U>(value, mapper);
     }
     
     /**
@@ -112,13 +113,13 @@ public enum ScalarXMap {
      * @param <T> the scalar value type
      * @param <R> the mapped Publisher's element type.
      */
-    static final class FlowableScalarXMap<T, R> extends Flowable<R> {
+    static final class ScalarXMapFlowable<T, R> extends Flowable<R> {
         
         final T value;
         
         final Function<? super T, ? extends Publisher<? extends R>> mapper;
         
-        public FlowableScalarXMap(T value,
+        public ScalarXMapFlowable(T value,
                 Function<? super T, ? extends Publisher<? extends R>> mapper) {
             this.value = value;
             this.mapper = mapper;

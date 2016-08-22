@@ -20,10 +20,9 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.*;
 
@@ -103,7 +102,7 @@ public class ObservableTakeWhileTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 NbpObserver.onNext("one");
                 NbpObserver.onError(new Throwable("test failed"));
             }

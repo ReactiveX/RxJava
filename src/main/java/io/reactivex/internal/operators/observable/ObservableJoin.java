@@ -16,8 +16,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static io.reactivex.Flowable.bufferSize;
-
 import java.util.*;
 import java.util.concurrent.atomic.*;
 

@@ -43,6 +43,11 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
     
     @Override
     public void subscribeActual(Observer<? super U> t) {
+        
+        if (ObservableScalarXMap.tryScalarXMapSubscribe(source, t, mapper)) {
+            return;
+        }
+        
         source.subscribe(new MergeSubscriber<T, U>(t, mapper, delayErrors, maxConcurrency, bufferSize));
     }
     
@@ -103,6 +108,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             }
         }
         
+        @SuppressWarnings("unchecked")
         @Override
         public void onNext(T t) {
             // safeguard against misbehaving sources
@@ -117,8 +123,8 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 onError(e);
                 return;
             }
-            if (p instanceof ObservableJust) {
-                tryEmitScalar(((ObservableJust<? extends U>)p).value());
+            if (p instanceof ScalarCallable) {
+                tryEmitScalar(((ScalarCallable<? extends U>)p).call());
             } else {
                 if (maxConcurrency == Integer.MAX_VALUE) {
                     subscribeInner(p);

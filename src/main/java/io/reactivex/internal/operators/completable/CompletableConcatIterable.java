@@ -20,6 +20,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.Objects;
 
 public final class CompletableConcatIterable extends Completable {
     final Iterable<? extends CompletableSource> sources;
@@ -34,16 +35,10 @@ public final class CompletableConcatIterable extends Completable {
         Iterator<? extends CompletableSource> it;
         
         try {
-            it = sources.iterator();
+            it = Objects.requireNonNull(sources.iterator(), "The iterator returned is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, s);
-            return;
-        }
-        
-        if (it == null) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(new NullPointerException("The iterator returned is null"));
             return;
         }
         

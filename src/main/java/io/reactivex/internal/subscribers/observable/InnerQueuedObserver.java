@@ -11,14 +11,14 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.subscribers.flowable;
+package io.reactivex.internal.subscribers.observable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
-
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.QueueDrainHelper;
 
 /**
@@ -27,18 +27,16 @@ import io.reactivex.internal.util.QueueDrainHelper;
  *
  * @param <T> the value type
  */
-public final class InnerQueuedSubscriber<T> 
-extends AtomicReference<Subscription>
-implements Subscriber<T>, Subscription {
+public final class InnerQueuedObserver<T> 
+extends AtomicReference<Disposable>
+implements Observer<T>, Disposable {
 
     /** */
-    private static final long serialVersionUID = 22876611072430776L;
+    private static final long serialVersionUID = -5417183359794346637L;
 
-    final InnerQueuedSubscriberSupport<T> parent;
+    final InnerQueuedObserverSupport<T> parent;
     
     final int prefetch;
-    
-    final int limit;
 
     SimpleQueue<T> queue;
     
@@ -48,20 +46,19 @@ implements Subscriber<T>, Subscription {
     
     int fusionMode;
     
-    public InnerQueuedSubscriber(InnerQueuedSubscriberSupport<T> parent, int prefetch) {
+    public InnerQueuedObserver(InnerQueuedObserverSupport<T> parent, int prefetch) {
         this.parent = parent;
         this.prefetch = prefetch;
-        this.limit = prefetch - (prefetch >> 2);
     }
     
     @Override
-    public void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.setOnce(this, s)) {
-            if (s instanceof QueueSubscription) {
+    public void onSubscribe(Disposable s) {
+        if (DisposableHelper.setOnce(this, s)) {
+            if (s instanceof QueueDisposable) {
                 @SuppressWarnings("unchecked")
-                QueueSubscription<T> qs = (QueueSubscription<T>) s;
+                QueueDisposable<T> qs = (QueueDisposable<T>) s;
                 
-                int m = qs.requestFusion(QueueSubscription.ANY);
+                int m = qs.requestFusion(QueueDisposable.ANY);
                 if (m == QueueSubscription.SYNC) {
                     fusionMode = m;
                     queue = qs;
@@ -69,23 +66,20 @@ implements Subscriber<T>, Subscription {
                     parent.innerComplete(this);
                     return;
                 }
-                if (m == QueueSubscription.ASYNC) {
+                if (m == QueueDisposable.ASYNC) {
                     fusionMode = m;
                     queue = qs;
-                    QueueDrainHelper.request(get(), prefetch);
                     return;
                 }
             }
             
-            queue = QueueDrainHelper.createQueue(prefetch);
-            
-            QueueDrainHelper.request(get(), prefetch);
+            queue = QueueDrainHelper.createQueue(-prefetch);
         }
     }
     
     @Override
     public void onNext(T t) {
-        if (fusionMode == QueueSubscription.NONE) {
+        if (fusionMode == QueueDisposable.NONE) {
             parent.innerNext(this, t);
         } else {
             parent.drain();
@@ -103,29 +97,13 @@ implements Subscriber<T>, Subscription {
     }
     
     @Override
-    public void request(long n) {
-        long p = produced + n;
-        if (p >= limit) {
-            produced = 0L;
-            get().request(p);
-        } else {
-            produced = p;
-        }
-    }
-    
-    public void requestOne() {
-        long p = produced + 1;
-        if (p == limit) {
-            produced = 0L;
-            get().request(p);
-        } else {
-            produced = p;
-        }
+    public void dispose() {
+        DisposableHelper.dispose(this);
     }
     
     @Override
-    public void cancel() {
-        SubscriptionHelper.cancel(this);
+    public boolean isDisposed() {
+        return DisposableHelper.isDisposed(get());
     }
     
     public boolean isDone() {

@@ -22,8 +22,8 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
@@ -45,7 +45,7 @@ public class ObservableThrottleFirstTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 publishNext(NbpObserver, 100, "one");    // publish as it's first
                 publishNext(NbpObserver, 300, "two");    // skip as it's last within the first 400
                 publishNext(NbpObserver, 900, "three");   // publish
@@ -73,7 +73,7 @@ public class ObservableThrottleFirstTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 Exception error = new TestException();
                 publishNext(NbpObserver, 100, "one");    // Should be published since it is first
                 publishNext(NbpObserver, 200, "two");    // Should be skipped since onError will arrive before the timeout expires

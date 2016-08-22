@@ -29,7 +29,6 @@ public final class CompletableErrorSupplier extends Completable {
 
     @Override
     protected void subscribeActual(CompletableObserver s) {
-        s.onSubscribe(EmptyDisposable.INSTANCE);
         Throwable error;
         
         try {
@@ -42,7 +41,7 @@ public final class CompletableErrorSupplier extends Completable {
         if (error == null) {
             error = new NullPointerException("The error supplied is null");
         }
-        s.onError(error);
+        EmptyDisposable.error(error, s);
     }
 
 }

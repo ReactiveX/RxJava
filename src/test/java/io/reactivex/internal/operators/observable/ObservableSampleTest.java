@@ -22,8 +22,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.disposables.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
@@ -47,7 +46,7 @@ public class ObservableSampleTest {
         Observable<Long> source = Observable.unsafeCreate(new ObservableSource<Long>() {
             @Override
             public void subscribe(final Observer<? super Long> observer1) {
-                observer1.onSubscribe(EmptyDisposable.INSTANCE);
+                observer1.onSubscribe(Disposables.empty());
                 innerScheduler.schedule(new Runnable() {
                     @Override
                     public void run() {

@@ -11,19 +11,21 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.completable;
+package io.reactivex.internal.subscribers.observable;
 
-import io.reactivex.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+/**
+ * Interface to allow the InnerQueuedSubscriber to call back a parent
+ * with signals.
+ *
+ * @param <T> the value type
+ */
+public interface InnerQueuedObserverSupport<T> {
 
-public final class CompletableEmpty extends Completable {
-    public static final Completable INSTANCE = new CompletableEmpty();
-
-    private CompletableEmpty() {
-    }
-
-    @Override
-    public void subscribeActual(CompletableObserver s) {
-        EmptyDisposable.complete(s);
-    }
+    void innerNext(InnerQueuedObserver<T> inner, T value);
+    
+    void innerError(InnerQueuedObserver<T> inner, Throwable e);
+    
+    void innerComplete(InnerQueuedObserver<T> inner);
+    
+    void drain();
 }

@@ -6441,7 +6441,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             if (v == null) {
                 return empty();
             }
-            return ScalarXMap.scalarXMap(v, mapper);
+            return FlowableScalarXMap.scalarXMap(v, mapper);
         }
         verifyPositive(prefetch, "prefetch");
         return new FlowableConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE);
@@ -6511,7 +6511,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             if (v == null) {
                 return empty();
             }
-            return ScalarXMap.scalarXMap(v, mapper);
+            return FlowableScalarXMap.scalarXMap(v, mapper);
         }
         verifyPositive(prefetch, "prefetch");
         return new FlowableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.IMMEDIATE);
@@ -8023,7 +8023,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             if (v == null) {
                 return empty();
             }
-            return ScalarXMap.scalarXMap(v, mapper);
+            return FlowableScalarXMap.scalarXMap(v, mapper);
         }
         verifyPositive(maxConcurrency, "maxConcurrency");
         verifyPositive(bufferSize, "bufferSize");
@@ -12207,7 +12207,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             if (v == null) {
                 return empty();
             }
-            return ScalarXMap.scalarXMap(v, mapper);
+            return FlowableScalarXMap.scalarXMap(v, mapper);
         }
         verifyPositive(bufferSize, "bufferSize");
         return new FlowableSwitchMap<T, R>(this, mapper, bufferSize, delayError);

@@ -23,8 +23,8 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
@@ -48,7 +48,7 @@ public class ObservableWindowWithStartEndObservableTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 push(NbpObserver, "one", 10);
                 push(NbpObserver, "two", 60);
                 push(NbpObserver, "three", 110);
@@ -61,7 +61,7 @@ public class ObservableWindowWithStartEndObservableTest {
         Observable<Object> openings = Observable.unsafeCreate(new ObservableSource<Object>() {
             @Override
             public void subscribe(Observer<? super Object> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 push(NbpObserver, new Object(), 50);
                 push(NbpObserver, new Object(), 200);
                 complete(NbpObserver, 250);
@@ -74,7 +74,7 @@ public class ObservableWindowWithStartEndObservableTest {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> NbpObserver) {
-                        NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                        NbpObserver.onSubscribe(Disposables.empty());
                         push(NbpObserver, new Object(), 100);
                         complete(NbpObserver, 101);
                     }
@@ -99,7 +99,7 @@ public class ObservableWindowWithStartEndObservableTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 push(NbpObserver, "one", 10);
                 push(NbpObserver, "two", 60);
                 push(NbpObserver, "three", 110);
@@ -116,7 +116,7 @@ public class ObservableWindowWithStartEndObservableTest {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
                     public void subscribe(Observer<? super Object> NbpObserver) {
-                        NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                        NbpObserver.onSubscribe(Disposables.empty());
                         int c = calls++;
                         if (c == 0) {
                             push(NbpObserver, new Object(), 100);
