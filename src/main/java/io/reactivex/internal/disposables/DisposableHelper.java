@@ -16,7 +16,7 @@ package io.reactivex.internal.disposables;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -54,7 +54,7 @@ public enum DisposableHelper {
     }
     
     public static boolean setOnce(AtomicReference<Disposable> field, Disposable d) {
-        Objects.requireNonNull(d, "d is null");
+        ObjectHelper.requireNonNull(d, "d is null");
         if (!field.compareAndSet(null, d)) {
             d.dispose();
             if (field.get() != DISPOSED) {

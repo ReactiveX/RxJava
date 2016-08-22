@@ -17,7 +17,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -138,7 +138,7 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
      * @return the value if not null
      */
     protected final <V> V nullCheck(V value, String message) {
-        return Objects.requireNonNull(value, message);
+        return ObjectHelper.requireNonNull(value, message);
     }
     
     /**

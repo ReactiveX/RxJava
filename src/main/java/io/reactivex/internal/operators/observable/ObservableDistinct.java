@@ -70,7 +70,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
                         }
                         Object o = last[0];
                         last[0] = t;
-                        return !Objects.equals(o, t);
+                        return !ObjectHelper.equals(o, t);
                     }
                 };
             }
@@ -93,7 +93,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
                         }
                         Object o = last[0];
                         last[0] = t;
-                        return !Objects.equals(o, t);
+                        return !ObjectHelper.equals(o, t);
                     }
                 };
             }

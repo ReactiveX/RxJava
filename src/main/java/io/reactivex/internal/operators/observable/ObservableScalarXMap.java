@@ -20,7 +20,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
 
 /**
@@ -61,7 +61,7 @@ public enum ObservableScalarXMap {
             ObservableSource<? extends R> r;
             
             try {
-                r = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                r = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptyDisposable.error(ex, observer);
@@ -131,7 +131,7 @@ public enum ObservableScalarXMap {
         public void subscribeActual(Observer<? super R> s) {
             ObservableSource<? extends R> other;
             try {
-                other = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null Publisher");
+                other = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null Publisher");
             } catch (Throwable e) {
                 EmptyDisposable.error(e, s);
                 return;

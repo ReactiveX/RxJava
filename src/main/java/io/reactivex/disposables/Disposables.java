@@ -39,7 +39,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     public static Disposable from(Runnable run) {
-        Objects.requireNonNull(run, "run is null");
+        ObjectHelper.requireNonNull(run, "run is null");
         return new RunnableDisposable(run);
     }
 
@@ -50,7 +50,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     public static Disposable from(Action run) {
-        Objects.requireNonNull(run, "run is null");
+        ObjectHelper.requireNonNull(run, "run is null");
         return new ActionDisposable(run);
     }
 
@@ -61,7 +61,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     public static Disposable from(Future<?> future) {
-        Objects.requireNonNull(future, "future is null");
+        ObjectHelper.requireNonNull(future, "future is null");
         return from(future, true);
     }
 
@@ -73,7 +73,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     public static Disposable from(Future<?> future, boolean allowInterrupt) {
-        Objects.requireNonNull(future, "future is null");
+        ObjectHelper.requireNonNull(future, "future is null");
         return new FutureDisposable(future, allowInterrupt);
     }
 
@@ -84,7 +84,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     public static Disposable from(Subscription subscription) {
-        Objects.requireNonNull(subscription, "subscription is null");
+        ObjectHelper.requireNonNull(subscription, "subscription is null");
         return new SubscriptionDisposable(subscription);
     }
 

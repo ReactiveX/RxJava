@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.exceptions.*;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
@@ -42,7 +42,7 @@ final Scheduler scheduler;
         if (prefetch <= 0) {
             throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
         }
-        this.scheduler = Objects.requireNonNull(scheduler, "scheduler");
+        this.scheduler = ObjectHelper.requireNonNull(scheduler, "scheduler");
         this.delayError = delayError;
         this.prefetch = prefetch;
     }

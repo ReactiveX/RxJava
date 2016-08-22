@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * Maps the success value of the source SingleSource into a Completable. 
@@ -82,7 +82,7 @@ public final class SingleFlatMapCompletable<T> extends Completable {
             CompletableSource cs;
             
             try {
-                cs = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
+                cs = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 onError(ex);

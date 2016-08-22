@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscribers.observable.BaseQueueDisposable;
 
 public final class ObservableFromArray<T> extends Observable<T> {
@@ -70,7 +70,7 @@ public final class ObservableFromArray<T> extends Observable<T> {
             T[] a = array;
             if (i != a.length) {
                 index = i + 1;
-                return Objects.requireNonNull(a[i], "The array element is null");
+                return ObjectHelper.requireNonNull(a[i], "The array element is null");
             }
             return null;
         }

@@ -16,7 +16,7 @@ import java.util.*;
 
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.disposables.DisposableContainer;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.OpenHashSet;
 
 /**
@@ -40,10 +40,10 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * @param resources the array of Disposables to start with
      */
     public CompositeDisposable(Disposable... resources) {
-        Objects.requireNonNull(resources, "resources is null");
+        ObjectHelper.requireNonNull(resources, "resources is null");
         this.resources = new OpenHashSet<Disposable>(resources.length + 1);
         for (Disposable d : resources) {
-            Objects.requireNonNull(d, "Disposable item is null");
+            ObjectHelper.requireNonNull(d, "Disposable item is null");
             this.resources.add(d);
         }
     }
@@ -53,9 +53,9 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * @param resources the Iterable sequence of Disposables to start with
      */
     public CompositeDisposable(Iterable<? extends Disposable> resources) {
-        Objects.requireNonNull(resources, "resources is null");
+        ObjectHelper.requireNonNull(resources, "resources is null");
         for (Disposable d : resources) {
-            Objects.requireNonNull(d, "Disposable item is null");
+            ObjectHelper.requireNonNull(d, "Disposable item is null");
             this.resources.add(d);
         }
     }
@@ -85,7 +85,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     
     @Override
     public boolean add(Disposable d) {
-        Objects.requireNonNull(d, "d is null");
+        ObjectHelper.requireNonNull(d, "d is null");
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
@@ -110,7 +110,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * @return true if the operation was successful, false if the container has been disposed
      */
     public boolean addAll(Disposable... ds) {
-        Objects.requireNonNull(ds, "ds is null");
+        ObjectHelper.requireNonNull(ds, "ds is null");
         if (!disposed) {
             synchronized (this) {
                 if (!disposed) {
@@ -120,7 +120,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
                         resources = set;
                     }
                     for (Disposable d : ds) {
-                        Objects.requireNonNull(d, "d is null");
+                        ObjectHelper.requireNonNull(d, "d is null");
                         set.add(d);
                     }
                     return true;
@@ -144,7 +144,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     
     @Override
     public boolean delete(Disposable d) {
-        Objects.requireNonNull(d, "Disposable item is null");
+        ObjectHelper.requireNonNull(d, "Disposable item is null");
         if (disposed) {
             return false;
         }

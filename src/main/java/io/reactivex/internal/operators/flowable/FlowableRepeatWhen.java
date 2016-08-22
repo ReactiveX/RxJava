@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.*;
 import io.reactivex.subscribers.SerializedSubscriber;
@@ -44,7 +44,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         Publisher<?> when;
         
         try {
-            when = Objects.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
+            when = ObjectHelper.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, s);

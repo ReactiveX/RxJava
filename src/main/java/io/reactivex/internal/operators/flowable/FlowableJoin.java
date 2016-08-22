@@ -21,7 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.operators.flowable.FlowableGroupJoin.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -223,7 +223,7 @@ public class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Abstrac
                         Publisher<TLeftEnd> p;
                         
                         try {
-                            p = Objects.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
+                            p = ObjectHelper.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -250,7 +250,7 @@ public class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Abstrac
                             R w;
                             
                             try {
-                                w = Objects.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
+                                w = ObjectHelper.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
                             } catch (Throwable exc) {
                                 fail(exc, a, q);
                                 return;
@@ -284,7 +284,7 @@ public class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Abstrac
                         Publisher<TRightEnd> p;
                         
                         try {
-                            p = Objects.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
+                            p = ObjectHelper.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -311,7 +311,7 @@ public class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Abstrac
                             R w;
                             
                             try {
-                                w = Objects.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
+                                w = ObjectHelper.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
                             } catch (Throwable exc) {
                                 fail(exc, a, q);
                                 return;

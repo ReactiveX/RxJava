@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.Flowable;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * Abstract base class for operators that take an upstream
@@ -38,7 +38,7 @@ abstract class AbstractFlowableWithUpstream<T, R> extends Flowable<R> implements
      * @param source the source (upstream) Publisher instance, not null (verified)
      */
     public AbstractFlowableWithUpstream(Publisher<T> source) {
-        this.source = Objects.requireNonNull(source, "source is null");
+        this.source = ObjectHelper.requireNonNull(source, "source is null");
     }
     
     @Override

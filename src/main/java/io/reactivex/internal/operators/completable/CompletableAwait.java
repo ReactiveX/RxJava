@@ -18,7 +18,7 @@ import java.util.concurrent.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 
 public enum CompletableAwait {
     ;
@@ -64,7 +64,7 @@ public enum CompletableAwait {
     }
     
     public static boolean await(CompletableSource cc, long timeout, TimeUnit unit) {
-        Objects.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(unit, "unit is null");
         
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
@@ -145,7 +145,7 @@ public enum CompletableAwait {
     }
     
     public static Throwable get(CompletableSource cc, long timeout, TimeUnit unit) {
-        Objects.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(unit, "unit is null");
         
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];

@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.*;
 
 /**
@@ -61,7 +61,7 @@ public enum FlowableScalarXMap {
             Publisher<? extends R> r;
             
             try {
-                r = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                r = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptySubscription.error(ex, subscriber);
@@ -130,7 +130,7 @@ public enum FlowableScalarXMap {
         public void subscribeActual(Subscriber<? super R> s) {
             Publisher<? extends R> other;
             try {
-                other = Objects.requireNonNull(mapper.apply(value), "The mapper returned a null Publisher");
+                other = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null Publisher");
             } catch (Throwable e) {
                 EmptySubscription.error(e, s);
                 return;

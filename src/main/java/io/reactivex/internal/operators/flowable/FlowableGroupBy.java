@@ -22,7 +22,7 @@ import org.reactivestreams.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -133,7 +133,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             
             V v;
             try {
-                v = Objects.requireNonNull(valueSelector.apply(t), "The valueSelector returned null");
+                v = ObjectHelper.requireNonNull(valueSelector.apply(t), "The valueSelector returned null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.cancel();

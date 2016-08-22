@@ -70,7 +70,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                         }
                         Object o = last;
                         last = t;
-                        return !Objects.equals(o, t);
+                        return !ObjectHelper.equals(o, t);
                     }
                 };
             }
@@ -93,7 +93,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                         }
                         Object o = last;
                         last = t;
-                        return !Objects.equals(o, t);
+                        return !ObjectHelper.equals(o, t);
                     }
                 };
             }

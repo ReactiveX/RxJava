@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.ObservableSource;
@@ -123,8 +124,8 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 onError(e);
                 return;
             }
-            if (p instanceof ScalarCallable) {
-                tryEmitScalar(((ScalarCallable<? extends U>)p).call());
+            if (p instanceof Callable) {
+                tryEmitScalar(((Callable<? extends U>)p));
             } else {
                 if (maxConcurrency == Integer.MAX_VALUE) {
                     subscribeInner(p);
@@ -208,15 +209,30 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             return q;
         }
         
-        void tryEmitScalar(U value) {
+        void tryEmitScalar(Callable<? extends U> value) {
+            U u;
+            try {
+                u = value.call();
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                getErrorQueue().offer(ex);
+                drain();
+                return;
+            }
+            
+            if (u == null) {
+                return;
+            }
+            
+            
             if (get() == 0 && compareAndSet(0, 1)) {
-                actual.onNext(value);
+                actual.onNext(u);
                 if (decrementAndGet() == 0) {
                     return;
                 }
             } else {
                 SimpleQueue<U> q = getMainQueue();
-                if (!q.offer(value)) {
+                if (!q.offer(u)) {
                     onError(new IllegalStateException("Scalar queue full?!"));
                     return;
                 }

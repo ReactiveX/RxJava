@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * Lightweight notification handling utility class.
@@ -63,7 +63,7 @@ public enum NotificationLite {
         public boolean equals(Object obj) {
             if (obj instanceof ErrorNotification) {
                 ErrorNotification n = (ErrorNotification) obj;
-                return Objects.equals(e, n.e);
+                return ObjectHelper.equals(e, n.e);
             }
             return false;
         }

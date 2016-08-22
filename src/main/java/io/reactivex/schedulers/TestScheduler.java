@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * A special, non thread-safe scheduler for testing operators that require
@@ -56,9 +56,9 @@ public final class TestScheduler extends Scheduler {
         @Override
         public int compareTo(TimedRunnable o) {
             if (time == o.time) {
-                return Objects.compare(count, o.count);
+                return ObjectHelper.compare(count, o.count);
             }
-            return Objects.compare(time, o.time);
+            return ObjectHelper.compare(time, o.time);
         }
     }
 

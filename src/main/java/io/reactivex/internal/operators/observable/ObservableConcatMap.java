@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.*;
@@ -212,7 +212,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         ObservableSource<? extends U> o;
                         
                         try {
-                            o = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableConsumable");
+                            o = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableConsumable");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             dispose();
@@ -439,7 +439,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         ObservableSource<? extends R> o;
                         
                         try {
-                            o = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
+                            o = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             this.d.dispose();

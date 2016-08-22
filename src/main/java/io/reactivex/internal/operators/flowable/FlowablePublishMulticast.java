@@ -24,7 +24,7 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
@@ -60,7 +60,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         Publisher<? extends R> other;
         
         try {
-            other = Objects.requireNonNull(selector.apply(mp), "selector returned a null Publisher");
+            other = ObjectHelper.requireNonNull(selector.apply(mp), "selector returned a null Publisher");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptySubscription.error(ex, s);

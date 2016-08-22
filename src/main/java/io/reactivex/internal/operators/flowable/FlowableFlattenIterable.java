@@ -21,7 +21,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
@@ -40,7 +40,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
         if (prefetch <= 0) {
             throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
         }
-        this.mapper = Objects.requireNonNull(mapper, "mapper");
+        this.mapper = ObjectHelper.requireNonNull(mapper, "mapper");
         this.prefetch = prefetch;
     }
 

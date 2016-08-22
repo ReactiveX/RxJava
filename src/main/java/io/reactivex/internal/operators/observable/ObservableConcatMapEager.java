@@ -22,7 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.*;
@@ -269,7 +269,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                             break;
                         }
                         
-                        source = Objects.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
+                        source = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         d.dispose();

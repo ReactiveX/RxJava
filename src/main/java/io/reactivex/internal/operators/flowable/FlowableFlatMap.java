@@ -136,8 +136,8 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     u  = ((Callable<U>)p).call();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    s.cancel();
-                    onError(ex);
+                    getErrorQueue().offer(ex);
+                    drain();
                     return;
                 }
                 

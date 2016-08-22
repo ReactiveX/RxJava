@@ -21,7 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -564,7 +564,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             fail("Expected: " + valueAndClass(value) + ", Actual: " + values);
         }
         T v = values.get(0);
-        if (!Objects.equals(value, v)) {
+        if (!ObjectHelper.equals(value, v)) {
             fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
         }
         return this;
@@ -614,7 +614,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             T u = values[i];
-            if (!Objects.equals(u, v)) {
+            if (!ObjectHelper.equals(u, v)) {
                 fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
         }
@@ -660,7 +660,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
             T v = it.next();
             T u = vit.next();
             
-            if (!Objects.equals(u, v)) {
+            if (!ObjectHelper.equals(u, v)) {
                 fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
             i++;
@@ -781,7 +781,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
                 fail("Error is null");
             }
             String errorMessage = e.getMessage();
-            if (!Objects.equals(message, errorMessage)) {
+            if (!ObjectHelper.equals(message, errorMessage)) {
                 fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
             }
         } else {

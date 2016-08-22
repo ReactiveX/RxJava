@@ -19,7 +19,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 
 public final class FlowableFromCallable<T> extends Flowable<T> implements Callable<T> {
@@ -34,7 +34,7 @@ public final class FlowableFromCallable<T> extends Flowable<T> implements Callab
         
         T t;
         try {
-            t = Objects.requireNonNull(callable.call(), "The callable returned a null value");
+            t = ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             s.onError(ex);
@@ -46,6 +46,6 @@ public final class FlowableFromCallable<T> extends Flowable<T> implements Callab
     
     @Override
     public T call() throws Exception {
-        return Objects.requireNonNull(callable.call(), "The callable returned a null value");
+        return ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
     }
 }

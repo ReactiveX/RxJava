@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.*;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
@@ -51,7 +51,7 @@ public abstract class ResourceSubscriber<T> implements Subscriber<T>, Disposable
      * @throws NullPointerException if resource is null
      */
     public final void add(Disposable resource) {
-        Objects.requireNonNull(resource, "resource is null");
+        ObjectHelper.requireNonNull(resource, "resource is null");
         resources.add(resource);
     }
     

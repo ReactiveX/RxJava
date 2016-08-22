@@ -21,7 +21,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
 
 /**
@@ -500,7 +500,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             fail("Expected: " + valueAndClass(value) + ", Actual: " + values);
         }
         T v = values.get(0);
-        if (!Objects.equals(value, v)) {
+        if (!ObjectHelper.equals(value, v)) {
             fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
         }
         return this;
@@ -550,7 +550,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             T u = values[i];
-            if (!Objects.equals(u, v)) {
+            if (!ObjectHelper.equals(u, v)) {
                 fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
         }
@@ -596,7 +596,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             T v = it.next();
             T u = vit.next();
             
-            if (!Objects.equals(u, v)) {
+            if (!ObjectHelper.equals(u, v)) {
                 fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
             i++;
@@ -717,7 +717,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
                 fail("Error is null");
             }
             String errorMessage = e.getMessage();
-            if (!Objects.equals(message, errorMessage)) {
+            if (!ObjectHelper.equals(message, errorMessage)) {
                 fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
             }
         } else {

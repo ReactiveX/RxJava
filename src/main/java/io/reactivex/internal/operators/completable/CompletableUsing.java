@@ -21,7 +21,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableUsing<R> extends Completable {
@@ -57,7 +57,7 @@ public final class CompletableUsing<R> extends Completable {
         CompletableSource cs;
         
         try {
-            cs = Objects.requireNonNull(completableFunction.apply(resource), "The completableFunction returned a null Completable");
+            cs = ObjectHelper.requireNonNull(completableFunction.apply(resource), "The completableFunction returned a null Completable");
         } catch (Throwable e) {
             try {
                 disposer.accept(resource);

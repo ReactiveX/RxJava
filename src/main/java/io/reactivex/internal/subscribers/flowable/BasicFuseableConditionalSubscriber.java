@@ -16,7 +16,7 @@ package io.reactivex.internal.subscribers.flowable;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -153,7 +153,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
      * @return the value if not null
      */
     protected final <V> V nullCheck(V value, String message) {
-        return Objects.requireNonNull(value, message);
+        return ObjectHelper.requireNonNull(value, message);
     }
     
     /**
