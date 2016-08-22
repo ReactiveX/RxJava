@@ -154,8 +154,11 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
             }
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            t2.suppress(e);
-            
+            if (t2 == null) {
+                t2 = new CompositeException(t, e);
+            } else {
+                t2.suppress(e);
+            }
             RxJavaPlugins.onError(t2);
         }
     }
