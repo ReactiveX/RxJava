@@ -1782,7 +1782,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> generate(final Consumer<Observer<T>> generator) {
+    public static <T> Observable<T> generate(final Consumer<Emitter<T>> generator) {
         ObjectHelper.requireNonNull(generator, "generator  is null");
         return generate(Functions.<Object>nullSupplier(), 
         ObservableInternalHelper.simpleGenerator(generator), Functions.<Object>emptyConsumer());
@@ -1806,7 +1806,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(Callable<S> initialState, final BiConsumer<S, Observer<T>> generator) {
+    public static <T, S> Observable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator) {
         ObjectHelper.requireNonNull(generator, "generator  is null");
         return generate(initialState, ObservableInternalHelper.simpleBiGenerator(generator), Functions.emptyConsumer());
     }
@@ -1833,7 +1833,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, S> Observable<T> generate(
             final Callable<S> initialState, 
-            final BiConsumer<S, Observer<T>> generator, 
+            final BiConsumer<S, Emitter<T>> generator, 
             Consumer<? super S> disposeState) {
         ObjectHelper.requireNonNull(generator, "generator  is null");
         return generate(initialState, ObservableInternalHelper.simpleBiGenerator(generator), disposeState);
@@ -1858,7 +1858,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(Callable<S> initialState, BiFunction<S, Observer<T>, S> generator) {
+    public static <T, S> Observable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator) {
         return generate(initialState, generator, Functions.emptyConsumer());
     }
 
@@ -1883,7 +1883,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Observable<T> generate(Callable<S> initialState, BiFunction<S, Observer<T>, S> generator, 
+    public static <T, S> Observable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator, 
             Consumer<? super S> disposeState) {
         ObjectHelper.requireNonNull(initialState, "initialState is null");
         ObjectHelper.requireNonNull(generator, "generator  is null");
@@ -13217,25 +13217,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     public final TestObserver<T> test() { // NoPMD
         TestObserver<T> ts = new TestObserver<T>();
-        subscribe(ts);
-        return ts;
-    }
-    
-    /**
-     * Creates a TestObserver with the given fusion mode
-     * and optionally in cancelled state, then subscribes it to this Observable.
-     * @param fusionMode the requested fusion mode, see {@link QueueDisposable} constants.
-     * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
-     * Observable.
-     * @return the new TestObserver instance
-     * @since 2.0
-     */
-    public final TestObserver<T> test(int fusionMode, boolean cancelled) { // NoPMD
-        TestObserver<T> ts = new TestObserver<T>();
-        ts.setInitialFusionMode(fusionMode);
-        if (cancelled) {
-            ts.dispose();
-        }
         subscribe(ts);
         return ts;
     }

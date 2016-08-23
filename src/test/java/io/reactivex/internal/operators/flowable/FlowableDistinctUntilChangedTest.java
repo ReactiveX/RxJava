@@ -26,7 +26,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.QueueSubscription;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableDistinctUntilChangedTest {
 
@@ -176,8 +176,9 @@ public class FlowableDistinctUntilChangedTest {
                 return a.equals(b);
             }
         })
-        .test(Long.MAX_VALUE, QueueSubscription.ANY, false)
-        .assertFusionMode(QueueSubscription.SYNC)
+        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueSubscription.ANY, false))
+        .assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
     
@@ -196,8 +197,9 @@ public class FlowableDistinctUntilChangedTest {
                 return true;
             }
         })
-        .test(Long.MAX_VALUE, QueueSubscription.ANY, false)
-        .assertFusionMode(QueueSubscription.SYNC)
+        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueSubscription.ANY, false))
+        .assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
     

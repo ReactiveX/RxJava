@@ -15,8 +15,8 @@ package io.reactivex.observable;
 
 import java.util.*;
 
+import io.reactivex.Emitter;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -29,9 +29,9 @@ public final class ObservableEventStream {
     }
     public static Observable<Event> getEventStream(final String type, final int numInstances) {
         
-        return Observable.<Event>generate(new Consumer<Observer<Event>>() {
+        return Observable.<Event>generate(new Consumer<Emitter<Event>>() {
             @Override
-            public void accept(Observer<Event> s) {
+            public void accept(Emitter<Event> s) {
                 s.onNext(randomEvent(type, numInstances));
                 try {
                     // slow it down somewhat

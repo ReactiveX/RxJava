@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
@@ -27,10 +27,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableGenerate<T, S> extends Flowable<T> {
     final Callable<S> stateSupplier;
-    final BiFunction<S, Subscriber<T>, S> generator;
+    final BiFunction<S, Emitter<T>, S> generator;
     final Consumer<? super S> disposeState;
     
-    public FlowableGenerate(Callable<S> stateSupplier, BiFunction<S, Subscriber<T>, S> generator,
+    public FlowableGenerate(Callable<S> stateSupplier, BiFunction<S, Emitter<T>, S> generator,
             Consumer<? super S> disposeState) {
         this.stateSupplier = stateSupplier;
         this.generator = generator;
@@ -54,12 +54,12 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
     
     static final class GeneratorSubscription<T, S> 
     extends AtomicLong 
-    implements Subscriber<T>, Subscription {
+    implements Emitter<T>, Subscription {
         /** */
         private static final long serialVersionUID = 7565982551505011832L;
         
         final Subscriber<? super T> actual;
-        final BiFunction<S, ? super Subscriber<T>, S> generator;
+        final BiFunction<S, ? super Emitter<T>, S> generator;
         final Consumer<? super S> disposeState;
         
         S state;
@@ -69,7 +69,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
         boolean terminate;
 
         public GeneratorSubscription(Subscriber<? super T> actual, 
-                BiFunction<S, ? super Subscriber<T>, S> generator,
+                BiFunction<S, ? super Emitter<T>, S> generator,
                 Consumer<? super S> disposeState, S initialState) {
             this.actual = actual;
             this.generator = generator;
@@ -90,7 +90,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
             
             S s = state;
             
-            final BiFunction<S, ? super Subscriber<T>, S> f = generator;
+            final BiFunction<S, ? super Emitter<T>, S> f = generator;
             
             for (;;) {
                 if (cancelled) {
@@ -169,11 +169,6 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                     dispose(state);
                 }
             }
-        }
-        
-        @Override
-        public void onSubscribe(Subscription s) {
-            throw new IllegalStateException("Should not call onSubscribe in the generator!");
         }
         
         @Override

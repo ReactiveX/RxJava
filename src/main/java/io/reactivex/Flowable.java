@@ -2049,7 +2049,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> generate(final Consumer<Subscriber<T>> generator) {
+    public static <T> Flowable<T> generate(final Consumer<Emitter<T>> generator) {
         ObjectHelper.requireNonNull(generator, "generator is null");
         return generate(Functions.nullSupplier(), 
                 FlowableInternalHelper.<T, Object>simpleGenerator(generator), 
@@ -2077,7 +2077,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Subscriber<T>> generator) {
+    public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator) {
         ObjectHelper.requireNonNull(generator, "generator is null");
         return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), 
                 Functions.emptyConsumer());
@@ -2106,7 +2106,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Subscriber<T>> generator, 
+    public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator, 
             Consumer<? super S> disposeState) {
         ObjectHelper.requireNonNull(generator, "generator is null");
         return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), 
@@ -2135,7 +2135,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, BiFunction<S, Subscriber<T>, S> generator) {
+    public static <T, S> Flowable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator) {
         return generate(initialState, generator, Functions.emptyConsumer());
     }
 
@@ -2163,7 +2163,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T, S> Flowable<T> generate(Callable<S> initialState, BiFunction<S, Subscriber<T>, S> generator, Consumer<? super S> disposeState) {
+    public static <T, S> Flowable<T> generate(Callable<S> initialState, BiFunction<S, Emitter<T>, S> generator, Consumer<? super S> disposeState) {
         ObjectHelper.requireNonNull(initialState, "initialState is null");
         ObjectHelper.requireNonNull(generator, "generator is null");
         ObjectHelper.requireNonNull(disposeState, "disposeState is null");
@@ -15446,22 +15446,21 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Creates a TestSubscriber with the given initial request amount, fusion mode
-     * and optionally in cancelled state, then subscribes it to this Flowable.
+     * Creates a TestSubscriber with the given initial request amount,
+     * optionally cancels it before the subscription and subscribes
+     * it to this Flowable.
      * @param initialRequest the initial request amount, positive
-     * @param fusionMode the requested fusion mode, see {@link QueueSubscription} constants.
-     * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
-     * Flowable.
+     * @param cancel should the TestSubscriber be cancelled before the subscription?
      * @return the new TestSubscriber instance
      * @since 2.0
      */
-    public final TestSubscriber<T> test(long initialRequest, int fusionMode, boolean cancelled) { // NoPMD
+    public final TestSubscriber<T> test(long initialRequest, boolean cancel) { // NoPMD
         TestSubscriber<T> ts = new TestSubscriber<T>(initialRequest);
-        ts.setInitialFusionMode(fusionMode);
-        if (cancelled) {
+        if (cancel) {
             ts.cancel();
         }
         subscribe(ts);
         return ts;
     }
+
 }

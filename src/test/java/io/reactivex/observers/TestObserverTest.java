@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.subscribers;
+package io.reactivex.observers;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -27,6 +27,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class TestObserverTest {
 

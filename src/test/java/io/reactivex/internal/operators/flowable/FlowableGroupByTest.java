@@ -1596,11 +1596,9 @@ public class FlowableGroupByTest {
     
     @Test
     public void outerInnerFusion() {
-        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
-        ts1.setInitialFusionMode(QueueSubscription.ANY);
+        final TestSubscriber<Integer> ts1 = SubscriberFusion.newTest(QueueSubscription.ANY);
 
-        final TestSubscriber<GroupedFlowable<Integer, Integer>> ts2 = new TestSubscriber<GroupedFlowable<Integer, Integer>>();
-        ts2.setInitialFusionMode(QueueSubscription.ANY);
+        final TestSubscriber<GroupedFlowable<Integer, Integer>> ts2 = SubscriberFusion.newTest(QueueSubscription.ANY);
 
         Flowable.range(1, 10).groupBy(new Function<Integer, Integer>() {
             @Override
@@ -1622,13 +1620,13 @@ public class FlowableGroupByTest {
         .subscribe(ts2);
         
         ts1
-        .assertFusionMode(QueueSubscription.ASYNC)
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
         .assertValues(2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         .assertNoErrors()
         .assertComplete();
 
         ts2
-        .assertFusionMode(QueueSubscription.ASYNC)
+        .assertOf(SubscriberFusion.<GroupedFlowable<Integer, Integer>>assertFusionMode(QueueSubscription.ASYNC))
         .assertValueCount(1)
         .assertNoErrors()
         .assertComplete();

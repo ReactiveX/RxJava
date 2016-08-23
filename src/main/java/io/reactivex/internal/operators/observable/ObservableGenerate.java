@@ -24,10 +24,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableGenerate<T, S> extends Observable<T> {
     final Callable<S> stateSupplier;
-    final BiFunction<S, Observer<T>, S> generator;
+    final BiFunction<S, Emitter<T>, S> generator;
     final Consumer<? super S> disposeState;
     
-    public ObservableGenerate(Callable<S> stateSupplier, BiFunction<S, Observer<T>, S> generator,
+    public ObservableGenerate(Callable<S> stateSupplier, BiFunction<S, Emitter<T>, S> generator,
             Consumer<? super S> disposeState) {
         this.stateSupplier = stateSupplier;
         this.generator = generator;
@@ -52,10 +52,10 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
     }
     
     static final class GeneratorDisposable<T, S> 
-    implements Observer<T>, Disposable {
+    implements Emitter<T>, Disposable {
         
         final Observer<? super T> actual;
-        final BiFunction<S, ? super Observer<T>, S> generator;
+        final BiFunction<S, ? super Emitter<T>, S> generator;
         final Consumer<? super S> disposeState;
         
         S state;
@@ -65,7 +65,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         boolean terminate;
 
         public GeneratorDisposable(Observer<? super T> actual, 
-                BiFunction<S, ? super Observer<T>, S> generator,
+                BiFunction<S, ? super Emitter<T>, S> generator,
                 Consumer<? super S> disposeState, S initialState) {
             this.actual = actual;
             this.generator = generator;
@@ -81,7 +81,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                 return;
             }
 
-            final BiFunction<S, ? super Observer<T>, S> f = generator;
+            final BiFunction<S, ? super Emitter<T>, S> f = generator;
 
             for (;;) {
                 
@@ -127,11 +127,6 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
             return cancelled;
         }
 
-        @Override
-        public void onSubscribe(Disposable s) {
-            throw new IllegalStateException("Should not call onSubscribe in the generator!");
-        }
-        
         @Override
         public void onNext(T t) {
             if (t == null) {

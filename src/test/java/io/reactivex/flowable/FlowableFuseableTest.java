@@ -18,19 +18,16 @@ import org.junit.Test;
 
 import io.reactivex.Flowable;
 import io.reactivex.internal.fuseable.QueueSubscription;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableFuseableTest {
 
     @Test
     public void syncRange() {
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.setInitialFusionMode(QueueSubscription.SYNC);
-        
-        Flowable.range(1, 10).subscribe(ts);
-        
-        ts.assertFusionMode(QueueSubscription.SYNC)
+        Flowable.range(1, 10)
+        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueSubscription.ANY, false))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();
@@ -39,12 +36,9 @@ public class FlowableFuseableTest {
     @Test
     public void syncArray() {
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.setInitialFusionMode(QueueSubscription.SYNC);
-        
-        Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }).subscribe(ts);
-        
-        ts.assertFusionMode(QueueSubscription.SYNC)
+        Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })
+        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueSubscription.ANY, false))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();
@@ -53,12 +47,9 @@ public class FlowableFuseableTest {
     @Test
     public void syncIterable() {
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.setInitialFusionMode(QueueSubscription.SYNC);
-        
-        Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)).subscribe(ts);
-        
-        ts.assertFusionMode(QueueSubscription.SYNC)
+        Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueSubscription.ANY, false))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();
@@ -67,12 +58,10 @@ public class FlowableFuseableTest {
     @Test
     public void syncRangeHidden() {
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.setInitialFusionMode(QueueSubscription.SYNC);
-        
-        Flowable.range(1, 10).hide().subscribe(ts);
-        
-        ts.assertNotFuseable()
+        Flowable.range(1, 10).hide()
+        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueSubscription.ANY, false))
+        .assertOf(SubscriberFusion.<Integer>assertNotFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.NONE))
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();
@@ -80,14 +69,11 @@ public class FlowableFuseableTest {
     
     @Test
     public void syncArrayHidden() {
-        
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.setInitialFusionMode(QueueSubscription.SYNC);
-        
         Flowable.fromArray(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })
-        .hide().subscribe(ts);
-        
-        ts.assertNotFuseable()
+        .hide()
+        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueSubscription.ANY, false))
+        .assertOf(SubscriberFusion.<Integer>assertNotFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.NONE))
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();
@@ -95,14 +81,11 @@ public class FlowableFuseableTest {
 
     @Test
     public void syncIterableHidden() {
-        
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.setInitialFusionMode(QueueSubscription.SYNC);
-        
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-        .hide().subscribe(ts);
-        
-        ts.assertNotFuseable()
+        .hide()
+        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueSubscription.ANY, false))
+        .assertOf(SubscriberFusion.<Integer>assertNotFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.NONE))
         .assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         .assertNoErrors()
         .assertComplete();

@@ -28,25 +28,8 @@ import io.reactivex.functions.Cancellable;
  *
  * @param <T> the value type to emit
  */
-public interface FlowableEmitter<T> {
+public interface FlowableEmitter<T> extends Emitter<T> {
 
-    /**
-     * Signal a value.
-     * @param t the value, not null
-     */
-    void onNext(T t);
-    
-    /**
-     * Signal an exception.
-     * @param t the exception, not null
-     */
-    void onError(Throwable t);
-    
-    /**
-     * Signal the completion.
-     */
-    void onComplete();
-    
     /**
      * Sets a Disposable on this emitter; any previous Disposable
      * or Cancellation will be unsubscribed/cancelled.
