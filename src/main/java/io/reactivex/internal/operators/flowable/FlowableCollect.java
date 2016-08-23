@@ -19,6 +19,7 @@ import org.reactivestreams.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T, U> {
     
@@ -58,6 +59,8 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
         
         Subscription s;
         
+        boolean done;
+        
         public CollectSubscriber(Subscriber<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
             super(actual);
             this.collector = collector;
@@ -75,22 +78,34 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
         
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             try {
                 collector.accept(u, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();
-                actual.onError(e);
+                onError(e);
             }
         }
         
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            } 
+            done = true;
             actual.onError(t);
         }
         
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
             complete(u);
         }
         

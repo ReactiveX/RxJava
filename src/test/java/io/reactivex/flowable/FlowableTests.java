@@ -886,58 +886,6 @@ public class FlowableTests {
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
-
-    @Test
-    public void testCollectToList() {
-        Flowable<List<Integer>> o = Flowable.just(1, 2, 3)
-        .collect(new Callable<List<Integer>>() {
-            @Override
-            public List<Integer> call() {
-                return new ArrayList<Integer>();
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-            @Override
-            public void accept(List<Integer> list, Integer v) {
-                list.add(v);
-            }
-        });
-        
-        List<Integer> list =  o.blockingLast();
-
-        assertEquals(3, list.size());
-        assertEquals(1, list.get(0).intValue());
-        assertEquals(2, list.get(1).intValue());
-        assertEquals(3, list.get(2).intValue());
-        
-        // test multiple subscribe
-        List<Integer> list2 =  o.blockingLast();
-
-        assertEquals(3, list2.size());
-        assertEquals(1, list2.get(0).intValue());
-        assertEquals(2, list2.get(1).intValue());
-        assertEquals(3, list2.get(2).intValue());
-    }
-
-    @Test
-    public void testCollectToString() {
-        String value = Flowable.just(1, 2, 3).collect(new Callable<StringBuilder>() {
-            @Override
-            public StringBuilder call() {
-                return new StringBuilder();
-            }
-        }, 
-            new BiConsumer<StringBuilder, Integer>() {
-                @Override
-                public void accept(StringBuilder sb, Integer v) {
-                if (sb.length() > 0) {
-                    sb.append("-");
-                }
-                sb.append(v);
-      }
-            }).blockingLast().toString();
-
-        assertEquals("1-2-3", value);
-    }
     
     @Test
     public void testMergeWith() {
