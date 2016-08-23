@@ -1488,7 +1488,7 @@ public class FlowableMergeTest {
         PublishProcessor<Integer> ps1 = PublishProcessor.create();
         PublishProcessor<Integer> ps2 = PublishProcessor.create();
         
-        Flowable.merge(1, new Flowable[] { ps1, ps2 }).subscribe(ts);
+        Flowable.mergeArray(1, 128, new Flowable[] { ps1, ps2 }).subscribe(ts);
         
         assertTrue("ps1 has no subscribers?!", ps1.hasSubscribers());
         assertFalse("ps2 has subscribers?!", ps2.hasSubscribers());

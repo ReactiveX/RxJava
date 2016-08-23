@@ -93,9 +93,11 @@ public class SingleNullTests {
     
     @Test
     public void concatNull() throws Exception {
+        int maxArgs = 4;
+        
         @SuppressWarnings("rawtypes")
         Class<Single> clazz = Single.class;
-        for (int argCount = 2; argCount < 10; argCount++) {
+        for (int argCount = 2; argCount <= maxArgs; argCount++) {
             for (int argNull = 1; argNull <= argCount; argNull++) {
                 Class<?>[] params = new Class[argCount];
                 Arrays.fill(params, SingleSource.class);
@@ -255,9 +257,11 @@ public class SingleNullTests {
 
     @Test
     public void mergeNull() throws Exception {
+        int maxArgs = 4;
+        
         @SuppressWarnings("rawtypes")
         Class<Single> clazz = Single.class;
-        for (int argCount = 2; argCount < 10; argCount++) {
+        for (int argCount = 2; argCount <= maxArgs; argCount++) {
             for (int argNull = 1; argNull <= argCount; argNull++) {
                 Class<?>[] params = new Class[argCount];
                 Arrays.fill(params, SingleSource.class);

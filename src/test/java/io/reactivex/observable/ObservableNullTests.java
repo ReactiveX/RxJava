@@ -603,13 +603,13 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void mergeArrayNull() {
-        Observable.merge(128, 128, (Observable<Object>[])null);
+        Observable.mergeArray(128, 128, (Observable<Object>[])null);
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeArrayOneIsNull() {
-        Observable.merge(128, 128, just1, null).blockingLast();
+        Observable.mergeArray(128, 128, just1, null).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -635,13 +635,13 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorArrayNull() {
-        Observable.mergeDelayError(128, 128, (Observable<Object>[])null);
+        Observable.mergeArrayDelayError(128, 128, (Observable<Object>[])null);
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorArrayOneIsNull() {
-        Observable.mergeDelayError(128, 128, just1, null).blockingLast();
+        Observable.mergeArrayDelayError(128, 128, just1, null).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2276,26 +2276,6 @@ public class ObservableNullTests {
         just1.takeLast(1, 1, TimeUnit.SECONDS, null);
     }
     
-    @Test(expected = NullPointerException.class)
-    public void takeLastBufferTimedUnitNull() {
-        just1.takeLastBuffer(1, null, Schedulers.single());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void takeLastBufferTimedSchedulerNull() {
-        just1.takeLastBuffer(1, TimeUnit.SECONDS, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void takeLastBufferSizeTimedUnitNull() {
-        just1.takeLastBuffer(1, 1, null, Schedulers.single());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void takeLastBufferSizeTimedSchedulerNull() {
-        just1.takeLastBuffer(1, 1, TimeUnit.SECONDS, null);
-    }
-
     @Test(expected = NullPointerException.class)
     public void takeUntilPredicateNull() {
         just1.takeUntil((Predicate<Integer>)null);
