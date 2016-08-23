@@ -12,10 +12,10 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.*;
+import io.reactivex.internal.fuseable.QueueDisposable;
 
 public final class ObservableRange extends Observable<Integer> {
     private final int start;
@@ -28,15 +28,86 @@ public final class ObservableRange extends Observable<Integer> {
 
     @Override
     protected void subscribeActual(Observer<? super Integer> o) {
-        Disposable d = Disposables.empty();
-        o.onSubscribe(d);
+        RangeDisposable parent = new RangeDisposable(o, start, (long)start + count);
+        o.onSubscribe(parent);
+        parent.run();
+    }
+    
+    static final class RangeDisposable 
+    extends AtomicInteger
+    implements QueueDisposable<Integer> {
+        /** */
+        private static final long serialVersionUID = 396518478098735504L;
 
-        long end = start - 1L + count;
-        for (long i = start; i <= end && !d.isDisposed(); i++) {
-            o.onNext((int)i);
+        final Observer<? super Integer> actual;
+        
+        final long end;
+        
+        long index;
+        
+        public RangeDisposable(Observer<? super Integer> actual, long start, long end) {
+            this.actual = actual;
+            this.index = start;
+            this.end = end;
         }
-        if (!d.isDisposed()) {
-            o.onComplete();
+        
+        void run() {
+            Observer<? super Integer> actual = this.actual;
+            long e = end;
+            for (long i = index; i != e && get() == 0; i++) {
+                actual.onNext((int)i);
+            }
+            if (get() == 0) {
+                lazySet(1);
+                actual.onComplete();
+            }
+        }
+
+        @Override
+        public boolean offer(Integer value) {
+            throw new UnsupportedOperationException("Should not be called!");
+        }
+
+        @Override
+        public boolean offer(Integer v1, Integer v2) {
+            throw new UnsupportedOperationException("Should not be called!");
+        }
+
+        @Override
+        public Integer poll() throws Exception {
+            long i = index;
+            if (i != end) {
+                index = i + 1;
+                return (int)i;
+            }
+            lazySet(1);
+            return null;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return index == end;
+        }
+
+        @Override
+        public void clear() {
+            index = end;
+            lazySet(1);
+        }
+
+        @Override
+        public void dispose() {
+            set(1);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return get() != 0;
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            return mode & SYNC;
         }
     }
 }

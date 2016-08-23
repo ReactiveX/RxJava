@@ -429,9 +429,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void generateConsumerEmitsNull() {
-        Observable.generate(new Consumer<Observer<Object>>() {
+        Observable.generate(new Consumer<Emitter<Object>>() {
             @Override
-            public void accept(Observer<Object> s) {
+            public void accept(Emitter<Object> s) {
                 s.onNext(null);
             }
         }).blockingLast();
@@ -439,9 +439,9 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void generateStateConsumerInitialStateNull() {
-        BiConsumer<Integer, Observer<Integer>> generator = new BiConsumer<Integer, Observer<Integer>>() {
+        BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
             @Override
-            public void accept(Integer s, Observer<Integer> o) {
+            public void accept(Integer s, Emitter<Integer> o) {
                 o.onNext(1);
             }
         };
@@ -450,9 +450,9 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void generateStateFunctionInitialStateNull() {
-        Observable.generate(null, new BiFunction<Object, Observer<Object>, Object>() {
+        Observable.generate(null, new BiFunction<Object, Emitter<Object>, Object>() {
             @Override
-            public Object apply(Object s, Observer<Object> o) { o.onNext(1); return s; }
+            public Object apply(Object s, Emitter<Object> o) { o.onNext(1); return s; }
         });
     }
 
@@ -463,14 +463,14 @@ public class ObservableNullTests {
             public Integer call() {
                 return 1;
             }
-        }, (BiConsumer<Integer, Observer<Object>>)null);
+        }, (BiConsumer<Integer, Emitter<Object>>)null);
     }
     
     @Test
     public void generateConsumerStateNullAllowed() {
-        BiConsumer<Integer, Observer<Integer>> generator = new BiConsumer<Integer, Observer<Integer>>() {
+        BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
             @Override
-            public void accept(Integer s, Observer<Integer> o) {
+            public void accept(Integer s, Emitter<Integer> o) {
                 o.onComplete();
             }
         };
@@ -489,17 +489,17 @@ public class ObservableNullTests {
             public Object call() {
                 return null;
             }
-        }, new BiFunction<Object, Observer<Object>, Object>() {
+        }, new BiFunction<Object, Emitter<Object>, Object>() {
             @Override
-            public Object apply(Object s, Observer<Object> o) { o.onComplete(); return s; }
+            public Object apply(Object s, Emitter<Object> o) { o.onComplete(); return s; }
         }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
     public void generateConsumerDisposeNull() {
-        BiConsumer<Integer, Observer<Integer>> generator = new BiConsumer<Integer, Observer<Integer>>() {
+        BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
             @Override
-            public void accept(Integer s, Observer<Integer> o) {
+            public void accept(Integer s, Emitter<Integer> o) {
                 o.onNext(1);
             }
         };
@@ -518,9 +518,9 @@ public class ObservableNullTests {
             public Object call() {
                 return 1;
             }
-        }, new BiFunction<Object, Observer<Object>, Object>() {
+        }, new BiFunction<Object, Emitter<Object>, Object>() {
             @Override
-            public Object apply(Object s, Observer<Object> o) { o.onNext(1); return s; }
+            public Object apply(Object s, Emitter<Object> o) { o.onNext(1); return s; }
         }, null);
     }
     

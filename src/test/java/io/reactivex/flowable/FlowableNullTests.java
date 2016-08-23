@@ -341,9 +341,9 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void generateConsumerEmitsNull() {
-        Flowable.generate(new Consumer<Subscriber<Object>>() {
+        Flowable.generate(new Consumer<Emitter<Object>>() {
             @Override
-            public void accept(Subscriber<Object> s) {
+            public void accept(Emitter<Object> s) {
                 s.onNext(null);
             }
         }).blockingLast();
@@ -351,9 +351,9 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void generateStateConsumerInitialStateNull() {
-        BiConsumer<Integer, Subscriber<Integer>> generator = new BiConsumer<Integer, Subscriber<Integer>>() {
+        BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
             @Override
-            public void accept(Integer s, Subscriber<Integer> o) {
+            public void accept(Integer s, Emitter<Integer> o) {
                 o.onNext(1);
             }
         };
@@ -362,9 +362,11 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void generateStateFunctionInitialStateNull() {
-        Flowable.generate(null, new BiFunction<Object, Subscriber<Object>, Object>() {
+        Flowable.generate(null, new BiFunction<Object, Emitter<Object>, Object>() {
             @Override
-            public Object apply(Object s, Subscriber<Object> o) { o.onNext(1); return s; }
+            public Object apply(Object s, Emitter<Object> o) { 
+                o.onNext(1); return s; 
+            }
         });
     }
 
@@ -375,14 +377,14 @@ public class FlowableNullTests {
             public Integer call() {
                 return 1;
             }
-        }, (BiConsumer<Integer, Subscriber<Object>>)null);
+        }, (BiConsumer<Integer, Emitter<Object>>)null);
     }
     
     @Test
     public void generateConsumerStateNullAllowed() {
-        BiConsumer<Integer, Subscriber<Integer>> generator = new BiConsumer<Integer, Subscriber<Integer>>() {
+        BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
             @Override
-            public void accept(Integer s, Subscriber<Integer> o) {
+            public void accept(Integer s, Emitter<Integer> o) {
                 o.onComplete();
             }
         };
@@ -401,17 +403,19 @@ public class FlowableNullTests {
             public Object call() {
                 return null;
             }
-        }, new BiFunction<Object, Subscriber<Object>, Object>() {
+        }, new BiFunction<Object, Emitter<Object>, Object>() {
             @Override
-            public Object apply(Object s, Subscriber<Object> o) { o.onComplete(); return s; }
+            public Object apply(Object s, Emitter<Object> o) { 
+                o.onComplete(); return s; 
+            }
         }).blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)
     public void generateConsumerDisposeNull() {
-        BiConsumer<Integer, Subscriber<Integer>> generator = new BiConsumer<Integer, Subscriber<Integer>>() {
+        BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
             @Override
-            public void accept(Integer s, Subscriber<Integer> o) {
+            public void accept(Integer s, Emitter<Integer> o) {
                 o.onNext(1);
             }
         };
@@ -430,9 +434,11 @@ public class FlowableNullTests {
             public Object call() {
                 return 1;
             }
-        }, new BiFunction<Object, Subscriber<Object>, Object>() {
+        }, new BiFunction<Object, Emitter<Object>, Object>() {
             @Override
-            public Object apply(Object s, Subscriber<Object> o) { o.onNext(1); return s; }
+            public Object apply(Object s, Emitter<Object> o) { 
+                o.onNext(1); return s; 
+            }
         }, null);
     }
     

@@ -21,6 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -816,20 +817,24 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
 
     /**
      * Sets the initial fusion mode if the upstream supports fusion.
+     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
+     * Use SubscriberFusion to work with such tests.
      * @param mode the mode to establish, see the {@link QueueSubscription} constants
      * @return this
      */
-    public final TestSubscriber<T> setInitialFusionMode(int mode) {
+    final TestSubscriber<T> setInitialFusionMode(int mode) {
         this.initialFusionMode = mode;
         return this;
     }
     
     /**
      * Asserts that the given fusion mode has been established
+     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
+     * Use SubscriberFusion to work with such tests.
      * @param mode the expected mode
      * @return this
      */
-    public final TestSubscriber<T> assertFusionMode(int mode) {
+    final TestSubscriber<T> assertFusionMode(int mode) {
         int m = establishedFusionMode;
         if (m != mode) {
             if (qs != null) {
@@ -853,9 +858,11 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     /**
      * Assert that the upstream is a fuseable source.
+     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
+     * Use SubscriberFusion to work with such tests.
      * @return this
      */
-    public final TestSubscriber<T> assertFuseable() {
+    final TestSubscriber<T> assertFuseable() {
         if (qs == null) {
             throw new AssertionError("Upstream is not fuseable.");
         }
@@ -864,11 +871,27 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
 
     /**
      * Assert that the upstream is not a fuseable source.
+     * <p>Package-private: avoid leaking the now internal fusion properties into the public API.
+     * Use SubscriberFusion to work with such tests.
      * @return this
      */
-    public final TestSubscriber<T> assertNotFuseable() {
+    final TestSubscriber<T> assertNotFuseable() {
         if (qs != null) {
             throw new AssertionError("Upstream is fuseable.");
+        }
+        return this;
+    }
+    
+    /**
+     * Run a check consumer with this TestSubscriber instance.
+     * @param check the check consumer to run
+     * @return this
+     */
+    public final TestSubscriber<T> assertOf(Consumer<? super TestSubscriber<T>> check) {
+        try {
+            check.accept(this);
+        } catch (Throwable ex) {
+            throw Exceptions.propagate(ex);
         }
         return this;
     }

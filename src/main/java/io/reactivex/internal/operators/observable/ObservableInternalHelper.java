@@ -26,39 +26,39 @@ import io.reactivex.observables.ConnectableObservable;
 public enum ObservableInternalHelper {
     ;
 
-    static final class SimpleGenerator<T, S> implements BiFunction<S, Observer<T>, S> {
-        final Consumer<Observer<T>> consumer;
+    static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
+        final Consumer<Emitter<T>> consumer;
         
-        public SimpleGenerator(Consumer<Observer<T>> consumer) {
+        public SimpleGenerator(Consumer<Emitter<T>> consumer) {
             this.consumer = consumer;
         }
         
         @Override
-        public S apply(S t1, Observer<T> t2) throws Exception {
+        public S apply(S t1, Emitter<T> t2) throws Exception {
             consumer.accept(t2);
             return t1;
         }
     }
     
-    public static <T, S> BiFunction<S, Observer<T>, S> simpleGenerator(Consumer<Observer<T>> consumer) {
+    public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Consumer<Emitter<T>> consumer) {
         return new SimpleGenerator<T, S>(consumer);
     }
     
-    static final class SimpleBiGenerator<T, S> implements BiFunction<S, Observer<T>, S> {
-        final BiConsumer<S, Observer<T>> consumer;
+    static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
+        final BiConsumer<S, Emitter<T>> consumer;
         
-        public SimpleBiGenerator(BiConsumer<S, Observer<T>> consumer) {
+        public SimpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
             this.consumer = consumer;
         }
         
         @Override
-        public S apply(S t1, Observer<T> t2) throws Exception {
+        public S apply(S t1, Emitter<T> t2) throws Exception {
             consumer.accept(t1, t2);
             return t1;
         }
     }
     
-    public static <T, S> BiFunction<S, Observer<T>, S> simpleBiGenerator(BiConsumer<S, Observer<T>> consumer) {
+    public static <T, S> BiFunction<S, Emitter<T>, S> simpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
         return new SimpleBiGenerator<T, S>(consumer);
     }
     

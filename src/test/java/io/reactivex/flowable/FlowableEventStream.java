@@ -15,9 +15,7 @@ package io.reactivex.flowable;
 
 import java.util.*;
 
-import org.reactivestreams.Subscriber;
-
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -30,9 +28,9 @@ public final class FlowableEventStream {
     }
     public static Flowable<Event> getEventStream(final String type, final int numInstances) {
         
-        return Flowable.<Event>generate(new Consumer<Subscriber<Event>>() {
+        return Flowable.<Event>generate(new Consumer<Emitter<Event>>() {
             @Override
-            public void accept(Subscriber<Event> s) {
+            public void accept(Emitter<Event> s) {
                 s.onNext(randomEvent(type, numInstances));
                 try {
                     // slow it down somewhat

@@ -271,7 +271,7 @@ public class FlowableSubscribeOnTest {
         TestScheduler test = new TestScheduler();
         
         TestSubscriber<Integer> ts = Flowable.just(1).hide()
-                .subscribeOn(test).test(Long.MAX_VALUE, 0, true);
+                .subscribeOn(test).test(Long.MAX_VALUE, true);
         
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         
