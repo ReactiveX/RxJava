@@ -19,7 +19,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -97,7 +97,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                     return null;
                 }
             }
-            return Objects.requireNonNull(it.next(), "Iterator.next() returned a null value");
+            return ObjectHelper.requireNonNull(it.next(), "Iterator.next() returned a null value");
         }
 
         

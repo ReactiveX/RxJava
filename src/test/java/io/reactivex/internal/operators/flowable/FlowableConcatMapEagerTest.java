@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
@@ -577,7 +578,7 @@ public class FlowableConcatMapEagerTest {
             }
         }).observeOn(Schedulers.newThread()).subscribe(ts);
         
-        ts.awaitTerminalEvent();
+        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertValueCount(2000);
     }
@@ -714,7 +715,7 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test
-    public void Flowable() {
+    public void flowable() {
         Flowable<Integer> source = Flowable.just(1);
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
@@ -726,7 +727,7 @@ public class FlowableConcatMapEagerTest {
     }
     
     @Test
-    public void FlowableCapacityHint() {
+    public void flowableCapacityHint() {
         Flowable<Integer> source = Flowable.just(1);
         TestSubscriber<Integer> ts = TestSubscriber.create();
 

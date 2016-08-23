@@ -15,30 +15,38 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.Subscriber;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.util.AtomicThrowable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstream<T, R> {
     final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
     final int bufferSize;
+    
+    final boolean delayErrors;
 
     public ObservableSwitchMap(ObservableSource<T> source,
-                               Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
+                               Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
+                                       boolean delayErrors) {
         super(source);
         this.mapper = mapper;
         this.bufferSize = bufferSize;
+        this.delayErrors = delayErrors;
     }
     
     @Override
     public void subscribeActual(Observer<? super R> t) {
-        source.subscribe(new SwitchMapSubscriber<T, R>(t, mapper, bufferSize));
+        
+        if (ObservableScalarXMap.tryScalarXMapSubscribe(source, t, mapper)) {
+            return;
+        }
+        
+        source.subscribe(new SwitchMapSubscriber<T, R>(t, mapper, bufferSize, delayErrors));
     }
     
     static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements Observer<T>, Disposable {
@@ -48,9 +56,11 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
         final int bufferSize;
         
+        final boolean delayErrors;
+        
+        final AtomicThrowable errors;
         
         volatile boolean done;
-        Throwable error;
         
         volatile boolean cancelled;
         
@@ -66,10 +76,14 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         
         volatile long unique;
         
-        public SwitchMapSubscriber(Observer<? super R> actual, Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
+        public SwitchMapSubscriber(Observer<? super R> actual, 
+                Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
+                        boolean delayErrors) {
             this.actual = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
+            this.delayErrors = delayErrors;
+            this.errors = new AtomicThrowable();
         }
         
         @Override
@@ -122,11 +136,13 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         
         @Override
         public void onError(Throwable t) {
-            if (done) {
+            if (done || !errors.addThrowable(t)) {
+                if (!delayErrors) {
+                    disposeInner();
+                }
                 RxJavaPlugins.onError(t);
                 return;
             }
-            error = t;
             done = true;
             drain();
         }
@@ -181,16 +197,27 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                 }
                 
                 if (done) {
-                    Throwable err = error;
-                    if (err != null) {
-                        disposeInner();
-                        s.dispose();
-                        a.onError(err);
-                        return;
-                    } else
-                    if (active.get() == null) {
-                        a.onComplete();
-                        return;
+                    boolean empty = active.get() == null;
+                    if (delayErrors) {
+                        if (empty) {
+                            Throwable ex = errors.get();
+                            if (ex != null) {
+                                a.onError(ex);
+                            } else {
+                                a.onComplete();
+                            }
+                            return;
+                        }
+                    } else {
+                        Throwable ex = errors.get();
+                        if (ex != null) {
+                            a.onError(errors.terminate());
+                            return;
+                        }
+                        if (empty) {
+                            a.onComplete();
+                            return;
+                        }
                     }
                 }
                 
@@ -200,16 +227,22 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                     SpscArrayQueue<R> q = inner.queue;
 
                     if (inner.done) {
-                        Throwable err = inner.error;
-                        if (err != null) {
-                            s.dispose();
-                            disposeInner();
-                            a.onError(err);
-                            return;
-                        } else
-                        if (q.isEmpty()) {
-                            active.compareAndSet(inner, null);
-                            continue;
+                        boolean empty = q.isEmpty();
+                        if (delayErrors) {
+                            if (empty) {
+                                active.compareAndSet(inner, null);
+                                continue;
+                            }
+                        } else {
+                            Throwable ex = errors.get();
+                            if (ex != null) {
+                                a.onError(errors.terminate());
+                                return;
+                            }
+                            if (empty) {
+                                active.compareAndSet(inner, null);
+                                continue;
+                            }
                         }
                     }
                     
@@ -229,16 +262,16 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                         boolean empty = v == null;
 
                         if (d) {
-                            Throwable err = inner.error;
-                            if (err != null) {
-                                s.dispose();
-                                a.onError(err);
-                                return;
-                            } else
-                            if (empty) {
+                            if (delayErrors || empty) {
                                 active.compareAndSet(inner, null);
                                 retry = true;
                                 break;
+                            }
+                            
+                            Throwable ex = errors.get();
+                            if (ex != null) {
+                                a.onError(errors.terminate());
+                                return;
                             }
                         }
                         
@@ -261,26 +294,16 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
             }
         }
         
-        boolean checkTerminated(boolean d, boolean empty, Subscriber<? super R> a) {
-            if (cancelled) {
-                s.dispose();
-                return true;
-            }
-            if (d) {
-                Throwable e = error;
-                if (e != null) {
-                    cancelled = true;
+        void innerError(SwitchMapInnerSubscriber<T, R> inner, Throwable ex) {
+            if (inner.index == unique && errors.addThrowable(ex)) {
+                if (!delayErrors) {
                     s.dispose();
-                    a.onError(e);
-                    return true;
-                } else
-                if (empty) {
-                    a.onComplete();
-                    return true;
                 }
+                inner.done = true;
+                drain();
+            } else {
+                RxJavaPlugins.onError(ex);
             }
-            
-            return false;
         }
     }
     
@@ -293,7 +316,6 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         final SpscArrayQueue<R> queue;
         
         volatile boolean done;
-        Throwable error;
 
         public SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
@@ -324,13 +346,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         @Override
         public void onError(Throwable t) {
-            if (index == parent.unique) {
-                error = t;
-                done = true;
-                parent.drain();
-            } else {
-                RxJavaPlugins.onError(t);
-            }
+            parent.innerError(this, t);
         }
         
         @Override

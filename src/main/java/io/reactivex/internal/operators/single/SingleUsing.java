@@ -20,6 +20,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleUsing<T, U> extends Single<T> {
@@ -56,16 +57,10 @@ public final class SingleUsing<T, U> extends Single<T> {
         SingleSource<? extends T> s1;
         
         try {
-            s1 = singleFunction.apply(resource);
+            s1 = ObjectHelper.requireNonNull(singleFunction.apply(resource), "The singleFunction returned a null SingleSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, s);
-            return;
-        }
-        
-        if (s1 == null) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(new NullPointerException("The Single supplied by the function was null"));
             return;
         }
         

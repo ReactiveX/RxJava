@@ -26,9 +26,9 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -71,7 +71,7 @@ public class ObservableRepeatTest {
 
             @Override
             public void subscribe(Observer<? super Integer> sub) {
-                sub.onSubscribe(EmptyDisposable.INSTANCE);
+                sub.onSubscribe(Disposables.empty());
                 counter.incrementAndGet();
                 sub.onNext(1);
                 sub.onNext(2);

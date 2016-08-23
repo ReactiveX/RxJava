@@ -28,10 +28,9 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 import io.reactivex.subjects.PublishSubject;
 
@@ -75,7 +74,7 @@ public class ObservableRetryWithPredicateTest {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(EmptyDisposable.INSTANCE);
+                t1.onSubscribe(Disposables.empty());
                 count++;
                 t1.onNext(0);
                 t1.onNext(1);
@@ -110,7 +109,7 @@ public class ObservableRetryWithPredicateTest {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(EmptyDisposable.INSTANCE);
+                t1.onSubscribe(Disposables.empty());
                 t1.onNext(0);
                 t1.onNext(1);
                 t1.onError(new TestException());
@@ -139,7 +138,7 @@ public class ObservableRetryWithPredicateTest {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(EmptyDisposable.INSTANCE);
+                t1.onSubscribe(Disposables.empty());
                 count++;
                 t1.onNext(0);
                 t1.onNext(1);
@@ -176,7 +175,7 @@ public class ObservableRetryWithPredicateTest {
             int count;
             @Override
             public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(EmptyDisposable.INSTANCE);
+                t1.onSubscribe(Disposables.empty());
                 count++;
                 t1.onNext(0);
                 t1.onNext(1);

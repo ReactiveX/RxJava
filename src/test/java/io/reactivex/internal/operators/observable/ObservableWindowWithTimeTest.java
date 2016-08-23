@@ -24,8 +24,8 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.TestScheduler;
 
@@ -49,7 +49,7 @@ public class ObservableWindowWithTimeTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 push(NbpObserver, "one", 10);
                 push(NbpObserver, "two", 90);
                 push(NbpObserver, "three", 110);
@@ -83,7 +83,7 @@ public class ObservableWindowWithTimeTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 push(NbpObserver, "one", 98);
                 push(NbpObserver, "two", 99);
                 push(NbpObserver, "three", 99); // FIXME happens after the window is open

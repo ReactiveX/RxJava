@@ -23,8 +23,8 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 
 public class ObservableMaterializeTest {
@@ -149,7 +149,7 @@ public class ObservableMaterializeTest {
 
         @Override
         public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override

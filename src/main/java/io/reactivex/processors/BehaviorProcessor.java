@@ -21,7 +21,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -95,7 +95,7 @@ public final class BehaviorProcessor<T> extends FlowProcessor<T> {
      * @return the constructed {@link BehaviorProcessor}
      */
     public static <T> BehaviorProcessor<T> createDefault(T defaultValue) {
-        Objects.requireNonNull(defaultValue, "defaultValue is null");
+        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
         State<T> state = new State<T>();
         state.lazySet(defaultValue);
         return new BehaviorProcessor<T>(state);

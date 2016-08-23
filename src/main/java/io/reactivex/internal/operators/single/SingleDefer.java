@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 
 public final class SingleDefer<T> extends Single<T> {
 
@@ -32,16 +33,10 @@ public final class SingleDefer<T> extends Single<T> {
         SingleSource<? extends T> next;
         
         try {
-            next = singleSupplier.call();
+            next = ObjectHelper.requireNonNull(singleSupplier.call(), "The singleSupplier returned a null SingleSource");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, s);
-            return;
-        }
-        
-        if (next == null) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(new NullPointerException("The Single supplied was null"));
             return;
         }
         

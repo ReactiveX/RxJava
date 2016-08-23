@@ -26,8 +26,8 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 
 public class ObservableMergeDelayErrorTest {
@@ -219,7 +219,7 @@ public class ObservableMergeDelayErrorTest {
 
             @Override
             public void subscribe(Observer<? super Observable<String>> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 // simulate what would happen in an NbpObservable
                 NbpObserver.onNext(o1);
                 NbpObserver.onNext(o2);
@@ -317,7 +317,7 @@ public class ObservableMergeDelayErrorTest {
 
         @Override
         public void subscribe(Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             NbpObserver.onNext("hello");
             NbpObserver.onComplete();
         }
@@ -328,7 +328,7 @@ public class ObservableMergeDelayErrorTest {
 
         @Override
         public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -352,7 +352,7 @@ public class ObservableMergeDelayErrorTest {
 
         @Override
         public void subscribe(Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             boolean errorThrown = false;
             for (String s : valuesToReturn) {
                 if (s == null) {
@@ -383,7 +383,7 @@ public class ObservableMergeDelayErrorTest {
 
         @Override
         public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -436,7 +436,7 @@ public class ObservableMergeDelayErrorTest {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t1) {
-                t1.onSubscribe(EmptyDisposable.INSTANCE);
+                t1.onSubscribe(Disposables.empty());
                 try {
                     t1.onNext(0);
                 } catch (Throwable swallow) {
@@ -508,7 +508,7 @@ public class ObservableMergeDelayErrorTest {
             Observable<Observable<String>> parentObservable = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
                 @Override
                 public void subscribe(Observer<? super Observable<String>> op) {
-                    op.onSubscribe(EmptyDisposable.INSTANCE);
+                    op.onSubscribe(Disposables.empty());
                     op.onNext(Observable.unsafeCreate(o1));
                     op.onNext(Observable.unsafeCreate(o2));
                     op.onError(new NullPointerException("throwing exception in parent"));
@@ -535,7 +535,7 @@ public class ObservableMergeDelayErrorTest {
 
         @Override
         public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override

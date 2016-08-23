@@ -25,9 +25,9 @@ import org.junit.*;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -61,16 +61,16 @@ public class ObservableCacheTest {
         Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(final Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            public void subscribe(final Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
                 new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         counter.incrementAndGet();
                         System.out.println("published NbpObservable being executed");
-                        NbpObserver.onNext("one");
-                        NbpObserver.onComplete();
+                        observer.onNext("one");
+                        observer.onComplete();
                     }
                 }).start();
             }
@@ -195,7 +195,7 @@ public class ObservableCacheTest {
         Observable<Integer> firehose = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t) {
-                t.onSubscribe(EmptyDisposable.INSTANCE);
+                t.onSubscribe(Disposables.empty());
                 for (int i = 0; i < m; i++) {
                     t.onNext(i);
                 }

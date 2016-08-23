@@ -24,9 +24,8 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
@@ -40,7 +39,7 @@ public class ObservablePublishTest {
 
             @Override
             public void subscribe(final Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 new Thread(new Runnable() {
 
                     @Override
@@ -347,7 +346,7 @@ public class ObservablePublishTest {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(Observer<? super Integer> t) {
-                t.onSubscribe(EmptyDisposable.INSTANCE);
+                t.onSubscribe(Disposables.empty());
                 calls.getAndIncrement();
             }
         });

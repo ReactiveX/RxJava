@@ -85,11 +85,11 @@ implements Subscriber<T>, Subscription {
     
     @Override
     public void onNext(T t) {
-        if (fusionMode == QueueSubscription.SYNC) {
+        if (fusionMode == QueueSubscription.NONE) {
+            parent.innerNext(this, t);
+        } else {
             parent.drain();
-            return;
         }
-        parent.innerNext(this, t);
     }
     
     @Override

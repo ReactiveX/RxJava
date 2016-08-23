@@ -24,7 +24,6 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -130,7 +129,7 @@ public class SingleTest {
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
             public void subscribe(SingleObserver<? super Object> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
+                s.onSubscribe(Disposables.empty());
                 s.onSuccess("Hello");
             }
         }).toFlowable().subscribe(ts);
@@ -144,7 +143,7 @@ public class SingleTest {
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
             public void subscribe(SingleObserver<? super Object> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
+                s.onSubscribe(Disposables.empty());
                 s.onError(new RuntimeException("fail"));
             }
         }).toFlowable().subscribe(ts);
@@ -201,7 +200,7 @@ public class SingleTest {
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
             public void subscribe(SingleObserver<? super String> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
+                s.onSubscribe(Disposables.empty());
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
@@ -223,7 +222,7 @@ public class SingleTest {
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
             public void subscribe(SingleObserver<? super String> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
+                s.onSubscribe(Disposables.empty());
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
@@ -428,7 +427,7 @@ public class SingleTest {
         Single<String> s = Single.unsafeCreate(new SingleSource<String>() {
             @Override
             public void subscribe(SingleObserver<? super String> t) {
-                t.onSubscribe(EmptyDisposable.INSTANCE);
+                t.onSubscribe(Disposables.empty());
                 t.onSuccess("hello");
             }
         });

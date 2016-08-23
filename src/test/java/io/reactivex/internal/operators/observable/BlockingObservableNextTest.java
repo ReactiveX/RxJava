@@ -25,8 +25,8 @@ import org.junit.*;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
@@ -238,7 +238,7 @@ public class BlockingObservableNextTest {
 
             @Override
             public void subscribe(final Observer<? super Integer> o) {
-                o.onSubscribe(EmptyDisposable.INSTANCE);
+                o.onSubscribe(Disposables.empty());
                 new Thread(new Runnable() {
 
                     @Override

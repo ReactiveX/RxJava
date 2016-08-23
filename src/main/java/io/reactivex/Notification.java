@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.NotificationLite;
 
 /**
@@ -92,7 +92,7 @@ public final class Notification<T> {
     public boolean equals(Object obj) {
         if (obj instanceof Notification) {
             Notification<?> n = (Notification<?>) obj;
-            return Objects.equals(value, n.value);
+            return ObjectHelper.equals(value, n.value);
         }
         return false;
     }
@@ -123,7 +123,7 @@ public final class Notification<T> {
      * @throws NullPointerException if value is null
      */
     public static <T> Notification<T> createOnNext(T value) {
-        Objects.requireNonNull(value, "value is null");
+        ObjectHelper.requireNonNull(value, "value is null");
         return new Notification<T>(value);
     }
     
@@ -135,7 +135,7 @@ public final class Notification<T> {
      * @throws NullPointerException if error is null
      */
     public static <T> Notification<T> createOnError(Throwable error) {
-        Objects.requireNonNull(error, "error is null");
+        ObjectHelper.requireNonNull(error, "error is null");
         return new Notification<T>(NotificationLite.error(error));
     }
     

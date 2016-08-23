@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.*;

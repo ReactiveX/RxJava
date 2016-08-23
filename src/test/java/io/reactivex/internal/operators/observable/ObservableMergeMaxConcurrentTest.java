@@ -24,7 +24,7 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.internal.schedulers.IoScheduler;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -98,7 +98,7 @@ public class ObservableMergeMaxConcurrentTest {
 
         @Override
         public void subscribe(final Observer<? super String> t1) {
-            t1.onSubscribe(EmptyDisposable.INSTANCE);
+            t1.onSubscribe(Disposables.empty());
             new Thread(new Runnable() {
 
                 @Override

@@ -21,7 +21,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -95,7 +95,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * @return the constructed {@link BehaviorSubject}
      */
     public static <T> BehaviorSubject<T> createDefault(T defaultValue) {
-        Objects.requireNonNull(defaultValue, "defaultValue is null");
+        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
         State<T> state = new State<T>();
         state.lazySet(defaultValue);
         return new BehaviorSubject<T>(state);

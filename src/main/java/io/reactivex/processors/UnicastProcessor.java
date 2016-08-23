@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.*;
@@ -84,7 +84,7 @@ public final class UnicastProcessor<T> extends FlowProcessor<T> {
      */
     public UnicastProcessor(int capacityHint, Runnable onTerminate) {
         this.queue = new SpscLinkedArrayQueue<T>(capacityHint);
-        this.onTerminate = new AtomicReference<Runnable>(Objects.requireNonNull(onTerminate, "onTerminate"));
+        this.onTerminate = new AtomicReference<Runnable>(ObjectHelper.requireNonNull(onTerminate, "onTerminate"));
         this.actual = new AtomicReference<Subscriber<? super T>>();
         this.once = new AtomicBoolean();
         this.wip = new UnicastQueueSubscription();

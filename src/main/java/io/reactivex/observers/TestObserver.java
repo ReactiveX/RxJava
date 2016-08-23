@@ -21,23 +21,21 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.fuseable.QueueDisposable;
 
 /**
- * A subscriber that records events and allows making assertions about them.
+ * An Observer that records events and allows making assertions about them.
  *
- * <p>You can override the onSubscribe, onNext, onError, onComplete, request and
+ * <p>You can override the onSubscribe, onNext, onError, onComplete and
  * cancel methods but not the others (this is by desing).
  * 
  * <p>The TestSubscriber implements Disposable for convenience where dispose calls cancel.
  * 
- * <p>When calling the default request method, you are requesting on behalf of the
- * wrapped actual subscriber.
- * 
  * @param <T> the value type
  */
 public class TestObserver<T> implements Observer<T>, Disposable {
-    /** The actual subscriber to forward events to. */
+    /** The actual observer to forward events to. */
     private final Observer<? super T> actual;
     /** The latch that indicates an onError or onCompleted has been called. */
     private final CountDownLatch done;
@@ -47,10 +45,10 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     private final List<Throwable> errors;
     /** The number of completions. */
     private long completions;
-    /** The last thread seen by the subscriber. */
+    /** The last thread seen by the observer. */
     private Thread lastThread;
     
-    /** Makes sure the incoming Subscriptions get cancelled immediately. */
+    /** Makes sure the incoming Disposables get cancelled immediately. */
     private volatile boolean cancelled;
 
     /** Holds the current subscription if any. */
@@ -58,16 +56,41 @@ public class TestObserver<T> implements Observer<T>, Disposable {
 
     private boolean checkSubscriptionOnce;
 
+    private int initialFusionMode;
+    
+    private int establishedFusionMode;
+    
+    private QueueDisposable<T> qs;
+    
     /**
-     * Constructs a non-forwarding TestSubscriber with an initial request value of Long.MAX_VALUE.
+     * Constructs a non-forwarding TestObserver.
+     * @param <T> the value type received
+     * @return the new TestObserver instance
+     */
+    public static <T> TestObserver<T> create() {
+        return new TestObserver<T>();
+    }
+    
+    /**
+     * Constructs a forwarding TestObserver.
+     * @param <T> the value type received
+     * @param delegate the actual Observer to forward events to
+     * @return the new TestObserver instance
+     */
+    public static <T> TestObserver<T> create(Observer<? super T> delegate) {
+        return new TestObserver<T>(delegate);
+    }
+
+    /**
+     * Constructs a non-forwarding TestObserver.
      */
     public TestObserver() {
         this(EmptyObserver.INSTANCE);
     }
 
     /**
-     * Constructs a forwarding TestSubscriber but leaves the requesting to the wrapped subscriber.
-     * @param actual the actual Subscriber to forward events to
+     * Constructs a forwarding TestObserver.
+     * @param actual the actual Observer to forward events to
      */
     public TestObserver(Observer<? super T> actual) {
         this.actual = actual;
@@ -76,6 +99,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         this.done = new CountDownLatch(1);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public void onSubscribe(Disposable s) {
         lastThread = Thread.currentThread();
@@ -96,6 +120,31 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             s.dispose();
         }
         
+        if (initialFusionMode != 0) {
+            if (s instanceof QueueDisposable) {
+                qs = (QueueDisposable<T>)s;
+                
+                int m = qs.requestFusion(initialFusionMode);
+                establishedFusionMode = m;
+                
+                if (m == QueueDisposable.SYNC) {
+                    checkSubscriptionOnce = true;
+                    lastThread = Thread.currentThread();
+                    try {
+                        T t;
+                        while ((t = qs.poll()) != null) {
+                            values.add(t);
+                        }
+                        completions++;
+                    } catch (Throwable ex) {
+                        // Exceptions.throwIfFatal(e); TODO add fatals?
+                        errors.add(ex);
+                    }
+                    return;
+                }
+            }
+        }
+        
         actual.onSubscribe(s);
         
         if (cancelled) {
@@ -113,6 +162,19 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         }
 
         lastThread = Thread.currentThread();
+
+        if (establishedFusionMode == QueueDisposable.ASYNC) {
+            try {
+                while ((t = qs.poll()) != null) {
+                    values.add(t);
+                }
+            } catch (Throwable ex) {
+                // Exceptions.throwIfFatal(e); TODO add fatals?
+                errors.add(ex);
+            }
+            return;
+        }
+
         values.add(t);
         
         if (t == null) {
@@ -170,6 +232,15 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      */
     public final boolean isCancelled() {
         return cancelled;
+    }
+    
+    /**
+     * Cancels the TestObserver (before or after the subscription happened).
+     * <p>This operation is threadsafe.
+     * <p>This method is provided as a convenience when converting Flowable tests that cancel.
+     */
+    public final void cancel() {
+        dispose();
     }
     
     @Override
@@ -253,15 +324,17 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     
     /**
      * Awaits until this TestSubscriber receives an onError or onComplete events.
+     * @return this
      * @throws InterruptedException if the current thread is interrupted while waiting
      * @see #awaitTerminalEvent()
      */
-    public final void await() throws InterruptedException {
+    public final TestObserver<T> await() throws InterruptedException {
         if (done.getCount() == 0) {
-            return;
+            return this;
         }
         
         done.await();
+        return this;
     }
     
     /**
@@ -427,7 +500,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             fail("Expected: " + valueAndClass(value) + ", Actual: " + values);
         }
         T v = values.get(0);
-        if (!Objects.equals(value, v)) {
+        if (!ObjectHelper.equals(value, v)) {
             fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
         }
         return this;
@@ -477,7 +550,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             T u = values[i];
-            if (!Objects.equals(u, v)) {
+            if (!ObjectHelper.equals(u, v)) {
                 fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
         }
@@ -523,7 +596,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             T v = it.next();
             T u = vit.next();
             
-            if (!Objects.equals(u, v)) {
+            if (!ObjectHelper.equals(u, v)) {
                 fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
             i++;
@@ -644,7 +717,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
                 fail("Error is null");
             }
             String errorMessage = e.getMessage();
-            if (!Objects.equals(message, errorMessage)) {
+            if (!ObjectHelper.equals(message, errorMessage)) {
                 fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
             }
         } else {
@@ -675,6 +748,65 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         result.add(completeList);
         
         return result;
+    }
+
+    /**
+     * Sets the initial fusion mode if the upstream supports fusion.
+     * @param mode the mode to establish, see the {@link QueueDisposable} constants
+     * @return this
+     */
+    public final TestObserver<T> setInitialFusionMode(int mode) {
+        this.initialFusionMode = mode;
+        return this;
+    }
+    
+    /**
+     * Asserts that the given fusion mode has been established
+     * @param mode the expected mode
+     * @return this
+     */
+    public final TestObserver<T> assertFusionMode(int mode) {
+        int m = establishedFusionMode;
+        if (m != mode) {
+            if (qs != null) {
+                throw new AssertionError("Fusion mode different. Expected: " + fusionModeToString(mode)
+                + ", actual: " + fusionModeToString(m));
+            } else {
+                throw new AssertionError("Upstream is not fuseable");
+            }
+        }
+        return this;
+    }
+    
+    private String fusionModeToString(int mode) {
+        switch (mode) {
+        case QueueDisposable.NONE : return "NONE";
+        case QueueDisposable.SYNC : return "SYNC";
+        case QueueDisposable.ASYNC : return "ASYNC";
+        default: return "Unknown(" + mode + ")";
+        }
+    }
+    
+    /**
+     * Assert that the upstream is a fuseable source.
+     * @return this
+     */
+    public final TestObserver<T> assertFuseable() {
+        if (qs == null) {
+            throw new AssertionError("Upstream is not fuseable.");
+        }
+        return this;
+    }
+
+    /**
+     * Assert that the upstream is not a fuseable source.
+     * @return this
+     */
+    public final TestObserver<T> assertNotFuseable() {
+        if (qs != null) {
+            throw new AssertionError("Upstream is fuseable.");
+        }
+        return this;
     }
 
     /**

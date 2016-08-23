@@ -20,9 +20,8 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.disposables.EmptyDisposable;
 
 public class ObservableDoOnSubscribeTest {
 
@@ -71,7 +70,7 @@ public class ObservableDoOnSubscribeTest {
 
             @Override
             public void subscribe(Observer<? super Integer> s) {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
+                s.onSubscribe(Disposables.empty());
                 onSubscribed.incrementAndGet();
                 sref.set(s);
             }

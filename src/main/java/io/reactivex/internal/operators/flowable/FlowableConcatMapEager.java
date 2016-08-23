@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscribers.flowable.*;
@@ -116,7 +116,7 @@ public class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpstream<T
             Publisher<? extends R> p;
             
             try {
-                p = Objects.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 s.cancel();

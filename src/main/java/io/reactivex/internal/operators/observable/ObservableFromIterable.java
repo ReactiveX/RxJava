@@ -18,7 +18,7 @@ import java.util.Iterator;
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscribers.observable.BaseQueueDisposable;
 
 public final class ObservableFromIterable<T> extends Observable<T> {
@@ -87,7 +87,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
                 T v;
                 
                 try {
-                    v = Objects.requireNonNull(it.next(), "The iterator returned a null value");
+                    v = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     actual.onError(e);
@@ -136,7 +136,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
                 checkNext = true;
             }
             
-            return Objects.requireNonNull(it.next(), "The iterator returned a null value");
+            return ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
         }
 
         @Override

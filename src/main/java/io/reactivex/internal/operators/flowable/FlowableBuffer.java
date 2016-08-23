@@ -21,7 +21,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BooleanSupplier;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -49,7 +49,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
         this.size = size;
         this.skip = skip;
-        this.bufferSupplier = Objects.requireNonNull(bufferSupplier, "bufferSupplier");
+        this.bufferSupplier = ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier");
     }
 
     @Override

@@ -24,8 +24,8 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 
@@ -42,7 +42,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
 
                     @Override
                     public void subscribe(Observer<? super Long> o) {
-                        o.onSubscribe(EmptyDisposable.INSTANCE);
+                        o.onSubscribe(Disposables.empty());
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);
@@ -152,7 +152,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
 
                     @Override
                     public void subscribe(Observer<? super Long> o) {
-                        o.onSubscribe(EmptyDisposable.INSTANCE);
+                        o.onSubscribe(Disposables.empty());
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);

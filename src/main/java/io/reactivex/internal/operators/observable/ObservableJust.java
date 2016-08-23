@@ -14,15 +14,15 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
 
 /**
  * Represents a constant scalar value.
  * @param <T> the value type
  */
-public final class ObservableJust<T> extends Observable<T> {
+public final class ObservableJust<T> extends Observable<T> implements ScalarCallable<T> {
+
     private final T value;
     public ObservableJust(final T value) {
         this.value = value;
@@ -30,41 +30,13 @@ public final class ObservableJust<T> extends Observable<T> {
 
     @Override
     protected void subscribeActual(Observer<? super T> s) {
-        s.onSubscribe(EmptyDisposable.INSTANCE);
-        s.onNext(value);
-        s.onComplete();
+        ScalarDisposable<T> sd = new ScalarDisposable<T>(s, value);
+        s.onSubscribe(sd);
+        sd.run();
     }
     
-    public T value() {
+    @Override
+    public T call() {
         return value;
-    }
-    
-    public <U> Observable<U> scalarFlatMap(final Function<? super T, ? extends ObservableSource<? extends U>> mapper) {
-        return new Observable<U>() {
-            @Override
-            public void subscribeActual(Observer<? super U> s) {
-                ObservableSource<? extends U> other;
-                try {
-                    other = mapper.apply(value);
-                } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    EmptyDisposable.error(e, s);
-                    return;
-                }
-                if (other == null) {
-                    EmptyDisposable.error(new NullPointerException("The publisher returned by the function is null"), s);
-                    return;
-                }
-                if (other instanceof ObservableJust) {
-                    @SuppressWarnings("unchecked")
-                    ObservableJust<U> o = (ObservableJust<U>)other;
-                    s.onSubscribe(EmptyDisposable.INSTANCE);
-                    s.onNext(o.value);
-                    s.onComplete();
-                } else {
-                    other.subscribe(s);
-                }
-            }
-        };
     }
 }

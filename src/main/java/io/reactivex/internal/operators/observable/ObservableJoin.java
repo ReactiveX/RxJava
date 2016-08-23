@@ -16,8 +16,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static io.reactivex.Flowable.bufferSize;
-
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -26,7 +24,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.operators.observable.ObservableGroupJoin.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.ExceptionHelper;
@@ -223,7 +221,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Abstr
                         ObservableSource<TLeftEnd> p;
                         
                         try {
-                            p = Objects.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
+                            p = ObjectHelper.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -247,7 +245,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Abstr
                             R w;
                             
                             try {
-                                w = Objects.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
+                                w = ObjectHelper.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
                             } catch (Throwable exc) {
                                 fail(exc, a, q);
                                 return;
@@ -267,7 +265,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Abstr
                         ObservableSource<TRightEnd> p;
                         
                         try {
-                            p = Objects.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
+                            p = ObjectHelper.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
@@ -291,7 +289,7 @@ public class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Abstr
                             R w;
                             
                             try {
-                                w = Objects.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
+                                w = ObjectHelper.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
                             } catch (Throwable exc) {
                                 fail(exc, a, q);
                                 return;

@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * An abstract Observer that allows asynchronous cancellation of its subscription and associated resources.
@@ -42,7 +42,7 @@ public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
      * @throws NullPointerException if resource is null
      */
     public final void add(Disposable resource) {
-        Objects.requireNonNull(resource, "resource is null");
+        ObjectHelper.requireNonNull(resource, "resource is null");
         resources.add(resource);
     }
     

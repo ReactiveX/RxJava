@@ -28,7 +28,6 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
@@ -112,7 +111,7 @@ public class ObservableTakeTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 NbpObserver.onNext("one");
                 NbpObserver.onError(new Throwable("test failed"));
             }
@@ -240,7 +239,7 @@ public class ObservableTakeTest {
 
         @Override
         public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

@@ -22,9 +22,9 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
@@ -47,7 +47,7 @@ public class ObservableDebounceTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 publishNext(NbpObserver, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
                 publishNext(NbpObserver, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
                 publishNext(NbpObserver, 900, "three");   // Should be skipped since onCompleted will arrive before the timeout expires.
@@ -73,7 +73,7 @@ public class ObservableDebounceTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 // all should be skipped since they are happening faster than the 200ms timeout
                 publishNext(NbpObserver, 100, "a");    // Should be skipped
                 publishNext(NbpObserver, 200, "b");    // Should be skipped
@@ -103,7 +103,7 @@ public class ObservableDebounceTest {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 Exception error = new TestException();
                 publishNext(NbpObserver, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
                 publishNext(NbpObserver, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.

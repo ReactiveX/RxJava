@@ -15,7 +15,7 @@ package io.reactivex.disposables;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * Base class for Disposable containers that manage some other type that
@@ -28,7 +28,7 @@ abstract class ReferenceDisposable<T> extends AtomicReference<T> implements Disp
     private static final long serialVersionUID = 6537757548749041217L;
 
     ReferenceDisposable(T value) {
-        super(Objects.requireNonNull(value, "value is null"));
+        super(ObjectHelper.requireNonNull(value, "value is null"));
     }
 
     protected abstract void onDisposed(T value);

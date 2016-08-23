@@ -148,8 +148,7 @@ public final class UnicastSubject<T> extends Subject<T> {
                 subscriber.lazySet(s); // full barrier in drain
                 drain();
             } else {
-                s.onSubscribe(EmptyDisposable.INSTANCE);
-                s.onError(new IllegalStateException("Only a single subscriber allowed."));
+                EmptyDisposable.error(new IllegalStateException("Only a single subscriber allowed."), s);
             }
         }
         

@@ -99,8 +99,7 @@ public final class CompletablePeek extends Completable {
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     d.dispose();
-                    s.onSubscribe(EmptyDisposable.INSTANCE);
-                    s.onError(ex);
+                    EmptyDisposable.error(ex, s);
                     return;
                 }
                 

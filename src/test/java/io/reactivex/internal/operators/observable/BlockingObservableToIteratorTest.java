@@ -20,8 +20,8 @@ import java.util.Iterator;
 import org.junit.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.disposables.EmptyDisposable;
 
 public class BlockingObservableToIteratorTest {
 
@@ -50,7 +50,7 @@ public class BlockingObservableToIteratorTest {
 
             @Override
             public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+                NbpObserver.onSubscribe(Disposables.empty());
                 NbpObserver.onNext("one");
                 NbpObserver.onError(new TestException());
             }

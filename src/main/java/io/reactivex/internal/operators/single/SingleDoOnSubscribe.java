@@ -44,8 +44,7 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
                     Exceptions.throwIfFatal(ex);
                     done = true;
                     d.dispose();
-                    s.onSubscribe(EmptyDisposable.INSTANCE);
-                    s.onError(ex);
+                    EmptyDisposable.error(ex, s);
                     return;
                 }
                 

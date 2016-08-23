@@ -18,7 +18,7 @@ import io.reactivex.functions.BiPredicate;
  * Utility methods containing the backport of Java 7's Objects utility class.
  * <p>Named as such to avoid clash with java.util.Objects.
  */
-public enum Objects {
+public enum ObjectHelper {
     ;
     /**
      * Verifies if the object is not null and returns it or throws a NullPointerException
@@ -78,7 +78,7 @@ public enum Objects {
     static final BiPredicate<Object, Object> EQUALS = new BiPredicate<Object, Object>() {
         @Override
         public boolean test(Object o1, Object o2) {
-            return Objects.equals(o1, o2);
+            return ObjectHelper.equals(o1, o2);
         }
     };
     

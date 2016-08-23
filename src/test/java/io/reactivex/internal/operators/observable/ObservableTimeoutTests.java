@@ -23,8 +23,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.disposables.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
@@ -241,16 +240,16 @@ public class ObservableTimeoutTests {
                 Observable.unsafeCreate(new ObservableSource<String>() {
 
                     @Override
-                    public void subscribe(Observer<? super String> NbpSubscriber) {
-                        NbpSubscriber.onSubscribe(EmptyDisposable.INSTANCE);
+                    public void subscribe(Observer<? super String> observer) {
+                        observer.onSubscribe(Disposables.empty());
                         try {
                             timeoutSetuped.countDown();
                             exit.await();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        NbpSubscriber.onNext("a");
-                        NbpSubscriber.onComplete();
+                        observer.onNext("a");
+                        observer.onComplete();
                     }
 
                 }).timeout(1, TimeUnit.SECONDS, testScheduler)

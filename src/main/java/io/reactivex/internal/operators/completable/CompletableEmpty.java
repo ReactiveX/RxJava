@@ -24,7 +24,6 @@ public final class CompletableEmpty extends Completable {
 
     @Override
     public void subscribeActual(CompletableObserver s) {
-        s.onSubscribe(EmptyDisposable.INSTANCE);
-        s.onComplete();
+        EmptyDisposable.complete(s);
     }
 }

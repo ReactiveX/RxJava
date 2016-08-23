@@ -15,7 +15,7 @@ package io.reactivex.schedulers;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * Holds onto a value along with time information.
@@ -37,7 +37,7 @@ public final class Timed<T> {
     public Timed(T value, long time, TimeUnit unit) {
         this.value = value;
         this.time = time;
-        this.unit = Objects.requireNonNull(unit, "unit is null");
+        this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
     }
     
     /**
@@ -77,9 +77,9 @@ public final class Timed<T> {
     public boolean equals(Object other) {
         if (other instanceof Timed) {
             Timed<?> o = (Timed<?>) other;
-            return Objects.equals(value, o.value)
+            return ObjectHelper.equals(value, o.value)
                     && time == o.time
-                    && Objects.equals(unit, o.unit);
+                    && ObjectHelper.equals(unit, o.unit);
         }
         return false;
     }

@@ -25,8 +25,7 @@ public final class ObservableEmpty extends Observable<Object> implements ScalarC
 
     @Override
     protected void subscribeActual(Observer<? super Object> o) {
-        o.onSubscribe(EmptyDisposable.INSTANCE);
-        o.onComplete();
+        EmptyDisposable.complete(o);
     }
 
     @Override

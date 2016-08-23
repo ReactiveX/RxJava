@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -82,7 +82,7 @@ public final class TrampolineScheduler extends Scheduler {
             return enqueue(new SleepingRunnable(action, this, execTime), execTime);
         }
         
-        private Disposable enqueue(Runnable action, long execTime) {
+        Disposable enqueue(Runnable action, long execTime) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
@@ -146,9 +146,9 @@ public final class TrampolineScheduler extends Scheduler {
 
         @Override
         public int compareTo(TimedRunnable that) {
-            int result = Objects.compare(execTime, that.execTime);
+            int result = ObjectHelper.compare(execTime, that.execTime);
             if (result == 0) {
-                return Objects.compare(count, that.count);
+                return ObjectHelper.compare(count, that.count);
             }
             return result;
         }

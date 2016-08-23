@@ -21,9 +21,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -225,7 +224,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
 
         @Override
         public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
+            NbpObserver.onSubscribe(Disposables.empty());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 

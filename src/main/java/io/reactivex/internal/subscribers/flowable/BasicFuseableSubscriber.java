@@ -16,7 +16,7 @@ package io.reactivex.internal.subscribers.flowable;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -138,7 +138,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
      * @return the value if not null
      */
     protected final <V> V nullCheck(V value, String message) {
-        return Objects.requireNonNull(value, message);
+        return ObjectHelper.requireNonNull(value, message);
     }
     
     /**

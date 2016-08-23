@@ -28,7 +28,7 @@ public enum Functions {
     
     @SuppressWarnings("unchecked")
     public static <T1, T2, R> Function<Object[], R> toFunction(final BiFunction<? super T1, ? super T2, ? extends R> biFunction) {
-        Objects.requireNonNull(biFunction, "biFunction is null");
+        ObjectHelper.requireNonNull(biFunction, "biFunction is null");
         return new Function<Object[], R>() {
             @Override
             public R apply(Object[] a) throws Exception {
@@ -41,7 +41,7 @@ public enum Functions {
     }
     
     public static <T1, T2, T3, R> Function<Object[], R> toFunction(final Function3<T1, T2, T3, R> f) {
-        Objects.requireNonNull(f, "f is null");
+        ObjectHelper.requireNonNull(f, "f is null");
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
@@ -55,7 +55,7 @@ public enum Functions {
     }
     
     public static <T1, T2, T3, T4, R> Function<Object[], R> toFunction(final Function4<T1, T2, T3, T4, R> f) {
-        Objects.requireNonNull(f, "f is null");
+        ObjectHelper.requireNonNull(f, "f is null");
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
@@ -69,7 +69,7 @@ public enum Functions {
     }
     
     public static <T1, T2, T3, T4, T5, R> Function<Object[], R> toFunction(final Function5<T1, T2, T3, T4, T5, R> f) {
-        Objects.requireNonNull(f, "f is null");
+        ObjectHelper.requireNonNull(f, "f is null");
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
@@ -84,7 +84,7 @@ public enum Functions {
     
     public static <T1, T2, T3, T4, T5, T6, R> Function<Object[], R> toFunction(
             final Function6<T1, T2, T3, T4, T5, T6, R> f) {
-        Objects.requireNonNull(f, "f is null");
+        ObjectHelper.requireNonNull(f, "f is null");
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
@@ -99,7 +99,7 @@ public enum Functions {
     
     public static <T1, T2, T3, T4, T5, T6, T7, R> Function<Object[], R> toFunction(
             final Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
-        Objects.requireNonNull(f, "f is null");
+        ObjectHelper.requireNonNull(f, "f is null");
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
@@ -114,7 +114,7 @@ public enum Functions {
     
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function<Object[], R> toFunction(
             final Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
-        Objects.requireNonNull(f, "f is null");
+        ObjectHelper.requireNonNull(f, "f is null");
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
@@ -129,7 +129,7 @@ public enum Functions {
     
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Function<Object[], R> toFunction(
             final Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
-        Objects.requireNonNull(f, "f is null");
+        ObjectHelper.requireNonNull(f, "f is null");
         return new Function<Object[], R>() {
             @SuppressWarnings("unchecked")
             @Override
@@ -362,7 +362,7 @@ public enum Functions {
         
         @Override
         public boolean test(T t) throws Exception {
-            return Objects.equals(t, value);
+            return ObjectHelper.equals(t, value);
         }
     }
     

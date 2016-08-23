@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 
 public final class CompletableDefer extends Completable {
 
@@ -32,16 +33,10 @@ public final class CompletableDefer extends Completable {
         CompletableSource c;
         
         try {
-            c = completableSupplier.call();
+            c = ObjectHelper.requireNonNull(completableSupplier.call(), "The completableSupplier returned a null CompletableSource");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, s);
-            return;
-        }
-        
-        if (c == null) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(new NullPointerException("The completable returned is null"));
             return;
         }
         

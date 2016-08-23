@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleEquals<T> extends Single<Boolean> {
@@ -54,7 +54,7 @@ public final class SingleEquals<T> extends Single<Boolean> {
                 values[index] = value;
                 
                 if (count.incrementAndGet() == 2) {
-                    s.onSuccess(Objects.equals(values[0], values[1]));
+                    s.onSuccess(ObjectHelper.equals(values[0], values[1]));
                 }
             }
 

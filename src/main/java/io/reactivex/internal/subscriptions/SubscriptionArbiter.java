@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
 
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
 /**
@@ -84,7 +84,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
             return;
         }
 
-        Objects.requireNonNull(s, "s is null");
+        ObjectHelper.requireNonNull(s, "s is null");
         
         if (get() == 0 && compareAndSet(0, 1)) {
             Subscription a = actual;

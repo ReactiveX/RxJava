@@ -21,7 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.functions.Objects;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
@@ -53,9 +53,9 @@ extends Flowable<R> {
             throw new IllegalArgumentException("BUFFER_SIZE > 0 required but it was " + bufferSize);
         }
 
-        this.array = Objects.requireNonNull(array, "array");
+        this.array = ObjectHelper.requireNonNull(array, "array");
         this.iterable = null;
-        this.combiner = Objects.requireNonNull(combiner, "combiner");
+        this.combiner = ObjectHelper.requireNonNull(combiner, "combiner");
         this.bufferSize = bufferSize;
         this.delayErrors = delayErrors;
     }
@@ -68,8 +68,8 @@ extends Flowable<R> {
         }
         
         this.array = null;
-        this.iterable = Objects.requireNonNull(iterable, "iterable");
-        this.combiner = Objects.requireNonNull(combiner, "combiner");
+        this.iterable = ObjectHelper.requireNonNull(iterable, "iterable");
+        this.combiner = ObjectHelper.requireNonNull(combiner, "combiner");
         this.bufferSize = bufferSize;
         this.delayErrors = delayErrors;
     }
@@ -381,7 +381,7 @@ extends Flowable<R> {
                     R w;
                     
                     try {
-                        w = Objects.requireNonNull(combiner.apply(va), "The combiner returned a null value");
+                        w = ObjectHelper.requireNonNull(combiner.apply(va), "The combiner returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         

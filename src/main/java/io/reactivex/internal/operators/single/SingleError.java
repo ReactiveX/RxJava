@@ -42,8 +42,7 @@ public final class SingleError<T> extends Single<T> {
             error = new NullPointerException();
         }
         
-        s.onSubscribe(EmptyDisposable.INSTANCE);
-        s.onError(error);
+        EmptyDisposable.error(error, s);
     }
 
 }
