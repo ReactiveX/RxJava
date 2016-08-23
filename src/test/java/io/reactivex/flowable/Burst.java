@@ -29,6 +29,7 @@ import io.reactivex.internal.util.BackpressureHelper;
  * Creates {@link Flowable} of a number of items followed by either an error or
  * completion. Cancellation has no effect on preventing emissions until the
  * currently outstanding requests have been met.
+ * @param <T> the value type
  */
 public final class Burst<T> extends Flowable<T> {
 
