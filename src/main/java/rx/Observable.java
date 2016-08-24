@@ -5513,7 +5513,7 @@ public class Observable<T> {
     }
 
     /**
-     * Modifies the source Observable so that it invokes an action for each item it emits.
+     * Modifies the source Observable so that it invokes an action for each item and terminal event it emits.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
      * <dl>
