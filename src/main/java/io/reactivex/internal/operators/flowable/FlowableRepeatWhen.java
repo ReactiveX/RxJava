@@ -39,7 +39,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         
         SerializedSubscriber<T> z = new SerializedSubscriber<T>(s);
         
-        FlowProcessor<Object> processor = new UnicastProcessor<Object>(8).toSerialized();
+        FlowableProcessor<Object> processor = new UnicastProcessor<Object>(8).toSerialized();
         
         Publisher<?> when;
         
@@ -137,13 +137,13 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
         protected final Subscriber<? super T> actual;
         
-        protected final FlowProcessor<U> processor;
+        protected final FlowableProcessor<U> processor;
         
         protected final Subscription receiver;
         
         private long produced;
         
-        public WhenSourceSubscriber(Subscriber<? super T> actual, FlowProcessor<U> processor,
+        public WhenSourceSubscriber(Subscriber<? super T> actual, FlowableProcessor<U> processor,
                 Subscription receiver) {
             this.actual = actual;
             this.processor = processor;
@@ -183,7 +183,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         /** */
         private static final long serialVersionUID = -2680129890138081029L;
 
-        public RepeatWhenSubscriber(Subscriber<? super T> actual, FlowProcessor<Object> processor,
+        public RepeatWhenSubscriber(Subscriber<? super T> actual, FlowableProcessor<Object> processor,
                 Subscription receiver) {
             super(actual, processor, receiver);
         }

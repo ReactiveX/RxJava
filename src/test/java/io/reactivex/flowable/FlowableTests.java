@@ -966,7 +966,7 @@ public class FlowableTests {
     
     @Test
     public void testErrorThrownIssue1685() {
-        FlowProcessor<Object> subject = ReplayProcessor.create();
+        FlowableProcessor<Object> subject = ReplayProcessor.create();
 
         Flowable.error(new RuntimeException("oops"))
             .materialize()

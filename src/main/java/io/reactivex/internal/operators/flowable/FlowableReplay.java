@@ -113,7 +113,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
      */
     public static <T> ConnectableFlowable<T> observeOn(final ConnectableFlowable<T> co, final Scheduler scheduler) {
         final Flowable<T> observable = co.observeOn(scheduler);
-        return new ConnectableFlowable<T>() {
+        return RxJavaPlugins.onAssembly(new ConnectableFlowable<T>() {
             @Override
             public void connect(Consumer<? super Disposable> connection) {
                 co.connect(connection);
@@ -123,7 +123,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
             protected void subscribeActual(Subscriber<? super T> s) {
                 observable.subscribe(s);
             }
-        };
+        });
     }
     
     /**
@@ -248,7 +248,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                 }
             }
         };
-        return new FlowableReplay<T>(onSubscribe, source, curr, bufferFactory);
+        return RxJavaPlugins.onAssembly(new FlowableReplay<T>(onSubscribe, source, curr, bufferFactory));
     }
     
     private FlowableReplay(Publisher<T> onSubscribe, Flowable<T> source,

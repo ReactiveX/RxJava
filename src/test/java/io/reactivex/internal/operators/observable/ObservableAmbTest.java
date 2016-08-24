@@ -86,7 +86,7 @@ public class ObservableAmbTest {
                 "3", "33", "333", "3333" }, 3000, null);
 
         @SuppressWarnings("unchecked")
-        Observable<String> o = Observable.amb(observable1,
+        Observable<String> o = Observable.ambArray(observable1,
                 observable2, observable3);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
@@ -115,7 +115,7 @@ public class ObservableAmbTest {
                 3000, new IOException("fake exception"));
 
         @SuppressWarnings("unchecked")
-        Observable<String> o = Observable.amb(observable1,
+        Observable<String> o = Observable.ambArray(observable1,
                 observable2, observable3);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
@@ -142,7 +142,7 @@ public class ObservableAmbTest {
                 "3" }, 3000, null);
 
         @SuppressWarnings("unchecked")
-        Observable<String> o = Observable.amb(observable1,
+        Observable<String> o = Observable.ambArray(observable1,
                 observable2, observable3);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
@@ -172,7 +172,7 @@ public class ObservableAmbTest {
         Observable<Integer> o2 = Observable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        Observable.amb(o1, o2).subscribe(ts);
+        Observable.ambArray(o1, o2).subscribe(ts);
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
         assertEquals(2, count.get());
@@ -207,7 +207,7 @@ public class ObservableAmbTest {
         
         TestObserver<Integer> ts = new TestObserver<Integer>();
         
-        Observable.amb(source1, source2, source3).subscribe(ts);
+        Observable.ambArray(source1, source2, source3).subscribe(ts);
         
         assertTrue("Source 1 doesn't have subscribers!", source1.hasObservers());
         assertTrue("Source 2 doesn't have subscribers!", source2.hasObservers());

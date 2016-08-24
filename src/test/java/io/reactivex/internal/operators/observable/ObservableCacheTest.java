@@ -34,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ObservableCacheTest {
     @Test
     public void testColdReplayNoBackpressure() {
-        ObservableCache<Integer> source = ObservableCache.from(Observable.range(0, 1000));
+        ObservableCache<Integer> source = (ObservableCache<Integer>)ObservableCache.from(Observable.range(0, 1000));
         
         assertFalse("Source is connected!", source.isConnected());
         
@@ -119,7 +119,7 @@ public class ObservableCacheTest {
     public void testTake() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
 
-        ObservableCache<Integer> cached = ObservableCache.from(Observable.range(1, 100));
+        ObservableCache<Integer> cached = (ObservableCache<Integer>)ObservableCache.from(Observable.range(1, 100));
         cached.take(10).subscribe(ts);
         
         ts.assertNoErrors();
@@ -135,7 +135,7 @@ public class ObservableCacheTest {
         for (int i = 0; i < 100; i++) {
             TestObserver<Integer> ts1 = new TestObserver<Integer>();
             
-            ObservableCache<Integer> cached = ObservableCache.from(source);
+            ObservableCache<Integer> cached = (ObservableCache<Integer>)ObservableCache.from(source);
             
             cached.observeOn(Schedulers.computation()).subscribe(ts1);
             
@@ -158,7 +158,7 @@ public class ObservableCacheTest {
         Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
-        ObservableCache<Long> cached = ObservableCache.from(source);
+        ObservableCache<Long> cached = (ObservableCache<Long>)ObservableCache.from(source);
         
         Observable<Long> output = cached.observeOn(Schedulers.computation());
         

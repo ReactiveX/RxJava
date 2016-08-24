@@ -117,7 +117,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 }
             }
         };
-        return new FlowablePublish<T>(onSubscribe, source, curr, bufferSize);
+        return RxJavaPlugins.onAssembly(new FlowablePublish<T>(onSubscribe, source, curr, bufferSize));
     }
 
     private FlowablePublish(Publisher<T> onSubscribe, Publisher<T> source,

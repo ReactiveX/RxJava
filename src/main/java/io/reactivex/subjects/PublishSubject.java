@@ -105,19 +105,6 @@ public final class PublishSubject<T> extends Subject<T> {
     }
     
     @Override
-    public T getValue() {
-        return null;
-    }
-    
-    @Override
-    public T[] getValues(T[] array) {
-        if (array.length != 0) {
-            array[0] = null;
-        }
-        return array;
-    }
-    
-    @Override
     public boolean hasComplete() {
         Object o = state.get();
         return o != null && !NotificationLite.isError(o);
@@ -126,11 +113,6 @@ public final class PublishSubject<T> extends Subject<T> {
     @Override
     public boolean hasThrowable() {
         return NotificationLite.isError(state.get());
-    }
-    
-    @Override
-    public boolean hasValue() {
-        return false;
     }
     
     static final class State<T> extends AtomicReference<Object> implements ObservableSource<T>, Observer<T> {

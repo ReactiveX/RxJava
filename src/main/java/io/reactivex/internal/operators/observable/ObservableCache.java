@@ -20,6 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.util.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * An observable which auto-connects to another observable, caches the elements
@@ -39,7 +40,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
      * @param source the source Observable to cache
      * @return the CachedObservable instance
      */
-    public static <T> ObservableCache<T> from(Observable<T> source) {
+    public static <T> Observable<T> from(Observable<T> source) {
         return from(source, 16);
     }
     
@@ -50,12 +51,12 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
      * @param capacityHint the hint for the internal buffer size
      * @return the CachedObservable instance
      */
-    public static <T> ObservableCache<T> from(Observable<T> source, int capacityHint) {
+    public static <T> Observable<T> from(Observable<T> source, int capacityHint) {
         if (capacityHint < 1) {
             throw new IllegalArgumentException("capacityHint > 0 required");
         }
         CacheState<T> state = new CacheState<T>(source, capacityHint);
-        return new ObservableCache<T>(source, state);
+        return RxJavaPlugins.onAssembly(new ObservableCache<T>(source, state));
     }
     
     /**

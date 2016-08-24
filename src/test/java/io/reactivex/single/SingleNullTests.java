@@ -56,13 +56,13 @@ public class SingleNullTests {
 
     @Test(expected = NullPointerException.class)
     public void ambArrayNull() {
-        Single.amb((Single<Integer>[])null);
+        Single.ambArray((Single<Integer>[])null);
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void ambArrayOneIsNull() {
-        Single.amb(null, just1).blockingGet();
+        Single.ambArray(null, just1).blockingGet();
     }
     
     @Test(expected = NullPointerException.class)

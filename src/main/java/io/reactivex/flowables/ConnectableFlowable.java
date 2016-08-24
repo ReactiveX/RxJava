@@ -20,6 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * A {@code ConnectableObservable} resembles an ordinary {@link Flowable}, except that it does not begin
@@ -75,7 +76,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
     public Flowable<T> refCount() {
-        return new FlowableRefCount<T>(this);
+        return RxJavaPlugins.onAssembly(new FlowableRefCount<T>(this));
     }
 
     /**
@@ -119,8 +120,8 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     public Flowable<T> autoConnect(int numberOfSubscribers, Consumer<? super Disposable> connection) {
         if (numberOfSubscribers <= 0) {
             this.connect(connection);
-            return this;
+            return RxJavaPlugins.onAssembly(this);
         }
-        return new FlowableAutoConnect<T>(this, numberOfSubscribers, connection);
+        return RxJavaPlugins.onAssembly(new FlowableAutoConnect<T>(this, numberOfSubscribers, connection));
     }
 }

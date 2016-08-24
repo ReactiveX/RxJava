@@ -30,7 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class BlockingFlowableNextTest {
 
-    private void fireOnNextInNewThread(final FlowProcessor<String> o, final String value) {
+    private void fireOnNextInNewThread(final FlowableProcessor<String> o, final String value) {
         new Thread() {
             @Override
             public void run() {
@@ -44,7 +44,7 @@ public class BlockingFlowableNextTest {
         }.start();
     }
 
-    private void fireOnErrorInNewThread(final FlowProcessor<String> o) {
+    private void fireOnErrorInNewThread(final FlowableProcessor<String> o) {
         new Thread() {
             @Override
             public void run() {
@@ -60,7 +60,7 @@ public class BlockingFlowableNextTest {
 
     @Test
     public void testNext() {
-        FlowProcessor<String> obs = PublishProcessor.create();
+        FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
@@ -96,7 +96,7 @@ public class BlockingFlowableNextTest {
 
     @Test
     public void testNextWithError() {
-        FlowProcessor<String> obs = PublishProcessor.create();
+        FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
@@ -135,7 +135,7 @@ public class BlockingFlowableNextTest {
 
     @Test
     public void testOnError() throws Throwable {
-        FlowProcessor<String> obs = PublishProcessor.create();
+        FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
 
         obs.onError(new TestException());
@@ -151,7 +151,7 @@ public class BlockingFlowableNextTest {
 
     @Test
     public void testOnErrorInNewThread() {
-        FlowProcessor<String> obs = PublishProcessor.create();
+        FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
 
         fireOnErrorInNewThread(obs);
@@ -182,7 +182,7 @@ public class BlockingFlowableNextTest {
 
     @Test
     public void testNextWithOnlyUsingNextMethod() {
-        FlowProcessor<String> obs = PublishProcessor.create();
+        FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
         assertEquals("one", it.next());
@@ -200,7 +200,7 @@ public class BlockingFlowableNextTest {
 
     @Test
     public void testNextWithCallingHasNextMultipleTimes() {
-        FlowProcessor<String> obs = PublishProcessor.create();
+        FlowableProcessor<String> obs = PublishProcessor.create();
         Iterator<String> it = obs.blockingNext().iterator();
         fireOnNextInNewThread(obs, "one");
         assertTrue(it.hasNext());
@@ -291,7 +291,7 @@ public class BlockingFlowableNextTest {
 
     @Test /* (timeout = 8000) */
     public void testSingleSourceManyIterators() throws InterruptedException {
-        Flowable<Long> o = Flowable.interval(100, TimeUnit.MILLISECONDS);
+        Flowable<Long> o = Flowable.interval(250, TimeUnit.MILLISECONDS);
         PublishProcessor<Integer> terminal = PublishProcessor.create();
         Flowable<Long> source = o.takeUntil(terminal);
 

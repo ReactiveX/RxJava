@@ -26,6 +26,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
 
 public final class ObservableReplay<T> extends ConnectableObservable<T> implements ObservableWithUpstream<T> {
@@ -58,7 +59,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     public static <U, R> Observable<R> multicastSelector(
             final Callable<? extends ConnectableObservable<U>> connectableFactory,
             final Function<? super Observable<U>, ? extends ObservableSource<R>> selector) {
-        return new Observable<R>() {
+        return RxJavaPlugins.onAssembly(new Observable<R>() {
             @Override
             protected void subscribeActual(Observer<? super R> child) {
                 ConnectableObservable<U> co;
@@ -83,7 +84,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                     }
                 });
             }
-        };
+        });
     }
     
     /**
@@ -96,7 +97,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      */
     public static <T> ConnectableObservable<T> observeOn(final ConnectableObservable<T> co, final Scheduler scheduler) {
         final Observable<T> observable = co.observeOn(scheduler);
-        return new ConnectableObservable<T>() {
+        return RxJavaPlugins.onAssembly(new ConnectableObservable<T>() {
             @Override
             public void connect(Consumer<? super Disposable> connection) {
                 co.connect(connection);
@@ -106,7 +107,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             protected void subscribeActual(Observer<? super T> observer) {
                 observable.subscribe(observer);
             }
-        };
+        });
     }
     
     /**
@@ -234,7 +235,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 }
             }
         };
-        return new ObservableReplay<T>(onSubscribe, source, curr, bufferFactory);
+        return RxJavaPlugins.onAssembly(new ObservableReplay<T>(onSubscribe, source, curr, bufferFactory));
     }
     
     private ObservableReplay(ObservableSource<T> onSubscribe, Observable<T> source,

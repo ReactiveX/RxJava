@@ -56,7 +56,7 @@ import io.reactivex.plugins.RxJavaPlugins;
   } </pre>
  * @param <T> the value type multicast to Subscribers.
  */
-public final class PublishProcessor<T> extends FlowProcessor<T> {
+public final class PublishProcessor<T> extends FlowableProcessor<T> {
     
     /** Holds the terminal event and manages the array of subscribers. */
     final State<T> state;
@@ -138,24 +138,6 @@ public final class PublishProcessor<T> extends FlowProcessor<T> {
     @Override
     public boolean hasSubscribers() {
         return state.subscribers().length != 0;
-    }
-    
-    @Override
-    public boolean hasValue() {
-        return false;
-    }
-    
-    @Override
-    public T getValue() {
-        return null;
-    }
-    
-    @Override
-    public T[] getValues(T[] array) {
-        if (array.length != 0) {
-            array[0] = null;
-        }
-        return array;
     }
     
     @Override

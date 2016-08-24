@@ -160,19 +160,19 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void concatNull() {
-        Completable.concat((Completable[])null);
+        Completable.concatArray((Completable[])null);
     }
     
     @Test(timeout = 1000)
     public void concatEmpty() {
-        Completable c = Completable.concat();
+        Completable c = Completable.concatArray();
         
         c.blockingAwait();
     }
     
     @Test(timeout = 1000)
     public void concatSingleSource() {
-        Completable c = Completable.concat(normal.completable);
+        Completable c = Completable.concatArray(normal.completable);
         
         c.blockingAwait();
         
@@ -181,14 +181,14 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void concatSingleSourceThrows() {
-        Completable c = Completable.concat(error.completable);
+        Completable c = Completable.concatArray(error.completable);
         
         c.blockingAwait();
     }
     
     @Test(timeout = 1000)
     public void concatMultipleSources() {
-        Completable c = Completable.concat(normal.completable, normal.completable, normal.completable);
+        Completable c = Completable.concatArray(normal.completable, normal.completable, normal.completable);
         
         c.blockingAwait();
         
@@ -197,14 +197,14 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void concatMultipleOneThrows() {
-        Completable c = Completable.concat(normal.completable, error.completable, normal.completable);
+        Completable c = Completable.concatArray(normal.completable, error.completable, normal.completable);
         
         c.blockingAwait();
     }
     
     @Test(timeout = 1000, expected = NullPointerException.class)
     public void concatMultipleOneIsNull() {
-        Completable c = Completable.concat(normal.completable, null);
+        Completable c = Completable.concatArray(normal.completable, null);
         
         c.blockingAwait();
     }
@@ -666,19 +666,19 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void mergeNull() {
-        Completable.merge((Completable[])null);
+        Completable.mergeArray((Completable[])null);
     }
     
     @Test(timeout = 1000)
     public void mergeEmpty() {
-        Completable c = Completable.merge();
+        Completable c = Completable.mergeArray();
         
         c.blockingAwait();
     }
     
     @Test(timeout = 1000)
     public void mergeSingleSource() {
-        Completable c = Completable.merge(normal.completable);
+        Completable c = Completable.mergeArray(normal.completable);
         
         c.blockingAwait();
         
@@ -687,14 +687,14 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void mergeSingleSourceThrows() {
-        Completable c = Completable.merge(error.completable);
+        Completable c = Completable.mergeArray(error.completable);
         
         c.blockingAwait();
     }
     
     @Test(timeout = 1000)
     public void mergeMultipleSources() {
-        Completable c = Completable.merge(normal.completable, normal.completable, normal.completable);
+        Completable c = Completable.mergeArray(normal.completable, normal.completable, normal.completable);
         
         c.blockingAwait();
         
@@ -703,14 +703,14 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void mergeMultipleOneThrows() {
-        Completable c = Completable.merge(normal.completable, error.completable, normal.completable);
+        Completable c = Completable.mergeArray(normal.completable, error.completable, normal.completable);
         
         c.blockingAwait();
     }
     
     @Test(timeout = 1000, expected = NullPointerException.class)
     public void mergeMultipleOneIsNull() {
-        Completable c = Completable.merge(normal.completable, null);
+        Completable c = Completable.mergeArray(normal.completable, null);
         
         c.blockingAwait();
     }
@@ -878,19 +878,19 @@ public class CompletableTest {
 
     @Test(expected = NullPointerException.class)
     public void mergeDelayErrorNull() {
-        Completable.mergeDelayError((Completable[])null);
+        Completable.mergeArrayDelayError((Completable[])null);
     }
     
     @Test(timeout = 1000)
     public void mergeDelayErrorEmpty() {
-        Completable c = Completable.mergeDelayError();
+        Completable c = Completable.mergeArrayDelayError();
         
         c.blockingAwait();
     }
     
     @Test(timeout = 1000)
     public void mergeDelayErrorSingleSource() {
-        Completable c = Completable.mergeDelayError(normal.completable);
+        Completable c = Completable.mergeArrayDelayError(normal.completable);
         
         c.blockingAwait();
         
@@ -899,14 +899,14 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = TestException.class)
     public void mergeDelayErrorSingleSourceThrows() {
-        Completable c = Completable.mergeDelayError(error.completable);
+        Completable c = Completable.mergeArrayDelayError(error.completable);
         
         c.blockingAwait();
     }
     
     @Test(timeout = 1000)
     public void mergeDelayErrorMultipleSources() {
-        Completable c = Completable.mergeDelayError(normal.completable, normal.completable, normal.completable);
+        Completable c = Completable.mergeArrayDelayError(normal.completable, normal.completable, normal.completable);
         
         c.blockingAwait();
         
@@ -915,7 +915,7 @@ public class CompletableTest {
     
     @Test(timeout = 1000)
     public void mergeDelayErrorMultipleOneThrows() {
-        Completable c = Completable.mergeDelayError(normal.completable, error.completable, normal.completable);
+        Completable c = Completable.mergeArrayDelayError(normal.completable, error.completable, normal.completable);
         
         try {
             c.blockingAwait();
@@ -926,7 +926,7 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = NullPointerException.class)
     public void mergeDelayErrorMultipleOneIsNull() {
-        Completable c = Completable.mergeDelayError(normal.completable, null);
+        Completable c = Completable.mergeArrayDelayError(normal.completable, null);
         
         c.blockingAwait();
     }
@@ -2908,26 +2908,26 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void ambArrayNull() {
-        Completable.amb((Completable[])null);
+        Completable.ambArray((Completable[])null);
     }
 
     @Test(timeout = 1000)
     public void ambArrayEmpty() {
-        Completable c = Completable.amb();
+        Completable c = Completable.ambArray();
                 
         c.blockingAwait();
     }
 
     @Test(timeout = 1000)
     public void ambArraySingleNormal() {
-        Completable c = Completable.amb(normal.completable);
+        Completable c = Completable.ambArray(normal.completable);
                 
         c.blockingAwait();
     }
 
     @Test(timeout = 1000, expected = TestException.class)
     public void ambArraySingleError() {
-        Completable c = Completable.amb(error.completable);
+        Completable c = Completable.ambArray(error.completable);
                 
         c.blockingAwait();
     }
@@ -2941,7 +2941,7 @@ public class CompletableTest {
 
         Completable c2 = Completable.fromPublisher(ps2);
         
-        Completable c = Completable.amb(c1, c2);
+        Completable c = Completable.ambArray(c1, c2);
         
         final AtomicBoolean complete = new AtomicBoolean();
         
@@ -2972,7 +2972,7 @@ public class CompletableTest {
 
         Completable c2 = Completable.fromPublisher(ps2);
         
-        Completable c = Completable.amb(c1, c2);
+        Completable c = Completable.ambArray(c1, c2);
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
 
@@ -3003,7 +3003,7 @@ public class CompletableTest {
 
         Completable c2 = Completable.fromPublisher(ps2);
         
-        Completable c = Completable.amb(c1, c2);
+        Completable c = Completable.ambArray(c1, c2);
         
         final AtomicBoolean complete = new AtomicBoolean();
         
@@ -3034,7 +3034,7 @@ public class CompletableTest {
 
         Completable c2 = Completable.fromPublisher(ps2);
         
-        Completable c = Completable.amb(c1, c2);
+        Completable c = Completable.ambArray(c1, c2);
         
         final AtomicReference<Throwable> complete = new AtomicReference<Throwable>();
 
@@ -3058,7 +3058,7 @@ public class CompletableTest {
     
     @Test(timeout = 1000, expected = NullPointerException.class)
     public void ambMultipleOneIsNull() {
-        Completable c = Completable.amb(null, normal.completable);
+        Completable c = Completable.ambArray(null, normal.completable);
         
         c.blockingAwait();
     }
