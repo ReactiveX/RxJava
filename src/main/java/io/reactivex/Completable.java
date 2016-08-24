@@ -1414,6 +1414,31 @@ public abstract class Completable implements CompletableSource {
     protected abstract void subscribeActual(CompletableObserver s);
 
     /**
+     * Subscribes a given CompletableObserver (subclass) to this Completable and returns the given
+     * CompletableObserver as is.
+     * <p>Usage example:
+     * <pre><code>
+     * Completable<Integer> source = Completable.complete().delay(1, TimeUnit.SECONDS);
+     * CompositeDisposable composite = new CompositeDisposable();
+     * 
+     * class ResourceCompletableObserver implements CompletableObserver, Disposable {
+     *     // ...
+     * }
+     * 
+     * composite.add(source.subscribeWith(new ResourceCompletableObserver()));
+     * </code></pre>
+     * @param <E> the type of the CompletableObserver to use and return
+     * @param observer the CompletableObserver (subclass) to use and return, not null
+     * @return the input {@code observer}
+     * @throws NullPointerException if {@code observer} is null
+     * @since 2.0
+     */
+    public final <E extends CompletableObserver> E subscribeWith(E observer) {
+        subscribe(observer);
+        return observer;
+    }
+    
+    /**
      * Subscribes to this Completable and calls back either the onError or onComplete functions.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
