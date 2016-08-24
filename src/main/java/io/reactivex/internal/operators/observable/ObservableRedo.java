@@ -35,7 +35,6 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
     @Override
     public void subscribeActual(Observer<? super T> s) {
         
-        // FIXE use BehaviorSubject? (once available)
         BehaviorSubject<Notification<Object>> subject = BehaviorSubject.create();
         
         final RedoSubscriber<T> parent = new RedoSubscriber<T>(s, subject, source);

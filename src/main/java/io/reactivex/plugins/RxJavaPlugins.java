@@ -463,7 +463,7 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Rewokes the lockdown, only for testing purposes.
+     * Revokes the lockdown, only for testing purposes.
      */
     /* test. */static void unlock() {
         lockdown = false;
@@ -630,10 +630,10 @@ public final class RxJavaPlugins {
     
     /**
      * Sets the specific hook function.
-     * @param onObservableAssembly the hook function to set, null allowed
+     * @param onConnectableObservableAssembly the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnConnectableObservableAssembly(Function<ConnectableObservable, ConnectableObservable> onObservableAssembly) {
+    public static void setOnConnectableObservableAssembly(Function<ConnectableObservable, ConnectableObservable> onConnectableObservableAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -829,7 +829,7 @@ public final class RxJavaPlugins {
 
     /**
      * Wraps the call to the function in try-catch and propagates thrown
-     * checked exceptions as runtimeexception.
+     * checked exceptions as RuntimeException.
      * @param <T> the input type
      * @param <R> the output type
      * @param f the function to call, not null (not verified)
@@ -847,7 +847,7 @@ public final class RxJavaPlugins {
 
     /**
      * Wraps the call to the function in try-catch and propagates thrown
-     * checked exceptions as runtimeexception.
+     * checked exceptions as RuntimeException.
      * @param <T> the first input type
      * @param <U> the second input type
      * @param <R> the output type

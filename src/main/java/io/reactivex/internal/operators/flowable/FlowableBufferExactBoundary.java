@@ -39,10 +39,10 @@ extends AbstractFlowableWithUpstream<T, U> {
 
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
-        source.subscribe(new BufferExactBondarySubscriber<T, U, B>(new SerializedSubscriber<U>(s), bufferSupplier, boundary));
+        source.subscribe(new BufferExactBoundarySubscriber<T, U, B>(new SerializedSubscriber<U>(s), bufferSupplier, boundary));
     }
     
-    static final class BufferExactBondarySubscriber<T, U extends Collection<? super T>, B>
+    static final class BufferExactBoundarySubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainSubscriber<T, U, U> implements Subscriber<T>, Subscription, Disposable {
         /** */
         final Callable<U> bufferSupplier;
@@ -54,8 +54,8 @@ extends AbstractFlowableWithUpstream<T, U> {
         
         U buffer;
         
-        public BufferExactBondarySubscriber(Subscriber<? super U> actual, Callable<U> bufferSupplier,
-                Publisher<B> boundary) {
+        public BufferExactBoundarySubscriber(Subscriber<? super U> actual, Callable<U> bufferSupplier,
+                                             Publisher<B> boundary) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundary = boundary;
@@ -180,7 +180,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                 buffer = next;
             }
             
-            fastpathEmitMax(b, false, this);
+            fastPathEmitMax(b, false, this);
         }
         
         @Override
@@ -202,9 +202,9 @@ extends AbstractFlowableWithUpstream<T, U> {
     }
     
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B> extends DisposableSubscriber<B> {
-        final BufferExactBondarySubscriber<T, U, B> parent;
+        final BufferExactBoundarySubscriber<T, U, B> parent;
         
-        public BufferBoundarySubscriber(BufferExactBondarySubscriber<T, U, B> parent) {
+        public BufferBoundarySubscriber(BufferExactBoundarySubscriber<T, U, B> parent) {
             this.parent = parent;
         }
 

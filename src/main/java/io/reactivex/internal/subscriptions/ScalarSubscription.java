@@ -49,10 +49,9 @@ public final class ScalarSubscription<T> extends AtomicInteger implements QueueS
             return;
         }
         if (compareAndSet(NO_REQUEST, REQUESTED)) {
-            T v = value;
             Subscriber<? super T> s = subscriber;
 
-            s.onNext(v);
+            s.onNext(value);
             if (get() != CANCELLED) {
                 s.onComplete();
             }

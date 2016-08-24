@@ -161,10 +161,7 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
                     return false;
                 }
                 last = t;
-                if (equal) {
-                    return false;
-                }
-                return actual.tryOnNext(t);
+                return !equal && actual.tryOnNext(t);
             }
             hasValue = true;
             last = t;

@@ -577,7 +577,7 @@ public abstract class Completable implements CompletableSource {
     }
     
     /**
-     * Returns a Completable instance that fires its onComplete event after the given delay ellapsed.
+     * Returns a Completable instance that fires its onComplete event after the given delay elapsed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timer} does operate by default on the {@code computation} {@link Scheduler}.</dd>
@@ -592,7 +592,7 @@ public abstract class Completable implements CompletableSource {
     }
     
     /**
-     * Returns a Completable instance that fires its onComplete event after the given delay ellapsed
+     * Returns a Completable instance that fires its onComplete event after the given delay elapsed
      * by using the supplied scheduler.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -815,7 +815,7 @@ public abstract class Completable implements CompletableSource {
      * @param timeout the timeout value
      * @param unit the timeout unit
      * @return true if the this Completable instance completed normally within the time limit,
-     * false if the timeout ellapsed before this Completable terminated.
+     * false if the timeout elapsed before this Completable terminated.
      * @throws RuntimeException wrapping an InterruptedException if the current thread is interrupted
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -840,12 +840,12 @@ public abstract class Completable implements CompletableSource {
     
     /**
      * Subscribes to this Completable instance and blocks until it terminates or the specified timeout 
-     * ellapses, then returns null for normal termination or the emitted exception if any.
+     * elapses, then returns null for normal termination or the emitted exception if any.
      * @param timeout the timeout value
      * @param unit the time unit
      * @return the throwable if this terminated with an error, null otherwise
      * @throws RuntimeException that wraps an InterruptedException if the wait is interrupted or
-     * TimeoutException if the specified timeout ellapsed before it
+     * TimeoutException if the specified timeout elapsed before it
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Throwable blockingGet(long timeout, TimeUnit unit) {
@@ -957,7 +957,7 @@ public abstract class Completable implements CompletableSource {
     }
     
     /**
-     * Returns a Completable which calls the giveon onDispose callback if the child subscriber cancels
+     * Returns a Completable which calls the given onDispose callback if the child subscriber cancels
      * the subscription.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1069,9 +1069,13 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doAfterTerminate(final Action onAfterTerminate) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.emptyConsumer(),
-                onAfterTerminate, Functions.EMPTY_ACTION,
-                Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
+        return doOnLifecycle(
+                Functions.emptyConsumer(),
+                Functions.emptyConsumer(),
+                Functions.EMPTY_ACTION,
+                Functions.EMPTY_ACTION,
+                onAfterTerminate,
+                Functions.EMPTY_ACTION);
     }
 
     /**
@@ -1618,7 +1622,7 @@ public abstract class Completable implements CompletableSource {
     }
     
     /**
-     * Convers this Completable into a Single which when this Completable completes normally,
+     * Converts this Completable into a Single which when this Completable completes normally,
      * calls the given supplier and emits its returned value through onSuccess.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1636,7 +1640,7 @@ public abstract class Completable implements CompletableSource {
     }
     
     /**
-     * Convers this Completable into a Single which when this Completable completes normally,
+     * Converts this Completable into a Single which when this Completable completes normally,
      * emits the given value through onSuccess.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>

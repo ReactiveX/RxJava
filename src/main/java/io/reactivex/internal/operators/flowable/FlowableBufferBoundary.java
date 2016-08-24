@@ -95,7 +95,7 @@ extends AbstractFlowableWithUpstream<T, U> {
         
         @Override
         public void onNext(T t) {
-            synchronized (t) {
+            synchronized (this) {
                 for (U b : buffers) {
                     b.add(t);
                 }
@@ -235,7 +235,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             }
             
             if (e) {
-                fastpathOrderedEmitMax(b, false, this);
+                fastPathOrderedEmitMax(b, false, this);
             }
             
             if (resources.remove(d)) {

@@ -63,7 +63,8 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     /**
      * Private constructor because state needs to be shared between the Observable body and
      * the onSubscribe function.
-     * @param state
+     * @param source the upstream source whose signals to cache
+     * @param state the cache state object performing the caching and replaying
      */
     private FlowableCache(Flowable<T> source, CacheState<T> state) {
         super(source);
@@ -97,15 +98,15 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     
     /**
      * Returns true if there are observers subscribed to this observable.
-     * @return
+     * @return true if the cache has Subscribers
      */
-    /* public */ boolean hasObservers() {
+    /* public */ boolean hasSubscribers() {
         return state.producers.length != 0;
     }
     
     /**
      * Returns the number of events currently cached.
-     * @return
+     * @return the number of currently cached event count
      */
     /* public */ int cachedEventCount() {
         return state.size();
@@ -114,7 +115,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     /**
      * Contains the active child producers and the values to replay.
      *
-     * @param <T>
+     * @param <T> the value type of the cached items
      */
     static final class CacheState<T> extends LinkedArrayList implements Subscriber<T> {
         /** The source observable to connect to. */
@@ -141,7 +142,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         }
         /**
          * Adds a ReplayProducer to the producers array atomically.
-         * @param p
+         * @param p the target ReplaySubscription wrapping a downstream Subscriber with state
          */
         public void addProducer(ReplaySubscription<T> p) {
             // guarding by connection to save on allocating another object
@@ -157,7 +158,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         }
         /**
          * Removes the ReplayProducer (if present) from the producers array atomically.
-         * @param p
+         * @param p the target ReplaySubscription wrapping a downstream Subscriber with state
          */
         public void removeProducer(ReplaySubscription<T> p) {
             synchronized (connection) {

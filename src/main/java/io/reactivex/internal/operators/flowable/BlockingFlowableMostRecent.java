@@ -61,7 +61,7 @@ public enum BlockingFlowableMostRecent {
     static final class MostRecentObserver<T> extends DefaultSubscriber<T> {
         volatile Object value;
         
-        private MostRecentObserver(T value) {
+        MostRecentObserver(T value) {
             this.value = NotificationLite.next(value);
         }
 

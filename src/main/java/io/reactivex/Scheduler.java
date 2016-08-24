@@ -31,9 +31,9 @@ public abstract class Scheduler {
      * <p>
      * The associated system parameter, {@code rx.scheduler.drift-tolerance}, expects its value in minutes.
      */
-    static final long CLOCK_DRIFT_TOLERANCE_NANOS;
+    static final long CLOCK_DRIFT_TOLERANCE_NANOSECONDS;
     static {
-        CLOCK_DRIFT_TOLERANCE_NANOS = TimeUnit.MINUTES.toNanos(
+        CLOCK_DRIFT_TOLERANCE_NANOSECONDS = TimeUnit.MINUTES.toNanos(
                 Long.getLong("rx2.scheduler.drift-tolerance", 15));
     }
 
@@ -62,7 +62,7 @@ public abstract class Scheduler {
     /** 
      * Allows the Scheduler instance to start threads 
      * and accept tasks on them.
-     * <p>Implementations should make sure the call is idempotent and threadsafe. 
+     * <p>Implementations should make sure the call is idempotent and thread-safe.
      * @since 2.0
      */
     public void start() {
@@ -72,7 +72,7 @@ public abstract class Scheduler {
     /** 
      * Instructs the Scheduler instance to stop threads 
      * and stop accepting tasks on any outstanding Workers. 
-     * <p>Implementations should make sure the call is idempotent and threadsafe. 
+     * <p>Implementations should make sure the call is idempotent and thread-safe.
      * @since 2.0
      */
     public void shutdown() {
@@ -160,7 +160,7 @@ public abstract class Scheduler {
     /**
      * Sequential Scheduler for executing actions on a single thread or event loop.
      * <p>
-     * Unsubscribing the {@link Worker} unschedules all outstanding work and allows resources cleanup.
+     * Unsubscribing the {@link Worker} cancels all outstanding work and allows resource cleanup.
      */
     public static abstract class Worker implements Disposable {
 
@@ -171,7 +171,7 @@ public abstract class Scheduler {
          * 
          * @param run
          *            Runnable to schedule
-         * @return a Disposable to be able to unsubscribe the action (unschedule it if not executed)
+         * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
          */
         public Disposable schedule(Runnable run) {
             return schedule(run, 0L, TimeUnit.NANOSECONDS);
@@ -180,17 +180,17 @@ public abstract class Scheduler {
         /**
          * Schedules an Runnable for execution at some point in the future.
          * <p>
-         * Note to implementors: non-positive {@code delayTime} should be regarded as undelayed schedule, i.e.,
+         * Note to implementors: non-positive {@code delayTime} should be regarded as non-delayed schedule, i.e.,
          * as if the {@link #schedule(Runnable)} was called.
          *
          * @param run
          *            the Runnable to schedule
          * @param delay
-         *            time to wait before executing the action; non-positive values indicate an undelayed
+         *            time to wait before executing the action; non-positive values indicate an non-delayed
          *            schedule
          * @param unit
          *            the time unit of {@code delayTime}
-         * @return a Disposable to be able to unsubscribe the action (unschedule it if not executed)
+         * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
          */
         public abstract Disposable schedule(Runnable run, long delay, TimeUnit unit);
 
@@ -200,19 +200,19 @@ public abstract class Scheduler {
          * concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
          * <p>
          * Note to implementors: non-positive {@code initialTime} and {@code period} should be regarded as
-         * undelayed scheduling of the first and any subsequent executions.
+         * non-delayed scheduling of the first and any subsequent executions.
          *
          * @param run
          *            the Runnable to execute periodically
          * @param initialDelay
          *            time to wait before executing the action for the first time; non-positive values indicate
-         *            an undelayed schedule
+         *            an non-delayed schedule
          * @param period
          *            the time interval to wait each time in between executing the action; non-positive values
          *            indicate no delay between repeated schedules
          * @param unit
          *            the time unit of {@code period}
-         * @return a Disposable to be able to unsubscribe the action (unschedule it if not executed)
+         * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
          */
         public Disposable schedulePeriodically(Runnable run, final long initialDelay, final long period, final TimeUnit unit) {
             final SequentialDisposable first = new SequentialDisposable();
@@ -221,14 +221,14 @@ public abstract class Scheduler {
             
             final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
-            final long periodInNanos = unit.toNanos(period);
-            final long firstNowNanos = now(TimeUnit.NANOSECONDS);
-            final long firstStartInNanos = firstNowNanos + unit.toNanos(initialDelay);
+            final long periodInNanoseconds = unit.toNanos(period);
+            final long firstNowNanoseconds = now(TimeUnit.NANOSECONDS);
+            final long firstStartInNanoseconds = firstNowNanoseconds + unit.toNanos(initialDelay);
 
             first.replace(schedule(new Runnable() {
                 long count;
-                long lastNowNanos = firstNowNanos;
-                long startInNanos = firstStartInNanos;
+                long lastNowNanoseconds = firstNowNanoseconds;
+                long startInNanoseconds = firstStartInNanoseconds;
                 @Override
                 public void run() {
                     decoratedRun.run();
@@ -237,22 +237,22 @@ public abstract class Scheduler {
 
                         long nextTick;
 
-                        long nowNanos = now(TimeUnit.NANOSECONDS);
+                        long nowNanoseconds = now(TimeUnit.NANOSECONDS);
                         // If the clock moved in a direction quite a bit, rebase the repetition period
-                        if (nowNanos + CLOCK_DRIFT_TOLERANCE_NANOS < lastNowNanos
-                                || nowNanos >= lastNowNanos + periodInNanos + CLOCK_DRIFT_TOLERANCE_NANOS) {
-                            nextTick = nowNanos + periodInNanos;
+                        if (nowNanoseconds + CLOCK_DRIFT_TOLERANCE_NANOSECONDS < lastNowNanoseconds
+                                || nowNanoseconds >= lastNowNanoseconds + periodInNanoseconds + CLOCK_DRIFT_TOLERANCE_NANOSECONDS) {
+                            nextTick = nowNanoseconds + periodInNanoseconds;
                             /* 
                              * Shift the start point back by the drift as if the whole thing
                              * started count periods ago.
                              */
-                            startInNanos = nextTick - (periodInNanos * (++count));
+                            startInNanoseconds = nextTick - (periodInNanoseconds * (++count));
                         } else {
-                            nextTick = startInNanos + (++count * periodInNanos);
+                            nextTick = startInNanoseconds + (++count * periodInNanoseconds);
                         }
-                        lastNowNanos = nowNanos;
+                        lastNowNanoseconds = nowNanoseconds;
 
-                        long delay = nextTick - nowNanos;
+                        long delay = nextTick - nowNanoseconds;
                         sd.replace(schedule(this, delay, TimeUnit.NANOSECONDS));
                     }
                 }

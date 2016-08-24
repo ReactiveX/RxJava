@@ -40,7 +40,7 @@ import io.reactivex.subscribers.*;
  * The Flowable class that implements the Reactive-Streams Pattern and offers factory methods,
  * intermediate operators and the ability to consume reactive dataflows.
  * <p>
- * Reactive-Streams operates with {@code Publisher}s wich {@code Flowable} extends. Many operators
+ * Reactive-Streams operates with {@code Publisher}s which {@code Flowable} extends. Many operators
  * therefore accept general {@code Publisher}s directly and allow direct interoperation with other
  * Reactive-Streams implementations.
  * <p>
@@ -505,9 +505,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T1> the element type of the first source
      * @param <T2> the element type of the second source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            the second source Publisher
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source Publishers
@@ -519,10 +519,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> combineLatest(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
             BiFunction<? super T1, ? super T2, ? extends R> combiner) {
         Function<Object[], R> f = Functions.toFunction(combiner);
-        return combineLatest(f, p1, p2);
+        return combineLatest(f, source1, source2);
     }
 
     /**
@@ -544,11 +544,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T2> the element type of the second source
      * @param <T3> the element type of the third source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            the second source Publisher
-     * @param p3
+     * @param source3
      *            the third source Publisher
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source Publishers
@@ -560,10 +560,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, R> Flowable<R> combineLatest(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
-            Publisher<? extends T3> p3, 
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
+            Publisher<? extends T3> source3, 
             Function3<? super T1, ? super T2, ? super T3, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), p1, p2, p3);
+        return combineLatest(Functions.toFunction(combiner), source1, source2, source3);
     }
 
     /**
@@ -586,13 +586,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T3> the element type of the third source
      * @param <T4> the element type of the fourth source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            the second source Publisher
-     * @param p3
+     * @param source3
      *            the third source Publisher
-     * @param p4
+     * @param source4
      *            the fourth source Publisher
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source Publishers
@@ -604,10 +604,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, R> Flowable<R> combineLatest(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
-            Publisher<? extends T3> p3, Publisher<? extends T4> p4,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
+            Publisher<? extends T3> source3, Publisher<? extends T4> source4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4);
+        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4);
     }
 
     /**
@@ -631,15 +631,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T4> the element type of the fourth source
      * @param <T5> the element type of the fifth source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            the second source Publisher
-     * @param p3
+     * @param source3
      *            the third source Publisher
-     * @param p4
+     * @param source4
      *            the fourth source Publisher
-     * @param p5
+     * @param source5
      *            the fifth source Publisher
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source Publishers
@@ -651,11 +651,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, R> Flowable<R> combineLatest(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
-            Publisher<? extends T3> p3, Publisher<? extends T4> p4,
-            Publisher<? extends T5> p5,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
+            Publisher<? extends T3> source3, Publisher<? extends T4> source4,
+            Publisher<? extends T5> source5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4, p5);
+        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5);
     }
 
     /**
@@ -680,17 +680,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T5> the element type of the fifth source
      * @param <T6> the element type of the sixth source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            the second source Publisher
-     * @param p3
+     * @param source3
      *            the third source Publisher
-     * @param p4
+     * @param source4
      *            the fourth source Publisher
-     * @param p5
+     * @param source5
      *            the fifth source Publisher
-     * @param p6
+     * @param source6
      *            the sixth source Publisher
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source Publishers
@@ -702,11 +702,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, R> Flowable<R> combineLatest(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
-            Publisher<? extends T3> p3, Publisher<? extends T4> p4,
-            Publisher<? extends T5> p5, Publisher<? extends T6> p6,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
+            Publisher<? extends T3> source3, Publisher<? extends T4> source4,
+            Publisher<? extends T5> source5, Publisher<? extends T6> source6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4, p5, p6);
+        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6);
     }
 
     /**
@@ -732,19 +732,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T6> the element type of the sixth source
      * @param <T7> the element type of the seventh source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            the second source Publisher
-     * @param p3
+     * @param source3
      *            the third source Publisher
-     * @param p4
+     * @param source4
      *            the fourth source Publisher
-     * @param p5
+     * @param source5
      *            the fifth source Publisher
-     * @param p6
+     * @param source6
      *            the sixth source Publisher
-     * @param p7
+     * @param source7
      *            the seventh source Publisher
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source Publishers
@@ -756,12 +756,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, R> Flowable<R> combineLatest(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
-            Publisher<? extends T3> p3, Publisher<? extends T4> p4,
-            Publisher<? extends T5> p5, Publisher<? extends T6> p6,
-            Publisher<? extends T7> p7,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
+            Publisher<? extends T3> source3, Publisher<? extends T4> source4,
+            Publisher<? extends T5> source5, Publisher<? extends T6> source6,
+            Publisher<? extends T7> source7,
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4, p5, p6, p7);
+        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6, source7);
     }
 
     /**
@@ -788,21 +788,21 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T7> the element type of the seventh source
      * @param <T8> the element type of the eighth source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            the second source Publisher
-     * @param p3
+     * @param source3
      *            the third source Publisher
-     * @param p4
+     * @param source4
      *            the fourth source Publisher
-     * @param p5
+     * @param source5
      *            the fifth source Publisher
-     * @param p6
+     * @param source6
      *            the sixth source Publisher
-     * @param p7
+     * @param source7
      *            the seventh source Publisher
-     * @param p8
+     * @param source8
      *            the eighth source Publisher
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source Publishers
@@ -814,12 +814,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Flowable<R> combineLatest(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
-            Publisher<? extends T3> p3, Publisher<? extends T4> p4,
-            Publisher<? extends T5> p5, Publisher<? extends T6> p6,
-            Publisher<? extends T7> p7, Publisher<? extends T8> p8,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
+            Publisher<? extends T3> source3, Publisher<? extends T4> source4,
+            Publisher<? extends T5> source5, Publisher<? extends T6> source6,
+            Publisher<? extends T7> source7, Publisher<? extends T8> source8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4, p5, p6, p7, p8);
+        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6, source7, source8);
     }
 
     /**
@@ -847,23 +847,23 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T8> the element type of the eighth source
      * @param <T9> the element type of the ninth source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            the second source Publisher
-     * @param p3
+     * @param source3
      *            the third source Publisher
-     * @param p4
+     * @param source4
      *            the fourth source Publisher
-     * @param p5
+     * @param source5
      *            the fifth source Publisher
-     * @param p6
+     * @param source6
      *            the sixth source Publisher
-     * @param p7
+     * @param source7
      *            the seventh source Publisher
-     * @param p8
+     * @param source8
      *            the eighth source Publisher
-     * @param p9
+     * @param source9
      *            the ninth source Publisher
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source Publishers
@@ -875,13 +875,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Flowable<R> combineLatest(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
-            Publisher<? extends T3> p3, Publisher<? extends T4> p4,
-            Publisher<? extends T5> p5, Publisher<? extends T6> p6,
-            Publisher<? extends T7> p7, Publisher<? extends T8> p8,
-            Publisher<? extends T9> p9,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
+            Publisher<? extends T3> source3, Publisher<? extends T4> source4,
+            Publisher<? extends T5> source5, Publisher<? extends T6> source6,
+            Publisher<? extends T7> source7, Publisher<? extends T8> source8,
+            Publisher<? extends T9> source9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), p1, p2, p3, p4, p5, p6, p7, p8, p9);
+        return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6, source7, source8, source9);
     }
 
     /**
@@ -935,7 +935,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> concat(Publisher<? extends Publisher<? extends T>> sources) {
+    public static <T> Flowable<T> concat(Publisher<? extends Publisher<? extends T>> sources) {
         return concat(sources, bufferSize());
     }
 
@@ -966,7 +966,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> concat(Publisher<? extends Publisher<? extends T>> sources, int prefetch) {
+    public static <T> Flowable<T> concat(Publisher<? extends Publisher<? extends T>> sources, int prefetch) {
         return fromPublisher(sources).concatMap((Function)Functions.identity(), prefetch);
     }
 
@@ -986,9 +986,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a Publisher to be concatenated
-     * @param p2
+     * @param source2
      *            a Publisher to be concatenated
      * @return a Flowable that emits items emitted by the two source Publishers, one after the other,
      *         without interleaving them
@@ -997,8 +997,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> concat(Publisher<? extends T> p1, Publisher<? extends T> p2) {
-        return concatArray(p1, p2);
+    public static <T> Flowable<T> concat(Publisher<? extends T> source1, Publisher<? extends T> source2) {
+        return concatArray(source1, source2);
     }
 
     /**
@@ -1017,11 +1017,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a Publisher to be concatenated
-     * @param p2
+     * @param source2
      *            a Publisher to be concatenated
-     * @param p3
+     * @param source3
      *            a Publisher to be concatenated
      * @return a Flowable that emits items emitted by the three source Publishers, one after the other,
      *         without interleaving them
@@ -1031,9 +1031,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
-            Publisher<? extends T> p1, Publisher<? extends T> p2,
-            Publisher<? extends T> p3) {
-        return concatArray(p1, p2, p3);
+            Publisher<? extends T> source1, Publisher<? extends T> source2,
+            Publisher<? extends T> source3) {
+        return concatArray(source1, source2, source3);
     }
 
     /**
@@ -1052,13 +1052,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a Publisher to be concatenated
-     * @param p2
+     * @param source2
      *            a Publisher to be concatenated
-     * @param p3
+     * @param source3
      *            a Publisher to be concatenated
-     * @param p4
+     * @param source4
      *            a Publisher to be concatenated
      * @return a Flowable that emits items emitted by the four source Publishers, one after the other,
      *         without interleaving them
@@ -1068,9 +1068,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(
-            Publisher<? extends T> p1, Publisher<? extends T> p2,
-            Publisher<? extends T> p3, Publisher<? extends T> p4) {
-        return concatArray(p1, p2, p3, p4);
+            Publisher<? extends T> source1, Publisher<? extends T> source2,
+            Publisher<? extends T> source3, Publisher<? extends T> source4) {
+        return concatArray(source1, source2, source3, source4);
     }
 
     /**
@@ -1154,7 +1154,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the value type
      * @param sources a sequence of Publishers that need to be eagerly concatenated
      * @return the new Publisher instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1183,7 +1183,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                       is interpreted as indication to subscribe to all sources at once
      * @param prefetch the number of elements to prefetch from each Publisher source
      * @return the new Publisher instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1235,7 +1235,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> concatDelayError(Publisher<? extends Publisher<? extends T>> sources) {
+    public static <T> Flowable<T> concatDelayError(Publisher<? extends Publisher<? extends T>> sources) {
         return concatDelayError(sources, bufferSize(), true);
     }
 
@@ -1260,7 +1260,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> concatDelayError(Publisher<? extends Publisher<? extends T>> sources, int prefetch, boolean tillTheEnd) {
+    public static <T> Flowable<T> concatDelayError(Publisher<? extends Publisher<? extends T>> sources, int prefetch, boolean tillTheEnd) {
         return fromPublisher(sources).concatMapDelayError((Function)Functions.identity(), prefetch, tillTheEnd);
     }
 
@@ -1281,7 +1281,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the value type
      * @param sources a sequence of Publishers that need to be eagerly concatenated
      * @return the new Publisher instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1309,7 +1309,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                       is interpreted as all inner Publishers can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner Publisher source
      * @return the new Publisher instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1335,7 +1335,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the value type
      * @param sources a sequence of Publishers that need to be eagerly concatenated
      * @return the new Publisher instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1363,7 +1363,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                       is interpreted as all inner Publishers can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner Publisher source
      * @return the new Publisher instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1402,7 +1402,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </code></pre>
      * <p>
      * You should call the FlowableEmitter onNext, onError and onComplete methods in a serialized fashion. The
-     * rest of its methods are threadsafe.
+     * rest of its methods are thread-safe.
      * 
      * @param <T> the element type
      * @param source the emitter that is called when a Subscriber subscribes to the returned {@code Flowable}
@@ -1489,7 +1489,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param errorSupplier
+     * @param supplier
      *            a Callable factory to return a Throwable for each individual Subscriber
      * @param <T>
      *            the type of the items (ostensibly) emitted by the Publisher
@@ -1499,9 +1499,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> error(Callable<? extends Throwable> errorSupplier) {
-        ObjectHelper.requireNonNull(errorSupplier, "errorSupplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableError<T>(errorSupplier));
+    public static <T> Flowable<T> error(Callable<? extends Throwable> supplier) {
+        ObjectHelper.requireNonNull(supplier, "errorSupplier is null");
+        return RxJavaPlugins.onAssembly(new FlowableError<T>(supplier));
     }
 
     /**
@@ -1516,7 +1516,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param exception
+     * @param throwable
      *            the particular Throwable to pass to {@link Observer#onError onError}
      * @param <T>
      *            the type of the items (ostensibly) emitted by the Publisher
@@ -1526,9 +1526,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> error(final Throwable exception) {
-        ObjectHelper.requireNonNull(exception, "e is null");
-        return error(Functions.justCallable(exception));
+    public static <T> Flowable<T> error(final Throwable throwable) {
+        ObjectHelper.requireNonNull(throwable, "throwable is null");
+        return error(Functions.justCallable(throwable));
     }
 
     /**
@@ -1543,7 +1543,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            the array of elements
      * @param <T>
      *            the type of items in the Array and the type of items to be emitted by the resulting Publisher
@@ -1552,15 +1552,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> fromArray(T... values) {
-        ObjectHelper.requireNonNull(values, "values is null");
-        if (values.length == 0) {
+    public static <T> Flowable<T> fromArray(T... items) {
+        ObjectHelper.requireNonNull(items, "items is null");
+        if (items.length == 0) {
             return empty();
         }
-        if (values.length == 1) {
-            return just(values[0]);
+        if (items.length == 1) {
+            return just(items[0]);
         }
-        return RxJavaPlugins.onAssembly(new FlowableFromArray<T>(values));
+        return RxJavaPlugins.onAssembly(new FlowableFromArray<T>(items));
     }
 
     /**
@@ -1585,7 +1585,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         the type of the item emitted by the Publisher
      * @return a Flowable whose {@link Observer}s' subscriptions trigger an invocation of the given function
      * @see #defer(Callable)
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1785,20 +1785,20 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code fromPublisher} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type of the flow
-     * @param publisher the Publisher to convert
+     * @param source the Publisher to convert
      * @return the new Flowable instance
      * @throws NullPointerException if publisher is null
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> fromPublisher(final Publisher<? extends T> publisher) {
-        if (publisher instanceof Flowable) {
-            return RxJavaPlugins.onAssembly((Flowable<T>)publisher);
+    public static <T> Flowable<T> fromPublisher(final Publisher<? extends T> source) {
+        if (source instanceof Flowable) {
+            return RxJavaPlugins.onAssembly((Flowable<T>)source);
         }
-        ObjectHelper.requireNonNull(publisher, "publisher is null");
+        ObjectHelper.requireNonNull(source, "publisher is null");
 
-        return RxJavaPlugins.onAssembly(new FlowableFromPublisher<T>(publisher));
+        return RxJavaPlugins.onAssembly(new FlowableFromPublisher<T>(source));
     }
 
     /**
@@ -2149,7 +2149,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param value
+     * @param item
      *            the item to emit
      * @param <T>
      *            the type of that item
@@ -2158,9 +2158,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> just(T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        return RxJavaPlugins.onAssembly(new FlowableJust<T>(value));
+    public static <T> Flowable<T> just(T item) {
+        ObjectHelper.requireNonNull(item, "item is null");
+        return RxJavaPlugins.onAssembly(new FlowableJust<T>(item));
     }
 
     /**
@@ -2174,9 +2174,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
      * @param <T>
      *            the type of these items
@@ -2186,11 +2186,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> just(T v1, T v2) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
+    public static <T> Flowable<T> just(T item1, T item2) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
         
-        return fromArray(v1, v2);
+        return fromArray(item1, item2);
     }
 
     /**
@@ -2204,11 +2204,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
      * @param <T>
      *            the type of these items
@@ -2218,12 +2218,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> just(T v1, T v2, T v3) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
+    public static <T> Flowable<T> just(T item1, T item2, T item3) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
         
-        return fromArray(v1, v2, v3);
+        return fromArray(item1, item2, item3);
     }
 
     /**
@@ -2237,13 +2237,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
      * @param <T>
      *            the type of these items
@@ -2253,13 +2253,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
+    public static <T> Flowable<T> just(T item1, T item2, T item3, T item4) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
         
-        return fromArray(v1, v2, v3, v4);
+        return fromArray(item1, item2, item3, item4);
     }
 
     /**
@@ -2273,15 +2273,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
      * @param <T>
      *            the type of these items
@@ -2291,14 +2291,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
+    public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
         
-        return fromArray(v1, v2, v3, v4, v5);
+        return fromArray(item1, item2, item3, item4, item5);
     }
 
     /**
@@ -2312,17 +2312,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
-     * @param v6
+     * @param item6
      *            sixth item
      * @param <T>
      *            the type of these items
@@ -2332,15 +2332,15 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5, T v6) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
-        ObjectHelper.requireNonNull(v6, "The sixth value is null");
+    public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
         
-        return fromArray(v1, v2, v3, v4, v5, v6);
+        return fromArray(item1, item2, item3, item4, item5, item6);
     }
 
     /**
@@ -2354,19 +2354,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
-     * @param v6
+     * @param item6
      *            sixth item
-     * @param v7
+     * @param item7
      *            seventh item
      * @param <T>
      *            the type of these items
@@ -2376,16 +2376,16 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
-        ObjectHelper.requireNonNull(v6, "The sixth value is null");
-        ObjectHelper.requireNonNull(v7, "The seventh value is null");
+    public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
         
-        return fromArray(v1, v2, v3, v4, v5, v6, v7);
+        return fromArray(item1, item2, item3, item4, item5, item6, item7);
     }
 
     /**
@@ -2399,21 +2399,21 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
-     * @param v6
+     * @param item6
      *            sixth item
-     * @param v7
+     * @param item7
      *            seventh item
-     * @param v8
+     * @param item8
      *            eighth item
      * @param <T>
      *            the type of these items
@@ -2423,17 +2423,17 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
-        ObjectHelper.requireNonNull(v6, "The sixth value is null");
-        ObjectHelper.requireNonNull(v7, "The seventh value is null");
-        ObjectHelper.requireNonNull(v8, "The eighth value is null");
+    public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
+        ObjectHelper.requireNonNull(item8, "The eighth item is null");
         
-        return fromArray(v1, v2, v3, v4, v5, v6, v7, v8);
+        return fromArray(item1, item2, item3, item4, item5, item6, item7, item8);
     }
 
     /**
@@ -2447,23 +2447,23 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
-     * @param v6
+     * @param item6
      *            sixth item
-     * @param v7
+     * @param item7
      *            seventh item
-     * @param v8
+     * @param item8
      *            eighth item
-     * @param v9
+     * @param item9
      *            ninth item
      * @param <T>
      *            the type of these items
@@ -2473,18 +2473,18 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
-        ObjectHelper.requireNonNull(v6, "The sixth value is null");
-        ObjectHelper.requireNonNull(v7, "The seventh value is null");
-        ObjectHelper.requireNonNull(v8, "The eighth value is null");
-        ObjectHelper.requireNonNull(v9, "The ninth is null");
+    public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
+        ObjectHelper.requireNonNull(item8, "The eighth item is null");
+        ObjectHelper.requireNonNull(item9, "The ninth is null");
         
-        return fromArray(v1, v2, v3, v4, v5, v6, v7, v8, v9);
+        return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9);
     }
 
     /**
@@ -2498,25 +2498,25 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
-     * @param v6
+     * @param item6
      *            sixth item
-     * @param v7
+     * @param item7
      *            seventh item
-     * @param v8
+     * @param item8
      *            eighth item
-     * @param v9
+     * @param item9
      *            ninth item
-     * @param v10
+     * @param item10
      *            tenth item
      * @param <T>
      *            the type of these items
@@ -2526,19 +2526,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Flowable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
-        ObjectHelper.requireNonNull(v6, "The sixth value is null");
-        ObjectHelper.requireNonNull(v7, "The seventh value is null");
-        ObjectHelper.requireNonNull(v8, "The eighth value is null");
-        ObjectHelper.requireNonNull(v9, "The ninth is null");
-        ObjectHelper.requireNonNull(v10, "The tenth is null");
+    public static <T> Flowable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9, T item10) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
+        ObjectHelper.requireNonNull(item8, "The eighth item is null");
+        ObjectHelper.requireNonNull(item9, "The ninth item is null");
+        ObjectHelper.requireNonNull(item10, "The tenth item is null");
         
-        return fromArray(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10);
+        return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10);
     }
 
     /**
@@ -2567,7 +2567,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits items that are the result of flattening the items emitted by the
      *         Publishers in the Iterable
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} is less than or equal to 0
+     *             if {@code maxConcurrency} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -2603,7 +2603,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits items that are the result of flattening the items emitted by the
      *         Publishers in the Iterable
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} is less than or equal to 0
+     *             if {@code maxConcurrency} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -2666,7 +2666,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits items that are the result of flattening the items emitted by the
      *         Publishers in the Iterable
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} is less than or equal to 0
+     *             if {@code maxConcurrency} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -2731,7 +2731,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits items that are the result of flattening the Publishers emitted by the
      *         {@code source} Publisher
      * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} is less than or equal to 0
+     *             if {@code maxConcurrency} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @since 1.1.0
      */
@@ -2786,9 +2786,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a Publisher to be merged
-     * @param p2
+     * @param source2
      *            a Publisher to be merged
      * @return a Flowable that emits all of the items emitted by the source Publishers
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -2796,10 +2796,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> merge(Publisher<? extends T> p1, Publisher<? extends T> p2) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        return fromArray(p1, p2).flatMap((Function)Functions.identity(), false, 2);
+    public static <T> Flowable<T> merge(Publisher<? extends T> source1, Publisher<? extends T> source2) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return fromArray(source1, source2).flatMap((Function)Functions.identity(), false, 2);
     }
 
     /**
@@ -2818,11 +2818,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a Publisher to be merged
-     * @param p2
+     * @param source2
      *            a Publisher to be merged
-     * @param p3
+     * @param source3
      *            a Publisher to be merged
      * @return a Flowable that emits all of the items emitted by the source Publishers
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -2830,11 +2830,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> merge(Publisher<? extends T> p1, Publisher<? extends T> p2, Publisher<? extends T> p3) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        ObjectHelper.requireNonNull(p3, "p3 is null");
-        return fromArray(p1, p2, p3).flatMap((Function)Functions.identity(), false, 3);
+    public static <T> Flowable<T> merge(Publisher<? extends T> source1, Publisher<? extends T> source2, Publisher<? extends T> source3) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), false, 3);
     }
 
     /**
@@ -2853,13 +2853,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a Publisher to be merged
-     * @param p2
+     * @param source2
      *            a Publisher to be merged
-     * @param p3
+     * @param source3
      *            a Publisher to be merged
-     * @param p4
+     * @param source4
      *            a Publisher to be merged
      * @return a Flowable that emits all of the items emitted by the source Publishers
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -2868,13 +2868,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(
-            Publisher<? extends T> p1, Publisher<? extends T> p2, 
-            Publisher<? extends T> p3, Publisher<? extends T> p4) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        ObjectHelper.requireNonNull(p3, "p3 is null");
-        ObjectHelper.requireNonNull(p4, "p4 is null");
-        return fromArray(p1, p2, p3, p4).flatMap((Function)Functions.identity(), false, 4);
+            Publisher<? extends T> source1, Publisher<? extends T> source2, 
+            Publisher<? extends T> source3, Publisher<? extends T> source4) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), false, 4);
     }
 
     /**
@@ -3081,7 +3081,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits all of the items emitted by the Publishers emitted by the
      *         {@code source} Publisher
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
@@ -3144,9 +3144,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a Publisher to be merged
-     * @param p2
+     * @param source2
      *            a Publisher to be merged
      * @return a Flowable that emits all of the items that are emitted by the two source Publishers
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -3154,10 +3154,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> mergeDelayError(Publisher<? extends T> p1, Publisher<? extends T> p2) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        return fromArray(p1, p2).flatMap((Function)Functions.identity(), true, 2);
+    public static <T> Flowable<T> mergeDelayError(Publisher<? extends T> source1, Publisher<? extends T> source2) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return fromArray(source1, source2).flatMap((Function)Functions.identity(), true, 2);
     }
 
     /**
@@ -3183,11 +3183,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a Publisher to be merged
-     * @param p2
+     * @param source2
      *            a Publisher to be merged
-     * @param p3
+     * @param source3
      *            a Publisher to be merged
      * @return a Flowable that emits all of the items that are emitted by the source Publishers
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -3195,11 +3195,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> mergeDelayError(Publisher<? extends T> p1, Publisher<? extends T> p2, Publisher<? extends T> p3) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        ObjectHelper.requireNonNull(p3, "p3 is null");
-        return fromArray(p1, p2, p3).flatMap((Function)Functions.identity(), true, 3);
+    public static <T> Flowable<T> mergeDelayError(Publisher<? extends T> source1, Publisher<? extends T> source2, Publisher<? extends T> source3) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), true, 3);
     }
 
     
@@ -3226,13 +3226,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a Publisher to be merged
-     * @param p2
+     * @param source2
      *            a Publisher to be merged
-     * @param p3
+     * @param source3
      *            a Publisher to be merged
-     * @param p4
+     * @param source4
      *            a Publisher to be merged
      * @return a Flowable that emits all of the items that are emitted by the source Publishers
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -3241,13 +3241,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(
-            Publisher<? extends T> p1, Publisher<? extends T> p2, 
-            Publisher<? extends T> p3, Publisher<? extends T> p4) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        ObjectHelper.requireNonNull(p3, "p3 is null");
-        ObjectHelper.requireNonNull(p4, "p4 is null");
-        return fromArray(p1, p2, p3, p4).flatMap((Function)Functions.identity(), true, 4);
+            Publisher<? extends T> source1, Publisher<? extends T> source2, 
+            Publisher<? extends T> source3, Publisher<? extends T> source4) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), true, 4);
     }
 
     /**
@@ -3324,9 +3324,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param p1
+     * @param source1
      *            the first Publisher to compare
-     * @param p2
+     * @param source2
      *            the second Publisher to compare
      * @param <T>
      *            the type of items emitted by each Publisher
@@ -3335,8 +3335,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2) {
-        return sequenceEqual(p1, p2, ObjectHelper.equalsPredicate(), bufferSize());
+    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2) {
+        return sequenceEqual(source1, source2, ObjectHelper.equalsPredicate(), bufferSize());
     }
 
     /**
@@ -3353,9 +3353,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param p1
+     * @param source1
      *            the first Publisher to compare
-     * @param p2
+     * @param source2
      *            the second Publisher to compare
      * @param isEqual
      *            a function used to compare items emitted by each Publisher
@@ -3367,9 +3367,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2, 
+    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2, 
             BiPredicate<? super T, ? super T> isEqual) {
-        return sequenceEqual(p1, p2, isEqual, bufferSize());
+        return sequenceEqual(source1, source2, isEqual, bufferSize());
     }
 
     /**
@@ -3386,9 +3386,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param p1
+     * @param source1
      *            the first Publisher to compare
-     * @param p2
+     * @param source2
      *            the second Publisher to compare
      * @param isEqual
      *            a function used to compare items emitted by each Publisher
@@ -3402,13 +3402,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2, 
+    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2, 
             BiPredicate<? super T, ? super T> isEqual, int bufferSize) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(isEqual, "isEqual is null");
         verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableSequenceEqual<T>(p1, p2, isEqual, bufferSize));
+        return RxJavaPlugins.onAssembly(new FlowableSequenceEqual<T>(source1, source2, isEqual, bufferSize));
     }
 
     /**
@@ -3421,9 +3421,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param p1
+     * @param source1
      *            the first Publisher to compare
-     * @param p2
+     * @param source2
      *            the second Publisher to compare
      * @param bufferSize
      *            the number of items to prefetch from the first and second source Publisher
@@ -3434,8 +3434,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2, int bufferSize) {
-        return sequenceEqual(p1, p2, ObjectHelper.equalsPredicate(), bufferSize);
+    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2, int bufferSize) {
+        return sequenceEqual(source1, source2, ObjectHelper.equalsPredicate(), bufferSize);
     }
 
     /**
@@ -3589,7 +3589,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> switchOnNextDelayError(Publisher<? extends Publisher<? extends T>> sources, int prefetch) {
-        return fromPublisher(sources).switchMapDelayError(Functions.<Publisher<? extends T>>identity(), bufferSize());
+        return fromPublisher(sources).switchMapDelayError(Functions.<Publisher<? extends T>>identity(), prefetch);
     }
 
     /**
@@ -3698,7 +3698,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the factory function to create a resource object that depends on the Publisher
      * @param sourceSupplier
      *            the factory function to create a Publisher
-     * @param disposer
+     * @param resourceDisposer
      *            the function that will dispose of the resource
      * @return the Publisher whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
@@ -3706,8 +3706,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, D> Flowable<T> using(Callable<? extends D> resourceSupplier, 
-            Function<? super D, ? extends Publisher<? extends T>> sourceSupplier, Consumer<? super D> disposer) {
-        return using(resourceSupplier, sourceSupplier, disposer, true);
+            Function<? super D, ? extends Publisher<? extends T>> sourceSupplier, Consumer<? super D> resourceDisposer) {
+        return using(resourceSupplier, sourceSupplier, resourceDisposer, true);
     }
 
     /**
@@ -3732,7 +3732,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the factory function to create a resource object that depends on the Publisher
      * @param sourceSupplier
      *            the factory function to create a Publisher
-     * @param disposer
+     * @param resourceDisposer
      *            the function that will dispose of the resource
      * @param eager
      *            if {@code true} then disposal will happen either on unsubscription or just before emission of 
@@ -3745,11 +3745,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, D> Flowable<T> using(Callable<? extends D> resourceSupplier, 
             Function<? super D, ? extends Publisher<? extends T>> sourceSupplier, 
-                    Consumer<? super D> disposer, boolean eager) {
+                    Consumer<? super D> resourceDisposer, boolean eager) {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
         ObjectHelper.requireNonNull(sourceSupplier, "sourceSupplier is null");
-        ObjectHelper.requireNonNull(disposer, "disposer is null");
-        return RxJavaPlugins.onAssembly(new FlowableUsing<T, D>(resourceSupplier, sourceSupplier, disposer, eager));
+        ObjectHelper.requireNonNull(resourceDisposer, "disposer is null");
+        return RxJavaPlugins.onAssembly(new FlowableUsing<T, D>(resourceSupplier, sourceSupplier, resourceDisposer, eager));
     }
 
     /**
@@ -3920,9 +3920,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T1> the value type of the first source
      * @param <T2> the value type of the second source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            a second source Publisher
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source Publishers, results
@@ -3934,9 +3934,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
             BiFunction<? super T1, ? super T2, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2);
     }
 
     /**
@@ -3977,9 +3977,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T1> the value type of the first source
      * @param <T2> the value type of the second source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            a second source Publisher
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source Publishers, results
@@ -3992,9 +3992,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
             BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
-        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), p1, p2);
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2);
     }
 
     
@@ -4036,9 +4036,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T1> the value type of the first source
      * @param <T2> the value type of the second source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            a second source Publisher
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source Publishers, results
@@ -4052,9 +4052,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Flowable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
             BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
-        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, p1, p2);
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2);
     }
 
     /**
@@ -4097,11 +4097,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T2> the value type of the second source
      * @param <T3> the value type of the third source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            a second source Publisher
-     * @param p3
+     * @param source3
      *            a third source Publisher
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source Publishers, results in
@@ -4113,9 +4113,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, R> Flowable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3, 
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3, 
             Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3);
     }
 
     /**
@@ -4159,13 +4159,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T3> the value type of the third source
      * @param <T4> the value type of the fourth source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            a second source Publisher
-     * @param p3
+     * @param source3
      *            a third source Publisher
-     * @param p4
+     * @param source4
      *            a fourth source Publisher
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source Publishers, results in
@@ -4177,10 +4177,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, R> Flowable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
-            Publisher<? extends T4> p4,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3,
+            Publisher<? extends T4> source4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4);
     }
 
     /**
@@ -4225,15 +4225,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T4> the value type of the fourth source
      * @param <T5> the value type of the fifth source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            a second source Publisher
-     * @param p3
+     * @param source3
      *            a third source Publisher
-     * @param p4
+     * @param source4
      *            a fourth source Publisher
-     * @param p5
+     * @param source5
      *            a fifth source Publisher
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source Publishers, results in
@@ -4245,10 +4245,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, R> Flowable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
-            Publisher<? extends T4> p4, Publisher<? extends T5> p5,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3,
+            Publisher<? extends T4> source4, Publisher<? extends T5> source5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4, p5);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5);
     }
 
     /**
@@ -4293,17 +4293,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T5> the value type of the fifth source
      * @param <T6> the value type of the sixth source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            a second source Publisher
-     * @param p3
+     * @param source3
      *            a third source Publisher
-     * @param p4
+     * @param source4
      *            a fourth source Publisher
-     * @param p5
+     * @param source5
      *            a fifth source Publisher
-     * @param p6
+     * @param source6
      *            a sixth source Publisher
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source Publishers, results in
@@ -4315,10 +4315,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, R> Flowable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
-            Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3,
+            Publisher<? extends T4> source4, Publisher<? extends T5> source5, Publisher<? extends T6> source6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4, p5, p6);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6);
     }
 
     /**
@@ -4364,19 +4364,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T6> the value type of the sixth source
      * @param <T7> the value type of the seventh source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            a second source Publisher
-     * @param p3
+     * @param source3
      *            a third source Publisher
-     * @param p4
+     * @param source4
      *            a fourth source Publisher
-     * @param p5
+     * @param source5
      *            a fifth source Publisher
-     * @param p6
+     * @param source6
      *            a sixth source Publisher
-     * @param p7
+     * @param source7
      *            a seventh source Publisher
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source Publishers, results in
@@ -4388,11 +4388,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, R> Flowable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
-            Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
-            Publisher<? extends T7> p7,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3,
+            Publisher<? extends T4> source4, Publisher<? extends T5> source5, Publisher<? extends T6> source6,
+            Publisher<? extends T7> source7,
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4, p5, p6, p7);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7);
     }
 
     /**
@@ -4439,21 +4439,21 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T7> the value type of the seventh source
      * @param <T8> the value type of the eighth source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            a second source Publisher
-     * @param p3
+     * @param source3
      *            a third source Publisher
-     * @param p4
+     * @param source4
      *            a fourth source Publisher
-     * @param p5
+     * @param source5
      *            a fifth source Publisher
-     * @param p6
+     * @param source6
      *            a sixth source Publisher
-     * @param p7
+     * @param source7
      *            a seventh source Publisher
-     * @param p8
+     * @param source8
      *            an eighth source Publisher
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source Publishers, results in
@@ -4465,11 +4465,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Flowable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
-            Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
-            Publisher<? extends T7> p7, Publisher<? extends T8> p8,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3,
+            Publisher<? extends T4> source4, Publisher<? extends T5> source5, Publisher<? extends T6> source6,
+            Publisher<? extends T7> source7, Publisher<? extends T8> source8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8);
     }
 
     /**
@@ -4517,23 +4517,23 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T8> the value type of the eighth source
      * @param <T9> the value type of the ninth source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source Publisher
-     * @param p2
+     * @param source2
      *            a second source Publisher
-     * @param p3
+     * @param source3
      *            a third source Publisher
-     * @param p4
+     * @param source4
      *            a fourth source Publisher
-     * @param p5
+     * @param source5
      *            a fifth source Publisher
-     * @param p6
+     * @param source6
      *            a sixth source Publisher
-     * @param p7
+     * @param source7
      *            a seventh source Publisher
-     * @param p8
+     * @param source8
      *            an eighth source Publisher
-     * @param p9
+     * @param source9
      *            a ninth source Publisher
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source Publishers, results in
@@ -4545,11 +4545,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Flowable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
-            Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
-            Publisher<? extends T7> p7, Publisher<? extends T8> p8, Publisher<? extends T9> p9,
+            Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3,
+            Publisher<? extends T4> source4, Publisher<? extends T5> source5, Publisher<? extends T6> source6,
+            Publisher<? extends T7> source7, Publisher<? extends T8> source8, Publisher<? extends T9> source9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8, p9);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8, source9);
     }
 
     /**
@@ -4797,17 +4797,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param defaultValue
+     * @param defaultItem
      *            a default value to return if this {@code Flowable} emits no items
      * @return the first item emitted by this {@code Flowable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
-    public final T blockingFirst(T defaultValue) {
+    public final T blockingFirst(T defaultItem) {
         BlockingFirstSubscriber<T> s = new BlockingFirstSubscriber<T>();
         subscribe(s);
         T v = s.blockingGet();
-        return v != null ? v : defaultValue;
+        return v != null ? v : defaultItem;
     }
 
     /**
@@ -4862,7 +4862,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
      *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code blockingITerable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @return an {@link Iterable} version of this {@code Flowable}
@@ -4934,20 +4934,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param defaultValue
+     * @param defaultItem
      *            a default value to return if this {@code Flowable} emits no items
      * @return the last item emitted by the {@code Flowable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
      */
-    public final T blockingLast(T defaultValue) {
+    public final T blockingLast(T defaultItem) {
         BlockingLastSubscriber<T> s = new BlockingLastSubscriber<T>();
         subscribe(s);
         T v = s.blockingGet();
-        if (v != null) {
-            return v;
-        }
-        return v != null ? v : defaultValue;
+        return v != null ? v : defaultItem;
     }
     
     /**
@@ -4987,15 +4984,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingMostRecent} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param initialValue
-     *            the initial value that the {@link Iterable} sequence will yield if this
+     * @param initialItem
+     *            the initial item that the {@link Iterable} sequence will yield if this
      *            {@code Flowable} has not yet emitted an item
      * @return an {@link Iterable} that on each iteration returns the item that this {@code Flowable}
      *         has most recently emitted
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
-    public final Iterable<T> blockingMostRecent(T initialValue) {
-        return BlockingFlowableMostRecent.mostRecent(this, initialValue);
+    public final Iterable<T> blockingMostRecent(T initialItem) {
+        return BlockingFlowableMostRecent.mostRecent(this, initialItem);
     }
     
     /**
@@ -5053,14 +5050,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param defaultValue
+     * @param defaultItem
      *            a default value to return if this {@code Flowable} emits no items
      * @return the single item emitted by this {@code Flowable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
-    public final T blockingSingle(T defaultValue) {
-        return single(defaultValue).blockingFirst();
+    public final T blockingSingle(T defaultItem) {
+        return single(defaultItem).blockingFirst();
     }
     
     /**
@@ -5304,7 +5301,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     /**
      * Returns a Flowable that emits buffers of items it collects from the source Publisher. The resulting
-     * Publisher starts a new buffer periodically, as determined by the {@code timeshift} argument. It emits
+     * Publisher starts a new buffer periodically, as determined by the {@code timeskip} argument. It emits
      * each buffer after a fixed timespan, specified by the {@code timespan} argument. When the source
      * Publisher completes or encounters an error, the resulting Publisher emits the current buffer and
      * propagates the notification from the source Publisher.
@@ -5323,7 +5320,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param timeskip
      *            the period of time after which a new buffer will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @return a Flowable that emits new buffers of items emitted by the source Publisher periodically after
      *         a fixed timespan has elapsed
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
@@ -5336,7 +5333,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Flowable that emits buffers of items it collects from the source Publisher. The resulting
-     * Publisher starts a new buffer periodically, as determined by the {@code timeshift} argument, and on the
+     * Publisher starts a new buffer periodically, as determined by the {@code timeskip} argument, and on the
      * specified {@code scheduler}. It emits each buffer after a fixed timespan, specified by the
      * {@code timespan} argument. When the source Publisher completes or encounters an error, the resulting
      * Publisher emits the current buffer and propagates the notification from the source Publisher.
@@ -5355,7 +5352,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param timeskip
      *            the period of time after which a new buffer will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @param scheduler
      *            the {@link Scheduler} to use when determining the end and start of a buffer
      * @return a Flowable that emits new buffers of items emitted by the source Publisher periodically after
@@ -5370,7 +5367,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Flowable that emits buffers of items it collects from the source Publisher. The resulting
-     * Publisher starts a new buffer periodically, as determined by the {@code timeshift} argument, and on the
+     * Publisher starts a new buffer periodically, as determined by the {@code timeskip} argument, and on the
      * specified {@code scheduler}. It emits each buffer after a fixed timespan, specified by the
      * {@code timespan} argument. When the source Publisher completes or encounters an error, the resulting
      * Publisher emits the current buffer and propagates the notification from the source Publisher.
@@ -5390,7 +5387,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param timeskip
      *            the period of time after which a new buffer will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @param scheduler
      *            the {@link Scheduler} to use when determining the end and start of a buffer
      * @param bufferSupplier
@@ -5597,8 +5594,8 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Flowable that emits buffers of items it collects from the source Publisher. The resulting
-     * Publisher emits buffers that it creates when the specified {@code bufferOpenings} Publisher emits an
-     * item, and closes when the Publisher returned from {@code bufferClosingSelector} emits an item.
+     * Publisher emits buffers that it creates when the specified {@code openingIndicator} Publisher emits an
+     * item, and closes when the Publisher returned from {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.png" alt="">
      * <dl>
@@ -5611,9 +5608,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <TOpening> the element type of the buffer-opening Publisher
      * @param <TClosing> the element type of the individual buffer-closing Publishers
-     * @param bufferOpenings
+     * @param openingIndicator
      *            the Publisher that, when it emits an item, causes a new buffer to be created
-     * @param bufferClosingSelector
+     * @param closingIndicator
      *            the {@link Function} that is used to produce a Publisher for every buffer created. When this
      *            Publisher emits an item, the associated buffer is emitted.
      * @return a Flowable that emits buffers, containing items from the source Publisher, that are created
@@ -5623,15 +5620,15 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <TOpening, TClosing> Flowable<List<T>> buffer(
-            Flowable<? extends TOpening> bufferOpenings, 
-            Function<? super TOpening, ? extends Publisher<? extends TClosing>> bufferClosingSelector) {
-        return buffer(bufferOpenings, bufferClosingSelector, ArrayListSupplier.<T>asCallable());
+            Flowable<? extends TOpening> openingIndicator, 
+            Function<? super TOpening, ? extends Publisher<? extends TClosing>> closingIndicator) {
+        return buffer(openingIndicator, closingIndicator, ArrayListSupplier.<T>asCallable());
     }
 
     /**
      * Returns a Flowable that emits buffers of items it collects from the source Publisher. The resulting
-     * Publisher emits buffers that it creates when the specified {@code bufferOpenings} Publisher emits an
-     * item, and closes when the Publisher returned from {@code bufferClosingSelector} emits an item.
+     * Publisher emits buffers that it creates when the specified {@code openingIndicator} Publisher emits an
+     * item, and closes when the Publisher returned from {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.png" alt="">
      * <dl>
@@ -5645,9 +5642,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <U> the collection subclass type to buffer into
      * @param <TOpening> the element type of the buffer-opening Publisher
      * @param <TClosing> the element type of the individual buffer-closing Publishers
-     * @param bufferOpenings
+     * @param openingIndicator
      *            the Publisher that, when it emits an item, causes a new buffer to be created
-     * @param bufferClosingSelector
+     * @param closingIndicator
      *            the {@link Function} that is used to produce a Publisher for every buffer created. When this
      *            Publisher emits an item, the associated buffer is emitted.
      * @param bufferSupplier
@@ -5660,13 +5657,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <TOpening, TClosing, U extends Collection<? super T>> Flowable<U> buffer(
-            Flowable<? extends TOpening> bufferOpenings, 
-            Function<? super TOpening, ? extends Publisher<? extends TClosing>> bufferClosingSelector,
+            Flowable<? extends TOpening> openingIndicator, 
+            Function<? super TOpening, ? extends Publisher<? extends TClosing>> closingIndicator,
             Callable<U> bufferSupplier) {
-        ObjectHelper.requireNonNull(bufferOpenings, "bufferOpenings is null");
-        ObjectHelper.requireNonNull(bufferClosingSelector, "bufferClosingSelector is null");
+        ObjectHelper.requireNonNull(openingIndicator, "openingIndicator is null");
+        ObjectHelper.requireNonNull(closingIndicator, "closingIndicator is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableBufferBoundary<T, U, TOpening, TClosing>(this, bufferOpenings, bufferClosingSelector, bufferSupplier));
+        return RxJavaPlugins.onAssembly(new FlowableBufferBoundary<T, U, TOpening, TClosing>(this, openingIndicator, closingIndicator, bufferSupplier));
     }
 
     /**
@@ -5688,7 +5685,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <B>
      *            the boundary value type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            the boundary Publisher
      * @return a Flowable that emits buffered items from the source Publisher when the boundary Publisher
      *         emits an item
@@ -5697,8 +5694,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Flowable<List<T>> buffer(Publisher<B> boundary) {
-        return buffer(boundary, ArrayListSupplier.<T>asCallable());
+    public final <B> Flowable<List<T>> buffer(Publisher<B> boundaryIndicator) {
+        return buffer(boundaryIndicator, ArrayListSupplier.<T>asCallable());
     }
 
     /**
@@ -5720,7 +5717,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <B>
      *            the boundary value type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            the boundary Publisher
      * @param initialCapacity
      *            the initial capacity of each buffer chunk
@@ -5731,8 +5728,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Flowable<List<T>> buffer(Publisher<B> boundary, final int initialCapacity) {
-        return buffer(boundary, Functions.<T>createArrayList(initialCapacity));
+    public final <B> Flowable<List<T>> buffer(Publisher<B> boundaryIndicator, final int initialCapacity) {
+        return buffer(boundaryIndicator, Functions.<T>createArrayList(initialCapacity));
     }
 
     /**
@@ -5755,7 +5752,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <U> the collection subclass type to buffer into
      * @param <B>
      *            the boundary value type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            the boundary Publisher
      * @param bufferSupplier
      *            a factory function that returns an instance of the collection subclass to be used and returned
@@ -5767,16 +5764,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B, U extends Collection<? super T>> Flowable<U> buffer(Publisher<B> boundary, Callable<U> bufferSupplier) {
-        ObjectHelper.requireNonNull(boundary, "boundary is null");
+    public final <B, U extends Collection<? super T>> Flowable<U> buffer(Publisher<B> boundaryIndicator, Callable<U> bufferSupplier) {
+        ObjectHelper.requireNonNull(boundaryIndicator, "boundaryIndicator is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableBufferExactBoundary<T, U, B>(this, boundary, bufferSupplier));
+        return RxJavaPlugins.onAssembly(new FlowableBufferExactBoundary<T, U, B>(this, boundaryIndicator, bufferSupplier));
     }
 
     /**
      * Returns a Flowable that emits buffers of items it collects from the source Publisher. The resulting
      * Publisher emits connected, non-overlapping buffers. It emits the current buffer and replaces it with a
-     * new buffer whenever the Publisher produced by the specified {@code bufferClosingSelector} emits an item.
+     * new buffer whenever the Publisher produced by the specified {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
      * <dl>
@@ -5788,25 +5785,25 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <B> the value type of the boundary-providing Publisher
-     * @param boundarySupplier
+     * @param boundaryIndicatorSupplier
      *            a {@link Callable} that produces a Publisher that governs the boundary between buffers.
      *            Whenever the source {@code Publisher} emits an item, {@code buffer} emits the current buffer and
      *            begins to fill a new one
      * @return a Flowable that emits a connected, non-overlapping buffer of items from the source Publisher
-     *         each time the Publisher created with the {@code bufferClosingSelector} argument emits an item
+     *         each time the Publisher created with the {@code closingIndicator} argument emits an item
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Flowable<List<T>> buffer(Callable<? extends Publisher<B>> boundarySupplier) {
-        return buffer(boundarySupplier, ArrayListSupplier.<T>asCallable());
+    public final <B> Flowable<List<T>> buffer(Callable<? extends Publisher<B>> boundaryIndicatorSupplier) {
+        return buffer(boundaryIndicatorSupplier, ArrayListSupplier.<T>asCallable());
         
     }
 
     /**
      * Returns a Flowable that emits buffers of items it collects from the source Publisher. The resulting
      * Publisher emits connected, non-overlapping buffers. It emits the current buffer and replaces it with a
-     * new buffer whenever the Publisher produced by the specified {@code bufferClosingSelector} emits an item.
+     * new buffer whenever the Publisher produced by the specified {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
      * <dl>
@@ -5819,7 +5816,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <U> the collection subclass type to buffer into
      * @param <B> the value type of the boundary-providing Publisher
-     * @param boundarySupplier
+     * @param boundaryIndicatorSupplier
      *            a {@link Callable} that produces a Publisher that governs the boundary between buffers.
      *            Whenever the source {@code Publisher} emits an item, {@code buffer} emits the current buffer and
      *            begins to fill a new one
@@ -5827,16 +5824,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a factory function that returns an instance of the collection subclass to be used and returned
      *            as the buffer
      * @return a Flowable that emits a connected, non-overlapping buffer of items from the source Publisher
-     *         each time the Publisher created with the {@code bufferClosingSelector} argument emits an item
+     *         each time the Publisher created with the {@code closingIndicator} argument emits an item
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B, U extends Collection<? super T>> Flowable<U> buffer(Callable<? extends Publisher<B>> boundarySupplier, 
+    public final <B, U extends Collection<? super T>> Flowable<U> buffer(Callable<? extends Publisher<B>> boundaryIndicatorSupplier, 
             Callable<U> bufferSupplier) {
-        ObjectHelper.requireNonNull(boundarySupplier, "boundarySupplier is null");
+        ObjectHelper.requireNonNull(boundaryIndicatorSupplier, "boundaryIndicatorSupplier is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableBufferBoundarySupplier<T, U, B>(this, boundarySupplier, bufferSupplier));
+        return RxJavaPlugins.onAssembly(new FlowableBufferBoundarySupplier<T, U, B>(this, boundaryIndicatorSupplier, bufferSupplier));
     }
 
     /**
@@ -6002,7 +5999,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <U> the accumulator and output type
-     * @param initialValueSupplier
+     * @param initialItemSupplier
      *           the mutable data structure that will collect the items
      * @param collector
      *           a function that accepts the {@code state} and an emitted item, and modifies {@code state}
@@ -6013,10 +6010,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Flowable<U> collect(Callable<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
-        ObjectHelper.requireNonNull(initialValueSupplier, "initialValueSupplier is null");
-        ObjectHelper.requireNonNull(collector, "collectior is null");
-        return RxJavaPlugins.onAssembly(new FlowableCollect<T, U>(this, initialValueSupplier, collector));
+    public final <U> Flowable<U> collect(Callable<? extends U> initialItemSupplier, BiConsumer<? super U, ? super T> collector) {
+        ObjectHelper.requireNonNull(initialItemSupplier, "initialItemSupplier is null");
+        ObjectHelper.requireNonNull(collector, "collector is null");
+        return RxJavaPlugins.onAssembly(new FlowableCollect<T, U>(this, initialItemSupplier, collector));
     }
 
     /**
@@ -6035,7 +6032,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <U> the accumulator and output type
-     * @param initialValue
+     * @param initialItem
      *           the mutable data structure that will collect the items
      * @param collector
      *           a function that accepts the {@code state} and an emitted item, and modifies {@code state}
@@ -6046,9 +6043,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Flowable<U> collectInto(final U initialValue, BiConsumer<? super U, ? super T> collector) {
-        ObjectHelper.requireNonNull(initialValue, "initialValue is null");
-        return collect(Functions.justCallable(initialValue), collector);
+    public final <U> Flowable<U> collectInto(final U initialItem, BiConsumer<? super U, ? super T> collector) {
+        ObjectHelper.requireNonNull(initialItem, "initialItem is null");
+        return collect(Functions.justCallable(initialItem), collector);
     }
 
     /**
@@ -6242,7 +6239,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param mapper the function that maps a sequence of values into a sequence of Publishers that will be
      *               eagerly concatenated
      * @return the new Publisher instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -6270,7 +6267,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param maxConcurrency the maximum number of concurrent subscribed Publishers
      * @param prefetch hints about the number of expected source sequence values
      * @return the new Publisher instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -6302,7 +6299,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            if true, all errors from the outer and inner Publisher sources are delayed until the end,
      *            if false, an error from the main source is signalled when the current Publisher source terminates
      * @return the new Publisher instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -6336,7 +6333,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *               all of them terminate, if false, exception from the current Flowable is delayed until the
      *               currently running Publisher terminates
      * @return the new Publisher instance with the specified concatenation behavior
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -6446,7 +6443,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code contains} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param element
+     * @param item
      *            the item to search for in the emissions from the source Publisher
      * @return a Flowable that emits {@code true} if the specified item is emitted by the source Publisher,
      *         or {@code false} if the source Publisher completes without emitting that item
@@ -6454,9 +6451,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<Boolean> contains(final Object element) {
-        ObjectHelper.requireNonNull(element, "o is null");
-        return any(Functions.equalsWith(element));
+    public final Flowable<Boolean> contains(final Object item) {
+        ObjectHelper.requireNonNull(item, "item is null");
+        return any(Functions.equalsWith(item));
     }
 
     /**
@@ -6498,7 +6495,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <U>
      *            the debounce value type (ignored)
-     * @param debounceSelector
+     * @param debounceIndicator
      *            function to retrieve a sequence that indicates the throttle duration for each item
      * @return a Flowable that omits items emitted by the source Publisher that are followed by another item
      *         within a computed debounce duration
@@ -6507,9 +6504,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Flowable<T> debounce(Function<? super T, ? extends Publisher<U>> debounceSelector) {
-        ObjectHelper.requireNonNull(debounceSelector, "debounceSelector is null");
-        return RxJavaPlugins.onAssembly(new FlowableDebounce<T, U>(this, debounceSelector));
+    public final <U> Flowable<T> debounce(Function<? super T, ? extends Publisher<U>> debounceIndicator) {
+        ObjectHelper.requireNonNull(debounceIndicator, "debounceIndicator is null");
+        return RxJavaPlugins.onAssembly(new FlowableDebounce<T, U>(this, debounceIndicator));
     }
 
     /**
@@ -6614,7 +6611,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code defaultIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param defaultValue
+     * @param defaultItem
      *            the item to emit if the source Publisher emits no items
      * @return a Flowable that emits either the specified default item if the source Publisher emits no
      *         items, or the items emitted by the source Publisher
@@ -6622,9 +6619,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> defaultIfEmpty(T defaultValue) {
-        ObjectHelper.requireNonNull(defaultValue, "value is null");
-        return switchIfEmpty(just(defaultValue));
+    public final Flowable<T> defaultIfEmpty(T defaultItem) {
+        ObjectHelper.requireNonNull(defaultItem, "item is null");
+        return switchIfEmpty(just(defaultItem));
     }
 
     /**
@@ -6646,7 +6643,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <U>
      *            the item delay value type (ignored)
-     * @param itemDelay
+     * @param itemDelayIndicator
      *            a function that returns a Publisher for each item emitted by the source Publisher, which is
      *            then used to delay the emission of that item by the resulting Publisher until the Publisher
      *            returned from {@code itemDelay} emits an item
@@ -6656,9 +6653,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Flowable<T> delay(final Function<? super T, ? extends Publisher<U>> itemDelay) {
-        ObjectHelper.requireNonNull(itemDelay, "itemDelay is null");
-        return flatMap(FlowableInternalHelper.itemDelay(itemDelay));
+    public final <U> Flowable<T> delay(final Function<? super T, ? extends Publisher<U>> itemDelayIndicator) {
+        ObjectHelper.requireNonNull(itemDelayIndicator, "itemDelayIndicator is null");
+        return flatMap(FlowableInternalHelper.itemDelay(itemDelayIndicator));
     }
 
     /**
@@ -6795,10 +6792,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the subscription delay value type (ignored)
      * @param <V>
      *            the item delay value type (ignored)
-     * @param subscriptionDelay
+     * @param subscriptionIndicator
      *            a function that returns a Publisher that triggers the subscription to the source Publisher
      *            once it emits any item
-     * @param itemDelay
+     * @param itemDelayIndicator
      *            a function that returns a Publisher for each item emitted by the source Publisher, which is
      *            then used to delay the emission of that item by the resulting Publisher until the Publisher
      *            returned from {@code itemDelay} emits an item
@@ -6808,9 +6805,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U, V> Flowable<T> delay(Publisher<U> subscriptionDelay,
-            Function<? super T, ? extends Publisher<V>> itemDelay) {
-        return delaySubscription(subscriptionDelay).delay(itemDelay);
+    public final <U, V> Flowable<T> delay(Publisher<U> subscriptionIndicator,
+            Function<? super T, ? extends Publisher<V>> itemDelayIndicator) {
+        return delaySubscription(subscriptionIndicator).delay(itemDelayIndicator);
     }
     
     /**
@@ -6826,15 +6823,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <U> the value type of the other Publisher, irrelevant
-     * @param other the other Publisher that should trigger the subscription
+     * @param subscriptionIndicator the other Publisher that should trigger the subscription
      *        to this Publisher.
      * @return a Flowable that delays the subscription to this Publisher
      *         until the other Publisher emits an element or completes normally.
      * @since 2.0
      */
-    public final <U> Flowable<T> delaySubscription(Publisher<U> other) {
-        ObjectHelper.requireNonNull(other, "other is null");
-        return RxJavaPlugins.onAssembly(new FlowableDelaySubscriptionOther<T, U>(this, other));
+    public final <U> Flowable<T> delaySubscription(Publisher<U> subscriptionIndicator) {
+        ObjectHelper.requireNonNull(subscriptionIndicator, "subscriptionIndicator is null");
+        return RxJavaPlugins.onAssembly(new FlowableDelaySubscriptionOther<T, U>(this, subscriptionIndicator));
     }
 
     /**
@@ -7066,8 +7063,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits those items from the source Publisher that are distinct from their
      *         immediate predecessors
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
-     *        with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7089,7 +7085,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param onFinally
+     * @param onAfterTerminate
      *            an {@link Action} to be invoked when the source Publisher finishes
      * @return a Flowable that emits the same items as the source Publisher, then invokes the
      *         {@link Action}
@@ -7098,9 +7094,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doAfterTerminate(Action onFinally) {
+    public final Flowable<T> doAfterTerminate(Action onAfterTerminate) {
         return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), 
-                Functions.EMPTY_ACTION, onFinally);
+                Functions.EMPTY_ACTION, onAfterTerminate);
     }
 
     /**
@@ -7131,7 +7127,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnCancel(Action onCancel) {
-        return doOnLifecycle(Functions.emptyConsumer(), Functions.EMPTY_LONGCONSUMER, onCancel);
+        return doOnLifecycle(Functions.emptyConsumer(), Functions.EMPTY_LONG_CONSUMER, onCancel);
     }
 
     /**
@@ -7231,7 +7227,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param observer
+     * @param subscriber
      *            the observer to be notified about onNext, onError and onCompleted events on its
      *            respective methods before the actual downstream Subscriber gets notified.
      * @return the source Publisher with the side-effecting behavior applied
@@ -7239,12 +7235,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> doOnEach(final Subscriber<? super T> observer) {
-        ObjectHelper.requireNonNull(observer, "observer is null");
+    public final Flowable<T> doOnEach(final Subscriber<? super T> subscriber) {
+        ObjectHelper.requireNonNull(subscriber, "subscriber is null");
         return doOnEach(
-                FlowableInternalHelper.subscriberOnNext(observer),
-                FlowableInternalHelper.subscriberOnError(observer),
-                FlowableInternalHelper.subscriberOnComplete(observer),
+                FlowableInternalHelper.subscriberOnNext(subscriber),
+                FlowableInternalHelper.subscriberOnError(subscriber),
+                FlowableInternalHelper.subscriberOnComplete(subscriber),
                 Functions.EMPTY_ACTION);
     }
 
@@ -7351,8 +7347,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the source {@code Publisher} modified so as to call this Action when appropriate
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators
      *      documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
-     *        with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7383,7 +7378,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> doOnSubscribe(Consumer<? super Subscription> onSubscribe) {
-        return doOnLifecycle(onSubscribe, Functions.EMPTY_LONGCONSUMER, Functions.EMPTY_ACTION);
+        return doOnLifecycle(onSubscribe, Functions.EMPTY_LONG_CONSUMER, Functions.EMPTY_ACTION);
     }
 
     /**
@@ -7462,7 +7457,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param index
      *            the zero-based index of the item to retrieve
-     * @param defaultValue
+     * @param defaultItem
      *            the default item
      * @return a Flowable that emits the item at the specified position in the sequence emitted by the source
      *         Publisher, or the default item if that index is outside the bounds of the source sequence
@@ -7472,12 +7467,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> elementAt(long index, T defaultValue) {
+    public final Flowable<T> elementAt(long index, T defaultItem) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
-        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(this, index, defaultValue));
+        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
+        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(this, index, defaultItem));
     }
 
     /**
@@ -7542,7 +7537,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param defaultValue
+     * @param defaultItem
      *            the default item to emit if the source Publisher doesn't emit anything
      * @return a Flowable that emits only the very first item from the source, or a default item if the
      *         source Publisher completes without emitting any items
@@ -7550,8 +7545,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.SPECIAL) // take may trigger UNBOUNDED_IN
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> first(T defaultValue) {
-        return take(1).single(defaultValue);
+    public final Flowable<T> first(T defaultItem) {
+        return take(1).single(defaultItem);
     }
 
     /**
@@ -7642,7 +7637,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         by the source Publisher and merging the results of the Publishers obtained from this
      *         transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7678,7 +7673,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         by the source Publisher and merging the results of the Publishers obtained from this
      *         transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7716,7 +7711,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         by the source Publisher and merging the results of the Publishers obtained from this
      *         transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7805,7 +7800,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the results of merging the Publishers returned from applying the
      *         specified functions to the emissions and notifications of the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7921,7 +7916,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the results of applying a function to a pair of values emitted by the
      *         source Publisher and the collection Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7959,11 +7954,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            if true, exceptions from the current Flowable and all inner Publishers are delayed until all of them terminate
      *            if false, the first one signalling an exception will terminate the whole sequence immediately
      * @param bufferSize
-     *            the number of elements to prefetch from the innner Publishers.
+     *            the number of elements to prefetch from the inner Publishers.
      * @return a Flowable that emits the results of applying a function to a pair of values emitted by the
      *         source Publisher and the collection Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -8002,7 +7997,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the results of applying a function to a pair of values emitted by the
      *         source Publisher and the collection Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -8136,10 +8131,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of elements to prefetch from the current Flowable
      * @return a Flowable that emits the results of merging the items emitted by the source Publisher with
      *         the values in the Iterables corresponding to those items, as generated by {@code collectionSelector}
-     * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -8440,7 +8433,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector, boolean delayError) {
-        return groupBy(keySelector, valueSelector, false, bufferSize());
+        return groupBy(keySelector, valueSelector, delayError, bufferSize());
     }
 
     /**
@@ -8692,7 +8685,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param defaultValue
+     * @param defaultItem
      *            the default item to emit if the source Publisher is empty
      * @return a Flowable that emits only the last item emitted by the source Publisher, or a default item
      *         if the source Publisher is empty
@@ -8700,8 +8693,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> last(T defaultValue) {
-        return takeLast(1).single(defaultValue);
+    public final Flowable<T> last(T defaultItem) {
+        return takeLast(1).single(defaultItem);
     }
 
     /**
@@ -8864,7 +8857,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure, 
      *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} opertors <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -8900,7 +8893,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure, 
      *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} opertors <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -8943,7 +8936,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <U> the output type
      * @param clazz
      *            the class type to filter the items emitted by the source Publisher
-     * @return a Flowable that emits items from the source Publisher of type {@code klass}
+     * @return a Flowable that emits items from the source Publisher of type {@code clazz}
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -8997,7 +8990,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(boolean delayError) {
-        return onBackpressureBuffer(bufferSize(), true, true);
+        return onBackpressureBuffer(bufferSize(), delayError, true);
     }
 
     /**
@@ -9053,7 +9046,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int capacity, boolean delayError) {
-        return onBackpressureBuffer(capacity, true, false);
+        return onBackpressureBuffer(capacity, delayError, false);
     }
 
     /**
@@ -9422,7 +9415,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param value
+     * @param item
      *            the value that is emitted along with a regular onComplete in case the current
      *            Flowable signals an exception
      * @return the original Publisher with appropriately modified behavior
@@ -9430,9 +9423,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> onErrorReturnValue(final T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        return onErrorReturn(Functions.justFunction(value));
+    public final Flowable<T> onErrorReturnItem(final T item) {
+        ObjectHelper.requireNonNull(item, "item is null");
+        return onErrorReturn(Functions.justFunction(item));
     }
 
     /**
@@ -9492,7 +9485,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * @return a Flowable which out references to the upstream producer and downstream Subscriber if
      * the sequence is terminated or downstream unsubscribes
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -9635,7 +9628,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  
      * @param n the initial request amount, further request will happen after 75% of this value
      * @return the Publisher that rebatches request amounts from downstream
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -11001,7 +10994,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param defaultValue
+     * @param defaultItem
      *            a default value to emit if the source Publisher emits no item
      * @return a Flowable that emits the single item emitted by the source Publisher, or a default item if
      *         the source Publisher is empty
@@ -11011,9 +11004,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> single(T defaultValue) {
-        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(this, defaultValue));
+    public final Flowable<T> single(T defaultItem) {
+        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
+        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(this, defaultItem));
     }
     
     /**
@@ -11423,7 +11416,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            an Iterable that contains the items you want the modified Publisher to emit first
      * @return a Flowable that emits the items in the specified {@link Iterable} and then emits the items
      *         emitted by the source Publisher
@@ -11432,8 +11425,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> startWith(Iterable<? extends T> values) {
-        return concatArray(fromIterable(values), this);
+    public final Flowable<T> startWith(Iterable<? extends T> items) {
+        return concatArray(fromIterable(items), this);
     }
 
     /**
@@ -11488,7 +11481,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> startWith(T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
+        ObjectHelper.requireNonNull(value, "item is null");
         return concatArray(just(value), this);
     }
 
@@ -11506,7 +11499,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            the array of values to emit first
      * @return a Flowable that emits the specified items before it begins to emit items emitted by the source
      *         Publisher
@@ -11515,8 +11508,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> startWithArray(T... values) {
-        Flowable<T> fromArray = fromArray(values);
+    public final Flowable<T> startWithArray(T... items) {
+        Flowable<T> fromArray = fromArray(items);
         if (fromArray == empty()) {
             return RxJavaPlugins.onAssembly(this);
         }
@@ -13153,7 +13146,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * This allows fluent conversion to any other type.
      * @param <R> the resulting object type
-     * @param converter the function that receives the current Flowable instance and returns a vlau
+     * @param converter the function that receives the current Flowable instance and returns a value
      * @return the value returned by the function
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
@@ -13187,8 +13180,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         calls onCompleted
      * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
      *      Completable</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
-     *        with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -13573,7 +13565,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @throws NoSuchElementException
      *             if the source Publisher emits no items
      * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -13656,7 +13648,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits a list that contains the items emitted by the source Publisher in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -13687,7 +13679,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             if any item emitted by the Publisher does not implement {@link Comparable} with respect to
      *             all other items emitted by the Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -13816,7 +13808,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     /**
      * Returns a Flowable that emits windows of items it collects from the source Publisher. The resulting
-     * Publisher starts a new window periodically, as determined by the {@code timeshift} argument. It emits
+     * Publisher starts a new window periodically, as determined by the {@code timeskip} argument. It emits
      * each window after a fixed timespan, specified by the {@code timespan} argument. When the source
      * Publisher completes or Publisher completes or encounters an error, the resulting Publisher emits the
      * current window and propagates the notification from the source Publisher.
@@ -13838,7 +13830,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param timeskip
      *            the period of time after which a new window will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @return a Flowable that emits new windows periodically as a fixed timespan elapses
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
@@ -13850,7 +13842,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     /**
      * Returns a Flowable that emits windows of items it collects from the source Publisher. The resulting
-     * Publisher starts a new window periodically, as determined by the {@code timeshift} argument. It emits
+     * Publisher starts a new window periodically, as determined by the {@code timeskip} argument. It emits
      * each window after a fixed timespan, specified by the {@code timespan} argument. When the source
      * Publisher completes or Publisher completes or encounters an error, the resulting Publisher emits the
      * current window and propagates the notification from the source Publisher.
@@ -13872,7 +13864,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param timeskip
      *            the period of time after which a new window will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @param scheduler
      *            the {@link Scheduler} to use when determining the end and start of a window
      * @return a Flowable that emits new windows periodically as a fixed timespan elapses
@@ -13886,7 +13878,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     /**
      * Returns a Flowable that emits windows of items it collects from the source Publisher. The resulting
-     * Publisher starts a new window periodically, as determined by the {@code timeshift} argument. It emits
+     * Publisher starts a new window periodically, as determined by the {@code timeskip} argument. It emits
      * each window after a fixed timespan, specified by the {@code timespan} argument. When the source
      * Publisher completes or Publisher completes or encounters an error, the resulting Publisher emits the
      * current window and propagates the notification from the source Publisher.
@@ -13908,7 +13900,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param timeskip
      *            the period of time after which a new window will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @param scheduler
      *            the {@link Scheduler} to use when determining the end and start of a window
      * @param bufferSize
@@ -14213,7 +14205,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <B>
      *            the window element type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            a Publisher whose emitted items close and open windows
      * @return a Flowable that emits non-overlapping windows of items it collects from the source Publisher
      *         where the boundary of each window is determined by the items emitted from the {@code boundary}
@@ -14222,8 +14214,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Flowable<Flowable<T>> window(Publisher<B> boundary) {
-        return window(boundary, bufferSize());
+    public final <B> Flowable<Flowable<T>> window(Publisher<B> boundaryIndicator) {
+        return window(boundaryIndicator, bufferSize());
     }
 
     /**
@@ -14242,7 +14234,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <B>
      *            the window element type (ignored)
-     * @param boundary
+     * @param boundaryIndicator
      *            a Publisher whose emitted items close and open windows
      * @param bufferSize
      *            the capacity hint for the buffer in the inner windows
@@ -14253,9 +14245,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Flowable<Flowable<T>> window(Publisher<B> boundary, int bufferSize) {
-        ObjectHelper.requireNonNull(boundary, "boundary is null");
-        return RxJavaPlugins.onAssembly(new FlowableWindowBoundary<T, B>(this, boundary, bufferSize));
+    public final <B> Flowable<Flowable<T>> window(Publisher<B> boundaryIndicator, int bufferSize) {
+        ObjectHelper.requireNonNull(boundaryIndicator, "boundaryIndicator is null");
+        return RxJavaPlugins.onAssembly(new FlowableWindowBoundary<T, B>(this, boundaryIndicator, bufferSize));
     }
 
     /**
@@ -14277,9 +14269,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <U> the element type of the window-opening Publisher
      * @param <V> the element type of the window-closing Publishers
-     * @param windowOpen
+     * @param openingIndicator
      *            a Publisher that, when it emits an item, causes another window to be created
-     * @param windowClose
+     * @param closingIndicator
      *            a {@link Function} that produces a Publisher for every window created. When this Publisher
      *            emits an item, the associated window is closed and emitted
      * @return a Flowable that emits windows of items emitted by the source Publisher that are governed by
@@ -14289,9 +14281,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<Flowable<T>> window(
-            Publisher<U> windowOpen, 
-            Function<? super U, ? extends Publisher<V>> windowClose) {
-        return window(windowOpen, windowClose, bufferSize());
+            Publisher<U> openingIndicator, 
+            Function<? super U, ? extends Publisher<V>> closingIndicator) {
+        return window(openingIndicator, closingIndicator, bufferSize());
     }
 
     /**
@@ -14313,9 +14305,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * 
      * @param <U> the element type of the window-opening Publisher
      * @param <V> the element type of the window-closing Publishers
-     * @param windowOpen
+     * @param openingIndicator
      *            a Publisher that, when it emits an item, causes another window to be created
-     * @param windowClose
+     * @param closingIndicator
      *            a {@link Function} that produces a Publisher for every window created. When this Publisher
      *            emits an item, the associated window is closed and emitted
      * @param bufferSize
@@ -14327,11 +14319,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Flowable<Flowable<T>> window(
-            Publisher<U> windowOpen, 
-            Function<? super U, ? extends Publisher<V>> windowClose, int bufferSize) {
-        ObjectHelper.requireNonNull(windowOpen, "windowOpen is null");
-        ObjectHelper.requireNonNull(windowClose, "windowClose is null");
-        return RxJavaPlugins.onAssembly(new FlowableWindowBoundarySelector<T, U, V>(this, windowOpen, windowClose, bufferSize));
+            Publisher<U> openingIndicator, 
+            Function<? super U, ? extends Publisher<V>> closingIndicator, int bufferSize) {
+        ObjectHelper.requireNonNull(openingIndicator, "openingIndicator is null");
+        ObjectHelper.requireNonNull(closingIndicator, "closingIndicator is null");
+        return RxJavaPlugins.onAssembly(new FlowableWindowBoundarySelector<T, U, V>(this, openingIndicator, closingIndicator, bufferSize));
     }
     
     /**
@@ -14352,7 +14344,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <B> the element type of the boundary Publisher
-     * @param boundary
+     * @param boundaryIndicatorSupplier
      *            a {@link Callable} that returns an {@code Publisher} that governs the boundary between windows.
      *            When the source {@code Publisher} emits an item, {@code window} emits the current window and begins
      *            a new one.
@@ -14362,8 +14354,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Flowable<Flowable<T>> window(Callable<? extends Publisher<B>> boundary) {
-        return window(boundary, bufferSize());
+    public final <B> Flowable<Flowable<T>> window(Callable<? extends Publisher<B>> boundaryIndicatorSupplier) {
+        return window(boundaryIndicatorSupplier, bufferSize());
     }
 
     /**
@@ -14384,7 +14376,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param <B> the element type of the boundary Publisher
-     * @param boundary
+     * @param boundaryIndicatorSupplier
      *            a {@link Callable} that returns an {@code Publisher} that governs the boundary between windows.
      *            When the source {@code Publisher} emits an item, {@code window} emits the current window and begins
      *            a new one.
@@ -14396,9 +14388,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <B> Flowable<Flowable<T>> window(Callable<? extends Publisher<B>> boundary, int bufferSize) {
-        ObjectHelper.requireNonNull(boundary, "boundary is null");
-        return RxJavaPlugins.onAssembly(new FlowableWindowBoundarySupplier<T, B>(this, boundary, bufferSize));
+    public final <B> Flowable<Flowable<T>> window(Callable<? extends Publisher<B>> boundaryIndicatorSupplier, int bufferSize) {
+        ObjectHelper.requireNonNull(boundaryIndicatorSupplier, "boundaryIndicatorSupplier is null");
+        return RxJavaPlugins.onAssembly(new FlowableWindowBoundarySupplier<T, B>(this, boundaryIndicatorSupplier, bufferSize));
     }
 
     /**
@@ -14459,16 +14451,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T1> the first other source's value type
      * @param <T2> the second other source's value type
      * @param <R> the result value type
-     * @param p1 the first other Publisher
-     * @param p2 the second other Publisher
+     * @param source1 the first other Publisher
+     * @param source2 the second other Publisher
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
      * @since 2.0
      */
-    public final <T1, T2, R> Flowable<R> withLatestFrom(Publisher<T1> p1, Publisher<T2> p2, 
+    public final <T1, T2, R> Flowable<R> withLatestFrom(Publisher<T1> source1, Publisher<T2> source2, 
             Function3<? super T, ? super T1, ? super T2, R> combiner) {
         Function<Object[], R> f = Functions.toFunction(combiner);
-        return withLatestFrom(new Publisher[] { p1, p2 }, f);
+        return withLatestFrom(new Publisher[] { source1, source2 }, f);
     }
 
     /**
@@ -14492,19 +14484,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T2> the second other source's value type
      * @param <T3> the third other source's value type
      * @param <R> the result value type
-     * @param p1 the first other Publisher
-     * @param p2 the second other Publisher
-     * @param p3 the third other Publisher
+     * @param source1 the first other Publisher
+     * @param source2 the second other Publisher
+     * @param source3 the third other Publisher
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
      * @since 2.0
      */
     public final <T1, T2, T3, R> Flowable<R> withLatestFrom(
-            Publisher<T1> p1, Publisher<T2> p2, 
-            Publisher<T3> p3, 
+            Publisher<T1> source1, Publisher<T2> source2, 
+            Publisher<T3> source3, 
             Function4<? super T, ? super T1, ? super T2, ? super T3, R> combiner) {
         Function<Object[], R> f = Functions.toFunction(combiner);
-        return withLatestFrom(new Publisher[] { p1, p2, p3 }, f);
+        return withLatestFrom(new Publisher[] { source1, source2, source3 }, f);
     }
 
     /**
@@ -14529,20 +14521,20 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T3> the third other source's value type
      * @param <T4> the fourth other source's value type
      * @param <R> the result value type
-     * @param p1 the first other Publisher
-     * @param p2 the second other Publisher
-     * @param p3 the third other Publisher
-     * @param p4 the fourth other Publisher
+     * @param source1 the first other Publisher
+     * @param source2 the second other Publisher
+     * @param source3 the third other Publisher
+     * @param source4 the fourth other Publisher
      * @param combiner the function called with an array of values from each participating Publisher
      * @return the new Publisher instance
      * @since 2.0
      */
     public final <T1, T2, T3, T4, R> Flowable<R> withLatestFrom(
-            Publisher<T1> p1, Publisher<T2> p2, 
-            Publisher<T3> p3, Publisher<T4> p4, 
+            Publisher<T1> source1, Publisher<T2> source2, 
+            Publisher<T3> source3, Publisher<T4> source4, 
             Function5<? super T, ? super T1, ? super T2, ? super T3, ? super T4, R> combiner) {
         Function<Object[], R> f = Functions.toFunction(combiner);
-        return withLatestFrom(new Publisher[] { p1, p2, p3, p4 }, f);
+        return withLatestFrom(new Publisher[] { source1, source2, source3, source4 }, f);
     }
 
     /**

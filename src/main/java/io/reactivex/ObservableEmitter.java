@@ -23,7 +23,7 @@ import io.reactivex.functions.Cancellable;
  * The onNext, onError and onComplete methods should be called 
  * in a sequential manner, just like the Observer's methods.
  * Use {@link #serialize()} if you want to ensure this. 
- * The other methods are threadsafe.
+ * The other methods are thread-safe.
  *
  * @param <T> the value type to emit
  */

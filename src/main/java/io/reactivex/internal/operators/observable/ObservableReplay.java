@@ -50,10 +50,10 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     /**
      * Given a connectable observable factory, it multicasts over the generated
      * ConnectableObservable via a selector function.
-     * @param <U> the value type of the NbpConnectableObservable
+     * @param <U> the value type of the ConnectableObservable
      * @param <R> the result value type
-     * @param connectableFactory
-     * @param selector
+     * @param connectableFactory the factory that returns a ConnectableObservable for each individual subscriber
+     * @param selector the function that receives a Observable and should return another Observable that will be subscribed to
      * @return the new NbpObservable instance
      */
     public static <U, R> Observable<R> multicastSelector(
@@ -124,8 +124,8 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     /**
      * Creates a replaying ConnectableObservable with a size bound buffer.
      * @param <T> the value type
-     * @param source
-     * @param bufferSize
+     * @param source the source Flowable to use
+     * @param bufferSize the maximum number of elements to hold
      * @return the new NbpConnectableObservable instance
      */
     public static <T> ConnectableObservable<T> create(Observable<T> source,
@@ -144,10 +144,10 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     /**
      * Creates a replaying ConnectableObservable with a time bound buffer.
      * @param <T> the value type
-     * @param source
-     * @param maxAge
-     * @param unit
-     * @param scheduler
+     * @param source the source Flowable to use
+     * @param maxAge the maximum age of entries
+     * @param unit the unit of measure of the age amount
+     * @param scheduler the target scheduler providing the current time
      * @return the new NbpConnectableObservable instance
      */
     public static <T> ConnectableObservable<T> create(Observable<T> source,
@@ -158,11 +158,11 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     /**
      * Creates a replaying ConnectableObservable with a size and time bound buffer.
      * @param <T> the value type
-     * @param source
-     * @param maxAge
-     * @param unit
-     * @param scheduler
-     * @param bufferSize
+     * @param source the source Flowable to use
+     * @param maxAge the maximum age of entries
+     * @param unit the unit of measure of the age amount
+     * @param scheduler the target scheduler providing the current time
+     * @param bufferSize the maximum number of elements to hold
      * @return the new NbpConnectableObservable instance
      */
     public static <T> ConnectableObservable<T> create(Observable<T> source,
@@ -207,7 +207,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                         
                         ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
                         // let's try setting it as the current subscriber-to-source
-                        if (!curr.compareAndSet(r, u)) {
+                        if (!curr.compareAndSet(null, u)) {
                             // didn't work, maybe someone else did it or the current subscriber 
                             // to source has just finished
                             continue;
@@ -397,7 +397,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 if (producers.compareAndSet(c, u)) {
                     return true;
                 }
-                // if failed, some other operation succeded (another add, remove or termination)
+                // if failed, some other operation succeeded (another add, remove or termination)
                 // so retry
             }
         }
@@ -552,7 +552,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
         /**
          * Convenience method to auto-cast the index object.
-         * @return
+         * @return the index Object or null
          */
         @SuppressWarnings("unchecked")
         <U> U index() {
@@ -567,12 +567,12 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     interface ReplayBuffer<T> {
         /**
          * Adds a regular value to the buffer.
-         * @param value
+         * @param value the value to be stored in the buffer
          */
         void next(T value);
         /**
          * Adds a terminal exception to the buffer
-         * @param e
+         * @param e the error to be stored in the buffer
          */
         void error(Throwable e);
         /**
@@ -584,7 +584,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
          * subscriber inside the output if there
          * is new value and requests available at the
          * same time.
-         * @param output
+         * @param output the receiver of the buffered events
          */
         void replay(InnerSubscription<T> output);
     }
@@ -638,11 +638,11 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 }
                 int sourceIndex = size;
                 
-                Integer destIndexObject = output.index();
-                int destIndex = destIndexObject != null ? destIndexObject.intValue() : 0;
+                Integer destinationIndexObject = output.index();
+                int destinationIndex = destinationIndexObject != null ? destinationIndexObject : 0;
                 
-                while (destIndex < sourceIndex) {
-                    Object o = get(destIndex);
+                while (destinationIndex < sourceIndex) {
+                    Object o = get(destinationIndex);
                     try {
                         if (NotificationLite.accept(o, child)) {
                             return;
@@ -658,10 +658,10 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                     if (output.isDisposed()) {
                         return;
                     }
-                    destIndex++;
+                    destinationIndex++;
                 }
 
-                output.index = destIndex;
+                output.index = destinationIndex;
                 
                 synchronized (output) {
                     if (!output.missed) {
@@ -707,7 +707,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         
         /**
          * Add a new node to the linked list.
-         * @param n
+         * @param n the Node instance to add as last
          */
         final void addLast(Node n) {
             tail.set(n);
@@ -740,7 +740,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
         /**
          * Arranges the given node is the new head from now on.
-         * @param n
+         * @param n the Node instance to set as first
          */
         final void setFirst(Node n) {
             set(n);
@@ -833,8 +833,8 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         /**
          * Override this to wrap the NotificationLite object into a
          * container to be used later by truncate.
-         * @param value
-         * @return
+         * @param value the value to transform into the internal representation
+         * @return the transformed value
          */
         Object enterTransform(Object value) {
             return value;
@@ -842,8 +842,8 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         /**
          * Override this to unwrap the transformed value into a
          * NotificationLite object.
-         * @param value
-         * @return
+         * @param value the value in the internal representation to transform
+         * @return the transformed value
          */
         Object leaveTransform(Object value) {
             return value;

@@ -34,7 +34,6 @@ public final class FlowableError<T> extends Flowable<T> {
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             error = t;
-            return;
         }
         if (error == null) {
             error = new NullPointerException();

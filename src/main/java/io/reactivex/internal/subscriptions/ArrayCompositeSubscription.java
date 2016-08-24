@@ -36,8 +36,8 @@ public final class ArrayCompositeSubscription extends AtomicReferenceArray<Subsc
 
     /**
      * Sets the resource at the specified index and disposes the old resource.
-     * @param index
-     * @param resource
+     * @param index the index of the resource to set
+     * @param resource the new resource
      * @return true if the resource has ben set, false if the composite has been disposed
      */
     public boolean setResource(int index, Subscription resource) {
@@ -58,8 +58,8 @@ public final class ArrayCompositeSubscription extends AtomicReferenceArray<Subsc
     
     /**
      * Replaces the resource at the specified index and returns the old resource.
-     * @param index
-     * @param resource
+     * @param index the index of the resource to replace
+     * @param resource the new resource
      * @return the old resource, can be null
      */
     public Subscription replaceResource(int index, Subscription resource) {

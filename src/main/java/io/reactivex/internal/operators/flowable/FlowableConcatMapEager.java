@@ -75,11 +75,11 @@ public class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpstream<T
         final AtomicReference<Throwable> error;
         
         final AtomicLong requested;
-        
+
+        final SpscLinkedArrayQueue<InnerQueuedSubscriber<R>> subscribers;
+
         Subscription s;
-        
-        SpscLinkedArrayQueue<InnerQueuedSubscriber<R>> subscribers;
-        
+
         volatile boolean cancelled;
         
         volatile boolean done;
@@ -353,7 +353,7 @@ public class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpstream<T
                             inner = null;
                             current = null;
                             s.request(1);
-                            continue outer;
+                            continue;
                         }
                     }
                 }

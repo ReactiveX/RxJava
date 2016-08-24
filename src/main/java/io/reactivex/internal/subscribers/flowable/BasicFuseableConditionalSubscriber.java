@@ -16,7 +16,6 @@ package io.reactivex.internal.subscribers.flowable;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -111,10 +110,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
      * false indicates dropped value
      */
     protected final boolean tryNext(R value) {
-        if (done) {
-            return false;
-        }
-        return actual.tryOnNext(value);
+        return !done && actual.tryOnNext(value);
     }
     
     @Override
@@ -144,16 +140,6 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
         }
         done = true;
         actual.onComplete();
-    }
-    
-    /**
-     * Checks if the value is null and if so, throws a NullPointerException.
-     * @param value the value to check
-     * @param message the message to indicate the source of the value
-     * @return the value if not null
-     */
-    protected final <V> V nullCheck(V value, String message) {
-        return ObjectHelper.requireNonNull(value, message);
     }
     
     /**
@@ -202,7 +188,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
     }
 
     // --------------------------------------------------------------
-    // Default implementation of the RS and QS protocol (overridable)
+    // Default implementation of the RS and QS protocol (can be overridden)
     // --------------------------------------------------------------
     
     @Override

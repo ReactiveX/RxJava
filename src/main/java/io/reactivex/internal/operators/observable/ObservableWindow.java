@@ -83,13 +83,15 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
                 actual.onNext(w);
             }
 
-            w.onNext(t);
-            if (++size >= count) {
-                size = 0;
-                window = null;
-                w.onComplete();
-                if (cancelled) {
-                    s.dispose();
+            if (w != null) {
+                w.onNext(t);
+                if (++size >= count) {
+                    size = 0;
+                    window = null;
+                    w.onComplete();
+                    if (cancelled) {
+                        s.dispose();
+                    }
                 }
             }
         }

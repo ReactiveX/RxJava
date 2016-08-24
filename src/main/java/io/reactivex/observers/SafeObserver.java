@@ -148,9 +148,13 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
             }
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            t2.suppress(e);
-            
-            RxJavaPlugins.onError(t2);
+            if (t2 == null) {
+                RxJavaPlugins.onError(e);
+            } else {
+                t2.suppress(e);
+
+                RxJavaPlugins.onError(t2);
+            }
         }
     }
     

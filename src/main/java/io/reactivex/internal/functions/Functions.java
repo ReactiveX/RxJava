@@ -192,7 +192,7 @@ public enum Functions {
         }
     };
 
-    public static final LongConsumer EMPTY_LONGCONSUMER = new LongConsumer() {
+    public static final LongConsumer EMPTY_LONG_CONSUMER = new LongConsumer() {
         @Override
         public void accept(long v) { }
     };
@@ -485,12 +485,12 @@ public enum Functions {
         return new BooleanSupplierPredicateReverse<T>(supplier);
     }
 
-    static final class TimestampingFunction<T> implements Function<T, Timed<T>> {
+    static final class TimestampFunction<T> implements Function<T, Timed<T>> {
         final TimeUnit unit;
         
         final Scheduler scheduler;
 
-        public TimestampingFunction(TimeUnit unit, Scheduler scheduler) {
+        public TimestampFunction(TimeUnit unit, Scheduler scheduler) {
             this.unit = unit;
             this.scheduler = scheduler;
         }
@@ -502,7 +502,7 @@ public enum Functions {
     }
     
     public static <T> Function<T, Timed<T>> timestampWith(TimeUnit unit, Scheduler scheduler) {
-        return new TimestampingFunction<T>(unit, scheduler);
+        return new TimestampFunction<T>(unit, scheduler);
     }
 
     static final class ToMapKeySelector<K, T> implements BiConsumer<Map<K, T>, T> {

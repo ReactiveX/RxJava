@@ -110,7 +110,6 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
                 if (boundary.compareAndSet(null, inner)) {
                     windows.getAndIncrement();
                     p.subscribe(inner);
-                    return;
                 }
             }
         }

@@ -76,7 +76,7 @@ implements Observer<T>, Disposable {
         
         Throwable e = error;
         if (e != null) {
-            Exceptions.propagate(e);
+            throw Exceptions.propagate(e);
         }
         return value;
     }

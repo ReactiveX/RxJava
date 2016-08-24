@@ -720,7 +720,6 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             } else {
                 s.cancel();
                 actual.onError(new IllegalStateException("Could not emit the first window due to lack of requests"));
-                return;
             }
         }
         
@@ -843,7 +842,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                             }
                         } else {
                             for (UnicastProcessor<T> w : ws) {
-                                w.onError(e);
+                                w.onComplete();
                             }
                         }
                         ws.clear();

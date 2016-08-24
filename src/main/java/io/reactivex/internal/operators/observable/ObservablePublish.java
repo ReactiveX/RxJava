@@ -85,7 +85,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                          */
                         continue;
                         /*
-                         * Note: although technically corrent, concurrent disconnects can cause 
+                         * Note: although technically correct, concurrent disconnects can cause
                          * unexpected behavior such as child subscribers never receiving anything 
                          * (unless connected again). An alternative approach, similar to 
                          * PublishSubject would be to immediately terminate such child 
@@ -341,7 +341,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 if (producers.compareAndSet(c, u)) {
                     return true;
                 }
-                // if failed, some other operation succeded (another add, remove or termination)
+                // if failed, some other operation succeeded (another add, remove or termination)
                 // so retry
             }
         }
@@ -430,7 +430,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                                 ip.child.onComplete();
                             }
                         } finally {
-                            // we explicitely unsubscribe/disconnect from the upstream
+                            // we explicitly unsubscribe/disconnect from the upstream
                             // after we sent out the terminal event to child subscribers
                             dispose();
                         }
@@ -450,7 +450,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                             ip.child.onError(t);
                         }
                     } finally {
-                        // we explicitely unsubscribe/disconnect from the upstream
+                        // we explicitly unsubscribe/disconnect from the upstream
                         // after we sent out the terminal event to child subscribers
                         dispose();
                     }
@@ -491,7 +491,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
             try {
                 for (;;) {
                     /*
-                     * We need to read terminalEvent before checking the queue for emptyness because
+                     * We need to read terminalEvent before checking the queue for emptiness because
                      * all enqueue happens before setting the terminal event.
                      * If it were the other way around, when the emission is paused between
                      * checking isEmpty and checking terminalEvent, some other thread might

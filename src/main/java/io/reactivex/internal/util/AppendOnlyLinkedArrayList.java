@@ -22,7 +22,7 @@ import io.reactivex.functions.*;
  */
 public class AppendOnlyLinkedArrayList<T> {
     final int capacity;
-    Object[] head;
+    final Object[] head;
     Object[] tail;
     int offset;
     
@@ -65,7 +65,7 @@ public class AppendOnlyLinkedArrayList<T> {
     /**
      * Loops through all elements of the list.
      * @param consumer the consumer of elements
-     * @throws Exception
+     * @throws Exception if the consumer throws
      */
     @SuppressWarnings("unchecked")
     public void forEach(Consumer<? super T> consumer) throws Exception {
@@ -87,7 +87,7 @@ public class AppendOnlyLinkedArrayList<T> {
      * Loops over all elements of the array until a null element is encountered or
      * the given predicate returns true.
      * @param consumer the consumer of values that returns true if the forEach should terminate
-     * @throws Exception
+     * @throws Exception if the predicate throws
      */
     @SuppressWarnings("unchecked")
     public void forEachWhile(Predicate<? super T> consumer) throws Exception {

@@ -89,8 +89,8 @@ public final class Disposables {
     }
 
     /**
-     * Returns a new, undisposed Disposable instance.
-     * @return a new, undisposed Disposable instance
+     * Returns a new, non-disposed Disposable instance.
+     * @return a new, non-disposed Disposable instance
      */
     public static Disposable empty() {
         return from(Functions.EMPTY_RUNNABLE);

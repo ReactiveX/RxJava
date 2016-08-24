@@ -93,7 +93,7 @@ extends AbstractObservableWithUpstream<T, U> {
         
         @Override
         public void onNext(T t) {
-            synchronized (t) {
+            synchronized (this) {
                 for (U b : buffers) {
                     b.add(t);
                 }
@@ -221,7 +221,7 @@ extends AbstractObservableWithUpstream<T, U> {
             }
             
             if (e) {
-                fastpathOrderedEmit(b, false, this);
+                fastPathOrderedEmit(b, false, this);
             }
             
             if (resources.remove(d)) {

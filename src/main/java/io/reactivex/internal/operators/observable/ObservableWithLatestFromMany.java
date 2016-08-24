@@ -104,7 +104,7 @@ public class ObservableWithLatestFromMany<T, R> extends AbstractObservableWithUp
         
         final Function<? super Object[], R> combiner;
         
-        final WithlatestInnerSubscriber[] subscribers;
+        final WithLatestInnerSubscriber[] subscribers;
         
         final AtomicReferenceArray<Object> values;
         
@@ -117,9 +117,9 @@ public class ObservableWithLatestFromMany<T, R> extends AbstractObservableWithUp
         public WithLatestFromObserver(Observer<? super R> actual, Function<? super Object[], R> combiner, int n) {
             this.actual = actual;
             this.combiner = combiner;
-            WithlatestInnerSubscriber[] s = new WithlatestInnerSubscriber[n];
+            WithLatestInnerSubscriber[] s = new WithLatestInnerSubscriber[n];
             for (int i = 0; i < n; i++) {
-                s[i] = new WithlatestInnerSubscriber(this, i);
+                s[i] = new WithLatestInnerSubscriber(this, i);
             }
             this.subscribers = s;
             this.values = new AtomicReferenceArray<Object>(n);
@@ -128,7 +128,7 @@ public class ObservableWithLatestFromMany<T, R> extends AbstractObservableWithUp
         }
         
         void subscribe(ObservableSource<?>[] others, int n) {
-            WithlatestInnerSubscriber[] subscribers = this.subscribers;
+            WithLatestInnerSubscriber[] subscribers = this.subscribers;
             AtomicReference<Disposable> s = this.d;
             for (int i = 0; i < n; i++) {
                 if (DisposableHelper.isDisposed(s.get()) || done) {
@@ -229,7 +229,7 @@ public class ObservableWithLatestFromMany<T, R> extends AbstractObservableWithUp
         }
         
         void cancelAllBut(int index) {
-            WithlatestInnerSubscriber[] subscribers = this.subscribers;
+            WithLatestInnerSubscriber[] subscribers = this.subscribers;
             for (int i = 0; i < subscribers.length; i++) {
                 if (i != index) {
                     subscribers[i].dispose();
@@ -238,7 +238,7 @@ public class ObservableWithLatestFromMany<T, R> extends AbstractObservableWithUp
         }
     }
 
-    static final class WithlatestInnerSubscriber 
+    static final class WithLatestInnerSubscriber
     extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
         /** */
@@ -250,7 +250,7 @@ public class ObservableWithLatestFromMany<T, R> extends AbstractObservableWithUp
         
         boolean hasValue;
         
-        public WithlatestInnerSubscriber(WithLatestFromObserver<?, ?> parent, int index) {
+        public WithLatestInnerSubscriber(WithLatestFromObserver<?, ?> parent, int index) {
             this.parent = parent;
             this.index = index;
         }

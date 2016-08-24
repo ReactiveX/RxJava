@@ -61,7 +61,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
         return wip.get() == 0 && wip.compareAndSet(0, 1);
     }
     
-    protected final void fastpathEmit(U value, boolean delayError, Disposable dispose) {
+    protected final void fastPathEmit(U value, boolean delayError, Disposable dispose) {
         final Observer<? super V> s = actual;
         final SimpleQueue<U> q = queue;
         
@@ -81,10 +81,10 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
 
     /**
      * Makes sure the fast-path emits in order.
-     * @param value
-     * @param delayError
+     * @param value the value to emit or queue up
+     * @param delayError if true, errors are delayed until the source has terminated
      */
-    protected final void fastpathOrderedEmit(U value, boolean delayError, Disposable disposable) {
+    protected final void fastPathOrderedEmit(U value, boolean delayError, Disposable disposable) {
         final Observer<? super V> s = actual;
         final SimpleQueue<U> q = queue;
         

@@ -32,7 +32,6 @@ public final class ObservableError<T> extends Observable<T> {
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             error = t;
-            return;
         }
         if (error == null) {
             error = new NullPointerException();

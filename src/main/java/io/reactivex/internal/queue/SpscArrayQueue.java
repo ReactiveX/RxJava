@@ -75,10 +75,7 @@ public final class SpscArrayQueue<E> extends BaseArrayQueue<E> {
     @Override
     public boolean offer(E v1, E v2) {
         // FIXME 
-        if (offer(v1)) {
-            return offer(v2);
-        }
-        return false;
+        return offer(v1) && offer(v2);
     }
 
     @Override

@@ -95,7 +95,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, non-overlappingly, of the Single sources provided by
+     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
      * an Iterable sequence. 
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -111,7 +111,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
     
     /**
-     * Concatenate the single values, non-overlappingly, of the Single sources provided by
+     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
      * a Publisher sequence. 
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -137,20 +137,20 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * 
      * @param <T> the common value type
-     * @param s1
+     * @param source1
      *            a Single to be concatenated
-     * @param s2
+     * @param source2
      *            a Single to be concatenated
      * @return a Flowable that emits items emitted by the two source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            SingleSource<? extends T> s1, SingleSource<? extends T> s2
+            SingleSource<? extends T> source1, SingleSource<? extends T> source2
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        return concat(Flowable.fromArray(s1, s2));
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return concat(Flowable.fromArray(source1, source2));
     }
     
     /**
@@ -163,24 +163,24 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      *
      * @param <T> the common value type
-     * @param s1
+     * @param source1
      *            a Single to be concatenated
-     * @param s2
+     * @param source2
      *            a Single to be concatenated
-     * @param s3
+     * @param source3
      *            a Single to be concatenated
      * @return a Flowable that emits items emitted by the three source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            SingleSource<? extends T> s1, SingleSource<? extends T> s2,
-            SingleSource<? extends T> s3
+            SingleSource<? extends T> source1, SingleSource<? extends T> source2,
+            SingleSource<? extends T> source3
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        return concat(Flowable.fromArray(s1, s2, s3));
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return concat(Flowable.fromArray(source1, source2, source3));
     }
     
     /**
@@ -193,27 +193,27 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * 
      * @param <T> the common value type
-     * @param s1
+     * @param source1
      *            a Single to be concatenated
-     * @param s2
+     * @param source2
      *            a Single to be concatenated
-     * @param s3
+     * @param source3
      *            a Single to be concatenated
-     * @param s4
+     * @param source4
      *            a Single to be concatenated
      * @return a Flowable that emits items emitted by the four source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> concat(
-            SingleSource<? extends T> s1, SingleSource<? extends T> s2,
-            SingleSource<? extends T> s3, SingleSource<? extends T> s4
+            SingleSource<? extends T> source1, SingleSource<? extends T> source2,
+            SingleSource<? extends T> source3, SingleSource<? extends T> source4
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        return concat(Flowable.fromArray(s1, s2, s3, s4));
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return concat(Flowable.fromArray(source1, source2, source3, source4));
     }
     
     /**
@@ -258,7 +258,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Calls a Callable for each individual SingleObserver to return the actula Single source to
+     * Calls a Callable for each individual SingleObserver to return the actual Single source to
      * be subscribe to.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -565,20 +565,20 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * 
      * @param <T> the common value type
-     * @param s1
+     * @param source1
      *            a Single to be merged
-     * @param s2
+     * @param source2
      *            a Single to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            SingleSource<? extends T> s1, SingleSource<? extends T> s2
+            SingleSource<? extends T> source1, SingleSource<? extends T> source2
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        return merge(Flowable.fromArray(s1, s2));
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return merge(Flowable.fromArray(source1, source2));
     }
     
     /**
@@ -594,24 +594,24 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * 
      * @param <T> the common value type
-     * @param s1
+     * @param source1
      *            a Single to be merged
-     * @param s2
+     * @param source2
      *            a Single to be merged
-     * @param s3
+     * @param source3
      *            a Single to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            SingleSource<? extends T> s1, SingleSource<? extends T> s2,
-            SingleSource<? extends T> s3
+            SingleSource<? extends T> source1, SingleSource<? extends T> source2,
+            SingleSource<? extends T> source3
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        return merge(Flowable.fromArray(s1, s2, s3));
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return merge(Flowable.fromArray(source1, source2, source3));
     }
     
     /**
@@ -627,27 +627,27 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * 
      * @param <T> the common value type
-     * @param s1
+     * @param source1
      *            a Single to be merged
-     * @param s2
+     * @param source2
      *            a Single to be merged
-     * @param s3
+     * @param source3
      *            a Single to be merged
-     * @param s4
+     * @param source4
      *            a Single to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> merge(
-            SingleSource<? extends T> s1, SingleSource<? extends T> s2,
-            SingleSource<? extends T> s3, SingleSource<? extends T> s4
+            SingleSource<? extends T> source1, SingleSource<? extends T> source2,
+            SingleSource<? extends T> source3, SingleSource<? extends T> source4
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        return merge(Flowable.fromArray(s1, s2, s3, s4));
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return merge(Flowable.fromArray(source1, source2, source3, source4));
     }
     
     /**
@@ -849,9 +849,9 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T1> the first source Single's value type
      * @param <T2> the second source Single's value type
      * @param <R> the result value type
-     * @param s1
+     * @param source1
      *            the first source Single
-     * @param s2
+     * @param source2
      *            a second source Single
      * @param zipper
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -861,12 +861,12 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T1, T2, R> Single<R> zip(
-            SingleSource<? extends T1> s1, SingleSource<? extends T2> s2,
+            SingleSource<? extends T1> source1, SingleSource<? extends T2> source2,
             BiFunction<? super T1, ? super T2, ? extends R> zipper
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2);
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return zipArray(Functions.toFunction(zipper), source1, source2);
     }
 
     /**
@@ -883,11 +883,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T2> the second source Single's value type
      * @param <T3> the third source Single's value type
      * @param <R> the result value type
-     * @param s1
+     * @param source1
      *            the first source Single
-     * @param s2
+     * @param source2
      *            a second source Single
-     * @param s3
+     * @param source3
      *            a third source Single
      * @param zipper
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -897,14 +897,14 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, R> Single<R> zip(
-            SingleSource<? extends T1> s1, SingleSource<? extends T2> s2,
-            SingleSource<? extends T3> s3,
+            SingleSource<? extends T1> source1, SingleSource<? extends T2> source2,
+            SingleSource<? extends T3> source3,
             Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3);
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return zipArray(Functions.toFunction(zipper), source1, source2, source3);
     }
 
     /**
@@ -922,13 +922,13 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T3> the third source Single's value type
      * @param <T4> the fourth source Single's value type
      * @param <R> the result value type
-     * @param s1
+     * @param source1
      *            the first source Single
-     * @param s2
+     * @param source2
      *            a second source Single
-     * @param s3
+     * @param source3
      *            a third source Single
-     * @param s4
+     * @param source4
      *            a fourth source Single
      * @param zipper
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -938,15 +938,15 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, R> Single<R> zip(
-            SingleSource<? extends T1> s1, SingleSource<? extends T2> s2,
-            SingleSource<? extends T3> s3, SingleSource<? extends T4> s4,
+            SingleSource<? extends T1> source1, SingleSource<? extends T2> source2,
+            SingleSource<? extends T3> source3, SingleSource<? extends T4> source4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipper
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4);
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4);
     }
 
     /**
@@ -965,15 +965,15 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T4> the fourth source Single's value type
      * @param <T5> the fifth source Single's value type
      * @param <R> the result value type
-     * @param s1
+     * @param source1
      *            the first source Single
-     * @param s2
+     * @param source2
      *            a second source Single
-     * @param s3
+     * @param source3
      *            a third source Single
-     * @param s4
+     * @param source4
      *            a fourth source Single
-     * @param s5
+     * @param source5
      *            a fifth source Single
      * @param zipper
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -983,17 +983,17 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, R> Single<R> zip(
-            SingleSource<? extends T1> s1, SingleSource<? extends T2> s2,
-            SingleSource<? extends T3> s3, SingleSource<? extends T4> s4,
-            SingleSource<? extends T5> s5,
+            SingleSource<? extends T1> source1, SingleSource<? extends T2> source2,
+            SingleSource<? extends T3> source3, SingleSource<? extends T4> source4,
+            SingleSource<? extends T5> source5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipper
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4, s5);
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4, source5);
     }
 
     /**
@@ -1013,17 +1013,17 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T5> the fifth source Single's value type
      * @param <T6> the sixth source Single's value type
      * @param <R> the result value type
-     * @param s1
+     * @param source1
      *            the first source Single
-     * @param s2
+     * @param source2
      *            a second source Single
-     * @param s3
+     * @param source3
      *            a third source Single
-     * @param s4
+     * @param source4
      *            a fourth source Single
-     * @param s5
+     * @param source5
      *            a fifth source Single
-     * @param s6
+     * @param source6
      *            a sixth source Single
      * @param zipper
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -1033,18 +1033,18 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, R> Single<R> zip(
-            SingleSource<? extends T1> s1, SingleSource<? extends T2> s2,
-            SingleSource<? extends T3> s3, SingleSource<? extends T4> s4,
-            SingleSource<? extends T5> s5, SingleSource<? extends T6> s6,
+            SingleSource<? extends T1> source1, SingleSource<? extends T2> source2,
+            SingleSource<? extends T3> source3, SingleSource<? extends T4> source4,
+            SingleSource<? extends T5> source5, SingleSource<? extends T6> source6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipper
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4, s5, s6);
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4, source5, source6);
     }
 
     /**
@@ -1065,19 +1065,19 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T6> the sixth source Single's value type
      * @param <T7> the seventh source Single's value type
      * @param <R> the result value type
-     * @param s1
+     * @param source1
      *            the first source Single
-     * @param s2
+     * @param source2
      *            a second source Single
-     * @param s3
+     * @param source3
      *            a third source Single
-     * @param s4
+     * @param source4
      *            a fourth source Single
-     * @param s5
+     * @param source5
      *            a fifth source Single
-     * @param s6
+     * @param source6
      *            a sixth source Single
-     * @param s7
+     * @param source7
      *            a seventh source Single
      * @param zipper
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -1087,20 +1087,20 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, R> Single<R> zip(
-            SingleSource<? extends T1> s1, SingleSource<? extends T2> s2,
-            SingleSource<? extends T3> s3, SingleSource<? extends T4> s4,
-            SingleSource<? extends T5> s5, SingleSource<? extends T6> s6,
-            SingleSource<? extends T7> s7,
+            SingleSource<? extends T1> source1, SingleSource<? extends T2> source2,
+            SingleSource<? extends T3> source3, SingleSource<? extends T4> source4,
+            SingleSource<? extends T5> source5, SingleSource<? extends T6> source6,
+            SingleSource<? extends T7> source7,
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipper
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4, s5, s6, s7);
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4, source5, source6, source7);
     }
     
     /**
@@ -1122,21 +1122,21 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T7> the seventh source Single's value type
      * @param <T8> the eighth source Single's value type
      * @param <R> the result value type
-     * @param s1
+     * @param source1
      *            the first source Single
-     * @param s2
+     * @param source2
      *            a second source Single
-     * @param s3
+     * @param source3
      *            a third source Single
-     * @param s4
+     * @param source4
      *            a fourth source Single
-     * @param s5
+     * @param source5
      *            a fifth source Single
-     * @param s6
+     * @param source6
      *            a sixth source Single
-     * @param s7
+     * @param source7
      *            a seventh source Single
-     * @param s8
+     * @param source8
      *            an eighth source Single
      * @param zipper
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -1146,21 +1146,21 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Single<R> zip(
-            SingleSource<? extends T1> s1, SingleSource<? extends T2> s2,
-            SingleSource<? extends T3> s3, SingleSource<? extends T4> s4,
-            SingleSource<? extends T5> s5, SingleSource<? extends T6> s6,
-            SingleSource<? extends T7> s7, SingleSource<? extends T8> s8,
+            SingleSource<? extends T1> source1, SingleSource<? extends T2> source2,
+            SingleSource<? extends T3> source3, SingleSource<? extends T4> source4,
+            SingleSource<? extends T5> source5, SingleSource<? extends T6> source6,
+            SingleSource<? extends T7> source7, SingleSource<? extends T8> source8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipper
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        ObjectHelper.requireNonNull(s8, "s8 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4, s5, s6, s7, s8);
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4, source5, source6, source7, source8);
     }
     
     /**
@@ -1183,23 +1183,23 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T8> the eighth source Single's value type
      * @param <T9> the ninth source Single's value type
      * @param <R> the result value type
-     * @param s1
+     * @param source1
      *            the first source Single
-     * @param s2
+     * @param source2
      *            a second source Single
-     * @param s3
+     * @param source3
      *            a third source Single
-     * @param s4
+     * @param source4
      *            a fourth source Single
-     * @param s5
+     * @param source5
      *            a fifth source Single
-     * @param s6
+     * @param source6
      *            a sixth source Single
-     * @param s7
+     * @param source7
      *            a seventh source Single
-     * @param s8
+     * @param source8
      *            an eighth source Single
-     * @param s9
+     * @param source9
      *            a ninth source Single
      * @param zipper
      *            a function that, when applied to the item emitted by each of the source Singles, results in an
@@ -1209,23 +1209,23 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Single<R> zip(
-            SingleSource<? extends T1> s1, SingleSource<? extends T2> s2,
-            SingleSource<? extends T3> s3, SingleSource<? extends T4> s4,
-            SingleSource<? extends T5> s5, SingleSource<? extends T6> s6,
-            SingleSource<? extends T7> s7, SingleSource<? extends T8> s8,
-            SingleSource<? extends T9> s9,
+            SingleSource<? extends T1> source1, SingleSource<? extends T2> source2,
+            SingleSource<? extends T3> source3, SingleSource<? extends T4> source4,
+            SingleSource<? extends T5> source5, SingleSource<? extends T6> source6,
+            SingleSource<? extends T7> source7, SingleSource<? extends T8> source8,
+            SingleSource<? extends T9> source9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipper
      ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        ObjectHelper.requireNonNull(s8, "s8 is null");
-        ObjectHelper.requireNonNull(s9, "s9 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4, s5, s6, s7, s8, s9);
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        ObjectHelper.requireNonNull(source9, "source9 is null");
+        return zipArray(Functions.toFunction(zipper), source1, source2, source3, source4, source5, source6, source7, source8, source9);
     }
 
     /**
@@ -1646,7 +1646,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
     
     /**
-     * Blockingly waits until the current Single signals a success value (which is returned) or
+     * Waits in a blocking fashion until the current Single signals a success value (which is returned) or
      * an exception (which is propagated).
      * <dl>
      * <dt><b>Scheduler:</b></dt>

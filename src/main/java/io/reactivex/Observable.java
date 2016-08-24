@@ -291,9 +291,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T1> the element type of the first source
      * @param <T2> the element type of the second source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            the second source ObservableSource
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source ObservableSources
@@ -304,9 +304,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Observable<R> combineLatest(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
             BiFunction<? super T1, ? super T2, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), p1, p2);
+        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2);
     }
     
     /**
@@ -324,11 +324,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T2> the element type of the second source
      * @param <T3> the element type of the third source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            the second source ObservableSource
-     * @param p3
+     * @param source3
      *            the third source ObservableSource
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source ObservableSources
@@ -339,10 +339,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, R> Observable<R> combineLatest(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
-            ObservableSource<? extends T3> p3,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
+            ObservableSource<? extends T3> source3,
             Function3<? super T1, ? super T2, ? super T3, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), p1, p2, p3);
+        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3);
     }
     
     /**
@@ -361,13 +361,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T3> the element type of the third source
      * @param <T4> the element type of the fourth source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            the second source ObservableSource
-     * @param p3
+     * @param source3
      *            the third source ObservableSource
-     * @param p4
+     * @param source4
      *            the fourth source ObservableSource
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source ObservableSources
@@ -378,10 +378,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, R> Observable<R> combineLatest(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
-            ObservableSource<? extends T3> p3, ObservableSource<? extends T4> p4,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
+            ObservableSource<? extends T3> source3, ObservableSource<? extends T4> source4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), p1, p2, p3, p4);
+        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4);
     }
     
     /**
@@ -401,15 +401,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T4> the element type of the fourth source
      * @param <T5> the element type of the fifth source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            the second source ObservableSource
-     * @param p3
+     * @param source3
      *            the third source ObservableSource
-     * @param p4
+     * @param source4
      *            the fourth source ObservableSource
-     * @param p5
+     * @param source5
      *            the fifth source ObservableSource
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source ObservableSources
@@ -420,11 +420,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, R> Observable<R> combineLatest(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
-            ObservableSource<? extends T3> p3, ObservableSource<? extends T4> p4,
-            ObservableSource<? extends T5> p5,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
+            ObservableSource<? extends T3> source3, ObservableSource<? extends T4> source4,
+            ObservableSource<? extends T5> source5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), p1, p2, p3, p4, p5);
+        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5);
     }
     
     /**
@@ -445,17 +445,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T5> the element type of the fifth source
      * @param <T6> the element type of the sixth source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            the second source ObservableSource
-     * @param p3
+     * @param source3
      *            the third source ObservableSource
-     * @param p4
+     * @param source4
      *            the fourth source ObservableSource
-     * @param p5
+     * @param source5
      *            the fifth source ObservableSource
-     * @param p6
+     * @param source6
      *            the sixth source ObservableSource
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source ObservableSources
@@ -466,11 +466,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, R> Observable<R> combineLatest(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
-            ObservableSource<? extends T3> p3, ObservableSource<? extends T4> p4,
-            ObservableSource<? extends T5> p5, ObservableSource<? extends T6> p6,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
+            ObservableSource<? extends T3> source3, ObservableSource<? extends T4> source4,
+            ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), p1, p2, p3, p4, p5, p6);
+        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6);
     }
     
     /**
@@ -492,19 +492,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T6> the element type of the sixth source
      * @param <T7> the element type of the seventh source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            the second source ObservableSource
-     * @param p3
+     * @param source3
      *            the third source ObservableSource
-     * @param p4
+     * @param source4
      *            the fourth source ObservableSource
-     * @param p5
+     * @param source5
      *            the fifth source ObservableSource
-     * @param p6
+     * @param source6
      *            the sixth source ObservableSource
-     * @param p7
+     * @param source7
      *            the seventh source ObservableSource
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source ObservableSources
@@ -515,12 +515,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
-            ObservableSource<? extends T3> p3, ObservableSource<? extends T4> p4,
-            ObservableSource<? extends T5> p5, ObservableSource<? extends T6> p6,
-            ObservableSource<? extends T7> p7,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
+            ObservableSource<? extends T3> source3, ObservableSource<? extends T4> source4,
+            ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
+            ObservableSource<? extends T7> source7,
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), p1, p2, p3, p4, p5, p6, p7);
+        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6, source7);
     }
 
     /**
@@ -543,21 +543,21 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T7> the element type of the seventh source
      * @param <T8> the element type of the eighth source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            the second source ObservableSource
-     * @param p3
+     * @param source3
      *            the third source ObservableSource
-     * @param p4
+     * @param source4
      *            the fourth source ObservableSource
-     * @param p5
+     * @param source5
      *            the fifth source ObservableSource
-     * @param p6
+     * @param source6
      *            the sixth source ObservableSource
-     * @param p7
+     * @param source7
      *            the seventh source ObservableSource
-     * @param p8
+     * @param source8
      *            the eighth source ObservableSource
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source ObservableSources
@@ -568,12 +568,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
-            ObservableSource<? extends T3> p3, ObservableSource<? extends T4> p4,
-            ObservableSource<? extends T5> p5, ObservableSource<? extends T6> p6,
-            ObservableSource<? extends T7> p7, ObservableSource<? extends T8> p8,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
+            ObservableSource<? extends T3> source3, ObservableSource<? extends T4> source4,
+            ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
+            ObservableSource<? extends T7> source7, ObservableSource<? extends T8> source8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8);
+        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8);
     }
 
     /**
@@ -597,23 +597,23 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T8> the element type of the eighth source
      * @param <T9> the element type of the ninth source
      * @param <R> the combined output type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            the second source ObservableSource
-     * @param p3
+     * @param source3
      *            the third source ObservableSource
-     * @param p4
+     * @param source4
      *            the fourth source ObservableSource
-     * @param p5
+     * @param source5
      *            the fifth source ObservableSource
-     * @param p6
+     * @param source6
      *            the sixth source ObservableSource
-     * @param p7
+     * @param source7
      *            the seventh source ObservableSource
-     * @param p8
+     * @param source8
      *            the eighth source ObservableSource
-     * @param p9
+     * @param source9
      *            the ninth source ObservableSource
      * @param combiner
      *            the aggregation function used to combine the items emitted by the source ObservableSources
@@ -624,13 +624,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> combineLatest(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
-            ObservableSource<? extends T3> p3, ObservableSource<? extends T4> p4,
-            ObservableSource<? extends T5> p5, ObservableSource<? extends T6> p6,
-            ObservableSource<? extends T7> p7, ObservableSource<? extends T8> p8,
-            ObservableSource<? extends T9> p9,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
+            ObservableSource<? extends T3> source3, ObservableSource<? extends T4> source4,
+            ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
+            ObservableSource<? extends T7> source7, ObservableSource<? extends T8> source8,
+            ObservableSource<? extends T9> source9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> combiner) {
-        return combineLatest(Functions.toFunction(combiner), bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8, p9);
+        return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8, source9);
     }
 
     /**
@@ -833,7 +833,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> concat(ObservableSource<? extends ObservableSource<? extends T>> sources) {
+    public static <T> Observable<T> concat(ObservableSource<? extends ObservableSource<? extends T>> sources) {
         return concat(sources, bufferSize());
     }
 
@@ -858,7 +858,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> concat(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch) {
+    public static <T> Observable<T> concat(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, Functions.identity(), prefetch, ErrorMode.IMMEDIATE));
     }
@@ -874,9 +874,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a ObservableSource to be concatenated
-     * @param p2
+     * @param source2
      *            a ObservableSource to be concatenated
      * @return a Observable that emits items emitted by the two source ObservableSources, one after the other,
      *         without interleaving them
@@ -884,8 +884,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> concat(ObservableSource<? extends T> p1, ObservableSource<? extends T> p2) {
-        return concatArray(p1, p2);
+    public static <T> Observable<T> concat(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2) {
+        return concatArray(source1, source2);
     }
 
     /**
@@ -899,11 +899,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a ObservableSource to be concatenated
-     * @param p2
+     * @param source2
      *            a ObservableSource to be concatenated
-     * @param p3
+     * @param source3
      *            a ObservableSource to be concatenated
      * @return a Observable that emits items emitted by the three source ObservableSources, one after the other,
      *         without interleaving them
@@ -912,9 +912,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(
-            ObservableSource<? extends T> p1, ObservableSource<? extends T> p2,
-            ObservableSource<? extends T> p3) {
-        return concatArray(p1, p2, p3);
+            ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
+            ObservableSource<? extends T> source3) {
+        return concatArray(source1, source2, source3);
     }
 
     /**
@@ -928,13 +928,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a ObservableSource to be concatenated
-     * @param p2
+     * @param source2
      *            a ObservableSource to be concatenated
-     * @param p3
+     * @param source3
      *            a ObservableSource to be concatenated
-     * @param p4
+     * @param source4
      *            a ObservableSource to be concatenated
      * @return a Observable that emits items emitted by the four source ObservableSources, one after the other,
      *         without interleaving them
@@ -943,9 +943,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(
-            ObservableSource<? extends T> p1, ObservableSource<? extends T> p2,
-            ObservableSource<? extends T> p3, ObservableSource<? extends T> p4) {
-        return concatArray(p1, p2, p3, p4);
+            ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
+            ObservableSource<? extends T> source3, ObservableSource<? extends T> source4) {
+        return concatArray(source1, source2, source3, source4);
     }
 
     /**
@@ -1072,7 +1072,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new ObservableSource with the concatenating behavior
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> concatDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources) {
+    public static <T> Observable<T> concatDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources) {
         return concatDelayError(sources, bufferSize(), true);
     }
 
@@ -1094,7 +1094,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> concatDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch, boolean tillTheEnd) {
+    public static <T> Observable<T> concatDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch, boolean tillTheEnd) {
         return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, Functions.identity(), prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
     }
 
@@ -1215,7 +1215,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </code></pre>
      * <p>
      * You should call the ObservableEmitter's onNext, onError and onComplete methods in a serialized fashion. The
-     * rest of its methods are threadsafe.
+     * rest of its methods are thread-safe.
      * 
      * @param <T> the element type
      * @param source the emitter that is called when an Observer subscribes to the returned {@code Observable}
@@ -1339,7 +1339,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            the array of elements
      * @param <T>
      *            the type of items in the Array and the type of items to be emitted by the resulting ObservableSource
@@ -1347,15 +1347,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> fromArray(T... values) {
-        ObjectHelper.requireNonNull(values, "values is null");
-        if (values.length == 0) {
+    public static <T> Observable<T> fromArray(T... items) {
+        ObjectHelper.requireNonNull(items, "items is null");
+        if (items.length == 0) {
             return empty();
         } else
-        if (values.length == 1) {
-            return just(values[0]);
+        if (items.length == 1) {
+            return just(items[0]);
         }
-        return RxJavaPlugins.onAssembly(new ObservableFromArray<T>(values));
+        return RxJavaPlugins.onAssembly(new ObservableFromArray<T>(items));
     }
 
     /**
@@ -1688,7 +1688,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Consumer<? super S> disposeState) {
         ObjectHelper.requireNonNull(initialState, "initialState is null");
         ObjectHelper.requireNonNull(generator, "generator  is null");
-        ObjectHelper.requireNonNull(disposeState, "diposeState is null");
+        ObjectHelper.requireNonNull(disposeState, "disposeState is null");
         return RxJavaPlugins.onAssembly(new ObservableGenerate<T, S>(initialState, generator, disposeState));
     }
 
@@ -1873,7 +1873,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param value
+     * @param item
      *            the item to emit
      * @param <T>
      *            the type of that item
@@ -1881,9 +1881,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> just(T value) {
-        ObjectHelper.requireNonNull(value, "The value is null");
-        return RxJavaPlugins.onAssembly(new ObservableJust<T>(value));
+    public static <T> Observable<T> just(T item) {
+        ObjectHelper.requireNonNull(item, "The item is null");
+        return RxJavaPlugins.onAssembly(new ObservableJust<T>(item));
     }
 
     /**
@@ -1895,9 +1895,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
      * @param <T>
      *            the type of these items
@@ -1906,11 +1906,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> just(T v1, T v2) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
+    public static <T> Observable<T> just(T item1, T item2) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
         
-        return fromArray(v1, v2);
+        return fromArray(item1, item2);
     }
 
     /**
@@ -1922,11 +1922,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
      * @param <T>
      *            the type of these items
@@ -1935,12 +1935,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> just(T v1, T v2, T v3) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
+    public static <T> Observable<T> just(T item1, T item2, T item3) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
         
-        return fromArray(v1, v2, v3);
+        return fromArray(item1, item2, item3);
     }
 
     /**
@@ -1952,13 +1952,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
      * @param <T>
      *            the type of these items
@@ -1967,13 +1967,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
+    public static <T> Observable<T> just(T item1, T item2, T item3, T item4) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
         
-        return fromArray(v1, v2, v3, v4);
+        return fromArray(item1, item2, item3, item4);
     }
 
     /**
@@ -1985,15 +1985,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
      * @param <T>
      *            the type of these items
@@ -2002,14 +2002,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
+    public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
         
-        return fromArray(v1, v2, v3, v4, v5);
+        return fromArray(item1, item2, item3, item4, item5);
     }
 
     /**
@@ -2021,17 +2021,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
-     * @param v6
+     * @param item6
      *            sixth item
      * @param <T>
      *            the type of these items
@@ -2040,15 +2040,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
-        ObjectHelper.requireNonNull(v6, "The sixth value is null");
+    public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
         
-        return fromArray(v1, v2, v3, v4, v5, v6);
+        return fromArray(item1, item2, item3, item4, item5, item6);
     }
 
     /**
@@ -2060,19 +2060,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
-     * @param v6
+     * @param item6
      *            sixth item
-     * @param v7
+     * @param item7
      *            seventh item
      * @param <T>
      *            the type of these items
@@ -2081,16 +2081,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
-        ObjectHelper.requireNonNull(v6, "The sixth value is null");
-        ObjectHelper.requireNonNull(v7, "The seventh value is null");
+    public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
         
-        return fromArray(v1, v2, v3, v4, v5, v6, v7);
+        return fromArray(item1, item2, item3, item4, item5, item6, item7);
     }
 
     /**
@@ -2102,21 +2102,21 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
-     * @param v6
+     * @param item6
      *            sixth item
-     * @param v7
+     * @param item7
      *            seventh item
-     * @param v8
+     * @param item8
      *            eighth item
      * @param <T>
      *            the type of these items
@@ -2125,17 +2125,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
-        ObjectHelper.requireNonNull(v6, "The sixth value is null");
-        ObjectHelper.requireNonNull(v7, "The seventh value is null");
-        ObjectHelper.requireNonNull(v8, "The eighth value is null");
+    public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
+        ObjectHelper.requireNonNull(item8, "The eighth item is null");
         
-        return fromArray(v1, v2, v3, v4, v5, v6, v7, v8);
+        return fromArray(item1, item2, item3, item4, item5, item6, item7, item8);
     }
 
     /**
@@ -2147,23 +2147,23 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
-     * @param v6
+     * @param item6
      *            sixth item
-     * @param v7
+     * @param item7
      *            seventh item
-     * @param v8
+     * @param item8
      *            eighth item
-     * @param v9
+     * @param item9
      *            ninth item
      * @param <T>
      *            the type of these items
@@ -2172,18 +2172,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
-        ObjectHelper.requireNonNull(v6, "The sixth value is null");
-        ObjectHelper.requireNonNull(v7, "The seventh value is null");
-        ObjectHelper.requireNonNull(v8, "The eighth value is null");
-        ObjectHelper.requireNonNull(v9, "The ninth is null");
+    public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
+        ObjectHelper.requireNonNull(item8, "The eighth item is null");
+        ObjectHelper.requireNonNull(item9, "The ninth item is null");
         
-        return fromArray(v1, v2, v3, v4, v5, v6, v7, v8, v9);
+        return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9);
     }
 
     /**
@@ -2195,25 +2195,25 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param v1
+     * @param item1
      *            first item
-     * @param v2
+     * @param item2
      *            second item
-     * @param v3
+     * @param item3
      *            third item
-     * @param v4
+     * @param item4
      *            fourth item
-     * @param v5
+     * @param item5
      *            fifth item
-     * @param v6
+     * @param item6
      *            sixth item
-     * @param v7
+     * @param item7
      *            seventh item
-     * @param v8
+     * @param item8
      *            eighth item
-     * @param v9
+     * @param item9
      *            ninth item
-     * @param v10
+     * @param item10
      *            tenth item
      * @param <T>
      *            the type of these items
@@ -2222,19 +2222,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static final <T> Observable<T> just(T v1, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10) {
-        ObjectHelper.requireNonNull(v1, "The first value is null");
-        ObjectHelper.requireNonNull(v2, "The second value is null");
-        ObjectHelper.requireNonNull(v3, "The third value is null");
-        ObjectHelper.requireNonNull(v4, "The fourth value is null");
-        ObjectHelper.requireNonNull(v5, "The fifth value is null");
-        ObjectHelper.requireNonNull(v6, "The sixth value is null");
-        ObjectHelper.requireNonNull(v7, "The seventh value is null");
-        ObjectHelper.requireNonNull(v8, "The eighth value is null");
-        ObjectHelper.requireNonNull(v9, "The ninth is null");
-        ObjectHelper.requireNonNull(v10, "The tenth is null");
+    public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9, T item10) {
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
+        ObjectHelper.requireNonNull(item8, "The eighth item is null");
+        ObjectHelper.requireNonNull(item9, "The ninth item is null");
+        ObjectHelper.requireNonNull(item10, "The tenth item is null");
         
-        return fromArray(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10);
+        return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10);
     }
 
     /**
@@ -2426,19 +2426,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a ObservableSource to be merged
-     * @param p2
+     * @param source2
      *            a ObservableSource to be merged
      * @return a Observable that emits all of the items emitted by the source ObservableSources
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> merge(ObservableSource<? extends T> p1, ObservableSource<? extends T> p2) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        return fromArray(p1, p2).flatMap((Function)Functions.identity(), false, 2);
+    public static <T> Observable<T> merge(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return fromArray(source1, source2).flatMap((Function)Functions.identity(), false, 2);
     }
 
     /**
@@ -2454,22 +2454,22 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a ObservableSource to be merged
-     * @param p2
+     * @param source2
      *            a ObservableSource to be merged
-     * @param p3
+     * @param source3
      *            a ObservableSource to be merged
      * @return a Observable that emits all of the items emitted by the source ObservableSources
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> merge(ObservableSource<? extends T> p1, ObservableSource<? extends T> p2, ObservableSource<? extends T> p3) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        ObjectHelper.requireNonNull(p3, "p3 is null");
-        return fromArray(p1, p2, p3).flatMap((Function)Functions.identity(), false, 3);
+    public static <T> Observable<T> merge(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2, ObservableSource<? extends T> source3) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), false, 3);
     }
 
     /**
@@ -2485,13 +2485,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a ObservableSource to be merged
-     * @param p2
+     * @param source2
      *            a ObservableSource to be merged
-     * @param p3
+     * @param source3
      *            a ObservableSource to be merged
-     * @param p4
+     * @param source4
      *            a ObservableSource to be merged
      * @return a Observable that emits all of the items emitted by the source ObservableSources
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -2499,13 +2499,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> merge(
-            ObservableSource<? extends T> p1, ObservableSource<? extends T> p2,
-            ObservableSource<? extends T> p3, ObservableSource<? extends T> p4) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        ObjectHelper.requireNonNull(p3, "p3 is null");
-        ObjectHelper.requireNonNull(p4, "p4 is null");
-        return fromArray(p1, p2, p3, p4).flatMap((Function)Functions.identity(), false, 4);
+            ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
+            ObservableSource<? extends T> source3, ObservableSource<? extends T> source4) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), false, 4);
     }
 
     /**
@@ -2750,19 +2750,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a ObservableSource to be merged
-     * @param p2
+     * @param source2
      *            a ObservableSource to be merged
      * @return a Observable that emits all of the items that are emitted by the two source ObservableSources
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> mergeDelayError(ObservableSource<? extends T> p1, ObservableSource<? extends T> p2) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        return fromArray(p1, p2).flatMap((Function)Functions.identity(), true, 2);
+    public static <T> Observable<T> mergeDelayError(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return fromArray(source1, source2).flatMap((Function)Functions.identity(), true, 2);
     }
 
     /**
@@ -2785,22 +2785,22 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a ObservableSource to be merged
-     * @param p2
+     * @param source2
      *            a ObservableSource to be merged
-     * @param p3
+     * @param source3
      *            a ObservableSource to be merged
      * @return a Observable that emits all of the items that are emitted by the source ObservableSources
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> mergeDelayError(ObservableSource<? extends T> p1, ObservableSource<? extends T> p2, ObservableSource<? extends T> p3) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        ObjectHelper.requireNonNull(p3, "p3 is null");
-        return fromArray(p1, p2, p3).flatMap((Function)Functions.identity(), true, 3);
+    public static <T> Observable<T> mergeDelayError(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2, ObservableSource<? extends T> source3) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), true, 3);
     }
 
     /**
@@ -2823,13 +2823,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param <T> the common element base type
-     * @param p1
+     * @param source1
      *            a ObservableSource to be merged
-     * @param p2
+     * @param source2
      *            a ObservableSource to be merged
-     * @param p3
+     * @param source3
      *            a ObservableSource to be merged
-     * @param p4
+     * @param source4
      *            a ObservableSource to be merged
      * @return a Observable that emits all of the items that are emitted by the source ObservableSources
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
@@ -2837,13 +2837,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> mergeDelayError(
-            ObservableSource<? extends T> p1, ObservableSource<? extends T> p2,
-            ObservableSource<? extends T> p3, ObservableSource<? extends T> p4) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
-        ObjectHelper.requireNonNull(p3, "p3 is null");
-        ObjectHelper.requireNonNull(p4, "p4 is null");
-        return fromArray(p1, p2, p3, p4).flatMap((Function)Functions.identity(), true, 4);
+            ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
+            ObservableSource<? extends T> source3, ObservableSource<? extends T> source4) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return fromArray(source1, source2, source3, source4).flatMap((Function)Functions.identity(), true, 4);
     }
 
     /**
@@ -2945,9 +2945,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param p1
+     * @param source1
      *            the first ObservableSource to compare
-     * @param p2
+     * @param source2
      *            the second ObservableSource to compare
      * @param <T>
      *            the type of items emitted by each ObservableSource
@@ -2955,8 +2955,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> p1, ObservableSource<? extends T> p2) {
-        return sequenceEqual(p1, p2, ObjectHelper.equalsPredicate(), bufferSize());
+    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2) {
+        return sequenceEqual(source1, source2, ObjectHelper.equalsPredicate(), bufferSize());
     }
 
     /**
@@ -2970,9 +2970,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param p1
+     * @param source1
      *            the first ObservableSource to compare
-     * @param p2
+     * @param source2
      *            the second ObservableSource to compare
      * @param isEqual
      *            a function used to compare items emitted by each ObservableSource
@@ -2983,9 +2983,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> p1, ObservableSource<? extends T> p2, 
+    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2, 
             BiPredicate<? super T, ? super T> isEqual) {
-        return sequenceEqual(p1, p2, isEqual, bufferSize());
+        return sequenceEqual(source1, source2, isEqual, bufferSize());
     }
 
     /**
@@ -2999,9 +2999,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param p1
+     * @param source1
      *            the first ObservableSource to compare
-     * @param p2
+     * @param source2
      *            the second ObservableSource to compare
      * @param isEqual
      *            a function used to compare items emitted by each ObservableSource
@@ -3014,13 +3014,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> p1, ObservableSource<? extends T> p2, 
+    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2, 
             BiPredicate<? super T, ? super T> isEqual, int bufferSize) {
-        ObjectHelper.requireNonNull(p1, "p1 is null");
-        ObjectHelper.requireNonNull(p2, "p2 is null");
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(isEqual, "isEqual is null");
         verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableSequenceEqual<T>(p1, p2, isEqual, bufferSize));
+        return RxJavaPlugins.onAssembly(new ObservableSequenceEqual<T>(source1, source2, isEqual, bufferSize));
     }
 
     /**
@@ -3033,9 +3033,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param p1
+     * @param source1
      *            the first ObservableSource to compare
-     * @param p2
+     * @param source2
      *            the second ObservableSource to compare
      * @param bufferSize
      *            the number of items to prefetch from the first and second source ObservableSource
@@ -3045,9 +3045,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> p1, ObservableSource<? extends T> p2, 
+    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2, 
             int bufferSize) {
-        return sequenceEqual(p1, p2, ObjectHelper.equalsPredicate(), bufferSize);
+        return sequenceEqual(source1, source2, ObjectHelper.equalsPredicate(), bufferSize);
     }
 
     /**
@@ -3496,9 +3496,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T1> the value type of the first source
      * @param <T2> the value type of the second source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            a second source ObservableSource
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source ObservableSources, results
@@ -3509,9 +3509,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Observable<R> zip(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
             BiFunction<? super T1, ? super T2, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2);
     }
 
     /**
@@ -3548,9 +3548,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T1> the value type of the first source
      * @param <T2> the value type of the second source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            a second source ObservableSource
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source ObservableSources, results
@@ -3562,9 +3562,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Observable<R> zip(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
             BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
-        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), p1, p2);
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2);
     }
 
     /**
@@ -3601,9 +3601,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T1> the value type of the first source
      * @param <T2> the value type of the second source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            a second source ObservableSource
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source ObservableSources, results
@@ -3616,9 +3616,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, R> Observable<R> zip(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
             BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
-        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, p1, p2);
+        return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2);
     }
 
     /**
@@ -3657,11 +3657,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T2> the value type of the second source
      * @param <T3> the value type of the third source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            a second source ObservableSource
-     * @param p3
+     * @param source3
      *            a third source ObservableSource
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source ObservableSources, results in
@@ -3672,9 +3672,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, R> Observable<R> zip(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2, ObservableSource<? extends T3> p3,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
             Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3);
     }
 
     /**
@@ -3714,13 +3714,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T3> the value type of the third source
      * @param <T4> the value type of the fourth source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            a second source ObservableSource
-     * @param p3
+     * @param source3
      *            a third source ObservableSource
-     * @param p4
+     * @param source4
      *            a fourth source ObservableSource
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source ObservableSources, results in
@@ -3731,10 +3731,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, R> Observable<R> zip(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2, ObservableSource<? extends T3> p3,
-            ObservableSource<? extends T4> p4,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
+            ObservableSource<? extends T4> source4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4);
     }
 
     /**
@@ -3775,15 +3775,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T4> the value type of the fourth source
      * @param <T5> the value type of the fifth source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            a second source ObservableSource
-     * @param p3
+     * @param source3
      *            a third source ObservableSource
-     * @param p4
+     * @param source4
      *            a fourth source ObservableSource
-     * @param p5
+     * @param source5
      *            a fifth source ObservableSource
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source ObservableSources, results in
@@ -3794,10 +3794,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, R> Observable<R> zip(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2, ObservableSource<? extends T3> p3,
-            ObservableSource<? extends T4> p4, ObservableSource<? extends T5> p5,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
+            ObservableSource<? extends T4> source4, ObservableSource<? extends T5> source5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4, p5);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5);
     }
 
     /**
@@ -3838,17 +3838,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T5> the value type of the fifth source
      * @param <T6> the value type of the sixth source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            a second source ObservableSource
-     * @param p3
+     * @param source3
      *            a third source ObservableSource
-     * @param p4
+     * @param source4
      *            a fourth source ObservableSource
-     * @param p5
+     * @param source5
      *            a fifth source ObservableSource
-     * @param p6
+     * @param source6
      *            a sixth source ObservableSource
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source ObservableSources, results in
@@ -3859,10 +3859,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, R> Observable<R> zip(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2, ObservableSource<? extends T3> p3,
-            ObservableSource<? extends T4> p4, ObservableSource<? extends T5> p5, ObservableSource<? extends T6> p6,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
+            ObservableSource<? extends T4> source4, ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4, p5, p6);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6);
     }
 
     /**
@@ -3904,19 +3904,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T6> the value type of the sixth source
      * @param <T7> the value type of the seventh source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            a second source ObservableSource
-     * @param p3
+     * @param source3
      *            a third source ObservableSource
-     * @param p4
+     * @param source4
      *            a fourth source ObservableSource
-     * @param p5
+     * @param source5
      *            a fifth source ObservableSource
-     * @param p6
+     * @param source6
      *            a sixth source ObservableSource
-     * @param p7
+     * @param source7
      *            a seventh source ObservableSource
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source ObservableSources, results in
@@ -3927,11 +3927,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> zip(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2, ObservableSource<? extends T3> p3,
-            ObservableSource<? extends T4> p4, ObservableSource<? extends T5> p5, ObservableSource<? extends T6> p6,
-            ObservableSource<? extends T7> p7,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
+            ObservableSource<? extends T4> source4, ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
+            ObservableSource<? extends T7> source7,
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4, p5, p6, p7);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7);
     }
 
     /**
@@ -3974,21 +3974,21 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T7> the value type of the seventh source
      * @param <T8> the value type of the eighth source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            a second source ObservableSource
-     * @param p3
+     * @param source3
      *            a third source ObservableSource
-     * @param p4
+     * @param source4
      *            a fourth source ObservableSource
-     * @param p5
+     * @param source5
      *            a fifth source ObservableSource
-     * @param p6
+     * @param source6
      *            a sixth source ObservableSource
-     * @param p7
+     * @param source7
      *            a seventh source ObservableSource
-     * @param p8
+     * @param source8
      *            an eighth source ObservableSource
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source ObservableSources, results in
@@ -3999,11 +3999,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> zip(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2, ObservableSource<? extends T3> p3,
-            ObservableSource<? extends T4> p4, ObservableSource<? extends T5> p5, ObservableSource<? extends T6> p6,
-            ObservableSource<? extends T7> p7, ObservableSource<? extends T8> p8,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
+            ObservableSource<? extends T4> source4, ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
+            ObservableSource<? extends T7> source7, ObservableSource<? extends T8> source8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8);
     }
 
     /**
@@ -4047,23 +4047,23 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T8> the value type of the eighth source
      * @param <T9> the value type of the ninth source
      * @param <R> the zipped result type
-     * @param p1
+     * @param source1
      *            the first source ObservableSource
-     * @param p2
+     * @param source2
      *            a second source ObservableSource
-     * @param p3
+     * @param source3
      *            a third source ObservableSource
-     * @param p4
+     * @param source4
      *            a fourth source ObservableSource
-     * @param p5
+     * @param source5
      *            a fifth source ObservableSource
-     * @param p6
+     * @param source6
      *            a sixth source ObservableSource
-     * @param p7
+     * @param source7
      *            a seventh source ObservableSource
-     * @param p8
+     * @param source8
      *            an eighth source ObservableSource
-     * @param p9
+     * @param source9
      *            a ninth source ObservableSource
      * @param zipper
      *            a function that, when applied to an item emitted by each of the source ObservableSources, results in
@@ -4074,11 +4074,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> zip(
-            ObservableSource<? extends T1> p1, ObservableSource<? extends T2> p2, ObservableSource<? extends T3> p3,
-            ObservableSource<? extends T4> p4, ObservableSource<? extends T5> p5, ObservableSource<? extends T6> p6,
-            ObservableSource<? extends T7> p7, ObservableSource<? extends T8> p8, ObservableSource<? extends T9> p9,
+            ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
+            ObservableSource<? extends T4> source4, ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
+            ObservableSource<? extends T7> source7, ObservableSource<? extends T8> source8, ObservableSource<? extends T9> source9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipper) {
-        return zipArray(Functions.toFunction(zipper), false, bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8, p9);
+        return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8, source9);
     }
 
     /**
@@ -4298,17 +4298,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param defaultValue
+     * @param defaultItem
      *            a default value to return if this {@code Observable} emits no items
      * @return the first item emitted by this {@code Observable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
-    public final T blockingFirst(T defaultValue) {
+    public final T blockingFirst(T defaultItem) {
         BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
         subscribe(s);
         T v = s.blockingGet();
-        return v != null ? v : defaultValue;
+        return v != null ? v : defaultItem;
     }
 
     /**
@@ -4420,20 +4420,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param defaultValue
+     * @param defaultItem
      *            a default value to return if this {@code Observable} emits no items
      * @return the last item emitted by the {@code Observable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
      */
-    public final T blockingLast(T defaultValue) {
+    public final T blockingLast(T defaultItem) {
         BlockingLastObserver<T> s = new BlockingLastObserver<T>();
         subscribe(s);
         T v = s.blockingGet();
-        if (v != null) {
-            return v;
-        }
-        return v != null ? v : defaultValue;
+        return v != null ? v : defaultItem;
     }
     
     /**
@@ -4524,14 +4521,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param defaultValue
+     * @param defaultItem
      *            a default value to return if this {@code Observable} emits no items
      * @return the single item emitted by this {@code Observable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
-    public final T blockingSingle(T defaultValue) {
-        return single(defaultValue).blockingFirst();
+    public final T blockingSingle(T defaultItem) {
+        return single(defaultItem).blockingFirst();
     }
     
     /**
@@ -5005,8 +5002,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits buffers of items it collects from the source ObservableSource. The resulting
-     * ObservableSource emits buffers that it creates when the specified {@code bufferOpenings} ObservableSource emits an
-     * item, and closes when the ObservableSource returned from {@code bufferClosingSelector} emits an item.
+     * ObservableSource emits buffers that it creates when the specified {@code openingIndicator} ObservableSource emits an
+     * item, and closes when the ObservableSource returned from {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.png" alt="">
      * <dl>
@@ -5016,9 +5013,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * 
      * @param <TOpening> the element type of the buffer-opening ObservableSource
      * @param <TClosing> the element type of the individual buffer-closing ObservableSources
-     * @param bufferOpenings
+     * @param openingIndicator
      *            the ObservableSource that, when it emits an item, causes a new buffer to be created
-     * @param bufferClosingSelector
+     * @param closingIndicator
      *            the {@link Function} that is used to produce a ObservableSource for every buffer created. When this
      *            ObservableSource emits an item, the associated buffer is emitted.
      * @return a Observable that emits buffers, containing items from the source ObservableSource, that are created
@@ -5027,15 +5024,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <TOpening, TClosing> Observable<List<T>> buffer(
-            ObservableSource<? extends TOpening> bufferOpenings,
-            Function<? super TOpening, ? extends ObservableSource<? extends TClosing>> bufferClosingSelector) {
-        return buffer(bufferOpenings, bufferClosingSelector, ArrayListSupplier.<T>asCallable());
+            ObservableSource<? extends TOpening> openingIndicator,
+            Function<? super TOpening, ? extends ObservableSource<? extends TClosing>> closingIndicator) {
+        return buffer(openingIndicator, closingIndicator, ArrayListSupplier.<T>asCallable());
     }
 
     /**
      * Returns a Observable that emits buffers of items it collects from the source ObservableSource. The resulting
-     * ObservableSource emits buffers that it creates when the specified {@code bufferOpenings} ObservableSource emits an
-     * item, and closes when the ObservableSource returned from {@code bufferClosingSelector} emits an item.
+     * ObservableSource emits buffers that it creates when the specified {@code openingIndicator} ObservableSource emits an
+     * item, and closes when the ObservableSource returned from {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.png" alt="">
      * <dl>
@@ -5046,9 +5043,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <U> the collection subclass type to buffer into
      * @param <TOpening> the element type of the buffer-opening ObservableSource
      * @param <TClosing> the element type of the individual buffer-closing ObservableSources
-     * @param bufferOpenings
+     * @param openingIndicator
      *            the ObservableSource that, when it emits an item, causes a new buffer to be created
-     * @param bufferClosingSelector
+     * @param closingIndicator
      *            the {@link Function} that is used to produce a ObservableSource for every buffer created. When this
      *            ObservableSource emits an item, the associated buffer is emitted.
      * @param bufferSupplier
@@ -5060,13 +5057,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <TOpening, TClosing, U extends Collection<? super T>> Observable<U> buffer(
-            ObservableSource<? extends TOpening> bufferOpenings,
-            Function<? super TOpening, ? extends ObservableSource<? extends TClosing>> bufferClosingSelector,
+            ObservableSource<? extends TOpening> openingIndicator,
+            Function<? super TOpening, ? extends ObservableSource<? extends TClosing>> closingIndicator,
             Callable<U> bufferSupplier) {
-        ObjectHelper.requireNonNull(bufferOpenings, "bufferOpenings is null");
-        ObjectHelper.requireNonNull(bufferClosingSelector, "bufferClosingSelector is null");
+        ObjectHelper.requireNonNull(openingIndicator, "openingIndicator is null");
+        ObjectHelper.requireNonNull(closingIndicator, "closingIndicator is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return RxJavaPlugins.onAssembly(new ObservableBufferBoundary<T, U, TOpening, TClosing>(this, bufferOpenings, bufferClosingSelector, bufferSupplier));
+        return RxJavaPlugins.onAssembly(new ObservableBufferBoundary<T, U, TOpening, TClosing>(this, openingIndicator, closingIndicator, bufferSupplier));
     }
 
     /**
@@ -5161,7 +5158,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns a Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers. It emits the current buffer and replaces it with a
-     * new buffer whenever the ObservableSource produced by the specified {@code bufferClosingSelector} emits an item.
+     * new buffer whenever the ObservableSource produced by the specified {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
      * <dl>
@@ -5175,7 +5172,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            Whenever the source {@code ObservableSource} emits an item, {@code buffer} emits the current buffer and
      *            begins to fill a new one
      * @return a Observable that emits a connected, non-overlapping buffer of items from the source ObservableSource
-     *         each time the ObservableSource created with the {@code bufferClosingSelector} argument emits an item
+     *         each time the ObservableSource created with the {@code closingIndicator} argument emits an item
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -5187,7 +5184,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns a Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers. It emits the current buffer and replaces it with a
-     * new buffer whenever the ObservableSource produced by the specified {@code bufferClosingSelector} emits an item.
+     * new buffer whenever the ObservableSource produced by the specified {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
      * <dl>
@@ -5205,7 +5202,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a factory function that returns an instance of the collection subclass to be used and returned
      *            as the buffer
      * @return a Observable that emits a connected, non-overlapping buffer of items from the source ObservableSource
-     *         each time the ObservableSource created with the {@code bufferClosingSelector} argument emits an item
+     *         each time the ObservableSource created with the {@code closingIndicator} argument emits an item
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -5879,16 +5876,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code defaultIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param defaultValue
+     * @param defaultItem
      *            the item to emit if the source ObservableSource emits no items
      * @return a Observable that emits either the specified default item if the source ObservableSource emits no
      *         items, or the items emitted by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/defaultifempty.html">ReactiveX operators documentation: DefaultIfEmpty</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> defaultIfEmpty(T defaultValue) {
-        ObjectHelper.requireNonNull(defaultValue, "value is null");
-        return switchIfEmpty(just(defaultValue));
+    public final Observable<T> defaultIfEmpty(T defaultItem) {
+        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
+        return switchIfEmpty(just(defaultItem));
     }
 
     /**
@@ -6270,8 +6267,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits those items from the source ObservableSource that are distinct from their
      *         immediate predecessors
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
-     *        with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> distinctUntilChanged(BiPredicate<? super T, ? super T> comparer) {
@@ -6577,7 +6573,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * 
      * @param index
      *            the zero-based index of the item to retrieve
-     * @param defaultValue
+     * @param defaultItem
      *            the default item
      * @return a Observable that emits the item at the specified position in the sequence emitted by the source
      *         ObservableSource, or the default item if that index is outside the bounds of the source sequence
@@ -6586,12 +6582,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> elementAt(long index, T defaultValue) {
+    public final Observable<T> elementAt(long index, T defaultItem) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
-        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(this, index, defaultValue));
+        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
+        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(this, index, defaultItem));
     }
 
     /**
@@ -6645,15 +6641,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param defaultValue
+     * @param defaultItem
      *            the default item to emit if the source ObservableSource doesn't emit anything
      * @return a Observable that emits only the very first item from the source, or a default item if the
      *         source ObservableSource completes without emitting any items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> first(T defaultValue) {
-        return take(1).single(defaultValue);
+    public final Observable<T> first(T defaultItem) {
+        return take(1).single(defaultItem);
     }
 
     /**
@@ -7391,7 +7387,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K, V> Observable<GroupedObservable<K, V>> groupBy(Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector, boolean delayError) {
-        return groupBy(keySelector, valueSelector, false, bufferSize());
+        return groupBy(keySelector, valueSelector, delayError, bufferSize());
     }
 
     /**
@@ -7610,15 +7606,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param defaultValue
+     * @param defaultItem
      *            the default item to emit if the source ObservableSource is empty
      * @return a Observable that emits only the last item emitted by the source ObservableSource, or a default item
      *         if the source ObservableSource is empty
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> last(T defaultValue) {
-        return takeLast(1).single(defaultValue);
+    public final Observable<T> last(T defaultItem) {
+        return takeLast(1).single(defaultItem);
     }
 
     /**
@@ -7948,16 +7944,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param value
+     * @param item
      *            the value that is emitted along with a regular onComplete in case the current
      *            Observable signals an exception
      * @return the original ObservableSource with appropriately modified behavior
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> onErrorReturnValue(final T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        return onErrorReturn(Functions.justFunction(value));
+    public final Observable<T> onErrorReturnItem(final T item) {
+        ObjectHelper.requireNonNull(item, "item is null");
+        return onErrorReturn(Functions.justFunction(item));
     }
 
     /**
@@ -9285,7 +9281,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param defaultValue
+     * @param defaultItem
      *            a default value to emit if the source ObservableSource emits no item
      * @return a Observable that emits the single item emitted by the source ObservableSource, or a default item if
      *         the source ObservableSource is empty
@@ -9294,9 +9290,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> single(T defaultValue) {
-        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return RxJavaPlugins.onAssembly(new ObservableSingle<T>(this, defaultValue));
+    public final Observable<T> single(T defaultItem) {
+        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
+        return RxJavaPlugins.onAssembly(new ObservableSingle<T>(this, defaultItem));
     }
 
     /**
@@ -9652,7 +9648,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            an Iterable that contains the items you want the modified ObservableSource to emit first
      * @return a Observable that emits the items in the specified {@link Iterable} and then emits the items
      *         emitted by the source ObservableSource
@@ -9660,8 +9656,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> startWith(Iterable<? extends T> values) {
-        return concatArray(fromIterable(values), this);
+    public final Observable<T> startWith(Iterable<? extends T> items) {
+        return concatArray(fromIterable(items), this);
     }
     
     /**
@@ -9697,7 +9693,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param value
+     * @param item
      *            the item to emit first
      * @return a Observable that emits the specified item before it begins to emit items emitted by the source
      *         ObservableSource
@@ -9705,9 +9701,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> startWith(T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        return concatArray(just(value), this);
+    public final Observable<T> startWith(T item) {
+        ObjectHelper.requireNonNull(item, "item is null");
+        return concatArray(just(item), this);
     }
 
     /**
@@ -9720,7 +9716,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            the array of values to emit first
      * @return a Observable that emits the specified items before it begins to emit items emitted by the source
      *         ObservableSource
@@ -9728,8 +9724,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> startWithArray(T... values) {
-        Observable<T> fromArray = fromArray(values);
+    public final Observable<T> startWithArray(T... items) {
+        Observable<T> fromArray = fromArray(items);
         if (fromArray == empty()) {
             return RxJavaPlugins.onAssembly(this);
         }
@@ -11125,7 +11121,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * This allows fluent conversion to any other type.
      * @param <R> the resulting object type
-     * @param converter the function that receives the current Observable instance and returns a vlau
+     * @param converter the function that receives the current Observable instance and returns a value
      * @return the value returned by the function
      */
     public final <R> R to(Function<? super Observable<T>, R> converter) {
@@ -11154,8 +11150,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         calls onCompleted
      * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
      *      Completable</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
-     *        with the release number)
+     * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable toCompletable() {
@@ -12094,8 +12089,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns a Observable that emits windows of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits windows that contain those items emitted by the source ObservableSource between the time when
-     * the {@code windowOpenings} ObservableSource emits an item and when the ObservableSource returned by
-     * {@code closingSelector} emits an item.
+     * the {@code openingIndicator} ObservableSource emits an item and when the ObservableSource returned by
+     * {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
      * <dl>
@@ -12105,9 +12100,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * 
      * @param <U> the element type of the window-opening ObservableSource
      * @param <V> the element type of the window-closing ObservableSources
-     * @param windowOpen
+     * @param openingIndicator
      *            a ObservableSource that, when it emits an item, causes another window to be created
-     * @param windowClose
+     * @param closingIndicator
      *            a {@link Function} that produces a ObservableSource for every window created. When this ObservableSource
      *            emits an item, the associated window is closed and emitted
      * @return a Observable that emits windows of items emitted by the source ObservableSource that are governed by
@@ -12116,16 +12111,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Observable<Observable<T>> window(
-            ObservableSource<U> windowOpen,
-            Function<? super U, ? extends ObservableSource<V>> windowClose) {
-        return window(windowOpen, windowClose, bufferSize());
+            ObservableSource<U> openingIndicator,
+            Function<? super U, ? extends ObservableSource<V>> closingIndicator) {
+        return window(openingIndicator, closingIndicator, bufferSize());
     }
 
     /**
      * Returns a Observable that emits windows of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits windows that contain those items emitted by the source ObservableSource between the time when
-     * the {@code windowOpenings} ObservableSource emits an item and when the ObservableSource returned by
-     * {@code closingSelector} emits an item.
+     * the {@code openingIndicator} ObservableSource emits an item and when the ObservableSource returned by
+     * {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
      * <dl>
@@ -12135,9 +12130,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * 
      * @param <U> the element type of the window-opening ObservableSource
      * @param <V> the element type of the window-closing ObservableSources
-     * @param windowOpen
+     * @param openingIndicator
      *            a ObservableSource that, when it emits an item, causes another window to be created
-     * @param windowClose
+     * @param closingIndicator
      *            a {@link Function} that produces a ObservableSource for every window created. When this ObservableSource
      *            emits an item, the associated window is closed and emitted
      * @param bufferSize
@@ -12148,17 +12143,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Observable<Observable<T>> window(
-            ObservableSource<U> windowOpen,
-            Function<? super U, ? extends ObservableSource<V>> windowClose, int bufferSize) {
-        ObjectHelper.requireNonNull(windowOpen, "windowOpen is null");
-        ObjectHelper.requireNonNull(windowClose, "windowClose is null");
-        return RxJavaPlugins.onAssembly(new ObservableWindowBoundarySelector<T, U, V>(this, windowOpen, windowClose, bufferSize));
+            ObservableSource<U> openingIndicator,
+            Function<? super U, ? extends ObservableSource<V>> closingIndicator, int bufferSize) {
+        ObjectHelper.requireNonNull(openingIndicator, "openingIndicator is null");
+        ObjectHelper.requireNonNull(closingIndicator, "closingIndicator is null");
+        return RxJavaPlugins.onAssembly(new ObservableWindowBoundarySelector<T, U, V>(this, openingIndicator, closingIndicator, bufferSize));
     }
 
     /**
      * Returns a Observable that emits windows of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping windows. It emits the current window and opens a new one
-     * whenever the ObservableSource produced by the specified {@code closingSelector} emits an item.
+     * whenever the ObservableSource produced by the specified {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
      * <dl>
@@ -12173,7 +12168,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            When the source {@code ObservableSource} emits an item, {@code window} emits the current window and begins
      *            a new one.
      * @return a Observable that emits connected, non-overlapping windows of items from the source ObservableSource
-     *         whenever {@code closingSelector} emits an item
+     *         whenever {@code closingIndicator} emits an item
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -12184,7 +12179,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns a Observable that emits windows of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping windows. It emits the current window and opens a new one
-     * whenever the ObservableSource produced by the specified {@code closingSelector} emits an item.
+     * whenever the ObservableSource produced by the specified {@code closingIndicator} emits an item.
      * <p>
      * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
      * <dl>
@@ -12200,7 +12195,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param bufferSize
      *            the capacity hint for the buffer in the inner windows
      * @return a Observable that emits connected, non-overlapping windows of items from the source ObservableSource
-     *         whenever {@code closingSelector} emits an item
+     *         whenever {@code closingIndicator} emits an item
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)

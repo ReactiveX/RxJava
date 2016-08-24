@@ -38,10 +38,10 @@ extends AbstractObservableWithUpstream<T, U> {
     
     @Override
     protected void subscribeActual(Observer<? super U> t) {
-        source.subscribe(new BufferExactBondarySubscriber<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundary));
+        source.subscribe(new BufferExactBoundarySubscriber<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundary));
     }
     
-    static final class BufferExactBondarySubscriber<T, U extends Collection<? super T>, B>
+    static final class BufferExactBoundarySubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
         /** */
         final Callable<U> bufferSupplier;
@@ -53,8 +53,8 @@ extends AbstractObservableWithUpstream<T, U> {
         
         U buffer;
         
-        public BufferExactBondarySubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
-                ObservableSource<B> boundary) {
+        public BufferExactBoundarySubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
+                                             ObservableSource<B> boundary) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundary = boundary;
@@ -176,7 +176,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 buffer = next;
             }
             
-            fastpathEmit(b, false, this);
+            fastPathEmit(b, false, this);
         }
         
         @Override
@@ -188,9 +188,9 @@ extends AbstractObservableWithUpstream<T, U> {
     
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B> 
     extends DisposableObserver<B> {
-        final BufferExactBondarySubscriber<T, U, B> parent;
+        final BufferExactBoundarySubscriber<T, U, B> parent;
         
-        public BufferBoundarySubscriber(BufferExactBondarySubscriber<T, U, B> parent) {
+        public BufferBoundarySubscriber(BufferExactBoundarySubscriber<T, U, B> parent) {
             this.parent = parent;
         }
 

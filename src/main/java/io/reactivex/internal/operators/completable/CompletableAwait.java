@@ -49,7 +49,7 @@ public enum CompletableAwait {
         
         if (cdl.getCount() == 0) {
             if (err[0] != null) {
-                Exceptions.propagate(err[0]);
+                throw Exceptions.propagate(err[0]);
             }
             return;
         }
@@ -59,7 +59,7 @@ public enum CompletableAwait {
             throw Exceptions.propagate(ex);
         }
         if (err[0] != null) {
-            Exceptions.propagate(err[0]);
+            throw Exceptions.propagate(err[0]);
         }
     }
     
@@ -91,7 +91,7 @@ public enum CompletableAwait {
         
         if (cdl.getCount() == 0) {
             if (err[0] != null) {
-                Exceptions.propagate(err[0]);
+                throw Exceptions.propagate(err[0]);
             }
             return true;
         }
@@ -103,7 +103,7 @@ public enum CompletableAwait {
         }
         if (b) {
             if (err[0] != null) {
-                Exceptions.propagate(err[0]);
+                throw Exceptions.propagate(err[0]);
             }
         }
         return b;
@@ -182,7 +182,6 @@ public enum CompletableAwait {
         if (b) {
             return err[0];
         }
-        Exceptions.propagate(new TimeoutException());
-        return null;
+        throw Exceptions.propagate(new TimeoutException());
     }
 }

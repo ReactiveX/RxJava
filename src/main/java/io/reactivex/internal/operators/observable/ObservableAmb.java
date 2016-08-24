@@ -38,7 +38,7 @@ public final class ObservableAmb<T> extends Observable<T> {
             sources = new Observable[8];
             for (ObservableSource<? extends T> p : sourcesIterable) {
                 if (count == sources.length) {
-                    Observable<? extends T>[] b = new Observable[count + (count >> 2)];
+                    ObservableSource<? extends T>[] b = new ObservableSource[count + (count >> 2)];
                     System.arraycopy(sources, 0, b, 0, count);
                     sources = b;
                 }

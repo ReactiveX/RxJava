@@ -132,7 +132,7 @@ public final class Schedulers {
     
     /**
      * Shuts down those standard Schedulers which support the SchedulerLifecycle interface.
-     * <p>The operation is idempotent and threadsafe.
+     * <p>The operation is idempotent and thread-safe.
      */
     public static void shutdown() {
         computation().shutdown();
@@ -145,7 +145,7 @@ public final class Schedulers {
     
     /**
      * Starts those standard Schedulers which support the SchedulerLifecycle interface.
-     * <p>The operation is idempotent and threadsafe.
+     * <p>The operation is idempotent and thread-safe.
      */
     public static void start() {
         computation().start();

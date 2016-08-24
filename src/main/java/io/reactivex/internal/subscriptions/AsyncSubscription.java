@@ -81,7 +81,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     /**
      * Sets a new resource and disposes the currently held resource.
      * @param r the new resource to set
-     * @return false if this AyncSubscription has been cancelled/disposed
+     * @return false if this AsyncSubscription has been cancelled/disposed
      * @see #replaceResource(Disposable)
      */
     public boolean setResource(Disposable r) {

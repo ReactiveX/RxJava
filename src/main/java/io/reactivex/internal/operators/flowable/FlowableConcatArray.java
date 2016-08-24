@@ -94,8 +94,8 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
         @Override
         public void onComplete() {
             if (wip.getAndIncrement() == 0) {
-                Publisher<? extends T>[] srcs = sources;
-                int n = srcs.length;
+                Publisher<? extends T>[] sources = this.sources;
+                int n = sources.length;
                 int i = index;
                 for (;;) {
                     
@@ -113,7 +113,7 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
                         return;
                     }
                     
-                    Publisher<? extends T> p = srcs[i];
+                    Publisher<? extends T> p = sources[i];
                     
                     if (p == null) {
                         Throwable ex = new NullPointerException("A Publisher entry is null");

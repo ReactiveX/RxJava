@@ -141,9 +141,7 @@ public final class OpenHashSet<T> {
             return;
         }
         T[] a = keys;
-        int len = a.length;
-        for (int i = 0; i < len; i++) {
-            T e = a[i];
+        for (T e : a) {
             if (e != null) {
                 clearAction.accept(e);
             }

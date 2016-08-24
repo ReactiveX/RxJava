@@ -133,7 +133,7 @@ public enum SubscriptionHelper {
 
     /**
      * Atomically sets the subscription on the field but does not
-     * cancel the previouls subscription.
+     * cancel the previous subscription.
      * @param field the target field to set the new subscription on
      * @param s the new subscription
      * @return true if the operation succeeded, false if the target field

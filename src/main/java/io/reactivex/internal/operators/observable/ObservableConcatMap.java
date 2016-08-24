@@ -48,8 +48,8 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         }
         
         if (delayErrors == ErrorMode.IMMEDIATE) {
-            SerializedObserver<U> ssub = new SerializedObserver<U>(s);
-            source.subscribe(new SourceSubscriber<T, U>(ssub, mapper, bufferSize));
+            SerializedObserver<U> serial = new SerializedObserver<U>(s);
+            source.subscribe(new SourceSubscriber<T, U>(serial, mapper, bufferSize));
         } else {
             source.subscribe(new ConcatMapDelayErrorObserver<T, U>(s, mapper, bufferSize, delayErrors == ErrorMode.END));
         }
@@ -229,7 +229,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                 if (decrementAndGet() == 0) {
                     break;
                 }
-            };
+            }
         }
         
         static final class InnerSubscriber<U> implements Observer<U> {

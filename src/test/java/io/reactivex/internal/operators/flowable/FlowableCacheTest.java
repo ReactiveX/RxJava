@@ -42,7 +42,7 @@ public class FlowableCacheTest {
         source.subscribe(ts);
 
         assertTrue("Source is not connected!", source.isConnected());
-        assertFalse("Subscribers retained!", source.hasObservers());
+        assertFalse("Subscribers retained!", source.hasSubscribers());
         
         ts.assertNoErrors();
         ts.assertTerminated();
@@ -65,7 +65,7 @@ public class FlowableCacheTest {
         source.subscribe(ts);
 
         assertTrue("Source is not connected!", source.isConnected());
-        assertTrue("Subscribers not retained!", source.hasObservers());
+        assertTrue("Subscribers not retained!", source.hasSubscribers());
         
         ts.assertNoErrors();
         ts.assertNotComplete();
@@ -77,7 +77,7 @@ public class FlowableCacheTest {
         }
         
         ts.dispose();
-        assertFalse("Subscribers retained!", source.hasObservers());
+        assertFalse("Subscribers retained!", source.hasSubscribers());
     }
     
     @Test
@@ -151,7 +151,7 @@ public class FlowableCacheTest {
         ts.assertComplete();
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 //        ts.assertUnsubscribed(); // FIXME no longer valid 
-        assertFalse(cached.hasObservers());
+        assertFalse(cached.hasSubscribers());
     }
     
     @Test

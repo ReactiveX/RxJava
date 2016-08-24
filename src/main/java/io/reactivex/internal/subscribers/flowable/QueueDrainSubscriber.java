@@ -63,7 +63,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         return wip.get() == 0 && wip.compareAndSet(0, 1);
     }
     
-    protected final void fastpathEmit(U value, boolean delayError) {
+    protected final void fastPathEmit(U value, boolean delayError) {
         final Subscriber<? super V> s = actual;
         final SimpleQueue<U> q = queue;
         
@@ -89,7 +89,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         QueueDrainHelper.drainLoop(q, s, delayError, this);
     }
 
-    protected final void fastpathEmitMax(U value, boolean delayError, Disposable dispose) {
+    protected final void fastPathEmitMax(U value, boolean delayError, Disposable dispose) {
         final Subscriber<? super V> s = actual;
         final SimpleQueue<U> q = queue;
         
@@ -118,7 +118,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         QueueDrainHelper.drainMaxLoop(q, s, delayError, dispose, this);
     }
 
-    protected final void fastpathOrderedEmitMax(U value, boolean delayError, Disposable dispose) {
+    protected final void fastPathOrderedEmitMax(U value, boolean delayError, Disposable dispose) {
         final Subscriber<? super V> s = actual;
         final SimpleQueue<U> q = queue;
         
@@ -154,10 +154,10 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
 
     /**
      * Makes sure the fast-path emits in order.
-     * @param value
-     * @param delayError
+     * @param value the value to emit or queue up
+     * @param delayError if true, errors are delayed until the source has terminated
      */
-    protected final void fastpathOrderedEmit(U value, boolean delayError) {
+    protected final void fastPathOrderedEmit(U value, boolean delayError) {
         final Subscriber<? super V> s = actual;
         final SimpleQueue<U> q = queue;
         

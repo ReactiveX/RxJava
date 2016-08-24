@@ -40,10 +40,10 @@ extends AbstractObservableWithUpstream<T, U> {
 
     @Override
     protected void subscribeActual(Observer<? super U> t) {
-        source.subscribe(new BufferBondarySupplierSubscriber<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundarySupplier));
+        source.subscribe(new BufferBoundarySupplierSubscriber<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundarySupplier));
     }
     
-    static final class BufferBondarySupplierSubscriber<T, U extends Collection<? super T>, B>
+    static final class BufferBoundarySupplierSubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
         /** */
         final Callable<U> bufferSupplier;
@@ -55,8 +55,8 @@ extends AbstractObservableWithUpstream<T, U> {
         
         U buffer;
         
-        public BufferBondarySupplierSubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
-                Callable<? extends ObservableSource<B>> boundarySupplier) {
+        public BufferBoundarySupplierSubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
+                                                Callable<? extends ObservableSource<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundarySupplier = boundarySupplier;
@@ -232,7 +232,7 @@ extends AbstractObservableWithUpstream<T, U> {
             
             boundary.subscribe(bs);
             
-            fastpathEmit(b, false, this);
+            fastPathEmit(b, false, this);
         }
         
         @Override
@@ -244,11 +244,11 @@ extends AbstractObservableWithUpstream<T, U> {
     
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B> 
     extends DisposableObserver<B> {
-        final BufferBondarySupplierSubscriber<T, U, B> parent;
+        final BufferBoundarySupplierSubscriber<T, U, B> parent;
         
         boolean once;
         
-        public BufferBoundarySubscriber(BufferBondarySupplierSubscriber<T, U, B> parent) {
+        public BufferBoundarySubscriber(BufferBoundarySupplierSubscriber<T, U, B> parent) {
             this.parent = parent;
         }
 

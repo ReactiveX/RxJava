@@ -28,18 +28,18 @@ import io.reactivex.internal.functions.ObjectHelper;
  */
 public final class TestScheduler extends Scheduler {
     /** The ordered queue for the runnable tasks. */
-    private final Queue<TimedRunnable> queue = new PriorityBlockingQueue<TimedRunnable>(11);
+    final Queue<TimedRunnable> queue = new PriorityBlockingQueue<TimedRunnable>(11);
     /** The per-scheduler global order counter. */
     long counter;
     // Storing time in nanoseconds internally.
-    private volatile long time;
+    volatile long time;
 
     static final class TimedRunnable implements Comparable<TimedRunnable> {
 
-        private final long time;
-        private final Runnable run;
-        private final TestWorker scheduler;
-        private final long count; // for differentiating tasks at same time
+        final long time;
+        final Runnable run;
+        final TestWorker scheduler;
+        final long count; // for differentiating tasks at same time
 
         TimedRunnable(TestWorker scheduler, long time, Runnable run, long count) {
             this.time = time;
@@ -100,10 +100,10 @@ public final class TestScheduler extends Scheduler {
         triggerActions(time);
     }
 
-    private void triggerActions(long targetTimeInNanos) {
+    private void triggerActions(long targetTimeInNanoseconds) {
         while (!queue.isEmpty()) {
             TimedRunnable current = queue.peek();
-            if (current.time > targetTimeInNanos) {
+            if (current.time > targetTimeInNanoseconds) {
                 break;
             }
             // if scheduled time is 0 (immediate) use current virtual time
@@ -115,7 +115,7 @@ public final class TestScheduler extends Scheduler {
                 current.run.run();
             }
         }
-        time = targetTimeInNanos;
+        time = targetTimeInNanoseconds;
     }
 
     @Override

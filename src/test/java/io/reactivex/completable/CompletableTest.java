@@ -3855,7 +3855,7 @@ public class CompletableTest {
         Assert.assertTrue("Closure called before onComplete", doneAfter.get());
     }
     
-    @Test(timeout = 5000)
+    @Test
     public void doAfterTerminateWithError() {
         final AtomicBoolean doneAfter = new AtomicBoolean();
         
@@ -3867,13 +3867,13 @@ public class CompletableTest {
         });
         
         try {
-            c.blockingAwait();
+            c.blockingAwait(5, TimeUnit.SECONDS);
             Assert.fail("Did not throw TestException");
         } catch (TestException ex) {
             // expected
         }
         
-        Assert.assertFalse("Closure called", doneAfter.get());
+        Assert.assertTrue("Closure not called", doneAfter.get());
     }
     
     @Test(expected = NullPointerException.class)
