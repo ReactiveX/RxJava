@@ -291,7 +291,7 @@ public class BlockingFlowableNextTest {
 
     @Test /* (timeout = 8000) */
     public void testSingleSourceManyIterators() throws InterruptedException {
-        Flowable<Long> o = Flowable.interval(100, TimeUnit.MILLISECONDS);
+        Flowable<Long> o = Flowable.interval(250, TimeUnit.MILLISECONDS);
         PublishProcessor<Integer> terminal = PublishProcessor.create();
         Flowable<Long> source = o.takeUntil(terminal);
 
