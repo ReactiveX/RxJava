@@ -232,7 +232,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 return;
             }
 
-            fastpathEmit(current, false, this);
+            fastPathEmit(current, false, this);
         }
         
         @Override
@@ -248,12 +248,12 @@ extends AbstractObservableWithUpstream<T, U> {
         final long timeskip;
         final TimeUnit unit;
         final Worker w;
-        
+        final List<U> buffers;
+
+
         Disposable s;
         
-        List<U> buffers;
-        
-        public BufferSkipBoundedSubscriber(Observer<? super U> actual, 
+        public BufferSkipBoundedSubscriber(Observer<? super U> actual,
                 Callable<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
             super(actual, new MpscLinkedQueue<U>());
@@ -302,7 +302,7 @@ extends AbstractObservableWithUpstream<T, U> {
                             buffers.remove(b);
                         }
                         
-                        fastpathOrderedEmit(b, false, w);
+                        fastPathOrderedEmit(b, false, w);
                     }
                 }, timespan, unit);
             }
@@ -398,7 +398,7 @@ extends AbstractObservableWithUpstream<T, U> {
                         buffers.remove(b);
                     }
                     
-                    fastpathOrderedEmit(b, false, w);
+                    fastPathOrderedEmit(b, false, w);
                 }
             }, timespan, unit);
         }
@@ -497,7 +497,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 timer.dispose();
             }
             
-            fastpathOrderedEmit(b, false, this);
+            fastPathOrderedEmit(b, false, this);
             
             try {
                 b = bufferSupplier.call();
@@ -608,7 +608,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 buffer = next;
             }
 
-            fastpathOrderedEmit(current, false, this);
+            fastPathOrderedEmit(current, false, this);
         }
     }
 }

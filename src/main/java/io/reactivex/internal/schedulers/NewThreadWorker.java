@@ -31,8 +31,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
     volatile boolean disposed;
     
     public NewThreadWorker(ThreadFactory threadFactory) {
-        ScheduledExecutorService exec = SchedulerPoolFactory.create(threadFactory);
-        executor = exec;
+        executor = SchedulerPoolFactory.create(threadFactory);
     }
 
     @Override
@@ -51,9 +50,9 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
     /**
      * Schedules the given runnable on the underlying executor directly and
      * returns its future wrapped into a Disposable.
-     * @param run
-     * @param delayTime
-     * @param unit
+     * @param run the Runnable to execute in a delayed fashion
+     * @param delayTime the delay amount
+     * @param unit the delay time unit
      * @return the ScheduledRunnable instance
      */
     public Disposable scheduleDirect(final Runnable run, long delayTime, TimeUnit unit) {
@@ -75,10 +74,10 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
     /**
      * Schedules the given runnable periodically on the underlying executor directly
      * and returns its future wrapped into a Disposable.
-     * @param run
-     * @param initialDelay
-     * @param period
-     * @param unit
+     * @param run the Runnable to execute in a periodic fashion
+     * @param initialDelay the initial delay amount
+     * @param period the repeat period amount
+     * @param unit the time unit for both the initialDelay and period
      * @return the ScheduledRunnable instance
      */
     public Disposable schedulePeriodicallyDirect(final Runnable run, long initialDelay, long period, TimeUnit unit) {

@@ -49,7 +49,7 @@ public enum BlockingObservableNext {
 
     }
 
-    // test needs to access the observer.waiting flag non-blockingly.
+    // test needs to access the observer.waiting flag
     static final class NextIterator<T> implements Iterator<T> {
 
         private final NextObserver<T> observer;
@@ -60,7 +60,7 @@ public enum BlockingObservableNext {
         private Throwable error;
         private boolean started;
 
-        private NextIterator(Observable<? extends T> items, NextObserver<T> observer) {
+        NextIterator(Observable<? extends T> items, NextObserver<T> observer) {
             this.items = items;
             this.observer = observer;
         }
@@ -77,11 +77,8 @@ public enum BlockingObservableNext {
                 // the iterator has reached the end.
                 return false;
             }
-            if (!isNextConsumed) {
-                // next has not been used yet.
-                return true;
-            }
-            return moveToNext();
+            // next has not been used yet.
+            return !isNextConsumed || moveToNext();
         }
 
         private boolean moveToNext() {
@@ -89,7 +86,7 @@ public enum BlockingObservableNext {
                 if (!started) {
                     started = true;
                     // if not started, start now
-                    observer.setWaiting(1);
+                    observer.setWaiting();
                     @SuppressWarnings("unchecked")
                     Observable<T> nbpObservable = (Observable<T>)items;
                     nbpObservable.materialize().subscribe(observer);
@@ -173,11 +170,11 @@ public enum BlockingObservableNext {
         }
         
         public Notification<T> takeNext() throws InterruptedException {
-            setWaiting(1);
+            setWaiting();
             return buf.take();
         }
-        void setWaiting(int value) {
-            waiting.set(value);
+        void setWaiting() {
+            waiting.set(1);
         }
     }
 }

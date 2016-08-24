@@ -87,7 +87,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                          */
                         continue;
                         /*
-                         * Note: although technically corrent, concurrent disconnects can cause 
+                         * Note: although technically correct, concurrent disconnects can cause
                          * unexpected behavior such as child subscribers never receiving anything 
                          * (unless connected again). An alternative approach, similar to 
                          * PublishSubject would be to immediately terminate such child 
@@ -313,7 +313,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 if (producers.compareAndSet(c, u)) {
                     return true;
                 }
-                // if failed, some other operation succeded (another add, remove or termination)
+                // if failed, some other operation succeeded (another add, remove or termination)
                 // so retry
             }
         }
@@ -402,7 +402,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                                 ip.child.onComplete();
                             }
                         } finally {
-                            // we explicitely unsubscribe/disconnect from the upstream
+                            // we explicitly unsubscribe/disconnect from the upstream
                             // after we sent out the terminal event to child subscribers
                             dispose();
                         }
@@ -422,7 +422,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                             ip.child.onError(t);
                         }
                     } finally {
-                        // we explicitely unsubscribe/disconnect from the upstream
+                        // we explicitly unsubscribe/disconnect from the upstream
                         // after we sent out the terminal event to child subscribers
                         dispose();
                     }
@@ -463,7 +463,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
             try {
                 for (;;) {
                     /*
-                     * We need to read terminalEvent before checking the queue for emptyness because
+                     * We need to read terminalEvent before checking the queue for emptiness because
                      * all enqueue happens before setting the terminal event.
                      * If it were the other way around, when the emission is paused between
                      * checking isEmpty and checking terminalEvent, some other thread might
@@ -671,7 +671,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 }
                 // try setting the new request value
                 if (compareAndSet(r, u)) {
-                    // if successful, notify the parent dispacher this child can receive more
+                    // if successful, notify the parent dispatcher this child can receive more
                     // elements
                     parent.dispatch();
                     return;
@@ -711,7 +711,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 }
                 // try updating the request value
                 if (compareAndSet(r, u)) {
-                    // and return the udpated value
+                    // and return the updated value
                     return u;
                 }
                 // otherwise, some concurrent activity happened and we need to retry

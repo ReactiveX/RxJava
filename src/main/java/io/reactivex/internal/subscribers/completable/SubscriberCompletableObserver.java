@@ -49,7 +49,7 @@ public final class SubscriberCompletableObserver<T> implements CompletableObserv
 
     @Override
     public void request(long n) {
-        // ingored, no values emitted anyway
+        // ignored, no values emitted anyway
     }
 
     @Override

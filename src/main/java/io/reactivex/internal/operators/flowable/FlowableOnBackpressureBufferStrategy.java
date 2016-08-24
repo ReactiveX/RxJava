@@ -173,9 +173,8 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
             cancelled = true;
             s.cancel();
             
-            Deque<T> dq = deque;
             if (getAndIncrement() == 0) {
-                clear(dq);
+                clear(deque);
             }
         }
         

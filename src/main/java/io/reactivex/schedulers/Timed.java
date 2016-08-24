@@ -87,7 +87,7 @@ public final class Timed<T> {
     @Override
     public int hashCode() {
          int h = value != null ? value.hashCode() : 0;
-         h = h * 31 + (int)((time >>> 31) ^ (time & 0xFFFFFFFF));
+         h = h * 31 + (int)((time >>> 31) ^ time);
          h = h * 31 + unit.hashCode();
          return h;
     }

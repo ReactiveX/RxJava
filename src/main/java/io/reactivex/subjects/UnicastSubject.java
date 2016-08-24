@@ -33,7 +33,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  * or the Subscribers receive the terminal event (error or completion) if this
  * Subject has terminated.
  * 
- * @param <T> the value type unicasted
+ * @param <T> the value type received and emitted by this Subject subclass
  */
 public final class UnicastSubject<T> extends Subject<T> {
     /** The subject state. */
@@ -325,7 +325,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     
     @Override
     public boolean hasObservers() {
-        return state.subscriber != null;
+        return state.subscriber.get() != null;
     }
     
     @Override

@@ -29,7 +29,7 @@ public enum ObjectHelper {
      * @return the object itself
      * @throws NullPointerException if object is null
      */
-    public static final <T> T requireNonNull(T object, String message) {
+    public static <T> T requireNonNull(T object, String message) {
         if (object == null) {
             throw new NullPointerException(message);
         }
@@ -85,7 +85,7 @@ public enum ObjectHelper {
     /**
      * Returns a BiPredicate that compares its parameters via Objects.equals().
      * @param <T> the value type
-     * @return the bipredicate
+     * @return the bi-predicate instance
      */
     @SuppressWarnings("unchecked")
     public static <T> BiPredicate<T, T> equalsPredicate() {

@@ -1666,7 +1666,7 @@ public class FlowableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void onErrorReturnValueNull() {
-        just1.onErrorReturnValue(null);
+        just1.onErrorReturnItem(null);
     }
 
     @Test(expected = NullPointerException.class)

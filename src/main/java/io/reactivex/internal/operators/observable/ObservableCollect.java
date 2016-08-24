@@ -41,7 +41,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
         }
         
         if (u == null) {
-            EmptyDisposable.error(new NullPointerException("The inital supplier returned a null value"), t);
+            EmptyDisposable.error(new NullPointerException("The initialSupplier returned a null value"), t);
             return;
         }
         

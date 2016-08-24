@@ -44,13 +44,13 @@ public class DeferredScalarSubscription<T> extends BasicQueueSubscription<T> {
     /** Constant for the this state. */
     static final long CANCELLED = 4;
 
-    /** Constant for the {@link fusionState} field. */
+    /** Constant for the {@link #fusionState} field. */
     static final int NOT_FUSED = 0;
-    /** Constant for the {@link fusionState} field. */
+    /** Constant for the {@link #fusionState} field. */
     static final int EMPTY = 1;
-    /** Constant for the {@link fusionState} field. */
+    /** Constant for the {@link #fusionState} field. */
     static final int HAS_VALUE = 2;
-    /** Constant for the {@link fusionState} field. */
+    /** Constant for the {@link #fusionState} field. */
     static final int CONSUMED = 3;
     
     public DeferredScalarSubscription(Subscriber<? super T> actual) {

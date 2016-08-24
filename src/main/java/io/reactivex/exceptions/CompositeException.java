@@ -194,30 +194,30 @@ public final class CompositeException extends RuntimeException {
      *            stream to print to
      */
     private void printStackTrace(PrintStreamOrWriter s) {
-        StringBuilder bldr = new StringBuilder(128);
-        bldr.append(this).append('\n');
+        StringBuilder b = new StringBuilder(128);
+        b.append(this).append('\n');
         for (StackTraceElement myStackElement : getStackTrace()) {
-            bldr.append("\tat ").append(myStackElement).append('\n');
+            b.append("\tat ").append(myStackElement).append('\n');
         }
         int i = 1;
         for (Throwable ex : exceptions) {
-            bldr.append("  ComposedException ").append(i).append(" :\n");
-            appendStackTrace(bldr, ex, "\t");
+            b.append("  ComposedException ").append(i).append(" :\n");
+            appendStackTrace(b, ex, "\t");
             i++;
         }
         synchronized (s.lock()) {
-            s.println(bldr.toString());
+            s.println(b.toString());
         }
     }
 
-    private void appendStackTrace(StringBuilder bldr, Throwable ex, String prefix) {
-        bldr.append(prefix).append(ex).append('\n');
+    private void appendStackTrace(StringBuilder b, Throwable ex, String prefix) {
+        b.append(prefix).append(ex).append('\n');
         for (StackTraceElement stackElement : ex.getStackTrace()) {
-            bldr.append("\t\tat ").append(stackElement).append('\n');
+            b.append("\t\tat ").append(stackElement).append('\n');
         }
         if (ex.getCause() != null) {
-            bldr.append("\tCaused by: ");
-            appendStackTrace(bldr, ex.getCause(), "");
+            b.append("\tCaused by: ");
+            appendStackTrace(b, ex.getCause(), "");
         }
     }
 
@@ -314,10 +314,10 @@ public final class CompositeException extends RuntimeException {
     }
     
     /**
-     * Returns the root cause of {@code e}. If {@code e.getCause()} returns {@null} or {@code e}, just return {@code e} itself.
+     * Returns the root cause of {@code e}. If {@code e.getCause()} returns {@code null} or {@code e}, just return {@code e} itself.
      *
      * @param e the {@link Throwable} {@code e}.
-     * @return The root cause of {@code e}. If {@code e.getCause()} returns {@null} or {@code e}, just return {@code e} itself.
+     * @return The root cause of {@code e}. If {@code e.getCause()} returns {@code null} or {@code e}, just return {@code e} itself.
      */
     private Throwable getRootCause(Throwable e) {
         Throwable root = e.getCause();

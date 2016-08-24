@@ -61,7 +61,7 @@ public enum BlockingObservableMostRecent {
     static final class MostRecentObserver<T> extends DefaultObserver<T> {
         volatile Object value;
         
-        private MostRecentObserver(T value) {
+        MostRecentObserver(T value) {
             this.value = NotificationLite.next(value);
         }
 

@@ -31,7 +31,7 @@ public final class ComputationScheduler extends Scheduler {
     static final FixedSchedulerPool NONE = new FixedSchedulerPool(0);
     /** Manages a fixed number of workers. */
     private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool";
-    private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
+    static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
     /** 
      * Key to setting the maximum number of computation scheduler threads.
      * Zero or less is interpreted as use available. Capped by available.
@@ -46,10 +46,10 @@ public final class ComputationScheduler extends Scheduler {
 
     static {
         int maxThreads = Integer.getInteger(KEY_MAX_THREADS, 0);
-        int ncpu = Runtime.getRuntime().availableProcessors();
+        int cpuCount = Runtime.getRuntime().availableProcessors();
         int max;
-        if (maxThreads <= 0 || maxThreads > ncpu) {
-            max = ncpu;
+        if (maxThreads <= 0 || maxThreads > cpuCount) {
+            max = cpuCount;
         } else {
             max = maxThreads;
         }

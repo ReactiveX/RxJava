@@ -95,10 +95,7 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
     
     @Override
     public boolean offer(T v1, T v2) {
-        if (offer(v1)) {
-            return offer(v2); 
-        }
-        return false;
+        return offer(v1) && offer(v2);
     }
     
     @Override

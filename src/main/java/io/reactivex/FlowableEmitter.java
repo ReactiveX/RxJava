@@ -24,7 +24,7 @@ import io.reactivex.functions.Cancellable;
  * The onNext, onError and onComplete methods should be called 
  * in a sequential manner, just like the Subscriber's methods.
  * Use {@link #serialize()} if you want to ensure this. 
- * The other methods are threadsafe.
+ * The other methods are thread-safe.
  *
  * @param <T> the value type to emit
  */
@@ -45,13 +45,14 @@ public interface FlowableEmitter<T> extends Emitter<T> {
     void setCancellable(Cancellable c);
     /**
      * The current outstanding request amount.
-     * <p>This method it threadsafe.
+     * <p>This method is thread-safe.
      * @return the current outstanding request amount
      */
     long requested();
     
     /**
      * Returns true if the downstream cancelled the sequence.
+     * <p>This method is thread-safe.
      * @return true if the downstream cancelled the sequence
      */
     boolean isCancelled();

@@ -143,7 +143,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
             }
         }
 
-        void error(Throwable e, int index) {
+        void error(Throwable e) {
             if (ExceptionHelper.addThrowable(error, e)) {
                 drain();
             } else {
@@ -322,8 +322,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
                 if (e != 0L) {
 
-                    for (int j = 0; j < n; j++) {
-                        ZipSubscriber<T, R> inner = qs[j];
+                    for (ZipSubscriber<T, R> inner : qs) {
                         inner.request(e);
                     }
 
@@ -409,7 +408,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         @Override
         public void onError(Throwable t) {
             if (sourceMode != QueueSubscription.ASYNC) {
-                parent.error(t, index);
+                parent.error(t);
             }
         }
 

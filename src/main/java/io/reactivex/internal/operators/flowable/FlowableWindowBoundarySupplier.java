@@ -126,7 +126,6 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
                 windows.getAndIncrement();
                 s.request(Long.MAX_VALUE);
                 p.subscribe(inner);
-                return;
             }
         }
         

@@ -34,7 +34,7 @@ public interface SingleObserver<T> {
     /**
      * Provides the SingleObserver with the means of cancelling (disposing) the
      * connection (channel) with the Single in both
-     * synchronous (from within {@link #onSubscribe(Disposable)} itself) and asynchronous manner. 
+     * synchronous (from within {@code onSubscribe(Disposable)} itself) and asynchronous manner.
      * @param d the Disposable instance whose {@link Disposable#dispose()} can
      * be called anytime to cancel the connection
      * @since 2.0

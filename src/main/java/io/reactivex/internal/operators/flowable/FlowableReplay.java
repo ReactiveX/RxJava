@@ -53,8 +53,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
      * ConnectableObservable via a selector function.
      * @param <U> the connectable observable type
      * @param <R> the result type
-     * @param connectableFactory
-     * @param selector
+     * @param connectableFactory the factory that returns a ConnectableFlowable for each individual subscriber
+     * @param selector the function that receives a Flowable and should return another Flowable that will be subscribed to
      * @return the new Observable instance
      */
     public static <U, R> Flowable<R> multicastSelector(
@@ -107,8 +107,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
      * Child Subscribers will observe the events of the ConnectableObservable on the
      * specified scheduler.
      * @param <T> the value type
-     * @param co
-     * @param scheduler
+     * @param co the ConnectableFlowable to wrap
+     * @param scheduler the target scheduler
      * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableFlowable<T> observeOn(final ConnectableFlowable<T> co, final Scheduler scheduler) {
@@ -129,7 +129,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
     /**
      * Creates a replaying ConnectableObservable with an unbounded buffer.
      * @param <T> the value type
-     * @param source
+     * @param source the source Flowable to use
      * @return the new ConnectableObservable instance
      */
     @SuppressWarnings("unchecked")
@@ -140,8 +140,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
     /**
      * Creates a replaying ConnectableObservable with a size bound buffer.
      * @param <T> the value type
-     * @param source
-     * @param bufferSize
+     * @param source the source Flowable to use
+     * @param bufferSize the maximum number of elements to hold
      * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableFlowable<T> create(Flowable<T> source,
@@ -160,10 +160,10 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
     /**
      * Creates a replaying ConnectableObservable with a time bound buffer.
      * @param <T> the value type
-     * @param source
-     * @param maxAge
-     * @param unit
-     * @param scheduler
+     * @param source the source Flowable to use
+     * @param maxAge the maximum age of entries
+     * @param unit the unit of measure of the age amount
+     * @param scheduler the target scheduler providing the current time
      * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableFlowable<T> create(Flowable<T> source,
@@ -174,11 +174,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
     /**
      * Creates a replaying ConnectableObservable with a size and time bound buffer.
      * @param <T> the value type
-     * @param source
-     * @param maxAge
-     * @param unit
-     * @param scheduler
-     * @param bufferSize
+     * @param source the source Flowable to use
+     * @param maxAge the maximum age of entries
+     * @param unit the unit of measure of the age amount
+     * @param scheduler the target scheduler providing the current time
+     * @param bufferSize the maximum number of elements to hold
      * @return the new NbpConnectableObservable instance
      */
     public static <T> ConnectableFlowable<T> create(Flowable<T> source,
@@ -222,7 +222,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                         // create a new subscriber to source
                         ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
                         // let's try setting it as the current subscriber-to-source
-                        if (!curr.compareAndSet(r, u)) {
+                        if (!curr.compareAndSet(null, u)) {
                             // didn't work, maybe someone else did it or the current subscriber 
                             // to source has just finished
                             continue;
@@ -414,7 +414,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                 if (producers.compareAndSet(c, u)) {
                     return true;
                 }
-                // if failed, some other operation succeded (another add, remove or termination)
+                // if failed, some other operation succeeded (another add, remove or termination)
                 // so retry
             }
         }
@@ -665,7 +665,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                 if (compareAndSet(r, u)) {
                     // increment the total request counter
                     BackpressureHelper.add(totalRequested, n);
-                    // if successful, notify the parent dispacher this child can receive more
+                    // if successful, notify the parent dispatcher this child can receive more
                     // elements
                     parent.manageRequests();
                     
@@ -702,7 +702,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                 }
                 // try updating the request value
                 if (compareAndSet(r, u)) {
-                    // and return the udpated value
+                    // and return the updated value
                     return u;
                 }
                 // otherwise, some concurrent activity happened and we need to retry
@@ -743,7 +743,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
         }
         /**
          * Convenience method to auto-cast the index object.
-         * @return
+         * @return the current index object
          */
         @SuppressWarnings("unchecked")
         <U> U index() {
@@ -758,12 +758,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
     interface ReplayBuffer<T> {
         /**
          * Adds a regular value to the buffer.
-         * @param value
+         * @param value the next value to store
          */
         void next(T value);
         /**
          * Adds a terminal exception to the buffer
-         * @param e
+         * @param e the Throwable instance
          */
         void error(Throwable e);
         /**
@@ -775,7 +775,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
          * subscriber inside the output if there
          * is new value and requests available at the
          * same time.
-         * @param output
+         * @param output the receiver of the events
          */
         void replay(InnerSubscription<T> output);
     }
@@ -829,15 +829,15 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                 }
                 int sourceIndex = size;
                 
-                Integer destIndexObject = output.index();
-                int destIndex = destIndexObject != null ? destIndexObject.intValue() : 0;
+                Integer destinationIndexObject = output.index();
+                int destinationIndex = destinationIndexObject != null ? destinationIndexObject : 0;
                 
                 long r = output.get();
                 long r0 = r; // NOPMD
                 long e = 0L;
                 
-                while (r != 0L && destIndex < sourceIndex) {
-                    Object o = get(destIndex);
+                while (r != 0L && destinationIndex < sourceIndex) {
+                    Object o = get(destinationIndex);
                     try {
                         if (NotificationLite.accept(o, child)) {
                             return;
@@ -853,12 +853,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                     if (output.isDisposed()) {
                         return;
                     }
-                    destIndex++;
+                    destinationIndex++;
                     r--;
                     e++;
                 }
                 if (e != 0L) {
-                    output.index = destIndex;
+                    output.index = destinationIndex;
                     if (r0 != Long.MAX_VALUE) {
                         output.produced(e);
                     }
@@ -912,7 +912,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
         
         /**
          * Add a new node to the linked list.
-         * @param n
+         * @param n the Node instance to add
          */
         final void addLast(Node n) {
             tail.set(n);
@@ -945,7 +945,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
         }
         /**
          * Arranges the given node is the new head from now on.
-         * @param n
+         * @param n the Node instance to set as first
          */
         final void setFirst(Node n) {
             set(n);
@@ -1051,8 +1051,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
         /**
          * Override this to wrap the NotificationLite object into a
          * container to be used later by truncate.
-         * @param value
-         * @return
+         * @param value the value to transform into the internal representation
+         * @return the transformed value
          */
         Object enterTransform(Object value) {
             return value;
@@ -1060,8 +1060,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
         /**
          * Override this to unwrap the transformed value into a
          * NotificationLite object.
-         * @param value
-         * @return
+         * @param value the input value to transform to the external representation
+         * @return the transformed value
          */
         Object leaveTransform(Object value) {
             return value;

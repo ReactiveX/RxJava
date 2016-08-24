@@ -16,7 +16,6 @@ package io.reactivex.internal.subscribers.flowable;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -132,16 +131,6 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
     }
     
     /**
-     * Checks if the value is null and if so, throws a NullPointerException.
-     * @param value the value to check
-     * @param message the message to indicate the source of the value
-     * @return the value if not null
-     */
-    protected final <V> V nullCheck(V value, String message) {
-        return ObjectHelper.requireNonNull(value, message);
-    }
-    
-    /**
      * Calls the upstream's QueueSubscription.requestFusion with the mode and
      * saves the established mode in {@link #sourceMode}.
      * <p>
@@ -187,7 +176,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
     }
 
     // --------------------------------------------------------------
-    // Default implementation of the RS and QS protocol (overridable)
+    // Default implementation of the RS and QS protocol (can be overridden)
     // --------------------------------------------------------------
     
     @Override

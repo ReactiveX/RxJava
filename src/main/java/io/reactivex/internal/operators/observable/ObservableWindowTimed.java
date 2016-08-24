@@ -121,7 +121,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                     Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
                     if (!timer.compareAndSet(null, d)) {
                         d.dispose();
-                        return;
                     }
                     
                 }
@@ -343,7 +342,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 
                 if (!timer.compareAndSet(null, d)) {
                     d.dispose();
-                    return;
                 }
             }
         }
@@ -728,7 +726,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                             }
                         } else {
                             for (UnicastSubject<T> w : ws) {
-                                w.onError(e);
+                                w.onComplete();
                             }
                         }
                         ws.clear();

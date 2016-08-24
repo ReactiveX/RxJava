@@ -35,7 +35,7 @@ public enum NotificationLite {
         @Override
         public String toString() {
             return "NotificationLite.Complete";
-        };
+        }
     }
     
     /**

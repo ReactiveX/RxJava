@@ -62,8 +62,8 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     /**
      * Private constructor because state needs to be shared between the Observable body and
      * the onSubscribe function.
-     * @param onSubscribe
-     * @param state
+     * @param source the source Observable to cache
+     * @param state the cache state object
      */
     private ObservableCache(Observable<T> source, CacheState<T> state) {
         super(source);
@@ -74,7 +74,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     @Override
     protected void subscribeActual(Observer<? super T> t) {
         // we can connect first because we replay everything anyway
-        ReplaySubscription<T> rp = new ReplaySubscription<T>(t, state);
+        ReplayDisposable<T> rp = new ReplayDisposable<T>(t, state);
         state.addProducer(rp);
         
         t.onSubscribe(rp);
@@ -97,7 +97,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     
     /**
      * Returns true if there are observers subscribed to this observable.
-     * @return
+     * @return true if the cache has downstream Observers
      */
     /* public */ boolean hasObservers() {
         return state.producers.length != 0;
@@ -105,7 +105,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     
     /**
      * Returns the number of events currently cached.
-     * @return
+     * @return the current number of elements in the cache
      */
     /* public */ int cachedEventCount() {
         return state.size();
@@ -122,9 +122,9 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         /** Holds onto the subscriber connected to source. */
         final SequentialDisposable connection;
         /** Guarded by connection (not this). */
-        volatile ReplaySubscription<?>[] producers;
+        volatile ReplayDisposable<?>[] producers;
         /** The default empty array of producers. */
-        static final ReplaySubscription<?>[] EMPTY = new ReplaySubscription<?>[0];
+        static final ReplayDisposable<?>[] EMPTY = new ReplayDisposable<?>[0];
         
         /** Set to true after connection. */
         volatile boolean isConnected;
@@ -142,15 +142,15 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         }
         /**
          * Adds a ReplayProducer to the producers array atomically.
-         * @param p
+         * @param p the target ReplayDisposable wrapping a downstream Observer with additional state
          */
-        public void addProducer(ReplaySubscription<T> p) {
+        public void addProducer(ReplayDisposable<T> p) {
             // guarding by connection to save on allocating another object
             // thus there are two distinct locks guarding the value-addition and child come-and-go
             synchronized (connection) {
-                ReplaySubscription<?>[] a = producers;
+                ReplayDisposable<?>[] a = producers;
                 int n = a.length;
-                ReplaySubscription<?>[] b = new ReplaySubscription<?>[n + 1];
+                ReplayDisposable<?>[] b = new ReplayDisposable<?>[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = p;
                 producers = b;
@@ -158,11 +158,11 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         }
         /**
          * Removes the ReplayProducer (if present) from the producers array atomically.
-         * @param p
+         * @param p the target ReplayDisposable wrapping a downstream Observer with additional state
          */
-        public void removeProducer(ReplaySubscription<T> p) {
+        public void removeProducer(ReplayDisposable<T> p) {
             synchronized (connection) {
-                ReplaySubscription<?>[] a = producers;
+                ReplayDisposable<?>[] a = producers;
                 int n = a.length;
                 int j = -1;
                 for (int i = 0; i < n; i++) {
@@ -178,7 +178,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                     producers = EMPTY;
                     return;
                 }
-                ReplaySubscription<?>[] b = new ReplaySubscription<?>[n - 1];
+                ReplayDisposable<?>[] b = new ReplayDisposable<?>[n - 1];
                 System.arraycopy(a, 0, b, 0, j);
                 System.arraycopy(a, j + 1, b, j, n - j - 1);
                 producers = b;
@@ -230,8 +230,8 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
          * Signals all known children there is work to do.
          */
         void dispatch() {
-            ReplaySubscription<?>[] a = producers;
-            for (ReplaySubscription<?> rp : a) {
+            ReplayDisposable<?>[] a = producers;
+            for (ReplayDisposable<?> rp : a) {
                 rp.replay();
             }
         }
@@ -242,7 +242,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
      *
      * @param <T>
      */
-    static final class ReplaySubscription<T> implements Disposable {
+    static final class ReplayDisposable<T> implements Disposable {
         /** The actual child subscriber. */
         final Observer<? super T> child;
         /** The cache state object. */
@@ -271,7 +271,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         /** Set if the Subscription has been cancelled/disposed. */
         volatile boolean cancelled;
         
-        public ReplaySubscription(Observer<? super T> child, CacheState<T> state) {
+        public ReplayDisposable(Observer<? super T> child, CacheState<T> state) {
             this.child = child;
             this.state = state;
         }

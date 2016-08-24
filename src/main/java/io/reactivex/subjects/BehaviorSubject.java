@@ -359,7 +359,6 @@ public final class BehaviorSubject<T> extends Subject<T> {
         public void onSubscribe(Disposable s) {
             if (done) {
                 s.dispose();
-                return;
             }
         }
         
@@ -513,10 +512,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
         @Override
         public boolean test(Object o) {
-            if (cancelled) {
-                return true;
-            }
-            return NotificationLite.accept(o, actual);
+            return cancelled || NotificationLite.accept(o, actual);
         }
         
         void emitLoop() {

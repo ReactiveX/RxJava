@@ -40,7 +40,7 @@ public class LinkedArrayList {
     int indexInTail;
     /**
      * Constructor with the capacity hint of each array segment.
-     * @param capacityHint
+     * @param capacityHint the expected number of elements to hold (can grow beyond that)
      */
     public LinkedArrayList(int capacityHint) {
         this.capacityHint = capacityHint;

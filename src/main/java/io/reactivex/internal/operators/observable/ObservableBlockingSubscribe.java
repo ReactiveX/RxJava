@@ -65,7 +65,7 @@ public enum ObservableBlockingSubscribe {
                 if (o == BlockingSubscriber.TERMINATED) {
                     break;
                 }
-                if (NotificationLite.acceptFull(o, subscriber)) {
+                if (NotificationLite.acceptFull(v, subscriber)) {
                     break;
                 }
             }
@@ -108,7 +108,7 @@ public enum ObservableBlockingSubscribe {
         BlockingHelper.awaitForComplete(cdl, ls);
         Throwable e = error[0];
         if (e != null) {
-            Exceptions.propagate(e);
+            throw Exceptions.propagate(e);
         }
     }
     

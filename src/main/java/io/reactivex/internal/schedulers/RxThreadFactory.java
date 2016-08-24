@@ -22,7 +22,7 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
     
     final String prefix;
     
-    static volatile boolean CREATE_TRACE = false;
+    static volatile boolean CREATE_TRACE;
     
     public RxThreadFactory(String prefix) {
         this.prefix = prefix;

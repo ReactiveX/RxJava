@@ -642,7 +642,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             final Subscriber<? super T> a = rs.actual;
 
             Integer indexObject = (Integer)rs.index;
-            int index = 0;
+            int index;
             if (indexObject != null) {
                 index = indexObject;
             } else {
@@ -782,8 +782,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         
         @Override
         public void add(T value) {
-            Object o = value;
-            Node<Object> n = new Node<Object>(o);
+            Node<Object> n = new Node<Object>(value);
             Node<Object> t = tail;
 
             tail = n;
@@ -800,8 +799,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         
         @Override
         public void addFinal(Object notificationLite) {
-            Object o = notificationLite;
-            Node<Object> n = new Node<Object>(o);
+            Node<Object> n = new Node<Object>(notificationLite);
             Node<Object> t = tail;
 
             tail = n;
@@ -1048,8 +1046,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         
         @Override
         public void add(T value) {
-            Object o = value;
-            TimedNode<Object> n = new TimedNode<Object>(o, scheduler.now(unit));
+            TimedNode<Object> n = new TimedNode<Object>(value, scheduler.now(unit));
             TimedNode<Object> t = tail;
 
             tail = n;
@@ -1066,8 +1063,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         
         @Override
         public void addFinal(Object notificationLite) {
-            Object o = notificationLite;
-            TimedNode<Object> n = new TimedNode<Object>(o, Long.MAX_VALUE);
+            TimedNode<Object> n = new TimedNode<Object>(notificationLite, Long.MAX_VALUE);
             TimedNode<Object> t = tail;
 
             tail = n;

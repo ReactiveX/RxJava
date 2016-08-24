@@ -58,12 +58,12 @@ public enum BlockingFlowableLatest {
         final AtomicReference<Notification<T>> value = new AtomicReference<Notification<T>>();
 
         // iterator's notification
-        Notification<T> iNotif;
+        Notification<T> iteratorNotification;
 
         @Override
         public void onNext(Notification<T> args) {
-            boolean wasntAvailable = value.getAndSet(args) == null;
-            if (wasntAvailable) {
+            boolean wasNotAvailable = value.getAndSet(args) == null;
+            if (wasNotAvailable) {
                 notify.release();
             }
         }
@@ -80,36 +80,36 @@ public enum BlockingFlowableLatest {
 
         @Override
         public boolean hasNext() {
-            if (iNotif != null && iNotif.isOnError()) {
-                throw Exceptions.propagate(iNotif.getError());
+            if (iteratorNotification != null && iteratorNotification.isOnError()) {
+                throw Exceptions.propagate(iteratorNotification.getError());
             }
-            if (iNotif == null || iNotif.isOnNext()) {
-                if (iNotif == null) {
+            if (iteratorNotification == null || iteratorNotification.isOnNext()) {
+                if (iteratorNotification == null) {
                     try {
                         notify.acquire();
                     } catch (InterruptedException ex) {
                         dispose();
                         Thread.currentThread().interrupt();
-                        iNotif = Notification.createOnError(ex);
+                        iteratorNotification = Notification.createOnError(ex);
                         throw Exceptions.propagate(ex);
                     }
 
                     Notification<T> n = value.getAndSet(null);
-                    iNotif = n;
-                    if (iNotif.isOnError()) {
-                        throw Exceptions.propagate(iNotif.getError());
+                    iteratorNotification = n;
+                    if (n.isOnError()) {
+                        throw Exceptions.propagate(n.getError());
                     }
                 }
             }
-            return iNotif.isOnNext();
+            return iteratorNotification.isOnNext();
         }
 
         @Override
         public T next() {
             if (hasNext()) {
-                if (iNotif.isOnNext()) {
-                    T v = iNotif.getValue();
-                    iNotif = null;
+                if (iteratorNotification.isOnNext()) {
+                    T v = iteratorNotification.getValue();
+                    iteratorNotification = null;
                     return v;
                 }
             }

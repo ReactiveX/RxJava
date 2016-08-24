@@ -57,8 +57,7 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
             if (d) {
                 Throwable e = error;
                 if (e != null) {
-                    Exceptions.propagate(e);
-                    return false;
+                    throw Exceptions.propagate(e);
                 } else
                 if (empty) {
                     return false;
@@ -72,8 +71,7 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
                     }
                 } catch (InterruptedException ex) {
                     run();
-                    Exceptions.propagate(ex);
-                    return false;
+                    throw Exceptions.propagate(ex);
                 } finally {
                     lock.unlock();
                 }

@@ -104,7 +104,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     }
 
     /**
-     * Atomically adds the givel array of Disposables to the container or
+     * Atomically adds the given array of Disposables to the container or
      * disposes them all if the container has been disposed.
      * @param ds the array of Disposables
      * @return true if the operation was successful, false if the container has been disposed

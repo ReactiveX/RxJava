@@ -34,8 +34,8 @@ public enum QueueDrainHelper {
      * A fast-path queue-drain serialization logic.
      * <p>The decrementing of the state is left to the drain callback.
      * @param <T> the instance type
-     * @param instance
-     * @param fastPath called if the instance is uncontended.
+     * @param instance the work-in-progress counter
+     * @param fastPath called if the instance is not contended.
      * @param queue called if the instance is contended to queue up work
      * @param drain called if the instance transitions to the drain state successfully
      */
@@ -57,14 +57,14 @@ public enum QueueDrainHelper {
 
     /**
      * A fast-path queue-drain serialization logic with the ability to leave the state
-     * in fastpath/drain mode or not continue after the call to queue.
+     * in fast-path/drain mode or not continue after the call to queue.
      * <p>The decrementing of the state is left to the drain callback.
      * @param <T> the instance type
-     * @param instance
-     * @param fastPath
-     * @param queue
-     * @param drain
-     * @throws Exception
+     * @param instance the work-in-progress counter
+     * @param fastPath called if the instance is not contended.
+     * @param queue called if the instance is contended to queue up work
+     * @param drain called if the instance transitions to the drain state successfully
+     * @throws Exception if the callbacks throw
      */
     public static <T> void queueDrainIf(AtomicInteger instance,
             BooleanSupplier fastPath, BooleanSupplier queue, Runnable drain) throws Exception  {
@@ -90,10 +90,10 @@ public enum QueueDrainHelper {
      * A fast-path queue-drain serialization logic where the drain is looped until
      * the instance state reaches 0 again.
      * @param <T> the instance type
-     * @param instance
-     * @param fastPath
-     * @param queue
-     * @param drain
+     * @param instance the work-in-progress counter
+     * @param fastPath called if the instance is not contended.
+     * @param queue called if the instance is contended to queue up work
+     * @param drain called if the instance transitions to the drain state successfully
      */
     public static <T> void queueDrainLoop(AtomicInteger instance,
             Runnable fastPath, Runnable queue, Runnable drain) {
@@ -121,13 +121,13 @@ public enum QueueDrainHelper {
     
     /**
      * A fast-path queue-drain serialization logic with looped drain call and the ability to leave the state
-     * in fastpath/drain mode or not continue after the call to queue.
+     * in fast-path/drain mode or not continue after the call to queue.
      * @param <T> the instance type
-     * @param instance
-     * @param fastPath
-     * @param queue
-     * @param drain
-     * @throws Exception
+     * @param instance the work-in-progress counter
+     * @param fastPath called if the instance is not contended.
+     * @param queue called if the instance is contended to queue up work
+     * @param drain called if the instance transitions to the drain state successfully
+     * @throws Exception if the callbacks throw
      */
     public static <T> void queueDrainLoopIf(AtomicInteger instance,
             BooleanSupplier fastPath, BooleanSupplier queue, BooleanSupplier drain) throws Exception {
@@ -255,7 +255,7 @@ public enum QueueDrainHelper {
                 if (r != 0L) {
                     if (qd.accept(a, v)) {
                         if (r != Long.MAX_VALUE) {
-                            r = qd.produced(1);
+                            qd.produced(1);
                         }
                     }
                 } else {
@@ -419,7 +419,7 @@ public enum QueueDrainHelper {
     static final long REQUESTED_MASK = 0x7FFFFFFFFFFFFFFFL;
 
     /**
-     * Accumulates requests (validated) and handles the completed mode draining of the queue based on the requests.
+     * Accumulates requests (not validated) and handles the completed mode draining of the queue based on the requests.
      * 
      * <p>
      * Post-completion backpressure handles the case when a source produces values based on
@@ -430,11 +430,11 @@ public enum QueueDrainHelper {
      * in completed mode, requests no-longer reach the upstream but help in draining the queue.
      *
      * @param <T> the value type emitted
-     * @param n
-     * @param actual
-     * @param queue
-     * @param state
-     * @param isCancelled
+     * @param n the request amount, positive (not validated)
+     * @param actual the target Subscriber to send events to
+     * @param queue the queue to drain if in the post-complete state
+     * @param state holds the request amount and the post-completed flag
+     * @param isCancelled a supplier that returns true if the drain has been cancelled
      * @return true if the state indicates a completion state.
      */
     public static <T> boolean postCompleteRequest(long n,
@@ -478,11 +478,11 @@ public enum QueueDrainHelper {
     /**
      * Drains the queue based on the outstanding requests in post-completed mode (only!).
      *
-     * @param n
-     * @param actual
-     * @param queue
-     * @param state
-     * @param isCancelled
+     * @param n the current request amount
+     * @param actual the target Subscriber to send events to
+     * @param queue the queue to drain if in the post-complete state
+     * @param state holds the request amount and the post-completed flag
+     * @param isCancelled a supplier that returns true if the drain has been cancelled
      * @return true if the queue was completely drained or the drain process was cancelled
      */
     static <T> boolean postCompleteDrain(long n,
@@ -575,10 +575,10 @@ public enum QueueDrainHelper {
      * allowed.
      *
      * @param <T> the value type emitted
-     * @param actual
-     * @param queue
-     * @param state
-     * @param isCancelled
+     * @param actual the target Subscriber to send events to
+     * @param queue the queue to drain if in the post-complete state
+     * @param state holds the request amount and the post-completed flag
+     * @param isCancelled a supplier that returns true if the drain has been cancelled
      */
     public static <T> void postComplete(Subscriber<? super T> actual,
                                         Queue<T> queue,

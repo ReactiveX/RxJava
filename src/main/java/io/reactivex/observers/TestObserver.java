@@ -29,7 +29,7 @@ import io.reactivex.internal.fuseable.QueueDisposable;
  * An Observer that records events and allows making assertions about them.
  *
  * <p>You can override the onSubscribe, onNext, onError, onComplete and
- * cancel methods but not the others (this is by desing).
+ * cancel methods but not the others (this is by design).
  * 
  * <p>The TestSubscriber implements Disposable for convenience where dispose calls cancel.
  * 
@@ -138,19 +138,20 @@ public class TestObserver<T> implements Observer<T>, Disposable {
                         }
                         completions++;
                     } catch (Throwable ex) {
-                        // Exceptions.throwIfFatal(e); TODO add fatals?
+                        // Exceptions.throwIfFatal(e); TODO add fatal exceptions?
                         errors.add(ex);
                     }
                     return;
                 }
             }
         }
-        
-        actual.onSubscribe(s);
-        
+
         if (cancelled) {
             return;
         }
+
+        actual.onSubscribe(s);
+        
     }
     
     @Override
@@ -170,7 +171,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
                     values.add(t);
                 }
             } catch (Throwable ex) {
-                // Exceptions.throwIfFatal(e); TODO add fatals?
+                // Exceptions.throwIfFatal(e); TODO add fatal exceptions?
                 errors.add(ex);
             }
             return;
@@ -237,7 +238,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     
     /**
      * Cancels the TestObserver (before or after the subscription happened).
-     * <p>This operation is threadsafe.
+     * <p>This operation is thread-safe.
      * <p>This method is provided as a convenience when converting Flowable tests that cancel.
      */
     public final void cancel() {
@@ -348,17 +349,14 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @see #awaitTerminalEvent(long, TimeUnit)
      */
     public final boolean await(long time, TimeUnit unit) throws InterruptedException {
-        if (done.getCount() == 0) {
-            return true;
-        }
-        return done.await(time, unit);
+        return done.getCount() == 0 || done.await(time, unit);
     }
     
     // assertion methods
     
     /**
      * Fail with the given message and add the sequence of errors as suppressed ones.
-     * <p>Note this is delibarately the only fail method. Most of the times an assertion
+     * <p>Note this is deliberately the only fail method. Most of the times an assertion
      * would fail but it is possible it was due to an exception somewhere. This construct
      * will capture those potential errors and report it along with the original failure.
      * 
@@ -563,19 +561,17 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * <p>This helps asserting when the order of the values is not guaranteed, i.e., when merging
      * asynchronous streams.
      * 
-     * @param values the collection of values expected in any order
+     * @param expected the collection of values expected in any order
      * @return this;
      */
-    public final TestObserver<T> assertValueSet(Collection<? extends T> values) {
+    public final TestObserver<T> assertValueSet(Collection<? extends T> expected) {
         int s = this.values.size();
-        if (s != values.size()) {
-            fail("Value count differs; Expected: " + values.size() + " " + values
+        if (s != expected.size()) {
+            fail("Value count differs; Expected: " + expected.size() + " " + expected
             + ", Actual: " + s + " " + this.values);
         }
-        for (int i = 0; i < s; i++) {
-            T v = this.values.get(i);
-            
-            if (!values.contains(v)) {
+        for (T v : this.values) {
+            if (!expected.contains(v)) {
                 fail("Value not in the expected collection: " + valueAndClass(v));
             }
         }
@@ -716,6 +712,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             Throwable e = errors.get(0);
             if (e == null) {
                 fail("Error is null");
+                return this;
             }
             String errorMessage = e.getMessage();
             if (!ObjectHelper.equals(message, errorMessage)) {

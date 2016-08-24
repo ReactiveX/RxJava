@@ -29,17 +29,17 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class IoScheduler extends Scheduler {
     private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler";
-    private static final RxThreadFactory WORKER_THREAD_FACTORY =
+    static final RxThreadFactory WORKER_THREAD_FACTORY =
             new RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
 
     private static final String EVICTOR_THREAD_NAME_PREFIX = "RxCachedWorkerPoolEvictor";
-    private static final RxThreadFactory EVICTOR_THREAD_FACTORY =
+    static final RxThreadFactory EVICTOR_THREAD_FACTORY =
             new RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX);
 
     private static final long KEEP_ALIVE_TIME = 60;
     private static final TimeUnit KEEP_ALIVE_UNIT = TimeUnit.SECONDS;
     
-    static final ThreadWorker SHUTDOWN_THREADWORKER;
+    static final ThreadWorker SHUTDOWN_THREAD_WORKER;
     final AtomicReference<CachedWorkerPool> pool;
     
     static final CachedWorkerPool NONE;
@@ -47,14 +47,14 @@ public final class IoScheduler extends Scheduler {
         NONE = new CachedWorkerPool(0, null);
         NONE.shutdown();
 
-        SHUTDOWN_THREADWORKER = new ThreadWorker(new RxThreadFactory("RxCachedThreadSchedulerShutdown"));
-        SHUTDOWN_THREADWORKER.dispose();
+        SHUTDOWN_THREAD_WORKER = new ThreadWorker(new RxThreadFactory("RxCachedThreadSchedulerShutdown"));
+        SHUTDOWN_THREAD_WORKER.dispose();
     }
     
     static final class CachedWorkerPool {
         private final long keepAliveTime;
         private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
-        private final CompositeDisposable allWorkers;
+        final CompositeDisposable allWorkers;
         private final ScheduledExecutorService evictorService;
         private final Future<?> evictorTask;
 
@@ -86,7 +86,7 @@ public final class IoScheduler extends Scheduler {
 
         ThreadWorker get() {
             if (allWorkers.isDisposed()) {
-                return SHUTDOWN_THREADWORKER;
+                return SHUTDOWN_THREAD_WORKER;
             }
             while (!expiringWorkerQueue.isEmpty()) {
                 ThreadWorker threadWorker = expiringWorkerQueue.poll();

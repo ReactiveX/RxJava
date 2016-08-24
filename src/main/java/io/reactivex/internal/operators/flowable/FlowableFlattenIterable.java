@@ -66,9 +66,9 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
             Iterator<? extends R> it;
 
             try {
-                Iterable<? extends R> iter = mapper.apply(v);
+                Iterable<? extends R> iterable = mapper.apply(v);
 
-                it = iter.iterator();
+                it = iterable.iterator();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptySubscription.error(ex, s);

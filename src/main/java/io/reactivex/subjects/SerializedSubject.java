@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 /* public */ final class SerializedSubject<T> extends Subject<T> {
     /** The actual subscriber to serialize Subscriber calls to. */
     final Subject<T> actual;
-    /** Indicates an emission is going on, guarted by this. */
+    /** Indicates an emission is going on, guarded by this. */
     boolean emitting;
     /** If not null, it holds the missed NotificationLite events. */
     AppendOnlyLinkedArrayList<Object> queue;
@@ -89,7 +89,6 @@ import io.reactivex.plugins.RxJavaPlugins;
         synchronized (this) {
             if (done) {
                 reportError = true;
-                return;
             } else {
                 done = true;
                 if (emitting) {

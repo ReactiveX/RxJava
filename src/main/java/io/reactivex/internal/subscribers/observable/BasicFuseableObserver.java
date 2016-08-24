@@ -187,7 +187,7 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
     }
 
     // --------------------------------------------------------------
-    // Default implementation of the RS and QS protocol (overridable)
+    // Default implementation of the RS and QS protocol (can be overridden)
     // --------------------------------------------------------------
     
     @Override

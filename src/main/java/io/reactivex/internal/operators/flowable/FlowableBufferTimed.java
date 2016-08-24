@@ -237,7 +237,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 return;
             }
 
-            fastpathEmitMax(current, false, this);
+            fastPathEmitMax(current, false, this);
         }
         
         @Override
@@ -265,11 +265,11 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         final long timeskip;
         final TimeUnit unit;
         final Worker w;
-        
+        final List<U> buffers;
+
         Subscription s;
         
-        List<U> buffers;
-        
+
         public BufferSkipBoundedSubscriber(Subscriber<? super U> actual, 
                 Callable<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
@@ -323,7 +323,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                         buffers.remove(b);
                     }
                     
-                    fastpathOrderedEmitMax(b, false, w);
+                    fastPathOrderedEmitMax(b, false, w);
                 }
             }, timespan, unit);
         }
@@ -415,7 +415,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                         buffers.remove(b);
                     }
                     
-                    fastpathOrderedEmitMax(b, false, w);
+                    fastPathOrderedEmitMax(b, false, w);
                 }
             }, timespan, unit);
         }
@@ -518,7 +518,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 timer.dispose();
             }
             
-            fastpathOrderedEmitMax(b, false, this);
+            fastPathOrderedEmitMax(b, false, this);
             
             try {
                 b = bufferSupplier.call();
@@ -640,7 +640,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 buffer = next;
             }
 
-            fastpathOrderedEmitMax(current, false, this);
+            fastPathOrderedEmitMax(current, false, this);
         }
     }
 }

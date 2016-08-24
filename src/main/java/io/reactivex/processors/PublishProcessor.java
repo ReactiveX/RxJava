@@ -338,7 +338,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            // not called because requests are handled locally and cancel is forwared to state
+            // not called because requests are handled locally and cancel is forwarded to state
         }
         
         @Override

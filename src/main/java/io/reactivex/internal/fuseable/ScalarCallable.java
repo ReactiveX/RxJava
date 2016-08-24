@@ -18,7 +18,7 @@ import java.util.concurrent.Callable;
  * A marker interface indicating that a scalar, constant value
  * is held by the implementing reactive type which can be
  * safely extracted during assembly time can be used for
- * optimiziation.
+ * optimization.
  * <p>
  * Implementors of {@link #call()} should not throw any exception.
  * <p>

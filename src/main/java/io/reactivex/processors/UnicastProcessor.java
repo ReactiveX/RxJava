@@ -36,7 +36,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * or the Subscribers receive the terminal event (error or completion) if this
  * Subject has terminated.
  * 
- * @param <T> the value type unicasted
+ * @param <T> the value type received and emitted by this Subject subclass
  */
 public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 

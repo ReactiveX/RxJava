@@ -77,6 +77,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
             S s = state;
             
             if (cancelled) {
+                state = null;
                 dispose(s);
                 return;
             }
@@ -86,6 +87,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
             for (;;) {
                 
                 if (cancelled) {
+                    state = null;
                     dispose(s);
                     return;
                 }
@@ -94,6 +96,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                     s = f.apply(s, this);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
+                    state = null;
                     cancelled = true;
                     actual.onError(ex);
                     return;
@@ -101,6 +104,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                 
                 if (terminate) {
                     cancelled = true;
+                    state = null;
                     dispose(s);
                     return;
                 }

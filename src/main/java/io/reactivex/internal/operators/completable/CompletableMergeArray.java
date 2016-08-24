@@ -44,10 +44,10 @@ public final class CompletableMergeArray extends Completable {
                 NullPointerException npe = new NullPointerException("A completable source is null");
                 if (once.compareAndSet(false, true)) {
                     s.onError(npe);
-                    return;
                 } else {
                     RxJavaPlugins.onError(npe);
                 }
+                return;
             }
             
             c.subscribe(new CompletableObserver() {
