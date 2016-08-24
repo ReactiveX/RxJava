@@ -11416,7 +11416,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            an Iterable that contains the items you want the modified Publisher to emit first
      * @return a Flowable that emits the items in the specified {@link Iterable} and then emits the items
      *         emitted by the source Publisher
@@ -11425,8 +11425,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> startWith(Iterable<? extends T> values) {
-        return concatArray(fromIterable(values), this);
+    public final Flowable<T> startWith(Iterable<? extends T> items) {
+        return concatArray(fromIterable(items), this);
     }
 
     /**
@@ -11499,7 +11499,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            the array of values to emit first
      * @return a Flowable that emits the specified items before it begins to emit items emitted by the source
      *         Publisher
@@ -11508,8 +11508,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> startWithArray(T... values) {
-        Flowable<T> fromArray = fromArray(values);
+    public final Flowable<T> startWithArray(T... items) {
+        Flowable<T> fromArray = fromArray(items);
         if (fromArray == empty()) {
             return RxJavaPlugins.onAssembly(this);
         }

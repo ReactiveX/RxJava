@@ -1339,7 +1339,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            the array of elements
      * @param <T>
      *            the type of items in the Array and the type of items to be emitted by the resulting ObservableSource
@@ -1347,15 +1347,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> fromArray(T... values) {
-        ObjectHelper.requireNonNull(values, "values is null");
-        if (values.length == 0) {
+    public static <T> Observable<T> fromArray(T... items) {
+        ObjectHelper.requireNonNull(items, "items is null");
+        if (items.length == 0) {
             return empty();
         } else
-        if (values.length == 1) {
-            return just(values[0]);
+        if (items.length == 1) {
+            return just(items[0]);
         }
-        return RxJavaPlugins.onAssembly(new ObservableFromArray<T>(values));
+        return RxJavaPlugins.onAssembly(new ObservableFromArray<T>(items));
     }
 
     /**
@@ -1873,7 +1873,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param value
+     * @param item
      *            the item to emit
      * @param <T>
      *            the type of that item
@@ -1881,9 +1881,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> just(T value) {
-        ObjectHelper.requireNonNull(value, "The value is null");
-        return RxJavaPlugins.onAssembly(new ObservableJust<T>(value));
+    public static <T> Observable<T> just(T item) {
+        ObjectHelper.requireNonNull(item, "The item is null");
+        return RxJavaPlugins.onAssembly(new ObservableJust<T>(item));
     }
 
     /**
@@ -1907,8 +1907,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2) {
-        ObjectHelper.requireNonNull(item1, "The first value is null");
-        ObjectHelper.requireNonNull(item2, "The second value is null");
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
         
         return fromArray(item1, item2);
     }
@@ -1936,9 +1936,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3) {
-        ObjectHelper.requireNonNull(item1, "The first value is null");
-        ObjectHelper.requireNonNull(item2, "The second value is null");
-        ObjectHelper.requireNonNull(item3, "The third value is null");
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
         
         return fromArray(item1, item2, item3);
     }
@@ -1968,10 +1968,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4) {
-        ObjectHelper.requireNonNull(item1, "The first value is null");
-        ObjectHelper.requireNonNull(item2, "The second value is null");
-        ObjectHelper.requireNonNull(item3, "The third value is null");
-        ObjectHelper.requireNonNull(item4, "The fourth value is null");
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
         
         return fromArray(item1, item2, item3, item4);
     }
@@ -2003,11 +2003,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5) {
-        ObjectHelper.requireNonNull(item1, "The first value is null");
-        ObjectHelper.requireNonNull(item2, "The second value is null");
-        ObjectHelper.requireNonNull(item3, "The third value is null");
-        ObjectHelper.requireNonNull(item4, "The fourth value is null");
-        ObjectHelper.requireNonNull(item5, "The fifth value is null");
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
         
         return fromArray(item1, item2, item3, item4, item5);
     }
@@ -2041,12 +2041,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6) {
-        ObjectHelper.requireNonNull(item1, "The first value is null");
-        ObjectHelper.requireNonNull(item2, "The second value is null");
-        ObjectHelper.requireNonNull(item3, "The third value is null");
-        ObjectHelper.requireNonNull(item4, "The fourth value is null");
-        ObjectHelper.requireNonNull(item5, "The fifth value is null");
-        ObjectHelper.requireNonNull(item6, "The sixth value is null");
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
         
         return fromArray(item1, item2, item3, item4, item5, item6);
     }
@@ -2082,13 +2082,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7) {
-        ObjectHelper.requireNonNull(item1, "The first value is null");
-        ObjectHelper.requireNonNull(item2, "The second value is null");
-        ObjectHelper.requireNonNull(item3, "The third value is null");
-        ObjectHelper.requireNonNull(item4, "The fourth value is null");
-        ObjectHelper.requireNonNull(item5, "The fifth value is null");
-        ObjectHelper.requireNonNull(item6, "The sixth value is null");
-        ObjectHelper.requireNonNull(item7, "The seventh value is null");
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
         
         return fromArray(item1, item2, item3, item4, item5, item6, item7);
     }
@@ -2126,14 +2126,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8) {
-        ObjectHelper.requireNonNull(item1, "The first value is null");
-        ObjectHelper.requireNonNull(item2, "The second value is null");
-        ObjectHelper.requireNonNull(item3, "The third value is null");
-        ObjectHelper.requireNonNull(item4, "The fourth value is null");
-        ObjectHelper.requireNonNull(item5, "The fifth value is null");
-        ObjectHelper.requireNonNull(item6, "The sixth value is null");
-        ObjectHelper.requireNonNull(item7, "The seventh value is null");
-        ObjectHelper.requireNonNull(item8, "The eighth value is null");
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
+        ObjectHelper.requireNonNull(item8, "The eighth item is null");
         
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8);
     }
@@ -2173,15 +2173,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9) {
-        ObjectHelper.requireNonNull(item1, "The first value is null");
-        ObjectHelper.requireNonNull(item2, "The second value is null");
-        ObjectHelper.requireNonNull(item3, "The third value is null");
-        ObjectHelper.requireNonNull(item4, "The fourth value is null");
-        ObjectHelper.requireNonNull(item5, "The fifth value is null");
-        ObjectHelper.requireNonNull(item6, "The sixth value is null");
-        ObjectHelper.requireNonNull(item7, "The seventh value is null");
-        ObjectHelper.requireNonNull(item8, "The eighth value is null");
-        ObjectHelper.requireNonNull(item9, "The ninth value is null");
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
+        ObjectHelper.requireNonNull(item8, "The eighth item is null");
+        ObjectHelper.requireNonNull(item9, "The ninth item is null");
         
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9);
     }
@@ -2223,16 +2223,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9, T item10) {
-        ObjectHelper.requireNonNull(item1, "The first value is null");
-        ObjectHelper.requireNonNull(item2, "The second value is null");
-        ObjectHelper.requireNonNull(item3, "The third value is null");
-        ObjectHelper.requireNonNull(item4, "The fourth value is null");
-        ObjectHelper.requireNonNull(item5, "The fifth value is null");
-        ObjectHelper.requireNonNull(item6, "The sixth value is null");
-        ObjectHelper.requireNonNull(item7, "The seventh value is null");
-        ObjectHelper.requireNonNull(item8, "The eighth value is null");
-        ObjectHelper.requireNonNull(item9, "The ninth value is null");
-        ObjectHelper.requireNonNull(item10, "The tenth value is null");
+        ObjectHelper.requireNonNull(item1, "The first item is null");
+        ObjectHelper.requireNonNull(item2, "The second item is null");
+        ObjectHelper.requireNonNull(item3, "The third item is null");
+        ObjectHelper.requireNonNull(item4, "The fourth item is null");
+        ObjectHelper.requireNonNull(item5, "The fifth item is null");
+        ObjectHelper.requireNonNull(item6, "The sixth item is null");
+        ObjectHelper.requireNonNull(item7, "The seventh item is null");
+        ObjectHelper.requireNonNull(item8, "The eighth item is null");
+        ObjectHelper.requireNonNull(item9, "The ninth item is null");
+        ObjectHelper.requireNonNull(item10, "The tenth item is null");
         
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10);
     }
@@ -9648,7 +9648,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            an Iterable that contains the items you want the modified ObservableSource to emit first
      * @return a Observable that emits the items in the specified {@link Iterable} and then emits the items
      *         emitted by the source ObservableSource
@@ -9656,8 +9656,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> startWith(Iterable<? extends T> values) {
-        return concatArray(fromIterable(values), this);
+    public final Observable<T> startWith(Iterable<? extends T> items) {
+        return concatArray(fromIterable(items), this);
     }
     
     /**
@@ -9693,7 +9693,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param value
+     * @param item
      *            the item to emit first
      * @return a Observable that emits the specified item before it begins to emit items emitted by the source
      *         ObservableSource
@@ -9701,9 +9701,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> startWith(T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        return concatArray(just(value), this);
+    public final Observable<T> startWith(T item) {
+        ObjectHelper.requireNonNull(item, "item is null");
+        return concatArray(just(item), this);
     }
 
     /**
@@ -9716,7 +9716,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param values
+     * @param items
      *            the array of values to emit first
      * @return a Observable that emits the specified items before it begins to emit items emitted by the source
      *         ObservableSource
@@ -9724,8 +9724,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> startWithArray(T... values) {
-        Observable<T> fromArray = fromArray(values);
+    public final Observable<T> startWithArray(T... items) {
+        Observable<T> fromArray = fromArray(items);
         if (fromArray == empty()) {
             return RxJavaPlugins.onAssembly(this);
         }
