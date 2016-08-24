@@ -9887,6 +9887,31 @@ public abstract class Observable<T> implements ObservableSource<T> {
     protected abstract void subscribeActual(Observer<? super T> observer);
 
     /**
+     * Subscribes a given Observer (subclass) to this Observable and returns the given
+     * Observer as is.
+     * <p>Usage example:
+     * <pre><code>
+     * Observable<Integer> source = Observable.range(1, 10);
+     * CompositeDisposable composite = new CompositeDisposable();
+     * 
+     * ResourceObserver&lt;Integer> rs = new ResourceSubscriber&lt;>() {
+     *     // ...
+     * };
+     * 
+     * composite.add(source.subscribeWith(rs));
+     * </code></pre>
+     * @param <E> the type of the Observer to use and return
+     * @param observer the Observer (subclass) to use and return, not null
+     * @return the input {@code observer}
+     * @throws NullPointerException if {@code observer} is null
+     * @since 2.0
+     */
+    public final <E extends Observer<? super T>> E subscribeWith(E observer) {
+        subscribe(observer);
+        return observer;
+    }
+
+    /**
      * Asynchronously subscribes Observers to this ObservableSource on the specified {@link Scheduler}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">

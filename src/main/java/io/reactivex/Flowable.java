@@ -11709,7 +11709,32 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param s the incoming Subscriber, never null
      */
     protected abstract void subscribeActual(Subscriber<? super T> s);
-    
+
+    /**
+     * Subscribes a given Subscriber (subclass) to this Flowable and returns the given
+     * Subscriber as is.
+     * <p>Usage example:
+     * <pre><code>
+     * Flowable<Integer> source = Flowable.range(1, 10);
+     * CompositeDisposable composite = new CompositeDisposable();
+     * 
+     * ResourceSubscriber&lt;Integer> rs = new ResourceSubscriber&lt;>() {
+     *     // ...
+     * };
+     * 
+     * composite.add(source.subscribeWith(rs));
+     * </code></pre>
+     * @param <E> the type of the Subscriber to use and return
+     * @param subscriber the Subscriber (subclass) to use and return, not null
+     * @return the input {@code subscriber}
+     * @throws NullPointerException if {@code subscriber} is null
+     * @since 2.0
+     */
+    public final <E extends Subscriber<? super T>> E subscribeWith(E subscriber) {
+        subscribe(subscriber);
+        return subscriber;
+    }
+
     /**
      * Asynchronously subscribes Observers to this Publisher on the specified {@link Scheduler}.
      * <p>

@@ -2156,7 +2156,32 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param observer the SingleObserver to handle, not null
      */
     protected abstract void subscribeActual(SingleObserver<? super T> observer);
-    
+
+    /**
+     * Subscribes a given SingleObserver (subclass) to this Single and returns the given
+     * SingleObserver as is.
+     * <p>Usage example:
+     * <pre><code>
+     * Single<Integer> source = Single.just(1);
+     * CompositeDisposable composite = new CompositeDisposable();
+     * 
+     * class ResourceSingleObserver implements SingleObserver&lt;Integer>, Disposable {
+     *     // ...
+     * }
+     * 
+     * composite.add(source.subscribeWith(new ResourceSingleObserver()));
+     * </code></pre>
+     * @param <E> the type of the SingleObserver to use and return
+     * @param observer the SingleObserver (subclass) to use and return, not null
+     * @return the input {@code observer}
+     * @throws NullPointerException if {@code observer} is null
+     * @since 2.0
+     */
+    public final <E extends SingleObserver<? super T>> E subscribeWith(E observer) {
+        subscribe(observer);
+        return observer;
+    }
+
     /**
      * Asynchronously subscribes subscribers to this Single on the specified {@link Scheduler}.
      * <p>
