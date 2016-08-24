@@ -733,7 +733,7 @@ public class FlowableConcatTest {
                 Flowable<Integer> observable = Flowable.just(t)
                         .subscribeOn(sch)
                 ;
-                FlowProcessor<Integer> subject = new UnicastProcessor<Integer>();
+                FlowableProcessor<Integer> subject = new UnicastProcessor<Integer>();
                 observable.subscribe(subject);
                 return subject;
             }

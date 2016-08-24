@@ -42,13 +42,13 @@ public class ObservableNullTests {
     
     @Test(expected = NullPointerException.class)
     public void ambVarargsNull() {
-        Observable.amb((Observable<Object>[])null);
+        Observable.ambArray((Observable<Object>[])null);
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void ambVarargsOneIsNull() {
-        Observable.amb(Observable.never(), null).blockingLast();
+        Observable.ambArray(Observable.never(), null).blockingLast();
     }
     
     @Test(expected = NullPointerException.class)

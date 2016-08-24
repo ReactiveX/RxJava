@@ -18,10 +18,12 @@ import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super T, K> keySelector;
@@ -33,7 +35,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
         this.keySelector = keySelector;
     }
     
-    public static <T, K> FlowableDistinct<T, K> withCollection(Publisher<T> source, Function<? super T, K> keySelector, final Callable<? extends Collection<? super K>> collectionSupplier) {
+    public static <T, K> Flowable<T> withCollection(Publisher<T> source, Function<? super T, K> keySelector, final Callable<? extends Collection<? super K>> collectionSupplier) {
         Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
             @Override
             public Predicate<K> call() throws Exception {
@@ -52,10 +54,10 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             }
         };
         
-        return new FlowableDistinct<T, K>(source, keySelector, p);
+        return RxJavaPlugins.onAssembly(new FlowableDistinct<T, K>(source, keySelector, p));
     }
     
-    public static <T> FlowableDistinct<T, T> untilChanged(Publisher<T> source) {
+    public static <T> Flowable<T> untilChanged(Publisher<T> source) {
         Callable<? extends Predicate<? super T>> p = new Callable<Predicate<T>>() {
             Object last;
             @Override
@@ -75,10 +77,10 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                 };
             }
         };
-        return new FlowableDistinct<T, T>(source, Functions.<T>identity(), p);
+        return RxJavaPlugins.onAssembly(new FlowableDistinct<T, T>(source, Functions.<T>identity(), p));
     }
 
-    public static <T, K> FlowableDistinct<T, K> untilChanged(Publisher<T> source, Function<? super T, K> keySelector) {
+    public static <T, K> Flowable<T> untilChanged(Publisher<T> source, Function<? super T, K> keySelector) {
         Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
             Object last;
             @Override
@@ -98,7 +100,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                 };
             }
         };
-        return new FlowableDistinct<T, K>(source, keySelector, p);
+        return RxJavaPlugins.onAssembly(new FlowableDistinct<T, K>(source, keySelector, p));
     }
 
     @Override

@@ -33,7 +33,7 @@ import io.reactivex.subscribers.TestSubscriber;
 public class FlowableCacheTest {
     @Test
     public void testColdReplayNoBackpressure() {
-        FlowableCache<Integer> source = FlowableCache.from(Flowable.range(0, 1000));
+        FlowableCache<Integer> source = (FlowableCache<Integer>)FlowableCache.from(Flowable.range(0, 1000));
         
         assertFalse("Source is connected!", source.isConnected());
         
@@ -55,7 +55,7 @@ public class FlowableCacheTest {
     }
     @Test
     public void testColdReplayBackpressure() {
-        FlowableCache<Integer> source = FlowableCache.from(Flowable.range(0, 1000));
+        FlowableCache<Integer> source = (FlowableCache<Integer>)FlowableCache.from(Flowable.range(0, 1000));
         
         assertFalse("Source is connected!", source.isConnected());
         
@@ -144,7 +144,7 @@ public class FlowableCacheTest {
     public void testTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        FlowableCache<Integer> cached = FlowableCache.from(Flowable.range(1, 100));
+        FlowableCache<Integer> cached = (FlowableCache<Integer>)FlowableCache.from(Flowable.range(1, 100));
         cached.take(10).subscribe(ts);
         
         ts.assertNoErrors();
@@ -160,7 +160,7 @@ public class FlowableCacheTest {
         for (int i = 0; i < 100; i++) {
             TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
             
-            FlowableCache<Integer> cached = FlowableCache.from(source);
+            FlowableCache<Integer> cached = (FlowableCache<Integer>)FlowableCache.from(source);
             
             cached.observeOn(Schedulers.computation()).subscribe(ts1);
             
@@ -183,7 +183,7 @@ public class FlowableCacheTest {
         Flowable<Long> source = Flowable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
-        FlowableCache<Long> cached = FlowableCache.from(source);
+        FlowableCache<Long> cached = (FlowableCache<Long>)FlowableCache.from(source);
         
         Flowable<Long> output = cached.observeOn(Schedulers.computation());
         

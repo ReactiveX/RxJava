@@ -23,6 +23,7 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * A connectable observable which shares an underlying source and dispatches source values to subscribers in a backpressure-aware
@@ -114,12 +115,12 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 }
             }
         };
-        return new ObservablePublish<T>(onSubscribe, source, curr, bufferSize);
+        return RxJavaPlugins.onAssembly(new ObservablePublish<T>(onSubscribe, source, curr, bufferSize));
     }
 
     public static <T, R> Observable<R> create(final ObservableSource<T> source,
                                               final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize) {
-        return new Observable<R>() {
+        return RxJavaPlugins.onAssembly(new Observable<R>() {
             @Override
             protected void subscribeActual(Observer<? super R> o) {
                 ConnectableObservable<T> op = ObservablePublish.create(source, bufferSize);
@@ -145,7 +146,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                     }
                 });
             }
-        };
+        });
     }
 
     private ObservablePublish(ObservableSource<T> onSubscribe, ObservableSource<T> source,

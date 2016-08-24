@@ -38,7 +38,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * 
  * @param <T> the value type unicasted
  */
-public final class UnicastProcessor<T> extends FlowProcessor<T> {
+public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     final SpscLinkedArrayQueue<T> queue;
     

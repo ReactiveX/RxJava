@@ -22,6 +22,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Utility classes to work with scalar-sourced XMap operators (where X == { flat, concat, switch }).
@@ -104,7 +105,7 @@ public enum FlowableScalarXMap {
      * @return the new Flowable instance
      */
     public static <T, U> Flowable<U> scalarXMap(final T value, final Function<? super T, ? extends Publisher<? extends U>> mapper) {
-        return new ScalarXMapFlowable<T, U>(value, mapper);
+        return RxJavaPlugins.onAssembly(new ScalarXMapFlowable<T, U>(value, mapper));
     }
     
     /**

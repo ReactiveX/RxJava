@@ -26,9 +26,9 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the item value type
  */
-/* public */ final class SerializedProcessor<T> extends FlowProcessor<T> {
+/* public */ final class SerializedProcessor<T> extends FlowableProcessor<T> {
     /** The actual subscriber to serialize Subscriber calls to. */
-    final FlowProcessor<T> actual;
+    final FlowableProcessor<T> actual;
     /** Indicates an emission is going on, guarted by this. */
     boolean emitting;
     /** If not null, it holds the missed NotificationLite events. */
@@ -40,7 +40,7 @@ import io.reactivex.plugins.RxJavaPlugins;
      * Constructor that wraps an actual subject.
      * @param actual the subject wrapped
      */
-    public SerializedProcessor(final FlowProcessor<T> actual) {
+    public SerializedProcessor(final FlowableProcessor<T> actual) {
         this.actual = actual;
     }
 
@@ -201,26 +201,6 @@ import io.reactivex.plugins.RxJavaPlugins;
     @Override
     public Throwable getThrowable() {
         return actual.getThrowable();
-    }
-    
-    @Override
-    public boolean hasValue() {
-        return actual.hasValue();
-    }
-    
-    @Override
-    public T getValue() {
-        return actual.getValue();
-    }
-    
-    @Override
-    public Object[] getValues() {
-        return actual.getValues();
-    }
-    
-    @Override
-    public T[] getValues(T[] array) {
-        return actual.getValues(array);
     }
     
     @Override

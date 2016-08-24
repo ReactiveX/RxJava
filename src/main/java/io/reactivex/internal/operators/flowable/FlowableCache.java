@@ -22,6 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * An observable which auto-connects to another observable, caches the elements
@@ -35,28 +36,28 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
 
     final AtomicBoolean once;
     /**
-     * Creates a cached Observable with a default capacity hint of 16.
+     * Creates a cached Flowable with a default capacity hint of 16.
      * @param <T> the value type
      * @param source the source Observable to cache
      * @return the CachedObservable instance
      */
-    public static <T> FlowableCache<T> from(Flowable<T> source) {
+    public static <T> Flowable<T> from(Flowable<T> source) {
         return from(source, 16);
     }
     
     /**
-     * Creates a cached Observable with the given capacity hint.
+     * Creates a cached Flowable with the given capacity hint.
      * @param <T> the value type
      * @param source the source Observable to cache
      * @param capacityHint the hint for the internal buffer size
      * @return the CachedObservable instance
      */
-    public static <T> FlowableCache<T> from(Flowable<T> source, int capacityHint) {
+    public static <T> Flowable<T> from(Flowable<T> source, int capacityHint) {
         if (capacityHint < 1) {
             throw new IllegalArgumentException("capacityHint > 0 required");
         }
         CacheState<T> state = new CacheState<T>(source, capacityHint);
-        return new FlowableCache<T>(source, state);
+        return RxJavaPlugins.onAssembly(new FlowableCache<T>(source, state));
     }
     
     /**

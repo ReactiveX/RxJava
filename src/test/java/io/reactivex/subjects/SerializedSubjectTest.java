@@ -44,12 +44,12 @@ public class SerializedSubjectTest {
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testAsyncSubjectValueEmpty() {
@@ -61,12 +61,12 @@ public class SerializedSubjectTest {
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testAsyncSubjectValueError() {
@@ -79,12 +79,12 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testPublishSubjectValueRelay() {
@@ -97,13 +97,6 @@ public class SerializedSubjectTest {
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        
-        assertArrayEquals(new Object[0], serial.getValues());
-        assertArrayEquals(new Integer[0], serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
     }
     
     @Test
@@ -116,12 +109,6 @@ public class SerializedSubjectTest {
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testPublishSubjectValueError() {
@@ -134,12 +121,6 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
     }
 
     @Test
@@ -153,12 +134,12 @@ public class SerializedSubjectTest {
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testBehaviorSubjectValueRelayIncomplete() {
@@ -170,12 +151,12 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testBehaviorSubjectIncompleteEmpty() {
@@ -186,12 +167,12 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testBehaviorSubjectEmpty() {
@@ -203,12 +184,12 @@ public class SerializedSubjectTest {
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testBehaviorSubjectError() {
@@ -221,12 +202,12 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     
     @Test
@@ -240,12 +221,12 @@ public class SerializedSubjectTest {
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectValueRelayIncomplete() {
@@ -257,12 +238,12 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectValueRelayBounded() {
@@ -276,12 +257,12 @@ public class SerializedSubjectTest {
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectValueRelayBoundedIncomplete() {
@@ -294,12 +275,12 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
@@ -310,12 +291,12 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectValueRelayEmptyIncomplete() {
@@ -326,12 +307,12 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     
     @Test
@@ -344,12 +325,12 @@ public class SerializedSubjectTest {
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectError() {
@@ -362,12 +343,12 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     
     @Test
@@ -380,12 +361,12 @@ public class SerializedSubjectTest {
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectBoundedError() {
@@ -398,12 +379,12 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     
     @Test

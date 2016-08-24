@@ -100,7 +100,7 @@ public class FlowableAmbTest {
                 "3", "33", "333", "3333" }, 3000, null);
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.amb(Flowable1,
+        Flowable<String> o = Flowable.ambArray(Flowable1,
                 Flowable2, Flowable3);
 
         @SuppressWarnings("unchecked")
@@ -130,7 +130,7 @@ public class FlowableAmbTest {
                 3000, new IOException("fake exception"));
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.amb(Flowable1,
+        Flowable<String> o = Flowable.ambArray(Flowable1,
                 Flowable2, Flowable3);
 
         @SuppressWarnings("unchecked")
@@ -158,7 +158,7 @@ public class FlowableAmbTest {
                 "3" }, 3000, null);
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.amb(Flowable1,
+        Flowable<String> o = Flowable.ambArray(Flowable1,
                 Flowable2, Flowable3);
 
         @SuppressWarnings("unchecked")
@@ -218,7 +218,7 @@ public class FlowableAmbTest {
             }
 
         });
-        Flowable.amb(o1, o2).subscribe(ts);
+        Flowable.ambArray(o1, o2).subscribe(ts);
         assertEquals(3, requested1.get());
         assertEquals(3, requested2.get());
     }
@@ -256,7 +256,7 @@ public class FlowableAmbTest {
         Flowable<Integer> o2 = Flowable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        Flowable.amb(o1, o2).subscribe(ts);
+        Flowable.ambArray(o1, o2).subscribe(ts);
         ts.request(1);
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -274,7 +274,7 @@ public class FlowableAmbTest {
                 .delay(200, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
         
-        Flowable.amb(o1, o2).subscribe(ts);
+        Flowable.ambArray(o1, o2).subscribe(ts);
         // before first emission request 20 more
         // this request should suffice to emit all
         ts.request(20);
@@ -312,7 +312,7 @@ public class FlowableAmbTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         
-        Flowable.amb(source1, source2, source3).subscribe(ts);
+        Flowable.ambArray(source1, source2, source3).subscribe(ts);
         
         assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
         assertTrue("Source 2 doesn't have subscribers!", source2.hasSubscribers());

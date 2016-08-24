@@ -38,108 +38,89 @@ public class SerializedProcessorTest {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
         async.onNext(1);
         async.onComplete();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testAsyncSubjectValueEmpty() {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
         async.onComplete();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testAsyncSubjectValueError() {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
         TestException te = new TestException();
         async.onError(te);
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testPublishSubjectValueRelay() {
         PublishProcessor<Integer> async = PublishProcessor.create();
         async.onNext(1);
         async.onComplete();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        
-        assertArrayEquals(new Object[0], serial.getValues());
-        assertArrayEquals(new Integer[0], serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
     }
     
     @Test
     public void testPublishSubjectValueEmpty() {
         PublishProcessor<Integer> async = PublishProcessor.create();
         async.onComplete();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testPublishSubjectValueError() {
         PublishProcessor<Integer> async = PublishProcessor.create();
         TestException te = new TestException();
         async.onError(te);
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
     }
 
     @Test
@@ -147,86 +128,86 @@ public class SerializedProcessorTest {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         async.onNext(1);
         async.onComplete();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testBehaviorSubjectValueRelayIncomplete() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         async.onNext(1);
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testBehaviorSubjectIncompleteEmpty() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testBehaviorSubjectEmpty() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         async.onComplete();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testBehaviorSubjectError() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         TestException te = new TestException();
         async.onError(te);
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     
     @Test
@@ -234,35 +215,35 @@ public class SerializedProcessorTest {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         async.onNext(1);
         async.onComplete();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectValueRelayIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         async.onNext(1);
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectValueRelayBounded() {
@@ -270,147 +251,147 @@ public class SerializedProcessorTest {
         async.onNext(0);
         async.onNext(1);
         async.onComplete();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectValueRelayBoundedIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
         async.onNext(0);
         async.onNext(1);
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertEquals((Integer)1, serial.getValue());
-        assertTrue(serial.hasValue());
-        assertArrayEquals(new Object[] { 1 }, serial.getValues());
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { 1 }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { 1, null }, serial.getValues(new Integer[] { 0, 0 }));
+        assertEquals((Integer)1, async.getValue());
+        assertTrue(async.hasValue());
+        assertArrayEquals(new Object[] { 1 }, async.getValues());
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectValueRelayEmptyIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     
     @Test
     public void testReplaySubjectEmpty() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         async.onComplete();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectError() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         TestException te = new TestException();
         async.onError(te);
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     
     @Test
     public void testReplaySubjectBoundedEmpty() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
         async.onComplete();
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     @Test
     public void testReplaySubjectBoundedError() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
         TestException te = new TestException();
         async.onError(te);
-        FlowProcessor<Integer> serial = async.toSerialized();
+        FlowableProcessor<Integer> serial = async.toSerialized();
         
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
         assertSame(te, serial.getThrowable());
-        assertNull(serial.getValue());
-        assertFalse(serial.hasValue());
-        assertArrayEquals(new Object[] { }, serial.getValues());
-        assertArrayEquals(new Integer[] { }, serial.getValues(new Integer[0]));
-        assertArrayEquals(new Integer[] { null }, serial.getValues(new Integer[] { 0 }));
-        assertArrayEquals(new Integer[] { null, 0 }, serial.getValues(new Integer[] { 0, 0 }));
+        assertNull(async.getValue());
+        assertFalse(async.hasValue());
+        assertArrayEquals(new Object[] { }, async.getValues());
+        assertArrayEquals(new Integer[] { }, async.getValues(new Integer[0]));
+        assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
+        assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
     
     @Test
     public void testDontWrapSerializedSubjectAgain() {
         PublishProcessor<Object> s = PublishProcessor.create();
-        FlowProcessor<Object> s1 = s.toSerialized();
-        FlowProcessor<Object> s2 = s1.toSerialized();
+        FlowableProcessor<Object> s1 = s.toSerialized();
+        FlowableProcessor<Object> s2 = s1.toSerialized();
         assertSame(s1, s2);
     }
 }

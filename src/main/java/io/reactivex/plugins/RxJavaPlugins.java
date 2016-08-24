@@ -18,7 +18,9 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.observables.ConnectableObservable;
 
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
@@ -47,10 +49,16 @@ public final class RxJavaPlugins {
     
     @SuppressWarnings("rawtypes")
     static volatile Function<Flowable, Flowable> onFlowableAssembly;
-    
+
+    @SuppressWarnings("rawtypes")
+    static volatile Function<ConnectableFlowable, ConnectableFlowable> onConnectableFlowableAssembly;
+
     @SuppressWarnings("rawtypes")
     static volatile Function<Observable, Observable> onObservableAssembly;
-    
+
+    @SuppressWarnings("rawtypes")
+    static volatile Function<ConnectableObservable, ConnectableObservable> onConnectableObservableAssembly;
+
     @SuppressWarnings("rawtypes")
     static volatile Function<Single, Single> onSingleAssembly;
     
@@ -485,7 +493,16 @@ public final class RxJavaPlugins {
     public static Function<Flowable, Flowable> getOnFlowableAssembly() {
         return onFlowableAssembly;
     }
-    
+
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
+    @SuppressWarnings("rawtypes")
+    public static Function<ConnectableFlowable, ConnectableFlowable> getOnConnectableFlowableAssembly() {
+        return onConnectableFlowableAssembly;
+    }
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -520,6 +537,15 @@ public final class RxJavaPlugins {
     @SuppressWarnings("rawtypes")
     public static Function<Observable, Observable> getOnObservableAssembly() {
         return onObservableAssembly;
+    }
+    
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
+    @SuppressWarnings("rawtypes")
+    public static Function<ConnectableObservable, ConnectableObservable> getOnConnectableObservableAssembly() {
+        return onConnectableObservableAssembly;
     }
     
     /**
@@ -568,6 +594,18 @@ public final class RxJavaPlugins {
     
     /**
      * Sets the specific hook function.
+     * @param onConnectableFlowableAssembly the hook function to set, null allowed
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnConnectableFlowableAssembly(Function<ConnectableFlowable, ConnectableFlowable> onConnectableFlowableAssembly) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onConnectableFlowableAssembly = onConnectableFlowableAssembly;
+    }
+    
+    /**
+     * Sets the specific hook function.
      * @param onFlowableSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
@@ -588,6 +626,18 @@ public final class RxJavaPlugins {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
         RxJavaPlugins.onObservableAssembly = onObservableAssembly;
+    }
+    
+    /**
+     * Sets the specific hook function.
+     * @param onObservableAssembly the hook function to set, null allowed
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnConnectableObservableAssembly(Function<ConnectableObservable, ConnectableObservable> onObservableAssembly) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onConnectableObservableAssembly = onConnectableObservableAssembly;
     }
     
     /**
@@ -711,8 +761,38 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> ConnectableFlowable<T> onAssembly(ConnectableFlowable<T> source) {
+        Function<ConnectableFlowable, ConnectableFlowable> f = onConnectableFlowableAssembly;
+        if (f != null) {
+            return apply(f, source);
+        }
+        return source;
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @return the value returned by the hook
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Observable<T> onAssembly(Observable<T> source) {
         Function<Observable, Observable> f = onObservableAssembly;
+        if (f != null) {
+            return apply(f, source);
+        }
+        return source;
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @return the value returned by the hook
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> ConnectableObservable<T> onAssembly(ConnectableObservable<T> source) {
+        Function<ConnectableObservable, ConnectableObservable> f = onConnectableObservableAssembly;
         if (f != null) {
             return apply(f, source);
         }

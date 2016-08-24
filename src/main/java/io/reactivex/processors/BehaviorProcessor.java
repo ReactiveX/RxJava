@@ -69,7 +69,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T>
  *          the type of item expected to be observed by the Subject
  */
-public final class BehaviorProcessor<T> extends FlowProcessor<T> {
+public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     final State<T> state;
 
     /**
@@ -156,7 +156,11 @@ public final class BehaviorProcessor<T> extends FlowProcessor<T> {
         return null;
     }
     
-    @Override
+    /**
+     * Returns a single value the Subject currently has or null if no such value exists.
+     * <p>The method is thread-safe.
+     * @return a single value the Subject currently has or null if no such value exists
+     */
     public T getValue() {
         Object o = state.get();
         if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
@@ -165,7 +169,33 @@ public final class BehaviorProcessor<T> extends FlowProcessor<T> {
         return NotificationLite.getValue(o);
     }
     
-    @Override
+    /** An empty array to avoid allocation in getValues(). */
+    private static final Object[] EMPTY = new Object[0];
+
+    /**
+     * Returns an Object array containing snapshot all values of the Subject.
+     * <p>The method is thread-safe.
+     * @return the array containing the snapshot of all values of the Subject
+     */
+    public Object[] getValues() {
+        @SuppressWarnings("unchecked")
+        T[] a = (T[])EMPTY;
+        T[] b = getValues(a);
+        if (b == EMPTY) {
+            return new Object[0];
+        }
+        return b;
+            
+    }
+    
+    /**
+     * Returns a typed array containing a snapshot of all values of the Subject.
+     * <p>The method follows the conventions of Collection.toArray by setting the array element
+     * after the last value to null (if the capacity permits).
+     * <p>The method is thread-safe.
+     * @param array the target array to copy values into if it fits
+     * @return the given array if the values fit into it or a new array containing all values
+     */
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] array) {
         Object o = state.get();
@@ -200,7 +230,11 @@ public final class BehaviorProcessor<T> extends FlowProcessor<T> {
         return NotificationLite.isError(o);
     }
     
-    @Override
+    /**
+     * Returns true if the subject has any value.
+     * <p>The method is thread-safe.
+     * @return true if the subject has any value
+     */
     public boolean hasValue() {
         Object o = state.get();
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);

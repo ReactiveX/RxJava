@@ -25,10 +25,7 @@ import io.reactivex.Flowable;
  *
  * @param <T> the item value type
  */
-public abstract class FlowProcessor<T> extends Flowable<T> implements Processor<T, T> {
-    /** An empty array to avoid allocation in getValues(). */
-    private static final Object[] EMPTY = new Object[0];
-    
+public abstract class FlowableProcessor<T> extends Flowable<T> implements Processor<T, T> {
     
     /**
      * Returns true if the subject has subscribers.
@@ -44,9 +41,7 @@ public abstract class FlowProcessor<T> extends Flowable<T> implements Processor<
      * @see #getThrowable()
      * @see #hasComplete()
      */
-    public boolean hasThrowable() {
-        throw new UnsupportedOperationException();
-    }
+    public abstract boolean hasThrowable();
     
     /**
      * Returns true if the subject has reached a terminal state through a complete event.
@@ -54,18 +49,7 @@ public abstract class FlowProcessor<T> extends Flowable<T> implements Processor<
      * @return true if the subject has reached a terminal state through a complete event
      * @see #hasThrowable()
      */
-    public boolean hasComplete() {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Returns true if the subject has any value.
-     * <p>The method is thread-safe.
-     * @return true if the subject has any value
-     */
-    public boolean hasValue() {
-        throw new UnsupportedOperationException();
-    }
+    public abstract boolean hasComplete();
     
     /**
      * Returns the error that caused the Subject to terminate or null if the Subject
@@ -74,57 +58,18 @@ public abstract class FlowProcessor<T> extends Flowable<T> implements Processor<
      * @return the error that caused the Subject to terminate or null if the Subject
      * hasn't terminated yet
      */
-    public Throwable getThrowable() {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Returns a single value the Subject currently has or null if no such value exists.
-     * <p>The method is thread-safe.
-     * @return a single value the Subject currently has or null if no such value exists
-     */
-    public T getValue() {
-        throw new UnsupportedOperationException();
-    }
-    
+    public abstract Throwable getThrowable();
+
     /**
      * Wraps this Subject and serializes the calls to the onSubscribe, onNext, onError and
      * onComplete methods, making them thread-safe.
      * <p>The method is thread-safe.
      * @return the wrapped and serialized subject
      */
-    public final FlowProcessor<T> toSerialized() {
+    public final FlowableProcessor<T> toSerialized() {
         if (this instanceof SerializedProcessor) {
             return this;
         }
         return new SerializedProcessor<T>(this);
-    }
-    
-    /**
-     * Returns an Object array containing snapshot all values of the Subject.
-     * <p>The method is thread-safe.
-     * @return the array containing the snapshot of all values of the Subject
-     */
-    public Object[] getValues() {
-        @SuppressWarnings("unchecked")
-        T[] a = (T[])EMPTY;
-        T[] b = getValues(a);
-        if (b == EMPTY) {
-            return new Object[0];
-        }
-        return b;
-            
-    }
-    
-    /**
-     * Returns a typed array containing a snapshot of all values of the Subject.
-     * <p>The method follows the conventions of Collection.toArray by setting the array element
-     * after the last value to null (if the capacity permits).
-     * <p>The method is thread-safe.
-     * @param array the target array to copy values into if it fits
-     * @return the given array if the values fit into it or a new array containing all values
-     */
-    public T[] getValues(T[] array) {
-        throw new UnsupportedOperationException();
     }
 }

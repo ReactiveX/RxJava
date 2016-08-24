@@ -37,7 +37,7 @@ public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, 
     public void subscribeActual(Subscriber<? super T> s) {
         SerializedSubscriber<T> z = new SerializedSubscriber<T>(s);
         
-        FlowProcessor<Throwable> processor = new UnicastProcessor<Throwable>(8).toSerialized();
+        FlowableProcessor<Throwable> processor = new UnicastProcessor<Throwable>(8).toSerialized();
         
         Publisher<?> when;
         
@@ -67,7 +67,7 @@ public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, 
         /** */
         private static final long serialVersionUID = -2680129890138081029L;
 
-        public RetryWhenSubscriber(Subscriber<? super T> actual, FlowProcessor<Throwable> processor,
+        public RetryWhenSubscriber(Subscriber<? super T> actual, FlowableProcessor<Throwable> processor,
                 Subscription receiver) {
             super(actual, processor, receiver);
         }

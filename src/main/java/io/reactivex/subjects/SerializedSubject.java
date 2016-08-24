@@ -186,26 +186,6 @@ import io.reactivex.plugins.RxJavaPlugins;
     }
     
     @Override
-    public boolean hasValue() {
-        return actual.hasValue();
-    }
-    
-    @Override
-    public T getValue() {
-        return actual.getValue();
-    }
-    
-    @Override
-    public Object[] getValues() {
-        return actual.getValues();
-    }
-    
-    @Override
-    public T[] getValues(T[] array) {
-        return actual.getValues(array);
-    }
-    
-    @Override
     public boolean hasComplete() {
         return actual.hasComplete();
     }

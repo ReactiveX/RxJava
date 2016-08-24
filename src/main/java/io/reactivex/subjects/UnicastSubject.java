@@ -348,22 +348,4 @@ public final class UnicastSubject<T> extends Subject<T> {
         State<T> s = state;
         return s.done && s.error == null;
     }
-    
-    @Override
-    public boolean hasValue() {
-        return false;
-    }
-    
-    @Override
-    public T getValue() {
-        return null;
-    }
-    
-    @Override
-    public T[] getValues(T[] array) {
-        if (array.length != 0) {
-            array[0] = null;
-        }
-        return array;
-    }
 }

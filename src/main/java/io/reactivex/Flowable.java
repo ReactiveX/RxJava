@@ -89,7 +89,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> amb(Iterable<? extends Publisher<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return new FlowableAmb<T>(null, sources);
+        return RxJavaPlugins.onAssembly(new FlowableAmb<T>(null, sources));
     }
 
     /**
@@ -114,7 +114,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> amb(Publisher<? extends T>... sources) {
+    public static <T> Flowable<T> ambArray(Publisher<? extends T>... sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         int len = sources.length;
         if (len == 0) {
@@ -123,7 +123,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (len == 1) {
             return fromPublisher(sources[0]);
         }
-        return new FlowableAmb<T>(sources, null);
+        return RxJavaPlugins.onAssembly(new FlowableAmb<T>(sources, null));
     }
 
     /**
@@ -234,7 +234,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (sources.length == 0) {
             return empty();
         }
-        return new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, false);
+        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, false));
     }
 
     /**
@@ -303,7 +303,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(sources, "sources is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, false);
+        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, false));
     }
 
     /**
@@ -411,7 +411,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (sources.length == 0) {
             return empty();
         }
-        return new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, true);
+        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, true));
     }
 
     /**
@@ -484,7 +484,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(sources, "sources is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, true);
+        return RxJavaPlugins.onAssembly(new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, true));
     }
 
     /**
@@ -1102,7 +1102,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (sources.length == 1) {
             return fromPublisher(sources[0]);
         }
-        return new FlowableConcatArray<T>(sources, false);
+        return RxJavaPlugins.onAssembly(new FlowableConcatArray<T>(sources, false));
     }
 
     /**
@@ -1133,7 +1133,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (sources.length == 1) {
             return fromPublisher(sources[0]);
         }
-        return new FlowableConcatArray<T>(sources, true);
+        return RxJavaPlugins.onAssembly(new FlowableConcatArray<T>(sources, true));
     }
 
     /**
@@ -1189,7 +1189,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Flowable<T> concatArrayEager(int maxConcurrency, int prefetch, Publisher<? extends T>... sources) {
-        return new FlowableConcatMapEager(new FlowableFromArray(sources), Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE);
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager(new FlowableFromArray(sources), Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE));
     }
 
     /**
@@ -1315,7 +1315,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Flowable<T> concatEager(Publisher<? extends Publisher<? extends T>> sources, int maxConcurrency, int prefetch) {
-        return new FlowableConcatMapEager(sources, Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE);
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager(sources, Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE));
     }
 
     /**
@@ -1369,7 +1369,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Flowable<T> concatEager(Iterable<? extends Publisher<? extends T>> sources, int maxConcurrency, int prefetch) {
-        return new FlowableConcatMapEager(new FlowableFromIterable(sources), Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE);
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager(new FlowableFromIterable(sources), Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE));
     }
     
     /**
@@ -1415,7 +1415,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> create(FlowableOnSubscribe<T> source, FlowableEmitter.BackpressureMode mode) {
-        return new FlowableCreate<T>(source, mode);
+        return RxJavaPlugins.onAssembly(new FlowableCreate<T>(source, mode));
     }
 
     /**
@@ -1449,7 +1449,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> defer(Callable<? extends Publisher<? extends T>> supplier) {
         ObjectHelper.requireNonNull(supplier, "supplier is null");
-        return new FlowableDefer<T>(supplier);
+        return RxJavaPlugins.onAssembly(new FlowableDefer<T>(supplier));
     }
 
     /**
@@ -1474,7 +1474,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> empty() {
-        return (Flowable<T>) FlowableEmpty.INSTANCE;
+        return RxJavaPlugins.onAssembly((Flowable<T>) FlowableEmpty.INSTANCE);
     }
 
     /**
@@ -1501,7 +1501,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> error(Callable<? extends Throwable> errorSupplier) {
         ObjectHelper.requireNonNull(errorSupplier, "errorSupplier is null");
-        return new FlowableError<T>(errorSupplier);
+        return RxJavaPlugins.onAssembly(new FlowableError<T>(errorSupplier));
     }
 
     /**
@@ -1556,11 +1556,11 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(values, "values is null");
         if (values.length == 0) {
             return empty();
-        } else
-            if (values.length == 1) {
-                return just(values[0]);
-            }
-        return new FlowableFromArray<T>(values);
+        }
+        if (values.length == 1) {
+            return just(values[0]);
+        }
+        return RxJavaPlugins.onAssembly(new FlowableFromArray<T>(values));
     }
 
     /**
@@ -1591,7 +1591,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromCallable(Callable<? extends T> supplier) {
         ObjectHelper.requireNonNull(supplier, "supplier is null");
-        return new FlowableFromCallable<T>(supplier);
+        return RxJavaPlugins.onAssembly(new FlowableFromCallable<T>(supplier));
     }
 
     /**
@@ -1626,7 +1626,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future) {
         ObjectHelper.requireNonNull(future, "future is null");
-        return new FlowableFromFuture<T>(future, 0L, null);
+        return RxJavaPlugins.onAssembly(new FlowableFromFuture<T>(future, 0L, null));
     }
 
     /**
@@ -1666,7 +1666,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
         ObjectHelper.requireNonNull(future, "future is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
-        return new FlowableFromFuture<T>(future, timeout, unit);
+        return RxJavaPlugins.onAssembly(new FlowableFromFuture<T>(future, timeout, unit));
     }
 
     /**
@@ -1771,7 +1771,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> fromIterable(Iterable<? extends T> source) {
         ObjectHelper.requireNonNull(source, "source is null");
-        return new FlowableFromIterable<T>(source);
+        return RxJavaPlugins.onAssembly(new FlowableFromIterable<T>(source));
     }
     
     /**
@@ -1794,11 +1794,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> fromPublisher(final Publisher<? extends T> publisher) {
         if (publisher instanceof Flowable) {
-            return (Flowable<T>)publisher;
+            return RxJavaPlugins.onAssembly((Flowable<T>)publisher);
         }
         ObjectHelper.requireNonNull(publisher, "publisher is null");
 
-        return new FlowableFromPublisher<T>(publisher);
+        return RxJavaPlugins.onAssembly(new FlowableFromPublisher<T>(publisher));
     }
 
     /**
@@ -1938,7 +1938,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(initialState, "initialState is null");
         ObjectHelper.requireNonNull(generator, "generator is null");
         ObjectHelper.requireNonNull(disposeState, "disposeState is null");
-        return new FlowableGenerate<T, S>(initialState, generator, disposeState);
+        return RxJavaPlugins.onAssembly(new FlowableGenerate<T, S>(initialState, generator, disposeState));
     }
 
     /**
@@ -2011,7 +2011,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
 
-        return new FlowableInterval(initialDelay, period, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new FlowableInterval(initialDelay, period, unit, scheduler));
     }
 
     /**
@@ -2109,8 +2109,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> intervalRange(long start, long count, long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         if (count == 0L) {
-            return Flowable.<Long>empty().delay(initialDelay, unit);
+            return RxJavaPlugins.onAssembly(Flowable.<Long>empty().delay(initialDelay, unit, scheduler));
         }
         
         long end = start + (count - 1);
@@ -2124,10 +2126,8 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (period < 0) {
             period = 0L;
         }
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
 
-        return new FlowableIntervalRange(start, end, initialDelay, period, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new FlowableIntervalRange(start, end, initialDelay, period, unit, scheduler));
     }
 
     /**
@@ -2160,7 +2160,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> just(T value) {
         ObjectHelper.requireNonNull(value, "value is null");
-        return new FlowableJust<T>(value);
+        return RxJavaPlugins.onAssembly(new FlowableJust<T>(value));
     }
 
     /**
@@ -3272,7 +3272,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Flowable<T> never() {
-        return (Flowable<T>) FlowableNever.INSTANCE;
+        return RxJavaPlugins.onAssembly((Flowable<T>) FlowableNever.INSTANCE);
     }
 
     /**
@@ -3311,7 +3311,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if ((long)start + (count - 1) > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Integer overflow");
         }
-        return new FlowableRange(start, count);
+        return RxJavaPlugins.onAssembly(new FlowableRange(start, count));
     }
 
     /**
@@ -3408,7 +3408,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(p2, "p2 is null");
         ObjectHelper.requireNonNull(isEqual, "isEqual is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new FlowableSequenceEqual<T>(p1, p2, isEqual, bufferSize);
+        return RxJavaPlugins.onAssembly(new FlowableSequenceEqual<T>(p1, p2, isEqual, bufferSize));
     }
 
     /**
@@ -3649,7 +3649,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
 
-        return new FlowableTimer(delay, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new FlowableTimer(delay, unit, scheduler));
     }
 
     /**
@@ -3666,6 +3666,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <T> the value type emitted
      * @param onSubscribe the Publisher instance to wrap
      * @return the new Flowable instance
+     * @throws IllegalArgumentException if {@code onSubscribe} is a subclass of {@code Flowable}; such
+     * instances don't need conversion and is possibly a port remnant from 1.x or one should use {@link #hide()}
+     * instead.
      */
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3674,7 +3677,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (onSubscribe instanceof Flowable) {
             throw new IllegalArgumentException("unsafeCreate(Flowable) should be upgraded");
         }
-        return new FlowableFromPublisher<T>(onSubscribe);
+        return RxJavaPlugins.onAssembly(new FlowableFromPublisher<T>(onSubscribe));
     }
 
     /**
@@ -3746,7 +3749,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
         ObjectHelper.requireNonNull(sourceSupplier, "sourceSupplier is null");
         ObjectHelper.requireNonNull(disposer, "disposer is null");
-        return new FlowableUsing<T, D>(resourceSupplier, sourceSupplier, disposer, eager);
+        return RxJavaPlugins.onAssembly(new FlowableUsing<T, D>(resourceSupplier, sourceSupplier, disposer, eager));
     }
 
     /**
@@ -3824,7 +3827,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T, R> Flowable<R> zip(Iterable<? extends Publisher<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return new FlowableZip<T, R>(null, sources, zipper, bufferSize(), false);
+        return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(null, sources, zipper, bufferSize(), false));
     }
 
     /**
@@ -4607,7 +4610,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         }
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new FlowableZip<T, R>(sources, null, zipper, bufferSize, delayError);
+        return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(sources, null, zipper, bufferSize, delayError));
     }
 
     /**
@@ -4667,7 +4670,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.requireNonNull(sources, "sources is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new FlowableZip<T, R>(null, sources, zipper, bufferSize, delayError);
+        return RxJavaPlugins.onAssembly(new FlowableZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
     // ***************************************************************************************************
@@ -4697,7 +4700,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Boolean> all(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return new FlowableAll<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new FlowableAll<T>(this, predicate));
     }
 
     /**
@@ -4724,7 +4727,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> ambWith(Publisher<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return amb(this, other);
+        return ambArray(this, other);
     }
 
     /**
@@ -4754,11 +4757,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Boolean> any(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return new FlowableAny<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new FlowableAny<T>(this, predicate));
     }
 
     /**
-     * Returns the first item emitted by this {@code BlockingObservable}, or throws
+     * Returns the first item emitted by this {@code Flowable}, or throws
      * {@code NoSuchElementException} if it emits no items.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -4768,9 +4771,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the first item emitted by this {@code BlockingObservable}
+     * @return the first item emitted by this {@code Flowable}
      * @throws NoSuchElementException
-     *             if this {@code BlockingObservable} emits no items
+     *             if this {@code Flowable} emits no items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     public final T blockingFirst() {
@@ -4784,7 +4787,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns the first item emitted by this {@code BlockingObservable}, or a default value if it emits no
+     * Returns the first item emitted by this {@code Flowable}, or a default value if it emits no
      * items.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -4795,8 +4798,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param defaultValue
-     *            a default value to return if this {@code BlockingObservable} emits no items
-     * @return the first item emitted by this {@code BlockingObservable}, or the default value if it emits no
+     *            a default value to return if this {@code Flowable} emits no items
+     * @return the first item emitted by this {@code Flowable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
@@ -4808,7 +4811,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Invokes a method on each item emitted by this {@code BlockingObservable} and blocks until the Observable
+     * Invokes a method on each item emitted by this {@code Flowable} and blocks until the Observable
      * completes.
      * <p>
      * <em>Note:</em> This will block even if the underlying Observable is asynchronous.
@@ -4831,7 +4834,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * 
      * @param onNext
-     *            the {@link Consumer} to invoke for each item emitted by the {@code BlockingObservable}
+     *            the {@link Consumer} to invoke for each item emitted by the {@code Flowable}
      * @throws RuntimeException
      *             if an error occurs
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX documentation: Subscribe</a>
@@ -4851,7 +4854,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     /**
-     * Converts this {@code BlockingObservable} into an {@link Iterable}.
+     * Converts this {@code Flowable} into an {@link Iterable}.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
      * <dl>
@@ -4862,7 +4865,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingITerable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an {@link Iterable} version of this {@code BlockingObservable}
+     * @return an {@link Iterable} version of this {@code Flowable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public final Iterable<T> blockingIterable() {
@@ -4870,7 +4873,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     /**
-     * Converts this {@code BlockingObservable} into an {@link Iterable}.
+     * Converts this {@code Flowable} into an {@link Iterable}.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
      * <dl>
@@ -4878,11 +4881,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
      *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code blockingFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param bufferSize the number of items to prefetch from the current Flowable
-     * @return an {@link Iterable} version of this {@code BlockingObservable}
+     * @return an {@link Iterable} version of this {@code Flowable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public final Iterable<T> blockingIterable(int bufferSize) {
@@ -4891,8 +4894,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     /**
-     * Returns the last item emitted by this {@code BlockingObservable}, or throws
-     * {@code NoSuchElementException} if this {@code BlockingObservable} emits no items.
+     * Returns the last item emitted by this {@code Flowable}, or throws
+     * {@code NoSuchElementException} if this {@code Flowable} emits no items.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.last.png" alt="">
      * <dl>
@@ -4903,9 +4906,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the last item emitted by this {@code BlockingObservable}
+     * @return the last item emitted by this {@code Flowable}
      * @throws NoSuchElementException
-     *             if this {@code BlockingObservable} emits no items
+     *             if this {@code Flowable} emits no items
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
      */
     public final T blockingLast() {
@@ -4919,7 +4922,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns the last item emitted by this {@code BlockingObservable}, or a default value if it emits no
+     * Returns the last item emitted by this {@code Flowable}, or a default value if it emits no
      * items.
      * <p>
      * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.lastOrDefault.png" alt="">
@@ -4932,8 +4935,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param defaultValue
-     *            a default value to return if this {@code BlockingObservable} emits no items
-     * @return the last item emitted by the {@code BlockingObservable}, or the default value if it emits no
+     *            a default value to return if this {@code Flowable} emits no items
+     * @return the last item emitted by the {@code Flowable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
      */
@@ -4948,10 +4951,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     /**
-     * Returns an {@link Iterable} that returns the latest item emitted by this {@code BlockingObservable},
+     * Returns an {@link Iterable} that returns the latest item emitted by this {@code Flowable},
      * waiting if necessary for one to become available.
      * <p>
-     * If this {@code BlockingObservable} produces items faster than {@code Iterator.next} takes them,
+     * If this {@code Flowable} produces items faster than {@code Iterator.next} takes them,
      * {@code onNext} events might be skipped, but {@code onError} or {@code onCompleted} events are not.
      * <p>
      * Note also that an {@code onNext} directly followed by {@code onCompleted} might hide the {@code onNext}
@@ -4964,7 +4967,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an Iterable that always returns the latest item emitted by this {@code BlockingObservable}
+     * @return an Iterable that always returns the latest item emitted by this {@code Flowable}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     public final Iterable<T> blockingLatest() {
@@ -4973,7 +4976,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     
     /**
      * Returns an {@link Iterable} that always returns the item most recently emitted by this
-     * {@code BlockingObservable}.
+     * {@code Flowable}.
      * <p>
      * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
      * <dl>
@@ -4986,8 +4989,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param initialValue
      *            the initial value that the {@link Iterable} sequence will yield if this
-     *            {@code BlockingObservable} has not yet emitted an item
-     * @return an {@link Iterable} that on each iteration returns the item that this {@code BlockingObservable}
+     *            {@code Flowable} has not yet emitted an item
+     * @return an {@link Iterable} that on each iteration returns the item that this {@code Flowable}
      *         has most recently emitted
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
@@ -4996,7 +4999,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     /**
-     * Returns an {@link Iterable} that blocks until this {@code BlockingObservable} emits another item, then
+     * Returns an {@link Iterable} that blocks until this {@code Flowable} emits another item, then
      * returns that item.
      * <p>
      * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
@@ -5008,7 +5011,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an {@link Iterable} that blocks upon each iteration until this {@code BlockingObservable} emits
+     * @return an {@link Iterable} that blocks upon each iteration until this {@code Flowable} emits
      *         a new item, whereupon the Iterable returns that item
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX documentation: TakeLast</a>
      */
@@ -5017,7 +5020,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     /**
-     * If this {@code BlockingObservable} completes after emitting a single item, return that item, otherwise
+     * If this {@code Flowable} completes after emitting a single item, return that item, otherwise
      * throw a {@code NoSuchElementException}.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.single.png" alt="">
@@ -5029,7 +5032,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the single item emitted by this {@code BlockingObservable}
+     * @return the single item emitted by this {@code Flowable}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     public final T blockingSingle() {
@@ -5037,7 +5040,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     /**
-     * If this {@code BlockingObservable} completes after emitting a single item, return that item; if it emits
+     * If this {@code Flowable} completes after emitting a single item, return that item; if it emits
      * more than one item, throw an {@code IllegalArgumentException}; if it emits no items, return a default
      * value.
      * <p>
@@ -5051,8 +5054,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param defaultValue
-     *            a default value to return if this {@code BlockingObservable} emits no items
-     * @return the single item emitted by this {@code BlockingObservable}, or the default value if it emits no
+     *            a default value to return if this {@code Flowable} emits no items
+     * @return the single item emitted by this {@code Flowable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
@@ -5061,13 +5064,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
     
     /**
-     * Returns a {@link Future} representing the single value emitted by this {@code BlockingObservable}.
+     * Returns a {@link Future} representing the single value emitted by this {@code Flowable}.
      * <p>
      * If the {@link Flowable} emits more than one item, {@link java.util.concurrent.Future} will receive an
      * {@link java.lang.IllegalArgumentException}. If the {@link Flowable} is empty, {@link java.util.concurrent.Future}
      * will receive an {@link java.util.NoSuchElementException}.
      * <p>
-     * If the {@code BlockingObservable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
+     * If the {@code Flowable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
      * <p>
      * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
      * <dl>
@@ -5078,7 +5081,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@link Future} that expects a single item to be emitted by this {@code BlockingObservable}
+     * @return a {@link Future} that expects a single item to be emitted by this {@code Flowable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public final Future<T> toFuture() {
@@ -5264,7 +5267,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U extends Collection<? super T>> Flowable<U> buffer(int count, int skip, Callable<U> bufferSupplier) {
-        return new FlowableBuffer<T, U>(this, count, skip, bufferSupplier);
+        return RxJavaPlugins.onAssembly(new FlowableBuffer<T, U>(this, count, skip, bufferSupplier));
     }
     
     /**
@@ -5404,7 +5407,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return new FlowableBufferTimed<T, U>(this, timespan, timeskip, unit, scheduler, bufferSupplier, Integer.MAX_VALUE, false);
+        return RxJavaPlugins.onAssembly(new FlowableBufferTimed<T, U>(this, timespan, timeskip, unit, scheduler, bufferSupplier, Integer.MAX_VALUE, false));
     }
     
     /**
@@ -5556,7 +5559,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
         verifyPositive(count, "count");
-        return new FlowableBufferTimed<T, U>(this, timespan, timespan, unit, scheduler, bufferSupplier, count, restartTimerOnMaxSize);
+        return RxJavaPlugins.onAssembly(new FlowableBufferTimed<T, U>(this, timespan, timespan, unit, scheduler, bufferSupplier, count, restartTimerOnMaxSize));
     }
 
     /**
@@ -5663,7 +5666,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(bufferOpenings, "bufferOpenings is null");
         ObjectHelper.requireNonNull(bufferClosingSelector, "bufferClosingSelector is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return new FlowableBufferBoundary<T, U, TOpening, TClosing>(this, bufferOpenings, bufferClosingSelector, bufferSupplier);
+        return RxJavaPlugins.onAssembly(new FlowableBufferBoundary<T, U, TOpening, TClosing>(this, bufferOpenings, bufferClosingSelector, bufferSupplier));
     }
 
     /**
@@ -5767,7 +5770,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <B, U extends Collection<? super T>> Flowable<U> buffer(Publisher<B> boundary, Callable<U> bufferSupplier) {
         ObjectHelper.requireNonNull(boundary, "boundary is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return new FlowableBufferExactBoundary<T, U, B>(this, boundary, bufferSupplier);
+        return RxJavaPlugins.onAssembly(new FlowableBufferExactBoundary<T, U, B>(this, boundary, bufferSupplier));
     }
 
     /**
@@ -5833,7 +5836,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Callable<U> bufferSupplier) {
         ObjectHelper.requireNonNull(boundarySupplier, "boundarySupplier is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return new FlowableBufferBoundarySupplier<T, U, B>(this, boundarySupplier, bufferSupplier);
+        return RxJavaPlugins.onAssembly(new FlowableBufferBoundarySupplier<T, U, B>(this, boundarySupplier, bufferSupplier));
     }
 
     /**
@@ -6013,7 +6016,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <U> Flowable<U> collect(Callable<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
         ObjectHelper.requireNonNull(initialValueSupplier, "initialValueSupplier is null");
         ObjectHelper.requireNonNull(collector, "collectior is null");
-        return new FlowableCollect<T, U>(this, initialValueSupplier, collector);
+        return RxJavaPlugins.onAssembly(new FlowableCollect<T, U>(this, initialValueSupplier, collector));
     }
 
     /**
@@ -6147,7 +6150,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             return FlowableScalarXMap.scalarXMap(v, mapper);
         }
         verifyPositive(prefetch, "prefetch");
-        return new FlowableConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE);
+        return RxJavaPlugins.onAssembly(new FlowableConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE));
     }
 
     /**
@@ -6217,7 +6220,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             return FlowableScalarXMap.scalarXMap(v, mapper);
         }
         verifyPositive(prefetch, "prefetch");
-        return new FlowableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.IMMEDIATE);
+        return RxJavaPlugins.onAssembly(new FlowableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.IMMEDIATE));
     }
 
 
@@ -6275,7 +6278,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             int maxConcurrency, int prefetch) {
         verifyPositive(maxConcurrency, "maxConcurrency");
         verifyPositive(prefetch, "prefetch");
-        return new FlowableConcatMapEager<T, R>(this, mapper, maxConcurrency, prefetch, ErrorMode.IMMEDIATE);
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager<T, R>(this, mapper, maxConcurrency, prefetch, ErrorMode.IMMEDIATE));
     }
 
     /**
@@ -6339,7 +6342,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> concatMapEagerDelayError(Function<? super T, ? extends Publisher<? extends R>> mapper, 
             int maxConcurrency, int prefetch, boolean tillTheEnd) {
-        return new FlowableConcatMapEager<T, R>(this, mapper, maxConcurrency, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY);
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager<T, R>(this, mapper, maxConcurrency, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
     }
 
     /**
@@ -6400,7 +6403,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> concatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        return new FlowableFlattenIterable<T, U>(this, mapper, prefetch);
+        return RxJavaPlugins.onAssembly(new FlowableFlattenIterable<T, U>(this, mapper, prefetch));
     }
 
     /**
@@ -6477,7 +6480,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Long> count() {
-        return new FlowableCount<T>(this);
+        return RxJavaPlugins.onAssembly(new FlowableCount<T>(this));
     }
 
     /**
@@ -6506,7 +6509,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> debounce(Function<? super T, ? extends Publisher<U>> debounceSelector) {
         ObjectHelper.requireNonNull(debounceSelector, "debounceSelector is null");
-        return new FlowableDebounce<T, U>(this, debounceSelector);
+        return RxJavaPlugins.onAssembly(new FlowableDebounce<T, U>(this, debounceSelector));
     }
 
     /**
@@ -6593,7 +6596,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new FlowableDebounceTimed<T>(this, timeout, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new FlowableDebounceTimed<T>(this, timeout, unit, scheduler));
     }
 
     /**
@@ -6768,7 +6771,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         
-        return new FlowableDelay<T>(this, delay, unit, scheduler, delayError);
+        return RxJavaPlugins.onAssembly(new FlowableDelay<T>(this, delay, unit, scheduler, delayError));
     }
 
     /**
@@ -6831,7 +6834,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     public final <U> Flowable<T> delaySubscription(Publisher<U> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return new FlowableDelaySubscriptionOther<T, U>(this, other);
+        return RxJavaPlugins.onAssembly(new FlowableDelaySubscriptionOther<T, U>(this, other));
     }
 
     /**
@@ -6910,7 +6913,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <T2> Flowable<T2> dematerialize() {
         @SuppressWarnings("unchecked")
         Flowable<Notification<T2>> m = (Flowable<Notification<T2>>)this;
-        return new FlowableDematerialize<T2>(m);
+        return RxJavaPlugins.onAssembly(new FlowableDematerialize<T2>(m));
     }
 
     /**
@@ -7070,7 +7073,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> distinctUntilChanged(BiPredicate<? super T, ? super T> comparer) {
         ObjectHelper.requireNonNull(comparer, "comparer is null");
-        return new FlowableDistinctUntilChanged<T>(this, comparer);
+        return RxJavaPlugins.onAssembly(new FlowableDistinctUntilChanged<T>(this, comparer));
     }
     
     /**
@@ -7179,7 +7182,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
         ObjectHelper.requireNonNull(onAfterTerminate, "onAfterTerminate is null");
-        return new FlowableDoOnEach<T>(this, onNext, onError, onComplete, onAfterTerminate);
+        return RxJavaPlugins.onAssembly(new FlowableDoOnEach<T>(this, onNext, onError, onComplete, onAfterTerminate));
     }
     
     /**
@@ -7301,7 +7304,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
         ObjectHelper.requireNonNull(onRequest, "onRequest is null");
         ObjectHelper.requireNonNull(onCancel, "onCancel is null");
-        return new FlowableDoOnLifecycle<T>(this, onSubscribe, onRequest, onCancel);
+        return RxJavaPlugins.onAssembly(new FlowableDoOnLifecycle<T>(this, onSubscribe, onRequest, onCancel));
     }
 
     /**
@@ -7441,7 +7444,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
-        return new FlowableElementAt<T>(this, index, null);
+        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(this, index, null));
     }
 
     /**
@@ -7474,7 +7477,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return new FlowableElementAt<T>(this, index, defaultValue);
+        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(this, index, defaultValue));
     }
 
     /**
@@ -7500,7 +7503,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> filter(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return new FlowableFilter<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new FlowableFilter<T>(this, predicate));
     }
 
     /**
@@ -7730,7 +7733,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         }
         verifyPositive(maxConcurrency, "maxConcurrency");
         verifyPositive(bufferSize, "bufferSize");
-        return new FlowableFlatMap<T, R>(this, mapper, delayErrors, maxConcurrency, bufferSize);
+        return RxJavaPlugins.onAssembly(new FlowableFlatMap<T, R>(this, mapper, delayErrors, maxConcurrency, bufferSize));
     }
 
     /**
@@ -8065,7 +8068,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int bufferSize) {
-        return new FlowableFlattenIterable<T, U>(this, mapper, bufferSize);
+        return RxJavaPlugins.onAssembly(new FlowableFlattenIterable<T, U>(this, mapper, bufferSize));
     }
 
     /**
@@ -8491,7 +8494,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
         verifyPositive(bufferSize, "bufferSize");
 
-        return new FlowableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError);
+        return RxJavaPlugins.onAssembly(new FlowableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError));
     }
 
     /**
@@ -8535,8 +8538,8 @@ public abstract class Flowable<T> implements Publisher<T> {
             Function<? super T, ? extends Publisher<TLeftEnd>> leftEnd,
             Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
             BiFunction<? super T, ? super Flowable<TRight>, ? extends R> resultSelector) {
-        return new FlowableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
-                this, other, leftEnd, rightEnd, resultSelector);
+        return RxJavaPlugins.onAssembly(new FlowableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+                this, other, leftEnd, rightEnd, resultSelector));
     }
 
     /**
@@ -8558,7 +8561,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> hide() {
-        return new FlowableHide<T>(this);
+        return RxJavaPlugins.onAssembly(new FlowableHide<T>(this));
     }
 
     /**
@@ -8580,7 +8583,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> ignoreElements() {
-        return new FlowableIgnoreElements<T>(this);
+        return RxJavaPlugins.onAssembly(new FlowableIgnoreElements<T>(this));
     }
 
     /**
@@ -8648,8 +8651,8 @@ public abstract class Flowable<T> implements Publisher<T> {
             Function<? super T, ? extends Publisher<TLeftEnd>> leftEnd,
             Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
             BiFunction<? super T, ? super TRight, ? extends R> resultSelector) {
-        return new FlowableJoin<T, TRight, TLeftEnd, TRightEnd, R>(
-                this, other, leftEnd, rightEnd, resultSelector);
+        return RxJavaPlugins.onAssembly(new FlowableJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+                this, other, leftEnd, rightEnd, resultSelector));
     }
     
 
@@ -8735,8 +8738,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> lift(FlowableOperator<? extends R, ? super T> lifter) {
         ObjectHelper.requireNonNull(lifter, "lifter is null");
-        // using onSubscribe so the fusing has access to the underlying raw Publisher
-        return new FlowableLift<R, T>(this, lifter);
+        return RxJavaPlugins.onAssembly(new FlowableLift<R, T>(this, lifter));
     }
 
     /**
@@ -8763,7 +8765,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> map(Function<? super T, ? extends R> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        return new FlowableMap<T, R>(this, mapper);
+        return RxJavaPlugins.onAssembly(new FlowableMap<T, R>(this, mapper));
     }
 
     /**
@@ -8786,7 +8788,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<Notification<T>> materialize() {
-        return new FlowableMaterialize<T>(this);
+        return RxJavaPlugins.onAssembly(new FlowableMaterialize<T>(this));
     }
 
     /**
@@ -8923,7 +8925,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new FlowableObserveOn<T>(this, scheduler, delayError, bufferSize);
+        return RxJavaPlugins.onAssembly(new FlowableObserveOn<T>(this, scheduler, delayError, bufferSize));
     }
 
     /**
@@ -9084,7 +9086,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureBuffer(int capacity, boolean delayError, boolean unbounded) {
         verifyPositive(capacity, "bufferSize");
-        return new FlowableOnBackpressureBuffer<T>(this, capacity, unbounded, delayError, Functions.EMPTY_ACTION);
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureBuffer<T>(this, capacity, unbounded, delayError, Functions.EMPTY_ACTION));
     }
 
     /**
@@ -9119,7 +9121,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> onBackpressureBuffer(int capacity, boolean delayError, boolean unbounded, 
             Action onOverflow) {
         ObjectHelper.requireNonNull(onOverflow, "onOverflow is null");
-        return new FlowableOnBackpressureBuffer<T>(this, capacity, unbounded, delayError, onOverflow);
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureBuffer<T>(this, capacity, unbounded, delayError, onOverflow));
     }
 
     /**
@@ -9185,7 +9187,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Publisher<T> onBackpressureBuffer(long capacity, Action onOverflow, BackpressureOverflowStrategy overflowStrategy) {
         ObjectHelper.requireNonNull(overflowStrategy, "strategy is null");
         verifyPositive(capacity, "capacity");
-        return new FlowableOnBackpressureBufferStrategy<T>(this, capacity, onOverflow, overflowStrategy);
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureBufferStrategy<T>(this, capacity, onOverflow, overflowStrategy));
     }
 
     /**
@@ -9210,7 +9212,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureDrop() {
-        return new FlowableOnBackpressureDrop<T>(this);
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureDrop<T>(this));
     }
 
     /**
@@ -9238,7 +9240,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureDrop(Consumer<? super T> onDrop) {
         ObjectHelper.requireNonNull(onDrop, "onDrop is null");
-        return new FlowableOnBackpressureDrop<T>(this, onDrop);
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureDrop<T>(this, onDrop));
     }
 
     /**
@@ -9270,7 +9272,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureLatest() {
-        return new FlowableOnBackpressureLatest<T>(this);
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureLatest<T>(this));
     }
 
     /**
@@ -9312,7 +9314,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorResumeNext(Function<? super Throwable, ? extends Publisher<? extends T>> resumeFunction) {
         ObjectHelper.requireNonNull(resumeFunction, "resumeFunction is null");
-        return new FlowableOnErrorNext<T>(this, resumeFunction, false);
+        return RxJavaPlugins.onAssembly(new FlowableOnErrorNext<T>(this, resumeFunction, false));
     }
 
     /**
@@ -9392,7 +9394,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onErrorReturn(Function<? super Throwable, ? extends T> valueSupplier) {
         ObjectHelper.requireNonNull(valueSupplier, "valueSupplier is null");
-        return new FlowableOnErrorReturn<T>(this, valueSupplier);
+        return RxJavaPlugins.onAssembly(new FlowableOnErrorReturn<T>(this, valueSupplier));
     }
 
     /**
@@ -9475,7 +9477,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onExceptionResumeNext(final Publisher<? extends T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
-        return new FlowableOnErrorNext<T>(this, Functions.justFunction(next), true);
+        return RxJavaPlugins.onAssembly(new FlowableOnErrorNext<T>(this, Functions.justFunction(next), true));
     }
 
     /**
@@ -9495,7 +9497,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onTerminateDetach() {
-        return new FlowableDetach<T>(this);
+        return RxJavaPlugins.onAssembly(new FlowableDetach<T>(this));
     }
     
     /**
@@ -9586,7 +9588,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> publish(Function<? super Flowable<T>, ? extends Publisher<? extends R>> selector, int prefetch) {
         ObjectHelper.requireNonNull(selector, "selector is null");
         verifyPositive(prefetch, "prefetch");
-        return new FlowablePublishMulticast<T, R>(this, selector, prefetch, false);
+        return RxJavaPlugins.onAssembly(new FlowablePublishMulticast<T, R>(this, selector, prefetch, false));
     }
 
     /**
@@ -9828,7 +9830,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (count == 0) {
             return empty();
         }
-        return new FlowableRepeat<T>(this, count);
+        return RxJavaPlugins.onAssembly(new FlowableRepeat<T>(this, count));
     }
 
     /**
@@ -9856,7 +9858,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeatUntil(BooleanSupplier stop) {
         ObjectHelper.requireNonNull(stop, "stop is null");
-        return new FlowableRepeatUntil<T>(this, stop);
+        return RxJavaPlugins.onAssembly(new FlowableRepeatUntil<T>(this, stop));
     }
     
     /**
@@ -9885,7 +9887,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeatWhen(final Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
         ObjectHelper.requireNonNull(handler, "handler is null");
-        return new FlowableRepeatWhen<T>(this, handler);
+        return RxJavaPlugins.onAssembly(new FlowableRepeatWhen<T>(this, handler));
     }
     
     /**
@@ -10493,7 +10495,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         
-        return new FlowableRetryBiPredicate<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new FlowableRetryBiPredicate<T>(this, predicate));
     }
     
     /**
@@ -10551,7 +10553,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         }
         ObjectHelper.requireNonNull(predicate, "predicate is null");
 
-        return new FlowableRetryPredicate<T>(this, times, predicate);
+        return RxJavaPlugins.onAssembly(new FlowableRetryPredicate<T>(this, times, predicate));
     }
     
     /**
@@ -10649,7 +10651,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             final Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler) {
         ObjectHelper.requireNonNull(handler, "handler is null");
         
-        return new FlowableRetryWhen<T>(this, handler);
+        return RxJavaPlugins.onAssembly(new FlowableRetryWhen<T>(this, handler));
     }
     
     /**
@@ -10734,7 +10736,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new FlowableSampleTimed<T>(this, period, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new FlowableSampleTimed<T>(this, period, unit, scheduler));
     }
     
     /**
@@ -10763,7 +10765,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> sample(Publisher<U> sampler) {
         ObjectHelper.requireNonNull(sampler, "sampler is null");
-        return new FlowableSamplePublisher<T>(this, sampler);
+        return RxJavaPlugins.onAssembly(new FlowableSamplePublisher<T>(this, sampler));
     }
     
     /**
@@ -10794,7 +10796,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> scan(BiFunction<T, T, T> accumulator) {
         ObjectHelper.requireNonNull(accumulator, "accumulator is null");
-        return new FlowableScan<T>(this, accumulator);
+        return RxJavaPlugins.onAssembly(new FlowableScan<T>(this, accumulator));
     }
 
     /**
@@ -10899,7 +10901,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> scanWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         ObjectHelper.requireNonNull(seedSupplier, "seedSupplier is null");
         ObjectHelper.requireNonNull(accumulator, "accumulator is null");
-        return new FlowableScanSeed<T, R>(this, seedSupplier, accumulator);
+        return RxJavaPlugins.onAssembly(new FlowableScanSeed<T, R>(this, seedSupplier, accumulator));
     }
     
     /**
@@ -10928,7 +10930,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> serialize() {
-        return new FlowableSerialized<T>(this);
+        return RxJavaPlugins.onAssembly(new FlowableSerialized<T>(this));
     }
 
     /**
@@ -10982,7 +10984,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> single() {
-        return new FlowableSingle<T>(this, null);
+        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(this, null));
     }
     
     /**
@@ -11011,7 +11013,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> single(T defaultValue) {
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return new FlowableSingle<T>(this, defaultValue);
+        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(this, defaultValue));
     }
     
     /**
@@ -11037,9 +11039,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> skip(long count) {
         if (count <= 0L) {
-            return this;
+            return RxJavaPlugins.onAssembly(this);
         }
-        return new FlowableSkip<T>(this, count);
+        return RxJavaPlugins.onAssembly(new FlowableSkip<T>(this, count));
     }
 
     /**
@@ -11131,9 +11133,9 @@ public abstract class Flowable<T> implements Publisher<T> {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         } 
         if (count == 0) {
-            return this;
+            return RxJavaPlugins.onAssembly(this);
         }
-        return new FlowableSkipLast<T>(this, count);
+        return RxJavaPlugins.onAssembly(new FlowableSkipLast<T>(this, count));
     }
     
     /**
@@ -11302,7 +11304,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         verifyPositive(bufferSize, "bufferSize");
         // the internal buffer holds pairs of (timestamp, value) so double the default buffer size
         int s = bufferSize << 1; 
-        return new FlowableSkipLastTimed<T>(this, time, unit, scheduler, s, delayError);
+        return RxJavaPlugins.onAssembly(new FlowableSkipLastTimed<T>(this, time, unit, scheduler, s, delayError));
     }
     
     /**
@@ -11330,7 +11332,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> skipUntil(Publisher<U> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return new FlowableSkipUntil<T, U>(this, other);
+        return RxJavaPlugins.onAssembly(new FlowableSkipUntil<T, U>(this, other));
     }
     
     /**
@@ -11356,7 +11358,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> skipWhile(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return new FlowableSkipWhile<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new FlowableSkipWhile<T>(this, predicate));
     }
     /**
      * Returns a Flowable that emits the events emitted by source Publisher, in a
@@ -11516,7 +11518,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> startWithArray(T... values) {
         Flowable<T> fromArray = fromArray(values);
         if (fromArray == empty()) {
-            return this;
+            return RxJavaPlugins.onAssembly(this);
         }
         return concatArray(fromArray, this);
     }
@@ -11739,7 +11741,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> subscribeOn(Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new FlowableSubscribeOn<T>(this, scheduler);
+        return RxJavaPlugins.onAssembly(new FlowableSubscribeOn<T>(this, scheduler));
     }
 
     /**
@@ -11767,7 +11769,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> switchIfEmpty(Publisher<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return new FlowableSwitchIfEmpty<T>(this, other);
+        return RxJavaPlugins.onAssembly(new FlowableSwitchIfEmpty<T>(this, other));
     }
 
     /**
@@ -11913,7 +11915,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             return FlowableScalarXMap.scalarXMap(v, mapper);
         }
         verifyPositive(bufferSize, "bufferSize");
-        return new FlowableSwitchMap<T, R>(this, mapper, bufferSize, delayError);
+        return RxJavaPlugins.onAssembly(new FlowableSwitchMap<T, R>(this, mapper, bufferSize, delayError));
     }
     
     /**
@@ -11946,7 +11948,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (count < 0) {
             throw new IllegalArgumentException("n >= required but it was " + count);
         }
-        return new FlowableTake<T>(this, count);
+        return RxJavaPlugins.onAssembly(new FlowableTake<T>(this, count));
     }
 
     /**
@@ -12061,9 +12063,9 @@ public abstract class Flowable<T> implements Publisher<T> {
             return ignoreElements();
         } else
         if (count == 1) {
-            return new FlowableTakeLastOne<T>(this);
+            return RxJavaPlugins.onAssembly(new FlowableTakeLastOne<T>(this));
         }
-        return new FlowableTakeLast<T>(this, count);
+        return RxJavaPlugins.onAssembly(new FlowableTakeLast<T>(this, count));
     }
 
     /**
@@ -12174,7 +12176,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         if (count < 0) {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         }
-        return new FlowableTakeLastTimed<T>(this, count, time, unit, scheduler, bufferSize, delayError);
+        return RxJavaPlugins.onAssembly(new FlowableTakeLastTimed<T>(this, count, time, unit, scheduler, bufferSize, delayError));
     }
 
     /**
@@ -12376,7 +12378,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> takeUntil(Predicate<? super T> stopPredicate) {
         ObjectHelper.requireNonNull(stopPredicate, "stopPredicate is null");
-        return new FlowableTakeUntilPredicate<T>(this, stopPredicate);
+        return RxJavaPlugins.onAssembly(new FlowableTakeUntilPredicate<T>(this, stopPredicate));
     }
     
     /**
@@ -12404,7 +12406,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<T> takeUntil(Publisher<U> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return new FlowableTakeUntil<T, U>(this, other);
+        return RxJavaPlugins.onAssembly(new FlowableTakeUntil<T, U>(this, other));
     }
 
     /**
@@ -12431,7 +12433,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> takeWhile(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return new FlowableTakeWhile<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new FlowableTakeWhile<T>(this, predicate));
     }
 
     /**
@@ -12494,7 +12496,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new FlowableThrottleFirstTimed<T>(this, skipDuration, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new FlowableThrottleFirstTimed<T>(this, skipDuration, unit, scheduler));
     }
 
     /**
@@ -12743,7 +12745,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<Timed<T>> timeInterval(TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new FlowableTimeInterval<T>(this, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new FlowableTimeInterval<T>(this, unit, scheduler));
     }
 
     /**
@@ -13033,7 +13035,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Scheduler scheduler) {
         ObjectHelper.requireNonNull(timeUnit, "timeUnit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new FlowableTimeoutTimed<T>(this, timeout, timeUnit, scheduler, other);
+        return RxJavaPlugins.onAssembly(new FlowableTimeoutTimed<T>(this, timeout, timeUnit, scheduler, other));
     }
 
     private <U, V> Flowable<T> timeout0(
@@ -13041,7 +13043,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Function<? super T, ? extends Publisher<V>> timeoutSelector, 
                     Publisher<? extends T> other) {
         ObjectHelper.requireNonNull(timeoutSelector, "timeoutSelector is null");
-        return new FlowableTimeout<T, U, V>(this, firstTimeoutSelector, timeoutSelector, other);
+        return RxJavaPlugins.onAssembly(new FlowableTimeout<T, U, V>(this, firstTimeoutSelector, timeoutSelector, other));
     }
 
     /**
@@ -13191,7 +13193,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable toCompletable() {
-        return new CompletableFromPublisher<T>(this);
+        return RxJavaPlugins.onAssembly(new CompletableFromPublisher<T>(this));
     }
     
     /**
@@ -13223,7 +13225,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> toList() {
-        return new FlowableToList<T, List<T>>(this);
+        return RxJavaPlugins.onAssembly(new FlowableToList<T, List<T>>(this));
     }
 
     /**
@@ -13258,7 +13260,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<List<T>> toList(final int capacityHint) {
         verifyPositive(capacityHint, "capacityHint");
-        return new FlowableToList<T, List<T>>(this, Functions.<T>createArrayList(capacityHint));
+        return RxJavaPlugins.onAssembly(new FlowableToList<T, List<T>>(this, Functions.<T>createArrayList(capacityHint)));
     }
 
     /**
@@ -13294,7 +13296,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U extends Collection<? super T>> Flowable<U> toList(Callable<U> collectionSupplier) {
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
-        return new FlowableToList<T, U>(this, collectionSupplier);
+        return RxJavaPlugins.onAssembly(new FlowableToList<T, U>(this, collectionSupplier));
     }
 
     /**
@@ -13548,7 +13550,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> toObservable() {
-        return new ObservableFromPublisher<T>(this);
+        return RxJavaPlugins.onAssembly(new ObservableFromPublisher<T>(this));
     }
     
     /**
@@ -13576,7 +13578,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> toSingle() {
-        return new SingleFromPublisher<T>(this);
+        return RxJavaPlugins.onAssembly(new SingleFromPublisher<T>(this));
     }
 
     /**
@@ -13714,7 +13716,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> unsubscribeOn(Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new FlowableUnsubscribeOn<T>(this, scheduler);
+        return RxJavaPlugins.onAssembly(new FlowableUnsubscribeOn<T>(this, scheduler));
     }
     
     /**
@@ -13809,7 +13811,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         verifyPositive(skip, "skip");
         verifyPositive(count, "count");
         verifyPositive(bufferSize, "bufferSize");
-        return new FlowableWindow<T>(this, count, skip, bufferSize);
+        return RxJavaPlugins.onAssembly(new FlowableWindow<T>(this, count, skip, bufferSize));
     }
     
     /**
@@ -13920,7 +13922,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
-        return new FlowableWindowTimed<T>(this, timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false);
+        return RxJavaPlugins.onAssembly(new FlowableWindowTimed<T>(this, timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false));
     }
 
     /**
@@ -14192,7 +14194,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
         verifyPositive(count, "count");
-        return new FlowableWindowTimed<T>(this, timespan, timespan, unit, scheduler, count, bufferSize, restart);
+        return RxJavaPlugins.onAssembly(new FlowableWindowTimed<T>(this, timespan, timespan, unit, scheduler, count, bufferSize, restart));
     }
     
     /**
@@ -14253,7 +14255,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<Flowable<T>> window(Publisher<B> boundary, int bufferSize) {
         ObjectHelper.requireNonNull(boundary, "boundary is null");
-        return new FlowableWindowBoundary<T, B>(this, boundary, bufferSize);
+        return RxJavaPlugins.onAssembly(new FlowableWindowBoundary<T, B>(this, boundary, bufferSize));
     }
 
     /**
@@ -14329,7 +14331,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Function<? super U, ? extends Publisher<V>> windowClose, int bufferSize) {
         ObjectHelper.requireNonNull(windowOpen, "windowOpen is null");
         ObjectHelper.requireNonNull(windowClose, "windowClose is null");
-        return new FlowableWindowBoundarySelector<T, U, V>(this, windowOpen, windowClose, bufferSize);
+        return RxJavaPlugins.onAssembly(new FlowableWindowBoundarySelector<T, U, V>(this, windowOpen, windowClose, bufferSize));
     }
     
     /**
@@ -14396,7 +14398,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<Flowable<T>> window(Callable<? extends Publisher<B>> boundary, int bufferSize) {
         ObjectHelper.requireNonNull(boundary, "boundary is null");
-        return new FlowableWindowBoundarySupplier<T, B>(this, boundary, bufferSize);
+        return RxJavaPlugins.onAssembly(new FlowableWindowBoundarySupplier<T, B>(this, boundary, bufferSize));
     }
 
     /**
@@ -14434,7 +14436,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
 
-        return new FlowableWithLatestFrom<T, U, R>(this, combiner, other);
+        return RxJavaPlugins.onAssembly(new FlowableWithLatestFrom<T, U, R>(this, combiner, other));
     }
 
     /**
@@ -14569,7 +14571,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> withLatestFrom(Publisher<?>[] others, Function<? super Object[], R> combiner) {
         ObjectHelper.requireNonNull(others, "others is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
-        return new FlowableWithLatestFromMany<T, R>(this, others, combiner);
+        return RxJavaPlugins.onAssembly(new FlowableWithLatestFromMany<T, R>(this, others, combiner));
     }
 
     /**
@@ -14598,7 +14600,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> withLatestFrom(Iterable<? extends Publisher<?>> others, Function<? super Object[], R> combiner) {
         ObjectHelper.requireNonNull(others, "others is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
-        return new FlowableWithLatestFromMany<T, R>(this, others, combiner);
+        return RxJavaPlugins.onAssembly(new FlowableWithLatestFromMany<T, R>(this, others, combiner));
     }
 
     /**
@@ -14636,7 +14638,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <U, R> Flowable<R> zipWith(Iterable<U> other,  BiFunction<? super T, ? super U, ? extends R> zipper) {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(zipper, "zipper is null");
-        return new FlowableZipIterable<T, U, R>(this, other, zipper);
+        return RxJavaPlugins.onAssembly(new FlowableZipIterable<T, U, R>(this, other, zipper));
     }
 
     /**

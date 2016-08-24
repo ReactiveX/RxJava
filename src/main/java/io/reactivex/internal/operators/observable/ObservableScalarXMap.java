@@ -22,6 +22,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Utility classes to work with scalar-sourced XMap operators (where X == { flat, concat, switch }).
@@ -105,7 +106,7 @@ public enum ObservableScalarXMap {
      */
     public static <T, U> Observable<U> scalarXMap(T value, 
             Function<? super T, ? extends ObservableSource<? extends U>> mapper) {
-        return new ScalarXMapObservable<T, U>(value, mapper);
+        return RxJavaPlugins.onAssembly(new ScalarXMapObservable<T, U>(value, mapper));
     }
     
     /**

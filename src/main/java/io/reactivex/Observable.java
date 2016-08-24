@@ -79,7 +79,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     public static <T> Observable<T> amb(Iterable<? extends ObservableSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return new ObservableAmb<T>(null, sources);
+        return RxJavaPlugins.onAssembly(new ObservableAmb<T>(null, sources));
     }
     
     /**
@@ -101,7 +101,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<T> amb(ObservableSource<? extends T>... sources) {
+    public static <T> Observable<T> ambArray(ObservableSource<? extends T>... sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         int len = sources.length;
         if (len == 0) {
@@ -110,7 +110,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (len == 1) {
             return (Observable<T>)wrap(sources[0]);
         }
-        return new ObservableAmb<T>(sources, null);
+        return RxJavaPlugins.onAssembly(new ObservableAmb<T>(sources, null));
     }
     
     /**
@@ -212,7 +212,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return new ObservableCombineLatest<T, R>(null, sources, combiner, s, false);
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<T, R>(null, sources, combiner, s, false));
     }
 
     /**
@@ -274,7 +274,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return new ObservableCombineLatest<T, R>(sources, null, combiner, s, false);
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<T, R>(sources, null, combiner, s, false));
     }
 
     /**
@@ -726,7 +726,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         }
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return new ObservableCombineLatest<T, R>(sources, null, combiner, s, true);
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<T, R>(sources, null, combiner, s, true));
     }
 
     /**
@@ -792,7 +792,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
-        return new ObservableCombineLatest<T, R>(null, sources, combiner, s, true);
+        return RxJavaPlugins.onAssembly(new ObservableCombineLatest<T, R>(null, sources, combiner, s, true));
     }
 
     /**
@@ -860,7 +860,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Observable<T> concat(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return new ObservableConcatMap(sources, Functions.identity(), prefetch, ErrorMode.IMMEDIATE);
+        return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, Functions.identity(), prefetch, ErrorMode.IMMEDIATE));
     }
 
     /**
@@ -966,7 +966,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (sources.length == 1) {
             return wrap((ObservableSource<T>)sources[0]);
         }
-        return new ObservableConcatMap(fromArray(sources), Functions.identity(), bufferSize(), ErrorMode.BOUNDARY);
+        return RxJavaPlugins.onAssembly(new ObservableConcatMap(fromArray(sources), Functions.identity(), bufferSize(), ErrorMode.BOUNDARY));
     }
 
     /**
@@ -1095,7 +1095,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static final <T> Observable<T> concatDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch, boolean tillTheEnd) {
-        return new ObservableConcatMap(sources, Functions.identity(), prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY);
+        return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, Functions.identity(), prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
     }
 
     /**
@@ -1227,7 +1227,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> create(ObservableOnSubscribe<T> source) {
         ObjectHelper.requireNonNull(source, "source is null");
-        return new ObservableCreate<T>(source);
+        return RxJavaPlugins.onAssembly(new ObservableCreate<T>(source));
     }
 
     /**
@@ -1257,7 +1257,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> defer(Callable<? extends ObservableSource<? extends T>> supplier) {
         ObjectHelper.requireNonNull(supplier, "supplier is null");
-        return new ObservableDefer<T>(supplier);
+        return RxJavaPlugins.onAssembly(new ObservableDefer<T>(supplier));
     }
 
     /**
@@ -1279,7 +1279,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> empty() {
-        return (Observable<T>) ObservableEmpty.INSTANCE;
+        return RxJavaPlugins.onAssembly((Observable<T>) ObservableEmpty.INSTANCE);
     }
 
     /**
@@ -1303,7 +1303,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> error(Callable<? extends Throwable> errorSupplier) {
         ObjectHelper.requireNonNull(errorSupplier, "errorSupplier is null");
-        return new ObservableError<T>(errorSupplier);
+        return RxJavaPlugins.onAssembly(new ObservableError<T>(errorSupplier));
     }
 
     /**
@@ -1355,7 +1355,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (values.length == 1) {
             return just(values[0]);
         }
-        return new ObservableFromArray<T>(values);
+        return RxJavaPlugins.onAssembly(new ObservableFromArray<T>(values));
     }
 
     /**
@@ -1383,7 +1383,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromCallable(Callable<? extends T> supplier) {
         ObjectHelper.requireNonNull(supplier, "supplier is null");
-        return new ObservableFromCallable<T>(supplier);
+        return RxJavaPlugins.onAssembly(new ObservableFromCallable<T>(supplier));
     }
 
     /**
@@ -1415,7 +1415,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromFuture(Future<? extends T> future) {
         ObjectHelper.requireNonNull(future, "future is null");
-        return new ObservableFromFuture<T>(future, 0L, null);
+        return RxJavaPlugins.onAssembly(new ObservableFromFuture<T>(future, 0L, null));
     }
 
     /**
@@ -1452,7 +1452,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T> Observable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
         ObjectHelper.requireNonNull(future, "future is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
-        return new ObservableFromFuture<T>(future, timeout, unit);
+        return RxJavaPlugins.onAssembly(new ObservableFromFuture<T>(future, timeout, unit));
     }
 
     /**
@@ -1548,7 +1548,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     public static <T> Observable<T> fromIterable(Iterable<? extends T> source) {
         ObjectHelper.requireNonNull(source, "source is null");
-        return new ObservableFromIterable<T>(source);
+        return RxJavaPlugins.onAssembly(new ObservableFromIterable<T>(source));
     }
 
     /**
@@ -1564,11 +1564,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     public static <T> Observable<T> fromPublisher(Publisher<? extends T> publisher) {
         ObjectHelper.requireNonNull(publisher, "publisher is null");
-        return new ObservableFromPublisher<T>(publisher);
+        return RxJavaPlugins.onAssembly(new ObservableFromPublisher<T>(publisher));
     }
 
     /**
-     * Returns a cold, synchronous, stateless and backpressure-aware generator of values.
+     * Returns a cold, synchronous and stateless generator of values.
      * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1590,7 +1590,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
+     * Returns a cold, synchronous and stateful generator of values.
      * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1613,7 +1613,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
+     * Returns a cold, synchronous and stateful generator of values.
      * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1641,7 +1641,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
+     * Returns a cold, synchronous and stateful generator of values.
      * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1664,7 +1664,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a cold, synchronous, stateful and backpressure-aware generator of values.
+     * Returns a cold, synchronous and stateful generator of values.
      * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1689,7 +1689,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(initialState, "initialState is null");
         ObjectHelper.requireNonNull(generator, "generator  is null");
         ObjectHelper.requireNonNull(disposeState, "diposeState is null");
-        return new ObservableGenerate<T, S>(initialState, generator, disposeState);
+        return RxJavaPlugins.onAssembly(new ObservableGenerate<T, S>(initialState, generator, disposeState));
     }
 
     /**
@@ -1752,7 +1752,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
 
-        return new ObservableInterval(initialDelay, period, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new ObservableInterval(initialDelay, period, unit, scheduler));
     }
 
     /**
@@ -1853,7 +1853,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
 
-        return new ObservableIntervalRange(start, end, initialDelay, period, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new ObservableIntervalRange(start, end, initialDelay, period, unit, scheduler));
     }
 
     /**
@@ -1883,7 +1883,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T value) {
         ObjectHelper.requireNonNull(value, "The value is null");
-        return new ObservableJust<T>(value);
+        return RxJavaPlugins.onAssembly(new ObservableJust<T>(value));
     }
 
     /**
@@ -2378,7 +2378,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> merge(ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return new ObservableFlatMap(sources, Functions.identity(), false, Integer.MAX_VALUE, bufferSize());
+        return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), false, Integer.MAX_VALUE, bufferSize()));
     }
 
     /**
@@ -2410,7 +2410,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> merge(ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency) {
-        return new ObservableFlatMap(sources, Functions.identity(), false, maxConcurrency, bufferSize());
+        return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), false, maxConcurrency, bufferSize()));
     }
 
     /**
@@ -2693,7 +2693,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> mergeDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources) {
-        return new ObservableFlatMap(sources, Functions.identity(), true, Integer.MAX_VALUE, bufferSize());
+        return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), true, Integer.MAX_VALUE, bufferSize()));
     }
 
     /**
@@ -2728,7 +2728,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> mergeDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency) {
-        return new ObservableFlatMap(sources, Functions.identity(), true, maxConcurrency, bufferSize());
+        return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), true, maxConcurrency, bufferSize()));
     }
 
     /**
@@ -2896,7 +2896,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> never() {
-        return (Observable<T>) ObservableNever.INSTANCE;
+        return RxJavaPlugins.onAssembly((Observable<T>) ObservableNever.INSTANCE);
     }
 
     /**
@@ -2922,17 +2922,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static Observable<Integer> range(final int start, final int count) {
         if (count < 0) {
             throw new IllegalArgumentException("count >= 0 required but it was " + count);
-        } else
+        }
         if (count == 0) {
             return empty();
-        } else
+        }
         if (count == 1) {
             return just(start);
-        } else
+        }
         if ((long)start + (count - 1) > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Integer overflow");
         }
-        return new ObservableRange(start, count);
+        return RxJavaPlugins.onAssembly(new ObservableRange(start, count));
     }
 
     /**
@@ -3020,7 +3020,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(p2, "p2 is null");
         ObjectHelper.requireNonNull(isEqual, "isEqual is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new ObservableSequenceEqual<T>(p1, p2, isEqual, bufferSize);
+        return RxJavaPlugins.onAssembly(new ObservableSequenceEqual<T>(p1, p2, isEqual, bufferSize));
     }
 
     /**
@@ -3081,7 +3081,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> switchOnNext(ObservableSource<? extends ObservableSource<? extends T>> sources, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return new ObservableSwitchMap(sources, Functions.identity(), bufferSize, false);
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMap(sources, Functions.identity(), bufferSize, false));
     }
 
     /**
@@ -3180,7 +3180,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T> Observable<T> switchOnNextDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         verifyPositive(prefetch, "prefetch");
-        return new ObservableSwitchMap(sources, Functions.identity(), prefetch, true);
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMap(sources, Functions.identity(), prefetch, true));
     }
     
     /**
@@ -3232,12 +3232,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
 
-        return new ObservableTimer(delay, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new ObservableTimer(delay, unit, scheduler));
     }
 
     /**
      * Create a Observable by wrapping a ObservableSource <em>which has to be implemented according
-     * to the Reactive-Streams specification by handling backpressure and
+     * to the Reactive-Streams-based Observable specification by handling
      * cancellation correctly; no safeguards are provided by the Observable itself</em>.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -3254,7 +3254,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (onSubscribe instanceof Observable) {
             throw new IllegalArgumentException("unsafeCreate(Observable) should be upgraded");
         }
-        return new ObservableFromUnsafeSource<T>(onSubscribe);
+        return RxJavaPlugins.onAssembly(new ObservableFromUnsafeSource<T>(onSubscribe));
     }
 
     /**
@@ -3315,19 +3315,32 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
         ObjectHelper.requireNonNull(sourceSupplier, "sourceSupplier is null");
         ObjectHelper.requireNonNull(disposer, "disposer is null");
-        return new ObservableUsing<T, D>(resourceSupplier, sourceSupplier, disposer, eager);
+        return RxJavaPlugins.onAssembly(new ObservableUsing<T, D>(resourceSupplier, sourceSupplier, disposer, eager));
     }
 
     /**
      * Validate that the given value is positive or report an IllegalArgumentException with
      * the parameter name.
-     * @param bufferSize the value to validate
+     * @param value the value to validate
      * @param paramName the parameter name of the value
      * @throws IllegalArgumentException if bufferSize &lt;= 0
      */
-    private static void verifyPositive(int bufferSize, String paramName) {
-        if (bufferSize <= 0) {
-            throw new IllegalArgumentException(paramName + " > 0 required but it was " + bufferSize);
+    private static void verifyPositive(int value, String paramName) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(paramName + " > 0 required but it was " + value);
+        }
+    }
+    
+    /**
+     * Validate that the given value is positive or report an IllegalArgumentException with
+     * the parameter name.
+     * @param value the value to validate
+     * @param paramName the parameter name of the value
+     * @throws IllegalArgumentException if bufferSize &lt;= 0
+     */
+    private static void verifyPositive(long value, String paramName) {
+        if (value <= 0L) {
+            throw new IllegalArgumentException(paramName + " > 0 required but it was " + value);
         }
     }
     
@@ -3348,7 +3361,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T> Observable<T> wrap(ObservableSource<T> source) {
         ObjectHelper.requireNonNull(source, "source is null");
         if (source instanceof Observable) {
-            return (Observable<T>)source;
+            return RxJavaPlugins.onAssembly((Observable<T>)source);
         }
         return RxJavaPlugins.onAssembly(new ObservableFromUnsafeSource<T>(source));
     }
@@ -3397,7 +3410,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T, R> Observable<R> zip(Iterable<? extends ObservableSource<? extends T>> sources, Function<? super T[], ? extends R> zipper) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return new ObservableZip<T, R>(null, sources, zipper, bufferSize(), false);
+        return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(null, sources, zipper, bufferSize(), false));
     }
 
     /**
@@ -3445,8 +3458,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T, R> Observable<R> zip(ObservableSource<? extends ObservableSource<? extends T>> sources, final Function<? super T[], ? extends R> zipper) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return new ObservableToList(sources, 16)
-                .flatMap(ObservableInternalHelper.zipIterable(zipper));
+        return RxJavaPlugins.onAssembly(new ObservableToList(sources, 16)
+                .flatMap(ObservableInternalHelper.zipIterable(zipper)));
     }
 
     /**
@@ -4121,7 +4134,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         }
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new ObservableZip<T, R>(sources, null, zipper, bufferSize, delayError);
+        return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(sources, null, zipper, bufferSize, delayError));
     }
 
     /**
@@ -4176,7 +4189,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.requireNonNull(sources, "sources is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new ObservableZip<T, R>(null, sources, zipper, bufferSize, delayError);
+        return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
     // ***************************************************************************************************
@@ -4202,7 +4215,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<Boolean> all(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return new ObservableAll<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new ObservableAll<T>(this, predicate));
     }
 
     /**
@@ -4225,7 +4238,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> ambWith(ObservableSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return amb(this, other);
+        return ambArray(this, other);
     }
 
     /**
@@ -4251,23 +4264,20 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<Boolean> any(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return new ObservableAny<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new ObservableAny<T>(this, predicate));
     }
 
     /**
-     * Returns the first item emitted by this {@code BlockingObservable}, or throws
+     * Returns the first item emitted by this {@code Observable}, or throws
      * {@code NoSuchElementException} if it emits no items.
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the first item emitted by this {@code BlockingObservable}
+     * @return the first item emitted by this {@code Observable}
      * @throws NoSuchElementException
-     *             if this {@code BlockingObservable} emits no items
+     *             if this {@code Observable} emits no items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     public final T blockingFirst() {
@@ -4281,19 +4291,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns the first item emitted by this {@code BlockingObservable}, or a default value if it emits no
+     * Returns the first item emitted by this {@code Observable}, or a default value if it emits no
      * items.
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param defaultValue
-     *            a default value to return if this {@code BlockingObservable} emits no items
-     * @return the first item emitted by this {@code BlockingObservable}, or the default value if it emits no
+     *            a default value to return if this {@code Observable} emits no items
+     * @return the first item emitted by this {@code Observable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
@@ -4305,7 +4312,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Invokes a method on each item emitted by this {@code BlockingObservable} and blocks until the Observable
+     * Invokes a method on each item emitted by this {@code Observable} and blocks until the Observable
      * completes.
      * <p>
      * <em>Note:</em> This will block even if the underlying Observable is asynchronous.
@@ -4320,15 +4327,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>The difference between this method and {@link #subscribe(Consumer)} is that the {@code onNext} action
      * is executed on the emission thread instead of the current thread.
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingForEach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param onNext
-     *            the {@link Consumer} to invoke for each item emitted by the {@code BlockingObservable}
+     *            the {@link Consumer} to invoke for each item emitted by the {@code Observable}
      * @throws RuntimeException
      *             if an error occurs
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX documentation: Subscribe</a>
@@ -4348,18 +4352,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
     
     /**
-     * Converts this {@code BlockingObservable} into an {@link Iterable}.
+     * Converts this {@code Observable} into an {@link Iterable}.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code blockingITerable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an {@link Iterable} version of this {@code BlockingObservable}
+     * @return an {@link Iterable} version of this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public final Iterable<T> blockingIterable() {
@@ -4367,19 +4368,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
     
     /**
-     * Converts this {@code BlockingObservable} into an {@link Iterable}.
+     * Converts this {@code Observable} into an {@link Iterable}.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code blockingFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param bufferSize the number of items to prefetch from the current Flowable
-     * @return an {@link Iterable} version of this {@code BlockingObservable}
+     * @param bufferSize the number of items to prefetch from the current Observable
+     * @return an {@link Iterable} version of this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public final Iterable<T> blockingIterable(int bufferSize) {
@@ -4388,21 +4386,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
     
     /**
-     * Returns the last item emitted by this {@code BlockingObservable}, or throws
-     * {@code NoSuchElementException} if this {@code BlockingObservable} emits no items.
+     * Returns the last item emitted by this {@code Observable}, or throws
+     * {@code NoSuchElementException} if this {@code Observable} emits no items.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.last.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the last item emitted by this {@code BlockingObservable}
+     * @return the last item emitted by this {@code Observable}
      * @throws NoSuchElementException
-     *             if this {@code BlockingObservable} emits no items
+     *             if this {@code Observable} emits no items
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
      */
     public final T blockingLast() {
@@ -4416,21 +4411,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns the last item emitted by this {@code BlockingObservable}, or a default value if it emits no
+     * Returns the last item emitted by this {@code Observable}, or a default value if it emits no
      * items.
      * <p>
      * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.lastOrDefault.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param defaultValue
-     *            a default value to return if this {@code BlockingObservable} emits no items
-     * @return the last item emitted by the {@code BlockingObservable}, or the default value if it emits no
+     *            a default value to return if this {@code Observable} emits no items
+     * @return the last item emitted by the {@code Observable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
      */
@@ -4445,23 +4437,20 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
     
     /**
-     * Returns an {@link Iterable} that returns the latest item emitted by this {@code BlockingObservable},
+     * Returns an {@link Iterable} that returns the latest item emitted by this {@code Observable},
      * waiting if necessary for one to become available.
      * <p>
-     * If this {@code BlockingObservable} produces items faster than {@code Iterator.next} takes them,
+     * If this {@code Observable} produces items faster than {@code Iterator.next} takes them,
      * {@code onNext} events might be skipped, but {@code onError} or {@code onCompleted} events are not.
      * <p>
      * Note also that an {@code onNext} directly followed by {@code onCompleted} might hide the {@code onNext}
      * event.
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingLatest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an Iterable that always returns the latest item emitted by this {@code BlockingObservable}
+     * @return an Iterable that always returns the latest item emitted by this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     public final Iterable<T> blockingLatest() {
@@ -4470,21 +4459,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
     
     /**
      * Returns an {@link Iterable} that always returns the item most recently emitted by this
-     * {@code BlockingObservable}.
+     * {@code Observable}.
      * <p>
      * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingMostRecent} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param initialValue
      *            the initial value that the {@link Iterable} sequence will yield if this
-     *            {@code BlockingObservable} has not yet emitted an item
-     * @return an {@link Iterable} that on each iteration returns the item that this {@code BlockingObservable}
+     *            {@code Observable} has not yet emitted an item
+     * @return an {@link Iterable} that on each iteration returns the item that this {@code Observable}
      *         has most recently emitted
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
@@ -4493,19 +4479,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
     
     /**
-     * Returns an {@link Iterable} that blocks until this {@code BlockingObservable} emits another item, then
+     * Returns an {@link Iterable} that blocks until this {@code Observable} emits another item, then
      * returns that item.
      * <p>
      * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingNext} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an {@link Iterable} that blocks upon each iteration until this {@code BlockingObservable} emits
+     * @return an {@link Iterable} that blocks upon each iteration until this {@code Observable} emits
      *         a new item, whereupon the Iterable returns that item
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX documentation: TakeLast</a>
      */
@@ -4514,19 +4497,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
     
     /**
-     * If this {@code BlockingObservable} completes after emitting a single item, return that item, otherwise
+     * If this {@code Observable} completes after emitting a single item, return that item, otherwise
      * throw a {@code NoSuchElementException}.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.single.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the single item emitted by this {@code BlockingObservable}
+     * @return the single item emitted by this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     public final T blockingSingle() {
@@ -4534,22 +4514,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
     
     /**
-     * If this {@code BlockingObservable} completes after emitting a single item, return that item; if it emits
+     * If this {@code Observable} completes after emitting a single item, return that item; if it emits
      * more than one item, throw an {@code IllegalArgumentException}; if it emits no items, return a default
      * value.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.singleOrDefault.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param defaultValue
-     *            a default value to return if this {@code BlockingObservable} emits no items
-     * @return the single item emitted by this {@code BlockingObservable}, or the default value if it emits no
+     *            a default value to return if this {@code Observable} emits no items
+     * @return the single item emitted by this {@code Observable}, or the default value if it emits no
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
@@ -4558,24 +4535,21 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
     
     /**
-     * Returns a {@link Future} representing the single value emitted by this {@code BlockingObservable}.
+     * Returns a {@link Future} representing the single value emitted by this {@code Observable}.
      * <p>
      * If the {@link Observable} emits more than one item, {@link java.util.concurrent.Future} will receive an
      * {@link java.lang.IllegalArgumentException}. If the {@link Observable} is empty, {@link java.util.concurrent.Future}
      * will receive an {@link java.util.NoSuchElementException}.
      * <p>
-     * If the {@code BlockingObservable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
+     * If the {@code Observable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
      * <p>
      * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@link Future} that expects a single item to be emitted by this {@code BlockingObservable}
+     * @return a {@link Future} that expects a single item to be emitted by this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public final Future<T> toFuture() {
@@ -4585,9 +4559,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -4600,9 +4571,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -4616,9 +4584,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -4634,9 +4599,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -4653,14 +4615,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Subscribes to the source and calls the Observer methods <strong>on the current thread</strong>.
      * <p>
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator consumes the source 
-     *  {@code Observable} in an unbounded manner
-     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * The unsubscription and backpressure is composed through.
+     * The unsubscription is composed through.
      * @param subscriber the subscriber to forward events and calls to in the current thread
      * @since 2.0
      */
@@ -4753,7 +4711,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             throw new IllegalArgumentException("skip > 0 required but it was " + count);
         }
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return new ObservableBuffer<T, U>(this, count, skip, bufferSupplier);
+        return RxJavaPlugins.onAssembly(new ObservableBuffer<T, U>(this, count, skip, bufferSupplier));
     }
 
     /**
@@ -4875,7 +4833,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return new ObservableBufferTimed<T, U>(this, timespan, timeskip, unit, scheduler, bufferSupplier, Integer.MAX_VALUE, false);
+        return RxJavaPlugins.onAssembly(new ObservableBufferTimed<T, U>(this, timespan, timeskip, unit, scheduler, bufferSupplier, Integer.MAX_VALUE, false));
     }
 
     /**
@@ -5013,7 +4971,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (count <= 0) {
             throw new IllegalArgumentException("count > 0 required but it was " + count);
         }
-        return new ObservableBufferTimed<T, U>(this, timespan, timespan, unit, scheduler, bufferSupplier, count, restartTimerOnMaxSize);
+        return RxJavaPlugins.onAssembly(new ObservableBufferTimed<T, U>(this, timespan, timespan, unit, scheduler, bufferSupplier, count, restartTimerOnMaxSize));
     }
 
     /**
@@ -5108,7 +5066,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(bufferOpenings, "bufferOpenings is null");
         ObjectHelper.requireNonNull(bufferClosingSelector, "bufferClosingSelector is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return new ObservableBufferBoundary<T, U, TOpening, TClosing>(this, bufferOpenings, bufferClosingSelector, bufferSupplier);
+        return RxJavaPlugins.onAssembly(new ObservableBufferBoundary<T, U, TOpening, TClosing>(this, bufferOpenings, bufferClosingSelector, bufferSupplier));
     }
 
     /**
@@ -5197,7 +5155,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <B, U extends Collection<? super T>> Observable<U> buffer(ObservableSource<B> boundary, Callable<U> bufferSupplier) {
         ObjectHelper.requireNonNull(boundary, "boundary is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return new ObservableBufferExactBoundary<T, U, B>(this, boundary, bufferSupplier);
+        return RxJavaPlugins.onAssembly(new ObservableBufferExactBoundary<T, U, B>(this, boundary, bufferSupplier));
     }
 
     /**
@@ -5254,7 +5212,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <B, U extends Collection<? super T>> Observable<U> buffer(Callable<? extends ObservableSource<B>> boundarySupplier, Callable<U> bufferSupplier) {
         ObjectHelper.requireNonNull(boundarySupplier, "boundarySupplier is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        return new ObservableBufferBoundarySupplier<T, U, B>(this, boundarySupplier, bufferSupplier);
+        return RxJavaPlugins.onAssembly(new ObservableBufferBoundarySupplier<T, U, B>(this, boundarySupplier, bufferSupplier));
     }
 
     /**
@@ -5417,7 +5375,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <U> Observable<U> collect(Callable<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
         ObjectHelper.requireNonNull(initialValueSupplier, "initialValueSupplier is null");
         ObjectHelper.requireNonNull(collector, "collector is null");
-        return new ObservableCollect<T, U>(this, initialValueSupplier, collector);
+        return RxJavaPlugins.onAssembly(new ObservableCollect<T, U>(this, initialValueSupplier, collector));
     }
 
     /**
@@ -5529,7 +5487,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             }
             return ObservableScalarXMap.scalarXMap(v, mapper);
         }
-        return new ObservableConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE);
+        return RxJavaPlugins.onAssembly(new ObservableConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE));
     }
 
     /**
@@ -5584,7 +5542,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             }
             return ObservableScalarXMap.scalarXMap(v, mapper);
         }
-        return new ObservableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY);
+        return RxJavaPlugins.onAssembly(new ObservableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
     }
 
     /**
@@ -5634,7 +5592,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         verifyPositive(maxConcurrency, "maxConcurrency");
         verifyPositive(prefetch, "prefetch");
-        return new ObservableConcatMapEager<T, R>(this, mapper, ErrorMode.IMMEDIATE, maxConcurrency, prefetch);
+        return RxJavaPlugins.onAssembly(new ObservableConcatMapEager<T, R>(this, mapper, ErrorMode.IMMEDIATE, maxConcurrency, prefetch));
     }
     
     /**
@@ -5690,7 +5648,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEagerDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
             int maxConcurrency, int prefetch, boolean tillTheEnd) {
-        return new ObservableConcatMapEager<T, R>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, maxConcurrency, prefetch);
+        return RxJavaPlugins.onAssembly(new ObservableConcatMapEager<T, R>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, maxConcurrency, prefetch));
     }
     
     /**
@@ -5805,7 +5763,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<Long> count() {
-        return new ObservableCount<T>(this);
+        return RxJavaPlugins.onAssembly(new ObservableCount<T>(this));
     }
 
     /**
@@ -5829,7 +5787,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<T> debounce(Function<? super T, ? extends ObservableSource<U>> debounceSelector) {
         ObjectHelper.requireNonNull(debounceSelector, "debounceSelector is null");
-        return new ObservableDebounce<T, U>(this, debounceSelector);
+        return RxJavaPlugins.onAssembly(new ObservableDebounce<T, U>(this, debounceSelector));
     }
 
     /**
@@ -5908,7 +5866,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new ObservableDebounceTimed<T>(this, timeout, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new ObservableDebounceTimed<T>(this, timeout, unit, scheduler));
     }
 
     /**
@@ -6060,7 +6018,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         
-        return new ObservableDelay<T>(this, delay, unit, scheduler, delayError);
+        return RxJavaPlugins.onAssembly(new ObservableDelay<T>(this, delay, unit, scheduler, delayError));
     }
 
     /**
@@ -6115,7 +6073,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     public final <U> Observable<T> delaySubscription(ObservableSource<U> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return new ObservableDelaySubscriptionOther<T, U>(this, other);
+        return RxJavaPlugins.onAssembly(new ObservableDelaySubscriptionOther<T, U>(this, other));
     }
 
     /**
@@ -6184,7 +6142,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <T2> Observable<T2> dematerialize() {
         @SuppressWarnings("unchecked")
         Observable<Notification<T2>> m = (Observable<Notification<T2>>)this;
-        return new ObservableDematerialize<T2>(m);
+        return RxJavaPlugins.onAssembly(new ObservableDematerialize<T2>(m));
     }
     
     /**
@@ -6318,7 +6276,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> distinctUntilChanged(BiPredicate<? super T, ? super T> comparer) {
         ObjectHelper.requireNonNull(comparer, "comparer is null");
-        return new ObservableDistinctUntilChanged<T>(this, comparer);
+        return RxJavaPlugins.onAssembly(new ObservableDistinctUntilChanged<T>(this, comparer));
     }
 
     /**
@@ -6409,7 +6367,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
         ObjectHelper.requireNonNull(onAfterTerminate, "onAfterTerminate is null");
-        return new ObservableDoOnEach<T>(this, onNext, onError, onComplete, onAfterTerminate);
+        return RxJavaPlugins.onAssembly(new ObservableDoOnEach<T>(this, onNext, onError, onComplete, onAfterTerminate));
     }
 
     /**
@@ -6510,7 +6468,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> doOnLifecycle(final Consumer<? super Disposable> onSubscribe, final Action onCancel) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
         ObjectHelper.requireNonNull(onCancel, "onCancel is null");
-        return new ObservableDoOnLifecycle<T>(this, onSubscribe, onCancel);
+        return RxJavaPlugins.onAssembly(new ObservableDoOnLifecycle<T>(this, onSubscribe, onCancel));
     }
 
     /**
@@ -6604,7 +6562,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
-        return new ObservableElementAt<T>(this, index, null);
+        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(this, index, null));
     }
 
     /**
@@ -6633,7 +6591,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return new ObservableElementAt<T>(this, index, defaultValue);
+        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(this, index, defaultValue));
     }
 
     /**
@@ -6655,7 +6613,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> filter(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return new ObservableFilter<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new ObservableFilter<T>(this, predicate));
     }
 
     /**
@@ -6827,7 +6785,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             }
             return ObservableScalarXMap.scalarXMap(v, mapper);
         }
-        return new ObservableFlatMap<T, R>(this, mapper, delayErrors, maxConcurrency, bufferSize);
+        return RxJavaPlugins.onAssembly(new ObservableFlatMap<T, R>(this, mapper, delayErrors, maxConcurrency, bufferSize));
     }
 
     /**
@@ -6940,9 +6898,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
      * <dl>
-     *  <dd>The operator honors backpressure from downstream. The outer {@code ObservableSource} is consumed
-     *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code ObservableSource}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6972,9 +6927,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
      * <dl>
-     *  <dd>The operator honors backpressure from downstream. The outer {@code ObservableSource} is consumed
-     *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code ObservableSource}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -7486,7 +7438,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
         verifyPositive(bufferSize, "bufferSize");
 
-        return new ObservableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError);
+        return RxJavaPlugins.onAssembly(new ObservableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError));
     }
 
     /**
@@ -7527,8 +7479,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
             BiFunction<? super T, ? super Observable<TRight>, ? extends R> resultSelector
                     ) {
-        return new ObservableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
-                this, other, leftEnd, rightEnd, resultSelector);
+        return RxJavaPlugins.onAssembly(new ObservableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+                this, other, leftEnd, rightEnd, resultSelector));
     }
     
     /**
@@ -7546,7 +7498,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> hide() {
-        return new ObservableHide<T>(this);
+        return RxJavaPlugins.onAssembly(new ObservableHide<T>(this));
     }
 
     /**
@@ -7564,7 +7516,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> ignoreElements() {
-        return new ObservableIgnoreElements<T>(this);
+        return RxJavaPlugins.onAssembly(new ObservableIgnoreElements<T>(this));
     }
 
     /**
@@ -7625,8 +7577,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
             BiFunction<? super T, ? super TRight, ? extends R> resultSelector
                     ) {
-        return new ObservableJoin<T, TRight, TLeftEnd, TRightEnd, R>(
-                this, other, leftEnd, rightEnd, resultSelector);
+        return RxJavaPlugins.onAssembly(new ObservableJoin<T, TRight, TLeftEnd, TRightEnd, R>(
+                this, other, leftEnd, rightEnd, resultSelector));
     }
     
     /**
@@ -7697,7 +7649,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     public final <R> Observable<R> lift(ObservableOperator<? extends R, ? super T> lifter) {
         ObjectHelper.requireNonNull(lifter, "onLift is null");
-        return new ObservableLift<R, T>(this, lifter);
+        return RxJavaPlugins.onAssembly(new ObservableLift<R, T>(this, lifter));
     }
 
     /**
@@ -7719,7 +7671,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     public final <R> Observable<R> map(Function<? super T, ? extends R> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        return new ObservableMap<T, R>(this, mapper);
+        return RxJavaPlugins.onAssembly(new ObservableMap<T, R>(this, mapper));
     }
 
     /**
@@ -7738,7 +7690,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<Notification<T>> materialize() {
-        return new ObservableMaterialize<T>(this);
+        return RxJavaPlugins.onAssembly(new ObservableMaterialize<T>(this));
     }
 
     /**
@@ -7850,7 +7802,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         verifyPositive(bufferSize, "bufferSize");
-        return new ObservableObserveOn<T>(this, scheduler, delayError, bufferSize);
+        return RxJavaPlugins.onAssembly(new ObservableObserveOn<T>(this, scheduler, delayError, bufferSize));
     }
 
     /**
@@ -7906,7 +7858,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> onErrorResumeNext(Function<? super Throwable, ? extends ObservableSource<? extends T>> resumeFunction) {
         ObjectHelper.requireNonNull(resumeFunction, "resumeFunction is null");
-        return new ObservableOnErrorNext<T>(this, resumeFunction, false);
+        return RxJavaPlugins.onAssembly(new ObservableOnErrorNext<T>(this, resumeFunction, false));
     }
 
     /**
@@ -7973,7 +7925,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> onErrorReturn(Function<? super Throwable, ? extends T> valueSupplier) {
         ObjectHelper.requireNonNull(valueSupplier, "valueSupplier is null");
-        return new ObservableOnErrorReturn<T>(this, valueSupplier);
+        return RxJavaPlugins.onAssembly(new ObservableOnErrorReturn<T>(this, valueSupplier));
     }
 
     /**
@@ -8043,7 +7995,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> onExceptionResumeNext(final ObservableSource<? extends T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
-        return new ObservableOnErrorNext<T>(this, Functions.justFunction(next), true);
+        return RxJavaPlugins.onAssembly(new ObservableOnErrorNext<T>(this, Functions.justFunction(next), true));
     }
 
     /**
@@ -8059,7 +8011,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> onTerminateDetach() {
-        return new ObservableDetach<T>(this);
+        return RxJavaPlugins.onAssembly(new ObservableDetach<T>(this));
     }
     
     /**
@@ -8324,7 +8276,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (count == 0) {
             return empty();
         }
-        return new ObservableRepeat<T>(this, count);
+        return RxJavaPlugins.onAssembly(new ObservableRepeat<T>(this, count));
     }
 
     /**
@@ -8348,7 +8300,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> repeatUntil(BooleanSupplier stop) {
         ObjectHelper.requireNonNull(stop, "stop is null");
-        return new ObservableRepeatUntil<T>(this, stop);
+        return RxJavaPlugins.onAssembly(new ObservableRepeatUntil<T>(this, stop));
     }
 
     /**
@@ -8373,7 +8325,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> repeatWhen(final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
         ObjectHelper.requireNonNull(handler, "handler is null");
-        return new ObservableRedo<T>(this, ObservableInternalHelper.repeatWhenHandler(handler));
+        return RxJavaPlugins.onAssembly(new ObservableRedo<T>(this, ObservableInternalHelper.repeatWhenHandler(handler)));
     }
 
     /**
@@ -8891,7 +8843,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         
-        return new ObservableRetryBiPredicate<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new ObservableRetryBiPredicate<T>(this, predicate));
     }
 
     /**
@@ -8941,7 +8893,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         }
         ObjectHelper.requireNonNull(predicate, "predicate is null");
 
-        return new ObservableRetryPredicate<T>(this, times, predicate);
+        return RxJavaPlugins.onAssembly(new ObservableRetryPredicate<T>(this, times, predicate));
     }
 
     /**
@@ -9026,7 +8978,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> retryWhen(
             final Function<? super Observable<? extends Throwable>, ? extends ObservableSource<?>> handler) {
         ObjectHelper.requireNonNull(handler, "handler is null");
-        return new ObservableRedo<T>(this, ObservableInternalHelper.retryWhenHandler(handler));
+        return RxJavaPlugins.onAssembly(new ObservableRedo<T>(this, ObservableInternalHelper.retryWhenHandler(handler)));
     }
     
     /**
@@ -9100,7 +9052,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new ObservableSampleTimed<T>(this, period, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<T>(this, period, unit, scheduler));
     }
 
     /**
@@ -9125,7 +9077,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<T> sample(ObservableSource<U> sampler) {
         ObjectHelper.requireNonNull(sampler, "sampler is null");
-        return new ObservableSampleWithObservable<T>(this, sampler);
+        return RxJavaPlugins.onAssembly(new ObservableSampleWithObservable<T>(this, sampler));
     }
 
     /**
@@ -9152,7 +9104,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> scan(BiFunction<T, T, T> accumulator) {
         ObjectHelper.requireNonNull(accumulator, "accumulator is null");
-        return new ObservableScan<T>(this, accumulator);
+        return RxJavaPlugins.onAssembly(new ObservableScan<T>(this, accumulator));
     }
 
     /**
@@ -9249,7 +9201,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <R> Observable<R> scanWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         ObjectHelper.requireNonNull(seedSupplier, "seedSupplier is null");
         ObjectHelper.requireNonNull(accumulator, "accumulator is null");
-        return new ObservableScanSeed<T, R>(this, seedSupplier, accumulator);
+        return RxJavaPlugins.onAssembly(new ObservableScanSeed<T, R>(this, seedSupplier, accumulator));
     }
 
     /**
@@ -9274,7 +9226,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> serialize() {
-        return new ObservableSerialized<T>(this);
+        return RxJavaPlugins.onAssembly(new ObservableSerialized<T>(this));
     }
 
     /**
@@ -9319,7 +9271,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> single() {
-        return new ObservableSingle<T>(this, null);
+        return RxJavaPlugins.onAssembly(new ObservableSingle<T>(this, null));
     }
 
     /**
@@ -9344,7 +9296,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> single(T defaultValue) {
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return new ObservableSingle<T>(this, defaultValue);
+        return RxJavaPlugins.onAssembly(new ObservableSingle<T>(this, defaultValue));
     }
 
     /**
@@ -9366,9 +9318,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> skip(long count) {
         if (count <= 0) {
-            return this;
+            return RxJavaPlugins.onAssembly(this);
         }
-        return new ObservableSkip<T>(this, count);
+        return RxJavaPlugins.onAssembly(new ObservableSkip<T>(this, count));
     }
 
     /**
@@ -9445,11 +9397,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> skipLast(int count) {
         if (count < 0) {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        } else
-            if (count == 0) {
-                return this;
-            }
-        return new ObservableSkipLast<T>(this, count);
+        }
+        if (count == 0) {
+            return RxJavaPlugins.onAssembly(this);
+        }
+        return RxJavaPlugins.onAssembly(new ObservableSkipLast<T>(this, count));
     }
 
     /**
@@ -9596,9 +9548,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         verifyPositive(bufferSize, "bufferSize");
-     // the internal buffer holds pairs of (timestamp, value) so double the default buffer size
+        // the internal buffer holds pairs of (timestamp, value) so double the default buffer size
         int s = bufferSize << 1; 
-        return new ObservableSkipLastTimed<T>(this, time, unit, scheduler, s, delayError);
+        return RxJavaPlugins.onAssembly(new ObservableSkipLastTimed<T>(this, time, unit, scheduler, s, delayError));
     }
 
     /**
@@ -9622,7 +9574,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<T> skipUntil(ObservableSource<U> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return new ObservableSkipUntil<T, U>(this, other);
+        return RxJavaPlugins.onAssembly(new ObservableSkipUntil<T, U>(this, other));
     }
 
     /**
@@ -9644,7 +9596,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> skipWhile(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return new ObservableSkipWhile<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new ObservableSkipWhile<T>(this, predicate));
     }
 
     /**
@@ -9779,7 +9731,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> startWithArray(T... values) {
         Observable<T> fromArray = fromArray(values);
         if (fromArray == empty()) {
-            return this;
+            return RxJavaPlugins.onAssembly(this);
         }
         return concatArray(fromArray, this);
     }
@@ -9958,7 +9910,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> subscribeOn(Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new ObservableSubscribeOn<T>(this, scheduler);
+        return RxJavaPlugins.onAssembly(new ObservableSubscribeOn<T>(this, scheduler));
     }
 
     /**
@@ -9979,7 +9931,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> switchIfEmpty(ObservableSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return new ObservableSwitchIfEmpty<T>(this, other);
+        return RxJavaPlugins.onAssembly(new ObservableSwitchIfEmpty<T>(this, other));
     }
 
     /**
@@ -10043,7 +9995,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             }
             return ObservableScalarXMap.scalarXMap(v, mapper);
         }
-        return new ObservableSwitchMap<T, R>(this, mapper, bufferSize, false);
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMap<T, R>(this, mapper, bufferSize, false));
     }
 
     /**
@@ -10109,7 +10061,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             }
             return ObservableScalarXMap.scalarXMap(v, mapper);
         }
-        return new ObservableSwitchMap<T, R>(this, mapper, bufferSize, true);
+        return RxJavaPlugins.onAssembly(new ObservableSwitchMap<T, R>(this, mapper, bufferSize, true));
     }
 
     /**
@@ -10137,7 +10089,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (count < 0) {
             throw new IllegalArgumentException("count >= required but it was " + count);
         }
-        return new ObservableTake<T>(this, count);
+        return RxJavaPlugins.onAssembly(new ObservableTake<T>(this, count));
     }
 
     /**
@@ -10236,9 +10188,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
             return ignoreElements();
         } else
         if (count == 1) {
-            return new ObservableTakeLastOne<T>(this);
+            return RxJavaPlugins.onAssembly(new ObservableTakeLastOne<T>(this));
         }
-        return new ObservableTakeLast<T>(this, count);
+        return RxJavaPlugins.onAssembly(new ObservableTakeLast<T>(this, count));
     }
 
     /**
@@ -10337,7 +10289,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (count < 0) {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         }
-        return new ObservableTakeLastTimed<T>(this, count, time, unit, scheduler, bufferSize, delayError);
+        return RxJavaPlugins.onAssembly(new ObservableTakeLastTimed<T>(this, count, time, unit, scheduler, bufferSize, delayError));
     }
 
     /**
@@ -10499,7 +10451,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<T> takeUntil(ObservableSource<U> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return new ObservableTakeUntil<T, U>(this, other);
+        return RxJavaPlugins.onAssembly(new ObservableTakeUntil<T, U>(this, other));
     }
 
     /**
@@ -10527,7 +10479,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> takeUntil(Predicate<? super T> stopPredicate) {
         ObjectHelper.requireNonNull(stopPredicate, "predicate is null");
-        return new ObservableTakeUntilPredicate<T>(this, stopPredicate);
+        return RxJavaPlugins.onAssembly(new ObservableTakeUntilPredicate<T>(this, stopPredicate));
     }
 
     /**
@@ -10550,7 +10502,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> takeWhile(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return new ObservableTakeWhile<T>(this, predicate);
+        return RxJavaPlugins.onAssembly(new ObservableTakeWhile<T>(this, predicate));
     }
 
     /**
@@ -10605,7 +10557,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new ObservableThrottleFirstTimed<T>(this, skipDuration, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new ObservableThrottleFirstTimed<T>(this, skipDuration, unit, scheduler));
     }
 
     /**
@@ -10822,7 +10774,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<Timed<T>> timeInterval(TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new ObservableTimeInterval<T>(this, unit, scheduler);
+        return RxJavaPlugins.onAssembly(new ObservableTimeInterval<T>(this, unit, scheduler));
     }
 
     /**
@@ -11071,7 +11023,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Scheduler scheduler) {
         ObjectHelper.requireNonNull(timeUnit, "timeUnit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new ObservableTimeoutTimed<T>(this, timeout, timeUnit, scheduler, other);
+        return RxJavaPlugins.onAssembly(new ObservableTimeoutTimed<T>(this, timeout, timeUnit, scheduler, other));
     }
 
     private <U, V> Observable<T> timeout0(
@@ -11079,7 +11031,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super T, ? extends ObservableSource<V>> timeoutSelector,
                     ObservableSource<? extends T> other) {
         ObjectHelper.requireNonNull(timeoutSelector, "timeoutSelector is null");
-        return new ObservableTimeout<T, U, V>(this, firstTimeoutSelector, timeoutSelector, other);
+        return RxJavaPlugins.onAssembly(new ObservableTimeout<T, U, V>(this, firstTimeoutSelector, timeoutSelector, other));
     }
 
     /**
@@ -11207,7 +11159,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable toCompletable() {
-        return new CompletableFromObservable<T>(this);
+        return RxJavaPlugins.onAssembly(new CompletableFromObservable<T>(this));
     }
 
     /**
@@ -11268,7 +11220,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (capacityHint <= 0) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
         }
-        return new ObservableToList<T, List<T>>(this, capacityHint);
+        return RxJavaPlugins.onAssembly(new ObservableToList<T, List<T>>(this, capacityHint));
     }
 
     /**
@@ -11300,7 +11252,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U extends Collection<? super T>> Observable<U> toList(Callable<U> collectionSupplier) {
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
-        return new ObservableToList<T, U>(this, collectionSupplier);
+        return RxJavaPlugins.onAssembly(new ObservableToList<T, U>(this, collectionSupplier));
     }
 
     /**
@@ -11561,7 +11513,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> toSingle() {
-        return new SingleFromObservable<T>(this);
+        return RxJavaPlugins.onAssembly(new SingleFromObservable<T>(this));
     }
 
     /**
@@ -11679,7 +11631,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> unsubscribeOn(Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new ObservableUnsubscribeOn<T>(this, scheduler);
+        return RxJavaPlugins.onAssembly(new ObservableUnsubscribeOn<T>(this, scheduler));
     }
 
     /**
@@ -11759,14 +11711,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<Observable<T>> window(long count, long skip, int bufferSize) {
-        if (skip <= 0) {
-            throw new IllegalArgumentException("skip > 0 required but it was " + skip);
-        }
-        if (count <= 0) {
-            throw new IllegalArgumentException("count > 0 required but it was " + count);
-        }
+        verifyPositive(count, "count");
+        verifyPositive(skip, "skip");
         verifyPositive(bufferSize, "bufferSize");
-        return new ObservableWindow<T>(this, count, skip, bufferSize);
+        return RxJavaPlugins.onAssembly(new ObservableWindow<T>(this, count, skip, bufferSize));
     }
 
     /**
@@ -11856,7 +11804,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
-        return new ObservableWindowTimed<T>(this, timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false);
+        return RxJavaPlugins.onAssembly(new ObservableWindowTimed<T>(this, timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false));
     }
 
     /**
@@ -12087,7 +12035,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (count <= 0) {
             throw new IllegalArgumentException("count > 0 required but it was " + count);
         }
-        return new ObservableWindowTimed<T>(this, timespan, timespan, unit, scheduler, count, bufferSize, restart);
+        return RxJavaPlugins.onAssembly(new ObservableWindowTimed<T>(this, timespan, timespan, unit, scheduler, count, bufferSize, restart));
     }
 
     /**
@@ -12140,7 +12088,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Observable<Observable<T>> window(ObservableSource<B> boundary, int bufferSize) {
         ObjectHelper.requireNonNull(boundary, "boundary is null");
-        return new ObservableWindowBoundary<T, B>(this, boundary, bufferSize);
+        return RxJavaPlugins.onAssembly(new ObservableWindowBoundary<T, B>(this, boundary, bufferSize));
     }
 
     /**
@@ -12204,7 +12152,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super U, ? extends ObservableSource<V>> windowClose, int bufferSize) {
         ObjectHelper.requireNonNull(windowOpen, "windowOpen is null");
         ObjectHelper.requireNonNull(windowClose, "windowClose is null");
-        return new ObservableWindowBoundarySelector<T, U, V>(this, windowOpen, windowClose, bufferSize);
+        return RxJavaPlugins.onAssembly(new ObservableWindowBoundarySelector<T, U, V>(this, windowOpen, windowClose, bufferSize));
     }
 
     /**
@@ -12258,7 +12206,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Observable<Observable<T>> window(Callable<? extends ObservableSource<B>> boundary, int bufferSize) {
         ObjectHelper.requireNonNull(boundary, "boundary is null");
-        return new ObservableWindowBoundarySupplier<T, B>(this, boundary, bufferSize);
+        return RxJavaPlugins.onAssembly(new ObservableWindowBoundarySupplier<T, B>(this, boundary, bufferSize));
     }
 
     /**
@@ -12290,7 +12238,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
 
-        return new ObservableWithLatestFrom<T, U, R>(this, combiner, other);
+        return RxJavaPlugins.onAssembly(new ObservableWithLatestFrom<T, U, R>(this, combiner, other));
     }
 
     /**
@@ -12426,7 +12374,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <R> Observable<R> withLatestFrom(ObservableSource<?>[] others, Function<? super Object[], R> combiner) {
         ObjectHelper.requireNonNull(others, "others is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
-        return new ObservableWithLatestFromMany<T, R>(this, others, combiner);
+        return RxJavaPlugins.onAssembly(new ObservableWithLatestFromMany<T, R>(this, others, combiner));
     }
 
     /**
@@ -12452,7 +12400,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <R> Observable<R> withLatestFrom(Iterable<? extends ObservableSource<?>> others, Function<? super Object[], R> combiner) {
         ObjectHelper.requireNonNull(others, "others is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
-        return new ObservableWithLatestFromMany<T, R>(this, others, combiner);
+        return RxJavaPlugins.onAssembly(new ObservableWithLatestFromMany<T, R>(this, others, combiner));
     }
 
     /**
@@ -12485,7 +12433,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <U, R> Observable<R> zipWith(Iterable<U> other,  BiFunction<? super T, ? super U, ? extends R> zipper) {
         ObjectHelper.requireNonNull(other, "other is null");
         ObjectHelper.requireNonNull(zipper, "zipper is null");
-        return new ObservableZipIterable<T, U, R>(this, other, zipper);
+        return RxJavaPlugins.onAssembly(new ObservableZipIterable<T, U, R>(this, other, zipper));
     }
 
     /**
@@ -12634,6 +12582,22 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     public final TestObserver<T> test() { // NoPMD
         TestObserver<T> ts = new TestObserver<T>();
+        subscribe(ts);
+        return ts;
+    }
+
+    /**
+     * Creates a TestObserver, optionally disposes it and then subscribes
+     * it to this Observable.
+     * @param dispose dispose the TestObserver before it is subscribed to this Observable?
+     * @return the new TestObserver instance
+     * @since 2.0
+     */
+    public final TestObserver<T> test(boolean dispose) { // NoPMD
+        TestObserver<T> ts = new TestObserver<T>();
+        if (dispose) {
+            ts.dispose();
+        }
         subscribe(ts);
         return ts;
     }
