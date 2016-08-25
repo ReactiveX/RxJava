@@ -2222,13 +2222,14 @@ public class Completable {
     }
     
     /**
-     * Allows fluent conversion to another type via a function callback.
-     * @param <U> the output type as determined by the converter function
-     * @param converter the function called with this which should return some other value.
-     * @return the converted value
-     * @throws NullPointerException if converter is null
+     * Calls the specified converter function during assembly time and returns its resulting value.
+     * <p>
+     * This allows fluent conversion to any other type.
+     * @param <R> the resulting object type
+     * @param converter the function that receives the current Single instance and returns a value
+     * @return the value returned by the function
      */
-    public final <U> U to(Func1<? super Completable, U> converter) {
+    public final <R> R to(Func1<? super Completable, R> converter) {
         return converter.call(this);
     }
 

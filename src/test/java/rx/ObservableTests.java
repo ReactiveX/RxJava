@@ -1423,4 +1423,21 @@ public class ObservableTests {
         assertTrue(list.get(1).toString(), list.get(1) instanceof TestException);
         assertEquals(100, list.get(2));
     }
+
+    @Test public void toFunctionReceivesObservableReturnsResult() {
+        Observable<String> o = Observable.just("Hi");
+
+        final Object expectedResult = new Object();
+        final AtomicReference<Observable<?>> observableRef = new AtomicReference<Observable<?>>();
+        Object actualResult = o.to(new Func1<Observable<String>, Object>() {
+            @Override
+            public Object call(Observable<String> observable) {
+                observableRef.set(observable);
+                return expectedResult;
+            }
+        });
+
+        assertSame(expectedResult, actualResult);
+        assertSame(o, observableRef.get());
+    }
 }

@@ -4158,4 +4158,21 @@ public class CompletableTest {
         Assert.assertTrue(errors.get(1).toString(), errors.get(1) instanceof TestException);
         Assert.assertEquals(errors.get(1).toString(), "Forced inner failure", errors.get(1).getMessage());
     }
+
+    @Test public void toFunctionReceivesObservableReturnsResult() {
+        Completable c = Completable.error(new RuntimeException());
+
+        final Object expectedResult = new Object();
+        final AtomicReference<Completable> completableRef = new AtomicReference<Completable>();
+        Object actualResult = c.to(new Func1<Completable, Object>() {
+            @Override
+            public Object call(Completable completable) {
+                completableRef.set(completable);
+                return expectedResult;
+            }
+        });
+
+        assertSame(expectedResult, actualResult);
+        assertSame(c, completableRef.get());
+    }
 }

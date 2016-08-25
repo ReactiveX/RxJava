@@ -2069,4 +2069,21 @@ public class SingleTest {
 
         testSubscriber.assertError(UnsupportedOperationException.class);
     }
+
+    @Test public void toFunctionReceivesObservableReturnsResult() {
+        Single<String> s = Single.just("Hi");
+
+        final Object expectedResult = new Object();
+        final AtomicReference<Single<?>> singleRef = new AtomicReference<Single<?>>();
+        Object actualResult = s.to(new Func1<Single<String>, Object>() {
+            @Override
+            public Object call(Single<String> single) {
+                singleRef.set(single);
+                return expectedResult;
+            }
+        });
+
+        assertSame(expectedResult, actualResult);
+        assertSame(s, singleRef.get());
+    }
 }
