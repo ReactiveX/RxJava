@@ -1,57 +1,36 @@
 # RxJava: Reactive Extensions for the JVM
 
+<a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=2.x'></a>
+[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=2.x)](http://codecov.io/github/ReactiveX/RxJava?branch=2.x)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava)
+
 RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io): a library for composing asynchronous and event-based programs by using observable sequences.
 
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
 
 #### Version 2.x
 
+- single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
+- continued support for Java 6+ & [Android](https://github.com/ReactiveX/RxAndroid) 2.3+
+- performance gains through design changes learned through the 1.x cycle and through [Reactive-Streams-Commons](https://github.com/reactor/reactive-streams-commons) research project.
+- Java 8 lambda-friendly API
+- non-opinionated about source of concurrency (threads, pools, event loops, fibers, actors, etc)
+- async or synchronous execution
+- virtual time and schedulers for parameterized concurrency
+
+
 Version 2.x and 1.x will live side-by-side for several years. They will have different group ids (`io.reactivex.rxjava2` vs `io.reactivex`) and namespaces (`io.reactivex` vs `rx`). 
 
-The purpose for 2.x is:
-
-- continued support for Java 6+ & [Android](https://github.com/ReactiveX/RxAndroid) 2.3+
-- [Reactive Streams](http://www.reactive-streams.org) compatibility
-- performance gains through design changes learned through the 1.x cycle
+See the differences between version 1.x and 2.x in the wiki article [What's different in 2.0](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0). Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
 
 ##### Releases
 
 The release plan for 2.x is as [follows](https://github.com/ReactiveX/RxJava/issues/4016):
 
-  - 26/08/2016: Release Candidate 1: stabilized API and feature set
+  - **25/08/2016: Release Candidate 1: stabilized API and feature set**
   - 23/09/2016: Release Candidate 2: addressing feedback from RC 1
   - 21/10/2016: Release Candidate 3: addressing feedback from RC 2
   - 29/10/2016: Stable Release: General availability
-  
-The snapshots of merges into the 2.x branch (developer preview) are available as follows:
-
-```
-repositories {
-    maven { url 'https://oss.jfrog.org/libs-snapshot' }
-}
-
-dependencies {
-    compile 'io.reactivex.rxjava2:rxjava:2.0.0-DP0-SNAPSHOT'
-}
-```
-
-#### Version 1.x
-
-- Zero Dependencies
-- < 800KB Jar
-- Java 6+ & [Android](https://github.com/ReactiveX/RxAndroid) 2.3+
-- Java 8 lambda support
-- Polyglot ([Scala](https://github.com/ReactiveX/RxScala), [Groovy](https://github.com/ReactiveX/RxGroovy), [Clojure](https://github.com/ReactiveX/RxClojure) and [Kotlin](https://github.com/ReactiveX/RxKotlin))
-- Non-opinionated about source of concurrency (threads, pools, event loops, fibers, actors, etc)
-- Async or synchronous execution
-- Virtual time and schedulers for parameterized concurrency
-
-Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
-
-## Master Build Status
-
-<a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=2.x'></a>
-[![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=2.x)](http://codecov.io/github/ReactiveX/RxJava?branch=2.x)
 
 ## Communication
 
@@ -61,7 +40,7 @@ Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki
 
 ## Versioning
 
-Version 2.x has started development. 
+Version 2.x has reached Release Candidate 1. 
 
 Version 1.x is now a stable API and will be supported for several years.
 
@@ -81,30 +60,30 @@ APIs marked with the [`@Experimental`][experimental source link] annotation at t
 
 APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release but it is recommended to stop using them. 
 
-#### rx.internal.*
+#### io.reactivex.internal.*
 
-All code inside the `rx.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time. 
+All code inside the `io.reactivex.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time. 
 
 ## Full Documentation
 
 - [Wiki](https://github.com/ReactiveX/RxJava/wiki)
-- [Javadoc](http://reactivex.io/RxJava/javadoc/)
+- [Javadoc](http://reactivex.io/RxJava/javadoc/2.x/)
 
 ## Binaries
 
-Binaries and dependency information for Maven, Ivy, Gradle and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cio.reactivex.rxjava).
+Binaries and dependency information for Maven, Ivy, Gradle and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cio.reactivex.rxjava2).
 
 Example for Gradle:
 
 ```groovy
-compile 'io.reactivex:rxjava:x.y.z'
+compile 'io.reactivex.rxjava2:rxjava:x.y.z'
 ```
 
 and for Maven:
 
 ```xml
 <dependency>
-    <groupId>io.reactivex</groupId>
+    <groupId>io.reactivex.rxjava2</groupId>
     <artifactId>rxjava</artifactId>
     <version>x.y.z</version>
 </dependency>
@@ -112,7 +91,7 @@ and for Maven:
 and for Ivy:
 
 ```xml
-<dependency org="io.reactivex" name="rxjava" rev="x.y.z" />
+<dependency org="io.reactivex.rxjava2" name="rxjava" rev="x.y.z" />
 ```
 
 Snapshots are available via [JFrog](https://oss.jfrog.org/webapp/search/artifact/?5&q=rxjava):
@@ -123,7 +102,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.reactivex:rxjava:1.0.y-SNAPSHOT'
+    compile 'io.reactivex.rxjava2:rxjava:2.0.0-DP0-SNAPSHOT'
 }
 ```
 
@@ -133,6 +112,7 @@ To build:
 
 ```
 $ git clone git@github.com:ReactiveX/RxJava.git
+$ git checkout -b 2.x
 $ cd RxJava/
 $ ./gradlew build
 ```
