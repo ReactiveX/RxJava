@@ -47,7 +47,7 @@
  * {@link io.reactivex.Flowable}, {@link io.reactivex.Observable}, {@link io.reactivex.Single}
  * or {@link io.reactivex.Completable} class which then allow consumers to subscribe to them
  * and receive events.</p>
- * <p>Usage examples can be found on the {@link rx.Observable} and {@link org.reactivestreams.Subscriber} classes.</p>
+ * <p>Usage examples can be found on the {@link io.reactivex.Flowable}/{@link io.reactivex.Observable} and {@link org.reactivestreams.Subscriber} classes.</p>
  */
 package io.reactivex;
 
