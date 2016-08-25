@@ -212,7 +212,7 @@ public class Observable<T> {
      * @return an instance of R created by the provided conversion function
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Experimental @Deprecated // TODO remove method some time after 1.2.0 release. It was never a stable API.
     public <R> R extend(Func1<? super OnSubscribe<T>, ? extends R> conversion) {
         return conversion.call(new OnSubscribeExtend<T>(this));
     }
@@ -307,6 +307,19 @@ public class Observable<T> {
      */
     public interface Transformer<T, R> extends Func1<Observable<T>, Observable<R>> {
         // cover for generics insanity
+    }
+
+    /**
+     * Calls the specified converter function during assembly time and returns its resulting value.
+     * <p>
+     * This allows fluent conversion to any other type.
+     * @param <R> the resulting object type
+     * @param converter the function that receives the current Observable instance and returns a value
+     * @return the value returned by the function
+     */
+    @Experimental
+    public final <R> R to(Func1<? super Observable<T>, R> converter) {
+        return converter.call(this);
     }
 
     /**

@@ -2197,6 +2197,19 @@ public class Single<T> {
             }
         });
     }
+
+    /**
+     * Calls the specified converter function during assembly time and returns its resulting value.
+     * <p>
+     * This allows fluent conversion to any other type.
+     * @param <R> the resulting object type
+     * @param converter the function that receives the current Single instance and returns a value
+     * @return the value returned by the function
+     */
+    @Experimental
+    public final <R> R to(Func1<? super Single<T>, R> converter) {
+        return converter.call(this);
+    }
     
     /**
      * Converts this Single into an {@link Observable}.
