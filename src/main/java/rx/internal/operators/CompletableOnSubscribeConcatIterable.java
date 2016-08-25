@@ -20,10 +20,10 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
-import rx.Completable.*;
+import rx.Completable.OnSubscribe;
 import rx.subscriptions.*;
 
-public final class CompletableOnSubscribeConcatIterable implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeConcatIterable implements OnSubscribe {
     final Iterable<? extends Completable> sources;
     
     public CompletableOnSubscribeConcatIterable(Iterable<? extends Completable> sources) {

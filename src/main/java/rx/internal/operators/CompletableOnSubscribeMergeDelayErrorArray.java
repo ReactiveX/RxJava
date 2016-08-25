@@ -21,10 +21,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
-import rx.Completable.*;
+import rx.Completable.OnSubscribe;
 import rx.subscriptions.CompositeSubscription;
 
-public final class CompletableOnSubscribeMergeDelayErrorArray implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeMergeDelayErrorArray implements OnSubscribe {
     final Completable[] sources;
     
     public CompletableOnSubscribeMergeDelayErrorArray(Completable[] sources) {

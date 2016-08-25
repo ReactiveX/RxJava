@@ -19,11 +19,11 @@ package rx.internal.operators;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
-import rx.Completable.*;
+import rx.Completable.OnSubscribe;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
-public final class CompletableOnSubscribeMergeArray implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeMergeArray implements OnSubscribe {
     final Completable[] sources;
     
     public CompletableOnSubscribeMergeArray(Completable[] sources) {

@@ -19,10 +19,10 @@ package rx.internal.operators;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
-import rx.Completable.*;
+import rx.Completable.OnSubscribe;
 import rx.subscriptions.SerialSubscription;
 
-public final class CompletableOnSubscribeConcatArray implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeConcatArray implements OnSubscribe {
     final Completable[] sources;
     
     public CompletableOnSubscribeConcatArray(Completable[] sources) {

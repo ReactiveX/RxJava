@@ -2021,7 +2021,7 @@ public class Single<T> {
                     }
                 };
 
-                final Completable.CompletableSubscriber so = new Completable.CompletableSubscriber() {
+                final CompletableSubscriber so = new CompletableSubscriber() {
                     @Override
                     public void onCompleted() {
                         onError(new CancellationException("Stream was canceled before emitting a terminal event."));

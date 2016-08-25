@@ -15,7 +15,7 @@
  */
 package rx.observers;
 
-import rx.Completable.CompletableSubscriber;
+import rx.CompletableSubscriber;
 import rx.Subscription;
 import rx.annotations.Experimental;
 import rx.exceptions.*;

@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.Observable.OnSubscribe;
 import rx.annotations.Experimental;
 import rx.exceptions.*;
 import rx.functions.*;
@@ -39,25 +38,62 @@ import rx.subscriptions.*;
 @Experimental
 public class Completable {
     /** The actual subscription action. */
-    private final CompletableOnSubscribe onSubscribe;
+    private final OnSubscribe onSubscribe;
+    
+    /**
+     * @deprecated Use {@link OnSubscribe} instead.
+     */
+    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
+    public interface CompletableOnSubscribe extends Action1<CompletableSubscriber> {
+
+    }
+
+    private static OnSubscribe fromOldOnSubscribe(final CompletableOnSubscribe onSubscribe) {
+        return new OnSubscribe() {
+            @Override
+            public void call(final rx.CompletableSubscriber s) {
+                onSubscribe.call(toOldSubscriber(s));
+            }
+        };
+    }
+
     /**
      * Callback used for building deferred computations that takes a CompletableSubscriber.
      */
-    public interface CompletableOnSubscribe extends Action1<CompletableSubscriber> {
+    public interface OnSubscribe extends Action1<rx.CompletableSubscriber> {
         
+    }
+
+    /**
+     * @deprecated Use {@link Operator} instead.
+     */
+    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
+    public interface CompletableOperator extends Func1<CompletableSubscriber, CompletableSubscriber> {
+
+    }
+
+    private static Operator fromOldOperator(final CompletableOperator operator) {
+        requireNonNull(operator);
+        return new Operator() {
+            @Override
+            public rx.CompletableSubscriber call(final rx.CompletableSubscriber subscriber) {
+                return fromOldSubscriber(operator.call(toOldSubscriber(subscriber)));
+            }
+        };
     }
     
     /**
      * Convenience interface and callback used by the lift operator that given a child CompletableSubscriber,
      * return a parent CompletableSubscriber that does any kind of lifecycle-related transformations.
      */
-    public interface CompletableOperator extends Func1<CompletableSubscriber, CompletableSubscriber> {
+    public interface Operator extends Func1<rx.CompletableSubscriber, rx.CompletableSubscriber> {
         
     }
     
     /**
-     * Represents the subscription API callbacks when subscribing to a Completable instance.
+     * @deprecated Use {@link rx.CompletableSubscriber} instead.
      */
+    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
     public interface CompletableSubscriber {
         /**
          * Called once the deferred computation completes normally.
@@ -78,27 +114,75 @@ public class Completable {
         void onSubscribe(Subscription d);
     }
     
+    static rx.CompletableSubscriber fromOldSubscriber(final CompletableSubscriber subscriber) {
+        requireNonNull(subscriber);
+        return new rx.CompletableSubscriber() {
+            @Override
+            public void onCompleted() {
+                subscriber.onCompleted();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                subscriber.onError(e);
+            }
+
+            @Override
+            public void onSubscribe(Subscription d) {
+                subscriber.onSubscribe(d);
+            }
+        };
+    }
+
+    static CompletableSubscriber toOldSubscriber(final rx.CompletableSubscriber subscriber) {
+        requireNonNull(subscriber);
+        return new CompletableSubscriber() {
+            @Override
+            public void onCompleted() {
+                subscriber.onCompleted();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                subscriber.onError(e);
+            }
+
+            @Override
+            public void onSubscribe(Subscription d) {
+                subscriber.onSubscribe(d);
+            }
+        };
+    }
+
+    /**
+     * @deprecated Use {@link Transformer} instead.
+     */
+    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
+    public interface CompletableTransformer extends Transformer {
+
+    }
+
     /**
      * Convenience interface and callback used by the compose operator to turn a Completable into another
      * Completable fluently.
      */
-    public interface CompletableTransformer extends Func1<Completable, Completable> {
+    public interface Transformer extends Func1<Completable, Completable> {
         
     }
     
     /** Single instance of a complete Completable. */
-    static final Completable COMPLETE = new Completable(new CompletableOnSubscribe() {
+    static final Completable COMPLETE = new Completable(new OnSubscribe() {
         @Override
-        public void call(CompletableSubscriber s) {
+        public void call(rx.CompletableSubscriber s) {
             s.onSubscribe(Subscriptions.unsubscribed());
             s.onCompleted();
         }
     }, false); // hook is handled in complete()
     
     /** Single instance of a never Completable. */
-    static final Completable NEVER = new Completable(new CompletableOnSubscribe() {
+    static final Completable NEVER = new Completable(new OnSubscribe() {
         @Override
-        public void call(CompletableSubscriber s) {
+        public void call(rx.CompletableSubscriber s) {
             s.onSubscribe(Subscriptions.unsubscribed());
         }
     }, false); // hook is handled in never()
@@ -119,15 +203,15 @@ public class Completable {
             return sources[0];
         }
         
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
+            public void call(final rx.CompletableSubscriber s) {
                 final CompositeSubscription set = new CompositeSubscription();
                 s.onSubscribe(set);
 
                 final AtomicBoolean once = new AtomicBoolean();
                 
-                CompletableSubscriber inner = new CompletableSubscriber() {
+                rx.CompletableSubscriber inner = new rx.CompletableSubscriber() {
                     @Override
                     public void onCompleted() {
                         if (once.compareAndSet(false, true)) {
@@ -188,9 +272,9 @@ public class Completable {
     public static Completable amb(final Iterable<? extends Completable> sources) {
         requireNonNull(sources);
         
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
+            public void call(final rx.CompletableSubscriber s) {
                 final CompositeSubscription set = new CompositeSubscription();
                 s.onSubscribe(set);
 
@@ -212,7 +296,7 @@ public class Completable {
                 
                 final AtomicBoolean once = new AtomicBoolean();
                 
-                CompletableSubscriber inner = new CompletableSubscriber() {
+                rx.CompletableSubscriber inner = new rx.CompletableSubscriber() {
                     @Override
                     public void onCompleted() {
                         if (once.compareAndSet(false, true)) {
@@ -311,7 +395,7 @@ public class Completable {
      * @return a Completable instance that completes immediately 
      */
     public static Completable complete() {
-        CompletableOnSubscribe cos = RxJavaHooks.onCreate(COMPLETE.onSubscribe);
+        OnSubscribe cos = RxJavaHooks.onCreate(COMPLETE.onSubscribe);
         if (cos == COMPLETE.onSubscribe) {
             return COMPLETE;
         }
@@ -371,6 +455,14 @@ public class Completable {
         }
         return create(new CompletableOnSubscribeConcat(sources, prefetch));
     }
+
+    /**
+     * @deprecated Use {@link #create(OnSubscribe)}.
+     */
+    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
+    public static Completable create(CompletableOnSubscribe onSubscribe) {
+        return create(fromOldOnSubscribe(onSubscribe));
+    }
     
     /**
      * Constructs a Completable instance by wrapping the given onSubscribe callback.
@@ -379,7 +471,7 @@ public class Completable {
      * @return the created Completable instance
      * @throws NullPointerException if onSubscribe is null
      */
-    public static Completable create(CompletableOnSubscribe onSubscribe) {
+    public static Completable create(OnSubscribe onSubscribe) {
         requireNonNull(onSubscribe);
         try {
             return new Completable(onSubscribe);
@@ -398,9 +490,9 @@ public class Completable {
      */
     public static Completable defer(final Func0<? extends Completable> completableFunc0) {
         requireNonNull(completableFunc0);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(CompletableSubscriber s) {
+            public void call(rx.CompletableSubscriber s) {
                 Completable c;
                 
                 try {
@@ -434,9 +526,9 @@ public class Completable {
      */
     public static Completable error(final Func0<? extends Throwable> errorFunc0) {
         requireNonNull(errorFunc0);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(CompletableSubscriber s) {
+            public void call(rx.CompletableSubscriber s) {
                 s.onSubscribe(Subscriptions.unsubscribed());
                 Throwable error;
                 
@@ -462,9 +554,9 @@ public class Completable {
      */
     public static Completable error(final Throwable error) {
         requireNonNull(error);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(CompletableSubscriber s) {
+            public void call(rx.CompletableSubscriber s) {
                 s.onSubscribe(Subscriptions.unsubscribed());
                 s.onError(error);
             }
@@ -480,9 +572,9 @@ public class Completable {
      */
     public static Completable fromAction(final Action0 action) {
         requireNonNull(action);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(CompletableSubscriber s) {
+            public void call(rx.CompletableSubscriber s) {
                 BooleanSubscription bs = new BooleanSubscription();
                 s.onSubscribe(bs);
                 try {
@@ -508,9 +600,9 @@ public class Completable {
      */
     public static Completable fromCallable(final Callable<?> callable) {
         requireNonNull(callable);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(CompletableSubscriber s) {
+            public void call(rx.CompletableSubscriber s) {
                 BooleanSubscription bs = new BooleanSubscription();
                 s.onSubscribe(bs);
                 try {
@@ -549,9 +641,9 @@ public class Completable {
      */
     public static Completable fromObservable(final Observable<?> flowable) {
         requireNonNull(flowable);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber cs) {
+            public void call(final rx.CompletableSubscriber cs) {
                 Subscriber<Object> subscriber = new Subscriber<Object>() {
 
                     @Override
@@ -584,9 +676,9 @@ public class Completable {
      */
     public static Completable fromSingle(final Single<?> single) {
         requireNonNull(single);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
+            public void call(final rx.CompletableSubscriber s) {
                 SingleSubscriber<Object> te = new SingleSubscriber<Object>() {
 
                     @Override
@@ -738,7 +830,7 @@ public class Completable {
      * @return the singleton instance that never calls onError or onComplete
      */
     public static Completable never() {
-        CompletableOnSubscribe cos = RxJavaHooks.onCreate(NEVER.onSubscribe);
+        OnSubscribe cos = RxJavaHooks.onCreate(NEVER.onSubscribe);
         if (cos == NEVER.onSubscribe) {
             return NEVER;
         }
@@ -779,9 +871,9 @@ public class Completable {
     public static Completable timer(final long delay, final TimeUnit unit, final Scheduler scheduler) {
         requireNonNull(unit);
         requireNonNull(scheduler);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
+            public void call(final rx.CompletableSubscriber s) {
                 MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
                 s.onSubscribe(mad);
                 if (!mad.isUnsubscribed()) {
@@ -856,9 +948,9 @@ public class Completable {
         requireNonNull(completableFunc1);
         requireNonNull(disposer);
         
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
+            public void call(final rx.CompletableSubscriber s) {
                 final R resource; // NOPMD 
                 
                 try {
@@ -908,7 +1000,7 @@ public class Completable {
                 
                 final AtomicBoolean once = new AtomicBoolean();
                 
-                cs.unsafeSubscribe(new CompletableSubscriber() {
+                cs.unsafeSubscribe(new rx.CompletableSubscriber() {
                     Subscription d;
                     void dispose() {
                         d.unsubscribe();
@@ -980,8 +1072,16 @@ public class Completable {
      * @param onSubscribe the callback that will receive CompletableSubscribers when they subscribe,
      * not null (not verified)
      */
-    protected Completable(CompletableOnSubscribe onSubscribe) {
+    protected Completable(OnSubscribe onSubscribe) {
         this.onSubscribe = RxJavaHooks.onCreate(onSubscribe);
+    }
+
+    /**
+     * @deprecated Use {@link #Completable(OnSubscribe)}.
+     */
+    @Deprecated // TODO Remove constructor after 1.2.0 release. It was never a stable API. Provided only for migration.
+    protected Completable(CompletableOnSubscribe onSubscribe) {
+        this(fromOldOnSubscribe(onSubscribe));
     }
 
     /**
@@ -991,8 +1091,16 @@ public class Completable {
      * not null (not verified)
      * @param useHook if false, RxJavaHooks.onCreate won't be called
      */
-    private Completable(CompletableOnSubscribe onSubscribe, boolean useHook) {
+    private Completable(OnSubscribe onSubscribe, boolean useHook) {
         this.onSubscribe = useHook ? RxJavaHooks.onCreate(onSubscribe) : onSubscribe;
+    }
+
+    /**
+     * @deprecated Use {@link #Completable(OnSubscribe, boolean)}.
+     */
+    @Deprecated // TODO Remove constructor after 1.2.0 release. It was never a stable API. Provided only for migration.
+    protected Completable(CompletableOnSubscribe onSubscribe, boolean useHook) {
+        this(fromOldOnSubscribe(onSubscribe), useHook);
     }
 
     /**
@@ -1016,7 +1124,7 @@ public class Completable {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        unsafeSubscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new rx.CompletableSubscriber() {
 
             @Override
             public void onCompleted() {
@@ -1067,7 +1175,7 @@ public class Completable {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        unsafeSubscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new rx.CompletableSubscriber() {
 
             @Override
             public void onCompleted() {
@@ -1114,7 +1222,7 @@ public class Completable {
      * @return the Completable returned by the function
      * @throws NullPointerException if transformer is null
      */
-    public final Completable compose(CompletableTransformer transformer) {
+    public final Completable compose(Transformer transformer) {
         return to(transformer);
     }
     
@@ -1214,15 +1322,15 @@ public class Completable {
     public final Completable delay(final long delay, final TimeUnit unit, final Scheduler scheduler, final boolean delayError) {
         requireNonNull(unit);
         requireNonNull(scheduler);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
+            public void call(final rx.CompletableSubscriber s) {
                 final CompositeSubscription set = new CompositeSubscription();
                 
                 final Scheduler.Worker w = scheduler.createWorker();
                 set.add(w);
                 
-                unsafeSubscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new rx.CompletableSubscriber() {
 
                     
                     @Override
@@ -1331,10 +1439,10 @@ public class Completable {
         requireNonNull(onComplete);
         requireNonNull(onAfterComplete);
         requireNonNull(onUnsubscribe);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
-                unsafeSubscribe(new CompletableSubscriber() {
+            public void call(final rx.CompletableSubscriber s) {
+                unsafeSubscribe(new rx.CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {
@@ -1470,7 +1578,7 @@ public class Completable {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        unsafeSubscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new rx.CompletableSubscriber() {
 
             @Override
             public void onCompleted() {
@@ -1516,7 +1624,7 @@ public class Completable {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] err = new Throwable[1];
         
-        unsafeSubscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new rx.CompletableSubscriber() {
 
             @Override
             public void onCompleted() {
@@ -1551,6 +1659,14 @@ public class Completable {
         Exceptions.propagate(new TimeoutException());
         return null;
     }
+
+    /**
+     * @deprecated Use {@link #lift(Operator)}.
+     */
+    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
+    public final Completable lift(CompletableOperator onLift) {
+        return lift(fromOldOperator(onLift));
+    }
     
     /**
      * Lifts a CompletableSubscriber transformation into the chain of Completables.
@@ -1558,14 +1674,14 @@ public class Completable {
      * @return the new Completable instance
      * @throws NullPointerException if onLift is null
      */
-    public final Completable lift(final CompletableOperator onLift) {
+    public final Completable lift(final Operator onLift) {
         requireNonNull(onLift);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(CompletableSubscriber s) {
+            public void call(rx.CompletableSubscriber s) {
                 try {
-                    CompletableOperator onLiftDecorated = RxJavaHooks.onCompletableLift(onLift);
-                    CompletableSubscriber sw = onLiftDecorated.call(s);
+                    Operator onLiftDecorated = RxJavaHooks.onCompletableLift(onLift);
+                    rx.CompletableSubscriber sw = onLiftDecorated.call(s);
                     
                     unsafeSubscribe(sw);
                 } catch (NullPointerException ex) { // NOPMD 
@@ -1597,9 +1713,9 @@ public class Completable {
      */
     public final Completable observeOn(final Scheduler scheduler) {
         requireNonNull(scheduler);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
+            public void call(final rx.CompletableSubscriber s) {
                 
                 final SubscriptionList ad = new SubscriptionList();
                 
@@ -1608,7 +1724,7 @@ public class Completable {
                 
                 s.onSubscribe(ad);
                 
-                unsafeSubscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new rx.CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {
@@ -1667,10 +1783,10 @@ public class Completable {
     public final Completable onErrorComplete(final Func1<? super Throwable, Boolean> predicate) {
         requireNonNull(predicate);
         
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
-                unsafeSubscribe(new CompletableSubscriber() {
+            public void call(final rx.CompletableSubscriber s) {
+                unsafeSubscribe(new rx.CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {
@@ -1716,11 +1832,11 @@ public class Completable {
      */
     public final Completable onErrorResumeNext(final Func1<? super Throwable, ? extends Completable> errorMapper) {
         requireNonNull(errorMapper);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
+            public void call(final rx.CompletableSubscriber s) {
                 final SerialSubscription sd = new SerialSubscription();
-                unsafeSubscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new rx.CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {
@@ -1746,7 +1862,7 @@ public class Completable {
                             return;
                         }
                         
-                        c.unsafeSubscribe(new CompletableSubscriber() {
+                        c.unsafeSubscribe(new rx.CompletableSubscriber() {
 
                             @Override
                             public void onCompleted() {
@@ -1883,7 +1999,7 @@ public class Completable {
      */
     public final Subscription subscribe() {
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
-        unsafeSubscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new rx.CompletableSubscriber() {
             @Override
             public void onCompleted() {
                 mad.unsubscribe();
@@ -1916,7 +2032,7 @@ public class Completable {
         requireNonNull(onComplete);
         
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
-        unsafeSubscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new rx.CompletableSubscriber() {
             boolean done;
             @Override
             public void onCompleted() {
@@ -1962,7 +2078,7 @@ public class Completable {
         requireNonNull(onError);
         
         final MultipleAssignmentSubscription mad = new MultipleAssignmentSubscription();
-        unsafeSubscribe(new CompletableSubscriber() {
+        unsafeSubscribe(new rx.CompletableSubscriber() {
             boolean done;
             @Override
             public void onCompleted() {
@@ -2016,14 +2132,22 @@ public class Completable {
     }
 
     /**
+     * @deprecated Use {@link #unsafeSubscribe(rx.CompletableSubscriber)}.
+     */
+    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
+    public final void unsafeSubscribe(CompletableSubscriber s) {
+        unsafeSubscribe(fromOldSubscriber(s));
+    }
+
+    /**
      * Subscribes the given CompletableSubscriber to this Completable instance.
      * @param s the CompletableSubscriber, not null
      * @throws NullPointerException if s is null
      */
-    public final void unsafeSubscribe(CompletableSubscriber s) {
+    public final void unsafeSubscribe(rx.CompletableSubscriber s) {
         requireNonNull(s);
         try {
-            CompletableOnSubscribe onSubscribeDecorated = RxJavaHooks.onCompletableStart(this, this.onSubscribe);
+            OnSubscribe onSubscribeDecorated = RxJavaHooks.onCompletableStart(this, this.onSubscribe);
             
             onSubscribeDecorated.call(s);
         } catch (NullPointerException ex) { // NOPMD 
@@ -2042,7 +2166,7 @@ public class Completable {
      * @param s the CompletableSubscriber, not null
      * @throws NullPointerException if s is null
      */
-    public final void subscribe(CompletableSubscriber s) {
+    public final void subscribe(rx.CompletableSubscriber s) {
         if (!(s instanceof SafeCompletableSubscriber)) {
             s = new SafeCompletableSubscriber(s);
         }
@@ -2073,7 +2197,7 @@ public class Completable {
             if (callOnStart) {
                 s.onStart();
             }
-            unsafeSubscribe(new CompletableSubscriber() {
+            unsafeSubscribe(new rx.CompletableSubscriber() {
                 @Override
                 public void onCompleted() {
                     s.onCompleted();
@@ -2126,9 +2250,9 @@ public class Completable {
     public final Completable subscribeOn(final Scheduler scheduler) {
         requireNonNull(scheduler);
         
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
+            public void call(final rx.CompletableSubscriber s) {
                 // FIXME cancellation of this schedule
                 
                 final Scheduler.Worker w = scheduler.createWorker();
@@ -2240,7 +2364,7 @@ public class Completable {
      * @return the new Observable created
      */
     public final <T> Observable<T> toObservable() {
-        return Observable.create(new OnSubscribe<T>() {
+        return Observable.create(new Observable.OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> s) {
                 unsafeSubscribe(s);
@@ -2261,7 +2385,7 @@ public class Completable {
         return Single.create(new rx.Single.OnSubscribe<T>() {
             @Override
             public void call(final SingleSubscriber<? super T> s) {
-                unsafeSubscribe(new CompletableSubscriber() {
+                unsafeSubscribe(new rx.CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {
@@ -2323,10 +2447,10 @@ public class Completable {
      */
     public final Completable unsubscribeOn(final Scheduler scheduler) {
         requireNonNull(scheduler);
-        return create(new CompletableOnSubscribe() {
+        return create(new OnSubscribe() {
             @Override
-            public void call(final CompletableSubscriber s) {
-                unsafeSubscribe(new CompletableSubscriber() {
+            public void call(final rx.CompletableSubscriber s) {
+                unsafeSubscribe(new rx.CompletableSubscriber() {
 
                     @Override
                     public void onCompleted() {

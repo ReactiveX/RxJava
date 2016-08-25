@@ -17,15 +17,15 @@
 package rx.internal.operators;
 
 import rx.Completable;
-import rx.Completable.CompletableOnSubscribe;
-import rx.Completable.CompletableSubscriber;
+import rx.Completable.OnSubscribe;
+import rx.CompletableSubscriber;
 import rx.Single;
 import rx.SingleSubscriber;
 import rx.Subscription;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 
-public final class CompletableFlatMapSingleToCompletable<T> implements CompletableOnSubscribe {
+public final class CompletableFlatMapSingleToCompletable<T> implements OnSubscribe {
 
     final Single<T> source;
 

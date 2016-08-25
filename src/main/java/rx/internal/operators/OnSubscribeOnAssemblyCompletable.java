@@ -16,7 +16,7 @@
 package rx.internal.operators;
 
 import rx.*;
-import rx.Completable.CompletableSubscriber;
+import rx.CompletableSubscriber;
 import rx.exceptions.AssemblyStackTraceException;
 
 /**
@@ -26,9 +26,9 @@ import rx.exceptions.AssemblyStackTraceException;
  *
  * @param <T> the value type
  */
-public final class OnSubscribeOnAssemblyCompletable<T> implements Completable.CompletableOnSubscribe {
+public final class OnSubscribeOnAssemblyCompletable<T> implements Completable.OnSubscribe {
 
-    final Completable.CompletableOnSubscribe source;
+    final Completable.OnSubscribe source;
     
     final String stacktrace;
 
@@ -38,13 +38,13 @@ public final class OnSubscribeOnAssemblyCompletable<T> implements Completable.Co
      */
     public static volatile boolean fullStackTrace;
     
-    public OnSubscribeOnAssemblyCompletable(Completable.CompletableOnSubscribe source) {
+    public OnSubscribeOnAssemblyCompletable(Completable.OnSubscribe source) {
         this.source = source;
         this.stacktrace = OnSubscribeOnAssembly.createStacktrace();
     }
     
     @Override
-    public void call(Completable.CompletableSubscriber t) {
+    public void call(CompletableSubscriber t) {
         source.call(new OnAssemblyCompletableSubscriber(t, stacktrace));
     }
     

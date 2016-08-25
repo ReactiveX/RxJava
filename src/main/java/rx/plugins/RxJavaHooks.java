@@ -19,8 +19,6 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ScheduledExecutorService;
 
 import rx.*;
-import rx.Completable.*;
-import rx.Observable.*;
 import rx.annotations.Experimental;
 import rx.functions.*;
 import rx.internal.operators.*;
@@ -47,7 +45,7 @@ public final class RxJavaHooks {
     @SuppressWarnings("rawtypes")
     static volatile Func1<Single.OnSubscribe, Single.OnSubscribe> onSingleCreate;
 
-    static volatile Func1<Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> onCompletableCreate;
+    static volatile Func1<Completable.OnSubscribe, Completable.OnSubscribe> onCompletableCreate;
 
     @SuppressWarnings("rawtypes")
     static volatile Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe> onObservableStart;
@@ -55,7 +53,7 @@ public final class RxJavaHooks {
     @SuppressWarnings("rawtypes")
     static volatile Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> onSingleStart;
 
-    static volatile Func2<Completable, Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> onCompletableStart;
+    static volatile Func2<Completable, Completable.OnSubscribe, Completable.OnSubscribe> onCompletableStart;
 
     static volatile Func1<Scheduler, Scheduler> onComputationScheduler;
 
@@ -78,12 +76,12 @@ public final class RxJavaHooks {
     static volatile Func1<Throwable, Throwable> onCompletableSubscribeError;
 
     @SuppressWarnings("rawtypes")
-    static volatile Func1<Operator, Operator> onObservableLift;
+    static volatile Func1<Observable.Operator, Observable.Operator> onObservableLift;
 
     @SuppressWarnings("rawtypes")
-    static volatile Func1<Operator, Operator> onSingleLift;
+    static volatile Func1<Observable.Operator, Observable.Operator> onSingleLift;
 
-    static volatile Func1<CompletableOperator, CompletableOperator> onCompletableLift;
+    static volatile Func1<Completable.Operator, Completable.Operator> onCompletableLift;
 
     /** Initialize with the default delegation to the original RxJavaPlugins. */
     static {
@@ -108,9 +106,9 @@ public final class RxJavaHooks {
             }
         };
         
-        onObservableStart = new Func2<Observable, OnSubscribe, OnSubscribe>() {
+        onObservableStart = new Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe>() {
             @Override
-            public OnSubscribe call(Observable t1, OnSubscribe t2) {
+            public Observable.OnSubscribe call(Observable t1, Observable.OnSubscribe t2) {
                 return RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeStart(t1, t2);
             }
         };
@@ -136,9 +134,9 @@ public final class RxJavaHooks {
             }
         };
         
-        onCompletableStart = new Func2<Completable, Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe>() {
+        onCompletableStart = new Func2<Completable, Completable.OnSubscribe, Completable.OnSubscribe>() {
             @Override
-            public Completable.CompletableOnSubscribe call(Completable t1, Completable.CompletableOnSubscribe t2) {
+            public Completable.OnSubscribe call(Completable t1, Completable.OnSubscribe t2) {
                 return RxJavaPlugins.getInstance().getCompletableExecutionHook().onSubscribeStart(t1, t2);
             }
         };
@@ -157,9 +155,9 @@ public final class RxJavaHooks {
             }
         };
         
-        onObservableLift = new Func1<Operator, Operator>() {
+        onObservableLift = new Func1<Observable.Operator, Observable.Operator>() {
             @Override
-            public Operator call(Operator t) {
+            public Observable.Operator call(Observable.Operator t) {
                 return RxJavaPlugins.getInstance().getObservableExecutionHook().onLift(t);
             }
         };
@@ -171,9 +169,9 @@ public final class RxJavaHooks {
             }
         };
         
-        onSingleLift = new Func1<Operator, Operator>() {
+        onSingleLift = new Func1<Observable.Operator, Observable.Operator>() {
             @Override
-            public Operator call(Operator t) {
+            public Observable.Operator call(Observable.Operator t) {
                 return RxJavaPlugins.getInstance().getSingleExecutionHook().onLift(t);
             }
         };
@@ -185,9 +183,9 @@ public final class RxJavaHooks {
             }
         };
         
-        onCompletableLift = new Func1<CompletableOperator, CompletableOperator>() {
+        onCompletableLift = new Func1<Completable.Operator, Completable.Operator>() {
             @Override
-            public CompletableOperator call(CompletableOperator t) {
+            public Completable.Operator call(Completable.Operator t) {
                 return RxJavaPlugins.getInstance().getCompletableExecutionHook().onLift(t);
             }
         };
@@ -197,9 +195,9 @@ public final class RxJavaHooks {
     
     @SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
     static void initCreate() {
-        onObservableCreate = new Func1<OnSubscribe, OnSubscribe>() {
+        onObservableCreate = new Func1<Observable.OnSubscribe, Observable.OnSubscribe>() {
             @Override
-            public OnSubscribe call(OnSubscribe f) {
+            public Observable.OnSubscribe call(Observable.OnSubscribe f) {
                 return RxJavaPlugins.getInstance().getObservableExecutionHook().onCreate(f);
             }
         };
@@ -211,9 +209,9 @@ public final class RxJavaHooks {
             }
         };
 
-        onCompletableCreate = new Func1<CompletableOnSubscribe, CompletableOnSubscribe>() {
+        onCompletableCreate = new Func1<Completable.OnSubscribe, Completable.OnSubscribe>() {
             @Override
-            public CompletableOnSubscribe call(CompletableOnSubscribe f) {
+            public Completable.OnSubscribe call(Completable.OnSubscribe f) {
                 return RxJavaPlugins.getInstance().getCompletableExecutionHook().onCreate(f);
             }
         };
@@ -327,7 +325,7 @@ public final class RxJavaHooks {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Observable.OnSubscribe<T> onCreate(Observable.OnSubscribe<T> onSubscribe) {
-        Func1<OnSubscribe, OnSubscribe> f = onObservableCreate;
+        Func1<Observable.OnSubscribe, Observable.OnSubscribe> f = onObservableCreate;
         if (f != null) {
             return f.call(onSubscribe);
         }
@@ -354,8 +352,8 @@ public final class RxJavaHooks {
      * @param onSubscribe the original OnSubscribe logic
      * @return the original or replacement OnSubscribe instance
      */
-    public static Completable.CompletableOnSubscribe onCreate(Completable.CompletableOnSubscribe onSubscribe) {
-        Func1<Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> f = onCompletableCreate;
+    public static Completable.OnSubscribe onCreate(Completable.OnSubscribe onSubscribe) {
+        Func1<Completable.OnSubscribe, Completable.OnSubscribe> f = onCompletableCreate;
         if (f != null) {
             return f.call(onSubscribe);
         }
@@ -423,8 +421,8 @@ public final class RxJavaHooks {
      * @return the original or alternative action that will be subscribed to
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> OnSubscribe<T> onObservableStart(Observable<T> instance, OnSubscribe<T> onSubscribe) {
-        Func2<Observable, OnSubscribe, OnSubscribe> f = onObservableStart;
+    public static <T> Observable.OnSubscribe onObservableStart(Observable<T> instance, Observable.OnSubscribe onSubscribe) {
+        Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe> f = onObservableStart;
         if (f != null) {
             return f.call(instance, onSubscribe);
         }
@@ -465,8 +463,8 @@ public final class RxJavaHooks {
      * @return the original or alternative operator that will be subscribed to
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T, R> Operator<R, T> onObservableLift(Operator<R, T> operator) {
-        Func1<Operator, Operator> f = onObservableLift;
+    public static <T, R> Observable.Operator<R, T> onObservableLift(Observable.Operator<R, T> operator) {
+        Func1<Observable.Operator, Observable.Operator> f = onObservableLift;
         if (f != null) {
             return f.call(operator);
         }
@@ -481,7 +479,7 @@ public final class RxJavaHooks {
      * @return the original or alternative action that will be subscribed to
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Observable.OnSubscribe<T> onSingleStart(Single<T> instance, Observable.OnSubscribe<T> onSubscribe) {
+    public static <T> Observable.OnSubscribe onSingleStart(Single<T> instance, Observable.OnSubscribe onSubscribe) {
         Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> f = onSingleStart;
         if (f != null) {
             return f.call(instance, onSubscribe);
@@ -523,8 +521,8 @@ public final class RxJavaHooks {
      * @return the original or alternative operator that will be subscribed to
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T, R> Operator<R, T> onSingleLift(Operator<R, T> operator) {
-        Func1<Operator, Operator> f = onSingleLift;
+    public static <T, R> Observable.Operator<R, T> onSingleLift(Observable.Operator<R, T> operator) {
+        Func1<Observable.Operator, Observable.Operator> f = onSingleLift;
         if (f != null) {
             return f.call(operator);
         }
@@ -538,8 +536,8 @@ public final class RxJavaHooks {
      * @param onSubscribe the original OnSubscribe action
      * @return the original or alternative action that will be subscribed to
      */
-    public static <T> Completable.CompletableOnSubscribe onCompletableStart(Completable instance, Completable.CompletableOnSubscribe onSubscribe) {
-        Func2<Completable, CompletableOnSubscribe, CompletableOnSubscribe> f = onCompletableStart;
+    public static <T> Completable.OnSubscribe onCompletableStart(Completable instance, Completable.OnSubscribe onSubscribe) {
+        Func2<Completable, Completable.OnSubscribe, Completable.OnSubscribe> f = onCompletableStart;
         if (f != null) {
             return f.call(instance, onSubscribe);
         }
@@ -566,8 +564,8 @@ public final class RxJavaHooks {
      * @param operator the original operator
      * @return the original or alternative operator that will be subscribed to
      */
-    public static <T, R> Completable.CompletableOperator onCompletableLift(Completable.CompletableOperator operator) {
-        Func1<CompletableOperator, CompletableOperator> f = onCompletableLift;
+    public static <T, R> Completable.Operator onCompletableLift(Completable.Operator operator) {
+        Func1<Completable.Operator, Completable.Operator> f = onCompletableLift;
         if (f != null) {
             return f.call(operator);
         }
@@ -602,7 +600,7 @@ public final class RxJavaHooks {
      * and should return a CompletableOnSubscribe.
      */
     public static void setOnCompletableCreate(
-            Func1<Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> onCompletableCreate) {
+            Func1<Completable.OnSubscribe, Completable.OnSubscribe> onCompletableCreate) {
         if (lockdown) {
             return;
         }
@@ -731,7 +729,7 @@ public final class RxJavaHooks {
      * that gets actually subscribed to.
      */
     public static void setOnCompletableStart(
-            Func2<Completable, Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> onCompletableStart) {
+            Func2<Completable, Completable.OnSubscribe, Completable.OnSubscribe> onCompletableStart) {
         if (lockdown) {
             return;
         }
@@ -916,7 +914,7 @@ public final class RxJavaHooks {
      * return an Operator instance.
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnObservableLift(Func1<Operator, Operator> onObservableLift) {
+    public static void setOnObservableLift(Func1<Observable.Operator, Observable.Operator> onObservableLift) {
         if (lockdown) {
             return;
         }
@@ -931,7 +929,7 @@ public final class RxJavaHooks {
      * @return the current hook function
      */
     @SuppressWarnings("rawtypes")
-    public static Func1<Operator, Operator> getOnObservableLift() {
+    public static Func1<Observable.Operator, Observable.Operator> getOnObservableLift() {
         return onObservableLift;
     }
 
@@ -947,7 +945,7 @@ public final class RxJavaHooks {
      * return an Operator instance.
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnSingleLift(Func1<Operator, Operator> onSingleLift) {
+    public static void setOnSingleLift(Func1<Observable.Operator, Observable.Operator> onSingleLift) {
         if (lockdown) {
             return;
         }
@@ -962,7 +960,7 @@ public final class RxJavaHooks {
      * @return the current hook function
      */
     @SuppressWarnings("rawtypes")
-    public static Func1<Operator, Operator> getOnSingleLift() {
+    public static Func1<Observable.Operator, Observable.Operator> getOnSingleLift() {
         return onSingleLift;
     }
 
@@ -977,7 +975,7 @@ public final class RxJavaHooks {
      * @param onCompletableLift the function that is called with original Operator and should
      * return an Operator instance.
      */
-    public static void setOnCompletableLift(Func1<CompletableOperator, CompletableOperator> onCompletableLift) {
+    public static void setOnCompletableLift(Func1<Completable.Operator, Completable.Operator> onCompletableLift) {
         if (lockdown) {
             return;
         }
@@ -991,7 +989,7 @@ public final class RxJavaHooks {
      * This operation is threadsafe.
      * @return the current hook function
      */
-    public static Func1<CompletableOperator, CompletableOperator> getOnCompletableLift() {
+    public static Func1<Completable.Operator, Completable.Operator> getOnCompletableLift() {
         return onCompletableLift;
     }
 
@@ -1082,7 +1080,7 @@ public final class RxJavaHooks {
      * This operation is threadsafe.
      * @return the current hook function
      */
-    public static Func1<Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> getOnCompletableCreate() {
+    public static Func1<Completable.OnSubscribe, Completable.OnSubscribe> getOnCompletableCreate() {
         return onCompletableCreate;
     }
     
@@ -1093,7 +1091,7 @@ public final class RxJavaHooks {
      * This operation is threadsafe.
      * @return the current hook function
      */
-    public static Func2<Completable, Completable.CompletableOnSubscribe, Completable.CompletableOnSubscribe> getOnCompletableStart() {
+    public static Func2<Completable, Completable.OnSubscribe, Completable.OnSubscribe> getOnCompletableStart() {
         return onCompletableStart;
     }
     
@@ -1178,9 +1176,9 @@ public final class RxJavaHooks {
             return;
         }
         
-        onObservableCreate = new Func1<OnSubscribe, OnSubscribe>() {
+        onObservableCreate = new Func1<Observable.OnSubscribe, Observable.OnSubscribe>() {
             @Override
-            public OnSubscribe call(OnSubscribe f) {
+            public Observable.OnSubscribe call(Observable.OnSubscribe f) {
                 return new OnSubscribeOnAssembly(f);
             }
         };
@@ -1192,9 +1190,9 @@ public final class RxJavaHooks {
             }
         };
 
-        onCompletableCreate = new Func1<CompletableOnSubscribe, CompletableOnSubscribe>() {
+        onCompletableCreate = new Func1<Completable.OnSubscribe, Completable.OnSubscribe>() {
             @Override
-            public CompletableOnSubscribe call(CompletableOnSubscribe f) {
+            public Completable.OnSubscribe call(Completable.OnSubscribe f) {
                 return new OnSubscribeOnAssemblyCompletable(f);
             }
         };
