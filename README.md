@@ -67,7 +67,7 @@ All code inside the `io.reactivex.internal.*` packages is considered private API
 ## Full Documentation
 
 - [Wiki](https://github.com/ReactiveX/RxJava/wiki)
-- [Javadoc](http://reactivex.io/RxJava/javadoc/2.x/)
+- [Javadoc](http://reactivex.io/RxJava/2.x/javadoc/)
 
 ## Binaries
 
