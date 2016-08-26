@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public enum SingleAwait {
     ;
@@ -54,7 +54,7 @@ public enum SingleAwait {
         }
         Throwable e = errorRef.get();
         if (e != null) {
-            throw Exceptions.propagate(e);
+            throw ExceptionHelper.wrapOrThrow(e);
         }
         return valueRef.get();
     }

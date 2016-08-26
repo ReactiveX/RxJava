@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Action;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public class ObservableFinallyTest {
 
@@ -38,7 +38,7 @@ public class ObservableFinallyTest {
         try {
             verify(aAction0, times(1)).run();
         } catch (Throwable e) {
-            throw Exceptions.propagate(e);
+            throw ExceptionHelper.wrapOrThrow(e);
         }
     }
 

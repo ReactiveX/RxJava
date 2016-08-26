@@ -26,9 +26,9 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public class TestSchedulerTest {
 
@@ -49,7 +49,7 @@ public class TestSchedulerTest {
                     try {
                         calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
                     } catch (Throwable ex) {
-                        Exceptions.propagate(ex);
+                        ExceptionHelper.wrapOrThrow(ex);
                     }
                 }
             }, 1, 2, TimeUnit.SECONDS);
@@ -99,7 +99,7 @@ public class TestSchedulerTest {
                     try {
                         calledOp.apply(scheduler.now(TimeUnit.MILLISECONDS));
                     } catch (Throwable ex) {
-                        Exceptions.propagate(ex);
+                        ExceptionHelper.wrapOrThrow(ex);
                     }
                 }
             }, 1, 2, TimeUnit.SECONDS);

@@ -4346,7 +4346,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 ((Disposable)it).dispose();
-                throw Exceptions.propagate(e);
+                throw ExceptionHelper.wrapOrThrow(e);
             }
         }
     }
@@ -11154,7 +11154,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             return converter.apply(this);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 

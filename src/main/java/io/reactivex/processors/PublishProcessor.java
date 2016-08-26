@@ -187,20 +187,18 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
         public void subscribe(Subscriber<? super T> t) {
             PublishSubscriber<T> ps = new PublishSubscriber<T>(t, this);
             t.onSubscribe(ps);
-            if (!ps.cancelled.get()) {
-                if (add(ps)) {
-                    // if cancellation happened while a successful add, the remove() didn't work
-                    // so we need to do it again
-                    if (ps.cancelled.get()) {
-                        remove(ps);
-                    }
+            if (add(ps)) {
+                // if cancellation happened while a successful add, the remove() didn't work
+                // so we need to do it again
+                if (ps.isCancelled()) {
+                    remove(ps);
+                }
+            } else {
+                Object o = get();
+                if (o == COMPLETE) {
+                    ps.onComplete();
                 } else {
-                    Object o = get();
-                    if (o == COMPLETE) {
-                        ps.onComplete();
-                    } else {
-                        ps.onError((Throwable)o);
-                    }
+                    ps.onError((Throwable)o);
                 }
             }
         }
@@ -230,11 +228,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
         @SuppressWarnings("unchecked")
         PublishSubscriber<T>[] terminate(Object event) {
             if (compareAndSet(null, event)) {
-                PublishSubscriber<T>[] a = subscribers.get();
-                if (a != TERMINATED) {
-                    a = subscribers.getAndSet(TERMINATED);
-                }
-                return a;
+                return subscribers.getAndSet(TERMINATED);
             }
             return TERMINATED;
         }
@@ -316,15 +310,13 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      *
      * @param <T> the value type
      */
-    static final class PublishSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
+    static final class PublishSubscriber<T> extends AtomicLong implements Subscription {
         /** */
         private static final long serialVersionUID = 3562861878281475070L;
         /** The actual subscriber. */
         final Subscriber<? super T> actual;
         /** The subject state. */
         final State<T> state;
-
-        final AtomicBoolean cancelled = new AtomicBoolean();
         
         /**
          * Constructs a PublishSubscriber, wraps the actual subscriber and the state.
@@ -336,14 +328,11 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             this.state = state;
         }
         
-        @Override
-        public void onSubscribe(Subscription s) {
-            // not called because requests are handled locally and cancel is forwarded to state
-        }
-        
-        @Override
         public void onNext(T t) {
             long r = get();
+            if (r == Long.MIN_VALUE) {
+                return;
+            }
             if (r != 0L) {
                 actual.onNext(t);
                 if (r != Long.MAX_VALUE) {
@@ -355,28 +344,36 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             }
         }
         
-        @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            if (get() != Long.MIN_VALUE) {
+                actual.onError(t);
+            } else {
+                RxJavaPlugins.onError(t);
+            }
         }
         
-        @Override
         public void onComplete() {
-            actual.onComplete();
+            if (get() != Long.MIN_VALUE) {
+                actual.onComplete();
+            }
         }
         
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
-                BackpressureHelper.add(this, n);
+                BackpressureHelper.addCancel(this, n);
             }
         }
         
         @Override
         public void cancel() {
-            if (!cancelled.get() && cancelled.compareAndSet(false, true)) {
+            if (getAndSet(Long.MIN_VALUE) != Long.MIN_VALUE) {
                 state.remove(this);
             }
+        }
+        
+        public boolean isCancelled() {
+            return get() == Long.MIN_VALUE;
         }
     }
 }

@@ -35,9 +35,6 @@ public final class ObservableAutoConnect<T> extends Observable<T> {
     public ObservableAutoConnect(ConnectableObservable<? extends T> source,
             int numberOfSubscribers,
             Consumer<? super Disposable> connection) {
-        if (numberOfSubscribers <= 0) {
-            throw new IllegalArgumentException("numberOfSubscribers > 0 required");
-        }
         this.source = source;
         this.numberOfSubscribers = numberOfSubscribers;
         this.connection = connection;

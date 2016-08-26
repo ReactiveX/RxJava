@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.subscribers.DisposableSubscriber;
 
 /**
@@ -70,7 +70,7 @@ public enum BlockingFlowableNext {
         public boolean hasNext() {
             if (error != null) {
                 // If any error has already been thrown, throw it again.
-                throw Exceptions.propagate(error);
+                throw ExceptionHelper.wrapOrThrow(error);
             }
             // Since an iterator should not be used in different thread,
             // so we do not need any synchronization.
@@ -106,14 +106,14 @@ public enum BlockingFlowableNext {
                 }
                 if (nextNotification.isOnError()) {
                     error = nextNotification.getError();
-                    throw Exceptions.propagate(error);
+                    throw ExceptionHelper.wrapOrThrow(error);
                 }
                 throw new IllegalStateException("Should not reach here");
             } catch (InterruptedException e) {
                 observer.dispose();
                 Thread.currentThread().interrupt();
                 error = e;
-                throw Exceptions.propagate(e);
+                throw ExceptionHelper.wrapOrThrow(e);
             }
         }
 
@@ -121,7 +121,7 @@ public enum BlockingFlowableNext {
         public T next() {
             if (error != null) {
                 // If any error has already been thrown, throw it again.
-                throw Exceptions.propagate(error);
+                throw ExceptionHelper.wrapOrThrow(error);
             }
             if (hasNext()) {
                 isNextConsumed = true;

@@ -17,9 +17,9 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.ConnectableObservable;
 
 /**
@@ -76,7 +76,7 @@ public final class RxJavaPlugins {
     static volatile BiFunction<Completable, CompletableObserver, CompletableObserver> onCompletableSubscribe;
 
     /** Prevents changing the plugins. */
-    private static volatile boolean lockdown;
+    static volatile boolean lockdown;
     
     /**
      * Prevents changing the plugins from then on.
@@ -256,6 +256,7 @@ public final class RxJavaPlugins {
                     error = new NullPointerException();
                 }
                 e.printStackTrace(); // NOPMD
+                uncaught(e);
             }
         } else {
             if (error == null) {
@@ -263,9 +264,13 @@ public final class RxJavaPlugins {
             }
         }
         error.printStackTrace(); // NOPMD
-        
-        UncaughtExceptionHandler handler = Thread.currentThread().getUncaughtExceptionHandler();
-        handler.uncaughtException(Thread.currentThread(), error);
+        uncaught(error);
+    }
+    
+    static void uncaught(Throwable error) {
+        Thread currentThread = Thread.currentThread();
+        UncaughtExceptionHandler handler = currentThread.getUncaughtExceptionHandler();
+        handler.uncaughtException(currentThread, error);
     }
     
     /**
@@ -350,6 +355,9 @@ public final class RxJavaPlugins {
         
         setOnCompletableAssembly(null);
         setOnCompletableSubscribe(null);
+
+        setOnConnectableFlowableAssembly(null);
+        setOnConnectableObservableAssembly(null);
     }
 
     /**
@@ -840,8 +848,7 @@ public final class RxJavaPlugins {
         try {
             return f.apply(t);
         } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 
@@ -860,8 +867,7 @@ public final class RxJavaPlugins {
         try {
             return f.apply(t, u);
         } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 

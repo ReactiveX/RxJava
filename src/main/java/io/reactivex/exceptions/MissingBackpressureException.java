@@ -16,7 +16,7 @@ package io.reactivex.exceptions;
 /**
  * Indicates that an operator attempted to emit a value but the downstream wasn't ready for it.
  */
-public class MissingBackpressureException extends RuntimeException {
+public final class MissingBackpressureException extends RuntimeException {
     /** */
     private static final long serialVersionUID = 8517344746016032542L;
 
@@ -24,7 +24,7 @@ public class MissingBackpressureException extends RuntimeException {
      * Constructs a MissingBackpressureException without message or cause.
      */
     public MissingBackpressureException() {
-        super();
+        // no message
     }
     
     /**
@@ -35,12 +35,4 @@ public class MissingBackpressureException extends RuntimeException {
         super(message);
     }
     
-    /**
-     * Constructs a MissingBackpressureException with the given message and cause.
-     * @param message the error message
-     * @param cause the cause Throwable
-     */
-    public MissingBackpressureException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

@@ -21,7 +21,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.*;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -209,7 +209,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
             connection.accept(ps);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         if (doConnect) {
             source.subscribe(ps);

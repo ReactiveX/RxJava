@@ -20,9 +20,9 @@ import java.util.concurrent.locks.*;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public final class BlockingFlowableIterator<T> 
 extends AtomicReference<Subscription>
@@ -67,7 +67,7 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
             if (d) {
                 Throwable e = error;
                 if (e != null) {
-                    throw Exceptions.propagate(e);
+                    throw ExceptionHelper.wrapOrThrow(e);
                 } else
                 if (empty) {
                     return false;
@@ -81,7 +81,7 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
                     }
                 } catch (InterruptedException ex) {
                     run();
-                    throw Exceptions.propagate(ex);
+                    throw ExceptionHelper.wrapOrThrow(ex);
                 } finally {
                     lock.unlock();
                 }

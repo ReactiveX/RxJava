@@ -23,6 +23,8 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import io.reactivex.internal.disposables.DisposableHelper;
+
 @RunWith(MockitoJUnitRunner.class)
 public class SerialDisposableTests {
     private SerialDisposable serialDisposable;
@@ -199,5 +201,23 @@ public class SerialDisposableTests {
         for (final Thread t : threads) {
             t.join();
         }
+    }
+    
+    @Test
+    public void disposeState() {
+        Disposable empty = Disposables.empty();
+        SerialDisposable d = new SerialDisposable(empty);
+        
+        assertFalse(d.isDisposed());
+        
+        assertSame(empty, d.get());
+        
+        d.dispose();
+        
+        assertTrue(d.isDisposed());
+        
+        assertNotSame(empty, d.get());
+        
+        assertNotSame(DisposableHelper.DISPOSED, d.get());
     }
 }

@@ -24,7 +24,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.*;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
@@ -202,7 +202,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                             buf = bufferFactory.call();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            throw Exceptions.propagate(ex);
+                            throw ExceptionHelper.wrapOrThrow(ex);
                         }
                         
                         ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
@@ -274,7 +274,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                     buf = bufferFactory.call();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    throw Exceptions.propagate(ex);
+                    throw ExceptionHelper.wrapOrThrow(ex);
                 }
 
                 ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
@@ -309,7 +309,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             connection.accept(ps);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         if (doConnect) {
             source.subscribe(ps);

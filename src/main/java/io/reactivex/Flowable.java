@@ -4848,7 +4848,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 ((Disposable)it).dispose();
-                throw Exceptions.propagate(e);
+                throw ExceptionHelper.wrapOrThrow(e);
             }
         }
     }
@@ -13181,7 +13181,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             return converter.apply(this);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 

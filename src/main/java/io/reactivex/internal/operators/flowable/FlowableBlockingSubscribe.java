@@ -108,7 +108,7 @@ public enum FlowableBlockingSubscribe {
         BlockingHelper.awaitForComplete(cdl, ls);
         Throwable e = error[0];
         if (e != null) {
-            throw Exceptions.propagate(e);
+            throw ExceptionHelper.wrapOrThrow(e);
         }
     }
     

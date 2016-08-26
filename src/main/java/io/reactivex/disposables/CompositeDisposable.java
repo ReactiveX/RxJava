@@ -17,7 +17,7 @@ import java.util.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.disposables.DisposableContainer;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.util.OpenHashSet;
+import io.reactivex.internal.util.*;
 
 /**
  * A disposable container that can hold onto multiple other disposables and
@@ -54,6 +54,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      */
     public CompositeDisposable(Iterable<? extends Disposable> resources) {
         ObjectHelper.requireNonNull(resources, "resources is null");
+        this.resources = new OpenHashSet<Disposable>();
         for (Disposable d : resources) {
             ObjectHelper.requireNonNull(d, "Disposable item is null");
             this.resources.add(d);
@@ -193,7 +194,8 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
             if (disposed) {
                 return 0;
             }
-            return resources.size();
+            OpenHashSet<Disposable> set = resources;
+            return set != null ? set.size() : 0;
         }
     }
     
@@ -223,7 +225,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         }
         if (errors != null) {
             if (errors.size() == 1) {
-                throw Exceptions.propagate(errors.get(0));
+                throw ExceptionHelper.wrapOrThrow(errors.get(0));
             }
             throw new CompositeException(errors);
         }

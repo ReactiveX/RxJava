@@ -93,6 +93,7 @@ public final class CompletableConcat extends Completable {
                 actual.onError(t);
                 return;
             }
+            done = true;
             RxJavaPlugins.onError(t);
         }
         

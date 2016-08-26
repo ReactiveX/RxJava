@@ -23,8 +23,8 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Action;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableDoAfterTerminateTest {
@@ -43,7 +43,7 @@ public class FlowableDoAfterTerminateTest {
         try {
             verify(aAction0, times(1)).run();
         } catch (Throwable ex) {
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 

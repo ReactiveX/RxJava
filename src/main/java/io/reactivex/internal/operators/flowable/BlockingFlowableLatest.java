@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.subscribers.DisposableSubscriber;
 
 /**
@@ -81,7 +81,7 @@ public enum BlockingFlowableLatest {
         @Override
         public boolean hasNext() {
             if (iteratorNotification != null && iteratorNotification.isOnError()) {
-                throw Exceptions.propagate(iteratorNotification.getError());
+                throw ExceptionHelper.wrapOrThrow(iteratorNotification.getError());
             }
             if (iteratorNotification == null || iteratorNotification.isOnNext()) {
                 if (iteratorNotification == null) {
@@ -91,13 +91,13 @@ public enum BlockingFlowableLatest {
                         dispose();
                         Thread.currentThread().interrupt();
                         iteratorNotification = Notification.createOnError(ex);
-                        throw Exceptions.propagate(ex);
+                        throw ExceptionHelper.wrapOrThrow(ex);
                     }
 
                     Notification<T> n = value.getAndSet(null);
                     iteratorNotification = n;
                     if (n.isOnError()) {
-                        throw Exceptions.propagate(n.getError());
+                        throw ExceptionHelper.wrapOrThrow(n.getError());
                     }
                 }
             }

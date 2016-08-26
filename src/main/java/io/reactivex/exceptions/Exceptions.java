@@ -13,6 +13,8 @@
 
 package io.reactivex.exceptions;
 
+import io.reactivex.internal.util.ExceptionHelper;
+
 /**
  * Utility class to help propagate checked exceptions and rethrow exceptions
  * designated as fatal.
@@ -39,13 +41,7 @@ public final class Exceptions {
          * Even though nothing will return and throw via that 'throw', it allows the code to look like it
          * so it's easy to read and understand that it will always result in a throw.
          */
-        if (t instanceof RuntimeException) {
-            throw (RuntimeException) t;
-        } else if (t instanceof Error) {
-            throw (Error) t;
-        } else {
-            throw new RuntimeException(t); // NOPMD
-        }
+        throw ExceptionHelper.wrapOrThrow(t);
     }
     
     /**

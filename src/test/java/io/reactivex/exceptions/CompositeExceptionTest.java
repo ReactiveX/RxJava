@@ -267,4 +267,85 @@ public class CompositeExceptionTest {
         // e1 -> e2 -> e3 -> e4 -> e5 -> e6
         assertEquals(Arrays.asList(e1, e2, e3, e4, e5, e6), causeChain);
     }
+    
+    @Test
+    public void constructorWithNull() {
+        assertTrue(new CompositeException((Throwable[])null).getExceptions().get(0) instanceof NullPointerException);
+
+        assertTrue(new CompositeException((Iterable<Throwable>)null).getExceptions().get(0) instanceof NullPointerException);
+
+        assertTrue(new CompositeException(null, new TestException()).getExceptions().get(0) instanceof NullPointerException);
+        
+        CompositeException ce1 = new CompositeException();
+        ce1.suppress(null);
+        
+        assertTrue(ce1.getExceptions().get(0) instanceof NullPointerException);
+    }
+    
+    @Test
+    public void isEmpty() {
+        assertTrue(new CompositeException().isEmpty());
+        
+        assertFalse(new CompositeException(new TestException()).isEmpty());
+        
+        CompositeException ce1 = new CompositeException();
+        ce1.initCause(new TestException());
+        
+        assertTrue(ce1.isEmpty());
+        
+        ce1.suppress(new TestException());
+        
+        assertEquals(1, ce1.size());
+    }
+    
+    @Test
+    public void printStackTrace() {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        
+        new CompositeException(new TestException()).printStackTrace(pw);
+        
+        assertTrue(sw.toString().contains("TestException"));
+    }
+    
+    @Test
+    public void cyclicRootCause() {
+        RuntimeException te = new RuntimeException() {
+            /** */
+            private static final long serialVersionUID = -8492568224555229753L;
+            Throwable cause;
+            
+            @Override
+            public Throwable initCause(Throwable c) {
+                return this;
+            }
+            
+            @Override
+            public Throwable getCause() {
+                return cause;
+            }
+        };
+        
+        assertSame(te, new CompositeException(te).getCause().getCause());
+        
+        assertSame(te, new CompositeException(new RuntimeException(te)).getCause().getCause().getCause());
+    }
+
+    @Test
+    public void nullRootCause() {
+        RuntimeException te = new RuntimeException() {
+            /** */
+            private static final long serialVersionUID = -8492568224555229753L;
+            
+            @Override
+            public Throwable getCause() {
+                return null;
+            }
+        };
+        
+        assertSame(te, new CompositeException(te).getCause().getCause());
+        
+        assertSame(te, new CompositeException(new RuntimeException(te)).getCause().getCause().getCause());
+    }
+
 }

@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -37,6 +38,16 @@ public abstract class Scheduler {
                 Long.getLong("rx2.scheduler.drift-tolerance", 15));
     }
 
+    /**
+     * Returns the clock drift tolerance in nanoseconds.
+     * <p>Related system property: {@code rx2.scheduler.drift-tolerance} in minutes
+     * @return the tolerance in nanoseconds
+     * @since 2.0
+     */
+    public static long clockDriftTolerance() {
+        return CLOCK_DRIFT_TOLERANCE_NANOSECONDS;
+    }
+    
     
     /**
      * Retrieves or creates a new {@link Scheduler.Worker} that represents serial execution of actions.
@@ -294,7 +305,7 @@ public abstract class Scheduler {
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     worker.dispose();
-                    throw Exceptions.propagate(ex);
+                    throw ExceptionHelper.wrapOrThrow(ex);
                 }
             }
         }

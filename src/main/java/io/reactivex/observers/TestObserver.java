@@ -19,11 +19,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.Notification;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.util.ExceptionHelper;
 
 /**
  * An Observer that records events and allows making assertions about them.
@@ -824,7 +825,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         try {
             check.accept(this);
         } catch (Throwable ex) {
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         return this;
     }
@@ -872,7 +873,42 @@ public class TestObserver<T> implements Observer<T>, Disposable {
                 .assertErrorMessage(message)
                 .assertNotComplete();
     }
-    
+
+    /**
+     * Awaits until the internal latch is counted down.
+     * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
+     * @return this
+     * @throws InterruptedException if the wait is interrupted
+     */
+    public final TestObserver<T> awaitDone() throws InterruptedException {
+        try {
+            done.await();
+        } catch (InterruptedException ex) {
+            cancel();
+        }
+        return this;
+    }
+
+    /**
+     * Awaits until the internal latch is counted down.
+     * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
+     * @param time the waiting time
+     * @param unit the time unit of the waiting time
+     * @return this
+     * @throws InterruptedException if the wait is interrupted
+     */
+    public final TestObserver<T> awaitDone(long time, TimeUnit unit) throws InterruptedException {
+        try {
+            if (!done.await(time, unit)) {
+                cancel();
+            }
+        } catch (InterruptedException ex) {
+            cancel();
+        }
+        return this;
+    }
+
+
     /**
      * An observer that ignores all events and does not report errors.
      */

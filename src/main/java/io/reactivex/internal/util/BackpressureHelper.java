@@ -70,7 +70,31 @@ public enum BackpressureHelper {
             }
         }
     }
-    
+
+    /**
+     * Atomically adds the positive value n to the requested value in the AtomicLong and
+     * caps the result at Long.MAX_VALUE and returns the previous value and
+     * considers Long.MIN_VALUE as a cancel indication (no addition then).
+     * @param requested the AtomicLong holding the current requested value
+     * @param n the value to add, must be positive (not verified)
+     * @return the original value before the add
+     */
+    public static long addCancel(AtomicLong requested, long n) {
+        for (;;) {
+            long r = requested.get();
+            if (r == Long.MIN_VALUE) {
+                return Long.MIN_VALUE;
+            }
+            if (r == Long.MAX_VALUE) {
+                return Long.MAX_VALUE;
+            }
+            long u = addCap(r, n);
+            if (requested.compareAndSet(r, u)) {
+                return r;
+            }
+        }
+    }
+
     /**
      * Atomically subtract the given number (positive, not validated) from the target field.
      * @param requested the target field holding the current requested amount

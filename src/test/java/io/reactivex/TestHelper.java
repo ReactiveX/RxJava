@@ -13,19 +13,23 @@
 
 package io.reactivex;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Assert;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
+import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -54,11 +58,21 @@ public enum TestHelper {
         return w;
     }
     
+    /**
+     * Mocks an Observer with the proper receiver type.
+     * @param <T> the value type
+     * @return the mocked observer
+     */
     @SuppressWarnings("unchecked")
     public static <T> Observer<T> mockObserver() {
         return mock(Observer.class);
     }
     
+    /**
+     * Validates that the given class, when forcefully instantiated throws
+     * an IllegalArgumentException("No instances!") exception.
+     * @param clazz the class to test, not null
+     */
     public static void checkUtilityClass(Class<?> clazz) {
         try {
             Constructor<?> c = clazz.getDeclaredConstructor();
@@ -67,9 +81,9 @@ public enum TestHelper {
             
             try {
                 c.newInstance();
-                Assert.fail("Should have thrown InvocationTargetException(IllegalStateException)");
+                fail("Should have thrown InvocationTargetException(IllegalStateException)");
             } catch (InvocationTargetException ex) {
-                Assert.assertEquals("No instances!", ex.getCause().getMessage());
+                assertEquals("No instances!", ex.getCause().getMessage());
             }
         } catch (Exception ex) {
             AssertionError ae = new AssertionError(ex.toString());
@@ -92,7 +106,153 @@ public enum TestHelper {
     }
     
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz, String message) {
-        Assert.assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
-        Assert.assertEquals(message, list.get(index).getMessage());
+        assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
+        assertEquals(message, list.get(index).getMessage());
+    }
+    
+    /**
+     * Verify that a specific enum type has no enum constants.
+     * @param <E> the enum type
+     * @param e the enum class instance
+     */
+    public static <E extends Enum<E>> void assertEmptyEnum(Class<E> e) {
+        assertEquals(0, e.getEnumConstants().length);
+        
+        try {
+            Method m = e.getDeclaredMethod("valueOf", String.class);
+            
+            try {
+                m.invoke("INSTANCE");
+                fail("Should have thrown!");
+            } catch (InvocationTargetException ex) {
+                fail(ex.toString());
+            } catch (IllegalAccessException ex) {
+                fail(ex.toString());
+            } catch (IllegalArgumentException ex) {
+                // we expected this
+            }
+        } catch (NoSuchMethodException ex) {
+            fail(ex.toString());
+        }
+    }
+    
+    public static void assertBadRequestReported(Publisher<?> source) {
+        List<Throwable> list = trackPluginErrors();
+        try {
+            final CountDownLatch cdl = new CountDownLatch(1);
+            
+            source.subscribe(new Subscriber<Object>() {
+
+                @Override
+                public void onSubscribe(Subscription s) {
+                    try {
+                        s.request(-99);
+                        s.cancel();
+                        s.cancel();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+
+                @Override
+                public void onNext(Object t) {
+                    
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    
+                }
+
+                @Override
+                public void onComplete() {
+                    
+                }
+                
+            });
+            
+            try {
+                assertTrue(cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw new AssertionError(ex.getMessage());
+            }
+            
+            assertTrue(list.toString(), list.get(0) instanceof IllegalArgumentException);
+            assertEquals("n > 0 required but it was -99", list.get(0).getMessage());
+        } finally {
+            RxJavaPlugins.setErrorHandler(null);
+        }
+    }
+    
+    /**
+     * Synchronizes the execution of two runnables (as much as possible)
+     * to test race conditions.
+     * <p>The method blocks until both have run to completion.
+     * @param r1 the first runnable
+     * @param r2 the second runnable
+     * @param s the scheduler to use
+     */
+    public static void race(final Runnable r1, final Runnable r2, Scheduler s) {
+        final AtomicInteger count = new AtomicInteger(2);
+        final CountDownLatch cdl = new CountDownLatch(2);
+        
+        final Throwable[] errors = { null, null };
+        
+        s.scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                if (count.decrementAndGet() != 0) {
+                    while (count.get() != 0);
+                }
+                
+                try {
+                    try {
+                        r1.run();
+                    } catch (Throwable ex) {
+                        errors[0] = ex;
+                    }
+                } finally {
+                    cdl.countDown();
+                }
+            }
+        });
+        
+        s.scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                if (count.decrementAndGet() != 0) {
+                    while (count.get() != 0);
+                }
+                
+                try {
+                    try {
+                        r2.run();
+                    } catch (Throwable ex) {
+                        errors[1] = ex;
+                    }
+                } finally {
+                    cdl.countDown();
+                }
+            }
+        });
+        
+        try {
+            if (!cdl.await(5, TimeUnit.SECONDS)) {
+                throw new AssertionError("The wait timed out!");
+            }
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+        if (errors[0] != null && errors[1] == null) {
+            throw ExceptionHelper.wrapOrThrow(errors[0]);
+        }
+        
+        if (errors[0] == null && errors[1] != null) {
+            throw ExceptionHelper.wrapOrThrow(errors[1]);
+        }
+        
+        if (errors[0] != null && errors[1] != null) {
+            throw new CompositeException(errors);
+        }
     }
 }
