@@ -12,8 +12,8 @@
  */
 package io.reactivex.disposables;
 
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Action;
+import io.reactivex.internal.util.ExceptionHelper;
 
 final class ActionDisposable extends ReferenceDisposable<Action> {
     /** */
@@ -27,9 +27,12 @@ final class ActionDisposable extends ReferenceDisposable<Action> {
     protected void onDisposed(Action value) {
         try {
             value.run();
+        } catch (Error ex) {
+            throw ex;
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrap(ex);
         }
     }
 }

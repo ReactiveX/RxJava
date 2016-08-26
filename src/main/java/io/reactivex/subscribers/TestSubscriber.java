@@ -401,20 +401,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         done.await();
         return this;
     }
-    
-    /**
-     * Awaits the specified amount of time or until this TestSubscriber 
-     * receives an onError or onComplete events, whichever happens first.
-     * @param time the waiting time
-     * @param unit the time unit of the waiting time
-     * @return true if the TestSubscriber terminated, false if timeout happened
-     * @throws InterruptedException if the current thread is interrupted while waiting
-     * @see #awaitTerminalEvent(long, TimeUnit)
-     */
-    public final boolean await(long time, TimeUnit unit) throws InterruptedException {
-        return done.getCount() == 0 || done.await(time, unit);
-    }
-    
+
     // assertion methods
     
     /**
@@ -934,6 +921,53 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
                 .assertError(error)
                 .assertErrorMessage(message)
                 .assertNotComplete();
+    }
+
+    /**
+     * Awaits the specified amount of time or until this TestSubscriber 
+     * receives an onError or onComplete events, whichever happens first.
+     * @param time the waiting time
+     * @param unit the time unit of the waiting time
+     * @return true if the TestSubscriber terminated, false if timeout happened
+     * @throws InterruptedException if the current thread is interrupted while waiting
+     * @see #awaitTerminalEvent(long, TimeUnit)
+     */
+    public final boolean await(long time, TimeUnit unit) throws InterruptedException {
+        return done.getCount() == 0 || done.await(time, unit);
+    }
+    
+    /**
+     * Awaits until the internal latch is counted down.
+     * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
+     * @return this
+     * @throws InterruptedException if the wait is interrupted
+     */
+    public final TestSubscriber<T> awaitDone() throws InterruptedException {
+        try {
+            done.await();
+        } catch (InterruptedException ex) {
+            cancel();
+        }
+        return this;
+    }
+    
+    /**
+     * Awaits until the internal latch is counted down for the specified duration.
+     * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
+     * @param time the waiting time
+     * @param unit the time unit of the waiting time
+     * @return this
+     * @throws InterruptedException if the wait is interrupted
+     */
+    public final TestSubscriber<T> awaitDone(long time, TimeUnit unit) throws InterruptedException {
+        try {
+            if (!done.await(time, unit)) {
+                cancel();
+            }
+        } catch (InterruptedException ex) {
+            cancel();
+        }
+        return this;
     }
 
     /**

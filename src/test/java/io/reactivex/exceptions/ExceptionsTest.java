@@ -442,4 +442,34 @@ public class ExceptionsTest {
         public void onNext(Integer value) {
         }
     }
+
+    @Test
+    public void utilityClass() {
+        TestHelper.checkUtilityClass(Exceptions.class);
+    }
+    
+    @Test
+    public void manualThrowIfFatal() {
+        
+        try {
+            Exceptions.throwIfFatal(new ThreadDeath());
+            fail("Didn't throw fatal exception");
+        } catch (ThreadDeath ex) {
+            // expected
+        }
+        
+        try {
+            Exceptions.throwIfFatal(new LinkageError());
+            fail("Didn't throw fatal error");
+        } catch (LinkageError ex) {
+            // expected
+        }
+
+        try {
+            Exceptions.propagate(new LinkageError());
+            fail("Didn't propagate Error");
+        } catch (LinkageError ex) {
+            // expected
+        }
+    }
 }

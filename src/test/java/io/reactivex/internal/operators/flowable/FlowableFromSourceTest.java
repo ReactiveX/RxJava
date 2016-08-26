@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.*;
+
 import org.junit.*;
 import org.reactivestreams.*;
 
@@ -35,6 +37,13 @@ public class FlowableFromSourceTest {
         source = new PublishAsyncEmitter();
         sourceNoCancel = new PublishAsyncEmitterNoCancel();
         ts = new TestSubscriber<Integer>(0L);
+    }
+    
+    @Test
+    public void backpressureModeEnum() {
+        assertEquals(5, FlowableEmitter.BackpressureMode.values().length);
+        
+        assertNotNull(FlowableEmitter.BackpressureMode.valueOf("BUFFER"));
     }
     
     @Test

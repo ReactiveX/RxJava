@@ -18,15 +18,17 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.*;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
 public class PublishProcessorTest {
@@ -425,5 +427,212 @@ public class PublishProcessorTest {
         assertTrue(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertTrue(as.getThrowable() instanceof TestException);
+    }
+    
+    @Test
+    public void subscribeTo() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        
+        Flowable.range(1, 10).subscribe(pp);
+        
+        assertTrue(pp.hasComplete());
+        
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        
+        pp2.subscribe(pp);
+        
+        assertFalse(pp2.hasSubscribers());
+    }
+    
+    @Test
+    public void testRequestValidation() {
+        TestHelper.assertBadRequestReported(PublishProcessor.create());
+    }
+    
+    @Test
+    public void crossCancel() {
+        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                ts1.cancel();
+            }
+        };
+        
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        
+        pp.subscribe(ts2);
+        pp.subscribe(ts1);
+        
+        pp.onNext(1);
+        
+        ts2.assertValue(1);
+        
+        ts1.assertNoValues();
+    }
+
+    @Test
+    public void crossCancelOnError() {
+        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
+            @Override
+            public void onError(Throwable t) {
+                super.onError(t);
+                ts1.cancel();
+            }
+        };
+        
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        
+        pp.subscribe(ts2);
+        pp.subscribe(ts1);
+        
+        pp.onError(new TestException());
+        
+        ts2.assertError(TestException.class);
+        
+        ts1.assertNoErrors();
+    }
+
+    @Test
+    public void crossCancelOnComplete() {
+        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>() {
+            @Override
+            public void onComplete() {
+                super.onComplete();
+                ts1.cancel();
+            }
+        };
+        
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        
+        pp.subscribe(ts2);
+        pp.subscribe(ts1);
+        
+        pp.onComplete();
+        
+        ts2.assertComplete();
+        
+        ts1.assertNotComplete();
+    }
+    
+    @Test
+    public void backpressureOverflow() {
+        
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = pp.test(0L);
+        
+        pp.onNext(1);
+        
+        ts.assertNoValues()
+        .assertNotComplete()
+        .assertError(MissingBackpressureException.class)
+        ;
+    }
+    
+    @Test
+    public void onSubscribeCancelsImmediately() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = pp.test();
+        
+        pp.subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onSubscribe(Subscription s) {
+                s.cancel();
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                
+            }
+
+            @Override
+            public void onComplete() {
+                
+            }
+            
+        });
+        
+        ts.cancel();
+        
+        assertFalse(pp.hasSubscribers());
+    }
+    
+    @Test
+    public void terminateRace() throws Exception {
+        
+        for (int i = 0; i < 100; i++) {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+            
+            TestSubscriber<Integer> ts = pp.test();
+            
+            final AtomicInteger count = new AtomicInteger(2);
+            
+            Runnable task = new Runnable() {
+                @Override
+                public void run() {
+                    if (count.decrementAndGet() != 0) {
+                        while (count.get() != 0);
+                    }
+                    pp.onComplete();
+                }
+            };
+            
+            Schedulers.newThread().scheduleDirect(task);
+            Schedulers.newThread().scheduleDirect(task);
+            
+            ts
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult();
+        }
+    }
+    
+    @Test
+    public void addRemoveRance() throws Exception {
+        
+        for (int i = 0; i < 100; i++) {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+            
+            final TestSubscriber<Integer> ts = pp.test();
+            
+            final AtomicInteger count = new AtomicInteger(2);
+            
+            final CountDownLatch cdl = new CountDownLatch(2);
+            
+            Schedulers.newThread().scheduleDirect(new Runnable() {
+                @Override
+                public void run() {
+                    if (count.decrementAndGet() != 0) {
+                        while (count.get() != 0);
+                    }
+                    pp.subscribe();
+                    
+                    cdl.countDown();
+                }
+            });
+            Schedulers.newThread().scheduleDirect(new Runnable() {
+                @Override
+                public void run() {
+                    if (count.decrementAndGet() != 0) {
+                        while (count.get() != 0);
+                    }
+                    ts.cancel();
+                    
+                    cdl.countDown();
+                }
+            });
+            
+            assertTrue(cdl.await(5, TimeUnit.SECONDS));
+        }
     }
 }

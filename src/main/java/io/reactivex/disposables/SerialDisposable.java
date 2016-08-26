@@ -81,6 +81,6 @@ public final class SerialDisposable implements Disposable {
     
     @Override
     public boolean isDisposed() {
-        return DisposableHelper.isDisposed(get());
+        return DisposableHelper.isDisposed(resource.get());
     }
 }

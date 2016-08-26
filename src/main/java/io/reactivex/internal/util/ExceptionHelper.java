@@ -23,6 +23,20 @@ import io.reactivex.exceptions.CompositeException;
  */
 public enum ExceptionHelper {
     ;
+    
+    /**
+     * Wraps the given error Exception into a RuntimeException if not already
+     * a RuntimeException
+     * @param error the error to wrap
+     * @return the (wrapped) error
+     */
+    public static RuntimeException wrap(Throwable error) {
+        if (error instanceof RuntimeException) {
+            return (RuntimeException)error;
+        }
+        return new RuntimeException(error);
+    }
+    
     /**
      * A singleton instance of a Throwable indicating a terminal state for exceptions,
      * don't leak this!

@@ -16,7 +16,13 @@ package io.reactivex.disposables;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Test;
+
+import io.reactivex.TestHelper;
+import io.reactivex.functions.Action;
 
 
 public class DisposablesTest {
@@ -42,5 +48,72 @@ public class DisposablesTest {
     public void testUnsubscribed() {
         Disposable disposed = Disposables.disposed();
         assertTrue(disposed.isDisposed());
+    }
+    
+    @Test
+    public void utilityClass() {
+        TestHelper.checkUtilityClass(Disposables.class);
+    }
+    
+    @Test
+    public void fromAction() {
+        class AtomicAction extends AtomicBoolean implements Action {
+            /** */
+            private static final long serialVersionUID = -1517510584253657229L;
+
+            @Override
+            public void run() throws Exception {
+                set(true);
+            }
+        }
+        
+        AtomicAction aa = new AtomicAction();
+        
+        Disposables.from(aa).dispose();
+        
+        assertTrue(aa.get());
+    }
+    
+    @Test
+    public void fromActionThrows() {
+        try {
+            Disposables.from(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new IllegalArgumentException();
+                }
+            }).dispose();
+            fail("Should have thrown!");
+        } catch (IllegalArgumentException ex) {
+            // expected
+        }
+        
+        try {
+            Disposables.from(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new InternalError();
+                }
+            }).dispose();
+            fail("Should have thrown!");
+        } catch (InternalError ex) {
+            // expected
+        }
+        
+        try {
+            Disposables.from(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new IOException();
+                }
+            }).dispose();
+            fail("Should have thrown!");
+        } catch (RuntimeException ex) {
+            if (!(ex.getCause() instanceof IOException)) {
+                fail(ex.toString() + ": Should have cause of IOException");
+            }
+            // expected
+        }
+
     }
 }

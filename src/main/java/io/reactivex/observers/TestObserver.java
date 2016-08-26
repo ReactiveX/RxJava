@@ -872,7 +872,42 @@ public class TestObserver<T> implements Observer<T>, Disposable {
                 .assertErrorMessage(message)
                 .assertNotComplete();
     }
-    
+
+    /**
+     * Awaits until the internal latch is counted down.
+     * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
+     * @return this
+     * @throws InterruptedException if the wait is interrupted
+     */
+    public final TestObserver<T> awaitDone() throws InterruptedException {
+        try {
+            done.await();
+        } catch (InterruptedException ex) {
+            cancel();
+        }
+        return this;
+    }
+
+    /**
+     * Awaits until the internal latch is counted down.
+     * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
+     * @param time the waiting time
+     * @param unit the time unit of the waiting time
+     * @return this
+     * @throws InterruptedException if the wait is interrupted
+     */
+    public final TestObserver<T> awaitDone(long time, TimeUnit unit) throws InterruptedException {
+        try {
+            if (!done.await(time, unit)) {
+                cancel();
+            }
+        } catch (InterruptedException ex) {
+            cancel();
+        }
+        return this;
+    }
+
+
     /**
      * An observer that ignores all events and does not report errors.
      */

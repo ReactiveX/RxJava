@@ -197,7 +197,6 @@ public abstract class Completable implements CompletableSource {
      * @param source the emitter that is called when a Subscriber subscribes to the returned {@code Flowable}
      * @return the new Completable instance
      * @see FlowableOnSubscribe
-     * @see FlowableEmitter.BackpressureMode
      * @see Cancellable
      */
     @SchedulerSupport(SchedulerSupport.NONE)

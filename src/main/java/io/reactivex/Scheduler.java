@@ -37,6 +37,16 @@ public abstract class Scheduler {
                 Long.getLong("rx2.scheduler.drift-tolerance", 15));
     }
 
+    /**
+     * Returns the clock drift tolerance in nanoseconds.
+     * <p>Related system property: {@code rx2.scheduler.drift-tolerance} in minutes
+     * @return the tolerance in nanoseconds
+     * @since 2.0
+     */
+    public static long clockDriftTolerance() {
+        return CLOCK_DRIFT_TOLERANCE_NANOSECONDS;
+    }
+    
     
     /**
      * Retrieves or creates a new {@link Scheduler.Worker} that represents serial execution of actions.

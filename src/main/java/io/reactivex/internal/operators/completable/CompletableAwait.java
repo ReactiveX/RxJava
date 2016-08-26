@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public enum CompletableAwait {
     ;
@@ -56,7 +57,7 @@ public enum CompletableAwait {
         try {
             cdl.await();
         } catch (InterruptedException ex) {
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrap(ex);
         }
         if (err[0] != null) {
             throw Exceptions.propagate(err[0]);

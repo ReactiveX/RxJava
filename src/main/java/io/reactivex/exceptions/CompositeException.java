@@ -205,9 +205,7 @@ public final class CompositeException extends RuntimeException {
             appendStackTrace(b, ex, "\t");
             i++;
         }
-        synchronized (s.lock()) {
-            s.println(b.toString());
-        }
+        s.println(b.toString());
     }
 
     private void appendStackTrace(StringBuilder b, Throwable ex, String prefix) {
@@ -222,9 +220,6 @@ public final class CompositeException extends RuntimeException {
     }
 
     abstract static class PrintStreamOrWriter {
-        /** Returns the object to be locked when using this StreamOrWriter */
-        abstract Object lock();
-
         /** Prints the specified string as a line on this StreamOrWriter */
         abstract void println(Object o);
     }
@@ -240,11 +235,6 @@ public final class CompositeException extends RuntimeException {
         }
 
         @Override
-        Object lock() {
-            return printStream;
-        }
-
-        @Override
         void println(Object o) {
             printStream.println(o);
         }
@@ -255,11 +245,6 @@ public final class CompositeException extends RuntimeException {
 
         WrappedPrintWriter(PrintWriter printWriter) {
             this.printWriter = printWriter;
-        }
-
-        @Override
-        Object lock() {
-            return printWriter;
         }
 
         @Override
@@ -310,7 +295,7 @@ public final class CompositeException extends RuntimeException {
      * any suppressed exceptions.
      */
     public boolean isEmpty() {
-        return exceptions.isEmpty() && getCause() == null;
+        return exceptions.isEmpty();
     }
     
     /**
@@ -321,16 +306,15 @@ public final class CompositeException extends RuntimeException {
      */
     private Throwable getRootCause(Throwable e) {
         Throwable root = e.getCause();
-        if (root == null || root == e) {
+        if (root == null /* || cause == root */) { // case might not be possible
             return e;
-        } else {
-            while(true) {
-                Throwable cause = root.getCause();
-                if (cause == null || cause == root) {
-                    return root;
-                }
-                root = root.getCause();
+        }
+        while(true) {
+            Throwable cause = root.getCause();
+            if (cause == null /* || cause == root */) { // case might not be possible
+                return root;
             }
+            root = root.getCause();
         }
     }
 }

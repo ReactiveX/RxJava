@@ -249,7 +249,6 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param source the emitter that is called when a Subscriber subscribes to the returned {@code Flowable}
      * @return the new Single instance
      * @see FlowableOnSubscribe
-     * @see FlowableEmitter.BackpressureMode
      * @see Cancellable
      */
     public static <T> Single<T> create(SingleOnSubscribe<T> source) {
