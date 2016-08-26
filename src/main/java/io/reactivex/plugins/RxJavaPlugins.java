@@ -19,6 +19,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.ConnectableObservable;
 
 /**
@@ -846,12 +847,8 @@ public final class RxJavaPlugins {
     static <T, R> R apply(Function<T, R> f, T t) {
         try {
             return f.apply(t);
-        } catch (Error ex) {
-            throw ex;
-        } catch (RuntimeException ex) {
-            throw ex;
         } catch (Throwable ex) {
-            throw new RuntimeException(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 
@@ -869,12 +866,8 @@ public final class RxJavaPlugins {
     static <T, U, R> R apply(BiFunction<T, U, R> f, T t, U u) {
         try {
             return f.apply(t, u);
-        } catch (Error ex) {
-            throw ex;
-        } catch (RuntimeException ex) {
-            throw ex;
         } catch (Throwable ex) {
-            throw new RuntimeException(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 

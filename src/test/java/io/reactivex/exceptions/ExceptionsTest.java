@@ -466,7 +466,7 @@ public class ExceptionsTest {
         }
 
         try {
-            Exceptions.propagate(new LinkageError());
+            ExceptionHelper.wrapOrThrow(new LinkageError());
             fail("Didn't propagate Error");
         } catch (LinkageError ex) {
             // expected

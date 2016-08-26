@@ -14,7 +14,7 @@ package io.reactivex;
 
 import java.util.concurrent.*;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
 
 import io.reactivex.annotations.SchedulerSupport;
 import io.reactivex.disposables.Disposable;
@@ -24,8 +24,9 @@ import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.FlowableDelaySubscriptionOther;
 import io.reactivex.internal.operators.observable.ObservableDelaySubscriptionOther;
-import io.reactivex.internal.operators.single.*;
+import io.reactivex.internal.operators.single.SingleDelayWithCompletable;
 import io.reactivex.internal.subscribers.completable.*;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -1611,7 +1612,7 @@ public abstract class Completable implements CompletableSource {
             return converter.apply(this);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 

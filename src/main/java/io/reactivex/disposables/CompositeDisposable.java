@@ -225,14 +225,7 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         }
         if (errors != null) {
             if (errors.size() == 1) {
-                Throwable ex = errors.get(0);
-                if (ex instanceof Error) {
-                    throw (Error)ex;
-                }
-                if (ex instanceof RuntimeException) {
-                    throw (RuntimeException)ex;
-                }
-                throw ExceptionHelper.wrap(ex);
+                throw ExceptionHelper.wrapOrThrow(errors.get(0));
             }
             throw new CompositeException(errors);
         }

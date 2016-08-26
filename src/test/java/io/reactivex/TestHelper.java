@@ -27,8 +27,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -243,11 +244,11 @@ public enum TestHelper {
             throw new RuntimeException(ex);
         }
         if (errors[0] != null && errors[1] == null) {
-            throw Exceptions.propagate(errors[0]);
+            throw ExceptionHelper.wrapOrThrow(errors[0]);
         }
         
         if (errors[0] == null && errors[1] != null) {
-            throw Exceptions.propagate(errors[1]);
+            throw ExceptionHelper.wrapOrThrow(errors[1]);
         }
         
         if (errors[0] != null && errors[1] != null) {

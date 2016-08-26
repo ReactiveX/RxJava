@@ -18,9 +18,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
 
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public final class BlockingObservableIterator<T> 
 extends AtomicReference<Disposable>
@@ -57,7 +57,7 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
             if (d) {
                 Throwable e = error;
                 if (e != null) {
-                    throw Exceptions.propagate(e);
+                    throw ExceptionHelper.wrapOrThrow(e);
                 } else
                 if (empty) {
                     return false;
@@ -71,7 +71,7 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
                     }
                 } catch (InterruptedException ex) {
                     run();
-                    throw Exceptions.propagate(ex);
+                    throw ExceptionHelper.wrapOrThrow(ex);
                 } finally {
                     lock.unlock();
                 }

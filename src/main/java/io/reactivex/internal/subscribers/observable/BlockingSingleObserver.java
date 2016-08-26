@@ -16,7 +16,7 @@ import java.util.concurrent.CountDownLatch;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public abstract class BlockingSingleObserver<T> extends CountDownLatch
 implements Observer<T>, Disposable {
@@ -70,13 +70,13 @@ implements Observer<T>, Disposable {
                 await();
             } catch (InterruptedException ex) {
                 dispose();
-                throw Exceptions.propagate(ex);
+                throw ExceptionHelper.wrapOrThrow(ex);
             }
         }
         
         Throwable e = error;
         if (e != null) {
-            throw Exceptions.propagate(e);
+            throw ExceptionHelper.wrapOrThrow(e);
         }
         return value;
     }

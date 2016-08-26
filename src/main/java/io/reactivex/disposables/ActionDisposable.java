@@ -27,12 +27,8 @@ final class ActionDisposable extends ReferenceDisposable<Action> {
     protected void onDisposed(Action value) {
         try {
             value.run();
-        } catch (Error ex) {
-            throw ex;
-        } catch (RuntimeException ex) {
-            throw ex;
         } catch (Throwable ex) {
-            throw ExceptionHelper.wrap(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 }

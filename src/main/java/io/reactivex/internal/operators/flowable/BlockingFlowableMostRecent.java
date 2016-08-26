@@ -17,8 +17,7 @@ import java.util.*;
 
 import org.reactivestreams.Publisher;
 
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.*;
 import io.reactivex.subscribers.DefaultSubscriber;
 
 /**
@@ -109,7 +108,7 @@ public enum BlockingFlowableMostRecent {
                             throw new NoSuchElementException();
                         }
                         if (NotificationLite.isError(buf)) {
-                            throw Exceptions.propagate(NotificationLite.getError(buf));
+                            throw ExceptionHelper.wrapOrThrow(NotificationLite.getError(buf));
                         }
                         return NotificationLite.getValue(buf);
                     }

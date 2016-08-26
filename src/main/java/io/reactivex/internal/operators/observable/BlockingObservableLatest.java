@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.DisposableObserver;
 
 /**
@@ -84,7 +84,7 @@ public enum BlockingObservableLatest {
         @Override
         public boolean hasNext() {
             if (iteratorNotification != null && iteratorNotification.isOnError()) {
-                throw Exceptions.propagate(iteratorNotification.getError());
+                throw ExceptionHelper.wrapOrThrow(iteratorNotification.getError());
             }
             if (iteratorNotification == null || iteratorNotification.isOnNext()) {
                 if (iteratorNotification == null) {
@@ -94,13 +94,13 @@ public enum BlockingObservableLatest {
                         dispose();
                         Thread.currentThread().interrupt();
                         iteratorNotification = Notification.createOnError(ex);
-                        throw Exceptions.propagate(ex);
+                        throw ExceptionHelper.wrapOrThrow(ex);
                     }
 
                     Notification<T> n = value.getAndSet(null);
                     iteratorNotification = n;
                     if (n.isOnError()) {
-                        throw Exceptions.propagate(n.getError());
+                        throw ExceptionHelper.wrapOrThrow(n.getError());
                     }
                 }
             }

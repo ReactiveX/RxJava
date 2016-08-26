@@ -25,12 +25,16 @@ public enum ExceptionHelper {
     ;
     
     /**
-     * Wraps the given error Exception into a RuntimeException if not already
-     * a RuntimeException
-     * @param error the error to wrap
+     * If the provided Throwable is an Error this method
+     * throws it, otherwise returns a RuntimeException wrapping the error
+     * if that error is a checked exception.
+     * @param error the error to wrap or throw
      * @return the (wrapped) error
      */
-    public static RuntimeException wrap(Throwable error) {
+    public static RuntimeException wrapOrThrow(Throwable error) {
+        if (error instanceof Error) {
+            throw (Error)error;
+        }
         if (error instanceof RuntimeException) {
             return (RuntimeException)error;
         }

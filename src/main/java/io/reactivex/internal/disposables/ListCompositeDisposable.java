@@ -17,6 +17,7 @@ import java.util.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.ExceptionHelper;
 
 /**
  * A disposable container that can hold onto multiple other disposables.
@@ -177,7 +178,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
         }
         if (errors != null) {
             if (errors.size() == 1) {
-                throw Exceptions.propagate(errors.get(0));
+                throw ExceptionHelper.wrapOrThrow(errors.get(0));
             }
             throw new CompositeException(errors);
         }

@@ -17,7 +17,6 @@ import java.util.concurrent.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.ExceptionHelper;
 
@@ -50,17 +49,17 @@ public enum CompletableAwait {
         
         if (cdl.getCount() == 0) {
             if (err[0] != null) {
-                throw Exceptions.propagate(err[0]);
+                throw ExceptionHelper.wrapOrThrow(err[0]);
             }
             return;
         }
         try {
             cdl.await();
         } catch (InterruptedException ex) {
-            throw ExceptionHelper.wrap(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         if (err[0] != null) {
-            throw Exceptions.propagate(err[0]);
+            throw ExceptionHelper.wrapOrThrow(err[0]);
         }
     }
     
@@ -92,7 +91,7 @@ public enum CompletableAwait {
         
         if (cdl.getCount() == 0) {
             if (err[0] != null) {
-                throw Exceptions.propagate(err[0]);
+                throw ExceptionHelper.wrapOrThrow(err[0]);
             }
             return true;
         }
@@ -100,11 +99,11 @@ public enum CompletableAwait {
         try {
              b = cdl.await(timeout, unit);
         } catch (InterruptedException ex) {
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         if (b) {
             if (err[0] != null) {
-                throw Exceptions.propagate(err[0]);
+                throw ExceptionHelper.wrapOrThrow(err[0]);
             }
         }
         return b;
@@ -140,7 +139,7 @@ public enum CompletableAwait {
         try {
             cdl.await();
         } catch (InterruptedException ex) {
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         return err[0];
     }
@@ -178,11 +177,11 @@ public enum CompletableAwait {
         try {
             b = cdl.await(timeout, unit);
         } catch (InterruptedException ex) {
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         if (b) {
             return err[0];
         }
-        throw Exceptions.propagate(new TimeoutException());
+        throw ExceptionHelper.wrapOrThrow(new TimeoutException());
     }
 }

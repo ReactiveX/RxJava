@@ -20,11 +20,10 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
-import io.reactivex.FlowableOperator;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
@@ -63,7 +62,7 @@ public class FlowableConversionTest {
             try {
                 return operator.apply(onSubscribe);
             } catch (Throwable ex) {
-                throw Exceptions.propagate(ex);
+                throw ExceptionHelper.wrapOrThrow(ex);
             }
         }
 
@@ -71,7 +70,7 @@ public class FlowableConversionTest {
             try {
                 return transformer.apply(this);
             } catch (Throwable ex) {
-                throw Exceptions.propagate(ex);
+                throw ExceptionHelper.wrapOrThrow(ex);
             }
         }
         

@@ -17,8 +17,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.*;
 
 import io.reactivex.ObservableSource;
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.*;
 import io.reactivex.observers.DefaultObserver;
 
 /**
@@ -109,7 +108,7 @@ public enum BlockingObservableMostRecent {
                             throw new NoSuchElementException();
                         }
                         if (NotificationLite.isError(buf)) {
-                            throw Exceptions.propagate(NotificationLite.getError(buf));
+                            throw ExceptionHelper.wrapOrThrow(NotificationLite.getError(buf));
                         }
                         return NotificationLite.getValue(buf);
                     }

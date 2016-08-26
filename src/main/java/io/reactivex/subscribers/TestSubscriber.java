@@ -20,12 +20,12 @@ import org.reactivestreams.*;
 
 import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.util.*;
 
 /**
  * A subscriber that records events and allows making assertions about them.
@@ -874,7 +874,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         try {
             check.accept(this);
         } catch (Throwable ex) {
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         return this;
     }

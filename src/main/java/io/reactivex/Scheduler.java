@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -304,7 +305,7 @@ public abstract class Scheduler {
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     worker.dispose();
-                    throw Exceptions.propagate(ex);
+                    throw ExceptionHelper.wrapOrThrow(ex);
                 }
             }
         }

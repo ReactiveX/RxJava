@@ -25,7 +25,7 @@ import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.subscribers.single.*;
-import io.reactivex.internal.util.ErrorMode;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -2365,7 +2365,7 @@ public abstract class Single<T> implements SingleSource<T> {
             return convert.apply(this);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 

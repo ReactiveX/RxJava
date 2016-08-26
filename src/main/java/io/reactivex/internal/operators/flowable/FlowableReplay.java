@@ -217,7 +217,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                             buf = bufferFactory.call();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            throw Exceptions.propagate(ex);
+                            throw ExceptionHelper.wrapOrThrow(ex);
                         }
                         // create a new subscriber to source
                         ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
@@ -287,7 +287,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
                     buf = bufferFactory.call();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    throw Exceptions.propagate(ex);
+                    throw ExceptionHelper.wrapOrThrow(ex);
                 }
                 
                 // create a new subscriber-to-source
@@ -322,7 +322,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements F
             connection.accept(ps);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         if (doConnect) {
             source.subscribe(ps);

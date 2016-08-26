@@ -33,6 +33,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -3439,7 +3440,7 @@ public class CompletableTest {
             assertTrue("A TestException should have been delivered to the handler",
                     caught instanceof TestException);
         } catch (Throwable ex) {
-            throw Exceptions.propagate(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
         } finally {
             Thread.setDefaultUncaughtExceptionHandler(originalHandler);
         }
