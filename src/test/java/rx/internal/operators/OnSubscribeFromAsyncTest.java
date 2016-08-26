@@ -16,12 +16,19 @@
 
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.junit.*;
 
 import rx.*;
 import rx.exceptions.*;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
+import rx.plugins.RxJavaHooks;
 import rx.subjects.PublishSubject;
 
 public class OnSubscribeFromAsyncTest {
@@ -133,6 +140,75 @@ public class OnSubscribeFromAsyncTest {
         ts.assertNotCompleted();
         
         Assert.assertEquals("fromAsync: could not emit value due to lack of requests", ts.getOnErrorEvents().get(0).getMessage());
+    }
+    
+    @Test
+    public void overflowErrorIsNotFollowedByAnotherErrorDueToOnNextFromUpstream() {
+        Action1<AsyncEmitter<Integer>> source = new Action1<AsyncEmitter<Integer>>(){
+
+            @Override
+            public void call(AsyncEmitter<Integer> emitter) {
+                emitter.onNext(1);
+                //don't check for unsubscription
+                emitter.onNext(2);
+            }};
+        Observable.fromAsync(source, AsyncEmitter.BackpressureMode.ERROR).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(MissingBackpressureException.class);
+        ts.assertNotCompleted();
+        
+        Assert.assertEquals("fromAsync: could not emit value due to lack of requests", ts.getOnErrorEvents().get(0).getMessage());
+    }
+    
+    @Test
+    public void overflowErrorIsNotFollowedByAnotherCompletedDueToCompletedFromUpstream() {
+        Action1<AsyncEmitter<Integer>> source = new Action1<AsyncEmitter<Integer>>(){
+
+            @Override
+            public void call(AsyncEmitter<Integer> emitter) {
+                emitter.onNext(1);
+                //don't check for unsubscription
+                emitter.onCompleted();
+            }};
+        Observable.fromAsync(source, AsyncEmitter.BackpressureMode.ERROR).unsafeSubscribe(ts);
+        
+        ts.assertNoValues();
+        ts.assertError(MissingBackpressureException.class);
+        ts.assertNotCompleted();
+        
+        Assert.assertEquals("fromAsync: could not emit value due to lack of requests", ts.getOnErrorEvents().get(0).getMessage());
+    }
+    
+    @Test
+    public void overflowErrorIsNotFollowedByAnotherErrorDueToOnErrorFromUpstreamAndSecondErrorIsReportedToHook() {
+        try {
+            final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+            RxJavaHooks.setOnError(new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    list.add(t);
+                }});
+            final RuntimeException e = new RuntimeException();
+            Action1<AsyncEmitter<Integer>> source = new Action1<AsyncEmitter<Integer>>(){
+    
+                @Override
+                public void call(AsyncEmitter<Integer> emitter) {
+                    emitter.onNext(1);
+                    //don't check for unsubscription
+                    emitter.onError(e);
+                }};
+            Observable.fromAsync(source, AsyncEmitter.BackpressureMode.ERROR).unsafeSubscribe(ts);
+            
+            ts.assertNoValues();
+            ts.assertError(MissingBackpressureException.class);
+            ts.assertNotCompleted();
+            
+            Assert.assertEquals("fromAsync: could not emit value due to lack of requests", ts.getOnErrorEvents().get(0).getMessage());
+            assertEquals(Arrays.asList(e), list);
+        } finally {
+            RxJavaHooks.reset();
+        }
     }
 
     @Test
