@@ -18,6 +18,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableCollect<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Callable<? extends U> initialSupplier;
@@ -56,6 +57,8 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
         
         Disposable s;
         
+        boolean done;
+        
         public CollectSubscriber(Observer<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
             this.actual = actual;
             this.collector = collector;
@@ -84,21 +87,33 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
         
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             try {
                 collector.accept(u, t);
             } catch (Throwable e) {
                 s.dispose();
-                actual.onError(e);
+                onError(e);
             }
         }
         
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
             actual.onError(t);
         }
         
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
             actual.onNext(u);
             actual.onComplete();
         }

@@ -1,17 +1,4 @@
-/**
- * Copyright 2016 Netflix, Inc.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
- * the License for the specific language governing permissions and limitations under the License.
- */
-
-package io.reactivex.flowable;
+package io.reactivex.internal.operators.observable;
 
 import static io.reactivex.internal.util.TestingHelper.addToList;
 import static io.reactivex.internal.util.TestingHelper.biConsumerThrows;
@@ -28,15 +15,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableCollectTest {
+public final class ObservableCollectTest {
     
     @Test
     public void testCollectToList() {
-        Flowable<List<Integer>> o = Flowable.just(1, 2, 3)
+        Observable<List<Integer>> o = Observable.just(1, 2, 3)
         .collect(new Callable<List<Integer>>() {
             @Override
             public List<Integer> call() {
@@ -67,50 +54,25 @@ public final class FlowableCollectTest {
 
     @Test
     public void testCollectToString() {
-        String value = Flowable.just(1, 2, 3)
-            .collect(
-                new Callable<StringBuilder>() {
-                    @Override
-                    public StringBuilder call() {
-                        return new StringBuilder();
-                    }
-                }, 
-                new BiConsumer<StringBuilder, Integer>() {
-                    @Override
-                    public void accept(StringBuilder sb, Integer v) {
-                    if (sb.length() > 0) {
-                        sb.append("-");
-                    }
-                    sb.append(v);
+        String value = Observable.just(1, 2, 3).collect(new Callable<StringBuilder>() {
+            @Override
+            public StringBuilder call() {
+                return new StringBuilder();
+            }
+        }, 
+            new BiConsumer<StringBuilder, Integer>() {
+                @Override
+                public void accept(StringBuilder sb, Integer v) {
+                if (sb.length() > 0) {
+                    sb.append("-");
                 }
+                sb.append(v);
+      }
             }).blockingLast().toString();
 
         assertEquals("1-2-3", value);
     }
-
-
-    @Test
-    public void testFactoryFailureResultsInErrorEmission() {
-        final RuntimeException e = new RuntimeException();
-        Flowable.just(1).collect(new Callable<List<Integer>>() {
-
-            @Override
-            public List<Integer> call() throws Exception {
-                throw e;
-            }
-        }, new BiConsumer<List<Integer>, Integer>() {
-
-            @Override
-            public void accept(List<Integer> list, Integer t) {
-                list.add(t);
-            }
-        })
-        .test()
-        .assertNoValues()
-        .assertError(e)
-        .assertNotComplete();
-    }
-
+    
     @Test
     public void testCollectorFailureDoesNotResultInTwoErrorEmissions() {
         try {
