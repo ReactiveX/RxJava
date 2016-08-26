@@ -223,7 +223,7 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
         }
 
         @Override
-        public final void onNext(T t) {
+        public void onNext(T t) {
             if (actual.isUnsubscribed()) {
                 return;
             }
@@ -259,10 +259,43 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
 
         /** */
         private static final long serialVersionUID = 338953216916120960L;
+        
+        private boolean done;
 
         public ErrorAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
+        
+
+        @Override
+        public void onNext(T t) {
+            if (done) {
+                return;
+            }
+            super.onNext(t);
+        }
+
+
+        @Override
+        public void onCompleted() {
+            if (done) {
+                return;
+            }
+            done = true;
+            super.onCompleted();
+        }
+
+
+        @Override
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaHooks.onError(e);
+                return;
+            }
+            done = true;
+            super.onError(e);
+        }
+
 
         @Override
         void onOverflow() {
