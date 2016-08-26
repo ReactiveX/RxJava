@@ -13,10 +13,10 @@
 
 package io.reactivex.subjects;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -115,16 +115,17 @@ public final class PublishSubject<T> extends Subject<T> {
         return NotificationLite.isError(state.get());
     }
     
-    static final class State<T> extends AtomicReference<Object> implements ObservableSource<T>, Observer<T> {
+    static final class State<T> extends AtomicReference<Object> 
+    implements ObservableSource<T> {
         /** */
         private static final long serialVersionUID = 4876574210612691772L;
 
-        final AtomicReference<Observer<? super T>[]> subscribers = new AtomicReference<Observer<? super T>[]>();
+        final AtomicReference<PublishDisposable<? super T>[]> subscribers = new AtomicReference<PublishDisposable<? super T>[]>();
         
         @SuppressWarnings("rawtypes")
-        static final Observer[] EMPTY = new Observer[0];
+        static final PublishDisposable[] EMPTY = new PublishDisposable[0];
         @SuppressWarnings("rawtypes")
-        static final Observer[] TERMINATED = new Observer[0];
+        static final PublishDisposable[] TERMINATED = new PublishDisposable[0];
 
         volatile boolean done;
         
@@ -133,16 +134,16 @@ public final class PublishSubject<T> extends Subject<T> {
             subscribers.lazySet(EMPTY);
         }
         
-        boolean add(Observer<? super T> s) {
+        boolean add(PublishDisposable<? super T> s) {
             for (;;) {
-                Observer<? super T>[] a = subscribers.get();
+                PublishDisposable<? super T>[] a = subscribers.get();
                 if (a == TERMINATED) {
                     return false;
                 }
                 int n = a.length;
                 
                 @SuppressWarnings("unchecked")
-                Observer<? super T>[] b = new Observer[n + 1];
+                PublishDisposable<? super T>[] b = new PublishDisposable[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = s;
                 
@@ -153,16 +154,16 @@ public final class PublishSubject<T> extends Subject<T> {
         }
         
         @SuppressWarnings("unchecked")
-        void remove(Observer<? super T> s) {
+        void remove(PublishDisposable<? super T> s) {
             for (;;) {
-                Observer<? super T>[] a = subscribers.get();
+                PublishDisposable<? super T>[] a = subscribers.get();
                 if (a == TERMINATED || a == EMPTY) {
                     return;
                 }
                 int n = a.length;
                 int j = -1;
                 for (int i = 0; i < n; i++) {
-                    Observer<? super T> e = a[i];
+                    PublishDisposable<? super T> e = a[i];
                     if (e.equals(s)) {
                         j = i;
                         break;
@@ -171,11 +172,11 @@ public final class PublishSubject<T> extends Subject<T> {
                 if (j < 0) {
                     return;
                 }
-                Observer<? super T>[] b;
+                PublishDisposable<? super T>[] b;
                 if (n == 1) {
                     b = EMPTY;
                 } else {
-                    b = new Observer[n - 1];
+                    b = new PublishDisposable[n - 1];
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, n - j - 1);
                 }
@@ -186,12 +187,9 @@ public final class PublishSubject<T> extends Subject<T> {
         }
         
         @SuppressWarnings("unchecked")
-        Observer<? super T>[] terminate(Object notification) {
+        PublishDisposable<? super T>[] terminate(Object notification) {
             if (compareAndSet(null, notification)) {
-                Observer<? super T>[] a = subscribers.get();
-                if (a != TERMINATED) {
-                    return subscribers.getAndSet(TERMINATED);
-                }
+                return subscribers.getAndSet(TERMINATED);
             }
             return TERMINATED;
         }
@@ -212,16 +210,11 @@ public final class PublishSubject<T> extends Subject<T> {
                 emit(t, v);
                 return;
             }
-            Disposable d = Disposables.from(new Runnable() {
-                @Override
-                public void run() {
-                    remove(t);
-                }
-            });
+            PublishDisposable<T> d = new PublishDisposable<T>(t, this);
             t.onSubscribe(d);
-            if (add(t)) {
+            if (add(d)) {
                 if (d.isDisposed()) {
-                    remove(t);
+                    remove(d);
                 }
                 return;
             }
@@ -229,14 +222,6 @@ public final class PublishSubject<T> extends Subject<T> {
             emit(t, v);
         }
         
-        @Override
-        public void onSubscribe(Disposable d) {
-            if (done) {
-                d.dispose();
-            }
-        }
-        
-        @Override
         public void onNext(T value) {
             if (done) {
                 return;
@@ -245,12 +230,13 @@ public final class PublishSubject<T> extends Subject<T> {
                 onError(new NullPointerException("The value is null"));
                 return;
             }
-            for (Observer<? super T> v : subscribers.get()) {
-                v.onNext(value);
+            for (PublishDisposable<? super T> v : subscribers.get()) {
+                if (!v.get()) {
+                    v.actual.onNext(value);
+                }
             }
         }
         
-        @Override
         public void onError(Throwable e) {
             if (done) {
                 RxJavaPlugins.onError(e);
@@ -261,19 +247,48 @@ public final class PublishSubject<T> extends Subject<T> {
                 e = new NullPointerException();
             }
 
-            for (Observer<? super T> v : terminate(NotificationLite.error(e))) {
-                v.onError(e);
+            for (PublishDisposable<? super T> v : terminate(NotificationLite.error(e))) {
+                if (!v.get()) {
+                    v.actual.onError(e);
+                }
             }
         }
         
-        @Override
         public void onComplete() {
             if (done) {
                 return;
             }
             done = true;
-            for (Observer<? super T> v : terminate(NotificationLite.complete())) {
-                v.onComplete();
+            for (PublishDisposable<? super T> v : terminate(NotificationLite.complete())) {
+                if (!v.get()) {
+                    v.actual.onComplete();
+                }
+            }
+        }
+    }
+    
+    static final class PublishDisposable<T> extends AtomicBoolean implements Disposable {
+        /** */
+        private static final long serialVersionUID = 2734660924929727368L;
+
+        final Observer<? super T> actual;
+
+        final State<T> parent;
+        
+        public PublishDisposable(Observer<? super T> actual, State<T> parent) {
+            this.actual = actual;
+            this.parent = parent;
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return get();
+        }
+        
+        @Override
+        public void dispose() {
+            if (compareAndSet(false, true)) {
+                parent.remove(this);
             }
         }
     }

@@ -217,24 +217,19 @@ public enum TestHelper {
             }
         });
         
-        s.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                if (count.decrementAndGet() != 0) {
-                    while (count.get() != 0);
-                }
-                
-                try {
-                    try {
-                        r2.run();
-                    } catch (Throwable ex) {
-                        errors[1] = ex;
-                    }
-                } finally {
-                    cdl.countDown();
-                }
+        if (count.decrementAndGet() != 0) {
+            while (count.get() != 0);
+        }
+        
+        try {
+            try {
+                r2.run();
+            } catch (Throwable ex) {
+                errors[1] = ex;
             }
-        });
+        } finally {
+            cdl.countDown();
+        }
         
         try {
             if (!cdl.await(5, TimeUnit.SECONDS)) {

@@ -15,29 +15,22 @@
  */
 package io.reactivex.exceptions;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.Observer;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.SingleSource;
-import io.reactivex.TestHelper;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.*;
+import org.reactivestreams.*;
+
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class ExceptionsTest {
     
@@ -472,4 +465,30 @@ public class ExceptionsTest {
             // expected
         }
     }
+
+    @Test
+    public void manualPropagate() {
+        
+        try {
+            Exceptions.propagate(new InternalError());
+            fail("Didn't throw exception");
+        } catch (InternalError ex) {
+            // expected
+        }
+        
+        try {
+            throw Exceptions.propagate(new IllegalArgumentException());
+        } catch (IllegalArgumentException ex) {
+            // expected
+        }
+
+        try {
+            throw ExceptionHelper.wrapOrThrow(new IOException());
+        } catch (RuntimeException ex) {
+            if (!(ex.getCause() instanceof IOException)) {
+                fail(ex.toString() + ": should have thrown RuntimeException(IOException)");
+            }
+        }
+    }
+
 }

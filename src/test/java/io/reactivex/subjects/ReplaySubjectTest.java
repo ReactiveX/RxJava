@@ -819,4 +819,113 @@ public class ReplaySubjectTest {
         assertArrayEquals(expected, rs.getValues());
         
     }
+
+    public void createInvalidCapacity() {
+        try {
+            ReplaySubject.create(-99);
+            fail("Didn't throw IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("capacityHint > 0 required but it was -99", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void createWithSizeInvalidCapacity() {
+        try {
+            ReplaySubject.createWithSize(-99);
+            fail("Didn't throw IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("size > 0 required but it was -99", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void createWithTimeAndSizeInvalidCapacity() {
+        try {
+            ReplaySubject.createWithTimeAndSize(1, TimeUnit.DAYS, Schedulers.computation(), -99);
+            fail("Didn't throw IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("size > 0 required but it was -99", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void hasSubscribers() {
+        ReplaySubject<Integer> rp = ReplaySubject.create();
+        
+        assertFalse(rp.hasObservers());
+        
+        TestObserver<Integer> ts = rp.test();
+        
+        assertTrue(rp.hasObservers());
+        
+        ts.cancel();
+        
+        assertFalse(rp.hasObservers());
+    }
+    
+    @Test
+    public void peekStateUnbounded() {
+        ReplaySubject<Integer> rp = ReplaySubject.create();
+        
+        rp.onNext(1);
+        
+        assertEquals((Integer)1, rp.getValue());
+        
+        assertEquals(1, rp.getValues()[0]);
+    }
+
+    @Test
+    public void peekStateTimeAndSize() {
+        ReplaySubject<Integer> rp = ReplaySubject.createWithTimeAndSize(1, TimeUnit.DAYS, Schedulers.computation(), 1);
+        
+        rp.onNext(1);
+        
+        assertEquals((Integer)1, rp.getValue());
+        
+        assertEquals(1, rp.getValues()[0]);
+
+        rp.onNext(2);
+
+        assertEquals((Integer)2, rp.getValue());
+        
+        assertEquals(2, rp.getValues()[0]);
+
+        assertEquals((Integer)2, rp.getValues(new Integer[0])[0]);
+
+        assertEquals((Integer)2, rp.getValues(new Integer[1])[0]);
+
+        Integer[] a = new Integer[2];
+        assertEquals((Integer)2, rp.getValues(a)[0]);
+        assertNull(a[1]);
+    }
+
+    @Test
+    public void peekStateTimeAndSizeValue() {
+        ReplaySubject<Integer> rp = ReplaySubject.createWithTimeAndSize(1, TimeUnit.DAYS, Schedulers.computation(), 1);
+    
+        assertNull(rp.getValue());
+        
+        assertEquals(0, rp.getValues().length);
+        
+        assertNull(rp.getValues(new Integer[2])[0]);
+
+        rp.onComplete();
+
+        assertNull(rp.getValue());
+        
+        assertEquals(0, rp.getValues().length);
+
+        assertNull(rp.getValues(new Integer[2])[0]);
+
+        rp = ReplaySubject.createWithTimeAndSize(1, TimeUnit.DAYS, Schedulers.computation(), 1);
+        rp.onError(new TestException());
+        
+        assertNull(rp.getValue());
+        
+        assertEquals(0, rp.getValues().length);
+
+        assertNull(rp.getValues(new Integer[2])[0]);
+    }
+
 }

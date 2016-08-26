@@ -445,7 +445,7 @@ public class PublishProcessorTest {
     }
     
     @Test
-    public void testRequestValidation() {
+    public void requestValidation() {
         TestHelper.assertBadRequestReported(PublishProcessor.create());
     }
     
@@ -576,20 +576,14 @@ public class PublishProcessorTest {
             
             TestSubscriber<Integer> ts = pp.test();
             
-            final AtomicInteger count = new AtomicInteger(2);
-            
             Runnable task = new Runnable() {
                 @Override
                 public void run() {
-                    if (count.decrementAndGet() != 0) {
-                        while (count.get() != 0);
-                    }
                     pp.onComplete();
                 }
             };
-            
-            Schedulers.newThread().scheduleDirect(task);
-            Schedulers.newThread().scheduleDirect(task);
+
+            TestHelper.race(task, task, Schedulers.io());
             
             ts
             .awaitDone(5, TimeUnit.SECONDS)
@@ -605,34 +599,20 @@ public class PublishProcessorTest {
             
             final TestSubscriber<Integer> ts = pp.test();
             
-            final AtomicInteger count = new AtomicInteger(2);
-            
-            final CountDownLatch cdl = new CountDownLatch(2);
-            
-            Schedulers.newThread().scheduleDirect(new Runnable() {
+            Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    if (count.decrementAndGet() != 0) {
-                        while (count.get() != 0);
-                    }
                     pp.subscribe();
-                    
-                    cdl.countDown();
                 }
-            });
-            Schedulers.newThread().scheduleDirect(new Runnable() {
+            };
+            Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    if (count.decrementAndGet() != 0) {
-                        while (count.get() != 0);
-                    }
                     ts.cancel();
-                    
-                    cdl.countDown();
                 }
-            });
-            
-            assertTrue(cdl.await(5, TimeUnit.SECONDS));
+            };
+
+            TestHelper.race(r1, r2, Schedulers.io());
         }
     }
 }
