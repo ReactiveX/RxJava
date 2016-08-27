@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.Observable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 
 public class ObservableDoOnTest {
@@ -71,5 +72,35 @@ public class ObservableDoOnTest {
 
         assertEquals("one", output);
         assertTrue(r.get());
+    }
+    
+    @Test
+    public void doOnTerminateComplete() {
+        final AtomicBoolean r = new AtomicBoolean();
+        String output = Observable.just("one").doOnTerminate(new Action() {
+            @Override
+            public void run() {
+                r.set(true);
+            }
+        }).blockingSingle();
+
+        assertEquals("one", output);
+        assertTrue(r.get());
+        
+    }
+
+    @Test
+    public void doOnTerminateError() {
+        final AtomicBoolean r = new AtomicBoolean();
+        Observable.<String>error(new TestException()).doOnTerminate(new Action() {
+            @Override
+            public void run() {
+                r.set(true);
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+        assertTrue(r.get());
+        
     }
 }

@@ -129,7 +129,14 @@ public class ObservableWindowWithSizeTest {
 
                     @Override
                     public void accept(Integer t1) {
-                        count.incrementAndGet();
+                        if (count.incrementAndGet() == 500000) {
+                            // give it a small break halfway through
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException ex) {
+                                // ignored
+                            }
+                        }
                     }
 
                 })

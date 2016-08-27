@@ -45,7 +45,7 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
     private static final Object HAS_NEXT = new Object();
 
     public SpscLinkedArrayQueue(final int bufferSize) {
-        int p2capacity = Pow2.roundToPowerOfTwo(bufferSize);
+        int p2capacity = Pow2.roundToPowerOfTwo(Math.max(8, bufferSize));
         int mask = p2capacity - 1;
         AtomicReferenceArray<Object> buffer = new AtomicReferenceArray<Object>(p2capacity + 1);
         producerBuffer = buffer;

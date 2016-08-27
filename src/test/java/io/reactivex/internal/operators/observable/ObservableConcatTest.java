@@ -28,7 +28,9 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
@@ -756,5 +758,202 @@ public class ObservableConcatTest {
             assertEquals((Integer)999, ts.values().get(999));
         }
     }
+
+    @Test
+    public void concat3() {
+        Observable.concat(Observable.just(1), Observable.just(2), Observable.just(3))
+        .test()
+        .assertResult(1, 2, 3);
+    }
+
+    @Test
+    public void concat4() {
+        Observable.concat(Observable.just(1), Observable.just(2), 
+                Observable.just(3), Observable.just(4))
+        .test()
+        .assertResult(1, 2, 3, 4);
+    }
     
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArrayDelayError() {
+        Observable.concatArrayDelayError(Observable.just(1), Observable.just(2), 
+                Observable.just(3), Observable.just(4))
+        .test()
+        .assertResult(1, 2, 3, 4);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArrayDelayErrorWithError() {
+        Observable.concatArrayDelayError(Observable.just(1), Observable.just(2), 
+                Observable.just(3).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(4))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatIterableDelayError() {
+        Observable.concatDelayError(
+                Arrays.asList(Observable.just(1), Observable.just(2), 
+                Observable.just(3), Observable.just(4)))
+        .test()
+        .assertResult(1, 2, 3, 4);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatIterableDelayErrorWithError() {
+        Observable.concatDelayError(
+                Arrays.asList(Observable.just(1), Observable.just(2), 
+                Observable.just(3).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(4)))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4);
+    }
+
+    @Test
+    public void concatObservableDelayError() {
+        Observable.concatDelayError(
+                Observable.just(Observable.just(1), Observable.just(2), 
+                Observable.just(3), Observable.just(4)))
+        .test()
+        .assertResult(1, 2, 3, 4);
+    }
+
+    @Test
+    public void concatObservableDelayErrorWithError() {
+        Observable.concatDelayError(
+                Observable.just(Observable.just(1), Observable.just(2), 
+                Observable.just(3).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(4)))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4);
+    }
+
+    @Test
+    public void concatObservableDelayErrorBoundary() {
+        Observable.concatDelayError(
+                Observable.just(Observable.just(1), Observable.just(2), 
+                Observable.just(3).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(4)), 2, false)
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3);
+    }
+
+    @Test
+    public void concatObservableDelayErrorTillEnd() {
+        Observable.concatDelayError(
+                Observable.just(Observable.just(1), Observable.just(2), 
+                Observable.just(3).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(4)), 2, true)
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4);
+    }
+
+    @Test
+    public void concatMapDelayError() {
+        Observable.just(Observable.just(1), Observable.just(2))
+        .concatMapDelayError(Functions.<Observable<Integer>>identity())
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void concatMapDelayErrorWithError() {
+        Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), Observable.just(2))
+        .concatMapDelayError(Functions.<Observable<Integer>>identity())
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+    
+    @Test
+    public void concatMapIterableBufferSize() {
+        
+        Observable.just(1, 2).concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer v) throws Exception {
+                return Arrays.asList(1, 2, 3, 4, 5);
+            }
+        }, 1)
+        .test()
+        .assertResult(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void emptyArray() {
+        assertSame(Observable.empty(), Observable.concatArrayDelayError());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void singleElementArray() {
+        assertSame(Observable.never(), Observable.concatArrayDelayError(Observable.never()));
+    }
+    
+    @Test
+    public void concatMapDelayErrorEmptySource() {
+        assertSame(Observable.empty(), Observable.<Object>empty()
+                .concatMapDelayError(new Function<Object, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Object v) throws Exception {
+                        return Observable.just(1);
+                    }
+                }, 16, true));
+    }
+
+    @Test
+    public void concatMapDelayErrorJustSource() {
+        Observable.just(0)
+        .concatMapDelayError(new Function<Object, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Object v) throws Exception {
+                return Observable.just(1);
+            }
+        }, 16, true)
+        .test()
+        .assertResult(1);
+    
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArrayEmpty() {
+        assertSame(Observable.empty(), Observable.concatArray());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArraySingleElement() {
+        assertSame(Observable.never(), Observable.concatArray(Observable.never()));
+    }
+
+    @Test
+    public void concatMapErrorEmptySource() {
+        assertSame(Observable.empty(), Observable.<Object>empty()
+                .concatMap(new Function<Object, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Object v) throws Exception {
+                        return Observable.just(1);
+                    }
+                }, 16));
+    }
+
+    @Test
+    public void concatMapJustSource() {
+        Observable.just(0)
+        .concatMap(new Function<Object, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Object v) throws Exception {
+                return Observable.just(1);
+            }
+        }, 16)
+        .test()
+        .assertResult(1);
+    
+    }
+
 }

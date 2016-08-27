@@ -357,4 +357,14 @@ public class ObservableTakeTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
+    
+    @Test
+    public void takeNegative() {
+        try {
+            Observable.just(1).take(-99);
+            fail("Should have thrown");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("count >= 0 required but it was -99", ex.getMessage());
+        }
+    }
 }

@@ -290,4 +290,13 @@ public class ObservableDebounceTest {
         NbpSubscriber.assertTerminated();
         NbpSubscriber.assertNoErrors();
     }
+    
+    @Test
+    public void debounceDefault() throws Exception {
+        
+        Observable.just(1).debounce(1, TimeUnit.SECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
 }

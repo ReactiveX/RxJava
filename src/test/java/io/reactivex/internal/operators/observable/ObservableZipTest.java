@@ -28,6 +28,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
@@ -1143,5 +1144,192 @@ public class ObservableZipTest {
             
             Assert.assertEquals(11, value);
         }
+    }
+
+    @Test
+    public void zip2() {
+        Observable.zip(Observable.just(1),
+                Observable.just(2),
+            new BiFunction<Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b) throws Exception {
+                    return "" + a + b;
+                }
+            }
+        )
+        .test()
+        .assertResult("12");
+    }
+
+    @Test
+    public void zip3() {
+        Observable.zip(Observable.just(1),
+                Observable.just(2), Observable.just(3),
+            new Function3<Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c) throws Exception {
+                    return "" + a + b + c;
+                }
+            }
+        )
+        .test()
+        .assertResult("123");
+    }
+
+    @Test
+    public void zip4() {
+        Observable.zip(Observable.just(1),
+                Observable.just(2), Observable.just(3),
+                Observable.just(4),
+            new Function4<Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d) throws Exception {
+                    return "" + a + b + c + d;
+                }
+            }
+        )
+        .test()
+        .assertResult("1234");
+    }
+
+    @Test
+    public void zip5() {
+        Observable.zip(Observable.just(1),
+                Observable.just(2), Observable.just(3),
+                Observable.just(4), Observable.just(5),
+            new Function5<Integer, Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e) throws Exception {
+                    return "" + a + b + c + d + e;
+                }
+            }
+        )
+        .test()
+        .assertResult("12345");
+    }
+
+    @Test
+    public void zip6() {
+        Observable.zip(Observable.just(1),
+                Observable.just(2), Observable.just(3),
+                Observable.just(4), Observable.just(5),
+                Observable.just(6),
+            new Function6<Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f) throws Exception {
+                    return "" + a + b + c + d + e + f;
+                }
+            }
+        )
+        .test()
+        .assertResult("123456");
+    }
+
+    @Test
+    public void zip7() {
+        Observable.zip(Observable.just(1),
+                Observable.just(2), Observable.just(3),
+                Observable.just(4), Observable.just(5),
+                Observable.just(6), Observable.just(7),
+            new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g)
+                        throws Exception {
+                    return "" + a + b + c + d + e + f + g;
+                }
+            }
+        )
+        .test()
+        .assertResult("1234567");
+    }
+
+    @Test
+    public void zip8() {
+        Observable.zip(Observable.just(1),
+                Observable.just(2), Observable.just(3),
+                Observable.just(4), Observable.just(5),
+                Observable.just(6), Observable.just(7),
+                Observable.just(8), 
+            new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
+                        Integer h) throws Exception {
+                    return "" + a + b + c + d + e + f + g + h;
+                }
+            }
+        )
+        .test()
+        .assertResult("12345678");
+    }
+    @Test
+    public void zip9() {
+        Observable.zip(Observable.just(1),
+                Observable.just(2), Observable.just(3),
+                Observable.just(4), Observable.just(5),
+                Observable.just(6), Observable.just(7),
+                Observable.just(8), Observable.just(9),
+            new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
+                        Integer h, Integer i) throws Exception {
+                    return "" + a + b + c + d + e + f + g + h + i;
+                }
+            }
+        )
+        .test()
+        .assertResult("123456789");
+    }
+
+    @Test
+    public void zip2DelayError() {
+        Observable.zip(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
+                Observable.just(2),
+            new BiFunction<Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b) throws Exception {
+                    return "" + a + b;
+                }
+            }, true
+        )
+        .test()
+        .assertFailure(TestException.class, "12");
+    }
+
+    @Test
+    public void zip2Prefetch() {
+        Observable.zip(Observable.range(1, 9),
+                Observable.range(21, 9),
+            new BiFunction<Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b) throws Exception {
+                    return "" + a + b;
+                }
+            }, false, 2
+        )
+        .takeLast(1)
+        .test()
+        .assertResult("929");
+    }
+
+    @Test
+    public void zip2DelayErrorPrefetch() {
+        Observable.zip(Observable.range(1, 9).concatWith(Observable.<Integer>error(new TestException())),
+                Observable.range(21, 9),
+            new BiFunction<Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b) throws Exception {
+                    return "" + a + b;
+                }
+            }, true, 2
+        )
+        .skip(8)
+        .test()
+        .assertFailure(TestException.class, "929");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zipArrayEmpty() {
+        assertSame(Observable.empty(), Observable.zipArray(Functions.<Object[]>identity(), false, 16));
     }
 }

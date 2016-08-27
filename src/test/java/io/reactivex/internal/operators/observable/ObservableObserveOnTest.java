@@ -439,4 +439,21 @@ public class ObservableObserveOnTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
     }
+    
+    @Test
+    public void delayError() {
+        Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
+        .observeOn(Schedulers.computation(), true)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                if (v == 1) {
+                    Thread.sleep(100);
+                }
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
 }

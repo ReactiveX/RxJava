@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import io.reactivex.Single;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 
@@ -69,6 +69,22 @@ public class SingleSubscribeTest {
         
         assertNull(value[0]);
         assertEquals(ex, value[1]);
+    }
+    
+    @Test
+    public void subscribeThrows() {
+        try {
+            new Single<Integer>() {
+                @Override
+                protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                    throw new IllegalArgumentException();
+                }
+            }.test();
+        } catch (NullPointerException ex) {
+            if (!(ex.getCause() instanceof IllegalArgumentException)) {
+                fail(ex.toString() + ": should have thrown NPE(IAE)");
+            }
+        }
     }
 
 }

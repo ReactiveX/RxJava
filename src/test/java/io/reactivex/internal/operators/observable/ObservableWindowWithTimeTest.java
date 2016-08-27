@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -26,8 +26,9 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
 
 
 public class ObservableWindowWithTimeTest {
@@ -218,5 +219,64 @@ public class ObservableWindowWithTimeTest {
         ts.assertComplete();
         Assert.assertTrue(ts.valueCount() != 0);
     }
-    
+
+    @Test
+    public void timespanTimeskipDefaultScheduler() {
+        Observable.just(1)
+        .window(1, 1, TimeUnit.MINUTES)
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void timespanTimeskipCustomScheduler() {
+        Observable.just(1)
+        .window(1, 1, TimeUnit.MINUTES, Schedulers.io())
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void timespanTimeskipCustomSchedulerBufferSize() {
+        Observable.range(1, 10)
+        .window(1, 1, TimeUnit.MINUTES, Schedulers.io(), 2)
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void timespanDefaultSchedulerSize() {
+        Observable.range(1, 10)
+        .window(1, TimeUnit.MINUTES, 20)
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void timespanDefaultSchedulerSizeRestart() {
+        Observable.range(1, 10)
+        .window(1, TimeUnit.MINUTES, 20, true)
+        .flatMap(Functions.<Observable<Integer>>identity(), true)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void invalidSpan() {
+        try {
+            Observable.just(1).window(-99, 1, TimeUnit.SECONDS);
+            fail("Should have thrown!");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("timespan > 0 required but it was -99", ex.getMessage());
+        }
+    }
 }

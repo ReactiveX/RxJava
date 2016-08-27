@@ -30,6 +30,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
@@ -1442,4 +1443,33 @@ public class ObservableGroupByTest {
         assertEquals(Arrays.asList(e), inner1.errors());
         assertEquals(Arrays.asList(e), inner2.errors());
     }
+    
+    @Test
+    public void keySelectorAndDelayError() {
+        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        .groupBy(Functions.identity(), true)
+        .flatMap(new Function<GroupedObservable<Object, Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(GroupedObservable<Object, Integer> g) throws Exception {
+                return g;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void keyAndValueSelectorAndDelayError() {
+        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        .groupBy(Functions.identity(), Functions.<Integer>identity(), true)
+        .flatMap(new Function<GroupedObservable<Object, Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(GroupedObservable<Object, Integer> g) throws Exception {
+                return g;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
 }

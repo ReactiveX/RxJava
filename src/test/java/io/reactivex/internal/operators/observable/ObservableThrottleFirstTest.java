@@ -149,4 +149,12 @@ public class ObservableThrottleFirstTest {
         inOrder.verify(NbpObserver).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
+    
+    @Test
+    public void throttleFirstDefaultScheduler() {
+        Observable.just(1).throttleFirst(100, TimeUnit.MILLISECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
 }

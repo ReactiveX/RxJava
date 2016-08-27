@@ -957,15 +957,16 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @param time the waiting time
      * @param unit the time unit of the waiting time
      * @return this
-     * @throws InterruptedException if the wait is interrupted
+     * @throws RuntimeException wrapping an InterruptedException if the wait is interrupted
      */
-    public final TestSubscriber<T> awaitDone(long time, TimeUnit unit) throws InterruptedException {
+    public final TestSubscriber<T> awaitDone(long time, TimeUnit unit) {
         try {
             if (!done.await(time, unit)) {
                 cancel();
             }
         } catch (InterruptedException ex) {
             cancel();
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         return this;
     }

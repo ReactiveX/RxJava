@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -544,5 +544,69 @@ public class ObservableFlatMapTest {
             ts.assertComplete();
             ts.assertValueCount(n * 2);
         }
+    }
+    
+    @Test
+    public void flatMapBiMapper() {
+        Observable.just(1)
+        .flatMap(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.just(v * 10);
+            }
+        }, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }, true)
+        .test()
+        .assertResult(11);
+    }
+
+    @Test
+    public void flatMapBiMapperWithError() {
+        Observable.just(1)
+        .flatMap(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.just(v * 10).concatWith(Observable.<Integer>error(new TestException()));
+            }
+        }, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }, true)
+        .test()
+        .assertFailure(TestException.class, 11);
+    }
+
+    @Test
+    public void flatMapBiMapperMaxConcurrency() {
+        Observable.just(1, 2)
+        .flatMap(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.just(v * 10);
+            }
+        }, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }, true, 1)
+        .test()
+        .assertResult(11, 22);
+    }
+
+    @Test
+    public void flatMapEmpty() {
+        assertSame(Observable.empty(), Observable.empty().flatMap(new Function<Object, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Object v) throws Exception {
+                return Observable.just(v);
+            }
+        }));
     }
 }

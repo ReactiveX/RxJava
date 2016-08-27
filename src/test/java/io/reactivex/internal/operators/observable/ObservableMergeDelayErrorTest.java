@@ -553,4 +553,109 @@ public class ObservableMergeDelayErrorTest {
             t.start();
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeIterableDelayError() {
+        Observable.mergeDelayError(Arrays.asList(Observable.just(1), Observable.just(2)))
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeArrayDelayError() {
+        Observable.mergeArrayDelayError(Observable.just(1), Observable.just(2))
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeIterableDelayErrorWithError() {
+        Observable.mergeDelayError(
+                Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(2)))
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void mergeDelayError() {
+        Observable.mergeDelayError(
+                Observable.just(Observable.just(1), 
+                Observable.just(2)))
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void mergeDelayErrorWithError() {
+        Observable.mergeDelayError(
+                Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(2)))
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void mergeDelayErrorMaxConcurrency() {
+        Observable.mergeDelayError(
+                Observable.just(Observable.just(1), 
+                Observable.just(2)), 1)
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void mergeDelayErrorWithErrorMaxConcurrency() {
+        Observable.mergeDelayError(
+                Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(2)), 1)
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeIterableDelayErrorMaxConcurrency() {
+        Observable.mergeDelayError(
+                Arrays.asList(Observable.just(1), 
+                Observable.just(2)), 1)
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeIterableDelayErrorWithErrorMaxConcurrency() {
+        Observable.mergeDelayError(
+                Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(2)), 1)
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void mergeDelayError3() {
+        Observable.mergeDelayError(
+                Observable.just(1), 
+                Observable.just(2),
+                Observable.just(3)
+        )
+        .test()
+        .assertResult(1, 2, 3);
+    }
+
+    @Test
+    public void mergeDelayError3WithError() {
+        Observable.mergeDelayError(
+                Observable.just(1), 
+                Observable.just(2).concatWith(Observable.<Integer>error(new TestException())),
+                Observable.just(3)
+        )
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3);
+    }
+
 }

@@ -28,7 +28,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -194,4 +194,29 @@ public class ObservableRepeatTest {
         
         assertEquals(Arrays.asList(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), concatBase);
     }
+    
+    @Test
+    public void repeatUntil() {
+        Observable.just(1)
+        .repeatUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return false;
+            }
+        })
+        .take(5)
+        .test()
+        .assertResult(1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void repeatLongPredicateInvalid() {
+        try {
+            Observable.just(1).repeat(-99);
+            fail("Should have thrown");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("times >= 0 required but it was -99", ex.getMessage());
+        }
+    }
+
 }

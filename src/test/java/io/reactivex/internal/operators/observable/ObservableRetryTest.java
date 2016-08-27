@@ -28,6 +28,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observables.GroupedObservable;
@@ -863,6 +864,49 @@ public class ObservableRetryTest {
         // should have a single successful onCompleted
         inOrder.verify(NbpObserver, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void retryPredicate() {
+        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        .retry(new Predicate<Throwable>() {
+            @Override
+            public boolean test(Throwable v) throws Exception {
+                return true;
+            }
+        })
+        .take(5)
+        .test()
+        .assertResult(1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void retryUntil() {
+        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        .retryUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return false;
+            }
+        })
+        .take(5)
+        .test()
+        .assertResult(1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void retryLongPredicateInvalid() {
+        try {
+            Observable.just(1).retry(-99, new Predicate<Throwable>() {
+                @Override
+                public boolean test(Throwable e) throws Exception {
+                    return true;
+                }
+            });
+            fail("Should have thrown");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("times >= 0 required but it was -99", ex.getMessage());
+        }
     }
 
 }

@@ -68,4 +68,9 @@ public class SingleCreateTest {
         
         assertTrue(d.isDisposed());
     }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void unsafeCreate() {
+        Single.unsafeCreate(Single.just(1));
+    }
 }

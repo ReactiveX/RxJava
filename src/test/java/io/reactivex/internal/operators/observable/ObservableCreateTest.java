@@ -130,4 +130,45 @@ public class ObservableCreateTest {
         assertTrue(d.isDisposed());
     }
 
+    @Test
+    public void wrap() {
+        Observable.wrap(new ObservableSource<Integer>() {
+            @Override
+            public void subscribe(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onNext(1);
+                observer.onNext(2);
+                observer.onNext(3);
+                observer.onNext(4);
+                observer.onNext(5);
+                observer.onComplete();
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void unsafe() {
+        Observable.unsafeCreate(new ObservableSource<Integer>() {
+            @Override
+            public void subscribe(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onNext(1);
+                observer.onNext(2);
+                observer.onNext(3);
+                observer.onNext(4);
+                observer.onNext(5);
+                observer.onComplete();
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void unsafeWithObservable() {
+        Observable.unsafeCreate(Observable.just(1));
+    }
+
 }

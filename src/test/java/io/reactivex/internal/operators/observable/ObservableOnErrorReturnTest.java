@@ -24,6 +24,7 @@ import org.mockito.Mockito;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
@@ -212,6 +213,12 @@ public class ObservableOnErrorReturnTest {
         }
     }
     
-    
+    @Test
+    public void returnItem() {
+        Observable.error(new TestException())
+        .onErrorReturnItem(1)
+        .test()
+        .assertResult(1);
+    }
     
 }

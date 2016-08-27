@@ -23,7 +23,7 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableTakeLastTimedTest {
@@ -199,4 +199,37 @@ public class ObservableTakeLastTimedTest {
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
     }
+    
+    @Test
+    public void takeLastTimeAndSize() {
+        Observable.just(1, 2)
+        .takeLast(1, 1, TimeUnit.MINUTES)
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void takeLastTime() {
+        Observable.just(1, 2)
+        .takeLast(1, TimeUnit.MINUTES)
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void takeLastTimeDelayError() {
+        Observable.just(1, 2).concatWith(Observable.<Integer>error(new TestException()))
+        .takeLast(1, TimeUnit.MINUTES, true)
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void takeLastTimeDelayErrorCustomScheduler() {
+        Observable.just(1, 2).concatWith(Observable.<Integer>error(new TestException()))
+        .takeLast(1, TimeUnit.MINUTES, Schedulers.io(), true)
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
 }

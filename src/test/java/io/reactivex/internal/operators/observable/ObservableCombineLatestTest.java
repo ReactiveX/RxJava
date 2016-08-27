@@ -27,7 +27,9 @@ import org.mockito.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
@@ -766,5 +768,91 @@ public class ObservableCombineLatestTest {
         }
 
         assertEquals(SIZE, count.get());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combineLatestArrayOfSources() {
+        
+        Observable.combineLatest(new ObservableSource[] {
+                Observable.just(1), Observable.just(2)
+        }, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertResult("[1, 2]");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineLatestDelayErrorArrayOfSources() {
+        
+        Observable.combineLatestDelayError(new ObservableSource[] {
+                Observable.just(1), Observable.just(2)
+        }, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertResult("[1, 2]");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineLatestDelayErrorArrayOfSourcesWithError() {
+        
+        Observable.combineLatestDelayError(new ObservableSource[] {
+                Observable.just(1), Observable.just(2).concatWith(Observable.<Integer>error(new TestException()))
+        }, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, "[1, 2]");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineLatestDelayErrorIterableOfSources() {
+        
+        Observable.combineLatestDelayError(Arrays.asList(
+                Observable.just(1), Observable.just(2)
+        ), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertResult("[1, 2]");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineLatestDelayErrorIterableOfSourcesWithError() {
+        
+        Observable.combineLatestDelayError(Arrays.asList(
+                Observable.just(1), Observable.just(2).concatWith(Observable.<Integer>error(new TestException()))
+        ), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, "[1, 2]");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combineLatestDelayErrorEmpty() {
+        assertSame(Observable.empty(), Observable.combineLatestDelayError(new ObservableSource[0], Functions.<Object[]>identity(), 16));
     }
 }

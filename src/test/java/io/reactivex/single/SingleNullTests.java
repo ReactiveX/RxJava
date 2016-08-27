@@ -688,7 +688,7 @@ public class SingleNullTests {
     
     @Test(expected = NullPointerException.class)
     public void onErrorReturnValueNull() {
-        error.onErrorReturnValue(null);
+        error.onErrorReturnItem(null);
     }
     
     @Test(expected = NullPointerException.class)
@@ -754,11 +754,6 @@ public class SingleNullTests {
                 return null;
             }
         }).blockingGet();
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void safeSubscribeNull() {
-        just1.safeSubscribe(null);
     }
     
     @Test(expected = NullPointerException.class)

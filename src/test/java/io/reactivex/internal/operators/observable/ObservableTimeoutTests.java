@@ -356,4 +356,12 @@ public class ObservableTimeoutTests {
 
         verify(s, times(1)).dispose();
     }
+    
+    @Test
+    public void timedAndOther() {
+        Observable.never().timeout(100, TimeUnit.MILLISECONDS, Observable.just(1))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
 }
