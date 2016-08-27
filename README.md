@@ -102,7 +102,7 @@ $ cd RxJava/
 $ ./gradlew build
 ```
 
-Futher details on building can be found on the [Getting Started](https://github.com/ReactiveX/RxJava/wiki/Getting-Started) page of the wiki.
+Further details on building can be found on the [Getting Started](https://github.com/ReactiveX/RxJava/wiki/Getting-Started) page of the wiki.
 
 ## Bugs and Feedback
 
