@@ -123,4 +123,12 @@ public class FlowableTakeTimedTest {
         verify(o, never()).onNext(4);
         verify(o, never()).onError(any(TestException.class));
     }
+    
+    @Test
+    public void timedDefaultScheduler() {
+        Observable.range(1, 5).take(1, TimeUnit.MINUTES)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
 }

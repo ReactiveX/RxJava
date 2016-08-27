@@ -58,4 +58,13 @@ public class ObservableThrottleWithTimeoutTests {
         inOrder.verify(observer).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
+
+    @Test
+    public void throttleFirstDefaultScheduler() {
+        Observable.just(1).throttleWithTimeout(100, TimeUnit.MILLISECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
 }

@@ -57,12 +57,12 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     @Test
     @Ignore("Unhandled errors are no longer thrown")
     public final void testUnhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTests.testUnhandledErrorIsDeliveredToThreadHandler(getScheduler());
+        SchedulerTestHelper.testUnhandledErrorIsDeliveredToThreadHandler(getScheduler());
     }
 
     @Test
     public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
+        SchedulerTestHelper.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
     
     @Test(timeout = 60000)

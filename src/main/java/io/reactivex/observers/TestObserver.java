@@ -895,15 +895,16 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @param time the waiting time
      * @param unit the time unit of the waiting time
      * @return this
-     * @throws InterruptedException if the wait is interrupted
+     * @throws RuntimeException wrapping an InterruptedException if the wait is interrupted
      */
-    public final TestObserver<T> awaitDone(long time, TimeUnit unit) throws InterruptedException {
+    public final TestObserver<T> awaitDone(long time, TimeUnit unit) {
         try {
             if (!done.await(time, unit)) {
                 cancel();
             }
         } catch (InterruptedException ex) {
             cancel();
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         return this;
     }

@@ -148,4 +148,11 @@ public class ObservableSequenceEqualTest {
         inOrder.verify(NbpObserver, times(1)).onError(isA(TestException.class));
         inOrder.verifyNoMoreInteractions();
     }
+    
+    @Test
+    public void sequenceEqualBufferSize() {
+        Observable.sequenceEqual(Observable.range(1, 20), Observable.range(1, 20), 2)
+        .test()
+        .assertResult(true);
+    }
 }

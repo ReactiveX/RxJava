@@ -75,4 +75,45 @@ public class ObservableToObservableSortedListTest {
             ex.printStackTrace();
         }
     }
+    
+    @Test
+    public void sorted() {
+        Observable.just(5, 1, 2, 4, 3).sorted()
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+    
+    @Test
+    public void sortedComparator() {
+        Observable.just(5, 1, 2, 4, 3).sorted(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                return b - a;
+            }
+        })
+        .test()
+        .assertResult(5, 4, 3, 2, 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void toSortedListCapacity() {
+        Observable.just(5, 1, 2, 4, 3).toSortedList(4)
+        .test()
+        .assertResult(Arrays.asList(1, 2, 3, 4, 5));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void toSortedListComparatorCapacity() {
+        Observable.just(5, 1, 2, 4, 3).toSortedList(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                return b - a;
+            }
+        }, 4)
+        .test()
+        .assertResult(Arrays.asList(5, 4, 3, 2, 1));
+    }
+
 }

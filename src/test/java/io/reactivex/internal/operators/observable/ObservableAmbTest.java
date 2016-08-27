@@ -220,4 +220,17 @@ public class ObservableAmbTest {
         assertFalse("Source 2 still has subscribers!", source3.hasObservers());
         
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambArrayEmpty() {
+        assertSame(Observable.empty(), Observable.ambArray());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambArraySingleElement() {
+        assertSame(Observable.never(), Observable.ambArray(Observable.never()));
+    }
+
 }

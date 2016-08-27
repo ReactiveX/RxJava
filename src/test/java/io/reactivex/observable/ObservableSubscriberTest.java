@@ -13,15 +13,20 @@
 
 package io.reactivex.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.ObservableOperator;
-import io.reactivex.observers.DefaultObserver;
+import io.reactivex.Observer;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.*;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservableSubscriberTest {
     @Test
@@ -117,5 +122,60 @@ public class ObservableSubscriberTest {
         }).subscribe();
 
         assertEquals(1, c.get());
+    }
+    
+    @Test
+    public void subscribeConsumerConsumer() {
+        final List<Integer> list = new ArrayList<Integer>();
+        
+        Observable.just(1).subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                list.add(v);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                list.add(100);
+            }
+        });
+        
+        assertEquals(Arrays.asList(1), list);
+    }
+
+    @Test
+    public void subscribeConsumerConsumerWithError() {
+        final List<Integer> list = new ArrayList<Integer>();
+        
+        Observable.<Integer>error(new TestException()).subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                list.add(v);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                list.add(100);
+            }
+        });
+        
+        assertEquals(Arrays.asList(100), list);
+    }
+
+    @Test
+    public void methodTestCancelled() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        ps.test(true);
+        
+        assertFalse(ps.hasObservers());
+    }
+    
+    @Test
+    public void safeSubscriberAlreadySafe() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        Observable.just(1).safeSubscribe(new SafeObserver<Integer>(ts));
+        
+        ts.assertResult(1);
     }
 }

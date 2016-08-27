@@ -31,6 +31,7 @@ import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.observable.ObservableReplay.*;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.TestObserver;
@@ -1004,4 +1005,67 @@ public class ObservableReplayTest {
         ts.assertNotComplete();
         ts.assertError(TestException.class);
     }
+    
+    @Test
+    public void replayScheduler() {
+        
+        Observable.just(1).replay(Schedulers.computation())
+        .autoConnect()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+    
+    @Test
+    public void replayTime() {
+        Observable.just(1).replay(1, TimeUnit.MINUTES)
+        .autoConnect()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void replaySizeScheduler() {
+        
+        Observable.just(1).replay(1, Schedulers.computation())
+        .autoConnect()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void replaySizeAndTime() {
+        Observable.just(1).replay(1, 1, TimeUnit.MILLISECONDS)
+        .autoConnect()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+    
+    @Test
+    public void replaySelectorSizeScheduler() {
+        Observable.just(1).replay(Functions.<Observable<Integer>>identity(), 1, Schedulers.io())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void replaySelectorScheduler() {
+        Observable.just(1).replay(Functions.<Observable<Integer>>identity(), Schedulers.io())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void replaySelectorTime() {
+        Observable.just(1).replay(Functions.<Observable<Integer>>identity(), 1, TimeUnit.MINUTES)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
 }

@@ -801,7 +801,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param source the source to wrap
      * @return the Single wrapper or the source cast to Single (if possible)
      */
-    static <T> Single<T> wrap(SingleSource<T> source) {
+    public static <T> Single<T> wrap(SingleSource<T> source) {
         ObjectHelper.requireNonNull(source, "source is null");
         if (source instanceof Single) {
             return RxJavaPlugins.onAssembly((Single<T>)source);
@@ -1824,7 +1824,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
-    public final Single<T> onErrorReturnValue(final T value) {
+    public final Single<T> onErrorReturnItem(final T value) {
         ObjectHelper.requireNonNull(value, "value is null");
         return RxJavaPlugins.onAssembly(new SingleOnErrorReturn<T>(this, null, value));
     }
@@ -2034,16 +2034,6 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public final Single<T> retryWhen(Function<? super Flowable<? extends Throwable>, ? extends Publisher<Object>> handler) {
         return toFlowable().retryWhen(handler).toSingle();
-    }
-    
-    /**
-     * Subscribes the given Reactive-Streams Subscriber to this Single with a safety wrapper
-     * that handles exceptions thrown from the Subscriber's onXXX methods.
-     * @param s the Subscriber to wrap and subscribe to the current Single
-     * @since 2.0
-     */
-    public final void safeSubscribe(Subscriber<? super T> s) {
-        toFlowable().safeSubscribe(s);
     }
     
     /**

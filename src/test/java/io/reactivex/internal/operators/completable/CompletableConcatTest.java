@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.completable;
 
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -39,5 +40,15 @@ public class CompletableConcatTest {
         )
         .test()
         .assertFailure(MissingBackpressureException.class);
+    }
+    
+    @Test
+    public void invalidPrefetch() {
+        try {
+            Completable.concat(Flowable.just(Completable.complete()), -99);
+            fail("Should have thrown IllegalArgumentExceptio");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("prefetch > 0 required but it was -99", ex.getMessage());
+        }
     }
 }

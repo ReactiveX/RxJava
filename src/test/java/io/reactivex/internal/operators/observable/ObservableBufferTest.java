@@ -790,4 +790,53 @@ public class ObservableBufferTest {
         
         assertFalse(s.isDisposed());
     }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimeSkipDefault() {
+        Observable.range(1, 5).buffer(1, 1, TimeUnit.MINUTES)
+        .test()
+        .assertResult(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferBoundaryHint() {
+        Observable.range(1, 5).buffer(Observable.timer(1, TimeUnit.MINUTES), 2)
+        .test()
+        .assertResult(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
+    static HashSet<Integer> set(Integer... values) {
+        return new HashSet<Integer>(Arrays.asList(values));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferIntoCustomCollection() {
+        Observable.just(1, 1, 2, 2, 3, 3, 4, 4)
+        .buffer(3, new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                return new HashSet<Integer>();
+            }
+        })
+        .test()
+        .assertResult(set(1, 2), set(2, 3), set(4));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferSkipIntoCustomCollection() {
+        Observable.just(1, 1, 2, 2, 3, 3, 4, 4)
+        .buffer(3, 3, new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                return new HashSet<Integer>();
+            }
+        })
+        .test()
+        .assertResult(set(1, 2), set(2, 3), set(4));
+    }
+
 }

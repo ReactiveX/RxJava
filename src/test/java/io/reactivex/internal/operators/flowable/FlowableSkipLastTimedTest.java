@@ -25,7 +25,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
 
 public class FlowableSkipLastTimedTest {
 
@@ -148,4 +148,32 @@ public class FlowableSkipLastTimedTest {
         inOrder.verify(o).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
+    
+    @Test
+    public void skipLastTimedDefaultScheduler() {
+        Observable.just(1).concatWith(Observable.just(2).delay(500, TimeUnit.MILLISECONDS))
+        .skipLast(300, TimeUnit.MILLISECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void skipLastTimedDefaultSchedulerDelayError() {
+        Observable.just(1).concatWith(Observable.just(2).delay(500, TimeUnit.MILLISECONDS))
+        .skipLast(300, TimeUnit.MILLISECONDS, true)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void skipLastTimedCustomSchedulerDelayError() {
+        Observable.just(1).concatWith(Observable.just(2).delay(500, TimeUnit.MILLISECONDS))
+        .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.io(), true)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
 }

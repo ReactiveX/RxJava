@@ -123,4 +123,31 @@ public class ObservableZipTests {
             System.out.println("Result: " + t1);
         }
     };
+    
+    @Test
+    public void zipWithDelayError() {
+        Observable.just(1)
+        .zipWith(Observable.just(2), new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }, true)
+        .test()
+        .assertResult(3);
+    }
+
+    @Test
+    public void zipWithDelayErrorBufferSize() {
+        Observable.just(1)
+        .zipWith(Observable.just(2), new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }, true, 16)
+        .test()
+        .assertResult(3);
+    }
+
 }

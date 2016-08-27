@@ -731,4 +731,12 @@ public class ObservableConcatMapEagerTest {
         }
         
     }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatEagerIterable() {
+        Observable.concatEager(Arrays.asList(Observable.just(1), Observable.just(2)))
+        .test()
+        .assertResult(1, 2);
+    }
 }

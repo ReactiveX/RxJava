@@ -174,7 +174,6 @@ public abstract class Scheduler {
      * Unsubscribing the {@link Worker} cancels all outstanding work and allows resource cleanup.
      */
     public static abstract class Worker implements Disposable {
-
         /**
          * Schedules a Runnable for execution without delay.
          * 
@@ -236,38 +235,8 @@ public abstract class Scheduler {
             final long firstNowNanoseconds = now(TimeUnit.NANOSECONDS);
             final long firstStartInNanoseconds = firstNowNanoseconds + unit.toNanos(initialDelay);
 
-            first.replace(schedule(new Runnable() {
-                long count;
-                long lastNowNanoseconds = firstNowNanoseconds;
-                long startInNanoseconds = firstStartInNanoseconds;
-                @Override
-                public void run() {
-                    decoratedRun.run();
-
-                    if (!sd.isDisposed()) {
-
-                        long nextTick;
-
-                        long nowNanoseconds = now(TimeUnit.NANOSECONDS);
-                        // If the clock moved in a direction quite a bit, rebase the repetition period
-                        if (nowNanoseconds + CLOCK_DRIFT_TOLERANCE_NANOSECONDS < lastNowNanoseconds
-                                || nowNanoseconds >= lastNowNanoseconds + periodInNanoseconds + CLOCK_DRIFT_TOLERANCE_NANOSECONDS) {
-                            nextTick = nowNanoseconds + periodInNanoseconds;
-                            /* 
-                             * Shift the start point back by the drift as if the whole thing
-                             * started count periods ago.
-                             */
-                            startInNanoseconds = nextTick - (periodInNanoseconds * (++count));
-                        } else {
-                            nextTick = startInNanoseconds + (++count * periodInNanoseconds);
-                        }
-                        lastNowNanoseconds = nowNanoseconds;
-
-                        long delay = nextTick - nowNanoseconds;
-                        sd.replace(schedule(this, delay, TimeUnit.NANOSECONDS));
-                    }
-                }
-            }, initialDelay, unit));
+            first.replace(schedule(new PeriodicTask(firstStartInNanoseconds, decoratedRun, firstNowNanoseconds, sd,
+                    periodInNanoseconds), initialDelay, unit));
             
             return sd;
         }
@@ -281,7 +250,60 @@ public abstract class Scheduler {
         public long now(TimeUnit unit) {
             return unit.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
         }
-        
+
+        /**
+         * Holds state and logic to calculate when the next delayed invocation
+         * of this task has to happen (accounting for clock drifts).
+         */
+        final class PeriodicTask implements Runnable {
+            final long firstStartInNanoseconds;
+            final Runnable decoratedRun;
+            final long firstNowNanoseconds;
+            final SequentialDisposable sd;
+            final long periodInNanoseconds;
+            long count;
+            long lastNowNanoseconds;
+            long startInNanoseconds;
+
+            PeriodicTask(long firstStartInNanoseconds, Runnable decoratedRun,
+                    long firstNowNanoseconds, SequentialDisposable sd, long periodInNanoseconds) {
+                this.firstStartInNanoseconds = firstStartInNanoseconds;
+                this.decoratedRun = decoratedRun;
+                this.firstNowNanoseconds = firstNowNanoseconds;
+                this.sd = sd;
+                this.periodInNanoseconds = periodInNanoseconds;
+                lastNowNanoseconds = firstNowNanoseconds;
+                startInNanoseconds = firstStartInNanoseconds;
+            }
+
+            @Override
+            public void run() {
+                decoratedRun.run();
+
+                if (!sd.isDisposed()) {
+
+                    long nextTick;
+
+                    long nowNanoseconds = now(TimeUnit.NANOSECONDS);
+                    // If the clock moved in a direction quite a bit, rebase the repetition period
+                    if (nowNanoseconds + CLOCK_DRIFT_TOLERANCE_NANOSECONDS < lastNowNanoseconds
+                            || nowNanoseconds >= lastNowNanoseconds + periodInNanoseconds + CLOCK_DRIFT_TOLERANCE_NANOSECONDS) {
+                        nextTick = nowNanoseconds + periodInNanoseconds;
+                        /* 
+                         * Shift the start point back by the drift as if the whole thing
+                         * started count periods ago.
+                         */
+                        startInNanoseconds = nextTick - (periodInNanoseconds * (++count));
+                    } else {
+                        nextTick = startInNanoseconds + (++count * periodInNanoseconds);
+                    }
+                    lastNowNanoseconds = nowNanoseconds;
+
+                    long delay = nextTick - nowNanoseconds;
+                    sd.replace(schedule(this, delay, TimeUnit.NANOSECONDS));
+                }
+            }
+        }
     }
     
     static class PeriodicDirectTask 

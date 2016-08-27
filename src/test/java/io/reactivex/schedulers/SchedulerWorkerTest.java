@@ -13,7 +13,7 @@
 
 package io.reactivex.schedulers;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -83,7 +83,7 @@ public class SchedulerWorkerTest {
 
             Thread.sleep(150);
             
-            s.drift = -1000 - TimeUnit.NANOSECONDS.toMillis(Scheduler.clockDriftTolerance());
+            s.drift = -TimeUnit.SECONDS.toNanos(1) - Scheduler.clockDriftTolerance();
             
             Thread.sleep(400);
             
@@ -125,7 +125,7 @@ public class SchedulerWorkerTest {
 
             Thread.sleep(150);
             
-            s.drift = 1000 + TimeUnit.NANOSECONDS.toMillis(Scheduler.clockDriftTolerance());
+            s.drift = TimeUnit.SECONDS.toNanos(1) + Scheduler.clockDriftTolerance();
             
             Thread.sleep(400);
             

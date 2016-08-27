@@ -54,6 +54,7 @@ public final class TrampolineScheduler extends Scheduler {
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         try {
             unit.sleep(delay);
+            run.run();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             RxJavaPlugins.onError(ex);

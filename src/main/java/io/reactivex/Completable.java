@@ -225,15 +225,7 @@ public abstract class Completable implements CompletableSource {
         if (source instanceof Completable) {
             throw new IllegalArgumentException("Use of unsafeCreate(Completable)!");
         }
-        try {
-            return RxJavaPlugins.onAssembly(new CompletableFromUnsafeSource(source));
-        } catch (NullPointerException ex) { // NOPMD
-            throw ex;
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            RxJavaPlugins.onError(ex);
-            throw toNpe(ex);
-        } 
+        return RxJavaPlugins.onAssembly(new CompletableFromUnsafeSource(source));
     }
     
     /**

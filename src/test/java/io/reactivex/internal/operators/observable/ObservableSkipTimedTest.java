@@ -156,4 +156,12 @@ public class ObservableSkipTimedTest {
         verify(o, never()).onComplete();
 
     }
+
+    @Test
+    public void skipTimedDefaultScheduler() {
+        Observable.just(1).skip(1, TimeUnit.MINUTES)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult();
+    }
 }

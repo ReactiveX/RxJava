@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -516,4 +516,95 @@ public class ObservableSwitchTest {
         TestHelper.assertError(errors, 1, TestException.class, "Forced failure 2");
         TestHelper.assertError(errors, 2, TestException.class, "Forced failure 3");
     }
+    
+    @Test
+    public void switchOnNextDelayError() {
+        PublishSubject<Observable<Integer>> ps = PublishSubject.create();
+        
+        TestObserver<Integer> ts = Observable.switchOnNextDelayError(ps).test();
+        
+        ps.onNext(Observable.just(1));
+        ps.onNext(Observable.range(2, 4));
+        ps.onComplete();
+        
+        ts.assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void switchOnNextDelayErrorWithError() {
+        PublishSubject<Observable<Integer>> ps = PublishSubject.create();
+        
+        TestObserver<Integer> ts = Observable.switchOnNextDelayError(ps).test();
+        
+        ps.onNext(Observable.just(1));
+        ps.onNext(Observable.<Integer>error(new TestException()));
+        ps.onNext(Observable.range(2, 4));
+        ps.onComplete();
+        
+        ts.assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void switchOnNextDelayErrorBufferSize() {
+        PublishSubject<Observable<Integer>> ps = PublishSubject.create();
+        
+        TestObserver<Integer> ts = Observable.switchOnNextDelayError(ps, 2).test();
+        
+        ps.onNext(Observable.just(1));
+        ps.onNext(Observable.range(2, 4));
+        ps.onComplete();
+        
+        ts.assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void switchMapDelayErrorEmptySource() {
+        assertSame(Observable.empty(), Observable.<Object>empty()
+                .switchMapDelayError(new Function<Object, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Object v) throws Exception {
+                        return Observable.just(1);
+                    }
+                }, 16));
+    }
+
+    @Test
+    public void switchMapDelayErrorJustSource() {
+        Observable.just(0)
+        .switchMapDelayError(new Function<Object, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Object v) throws Exception {
+                return Observable.just(1);
+            }
+        }, 16)
+        .test()
+        .assertResult(1);
+    
+    }
+
+    @Test
+    public void switchMapErrorEmptySource() {
+        assertSame(Observable.empty(), Observable.<Object>empty()
+                .switchMap(new Function<Object, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Object v) throws Exception {
+                        return Observable.just(1);
+                    }
+                }, 16));
+    }
+
+    @Test
+    public void switchMapJustSource() {
+        Observable.just(0)
+        .switchMap(new Function<Object, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Object v) throws Exception {
+                return Observable.just(1);
+            }
+        }, 16)
+        .test()
+        .assertResult(1);
+    
+    }
+
 }

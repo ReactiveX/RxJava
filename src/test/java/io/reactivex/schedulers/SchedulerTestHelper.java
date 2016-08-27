@@ -20,8 +20,8 @@ import java.util.concurrent.*;
 import io.reactivex.*;
 import io.reactivex.subscribers.DefaultSubscriber;
 
-final class SchedulerTests {
-    private SchedulerTests() {
+final class SchedulerTestHelper {
+    private SchedulerTestHelper() {
         // No instances.
     }
 

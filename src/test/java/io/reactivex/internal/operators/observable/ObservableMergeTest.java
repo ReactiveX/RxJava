@@ -1116,4 +1116,12 @@ public class ObservableMergeTest {
             runMerge(toHiddenScalar, ts);
         }
     }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeArray() {
+        Observable.mergeArray(Observable.just(1), Observable.just(2))
+        .test()
+        .assertResult(1, 2);
+    }
 }

@@ -61,4 +61,8 @@ public class ObservableStartWithTests {
         assertEquals("two", values.get(3));
     }
 
+    @Test
+    public void startWithEmpty() {
+        Observable.just(1).startWithArray().test().assertResult(1);
+    }
 }

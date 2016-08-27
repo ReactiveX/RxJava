@@ -73,7 +73,7 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
         
         @Override
         public void onNext(U value) {
-            get().dispose();
+            s.cancel();
             onComplete();
         }
         

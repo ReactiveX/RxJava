@@ -60,6 +60,7 @@ public final class SingleAmbArray<T> extends Single<T> {
                 @Override
                 public void onSuccess(T value) {
                     if (once.compareAndSet(false, true)) {
+                        set.dispose();
                         s.onSuccess(value);
                     }
                 }
@@ -67,6 +68,7 @@ public final class SingleAmbArray<T> extends Single<T> {
                 @Override
                 public void onError(Throwable e) {
                     if (once.compareAndSet(false, true)) {
+                        set.dispose();
                         s.onError(e);
                     } else {
                         RxJavaPlugins.onError(e);

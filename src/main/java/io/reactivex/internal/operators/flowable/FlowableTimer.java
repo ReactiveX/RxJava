@@ -20,6 +20,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
@@ -75,7 +76,7 @@ public final class FlowableTimer extends Flowable<Long> {
                     actual.onNext(0L);
                     actual.onComplete();
                 } else {
-                    actual.onError(new IllegalStateException("Can't deliver value due to lack of requests"));
+                    actual.onError(new MissingBackpressureException("Can't deliver value due to lack of requests"));
                 }
                 lazySet(EmptyDisposable.INSTANCE);
             }

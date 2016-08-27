@@ -47,12 +47,12 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     @Test
     @Ignore("Unhandled errors are no longer thrown")
     public final void testUnhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTests.testUnhandledErrorIsDeliveredToThreadHandler(getScheduler());
+        SchedulerTestHelper.testUnhandledErrorIsDeliveredToThreadHandler(getScheduler());
     }
 
     @Test
     public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
-        SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
+        SchedulerTestHelper.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
     
     public static void testCancelledRetention(Scheduler.Worker w, boolean periodic) throws InterruptedException {
@@ -109,8 +109,18 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         int t = (int)(n * Math.log(n) / 100) + SchedulerPoolFactory.PURGE_PERIOD_SECONDS * 1000;
         while (t > 0) {
             System.out.printf("  >> Waiting for purge: %.2f s remaining%n", t / 1000d);
+
+            System.gc();
+            
             Thread.sleep(1000);
+            
             t -= 1000;
+            memHeap = memoryMXBean.getHeapMemoryUsage();
+            long finish = memHeap.getUsed();
+            System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
+            if (finish <= initial * 5) {
+                break;
+            }
         }
         
         System.out.println("Second GC");

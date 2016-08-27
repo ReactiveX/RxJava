@@ -39,6 +39,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
     @Override
     public void subscribeActual(Observer<? super Boolean> s) {
         EqualCoordinator<T> ec = new EqualCoordinator<T>(s, bufferSize, first, second, comparer);
+        s.onSubscribe(ec);
         ec.subscribe();
     }
     
