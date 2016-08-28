@@ -11,32 +11,30 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.completable;
+package io.reactivex.internal.disposables;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.TestHelper;
+import io.reactivex.internal.fuseable.QueueDisposable;
 
-public class CompletableSubscribeTest {
+public class EmptyDisposableTest {
+
     @Test
-    public void subscribeAlreadyCancelled() {
-        
-        PublishProcessor<Integer> pp = PublishProcessor.create();
-        
-        pp.toCompletable().test(true);
-        
-        assertFalse(pp.hasSubscribers());
+    public void noOffer() {
+        TestHelper.assertNoOffer(EmptyDisposable.INSTANCE);
     }
-
-
+    
     @Test
-    public void methodTestNoCancel() {
-        PublishSubject<Integer> ps = PublishSubject.create();
-        
-        ps.toCompletable().test(false);
-        
-        assertTrue(ps.hasObservers());
+    public void asyncFusion() {
+        assertEquals(QueueDisposable.NONE, EmptyDisposable.INSTANCE.requestFusion(QueueDisposable.SYNC));
+        assertEquals(QueueDisposable.ASYNC, EmptyDisposable.INSTANCE.requestFusion(QueueDisposable.ASYNC));
+    }
+    
+    @Test
+    public void checkEnum() {
+        assertEquals(1, EmptyDisposable.values().length);
+        assertNotNull(EmptyDisposable.valueOf("INSTANCE"));
     }
 }

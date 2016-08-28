@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.BiConsumer;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class BiConsumerSingleObserver<T>
@@ -40,7 +40,7 @@ implements SingleObserver<T>, Disposable {
             onCallback.accept(null, e);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            RxJavaPlugins.onError(ex);
+            RxJavaPlugins.onError(new CompositeException(e, ex));
         }
     }
     

@@ -11,32 +11,33 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.completable;
+package io.reactivex.internal.util;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.TestHelper;
 
-public class CompletableSubscribeTest {
+public class MiscUtilTest {
     @Test
-    public void subscribeAlreadyCancelled() {
-        
-        PublishProcessor<Integer> pp = PublishProcessor.create();
-        
-        pp.toCompletable().test(true);
-        
-        assertFalse(pp.hasSubscribers());
+    public void pow2UtilityClass() {
+        TestHelper.checkUtilityClass(Pow2.class);
     }
-
-
+    
     @Test
-    public void methodTestNoCancel() {
-        PublishSubject<Integer> ps = PublishSubject.create();
+    public void isPowerOf2() {
+        for (int i = 1; i > 0; i *= 2) {
+            assertTrue(Pow2.isPowerOfTwo(i));
+        }
         
-        ps.toCompletable().test(false);
-        
-        assertTrue(ps.hasObservers());
+        assertFalse(Pow2.isPowerOfTwo(3));
+        assertFalse(Pow2.isPowerOfTwo(5));
+        assertFalse(Pow2.isPowerOfTwo(6));
+        assertFalse(Pow2.isPowerOfTwo(7));
+    }
+    
+    @Test
+    public void hashMapSupplier() {
+        TestHelper.checkEnum(HashMapSupplier.class);
     }
 }

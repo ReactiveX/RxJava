@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -85,7 +85,7 @@ implements Subscriber<T>, Disposable {
             onError.accept(t);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            RxJavaPlugins.onError(ex);
+            RxJavaPlugins.onError(new CompositeException(t, ex));
         }
     }
     

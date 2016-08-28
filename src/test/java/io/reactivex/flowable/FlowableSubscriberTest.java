@@ -13,7 +13,7 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -22,9 +22,15 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
-import io.reactivex.FlowableOperator;
+import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.*;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.subscribers.flowable.ForEachWhileSubscriber;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
 
 public class FlowableSubscriberTest {
@@ -546,4 +552,183 @@ public class FlowableSubscriberTest {
             }});
         assertEquals(Arrays.asList(1,2,3,4,5), list);
     }
+    
+    @Test
+    public void forEachWhile() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        
+        final List<Integer> list = new ArrayList<Integer>();
+        
+        Disposable d = pp.forEachWhile(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                list.add(v);
+                return v < 3;
+            }
+        });
+        
+        assertFalse(d.isDisposed());
+        
+        pp.onNext(1);
+        pp.onNext(2);
+        pp.onNext(3);
+        
+        assertFalse(pp.hasSubscribers());
+        
+        assertEquals(Arrays.asList(1, 2, 3), list);
+    }
+    
+    @Test
+    public void doubleSubscribe() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return true;
+            }
+        }, Functions.<Throwable>emptyConsumer(), Functions.EMPTY_ACTION);
+        
+        List<Throwable> list = TestHelper.trackPluginErrors();
+        
+        try {
+            s.onSubscribe(new BooleanSubscription());
+            
+            BooleanSubscription d = new BooleanSubscription();
+            s.onSubscribe(d);
+            
+            assertTrue(d.isCancelled());
+            
+            TestHelper.assertError(list, 0, IllegalStateException.class, "Subscription already set!");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void suppressAfterCompleteEvents() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(new BooleanSubscription());
+
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                ts.onNext(v);
+                return true;
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                ts.onError(e);
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+                ts.onComplete();
+            }
+        });
+
+        s.onComplete();
+        s.onNext(1);
+        s.onError(new TestException());
+        s.onComplete();
+        
+        ts.assertResult();
+    }
+
+    @Test
+    public void onNextCrashes() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(new BooleanSubscription());
+
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                throw new TestException();
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                ts.onError(e);
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+                ts.onComplete();
+            }
+        });
+
+        BooleanSubscription b = new BooleanSubscription();
+        
+        s.onSubscribe(b);
+        s.onNext(1);
+        
+        assertTrue(b.isCancelled());
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void onErrorThrows() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return true;
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                throw new TestException("Inner");
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+                
+            }
+        });
+        
+        List<Throwable> list = TestHelper.trackPluginErrors();
+        
+        try {
+            s.onSubscribe(new BooleanSubscription());
+            
+            s.onError(new TestException("Outer"));
+            
+            TestHelper.assertError(list, 0, CompositeException.class);
+            List<Throwable> cel = TestHelper.compositeList(list.get(0));
+            TestHelper.assertError(cel, 0, TestException.class, "Outer");
+            TestHelper.assertError(cel, 1, TestException.class, "Inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onCompleteThrows() {
+        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return true;
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+                throw new TestException("Inner");
+            }
+        });
+        
+        List<Throwable> list = TestHelper.trackPluginErrors();
+        
+        try {
+            s.onSubscribe(new BooleanSubscription());
+            
+            s.onComplete();
+            
+            TestHelper.assertError(list, 0, TestException.class, "Inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
 }

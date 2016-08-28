@@ -16,7 +16,12 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.reactivestreams.Subscription;
 
+import io.reactivex.TestHelper;
+import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.NotificationLite;
 
 
@@ -38,6 +43,70 @@ public class NotificationLiteTest {
         assertSame(1, NotificationLite.next(1));
     }
     
+    @Test
+    public void soloEnum() {
+        TestHelper.checkEnum(NotificationLite.class);
+    }
+    
+    @Test
+    public void errorNotification() {
+        Object o = NotificationLite.error(new TestException());
+        
+        assertEquals("NotificationLite.Error[io.reactivex.exceptions.TestException]", o.toString());
+        
+        assertTrue(NotificationLite.isError(o));
+        assertFalse(NotificationLite.isComplete(o));
+        assertFalse(NotificationLite.isDisposable(o));
+        assertFalse(NotificationLite.isSubscription(o));
+        
+        assertTrue(NotificationLite.getError(o) instanceof TestException);
+    }
+    
+    @Test
+    public void completeNotification() {
+        Object o = NotificationLite.complete();
+        Object o2 = NotificationLite.complete();
+        
+        assertSame(o, o2);
+
+        assertFalse(NotificationLite.isError(o));
+        assertTrue(NotificationLite.isComplete(o));
+        assertFalse(NotificationLite.isDisposable(o));
+        assertFalse(NotificationLite.isSubscription(o));
+
+        assertEquals("NotificationLite.Complete", o.toString());
+        
+        assertTrue(NotificationLite.isComplete(o));
+    }
+
+    @Test
+    public void disposableNotification() {
+        Object o = NotificationLite.disposable(Disposables.empty());
+        
+        assertEquals("NotificationLite.Disposable[RunnableDisposable(disposed=false, EmptyRunnable)]", o.toString());
+
+        assertFalse(NotificationLite.isError(o));
+        assertFalse(NotificationLite.isComplete(o));
+        assertTrue(NotificationLite.isDisposable(o));
+        assertFalse(NotificationLite.isSubscription(o));
+
+        assertTrue(NotificationLite.getDisposable(o) instanceof Disposable);
+    }
+    
+    @Test
+    public void subscriptionNotification() {
+        Object o = NotificationLite.subscription(new BooleanSubscription());
+        
+        assertEquals("NotificationLite.Subscription[BooleanSubscription(cancelled=false)]", o.toString());
+
+        assertFalse(NotificationLite.isError(o));
+        assertFalse(NotificationLite.isComplete(o));
+        assertFalse(NotificationLite.isDisposable(o));
+        assertTrue(NotificationLite.isSubscription(o));
+
+        assertTrue(NotificationLite.getSubscription(o) instanceof Subscription);
+    }
+
     // TODO this test is no longer relevant as nulls are not allowed and value maps to itself
 //    @Test
 //    public void testValueKind() {

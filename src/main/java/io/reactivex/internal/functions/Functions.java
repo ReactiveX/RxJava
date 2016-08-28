@@ -148,6 +148,11 @@ public enum Functions {
         public Object apply(Object v) {
             return v;
         }
+
+        @Override
+        public String toString() {
+            return "IdentityFunction";
+        }
     };
     
     /**
@@ -163,16 +168,31 @@ public enum Functions {
     public static final Runnable EMPTY_RUNNABLE = new Runnable() {
         @Override
         public void run() { }
+        
+        @Override
+        public String toString() {
+            return "EmptyRunnable";
+        }
     };
 
     public static final Action EMPTY_ACTION = new Action() {
         @Override
         public void run() { }
+
+        @Override
+        public String toString() {
+            return "EmptyAction";
+        }
     };
 
     static final Consumer<Object> EMPTY_CONSUMER = new Consumer<Object>() {
         @Override
         public void accept(Object v) { }
+
+        @Override
+        public String toString() {
+            return "EmptyConsumer";
+        }
     };
     
     /**

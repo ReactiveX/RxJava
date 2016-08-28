@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import io.reactivex.TestHelper;
 import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class DisposablesTest {
@@ -115,5 +116,21 @@ public class DisposablesTest {
             // expected
         }
 
+    }
+    
+    @Test
+    public void disposeRace() {
+        for (int i = 0; i < 100; i++) {
+            final Disposable d = Disposables.empty();
+            
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    d.dispose();
+                }
+            };
+            
+            TestHelper.race(r, r, Schedulers.io());
+        }
     }
 }

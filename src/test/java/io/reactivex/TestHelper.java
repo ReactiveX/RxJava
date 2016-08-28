@@ -29,8 +29,11 @@ import org.reactivestreams.*;
 
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Common methods for helping with tests from 1.x mostly.
@@ -104,12 +107,62 @@ public enum TestHelper {
         
         return list;
     }
-    
+
+    public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz) {
+        assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
+    }
+
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz, String message) {
         assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
         assertEquals(message, list.get(index).getMessage());
     }
     
+    public static void assertError(TestObserver<?> ts, int index, Class<? extends Throwable> clazz) {
+        Throwable ex = ts.errors().get(0);
+        if (ex instanceof CompositeException) {
+            CompositeException ce = (CompositeException) ex;
+            List<Throwable> cel = ce.getExceptions();
+            assertTrue(cel.get(index).toString(), clazz.isInstance(cel.get(index)));
+        } else {
+            fail(ex.toString() + ": not a CompositeException");
+        }
+    }
+
+    public static void assertError(TestSubscriber<?> ts, int index, Class<? extends Throwable> clazz) {
+        Throwable ex = ts.errors().get(0);
+        if (ex instanceof CompositeException) {
+            CompositeException ce = (CompositeException) ex;
+            List<Throwable> cel = ce.getExceptions();
+            assertTrue(cel.get(index).toString(), clazz.isInstance(cel.get(index)));
+        } else {
+            fail(ex.toString() + ": not a CompositeException");
+        }
+    }
+
+    public static void assertError(TestObserver<?> ts, int index, Class<? extends Throwable> clazz, String message) {
+        Throwable ex = ts.errors().get(0);
+        if (ex instanceof CompositeException) {
+            CompositeException ce = (CompositeException) ex;
+            List<Throwable> cel = ce.getExceptions();
+            assertTrue(cel.get(index).toString(), clazz.isInstance(cel.get(index)));
+            assertEquals(message, cel.get(index).getMessage());
+        } else {
+            fail(ex.toString() + ": not a CompositeException");
+        }
+    }
+
+    public static void assertError(TestSubscriber<?> ts, int index, Class<? extends Throwable> clazz, String message) {
+        Throwable ex = ts.errors().get(0);
+        if (ex instanceof CompositeException) {
+            CompositeException ce = (CompositeException) ex;
+            List<Throwable> cel = ce.getExceptions();
+            assertTrue(cel.get(index).toString(), clazz.isInstance(cel.get(index)));
+            assertEquals(message, cel.get(index).getMessage());
+        } else {
+            fail(ex.toString() + ": not a CompositeException");
+        }
+    }
+
     /**
      * Verify that a specific enum type has no enum constants.
      * @param <E> the enum type
@@ -119,9 +172,14 @@ public enum TestHelper {
         assertEquals(0, e.getEnumConstants().length);
         
         try {
-            Method m = e.getDeclaredMethod("valueOf", String.class);
-            
             try {
+                Method m0 = e.getDeclaredMethod("values");
+
+                Object[] a = (Object[])m0.invoke(null);
+                assertEquals(0, a.length);
+                
+                Method m = e.getDeclaredMethod("valueOf", String.class);
+            
                 m.invoke("INSTANCE");
                 fail("Should have thrown!");
             } catch (InvocationTargetException ex) {
@@ -248,6 +306,46 @@ public enum TestHelper {
         
         if (errors[0] != null && errors[1] != null) {
             throw new CompositeException(errors);
+        }
+    }
+    
+    public static List<Throwable> compositeList(Throwable ex) {
+        return ((CompositeException)ex).getExceptions();
+    }
+    
+    /**
+     * Assert that the offer methods throw UnsupportedOperationExcetpion.
+     * @param q the queue implementation
+     */
+    public static void assertNoOffer(SimpleQueue<?> q) {
+        try {
+            q.offer(null);
+            fail("Should have thrown!");
+        } catch (UnsupportedOperationException ex) {
+            // expected
+        }
+        try {
+            q.offer(null, null);
+            fail("Should have thrown!");
+        } catch (UnsupportedOperationException ex) {
+            // expected
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <E extends Enum<E>> void checkEnum(Class<E> enumClass) {
+        try {
+            Method m = enumClass.getMethod("values");
+            m.setAccessible(true);
+            Method e = enumClass.getMethod("valueOf", String.class);
+            m.setAccessible(true);
+            
+            for (Enum<E> o : (Enum<E>[])m.invoke(null)) {
+                assertSame(o, e.invoke(null, o.name()));
+            }
+            
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
 }

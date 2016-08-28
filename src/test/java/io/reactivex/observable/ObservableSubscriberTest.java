@@ -178,4 +178,15 @@ public class ObservableSubscriberTest {
         
         ts.assertResult(1);
     }
+
+
+    @Test
+    public void methodTestNoCancel() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        ps.test(false);
+        
+        assertTrue(ps.hasObservers());
+    }
+
 }

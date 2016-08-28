@@ -42,6 +42,7 @@ public final class ListCompositeDisposable implements Disposable, DisposableCont
     
     public ListCompositeDisposable(Iterable<? extends Disposable> resources) {
         ObjectHelper.requireNonNull(resources, "resources is null");
+        this.resources = new LinkedList<Disposable>();
         for (Disposable d : resources) {
             ObjectHelper.requireNonNull(d, "Disposable item is null");
             this.resources.add(d);

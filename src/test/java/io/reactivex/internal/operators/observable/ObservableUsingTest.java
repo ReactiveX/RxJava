@@ -296,7 +296,7 @@ public class ObservableUsingTest {
         
         o.safeSubscribe(NbpObserver);
 
-        assertEquals(Arrays.asList("disposed", "completed", "unsub"), events);
+        assertEquals(Arrays.asList("disposed", "completed" /* , "unsub" */), events);
 
     }
 
@@ -323,7 +323,7 @@ public class ObservableUsingTest {
         
         o.safeSubscribe(NbpObserver);
 
-        assertEquals(Arrays.asList("completed", "unsub", "disposed"), events);
+        assertEquals(Arrays.asList("completed", /*"unsub",*/ "disposed"), events);
 
     }
 
@@ -353,7 +353,7 @@ public class ObservableUsingTest {
         
         o.safeSubscribe(NbpObserver);
 
-        assertEquals(Arrays.asList("disposed", "error", "unsub"), events);
+        assertEquals(Arrays.asList("disposed", "error" /*, "unsub"*/), events);
 
     }
     
@@ -381,7 +381,7 @@ public class ObservableUsingTest {
         
         o.safeSubscribe(NbpObserver);
 
-        assertEquals(Arrays.asList("error", "unsub", "disposed"), events);
+        assertEquals(Arrays.asList("error", /* "unsub",*/ "disposed"), events);
     }
 
     private static Action createUnsubAction(final List<String> events) {
