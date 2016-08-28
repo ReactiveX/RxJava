@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableSampleWithObservable<T> extends AbstractObservableWithUpstream<T, T> {

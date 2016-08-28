@@ -16,15 +16,18 @@ package io.reactivex.internal.subscribers.observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.fuseable.QueueDisposable;
 
 /**
  * A fuseable Observer that can generate 0 or 1 resulting value. 
  * @param <T> the input value type
  * @param <R> the output value type
  */
-public abstract class DeferredScalarObserver<T, R> extends BaseQueueDisposable<R>
+public abstract class DeferredScalarObserver<T, R> 
+extends BaseIntQueueDisposable<R>
 implements Observer<T> {
+    /** */
+    private static final long serialVersionUID = -266195175408988651L;
+
     protected final Observer<? super R> actual;
     
     /** The upstream disposable. */
@@ -36,9 +39,6 @@ implements Observer<T> {
     /** The result value. */
     protected R value;
 
-    /** Holds the current fusion mode, see the constants below. */
-    protected int fusionState;
-    
     static final int NOT_FUSED = 0;
     static final int EMPTY = 1;
     static final int READY = 2;
@@ -66,8 +66,12 @@ implements Observer<T> {
     
     @Override
     public void onError(Throwable t) {
-        value = null;
-        actual.onError(t);
+        int state = get();
+        if (state == NOT_FUSED || state == EMPTY) {
+            value = null;
+            lazySet(CONSUMED);
+            actual.onError(t);
+        }
     }
     
     @Override
@@ -75,17 +79,24 @@ implements Observer<T> {
         if (hasValue) {
             complete(value);
         } else {
-            actual.onComplete();
+            int state = get();
+            if (state == NOT_FUSED || state == EMPTY) {
+                lazySet(CONSUMED);
+                actual.onComplete();
+            }
         }
     }
     
     protected final void complete(R value) {
-        if (disposed) {
+        int state = get();
+        if (state == READY || state == CONSUMED || disposed) {
             return;
         }
-        if (fusionState == EMPTY) {
-            fusionState = READY;
+        if (state == EMPTY) {
             this.value = value;
+            lazySet(READY);
+        } else {
+            lazySet(CONSUMED);
         }
         actual.onNext(value);
         if (disposed) {
@@ -96,9 +107,11 @@ implements Observer<T> {
     
     @Override
     public final R poll() {
-        if (fusionState == READY) {
-            fusionState = CONSUMED;
-            return value;
+        if (get() == READY) {
+            R v = value;
+            value = null;
+            lazySet(CONSUMED);
+            return v;
         }
         return null;
     }
@@ -116,17 +129,21 @@ implements Observer<T> {
     
     @Override
     public final boolean isEmpty() {
-        return fusionState != READY;
+        return get() != READY;
     }
     
     @Override
     public final int requestFusion(int mode) {
-        return mode & QueueDisposable.ASYNC;
+        if ((mode & ASYNC) != 0) {
+            lazySet(EMPTY);
+            return ASYNC;
+        }
+        return NONE;
     }
     
     @Override
     public void clear() {
         value = null;
-        fusionState = CONSUMED;
+        lazySet(CONSUMED);
     }
 }

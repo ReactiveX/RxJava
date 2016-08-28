@@ -21,7 +21,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.internal.util.ExceptionHelper;
@@ -50,9 +50,6 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     /** The last thread seen by the observer. */
     private Thread lastThread;
     
-    /** Makes sure the incoming Disposables get cancelled immediately. */
-    private volatile boolean cancelled;
-
     /** Holds the current subscription if any. */
     private final AtomicReference<Disposable> subscription = new AtomicReference<Disposable>();
 
@@ -113,13 +110,9 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         if (!subscription.compareAndSet(null, s)) {
             s.dispose();
             if (subscription.get() != DisposableHelper.DISPOSED) {
-                errors.add(new NullPointerException("onSubscribe received multiple subscriptions: " + s));
+                errors.add(new IllegalStateException("onSubscribe received multiple subscriptions: " + s));
             }
             return;
-        }
-        
-        if (cancelled) {
-            s.dispose();
         }
         
         if (initialFusionMode != 0) {
@@ -147,12 +140,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             }
         }
 
-        if (cancelled) {
-            return;
-        }
-
         actual.onSubscribe(s);
-        
     }
     
     @Override
@@ -198,10 +186,10 @@ public class TestObserver<T> implements Observer<T>, Disposable {
 
         try {
             lastThread = Thread.currentThread();
-            errors.add(t);
-
             if (t == null) {
-                errors.add(new NullPointerException("onError received a null Subscription"));
+                errors.add(new NullPointerException("onError received a null Throwable"));
+            } else {
+                errors.add(t);
             }
 
             actual.onError(t);
@@ -234,7 +222,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @return true if this TestSubscriber has been cancelled
      */
     public final boolean isCancelled() {
-        return cancelled;
+        return isDisposed();
     }
     
     /**
@@ -248,15 +236,12 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     
     @Override
     public final void dispose() {
-        if (!cancelled) {
-            cancelled = true;
-            DisposableHelper.dispose(subscription);
-        }
+        DisposableHelper.dispose(subscription);
     }
 
     @Override
     public final boolean isDisposed() {
-        return cancelled;
+        return DisposableHelper.isDisposed(subscription.get());
     }
 
     // state retrieval methods
@@ -363,7 +348,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * 
      * @param message the message to use
      */
-    private void fail(String message) {
+    private AssertionError fail(String message) {
         StringBuilder b = new StringBuilder(64 + message.length());
         b.append(message);
         
@@ -378,16 +363,12 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         AssertionError ae = new AssertionError(b.toString());
         CompositeException ce = new CompositeException();
         for (Throwable e : errors) {
-            if (e == null) {
-                ce.suppress(new NullPointerException("Throwable was null!"));
-            } else {
-                ce.suppress(e);
-            }
+            ce.suppress(e);
         }
         if (!ce.isEmpty()) {
             ae.initCause(ce);
         }
-        throw ae;
+        return ae;
     }
     
     /**
@@ -397,10 +378,10 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     public final TestObserver<T> assertComplete() {
         long c = completions;
         if (c == 0) {
-            fail("Not completed");
+            throw fail("Not completed");
         } else
         if (c > 1) {
-            fail("Multiple completions: " + c);
+            throw fail("Multiple completions: " + c);
         }
         return this;
     }
@@ -412,10 +393,10 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     public final TestObserver<T> assertNotComplete() {
         long c = completions;
         if (c == 1) {
-            fail("Completed!");
+            throw fail("Completed!");
         } else 
         if (c > 1) {
-            fail("Multiple completions: " + c);
+            throw fail("Multiple completions: " + c);
         }
         return this;
     }
@@ -427,7 +408,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     public final TestObserver<T> assertNoErrors() {
         int s = errors.size();
         if (s != 0) {
-            fail("Error(s) present: " + errors);
+            throw fail("Error(s) present: " + errors);
         }
         return this;
     }
@@ -445,14 +426,14 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     public final TestObserver<T> assertError(Throwable error) {
         int s = errors.size();
         if (s == 0) {
-            fail("No errors");
+            throw fail("No errors");
         }
         if (errors.contains(error)) {
             if (s != 1) {
-                fail("Error present but other errors as well");
+                throw fail("Error present but other errors as well");
             }
         } else {
-            fail("Error not present");
+            throw fail("Error not present");
         }
         return this;
     }
@@ -466,7 +447,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     public final TestObserver<T> assertError(Class<? extends Throwable> errorClass) {
         int s = errors.size();
         if (s == 0) {
-            fail("No errors");
+            throw fail("No errors");
         }
         
         boolean found = false;
@@ -480,10 +461,10 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         
         if (found) {
             if (s != 1) {
-                fail("Error present but other errors as well");
+                throw fail("Error present but other errors as well");
             }
         } else {
-            fail("Error not present");
+            throw fail("Error not present");
         }
         return this;
     }
@@ -497,11 +478,11 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     public final TestObserver<T> assertValue(T value) {
         int s = values.size();
         if (s != 1) {
-            fail("Expected: " + valueAndClass(value) + ", Actual: " + values);
+            throw fail("Expected: " + valueAndClass(value) + ", Actual: " + values);
         }
         T v = values.get(0);
         if (!ObjectHelper.equals(value, v)) {
-            fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
+            throw fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
         }
         return this;
     }
@@ -522,7 +503,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     public final TestObserver<T> assertValueCount(int count) {
         int s = values.size();
         if (s != count) {
-            fail("Value counts differ; Expected: " + count + ", Actual: " + s);
+            throw fail("Value counts differ; Expected: " + count + ", Actual: " + s);
         }
         return this;
     }
@@ -544,14 +525,14 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     public final TestObserver<T> assertValues(T... values) {
         int s = this.values.size();
         if (s != values.length) {
-            fail("Value count differs; Expected: " + values.length + " " + Arrays.toString(values)
+            throw fail("Value count differs; Expected: " + values.length + " " + Arrays.toString(values)
             + ", Actual: " + s + " " + this.values);
         }
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             T u = values[i];
             if (!ObjectHelper.equals(u, v)) {
-                fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
+                throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
         }
         return this;
@@ -566,14 +547,13 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @return this;
      */
     public final TestObserver<T> assertValueSet(Collection<? extends T> expected) {
-        int s = this.values.size();
-        if (s != expected.size()) {
-            fail("Value count differs; Expected: " + expected.size() + " " + expected
-            + ", Actual: " + s + " " + this.values);
+        if (expected.isEmpty()) {
+            assertNoValues();
+            return this;
         }
         for (T v : this.values) {
             if (!expected.contains(v)) {
-                fail("Value not in the expected collection: " + valueAndClass(v));
+                throw fail("Value not in the expected collection: " + valueAndClass(v));
             }
         }
         return this;
@@ -588,23 +568,32 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         int i = 0;
         Iterator<T> vit = values.iterator();
         Iterator<? extends T> it = sequence.iterator();
-        boolean itNext = false;
-        boolean vitNext = false;
-        while ((itNext = it.hasNext()) && (vitNext = vit.hasNext())) {
+        boolean actualNext = false;
+        boolean expectedNext = false;
+        for (;;) {
+            actualNext = it.hasNext();
+            expectedNext = vit.hasNext();
+
+            if (!actualNext || !expectedNext) {
+                break;
+            }
+            
             T v = it.next();
             T u = vit.next();
             
             if (!ObjectHelper.equals(u, v)) {
-                fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
+                throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
             i++;
+            actualNext = false;
+            expectedNext = false;
         }
         
-        if (itNext && !vitNext) {
-            fail("More values received than expected (" + i + ")");
+        if (actualNext) {
+            throw fail("More values received than expected (" + i + ")");
         }
-        if (!itNext && !vitNext) {
-            fail("Fever values received than expected (" + i + ")");
+        if (expectedNext) {
+            throw fail("Fever values received than expected (" + i + ")");
         }
         return this;
     }
@@ -615,19 +604,19 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      */
     public final TestObserver<T> assertTerminated() {
         if (done.getCount() != 0) {
-            fail("Subscriber still running!");
+            throw fail("Subscriber still running!");
         }
         long c = completions;
         if (c > 1) {
-            fail("Terminated with multiple completions: " + c);
+            throw fail("Terminated with multiple completions: " + c);
         }
         int s = errors.size();
         if (s > 1) {
-            fail("Terminated with multiple errors: " + s);
+            throw fail("Terminated with multiple errors: " + s);
         }
         
         if (c != 0 && s != 0) {
-            fail("Terminated with multiple completions and errors: " + c);
+            throw fail("Terminated with multiple completions and errors: " + c);
         }
         return this;
     }
@@ -638,7 +627,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      */
     public final TestObserver<T> assertNotTerminated() {
         if (done.getCount() == 0) {
-            fail("Subscriber terminated!");
+            throw fail("Subscriber terminated!");
         }
         return this;
     }
@@ -649,7 +638,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      */
     public final TestObserver<T> assertSubscribed() {
         if (subscription.get() == null) {
-            fail("Not subscribed!");
+            throw fail("Not subscribed!");
         }
         return this;
     }
@@ -660,10 +649,10 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      */
     public final TestObserver<T> assertNotSubscribed() {
         if (subscription.get() != null) {
-            fail("Subscribed!");
+            throw fail("Subscribed!");
         } else
         if (!errors.isEmpty()) {
-            fail("Not subscribed but errors found");
+            throw fail("Not subscribed but errors found");
         }
         return this;
     }
@@ -707,20 +696,19 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     public final TestObserver<T> assertErrorMessage(String message) {
         int s = errors.size();
         if (s == 0) {
-            fail("No errors");
+            throw fail("No errors");
         } else
         if (s == 1) {
             Throwable e = errors.get(0);
             if (e == null) {
-                fail("Error is null");
-                return this;
+                throw fail("Error is null");
             }
             String errorMessage = e.getMessage();
             if (!ObjectHelper.equals(message, errorMessage)) {
-                fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
+                throw fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
             }
         } else {
-            fail("Multiple errors");
+            throw fail("Multiple errors");
         }
         return this;
     }
@@ -781,7 +769,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         return this;
     }
     
-    private String fusionModeToString(int mode) {
+    static String fusionModeToString(int mode) {
         switch (mode) {
         case QueueDisposable.NONE : return "NONE";
         case QueueDisposable.SYNC : return "SYNC";
@@ -877,21 +865,6 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     /**
      * Awaits until the internal latch is counted down.
      * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
-     * @return this
-     * @throws InterruptedException if the wait is interrupted
-     */
-    public final TestObserver<T> awaitDone() throws InterruptedException {
-        try {
-            done.await();
-        } catch (InterruptedException ex) {
-            cancel();
-        }
-        return this;
-    }
-
-    /**
-     * Awaits until the internal latch is counted down.
-     * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
      * @param time the waiting time
      * @param unit the time unit of the waiting time
      * @return this
@@ -913,7 +886,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     /**
      * An observer that ignores all events and does not report errors.
      */
-    private enum EmptyObserver implements Observer<Object> {
+    enum EmptyObserver implements Observer<Object> {
         INSTANCE;
 
         @Override

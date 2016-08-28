@@ -30,7 +30,7 @@ public class ObservableFromTest {
         Observable.fromFuture(Observable.never()
         .toFuture(), 100, TimeUnit.MILLISECONDS, Schedulers.io())
         .test()
-        .awaitDone()
+        .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TimeoutException.class);
     }
     

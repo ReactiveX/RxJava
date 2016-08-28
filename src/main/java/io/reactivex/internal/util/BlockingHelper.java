@@ -20,8 +20,11 @@ import io.reactivex.disposables.Disposable;
 /**
  * Utility methods for helping common blocking operations.
  */
-public enum BlockingHelper {
-    ;
+public final class BlockingHelper {
+    /** Utility class. */
+    private BlockingHelper() {
+        throw new IllegalStateException("No instances!");
+    }
     
     public static void awaitForComplete(CountDownLatch latch, Disposable subscription) {
         if (latch.getCount() == 0) {

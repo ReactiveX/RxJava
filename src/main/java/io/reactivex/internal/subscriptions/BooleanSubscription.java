@@ -41,4 +41,9 @@ public final class BooleanSubscription extends AtomicBoolean implements Subscrip
     public boolean isCancelled() {
         return get();
     }
+    
+    @Override
+    public String toString() {
+        return "BooleanSubscription(cancelled=" + get() + ")";
+    }
 }

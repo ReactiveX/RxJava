@@ -24,19 +24,8 @@ import io.reactivex.internal.functions.ObjectHelper;
  * Lightweight notification handling utility class.
  */
 public enum NotificationLite {
-    // No instances
+    COMPLETE
     ;
-    
-    /**
-     * Indicates a completion notification.
-     */
-    private enum Complete {
-        INSTANCE;
-        @Override
-        public String toString() {
-            return "NotificationLite.Complete";
-        }
-    }
     
     /**
      * Wraps a Throwable.
@@ -119,7 +108,7 @@ public enum NotificationLite {
      * @return a complete notification
      */
     public static Object complete() {
-        return Complete.INSTANCE;
+        return COMPLETE;
     }
     
     /**
@@ -155,7 +144,7 @@ public enum NotificationLite {
      * @return true if the object represents a complete notification
      */
     public static boolean isComplete(Object o) {
-        return o == Complete.INSTANCE;
+        return o == COMPLETE;
     }
     
     /**
@@ -224,7 +213,7 @@ public enum NotificationLite {
      */
     @SuppressWarnings("unchecked")
     public static <T> boolean accept(Object o, Subscriber<? super T> s) {
-        if (o == Complete.INSTANCE) {
+        if (o == COMPLETE) {
             s.onComplete();
             return true;
         } else
@@ -246,7 +235,7 @@ public enum NotificationLite {
      */
     @SuppressWarnings("unchecked")
     public static <T> boolean accept(Object o, Observer<? super T> s) {
-        if (o == Complete.INSTANCE) {
+        if (o == COMPLETE) {
             s.onComplete();
             return true;
         } else
@@ -268,7 +257,7 @@ public enum NotificationLite {
      */
     @SuppressWarnings("unchecked")
     public static <T> boolean acceptFull(Object o, Subscriber<? super T> s) {
-        if (o == Complete.INSTANCE) {
+        if (o == COMPLETE) {
             s.onComplete();
             return true;
         } else
@@ -294,7 +283,7 @@ public enum NotificationLite {
      */
     @SuppressWarnings("unchecked")
     public static <T> boolean acceptFull(Object o, Observer<? super T> s) {
-        if (o == Complete.INSTANCE) {
+        if (o == COMPLETE) {
             s.onComplete();
             return true;
         } else
@@ -308,5 +297,10 @@ public enum NotificationLite {
         }
         s.onNext((T)o);
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "NotificationLite.Complete";
     }
 }

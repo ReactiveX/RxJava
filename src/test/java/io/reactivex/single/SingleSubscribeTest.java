@@ -15,11 +15,17 @@ package io.reactivex.single;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.PublishSubject;
 
 public class SingleSubscribeTest {
 
@@ -86,5 +92,129 @@ public class SingleSubscribeTest {
             }
         }
     }
+    
+    @Test
+    public void biConsumerDispose() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        Disposable d = ps.toSingle().subscribe(new BiConsumer<Object, Object>() {
+            @Override
+            public void accept(Object t1, Object t2) throws Exception {
+                
+            }
+        });
 
+        assertFalse(d.isDisposed());
+
+        d.dispose();
+        
+        assertTrue(d.isDisposed());
+
+        assertFalse(ps.hasObservers());
+    }
+
+    @Test
+    public void consumerDispose() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        Disposable d = ps.toSingle().subscribe(Functions.<Integer>emptyConsumer());
+
+        assertFalse(d.isDisposed());
+
+        d.dispose();
+        
+        assertTrue(d.isDisposed());
+
+        assertFalse(ps.hasObservers());
+    }
+
+    @Test
+    public void consumerSuccessThrows() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+        
+        try {
+            Single.just(1).subscribe(new Consumer<Integer>() {
+                @Override
+                public void accept(Integer t) throws Exception {
+                    throw new TestException();
+                }
+            });
+            
+            TestHelper.assertError(list, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void consumerErrorThrows() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+        
+        try {
+            Single.<Integer>error(new TestException("Outer failure")).subscribe(
+            Functions.<Integer>emptyConsumer(),
+            new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable t) throws Exception {
+                    throw new TestException("Inner failure");
+                }
+            });
+            
+            TestHelper.assertError(list, 0, CompositeException.class);
+            List<Throwable> cel = TestHelper.compositeList(list.get(0));
+            TestHelper.assertError(cel, 0, TestException.class, "Outer failure");
+            TestHelper.assertError(cel, 1, TestException.class, "Inner failure");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void biConsumerThrows() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+        
+        try {
+            Single.just(1).subscribe(new BiConsumer<Integer, Throwable>() {
+                @Override
+                public void accept(Integer t, Throwable e) throws Exception {
+                    throw new TestException();
+                }
+            });
+            
+            TestHelper.assertError(list, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void biConsumerErrorThrows() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+        
+        try {
+            Single.<Integer>error(new TestException("Outer failure")).subscribe(
+            new BiConsumer<Integer, Throwable>() {
+                @Override
+                public void accept(Integer a, Throwable t) throws Exception {
+                    throw new TestException("Inner failure");
+                }
+            });
+            
+            TestHelper.assertError(list, 0, CompositeException.class);
+            List<Throwable> cel = TestHelper.compositeList(list.get(0));
+            TestHelper.assertError(cel, 0, TestException.class, "Outer failure");
+            TestHelper.assertError(cel, 1, TestException.class, "Inner failure");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void methodTestNoCancel() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        ps.toSingle().test(false);
+        
+        assertTrue(ps.hasObservers());
+    }
 }

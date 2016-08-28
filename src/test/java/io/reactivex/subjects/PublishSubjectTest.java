@@ -649,7 +649,7 @@ public class PublishSubjectTest {
 
             TestHelper.race(r1, r2, Schedulers.io());
             
-            ts.awaitDone()
+            ts.awaitDone(5, TimeUnit.SECONDS)
             .assertResult();
         }
     }

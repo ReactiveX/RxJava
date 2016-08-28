@@ -22,14 +22,13 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Utility methods for working with Disposables atomically.
  */
-public enum DisposableHelper {
-    ;
-    
-    /**
-     * Marker instance compared by identity for indicating a previously referenced
-     * {@link Disposable} was disposed. DO NOT USE this instance as an arbitrary, empty disposable!
+public enum DisposableHelper implements Disposable {
+    /** 
+     * The singleton instance representing a terminal, disposed state;
+     * Don't leak it!
      */
-    public static final Disposable DISPOSED = Disposed.INSTANCE;
+    DISPOSED
+    ;
     
     public static boolean isDisposed(Disposable d) {
         return d == DISPOSED;
@@ -82,9 +81,10 @@ public enum DisposableHelper {
     
     public static boolean dispose(AtomicReference<Disposable> field) {
         Disposable current = field.get();
-        if (current != DISPOSED) {
-            current = field.getAndSet(DISPOSED);
-            if (current != DISPOSED) {
+        Disposable d = DISPOSED;
+        if (current != d) {
+            current = field.getAndSet(d);
+            if (current != d) {
                 if (current != null) {
                     current.dispose();
                 }
@@ -121,18 +121,13 @@ public enum DisposableHelper {
         RxJavaPlugins.onError(new IllegalStateException("Disposable already set!"));
     }
 
-    enum Disposed implements Disposable {
-        INSTANCE;
-        
-        @Override
-        public void dispose() {
-            // deliberately no-op
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return true;
-        }
+    @Override
+    public void dispose() {
+        // deliberately no-op
     }
-
+    
+    @Override
+    public boolean isDisposed() {
+        return true;
+    }
 }
