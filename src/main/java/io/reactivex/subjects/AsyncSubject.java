@@ -13,12 +13,12 @@
 
 package io.reactivex.subjects;
 
-import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.*;
-import io.reactivex.disposables.*;
-import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.subscribers.observable.DeferredScalarDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -27,62 +27,223 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
  * to them may lead to undefined state in the currently subscribed NbpSubscribers.
  * 
- * <p>Due to the nature Observables are constructed, the NbpAsyncSubject can't be instantiated through
- * {@code new} but must be created via the {@link #create()} method.
- *
  * @param <T> the value type
  */
 
 public final class AsyncSubject<T> extends Subject<T> {
-    final State<T> state;
+
+    @SuppressWarnings("rawtypes")
+    static final AsyncDisposable[] EMPTY = new AsyncDisposable[0];
+
+    @SuppressWarnings("rawtypes")
+    static final AsyncDisposable[] TERMINATED = new AsyncDisposable[0];
+
+    final AtomicReference<AsyncDisposable<T>[]> subscribers;
     
+    /** Write before updating subscribers, read after reading subscribers as TERMINATED. */
+    Throwable error;
+    
+    /** Write before updating subscribers, read after reading subscribers as TERMINATED. */
+    T value;
+    
+    /**
+     * Creates a new AsyncProcessor.
+     * @param <T> the value type to be received and emitted
+     * @return the new AsyncProcessor instance
+     */
     public static <T> AsyncSubject<T> create() {
         return new AsyncSubject<T>();
     }
     
-    protected AsyncSubject() {
-        this.state = new State<T>();
+    /**
+     * Constructs an AsyncSubject.
+     * @since 2.0
+     */
+    @SuppressWarnings("unchecked")
+    AsyncSubject() {
+        this.subscribers = new AtomicReference<AsyncDisposable<T>[]>(EMPTY);
     }
-    
+
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
-        state.subscribe(observer);
-    }
-    
-    @Override
-    public void onSubscribe(Disposable d) {
-        if (state.subscribers.get() == State.TERMINATED) {
-            d.dispose();
+    public void onSubscribe(Disposable s) {
+        if (subscribers.get() == TERMINATED) {
+            s.dispose();
         }
     }
-    
+
     @Override
-    public void onNext(T value) {
-        state.onNext(value);
+    public void onNext(T t) {
+        if (subscribers.get() == TERMINATED) {
+            return;
+        }
+        if (t == null) {
+            nullOnNext();
+            return;
+        }
+        value = t;
     }
     
-    @Override
-    public void onError(Throwable e) {
-        state.onError(e);
+    @SuppressWarnings("unchecked")
+    void nullOnNext() {
+        value = null;
+        Throwable ex = new NullPointerException();
+        error = ex;
+        for (AsyncDisposable<T> as : subscribers.getAndSet(TERMINATED)) {
+            as.onError(ex);
+        }
     }
-    
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onError(Throwable t) {
+        if (t == null) {
+            t = new NullPointerException();
+        }
+        if (subscribers.get() == TERMINATED) {
+            RxJavaPlugins.onError(t);
+            return;
+        }
+        value = null;
+        error = t;
+        for (AsyncDisposable<T> as : subscribers.getAndSet(TERMINATED)) {
+            as.onError(t);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public void onComplete() {
-        state.onComplete();
+        if (subscribers.get() == TERMINATED) {
+            return;
+        }
+        T v = value;
+        AsyncDisposable<T>[] array = subscribers.getAndSet(TERMINATED);
+        if (v == null) {
+            for (AsyncDisposable<T> as : array) {
+                as.onComplete();
+            }
+        } else {
+            for (AsyncDisposable<T> as : array) {
+                as.complete(v);
+            }
+        }
     }
-    
+
     @Override
     public boolean hasObservers() {
-        return state.subscribers.get().length != 0;
+        return subscribers.get().length != 0;
     }
-    
+
+    @Override
+    public boolean hasThrowable() {
+        return subscribers.get() == TERMINATED && error != null;
+    }
+
+    @Override
+    public boolean hasComplete() {
+        return subscribers.get() == TERMINATED && error == null;
+    }
+
     @Override
     public Throwable getThrowable() {
-        Object o = state.get();
-        if (NotificationLite.isError(o)) {
-            return NotificationLite.getError(o);
+        return subscribers.get() == TERMINATED ? error : null;
+    }
+
+    @Override
+    protected void subscribeActual(Observer<? super T> s) {
+        AsyncDisposable<T> as = new AsyncDisposable<T>(s, this);
+        s.onSubscribe(as);
+        if (add(as)) {
+            if (as.isDisposed()) {
+                remove(as);
+            }
+        } else {
+            Throwable ex = error;
+            if (ex != null) {
+                s.onError(ex);
+            } else {
+                T v = value;
+                if (v != null) {
+                    as.complete(v);
+                } else {
+                    as.onComplete();
+                }
+            }
         }
-        return null;
+    }
+
+    /**
+     * Tries to add the given subscriber to the subscribers array atomically
+     * or returns false if the subject has terminated.
+     * @param ps the subscriber to add
+     * @return true if successful, false if the subject has terminated
+     */
+    boolean add(AsyncDisposable<T> ps) {
+        for (;;) {
+            AsyncDisposable<T>[] a = subscribers.get();
+            if (a == TERMINATED) {
+                return false;
+            }
+            
+            int n = a.length;
+            @SuppressWarnings("unchecked")
+            AsyncDisposable<T>[] b = new AsyncDisposable[n + 1];
+            System.arraycopy(a, 0, b, 0, n);
+            b[n] = ps;
+            
+            if (subscribers.compareAndSet(a, b)) {
+                return true;
+            }
+        }
+    }
+    
+    /**
+     * Atomically removes the given subscriber if it is subscribed to the subject.
+     * @param ps the subject to remove
+     */
+    @SuppressWarnings("unchecked")
+    void remove(AsyncDisposable<T> ps) {
+        for (;;) {
+            AsyncDisposable<T>[] a = subscribers.get();
+            int n = a.length;
+            if (n == 0) {
+                return;
+            }
+            
+            int j = -1;
+            for (int i = 0; i < n; i++) {
+                if (a[i] == ps) {
+                    j = i;
+                    break;
+                }
+            }
+            
+            if (j < 0) {
+                return;
+            }
+            
+            AsyncDisposable<T>[] b;
+            
+            if (n == 1) {
+                b = EMPTY;
+            } else {
+                b = new AsyncDisposable[n - 1];
+                System.arraycopy(a, 0, b, 0, j);
+                System.arraycopy(a, j + 1, b, j, n - j - 1);
+            }
+            if (subscribers.compareAndSet(a, b)) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * Returns true if the subject has any value.
+     * <p>The method is thread-safe.
+     * @return true if the subject has any value
+     */
+    public boolean hasValue() {
+        return subscribers.get() == TERMINATED && value != null;
     }
     
     /**
@@ -91,33 +252,17 @@ public final class AsyncSubject<T> extends Subject<T> {
      * @return a single value the Subject currently has or null if no such value exists
      */
     public T getValue() {
-        Object o = state.get();
-        if (o != null) {
-            if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
-                return null;
-            }
-            return NotificationLite.getValue(o);
-        }
-        return null;
+        return subscribers.get() == TERMINATED ? value : null;
     }
     
-    /** An empty array to avoid allocation in getValues(). */
-    private static final Object[] EMPTY = new Object[0];
-
     /**
      * Returns an Object array containing snapshot all values of the Subject.
      * <p>The method is thread-safe.
      * @return the array containing the snapshot of all values of the Subject
      */
     public Object[] getValues() {
-        @SuppressWarnings("unchecked")
-        T[] a = (T[])EMPTY;
-        T[] b = getValues(a);
-        if (b == EMPTY) {
-            return new Object[0];
-        }
-        return b;
-            
+        T v = getValue();
+        return v != null ? new Object[] { v } : new Object[0];
     }
     
     /**
@@ -128,216 +273,53 @@ public final class AsyncSubject<T> extends Subject<T> {
      * @param array the target array to copy values into if it fits
      * @return the given array if the values fit into it or a new array containing all values
      */
-    @SuppressWarnings("unchecked")
     public T[] getValues(T[] array) {
-        Object o = state.get();
-        if (o != null) {
-            if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
-                if (array.length != 0) {
-                    array[0] = null;
-                }
-            } else {
-                T v = NotificationLite.getValue(o);
-                if (array.length != 0) {
-                    array[0] = v;
-                    if (array.length != 1) {
-                        array[1] = null;
-                    }
-                } else {
-                    array = (T[])Array.newInstance(array.getClass().getComponentType(), 1);
-                    array[0] = v;
-                }
-            }
-        } else {
+        T v = getValue();
+        if (v == null) {
             if (array.length != 0) {
                 array[0] = null;
             }
+            return array;
+        }
+        if (array.length == 0) {
+            array = Arrays.copyOf(array, 1);
+        }
+        array[0] = v;
+        if (array.length != 1) {
+            array[1] = null;
         }
         return array;
     }
     
-    @Override
-    public boolean hasComplete() {
-        return state.subscribers.get() == State.TERMINATED && !NotificationLite.isError(state.get());
-    }
-    
-    @Override
-    public boolean hasThrowable() {
-        return NotificationLite.isError(state.get());
-    }
-    
-    /**
-     * Returns true if the subject has any value.
-     * <p>The method is thread-safe.
-     * @return true if the subject has any value
-     */
-    public boolean hasValue() {
-        Object o = state.get();
-        return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
-    }
-    
-    static final class State<T> extends AtomicReference<Object> implements ObservableSource<T>, Observer<T> {
+    static final class AsyncDisposable<T> extends DeferredScalarDisposable<T> {
         /** */
-        private static final long serialVersionUID = 4876574210612691772L;
+        private static final long serialVersionUID = 5629876084736248016L;
+        
+        final AsyncSubject<T> parent;
+        
+        public AsyncDisposable(Observer<? super T> actual, AsyncSubject<T> parent) {
+            super(actual);
+            this.parent = parent;
+        }
+        
+        @Override
+        public void dispose() {
+            if (super.tryDispose()) {
+                parent.remove(this);
+            }
+        }
 
-        final AtomicReference<Observer<? super T>[]> subscribers;
-        
-        @SuppressWarnings("rawtypes")
-        static final Observer[] EMPTY = new Observer[0];
-        @SuppressWarnings("rawtypes")
-        static final Observer[] TERMINATED = new Observer[0];
-
-        boolean done;
-        
-        @SuppressWarnings("unchecked")
-        public State() {
-            subscribers = new AtomicReference<Observer<? super T>[]>(EMPTY);
-        }
-        
-        boolean add(Observer<? super T> s) {
-            for (;;) {
-                Observer<? super T>[] a = subscribers.get();
-                if (a == TERMINATED) {
-                    return false;
-                }
-                int n = a.length;
-                
-                @SuppressWarnings("unchecked")
-                Observer<? super T>[] b = new Observer[n + 1];
-                System.arraycopy(a, 0, b, 0, n);
-                b[n] = s;
-                
-                if (subscribers.compareAndSet(a, b)) {
-                    return true;
-                }
+        void onComplete() {
+            if (!isDisposed()) {
+                actual.onComplete();
             }
         }
         
-        @SuppressWarnings("unchecked")
-        void remove(Observer<? super T> s) {
-            for (;;) {
-                Observer<? super T>[] a = subscribers.get();
-                if (a == TERMINATED || a == EMPTY) {
-                    return;
-                }
-                int n = a.length;
-                int j = -1;
-                for (int i = 0; i < n; i++) {
-                    Observer<? super T> e = a[i];
-                    if (e.equals(s)) {
-                        j = i;
-                        break;
-                    }
-                }
-                if (j < 0) {
-                    return;
-                }
-                Observer<? super T>[] b;
-                if (n == 1) {
-                    b = EMPTY;
-                } else {
-                    b = new Observer[n - 1];
-                    System.arraycopy(a, 0, b, 0, j);
-                    System.arraycopy(a, j + 1, b, j, n - j - 1);
-                }
-                if (subscribers.compareAndSet(a, b)) {
-                    return;
-                }
-            }
-        }
-        
-        @SuppressWarnings("unchecked")
-        Observer<? super T>[] terminate(Object notification) {
-            if (compareAndSet(get(), notification)) {
-                Observer<? super T>[] a = subscribers.get();
-                if (a != TERMINATED) {
-                    return subscribers.getAndSet(TERMINATED);
-                }
-            }
-            return TERMINATED;
-        }
-        
-        void emit(Observer<? super T> t, Object v) {
-            if (NotificationLite.isComplete(v)) {
-                t.onComplete();
-            } else
-            if (NotificationLite.isError(v)) {
-                t.onError(NotificationLite.getError(v));
+        void onError(Throwable t) {
+            if (isDisposed()) {
+                RxJavaPlugins.onError(t);
             } else {
-                t.onNext(NotificationLite.<T>getValue(v));
-                t.onComplete();
-            }
-        }
-        
-        @Override
-        public void subscribe(final Observer<? super T> t) {
-            Disposable d = Disposables.from(new Runnable() {
-                @Override
-                public void run() {
-                    remove(t);
-                }
-            });
-            t.onSubscribe(d);
-            if (add(t)) {
-                if (d.isDisposed()) {
-                    remove(t);
-                }
-                return;
-            }
-            Object v = get();
-            emit(t, v);
-        }
-        
-        @Override
-        public void onSubscribe(Disposable d) {
-            if (done) {
-                d.dispose();
-            }
-        }
-        
-        @Override
-        public void onNext(T value) {
-            if (done) {
-                return;
-            }
-            if (value == null) {
-                onError(new NullPointerException());
-                return;
-            }
-            lazySet(value);
-        }
-        
-        @Override
-        public void onError(Throwable e) {
-            if (done) {
-                RxJavaPlugins.onError(e);
-                return;
-            }
-            done = true;
-            if (e == null) {
-                e = new NullPointerException();
-            }
-            for (Observer<? super T> v : terminate(NotificationLite.error(e))) {
-                v.onError(e);
-            }
-        }
-        
-        @Override
-        public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            T value = NotificationLite.getValue(get());
-            if (value == null) {
-                for (Observer<? super T> v : terminate(NotificationLite.complete())) {
-                    v.onComplete();
-                }
-            } else {
-                for (Observer<? super T> v : terminate(NotificationLite.next(value))) {
-                    v.onNext(value);
-                    v.onComplete();
-                }
+                actual.onError(t);
             }
         }
     }

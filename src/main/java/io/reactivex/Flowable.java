@@ -3757,12 +3757,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the parameter name.
      * @param value the value to validate
      * @param paramName the parameter name of the value
+     * @return the value
      * @throws IllegalArgumentException if bufferSize &lt;= 0
      */
-    private static void verifyPositive(int value, String paramName) {
+    protected static int verifyPositive(int value, String paramName) {
         if (value <= 0) {
             throw new IllegalArgumentException(paramName + " > 0 required but it was " + value);
         }
+        return value;
     }
 
     /**
@@ -3770,12 +3772,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the parameter name.
      * @param value the value to validate
      * @param paramName the parameter name of the value
+     * @return the value
      * @throws IllegalArgumentException if bufferSize &lt;= 0
      */
-    private static void verifyPositive(long value, String paramName) {
+    protected static long verifyPositive(long value, String paramName) {
         if (value <= 0L) {
             throw new IllegalArgumentException(paramName + " > 0 required but it was " + value);
         }
+        return value;
     }
 
     /**

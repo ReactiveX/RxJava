@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.subscribers.observable.BaseQueueDisposable;
+import io.reactivex.internal.subscribers.observable.BasicQueueDisposable;
 
 public final class ObservableFromIterable<T> extends Observable<T> {
     final Iterable<? extends T> source;
@@ -58,7 +58,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
         }
     }
     
-    static final class FromIterableDisposable<T> extends BaseQueueDisposable<T> {
+    static final class FromIterableDisposable<T> extends BasicQueueDisposable<T> {
         
         final Observer<? super T> actual;
         

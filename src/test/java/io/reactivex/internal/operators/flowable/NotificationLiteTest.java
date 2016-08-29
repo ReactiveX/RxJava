@@ -16,10 +16,9 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.reactivestreams.Subscription;
 
 import io.reactivex.TestHelper;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.NotificationLite;
@@ -90,7 +89,7 @@ public class NotificationLiteTest {
         assertTrue(NotificationLite.isDisposable(o));
         assertFalse(NotificationLite.isSubscription(o));
 
-        assertTrue(NotificationLite.getDisposable(o) instanceof Disposable);
+        assertNotNull(NotificationLite.getDisposable(o));
     }
     
     @Test
@@ -104,7 +103,7 @@ public class NotificationLiteTest {
         assertFalse(NotificationLite.isDisposable(o));
         assertTrue(NotificationLite.isSubscription(o));
 
-        assertTrue(NotificationLite.getSubscription(o) instanceof Subscription);
+        assertNotNull(NotificationLite.getSubscription(o));
     }
 
     // TODO this test is no longer relevant as nulls are not allowed and value maps to itself

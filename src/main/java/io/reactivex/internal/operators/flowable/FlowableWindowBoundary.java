@@ -86,7 +86,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
                 return;
             }
             
-            UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
+            UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
             
             long r = requested();
             if (r != 0L) {
@@ -226,7 +226,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
                             continue;
                         }
                         
-                        w = new UnicastProcessor<T>(bufferSize);
+                        w = UnicastProcessor.<T>create(bufferSize);
                         
                         long r = requested();
                         if (r != 0L) {

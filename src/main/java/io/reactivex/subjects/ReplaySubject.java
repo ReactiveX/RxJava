@@ -18,15 +18,15 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.*;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Replays events to Subscribers.
+ * Replays events to Observers.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
  * <p>
@@ -34,7 +34,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>
  * <pre> {@code
 
-  ReplaySubject<Object> subject = ReplaySubject.create();
+  ReplaySubject<Object> subject = new ReplaySubject<>();
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
@@ -49,8 +49,18 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type
  */
 public final class ReplaySubject<T> extends Subject<T> {
-    final State<T> state;
+    final ReplayBuffer<T> buffer;
+    
+    final AtomicReference<ReplayDisposable<T>[]> observers;
+    
+    @SuppressWarnings("rawtypes")
+    static final ReplayDisposable[] EMPTY = new ReplayDisposable[0];
 
+    @SuppressWarnings("rawtypes")
+    static final ReplayDisposable[] TERMINATED = new ReplayDisposable[0];
+    
+    boolean done;
+    
     /**
      * Creates an unbounded replay subject.
      * <p>
@@ -65,7 +75,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the created subject
      */
     public static <T> ReplaySubject<T> create() {
-        return create(16);
+        return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(16));
     }
 
     /**
@@ -84,11 +94,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the created subject
      */
     public static <T> ReplaySubject<T> create(int capacityHint) {
-        if (capacityHint <= 0) {
-            throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
-        }
-        ReplayBuffer<T> buffer = new UnboundedReplayBuffer<T>(capacityHint);
-        return createWithBuffer(buffer);
+        return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(capacityHint));
     }
 
     /**
@@ -107,16 +113,12 @@ public final class ReplaySubject<T> extends Subject<T> {
      *
      * @param <T>
      *          the type of items observed and emitted by the Subject
-     * @param size
+     * @param maxSize
      *          the maximum number of buffered items
      * @return the created subject
      */
-    public static <T> ReplaySubject<T> createWithSize(int size) {
-        if (size <= 0) {
-            throw new IllegalArgumentException("size > 0 required but it was " + size);
-        }
-        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<T>(size);
-        return createWithBuffer(buffer);
+    public static <T> ReplaySubject<T> createWithSize(int maxSize) {
+        return new ReplaySubject<T>(new SizeBoundReplayBuffer<T>(maxSize));
     }
 
     /**
@@ -133,8 +135,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the created subject
      */
     /* test */ static <T> ReplaySubject<T> createUnbounded() {
-        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE);
-        return createWithBuffer(buffer);
+        return new ReplaySubject<T>(new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE));
     }
 
     /**
@@ -170,7 +171,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the created subject
      */
     public static <T> ReplaySubject<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
-        return createWithTimeAndSize(maxAge, unit, scheduler, Integer.MAX_VALUE);
+        return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
 
     /**
@@ -201,40 +202,47 @@ public final class ReplaySubject<T> extends Subject<T> {
      *          the maximum age of the contained items
      * @param unit
      *          the time unit of {@code time}
-     * @param size
+     * @param maxSize
      *          the maximum number of buffered items
      * @param scheduler
      *          the {@link Scheduler} that provides the current time
      * @return the created subject
      */
-    public static <T> ReplaySubject<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int size) {
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        if (size <= 0) {
-            throw new IllegalArgumentException("size > 0 required but it was " + size);
-        }
-        SizeAndTimeBoundReplayBuffer<T> buffer = new SizeAndTimeBoundReplayBuffer<T>(size, maxAge, unit, scheduler);
-        return createWithBuffer(buffer);
+    public static <T> ReplaySubject<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
+        return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
     }
     
-    static <T> ReplaySubject<T> createWithBuffer(ReplayBuffer<T> buffer) {
-        State<T> state = new State<T>(buffer);
-        return new ReplaySubject<T>(state);
-    }
-
-
-    protected ReplaySubject(State<T> state) {
-        this.state = state;
+    /**
+     * Constructs a ReplayProcessor with the given custom ReplayBuffer instance.
+     * @param buffer the ReplayBuffer instance, not null (not verified)
+     */
+    @SuppressWarnings("unchecked")
+    ReplaySubject(ReplayBuffer<T> buffer) {
+        this.buffer = buffer;
+        this.observers = new AtomicReference<ReplayDisposable<T>[]>(EMPTY);
     }
     
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        state.subscribe(observer);
+        ReplayDisposable<T> rs = new ReplayDisposable<T>(observer, this);
+        observer.onSubscribe(rs);
+        
+        if (!rs.cancelled) {
+            if (add(rs)) {
+                if (rs.cancelled) {
+                    remove(rs);
+                    return;
+                }
+            }
+            buffer.replay(rs);
+        }
     }
 
     @Override
     public void onSubscribe(Disposable s) {
-        state.onSubscribe(s);
+        if (done) {
+            s.dispose();
+        }
     }
 
     @Override
@@ -243,7 +251,16 @@ public final class ReplaySubject<T> extends Subject<T> {
             onError(new NullPointerException());
             return;
         }
-        state.onNext(t);
+        if (done) {
+            return;
+        }
+
+        ReplayBuffer<T> b = buffer;
+        b.add(t);
+        
+        for (ReplayDisposable<T> rs : observers.get()) {
+            b.replay(rs);
+        }
     }
 
     @Override
@@ -251,26 +268,53 @@ public final class ReplaySubject<T> extends Subject<T> {
         if (t == null) {
             t = new NullPointerException();
         }
-        state.onError(t);
+        if (done) {
+            RxJavaPlugins.onError(t);
+            return;
+        }
+        done = true;
+
+        Object o = NotificationLite.error(t);
+        
+        ReplayBuffer<T> b = buffer;
+        
+        b.addFinal(o);
+        
+        for (ReplayDisposable<T> rs : terminate(o)) {
+            b.replay(rs);
+        }
     }
 
     @Override
     public void onComplete() {
-        state.onComplete();
+        if (done) {
+            return;
+        }
+        done = true;
+
+        Object o = NotificationLite.complete();
+        
+        ReplayBuffer<T> b = buffer;
+        
+        b.addFinal(o);
+        
+        for (ReplayDisposable<T> rs : terminate(o)) {
+            b.replay(rs);
+        }
     }
 
     @Override
     public boolean hasObservers() {
-        return state.subscribers.get().length != 0;
+        return observers.get().length != 0;
     }
 
-    /* test */ int subscriberCount() {
-        return state.subscribers.get().length;
+    /* test */ int observerCount() {
+        return observers.get().length;
     }
 
     @Override
     public Throwable getThrowable() {
-        Object o = state.get();
+        Object o = buffer.get();
         if (NotificationLite.isError(o)) {
             return NotificationLite.getError(o);
         }
@@ -283,11 +327,11 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return a single value the Subject currently has or null if no such value exists
      */
     public T getValue() {
-        return state.buffer.getValue();
+        return buffer.getValue();
     }
     
     /** An empty array to avoid allocation in getValues(). */
-    private static final Object[] EMPTY = new Object[0];
+    private static final Object[] EMPTY_ARRAY = new Object[0];
 
     /**
      * Returns an Object array containing snapshot all values of the Subject.
@@ -296,9 +340,9 @@ public final class ReplaySubject<T> extends Subject<T> {
      */
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
-        T[] a = (T[])EMPTY;
+        T[] a = (T[])EMPTY_ARRAY;
         T[] b = getValues(a);
-        if (b == EMPTY) {
+        if (b == EMPTY_ARRAY) {
             return new Object[0];
         }
         return b;
@@ -314,18 +358,18 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the given array if the values fit into it or a new array containing all values
      */
     public T[] getValues(T[] array) {
-        return state.buffer.getValues(array);
+        return buffer.getValues(array);
     }
     
     @Override
     public boolean hasComplete() {
-        Object o = state.get();
+        Object o = buffer.get();
         return NotificationLite.isComplete(o);
     }
     
     @Override
     public boolean hasThrowable() {
-        Object o = state.get();
+        Object o = buffer.get();
         return NotificationLite.isError(o);
     }
     
@@ -335,169 +379,77 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return true if the subject has any value
      */
     public boolean hasValue() {
-        return state.buffer.size() != 0; // NOPMD
+        return buffer.size() != 0; // NOPMD
     }
     
     /* test*/ int size() {
-        return state.buffer.size();
+        return buffer.size();
     }
     
-    static final class State<T> extends AtomicReference<Object> implements ObservableSource<T>, Observer<T> {
-        /** */
-        private static final long serialVersionUID = -4673197222000219014L;
-
-        final ReplayBuffer<T> buffer;
-        
-        boolean done;
-        
-        final AtomicReference<ReplayDisposable<T>[]> subscribers = new AtomicReference<ReplayDisposable<T>[]>();
-        
-        @SuppressWarnings("rawtypes")
-        static final ReplayDisposable[] EMPTY = new ReplayDisposable[0];
-
-        @SuppressWarnings("rawtypes")
-        static final ReplayDisposable[] TERMINATED = new ReplayDisposable[0];
-        
-        @SuppressWarnings("unchecked")
-        public State(ReplayBuffer<T> buffer) {
-            this.buffer = buffer;
-            subscribers.lazySet(EMPTY);
-        }
-        
-        @Override
-        public void subscribe(Observer<? super T> s) {
-            ReplayDisposable<T> rs = new ReplayDisposable<T>(s, this);
-            s.onSubscribe(rs);
-            
-            if (!rs.cancelled) {
-                if (add(rs)) {
-                    if (rs.cancelled) {
-                        remove(rs);
-                        return;
-                    }
-                }
-                buffer.replay(rs);
+    boolean add(ReplayDisposable<T> rs) {
+        for (;;) {
+            ReplayDisposable<T>[] a = observers.get();
+            if (a == TERMINATED) {
+                return false;
             }
-        }
-        
-        public boolean add(ReplayDisposable<T> rs) {
-            for (;;) {
-                ReplayDisposable<T>[] a = subscribers.get();
-                if (a == TERMINATED) {
-                    return false;
-                }
-                int len = a.length;
-                @SuppressWarnings("unchecked")
-                ReplayDisposable<T>[] b = new ReplayDisposable[len + 1];
-                System.arraycopy(a, 0, b, 0, len);
-                b[len] = rs;
-                if (subscribers.compareAndSet(a, b)) {
-                    return true;
-                }
-            }
-        }
-        
-        @SuppressWarnings("unchecked")
-        public void remove(ReplayDisposable<T> rs) {
-            for (;;) {
-                ReplayDisposable<T>[] a = subscribers.get();
-                if (a == TERMINATED || a == EMPTY) {
-                    return;
-                }
-                int len = a.length;
-                int j = -1;
-                for (int i = 0; i < len; i++) {
-                    if (a[i] == rs) {
-                        j = i;
-                        break;
-                    }
-                }
-                
-                if (j < 0) {
-                    return;
-                }
-                ReplayDisposable<T>[] b;
-                if (len == 1) {
-                    b = EMPTY;
-                } else {
-                    b = new ReplayDisposable[len - 1];
-                    System.arraycopy(a, 0, b, 0, j);
-                    System.arraycopy(a, j + 1, b, j, len - j - 1);
-                }
-                if (subscribers.compareAndSet(a, b)) {
-                    return;
-                }
-            }
-        }
-        
-        @SuppressWarnings("unchecked")
-        public ReplayDisposable<T>[] terminate(Object terminalValue) {
-            if (compareAndSet(null, terminalValue)) {
-                return subscribers.getAndSet(TERMINATED);
-            }
-            return TERMINATED;
-        }
-        
-        @Override
-        public void onSubscribe(Disposable s) {
-            if (done) {
-                s.dispose();
-            }
-        }
-        
-        @Override
-        public void onNext(T t) {
-            if (done) {
-                return;
-            }
-
-            ReplayBuffer<T> b = buffer;
-            b.add(t);
-            
-            for (ReplayDisposable<T> rs : subscribers.get()) {
-                // FIXME there is a caught-up optimization possible here as is with 1.x
-                b.replay(rs);
-            }
-        }
-        
-        @Override
-        public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            done = true;
-
-            Object o = NotificationLite.error(t);
-            
-            ReplayBuffer<T> b = buffer;
-            
-            b.addFinal(o);
-            
-            for (ReplayDisposable<T> rs : terminate(o)) {
-                b.replay(rs);
-            }
-        }
-        
-        @Override
-        public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-
-            Object o = NotificationLite.complete();
-            
-            ReplayBuffer<T> b = buffer;
-            
-            b.addFinal(o);
-            
-            for (ReplayDisposable<T> rs : terminate(o)) {
-                b.replay(rs);
+            int len = a.length;
+            @SuppressWarnings("unchecked")
+            ReplayDisposable<T>[] b = new ReplayDisposable[len + 1];
+            System.arraycopy(a, 0, b, 0, len);
+            b[len] = rs;
+            if (observers.compareAndSet(a, b)) {
+                return true;
             }
         }
     }
     
+    @SuppressWarnings("unchecked")
+    void remove(ReplayDisposable<T> rs) {
+        for (;;) {
+            ReplayDisposable<T>[] a = observers.get();
+            if (a == TERMINATED || a == EMPTY) {
+                return;
+            }
+            int len = a.length;
+            int j = -1;
+            for (int i = 0; i < len; i++) {
+                if (a[i] == rs) {
+                    j = i;
+                    break;
+                }
+            }
+            
+            if (j < 0) {
+                return;
+            }
+            ReplayDisposable<T>[] b;
+            if (len == 1) {
+                b = EMPTY;
+            } else {
+                b = new ReplayDisposable[len - 1];
+                System.arraycopy(a, 0, b, 0, j);
+                System.arraycopy(a, j + 1, b, j, len - j - 1);
+            }
+            if (observers.compareAndSet(a, b)) {
+                return;
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    ReplayDisposable<T>[] terminate(Object terminalValue) {
+        if (buffer.compareAndSet(null, terminalValue)) {
+            return observers.getAndSet(TERMINATED);
+        }
+        return TERMINATED;
+    }
+    
+    /**
+     * Abstraction over a buffer that receives events and replays them to
+     * individual Observers.
+     *
+     * @param <T> the value type
+     */
     interface ReplayBuffer<T> {
         
         void add(T value);
@@ -511,19 +463,33 @@ public final class ReplaySubject<T> extends Subject<T> {
         T getValue();
         
         T[] getValues(T[] array);
+        /**
+         * Returns the terminal NotificationLite object or null if not yet terminated.
+         * @return the terminal NotificationLite object or null if not yet terminated
+         */
+        Object get();
+        
+        /**
+         * Atomically compares and sets the next terminal NotificationLite object if the
+         * current equals to the expected NotificationLite object.
+         * @param expected the expected NotificationLite object
+         * @param next the next NotificationLite object
+         * @return true if successful
+         */
+        boolean compareAndSet(Object expected, Object next);
     }
     
     static final class ReplayDisposable<T> extends AtomicInteger implements Disposable {
         /** */
         private static final long serialVersionUID = 466549804534799122L;
         final Observer<? super T> actual;
-        final State<T> state;
+        final ReplaySubject<T> state;
         
         Object index;
         
         volatile boolean cancelled;
         
-        public ReplayDisposable(Observer<? super T> actual, State<T> state) {
+        public ReplayDisposable(Observer<? super T> actual, ReplaySubject<T> state) {
             this.actual = actual;
             this.state = state;
         }
@@ -542,7 +508,12 @@ public final class ReplaySubject<T> extends Subject<T> {
         }
     }
     
-    static final class UnboundedReplayBuffer<T> implements ReplayBuffer<T> {
+    static final class UnboundedReplayBuffer<T> 
+    extends AtomicReference<Object>
+    implements ReplayBuffer<T> {
+        /** */
+        private static final long serialVersionUID = -733876083048047795L;
+
         final List<Object> buffer;
         
         volatile boolean done;
@@ -550,7 +521,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         volatile int size;
         
         public UnboundedReplayBuffer(int capacityHint) {
-            this.buffer = new ArrayList<Object>(capacityHint);
+            this.buffer = new ArrayList<Object>(verifyPositive(capacityHint, "capacityHint"));
         }
         
         @Override
@@ -730,7 +701,12 @@ public final class ReplaySubject<T> extends Subject<T> {
         }
     }
     
-    static final class SizeBoundReplayBuffer<T> implements ReplayBuffer<T> {
+    static final class SizeBoundReplayBuffer<T>
+    extends AtomicReference<Object>
+    implements ReplayBuffer<T> {
+        /** */
+        private static final long serialVersionUID = 1107649250281456395L;
+        
         final int maxSize;
         int size;
         
@@ -741,7 +717,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         volatile boolean done;
         
         public SizeBoundReplayBuffer(int maxSize) {
-            this.maxSize = maxSize;
+            this.maxSize = verifyPositive(maxSize, "maxSize");
             Node<Object> h = new Node<Object>(null);
             this.tail = h;
             this.head = h;
@@ -762,11 +738,6 @@ public final class ReplaySubject<T> extends Subject<T> {
 
             tail = n;
             size++;
-            /*
-             *  FIXME not sure why lazySet doesn't work here
-             *  (testReplaySubjectEmissionSubscriptionRace hangs) 
-             *  must be the lack of StoreLoad barrier?
-             */
             t.set(n); // releases both the tail and size
             
             trim();
@@ -929,7 +900,12 @@ public final class ReplaySubject<T> extends Subject<T> {
         }
     }
     
-    static final class SizeAndTimeBoundReplayBuffer<T> implements ReplayBuffer<T> {
+    static final class SizeAndTimeBoundReplayBuffer<T>
+    extends AtomicReference<Object>
+    implements ReplayBuffer<T> {
+        /** */
+        private static final long serialVersionUID = -8056260896137901749L;
+        
         final int maxSize;
         final long maxAge;
         final TimeUnit unit;
@@ -944,10 +920,10 @@ public final class ReplaySubject<T> extends Subject<T> {
         
         
         public SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
-            this.maxSize = maxSize;
-            this.maxAge = maxAge;
-            this.unit = unit;
-            this.scheduler = scheduler;
+            this.maxSize = verifyPositive(maxSize, "maxSize");
+            this.maxAge = verifyPositive(maxAge, "maxAge");
+            this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
+            this.scheduler = ObjectHelper.requireNonNull(scheduler, "scheduler is null");
             TimedNode<Object> h = new TimedNode<Object>(null, 0L);
             this.tail = h;
             this.head = h;
@@ -1008,11 +984,6 @@ public final class ReplaySubject<T> extends Subject<T> {
 
             tail = n;
             size++;
-            /*
-             *  FIXME not sure why lazySet doesn't work here
-             *  (testReplaySubjectEmissionSubscriptionRace hangs) 
-             *  must be the lack of StoreLoad barrier?
-             */
             t.set(n); // releases both the tail and size
             
             trim();

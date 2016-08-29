@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.subscribers.observable.BaseQueueDisposable;
+import io.reactivex.internal.subscribers.observable.BasicQueueDisposable;
 
 public final class ObservableFromArray<T> extends Observable<T> {
     final T[] array;
@@ -38,7 +38,7 @@ public final class ObservableFromArray<T> extends Observable<T> {
         d.run();
     }
     
-    static final class FromArrayDisposable<T> extends BaseQueueDisposable<T> {
+    static final class FromArrayDisposable<T> extends BasicQueueDisposable<T> {
 
         final Observer<? super T> actual;
         

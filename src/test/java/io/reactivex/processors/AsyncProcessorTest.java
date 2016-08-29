@@ -27,7 +27,8 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.subscribers.*;
 
 public class AsyncProcessorTest {
 
@@ -329,10 +330,10 @@ public class AsyncProcessorTest {
         
         as.onNext(1);
         
-        assertTrue(as.hasValue());
+        assertFalse(as.hasValue()); // AP no longer reports it has a value until it is terminated
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
-        assertEquals(1, as.getValue());
+        assertNull(as.getValue()); // AP no longer reports it has a value until it is terminated
         assertNull(as.getThrowable());
         
         as.onComplete();
@@ -378,5 +379,44 @@ public class AsyncProcessorTest {
         assertFalse(as.hasComplete());
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
+    }
+    
+    @Test
+    public void fusionLive() {
+        AsyncProcessor<Integer> ap = new AsyncProcessor<Integer>();
+        
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        
+        ap.subscribe(ts);
+        
+        ts
+        .assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC));
+        
+        ts.assertNoValues().assertNoErrors().assertNotComplete();
+        
+        ap.onNext(1);
+        
+        ts.assertNoValues().assertNoErrors().assertNotComplete();
+        
+        ap.onComplete();
+        
+        ts.assertResult(1);
+    }
+    
+    @Test
+    public void fusionOfflie() {
+        AsyncProcessor<Integer> ap = new AsyncProcessor<Integer>();
+        ap.onNext(1);
+        ap.onComplete();
+        
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        
+        ap.subscribe(ts);
+        
+        ts
+        .assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult(1);
     }
 }

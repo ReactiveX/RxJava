@@ -79,7 +79,7 @@ public class SingleDoOnTest {
         })
         .test();
         
-        assertEquals((Integer)1, event[0]);
+        assertEquals(1, event[0]);
     }
 
 }

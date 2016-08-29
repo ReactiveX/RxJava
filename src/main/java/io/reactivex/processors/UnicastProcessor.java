@@ -25,18 +25,19 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Subject that allows only a single Subscriber to subscribe to it during its lifetime.
+ * Processor that allows only a single Subscriber to subscribe to it during its lifetime.
  * 
- * <p>This subject buffers notifications and replays them to the Subscriber as requested.
+ * <p>This processor buffers notifications and replays them to the Subscriber as requested.
  * 
- * <p>This subject holds an unbounded internal buffer.
+ * <p>This processor holds an unbounded internal buffer.
  * 
- * <p>If more than one Subscriber attempts to subscribe to this Subject, they
- * will receive an IllegalStateException if this Subject hasn't terminated yet,
+ * <p>If more than one Subscriber attempts to subscribe to this Processor, they
+ * will receive an IllegalStateException if this Processor hasn't terminated yet,
  * or the Subscribers receive the terminal event (error or completion) if this
- * Subject has terminated.
+ * Processor has terminated.
  * 
- * @param <T> the value type received and emitted by this Subject subclass
+ * @param <T> the value type received and emitted by this Processor subclass
+ * @since 2.0
  */
 public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
@@ -59,16 +60,48 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     
     boolean enableOperatorFusion;
 
-    public UnicastProcessor() {
-        this(bufferSize());
+    /**
+     * Creates an UnicastSubject with an internal buffer capacity hint 16.
+     * @param <T> the value type
+     * @return an UnicastSubject instance
+     */
+    public static <T> UnicastProcessor<T> create() {
+        return new UnicastProcessor<T>(bufferSize());
+    }
+    
+    /**
+     * Creates an UnicastProcessor with the given internal buffer capacity hint.
+     * @param <T> the value type
+     * @param capacityHint the hint to size the internal unbounded buffer
+     * @return an UnicastProcessor instance
+     */
+    public static <T> UnicastProcessor<T> create(int capacityHint) {
+        return new UnicastProcessor<T>(capacityHint);
+    }
+
+    /**
+     * Creates an UnicastProcessor with the given internal buffer capacity hint and a callback for
+     * the case when the single Subscriber cancels its subscription.
+     * 
+     * <p>The callback, if not null, is called exactly once and
+     * non-overlapped with any active replay.
+     * 
+     * @param <T> the value type
+     * @param capacityHint the hint to size the internal unbounded buffer
+     * @param onCancelled the optional callback
+     * @return an UnicastProcessor instance
+     */
+    public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled) {
+        return new UnicastProcessor<T>(capacityHint, onCancelled);
     }
 
     /**
      * Creates an UnicastProcessor with the given capacity hint.
      * @param capacityHint the capacity hint for the internal, unbounded queue
+     * @since 2.0
      */
-    public UnicastProcessor(int capacityHint) {
-        this.queue = new SpscLinkedArrayQueue<T>(capacityHint);
+    UnicastProcessor(int capacityHint) {
+        this.queue = new SpscLinkedArrayQueue<T>(verifyPositive(capacityHint, "capacityHint"));
         this.onTerminate = new AtomicReference<Runnable>();
         this.actual = new AtomicReference<Subscriber<? super T>>();
         this.once = new AtomicBoolean();
@@ -81,9 +114,10 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * for when the Processor is terminated normally or its single Subscriber cancels.
      * @param capacityHint the capacity hint for the internal, unbounded queue
      * @param onTerminate the callback to run when the Processor is terminated or cancelled, null allowed
+     * @since 2.0
      */
-    public UnicastProcessor(int capacityHint, Runnable onTerminate) {
-        this.queue = new SpscLinkedArrayQueue<T>(capacityHint);
+    UnicastProcessor(int capacityHint, Runnable onTerminate) {
+        this.queue = new SpscLinkedArrayQueue<T>(verifyPositive(capacityHint, "capacityHint"));
         this.onTerminate = new AtomicReference<Runnable>(ObjectHelper.requireNonNull(onTerminate, "onTerminate"));
         this.actual = new AtomicReference<Subscriber<? super T>>();
         this.once = new AtomicBoolean();
@@ -185,8 +219,8 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
         int missed = 1;
         
+        Subscriber<? super T> a = actual.get();
         for (;;) {
-            Subscriber<? super T> a = actual.get();
             if (a != null) {
     
                 if (enableOperatorFusion) {
@@ -200,6 +234,9 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
             missed = wip.addAndGet(-missed);
             if (missed == 0) {
                 break;
+            }
+            if (a == null) {
+                a = actual.get();
             }
         }
     }

@@ -20,7 +20,7 @@ import io.reactivex.internal.fuseable.QueueDisposable;
  * unnecessary Queue methods to throw UnsupportedOperationException.
  * @param <T> the output value type
  */
-public abstract class BaseQueueDisposable<T> implements QueueDisposable<T> {
+public abstract class BasicQueueDisposable<T> implements QueueDisposable<T> {
 
     @Override
     public final boolean offer(T e) {

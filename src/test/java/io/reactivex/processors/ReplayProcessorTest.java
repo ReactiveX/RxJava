@@ -924,7 +924,7 @@ public class ReplayProcessorTest {
             ReplayProcessor.createWithSize(-99);
             fail("Didn't throw IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
-            assertEquals("size > 0 required but it was -99", ex.getMessage());
+            assertEquals("maxSize > 0 required but it was -99", ex.getMessage());
         }
     }
 
@@ -934,7 +934,7 @@ public class ReplayProcessorTest {
             ReplayProcessor.createWithTimeAndSize(1, TimeUnit.DAYS, Schedulers.computation(), -99);
             fail("Didn't throw IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
-            assertEquals("size > 0 required but it was -99", ex.getMessage());
+            assertEquals("maxSize > 0 required but it was -99", ex.getMessage());
         }
     }
 

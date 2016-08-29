@@ -17,7 +17,7 @@ import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
 
-import io.reactivex.*;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
@@ -69,7 +69,26 @@ import io.reactivex.plugins.RxJavaPlugins;
  *          the type of item expected to be observed by the Subject
  */
 public final class BehaviorSubject<T> extends Subject<T> {
-    final State<T> state;
+    
+    /** An empty array to avoid allocation in getValues(). */
+    private static final Object[] EMPTY_ARRAY = new Object[0];
+
+    final AtomicReference<Object> value;
+    
+    final AtomicReference<BehaviorDisposable<T>[]> subscribers;
+    
+    @SuppressWarnings("rawtypes")
+    static final BehaviorDisposable[] EMPTY = new BehaviorDisposable[0];
+
+    @SuppressWarnings("rawtypes")
+    static final BehaviorDisposable[] TERMINATED = new BehaviorDisposable[0];
+    final ReadWriteLock lock;
+    final Lock readLock;
+    final Lock writeLock;
+
+    boolean done;
+
+    long index;
 
     /**
      * Creates a {@link BehaviorSubject} without a default item.
@@ -79,8 +98,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * @return the constructed {@link BehaviorSubject}
      */
     public static <T> BehaviorSubject<T> create() {
-        State<T> state = new State<T>();
-        return new BehaviorSubject<T>(state);
+        return new BehaviorSubject<T>();
     }
     
     /**
@@ -95,24 +113,60 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * @return the constructed {@link BehaviorSubject}
      */
     public static <T> BehaviorSubject<T> createDefault(T defaultValue) {
-        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        State<T> state = new State<T>();
-        state.lazySet(defaultValue);
-        return new BehaviorSubject<T>(state);
+        return new BehaviorSubject<T>(defaultValue);
     }
     
-    protected BehaviorSubject(State<T> state) {
-        this.state = state;
+    /**
+     * Constructs an empty BehaviorSubject.
+     * @since 2.0
+     */
+    @SuppressWarnings("unchecked")
+    BehaviorSubject() {
+        this.lock = new ReentrantReadWriteLock();
+        this.readLock = lock.readLock();
+        this.writeLock = lock.writeLock();
+        this.subscribers = new AtomicReference<BehaviorDisposable<T>[]>(EMPTY);
+        this.value = new AtomicReference<Object>();
     }
-    
+
+    /**
+     * Constructs a BehaviorSubject with the given initial value.
+     * @param defaultValue the initial value, not null (verified)
+     * @throws NullPointerException if {@code defaultValue} is null
+     * @since 2.0
+     */
+    BehaviorSubject(T defaultValue) {
+        this();
+        this.value.lazySet(ObjectHelper.requireNonNull(defaultValue, "defaultValue is null"));
+    }
+
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        state.subscribe(observer);
+        BehaviorDisposable<T> bs = new BehaviorDisposable<T>(observer, this);
+        observer.onSubscribe(bs);
+        if (!bs.cancelled) {
+            if (add(bs)) {
+                if (bs.cancelled) {
+                    remove(bs);
+                } else {
+                    bs.emitFirst();
+                }
+            } else {
+                Object o = value.get();
+                if (NotificationLite.isComplete(o)) {
+                    observer.onComplete();
+                } else {
+                    observer.onError(NotificationLite.getError(o));
+                }
+            }
+        }
     }
     
     @Override
     public void onSubscribe(Disposable s) {
-        state.onSubscribe(s);
+        if (done) {
+            s.dispose();
+        }
     }
 
     @Override
@@ -121,7 +175,14 @@ public final class BehaviorSubject<T> extends Subject<T> {
             onError(new NullPointerException());
             return;
         }
-        state.onNext(t);
+        if (done) {
+            return;
+        }
+        Object o = NotificationLite.next(t);
+        setCurrent(o);
+        for (BehaviorDisposable<T> bs : subscribers.get()) {
+            bs.emitNext(o, index);
+        }
     }
 
     @Override
@@ -129,27 +190,42 @@ public final class BehaviorSubject<T> extends Subject<T> {
         if (t == null) {
             t = new NullPointerException();
         }
-        state.onError(t);
+        if (done) {
+            RxJavaPlugins.onError(t);
+            return;
+        }
+        done = true;
+        Object o = NotificationLite.error(t);
+        for (BehaviorDisposable<T> bs : terminate(o)) {
+            bs.emitNext(o, index);
+        }
     }
 
     @Override
     public void onComplete() {
-        state.onComplete();
+        if (done) {
+            return;
+        }
+        done = true;
+        Object o = NotificationLite.complete();
+        for (BehaviorDisposable<T> bs : terminate(o)) {
+            bs.emitNext(o, index);  // relaxed read okay since this is the only mutator thread
+        }
     }
 
     @Override
     public boolean hasObservers() {
-        return state.subscribers.get().length != 0;
+        return subscribers.get().length != 0;
     }
     
     
     /* test support*/ int subscriberCount() {
-        return state.subscribers.get().length;
+        return subscribers.get().length;
     }
 
     @Override
     public Throwable getThrowable() {
-        Object o = state.get();
+        Object o = value.get();
         if (NotificationLite.isError(o)) {
             return NotificationLite.getError(o);
         }
@@ -162,15 +238,12 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * @return a single value the Subject currently has or null if no such value exists
      */
     public T getValue() {
-        Object o = state.get();
+        Object o = value.get();
         if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
             return null;
         }
         return NotificationLite.getValue(o);
     }
-    
-    /** An empty array to avoid allocation in getValues(). */
-    private static final Object[] EMPTY = new Object[0];
 
     /**
      * Returns an Object array containing snapshot all values of the Subject.
@@ -179,9 +252,9 @@ public final class BehaviorSubject<T> extends Subject<T> {
      */
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
-        T[] a = (T[])EMPTY;
+        T[] a = (T[])EMPTY_ARRAY;
         T[] b = getValues(a);
-        if (b == EMPTY) {
+        if (b == EMPTY_ARRAY) {
             return new Object[0];
         }
         return b;
@@ -198,7 +271,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      */
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] array) {
-        Object o = state.get();
+        Object o = value.get();
         if (o == null || NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
             if (array.length != 0) {
                 array[0] = null;
@@ -220,13 +293,13 @@ public final class BehaviorSubject<T> extends Subject<T> {
     
     @Override
     public boolean hasComplete() {
-        Object o = state.get();
+        Object o = value.get();
         return NotificationLite.isComplete(o);
     }
     
     @Override
     public boolean hasThrowable() {
-        Object o = state.get();
+        Object o = value.get();
         return NotificationLite.isError(o);
     }
     
@@ -236,184 +309,89 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * @return true if the subject has any value
      */
     public boolean hasValue() {
-        Object o = state.get();
+        Object o = value.get();
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
     }
     
-    static final class State<T> extends AtomicReference<Object> implements ObservableSource<T>, Observer<T> {
-        /** */
-        private static final long serialVersionUID = -4311717003288339429L;
-
-        boolean done;
-        
-        final AtomicReference<BehaviorDisposable<T>[]> subscribers;
-        
-        @SuppressWarnings("rawtypes")
-        static final BehaviorDisposable[] EMPTY = new BehaviorDisposable[0];
-
-        @SuppressWarnings("rawtypes")
-        static final BehaviorDisposable[] TERMINATED = new BehaviorDisposable[0];
-
-        long index;
-        
-        final ReadWriteLock lock;
-        final Lock readLock;
-        final Lock writeLock;
-        
-        @SuppressWarnings("unchecked")
-        public State() {
-            this.lock = new ReentrantReadWriteLock();
-            this.readLock = lock.readLock();
-            this.writeLock = lock.writeLock();
-            this.subscribers = new AtomicReference<BehaviorDisposable<T>[]>(EMPTY);
-        }
-        
-        public boolean add(BehaviorDisposable<T> rs) {
-            for (;;) {
-                BehaviorDisposable<T>[] a = subscribers.get();
-                if (a == TERMINATED) {
-                    return false;
-                }
-                int len = a.length;
-                @SuppressWarnings("unchecked")
-                BehaviorDisposable<T>[] b = new BehaviorDisposable[len + 1];
-                System.arraycopy(a, 0, b, 0, len);
-                b[len] = rs;
-                if (subscribers.compareAndSet(a, b)) {
-                    return true;
-                }
-            }
-        }
-        
-        @SuppressWarnings("unchecked")
-        public void remove(BehaviorDisposable<T> rs) {
-            for (;;) {
-                BehaviorDisposable<T>[] a = subscribers.get();
-                if (a == TERMINATED || a == EMPTY) {
-                    return;
-                }
-                int len = a.length;
-                int j = -1;
-                for (int i = 0; i < len; i++) {
-                    if (a[i] == rs) {
-                        j = i;
-                        break;
-                    }
-                }
-                
-                if (j < 0) {
-                    return;
-                }
-                BehaviorDisposable<T>[] b;
-                if (len == 1) {
-                    b = EMPTY;
-                } else {
-                    b = new BehaviorDisposable[len - 1];
-                    System.arraycopy(a, 0, b, 0, j);
-                    System.arraycopy(a, j + 1, b, j, len - j - 1);
-                }
-                if (subscribers.compareAndSet(a, b)) {
-                    return;
-                }
-            }
-        }
-        
-        @SuppressWarnings("unchecked")
-        public BehaviorDisposable<T>[] terminate(Object terminalValue) {
-            
+    boolean add(BehaviorDisposable<T> rs) {
+        for (;;) {
             BehaviorDisposable<T>[] a = subscribers.get();
-            if (a != TERMINATED) {
-                a = subscribers.getAndSet(TERMINATED);
-                if (a != TERMINATED) {
-                    // either this or atomics with lots of allocation
-                    setCurrent(terminalValue);
+            if (a == TERMINATED) {
+                return false;
+            }
+            int len = a.length;
+            @SuppressWarnings("unchecked")
+            BehaviorDisposable<T>[] b = new BehaviorDisposable[len + 1];
+            System.arraycopy(a, 0, b, 0, len);
+            b[len] = rs;
+            if (subscribers.compareAndSet(a, b)) {
+                return true;
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    void remove(BehaviorDisposable<T> rs) {
+        for (;;) {
+            BehaviorDisposable<T>[] a = subscribers.get();
+            if (a == TERMINATED || a == EMPTY) {
+                return;
+            }
+            int len = a.length;
+            int j = -1;
+            for (int i = 0; i < len; i++) {
+                if (a[i] == rs) {
+                    j = i;
+                    break;
                 }
             }
             
-            return a;
-        }
-        
-        @Override
-        public void subscribe(Observer<? super T> s) {
-            BehaviorDisposable<T> bs = new BehaviorDisposable<T>(s, this);
-            s.onSubscribe(bs);
-            if (!bs.cancelled) {
-                if (add(bs)) {
-                    if (bs.cancelled) {
-                        remove(bs);
-                    } else {
-                        bs.emitFirst();
-                    }
-                } else {
-                    Object o = get();
-                    if (NotificationLite.isComplete(o)) {
-                        s.onComplete();
-                    } else {
-                        s.onError(NotificationLite.getError(o));
-                    }
-                }
-            }
-        }
-        
-        @Override
-        public void onSubscribe(Disposable s) {
-            if (done) {
-                s.dispose();
-            }
-        }
-        
-        void setCurrent(Object o) {
-            writeLock.lock();
-            try {
-                index++;
-                lazySet(o);
-            } finally {
-                writeLock.unlock();
-            }
-        }
-        
-        @Override
-        public void onNext(T t) {
-            if (done) {
+            if (j < 0) {
                 return;
             }
-            Object o = NotificationLite.next(t);
-            setCurrent(o);
-            for (BehaviorDisposable<T> bs : subscribers.get()) {
-                bs.emitNext(o, index);
+            BehaviorDisposable<T>[] b;
+            if (len == 1) {
+                b = EMPTY;
+            } else {
+                b = new BehaviorDisposable[len - 1];
+                System.arraycopy(a, 0, b, 0, j);
+                System.arraycopy(a, j + 1, b, j, len - j - 1);
+            }
+            if (subscribers.compareAndSet(a, b)) {
+                return;
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    BehaviorDisposable<T>[] terminate(Object terminalValue) {
+        
+        BehaviorDisposable<T>[] a = subscribers.get();
+        if (a != TERMINATED) {
+            a = subscribers.getAndSet(TERMINATED);
+            if (a != TERMINATED) {
+                // either this or atomics with lots of allocation
+                setCurrent(terminalValue);
             }
         }
         
-        @Override
-        public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            done = true;
-            Object o = NotificationLite.error(t);
-            for (BehaviorDisposable<T> bs : terminate(o)) {
-                bs.emitNext(o, index);
-            }
-        }
-        
-        @Override
-        public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            Object o = NotificationLite.complete();
-            for (BehaviorDisposable<T> bs : terminate(o)) {
-                bs.emitNext(o, index);  // relaxed read okay since this is the only mutator thread
-            }
+        return a;
+    }
+    
+    void setCurrent(Object o) {
+        writeLock.lock();
+        try {
+            index++;
+            value.lazySet(o);
+        } finally {
+            writeLock.unlock();
         }
     }
     
     static final class BehaviorDisposable<T> implements Disposable, Predicate<Object> {
         
         final Observer<? super T> actual;
-        final State<T> state;
+        final BehaviorSubject<T> state;
         
         boolean next;
         boolean emitting;
@@ -425,7 +403,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         
         long index;
 
-        public BehaviorDisposable(Observer<? super T> actual, State<T> state) {
+        public BehaviorDisposable(Observer<? super T> actual, BehaviorSubject<T> state) {
             this.actual = actual;
             this.state = state;
         }
@@ -457,13 +435,13 @@ public final class BehaviorSubject<T> extends Subject<T> {
                     return;
                 }
                 
-                State<T> s = state;
+                BehaviorSubject<T> s = state;
                 Lock lock = s.readLock;
                 
                 lock.lock();
                 try {
                     index = s.index;
-                    o = s.get();
+                    o = s.value.get();
                 } finally {
                     lock.unlock();
                 }

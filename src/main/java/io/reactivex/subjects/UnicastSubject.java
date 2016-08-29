@@ -15,11 +15,13 @@ package io.reactivex.subjects;
 
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.*;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.subscribers.observable.BasicIntQueueDisposable;
 
 /**
  * Subject that allows only a single Subscriber to subscribe to it during its lifetime.
@@ -34,18 +36,51 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  * Subject has terminated.
  * 
  * @param <T> the value type received and emitted by this Subject subclass
+ * @since 2.0
  */
 public final class UnicastSubject<T> extends Subject<T> {
-    /** The subject state. */
-    final State<T> state;
+    /** The queue that buffers the source events. */
+    final SpscLinkedArrayQueue<T> queue;
     
+    /** The single Observer. */
+    final AtomicReference<Observer<? super T>> actual;
+    
+    /** The optional callback when the Subject gets cancelled or terminates. */
+    final AtomicReference<Runnable> onTerminate;
+
+    /** Indicates the single observer has cancelled. */
+    volatile boolean disposed;
+    
+    /** Indicates the source has terminated. */
+    volatile boolean done;
+    /** 
+     * The terminal error if not null. 
+     * Must be set before writing to done and read after done == true.
+     */
+    Throwable error;
+
+    /** Set to 1 atomically for the first and only Subscriber. */
+    final AtomicBoolean once;
+    
+    /** 
+     * Called when the Subscriber has called cancel.
+     * This allows early termination for those who emit into this
+     * subject so that they can stop immediately 
+     */
+    Runnable onCancelled;
+
+    /** The wip counter and QueueDisposable surface. */
+    final BasicIntQueueDisposable<T> wip;
+    
+    boolean enableOperatorFusion;
+
     /**
      * Creates an UnicastSubject with an internal buffer capacity hint 16.
      * @param <T> the value type
      * @return an UnicastSubject instance
      */
     public static <T> UnicastSubject<T> create() {
-        return create(16);
+        return new UnicastSubject<T>(bufferSize());
     }
     
     /**
@@ -55,7 +90,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @return an UnicastSubject instance
      */
     public static <T> UnicastSubject<T> create(int capacityHint) {
-        return create(capacityHint, null);
+        return new UnicastSubject<T>(capacityHint);
     }
 
     /**
@@ -71,281 +106,285 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @return an UnicastSubject instance
      */
     public static <T> UnicastSubject<T> create(int capacityHint, Runnable onCancelled) {
-        State<T> state = new State<T>(capacityHint, onCancelled);
-        return new UnicastSubject<T>(state);
+        return new UnicastSubject<T>(capacityHint, onCancelled);
     }
 
     /**
-     * Constructs the Observable base class.
-     * @param state the subject state
+     * Creates an UnicastSubject with the given capacity hint.
+     * @param capacityHint the capacity hint for the internal, unbounded queue
+     * @since 2.0
      */
-    protected UnicastSubject(State<T> state) {
-        this.state = state;
+    UnicastSubject(int capacityHint) {
+        this.queue = new SpscLinkedArrayQueue<T>(verifyPositive(capacityHint, "capacityHint"));
+        this.onTerminate = new AtomicReference<Runnable>();
+        this.actual = new AtomicReference<Observer<? super T>>();
+        this.once = new AtomicBoolean();
+        this.wip = new UnicastQueueDisposable();
     }
 
+    /**
+     * Creates an UnicastProcessor with the given capacity hint and callback
+     * for when the Processor is terminated normally or its single Subscriber cancels.
+     * @param capacityHint the capacity hint for the internal, unbounded queue
+     * @param onTerminate the callback to run when the Processor is terminated or cancelled, null allowed
+     * @since 2.0
+     */
+    UnicastSubject(int capacityHint, Runnable onTerminate) {
+        this.queue = new SpscLinkedArrayQueue<T>(verifyPositive(capacityHint, "capacityHint"));
+        this.onTerminate = new AtomicReference<Runnable>(ObjectHelper.requireNonNull(onTerminate, "onTerminate"));
+        this.actual = new AtomicReference<Observer<? super T>>();
+        this.once = new AtomicBoolean();
+        this.wip = new UnicastQueueDisposable();
+    }
+    
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        state.subscribe(observer);
-    }
-    
-    // TODO may need to have a direct WIP field to avoid clashing on the object header
-    /** Pads the WIP counter. */
-    static abstract class StatePad0 extends AtomicInteger {
-        /** */
-        private static final long serialVersionUID = 7779228232971173701L;
-        /** Cache line padding 1. */
-        volatile long p1a, p2a, p3a, p4a, p5a, p6a, p7a;
-        /** Cache line padding 2. */
-        volatile long p8a, p9a, p10a, p11a, p12a, p13a, p14a, p15a;
-    }
-    
-    /** The state of the UnicastSubject. */
-    static final class State<T> extends StatePad0 implements ObservableSource<T>, Disposable, Observer<T> {
-        /** */
-        private static final long serialVersionUID = 5058617037583835632L;
-
-        /** The queue that buffers the source events. */
-        final SpscLinkedArrayQueue<T> queue;
-        
-        /** The single subscriber. */
-        final AtomicReference<Observer<? super T>> subscriber = new AtomicReference<Observer<? super T>>();
-        
-        /** Indicates the single subscriber has cancelled. */
-        volatile boolean cancelled;
-        
-        /** Indicates the source has terminated. */
-        volatile boolean done;
-        /** 
-         * The terminal error if not null. 
-         * Must be set before writing to done and read after done == true.
-         */
-        Throwable error;
-
-        /** Set to 1 atomically for the first and only Subscriber. */
-        final AtomicBoolean once = new AtomicBoolean();
-        
-        /** 
-         * Called when the Subscriber has called cancel.
-         * This allows early termination for those who emit into this
-         * subject so that they can stop immediately 
-         */
-        Runnable onCancelled;
-        
-        /**
-         * Constructs the state with the given capacity and optional cancellation callback.
-         * @param capacityHint the capacity hint for the internal buffer
-         * @param onCancelled the optional cancellation callback
-         */
-        public State(int capacityHint, Runnable onCancelled) {
-            this.onCancelled = onCancelled;
-            queue = new SpscLinkedArrayQueue<T>(capacityHint);
-        }
-        
-        @Override
-        public void subscribe(Observer<? super T> s) {
-            if (!once.get() && once.compareAndSet(false, true)) {
-                s.onSubscribe(this);
-                subscriber.lazySet(s); // full barrier in drain
-                drain();
-            } else {
-                EmptyDisposable.error(new IllegalStateException("Only a single subscriber allowed."), s);
-            }
-        }
-        
-        @Override
-        public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-                
-                if (getAndIncrement() == 0) {
-                    clear(queue);
-                }
-            }
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return cancelled;
-        }
-
-        void notifyOnCancelled() {
-            Runnable r = onCancelled;
-            onCancelled = null;
-            if (r != null) {
-                r.run();
-            }
-        }
-        
-        /**
-         * Clears the subscriber and the queue.
-         * @param q the queue reference (avoid re-reading instance field).
-         */
-        void clear(SimpleQueue<?> q) {
-            subscriber.lazySet(null);
-            q.clear();
-            notifyOnCancelled();
-        }
-        
-        @Override
-        public void onSubscribe(Disposable s) {
-            if (done || cancelled) {
-                s.dispose();
-            }
-        }
-        
-        @Override
-        public void onNext(T t) {
-            if (done || cancelled) {
+        if (!once.get() && once.compareAndSet(false, true)) {
+            observer.onSubscribe(wip);
+            actual.lazySet(observer); // full barrier in drain
+            if (disposed) {
+                actual.lazySet(null);
                 return;
             }
-            if (t == null) {
-                onError(new NullPointerException());
-                return;
-            }
-            queue.offer(t);
             drain();
-        }
-        
-        @Override
-        public void onError(Throwable t) {
-            if (done || cancelled) {
-                return;
-            }
-            if (t == null) {
-                t = new NullPointerException();
-            }
-            error = t;
-            done = true;
-            drain();
-        }
-        
-        @Override
-        public void onComplete() {
-            if (done || cancelled) {
-                return;
-            }
-            done = true;
-            drain();
-        }
-        
-        void drain() {
-            if (getAndIncrement() != 0) {
-                return;
-            }
-            
-            final SimpleQueue<T> q = queue;
-            Observer<? super T> a = subscriber.get();
-            int missed = 1;
-            
-            for (;;) {
-                
-                if (cancelled) {
-                    clear(q);
-                    notifyOnCancelled();
-                    return;
-                }
-                
-                if (a != null) {
-                    
-                    boolean d = done;
-                    boolean empty = q.isEmpty();
-                    if (d && empty) {
-                        subscriber.lazySet(null);
-                        Throwable ex = error;
-                        if (ex != null) {
-                            a.onError(ex);
-                        } else {
-                            a.onComplete();
-                        }
-                        return;
-                    }
-                    
-                    for (;;) {
-                        
-                        if (cancelled) {
-                            clear(q);
-                            notifyOnCancelled();
-                            return;
-                        }
-
-                        d = done;
-                        T v = queue.poll();
-                        empty = v == null;
-                        
-                        if (d && empty) {
-                            subscriber.lazySet(null);
-                            Throwable ex = error;
-                            if (ex != null) {
-                                a.onError(ex);
-                            } else {
-                                a.onComplete();
-                            }
-                            return;
-                        }
-                        
-                        if (empty) {
-                            break;
-                        }
-                        
-                        a.onNext(v);
-                    }
-                }
-                
-                missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-                
-                if (a == null) {
-                    a = subscriber.get();
-                }
-            }
+        } else {
+            EmptyDisposable.error(new IllegalStateException("Only a single observer allowed."), observer);
         }
     }
     
+    void notifyOnCancelled() {
+        Runnable r = onCancelled;
+        onCancelled = null;
+        if (r != null) {
+            r.run();
+        }
+    }
+
+    /**
+     * Clears the observer and the queue.
+     * @param q the queue reference (avoid re-reading instance field).
+     */
+    void clearAndNotify(SimpleQueue<?> q) {
+        actual.lazySet(null);
+        q.clear();
+        notifyOnCancelled();
+    }
+
     @Override
     public void onSubscribe(Disposable s) {
-        state.onSubscribe(s);
+        if (done || disposed) {
+            s.dispose();
+        }
     }
-    
+
     @Override
     public void onNext(T t) {
-        state.onNext(t);
+        if (done || disposed) {
+            return;
+        }
+        if (t == null) {
+            onError(new NullPointerException());
+            return;
+        }
+        queue.offer(t);
+        drain();
     }
     
     @Override
     public void onError(Throwable t) {
-        state.onError(t);
+        if (done || disposed) {
+            return;
+        }
+        if (t == null) {
+            t = new NullPointerException();
+        }
+        error = t;
+        done = true;
+        drain();
     }
     
     @Override
     public void onComplete() {
-        state.onComplete();
+        if (done || disposed) {
+            return;
+        }
+        done = true;
+        drain();
+    }
+
+    void drainNormal(Observer<? super T> a) {
+        int missed = 1;
+        SimpleQueue<T> q = queue;
+        for (;;) {
+            for (;;) {
+                
+                if (disposed) {
+                    clearAndNotify(q);
+                    return;
+                }
+    
+                boolean d = done;
+                T v = queue.poll();
+                boolean empty = v == null;
+                
+                if (d && empty) {
+                    actual.lazySet(null);
+                    notifyOnCancelled();
+                    Throwable ex = error;
+                    if (ex != null) {
+                        a.onError(ex);
+                    } else {
+                        a.onComplete();
+                    }
+                    return;
+                }
+                
+                if (empty) {
+                    break;
+                }
+                
+                a.onNext(v);
+            }
+            
+            missed = wip.addAndGet(-missed);
+            if (missed == 0) {
+                break;
+            }
+        }
+    }
+    
+    void drainFused(Observer<? super T> a) {
+        int missed = 1;
+        
+        final SpscLinkedArrayQueue<T> q = queue;
+        
+        for (;;) {
+            
+            if (disposed) {
+                clearAndNotify(q);
+                return;
+            }
+            
+            boolean d = done;
+            
+            a.onNext(null);
+            
+            if (d) {
+                actual.lazySet(null);
+                
+                Throwable ex = error;
+                if (ex != null) {
+                    a.onError(ex);
+                } else {
+                    a.onComplete();
+                }
+                return;
+            }
+            
+            missed = wip.addAndGet(-missed);
+            if (missed == 0) {
+                break;
+            }
+        }
+    }
+    
+    void drain() {
+        if (wip.getAndIncrement() != 0) {
+            return;
+        }
+        
+        Observer<? super T> a = actual.get();
+        int missed = 1;
+        
+        for (;;) {
+            
+            if (a != null) {
+                if (enableOperatorFusion) {
+                    drainFused(a);
+                } else {
+                    drainNormal(a);
+                }
+                return;
+            }
+            
+            missed = wip.addAndGet(-missed);
+            if (missed == 0) {
+                break;
+            }
+            
+            if (a == null) {
+                a = actual.get();
+            }
+        }
     }
     
     @Override
     public boolean hasObservers() {
-        return state.subscriber.get() != null;
+        return actual.get() != null;
     }
     
     @Override
     public Throwable getThrowable() {
-        State<T> s = state;
-        if (s.done) {
-            return s.error;
+        if (done) {
+            return error;
         }
         return null;
     }
     
     @Override
     public boolean hasThrowable() {
-        State<T> s = state;
-        return s.done && s.error != null;
+        return done && error != null;
     }
     
     @Override
     public boolean hasComplete() {
-        State<T> s = state;
-        return s.done && s.error == null;
+        return done && error == null;
+    }
+    
+    final class UnicastQueueDisposable extends BasicIntQueueDisposable<T> {
+
+        /** */
+        private static final long serialVersionUID = 7926949470189395511L;
+
+        @Override
+        public int requestFusion(int mode) {
+            if ((mode & ASYNC) != 0) {
+                enableOperatorFusion = true;
+                return ASYNC;
+            }
+            return NONE;
+        }
+
+        @Override
+        public T poll() throws Exception {
+            return queue.poll();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return queue.isEmpty();
+        }
+
+        @Override
+        public void clear() {
+            queue.clear();
+        }
+
+        @Override
+        public void dispose() {
+            if (!disposed) {
+                disposed = true;
+                actual.lazySet(null);
+                if (wip.getAndIncrement() == 0) {
+                    clearAndNotify(queue);
+                }
+            }
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+        
     }
 }
