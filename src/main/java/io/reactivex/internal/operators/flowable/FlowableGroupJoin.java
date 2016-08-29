@@ -241,7 +241,7 @@ public class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends Ab
                         @SuppressWarnings("unchecked")
                         TLeft left = (TLeft)val;
                         
-                        UnicastProcessor<TRight> up = new UnicastProcessor<TRight>();
+                        UnicastProcessor<TRight> up = UnicastProcessor.<TRight>create();
                         int idx = leftIndex++;
                         lefts.put(idx, up);
                         

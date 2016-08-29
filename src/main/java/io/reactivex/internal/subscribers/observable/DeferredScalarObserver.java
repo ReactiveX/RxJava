@@ -23,36 +23,20 @@ import io.reactivex.internal.disposables.DisposableHelper;
  * @param <R> the output value type
  */
 public abstract class DeferredScalarObserver<T, R> 
-extends BaseIntQueueDisposable<R>
+extends DeferredScalarDisposable<R>
 implements Observer<T> {
     /** */
     private static final long serialVersionUID = -266195175408988651L;
-
-    protected final Observer<? super R> actual;
     
     /** The upstream disposable. */
     protected Disposable s;
-    
-    /** Can indicate if there was at least on onNext call. */
-    protected boolean hasValue;
-    
-    /** The result value. */
-    protected R value;
-
-    static final int NOT_FUSED = 0;
-    static final int EMPTY = 1;
-    static final int READY = 2;
-    static final int CONSUMED = 3;
-    
-    /** True if this has been disposed. */ 
-    volatile boolean disposed;
     
     /**
      * Creates a DeferredScalarObserver instance and wraps a downstream Observer.
      * @param actual the downstream subscriber, not null (not verified)
      */
     public DeferredScalarObserver(Observer<? super R> actual) {
-        this.actual = actual;
+        super(actual);
     }
 
     @Override
@@ -66,84 +50,24 @@ implements Observer<T> {
     
     @Override
     public void onError(Throwable t) {
-        int state = get();
-        if (state == NOT_FUSED || state == EMPTY) {
-            value = null;
-            lazySet(CONSUMED);
-            actual.onError(t);
-        }
+        value = null;
+        error(t);
     }
     
     @Override
     public void onComplete() {
-        if (hasValue) {
-            complete(value);
-        } else {
-            int state = get();
-            if (state == NOT_FUSED || state == EMPTY) {
-                lazySet(CONSUMED);
-                actual.onComplete();
-            }
-        }
-    }
-    
-    protected final void complete(R value) {
-        int state = get();
-        if (state == READY || state == CONSUMED || disposed) {
-            return;
-        }
-        if (state == EMPTY) {
-            this.value = value;
-            lazySet(READY);
-        } else {
-            lazySet(CONSUMED);
-        }
-        actual.onNext(value);
-        if (disposed) {
-            return;
-        }
-        actual.onComplete();
-    }
-    
-    @Override
-    public final R poll() {
-        if (get() == READY) {
-            R v = value;
+        R v = value;
+        if (v != null) {
             value = null;
-            lazySet(CONSUMED);
-            return v;
+            complete(v);
+        } else {
+            complete();
         }
-        return null;
     }
     
     @Override
-    public final boolean isDisposed() {
-        return disposed;
-    }
-    
-    @Override
-    public final void dispose() {
-        disposed = true;
+    public void dispose() {
+        super.dispose();
         s.dispose();
-    }
-    
-    @Override
-    public final boolean isEmpty() {
-        return get() != READY;
-    }
-    
-    @Override
-    public final int requestFusion(int mode) {
-        if ((mode & ASYNC) != 0) {
-            lazySet(EMPTY);
-            return ASYNC;
-        }
-        return NONE;
-    }
-    
-    @Override
-    public void clear() {
-        value = null;
-        lazySet(CONSUMED);
     }
 }

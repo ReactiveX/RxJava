@@ -112,7 +112,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             }
             this.s = s;
             
-            window = new UnicastProcessor<T>(bufferSize);
+            window = UnicastProcessor.<T>create(bufferSize);
             
             Subscriber<? super Flowable<T>> a = actual;
             a.onSubscribe(this);
@@ -267,7 +267,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     if (o == NEXT) {
                         w.onComplete();
                         if (!term) {
-                            w = new UnicastProcessor<T>(bufferSize);
+                            w = UnicastProcessor.<T>create(bufferSize);
                             window = w;
                             
                             long r = requested();
@@ -362,7 +362,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 return;
             }
             
-            UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
+            UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
             window = w;
             
             long r = requested();
@@ -416,7 +416,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     long r = requested();
                     
                     if (r != 0L) {
-                        w = new UnicastProcessor<T>(bufferSize);
+                        w = UnicastProcessor.<T>create(bufferSize);
                         window = w;
                         actual.onNext(w);
                         if (r != Long.MAX_VALUE) {
@@ -558,7 +558,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     if (isHolder) {
                         ConsumerIndexHolder consumerIndexHolder = (ConsumerIndexHolder) o;
                         if (producerIndex == consumerIndexHolder.index) {
-                            w = new UnicastProcessor<T>(bufferSize);
+                            w = UnicastProcessor.<T>create(bufferSize);
                             window = w;
                             
                             long r = requested();
@@ -591,7 +591,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         long r = requested();
                         
                         if (r != 0L) {
-                            w = new UnicastProcessor<T>(bufferSize);
+                            w = UnicastProcessor.<T>create(bufferSize);
                             window = w;
                             actual.onNext(w);
                             if (r != Long.MAX_VALUE) {
@@ -699,7 +699,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             
             long r = requested();
             if (r != 0L) {
-                final UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
+                final UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
                 windows.add(w);
                 
                 actual.onNext(w);
@@ -864,7 +864,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                             
                             long r = requested();
                             if (r != 0L) {
-                                final UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
+                                final UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
                                 ws.add(w);
                                 a.onNext(w);
                                 if (r != Long.MAX_VALUE) {
@@ -906,7 +906,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
         @Override
         public void run() {
 
-            UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
+            UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
             
             SubjectWork<T> sw = new SubjectWork<T>(w, true);
             if (!cancelled) {

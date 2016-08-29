@@ -55,7 +55,7 @@ public class SingleSubscribeTest {
             }
         });
         
-        assertEquals((Integer)1, value[0]);
+        assertEquals(1, value[0]);
         assertNull(value[1]);
     }
 

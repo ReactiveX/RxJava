@@ -104,7 +104,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
                 return;
             }
             
-            UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize);
+            UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
             
             long r = requested();
             if (r != 0L) {
@@ -262,7 +262,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
                             return;
                         }
                         
-                        w = new UnicastProcessor<T>(bufferSize);
+                        w = UnicastProcessor.<T>create(bufferSize);
                         
                         long r = requested();
                         if (r != 0L) {

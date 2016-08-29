@@ -20,60 +20,73 @@ import org.reactivestreams.Subscriber;
  * <p>
  * Note that the class leaks all methods of {@link java.util.concurrent.atomic.AtomicLong}.
  * Use {@link #complete(Object)} to signal the single value.
+ * <p>
+ * The this atomic integer stores a bitfield:<br>
+ * bit 0: indicates that there is a value available<br>
+ * bit 1: indicates that there was a request made<br>
+ * bit 2: indicates there was a cancellation, exclusively set<br>
+ * bit 3: indicates in fusion mode but no value yet, exclusively set<br>
+ * bit 4: indicates in fusion mode and value is available, exclusively set<br>
+ * bit 5: indicates in fusion mode and value has been consumed, exclusively set<br>
+ * Where exclusively set means any other bits are 0 when that bit is set.
  * @param <T> the value type
  */
-public class DeferredScalarSubscription<T> extends BasicQueueSubscription<T> {
+public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> {
 
     /** */
     private static final long serialVersionUID = -2151279923272604993L;
 
+    /** The Subscriber to emit the value to. */
     protected final Subscriber<? super T> actual;
     
+    /** The value is stored here if there is no request yet or in fusion mode. */
     protected T value;
     
-    protected int fusionState;
+    /** Indicates this Subscription has no value and not requested yet. */
+    static final int NO_REQUEST_NO_VALUE = 0;
+    /** Indicates this Subscription has a value but not requested yet. */
+    static final int NO_REQUEST_HAS_VALUE = 1;
+    /** Indicates this Subscription has been requested but there is no value yet. */
+    static final int HAS_REQUEST_NO_VALUE = 2;
+    /** Indicates this Subscription has both request and value. */
+    static final int HAS_REQUEST_HAS_VALUE = 3;
     
-    /** Constant for the this state. */
-    static final long NO_REQUEST_NO_VALUE = 0;
-    /** Constant for the this state. */
-    static final long NO_REQUEST_HAS_VALUE = 1;
-    /** Constant for the this state. */
-    static final long HAS_REQUEST_NO_VALUE = 2;
-    /** Constant for the this state. */
-    static final long HAS_REQUEST_HAS_VALUE = 3;
-    /** Constant for the this state. */
-    static final long CANCELLED = 4;
-
-    /** Constant for the {@link #fusionState} field. */
-    static final int NOT_FUSED = 0;
-    /** Constant for the {@link #fusionState} field. */
-    static final int EMPTY = 1;
-    /** Constant for the {@link #fusionState} field. */
-    static final int HAS_VALUE = 2;
-    /** Constant for the {@link #fusionState} field. */
-    static final int CONSUMED = 3;
+    /** Indicates the Subscription has been cancelled. */
+    static final int CANCELLED = 4;
     
+    /** Indicates this Subscription is in fusion mode and is currently empty. */
+    static final int FUSED_EMPTY = 8;
+    /** Indicates this Subscription is in fusion mode and has a value. */
+    static final int FUSED_READY = 16;
+    /** Indicates this Subscription is in fusion mode and its value has been consumed. */
+    static final int FUSED_CONSUMED = 32;
+    
+    /**
+     * Creates a DeferredScalarSubscription by wrapping the given Subscriber.
+     * @param actual the Subscriber to wrap, not null (not verified)
+     */
     public DeferredScalarSubscription(Subscriber<? super T> actual) {
         this.actual = actual;
     }
     
     @Override
-    public void request(long n) {
+    public final void request(long n) {
         if (SubscriptionHelper.validate(n)) {
             for (;;) {
-                long state = get();
-                if (state == HAS_REQUEST_NO_VALUE || state == HAS_REQUEST_HAS_VALUE || state == CANCELLED) {
+                int state = get();
+                // if the any bits 1-31 are set, we are either in fusion mode (FUSED_*)
+                // or request has been called (HAS_REQUEST_*)
+                if ((state & ~NO_REQUEST_HAS_VALUE) != 0) {
                     return;
                 }
                 if (state == NO_REQUEST_HAS_VALUE) {
-                    // unlike complete() we need to CAS as multiple concurrent requests are allowed
                     if (compareAndSet(NO_REQUEST_HAS_VALUE, HAS_REQUEST_HAS_VALUE)) {
-                        if (fusionState == EMPTY) {
-                            fusionState = HAS_VALUE;
-                        }
-                        actual.onNext(value);
+                        T v = value;
+                        value = null;
+                        Subscriber<? super T> a = actual;
+                        a.onNext(v);
                         if (get() != CANCELLED) {
-                            actual.onComplete();
+                            a.onComplete();
                         }
                     }
                     return;
@@ -92,26 +105,41 @@ public class DeferredScalarSubscription<T> extends BasicQueueSubscription<T> {
      * @param v the value to signal, not null (not validated)
      */
     public final void complete(T v) {
+        int state = get();
         for (;;) {
-            long state = get();
-            if (state == NO_REQUEST_HAS_VALUE || state == HAS_REQUEST_HAS_VALUE || state == CANCELLED) {
-                return;
-            }
-            if (state == HAS_REQUEST_NO_VALUE) {
-                // no need to CAS in the terminal state because complete() is called at most once
-                if (fusionState == EMPTY) {
-                    value = v;
-                    fusionState = HAS_VALUE;
-                }
-                actual.onNext(v);
+            if (state == FUSED_EMPTY) {
+                value = v;
+                lazySet(FUSED_READY);
+                
+                Subscriber<? super T> a = actual;
+                a.onNext(v);
                 if (get() != CANCELLED) {
-                    actual.onComplete();
+                    a.onComplete();
                 }
-                lazySet(HAS_REQUEST_HAS_VALUE);
                 return;
             }
-            this.value = v;
+            
+            // if state is >= CANCELLED or bit zero is set (*_HAS_VALUE) case, return
+            if ((state & ~HAS_REQUEST_NO_VALUE) != 0) {
+                return;
+            }
+            
+            if (state == HAS_REQUEST_NO_VALUE) {
+                lazySet(HAS_REQUEST_HAS_VALUE);
+                Subscriber<? super T> a = actual;
+                a.onNext(v);
+                if (get() != CANCELLED) {
+                    a.onComplete();
+                }
+                return;
+            }
+            value = v;
             if (compareAndSet(NO_REQUEST_NO_VALUE, NO_REQUEST_HAS_VALUE)) {
+                return;
+            }
+            state = get();
+            if (state == CANCELLED) {
+                value = null;
                 return;
             }
         }
@@ -120,7 +148,7 @@ public class DeferredScalarSubscription<T> extends BasicQueueSubscription<T> {
     @Override
     public final int requestFusion(int mode) {
         if ((mode & ASYNC) != 0) {
-            fusionState = EMPTY;
+            lazySet(FUSED_EMPTY);
             return ASYNC;
         }
         return NONE;
@@ -128,26 +156,30 @@ public class DeferredScalarSubscription<T> extends BasicQueueSubscription<T> {
 
     @Override
     public final T poll() {
-        if (fusionState == HAS_VALUE) {
-            fusionState = CONSUMED;
-            return value;
+        if (get() == FUSED_READY) {
+            lazySet(FUSED_CONSUMED);
+            T v = value;
+            value = null;
+            return v;
         }
         return null;
     }
 
     @Override
     public final boolean isEmpty() {
-        return fusionState != HAS_VALUE;
+        return get() != FUSED_READY;
     }
 
     @Override
     public final void clear() {
-        fusionState = CONSUMED;
+        lazySet(FUSED_CONSUMED);
+        value = null;
     }
 
     @Override
     public void cancel() {
         set(CANCELLED);
+        value = null;
     }
 
     /**
@@ -156,5 +188,14 @@ public class DeferredScalarSubscription<T> extends BasicQueueSubscription<T> {
      */
     public final boolean isCancelled() {
         return get() == CANCELLED;
+    }
+    
+    /**
+     * Atomically sets a cancelled state and returns true if
+     * the current thread did it successfully.
+     * @return true if the current thread cancelled
+     */
+    public final boolean tryCancel() {
+        return getAndSet(CANCELLED) != CANCELLED;
     }
 }

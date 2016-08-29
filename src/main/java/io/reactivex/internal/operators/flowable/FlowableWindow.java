@@ -102,7 +102,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
             if (i == 0) {
                 getAndIncrement();
                 
-                w = new UnicastProcessor<T>(bufferSize, this);
+                w = UnicastProcessor.<T>create(bufferSize, this);
                 window = w;
                 
                 actual.onNext(w);
@@ -232,7 +232,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 getAndIncrement();
                 
                 
-                w = new UnicastProcessor<T>(bufferSize, this);
+                w = UnicastProcessor.<T>create(bufferSize, this);
                 window = w;
                 
                 actual.onNext(w);
@@ -388,7 +388,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 if (!cancelled) {
                     getAndIncrement();
                     
-                    UnicastProcessor<T> w = new UnicastProcessor<T>(bufferSize, this);
+                    UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize, this);
                     
                     windows.offer(w);
                     

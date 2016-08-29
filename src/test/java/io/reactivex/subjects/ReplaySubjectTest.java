@@ -348,11 +348,11 @@ public class ReplaySubjectTest {
         
         Disposable s = subject.subscribe();
 
-        assertEquals(1, subject.subscriberCount());
+        assertEquals(1, subject.observerCount());
 
         s.dispose();
         
-        assertEquals(0, subject.subscriberCount());
+        assertEquals(0, subject.observerCount());
     }
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
@@ -835,7 +835,7 @@ public class ReplaySubjectTest {
             ReplaySubject.createWithSize(-99);
             fail("Didn't throw IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
-            assertEquals("size > 0 required but it was -99", ex.getMessage());
+            assertEquals("maxSize > 0 required but it was -99", ex.getMessage());
         }
     }
 
@@ -845,7 +845,7 @@ public class ReplaySubjectTest {
             ReplaySubject.createWithTimeAndSize(1, TimeUnit.DAYS, Schedulers.computation(), -99);
             fail("Didn't throw IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
-            assertEquals("size > 0 required but it was -99", ex.getMessage());
+            assertEquals("maxSize > 0 required but it was -99", ex.getMessage());
         }
     }
 

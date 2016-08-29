@@ -159,7 +159,6 @@ public class DeferredScalarObserverTest {
 
         @Override
         public void onNext(Integer value) {
-            hasValue = true;
             this.value = value;
         }
         

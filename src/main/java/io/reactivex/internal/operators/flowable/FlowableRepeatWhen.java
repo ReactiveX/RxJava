@@ -39,7 +39,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         
         SerializedSubscriber<T> z = new SerializedSubscriber<T>(s);
         
-        FlowableProcessor<Object> processor = new UnicastProcessor<Object>(8).toSerialized();
+        FlowableProcessor<Object> processor = UnicastProcessor.<Object>create(8).toSerialized();
         
         Publisher<?> when;
         

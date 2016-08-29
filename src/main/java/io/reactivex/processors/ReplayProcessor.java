@@ -31,31 +31,53 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
  * 
- * <p>This Subject respects the backpressure behavior of its Subscribers (individually).
+ * <p>
+ * The ReplayProcessor can be created in bounded and unbounded mode. It can be bounded by
+ * size (maximum number of elements retained at most) and/or time (maximum age of elements replayed).
+ * 
+ * <p>This Processor respects the backpressure behavior of its Subscribers (individually) but
+ * does not coordinate their request amounts towards the upstream (because there might not be any).
+ * 
+ * <p>Note that Subscribers receive a continuous sequence of values after they subscribed even 
+ * if an individual item gets delayed due to backpressure.
+ * 
  * <p>
  * Example usage:
  * <p>
  * <pre> {@code
 
-  ReplayProcessor<Object> processor = ReplayProcessor.create();
+  ReplayProcessor<Object> processor = new ReplayProcessor<T>();
   processor.onNext("one");
   processor.onNext("two");
   processor.onNext("three");
   processor.onCompleted();
 
   // both of the following will get the onNext/onComplete calls from above
-  subject.subscribe(subscriber1);
-  subject.subscribe(subscriber2);
+  processor.subscribe(subscriber1);
+  processor.subscribe(subscriber2);
 
   } </pre>
  * 
  * @param <T> the value type
  */
 public final class ReplayProcessor<T> extends FlowableProcessor<T> {
-    final State<T> state;
+    /** An empty array to avoid allocation in getValues(). */
+    private static final Object[] EMPTY_ARRAY = new Object[0];
+
+    final ReplayBuffer<T> buffer;
+    
+    boolean done;
+    
+    final AtomicReference<ReplaySubscription<T>[]> subscribers;
+    
+    @SuppressWarnings("rawtypes")
+    static final ReplaySubscription[] EMPTY = new ReplaySubscription[0];
+
+    @SuppressWarnings("rawtypes")
+    static final ReplaySubscription[] TERMINATED = new ReplaySubscription[0];
     
     /**
-     * Creates an unbounded replay subject.
+     * Creates an unbounded ReplayProcessor.
      * <p>
      * The internal buffer is backed by an {@link ArrayList} and starts with an initial capacity of 16. Once the
      * number of items reaches this capacity, it will grow as necessary (usually by 50%). However, as the
@@ -64,19 +86,19 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * parameter and can be tuned to reduce the array reallocation frequency as needed.
      *
      * @param <T>
-     *          the type of items observed and emitted by the Subject
-     * @return the created subject
+     *          the type of items observed and emitted by the ReplayProcessor
+     * @return the created ReplayProcessor
      */
     public static <T> ReplayProcessor<T> create() {
-        return create(16);
+        return new ReplayProcessor<T>(new UnboundedReplayBuffer<T>(16));
     }
 
     /**
-     * Creates an unbounded replay subject with the specified initial buffer capacity.
+     * Creates an unbounded ReplayProcessor with the specified initial buffer capacity.
      * <p>
      * Use this method to avoid excessive array reallocation while the internal buffer grows to accommodate new
      * items. For example, if you know that the buffer will hold 32k items, you can ask the
-     * {@code ReplaySubject} to preallocate its internal array with a capacity to hold that many items. Once
+     * {@code ReplayProcessor} to preallocate its internal array with a capacity to hold that many items. Once
      * the items start to arrive, the internal array won't need to grow, creating less garbage and no overhead
      * due to frequent array-copying.
      *
@@ -87,47 +109,39 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     public static <T> ReplayProcessor<T> create(int capacityHint) {
-        if (capacityHint <= 0) {
-            throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
-        }
-        ReplayBuffer<T> buffer = new UnboundedReplayBuffer<T>(capacityHint);
-        return createWithBuffer(buffer);
+        return new ReplayProcessor<T>(new UnboundedReplayBuffer<T>(capacityHint));
     }
 
     /**
-     * Creates a size-bounded replay subject.
+     * Creates a size-bounded ReplayProcessor.
      * <p>
-     * In this setting, the {@code ReplaySubject} holds at most {@code size} items in its internal buffer and
+     * In this setting, the {@code ReplayProcessor} holds at most {@code size} items in its internal buffer and
      * discards the oldest item.
      * <p>
-     * When observers subscribe to a terminated {@code ReplaySubject}, they are guaranteed to see at most
+     * When observers subscribe to a terminated {@code ReplayProcessor}, they are guaranteed to see at most
      * {@code size} {@code onNext} events followed by a termination event. 
      * <p>
-     * If an observer subscribes while the {@code ReplaySubject} is active, it will observe all items in the
+     * If an observer subscribes while the {@code ReplayProcessor} is active, it will observe all items in the
      * buffer at that point in time and each item observed afterwards, even if the buffer evicts items due to
      * the size constraint in the mean time. In other words, once an Observer subscribes, it will receive items
      * without gaps in the sequence.
      *
      * @param <T>
      *          the type of items observed and emitted by the Subject
-     * @param size
+     * @param maxSize
      *          the maximum number of buffered items
      * @return the created subject
      */
-    public static <T> ReplayProcessor<T> createWithSize(int size) {
-        if (size <= 0) {
-            throw new IllegalArgumentException("size > 0 required but it was " + size);
-        }
-        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<T>(size);
-        return createWithBuffer(buffer);
+    public static <T> ReplayProcessor<T> createWithSize(int maxSize) {
+        return new ReplayProcessor<T>(new SizeBoundReplayBuffer<T>(maxSize));
     }
 
     /**
-     * Creates an unbounded replay subject with the bounded-implementation for testing purposes.
+     * Creates an unbounded ReplayProcessor with the bounded-implementation for testing purposes.
      * <p>
-     * This variant behaves like the regular unbounded {@code ReplaySubject} created via {@link #create()} but
+     * This variant behaves like the regular unbounded {@code ReplayProcessor} created via {@link #create()} but
      * uses the structures of the bounded-implementation. This is by no means intended for the replacement of
-     * the original, array-backed and unbounded {@code ReplaySubject} due to the additional overhead of the
+     * the original, array-backed and unbounded {@code ReplayProcessor} due to the additional overhead of the
      * linked-list based internal buffer. The sole purpose is to allow testing and reasoning about the behavior
      * of the bounded implementations without the interference of the eviction policies.
      *
@@ -136,14 +150,13 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     /* test */ static <T> ReplayProcessor<T> createUnbounded() {
-        SizeBoundReplayBuffer<T> buffer = new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE);
-        return createWithBuffer(buffer);
+        return new ReplayProcessor<T>(new SizeBoundReplayBuffer<T>(Integer.MAX_VALUE));
     }
 
     /**
-     * Creates a time-bounded replay subject.
+     * Creates a time-bounded ReplayProcessor.
      * <p>
-     * In this setting, the {@code ReplaySubject} internally tags each observed item with a timestamp value
+     * In this setting, the {@code ReplayProcessor} internally tags each observed item with a timestamp value
      * supplied by the {@link Scheduler} and keeps only those whose age is less than the supplied time value
      * converted to milliseconds. For example, an item arrives at T=0 and the max age is set to 5; at T&gt;=5
      * this first item is then evicted by any subsequent item or termination event, leaving the buffer empty. 
@@ -151,7 +164,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * Once the subject is terminated, observers subscribing to it will receive items that remained in the
      * buffer after the terminal event, regardless of their age. 
      * <p>
-     * If an observer subscribes while the {@code ReplaySubject} is active, it will observe only those items
+     * If an observer subscribes while the {@code ReplayProcessor} is active, it will observe only those items
      * from within the buffer that have an age less than the specified time, and each item observed thereafter,
      * even if the buffer evicts items due to the time constraint in the mean time. In other words, once an
      * observer subscribes, it observes items without gaps in the sequence except for any outdated items at the
@@ -159,7 +172,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * <p>
      * Note that terminal notifications ({@code onError} and {@code onCompleted}) trigger eviction as well. For
      * example, with a max age of 5, the first item is observed at T=0, then an {@code onCompleted} notification
-     * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplaySubject} with just
+     * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplayProcessor} with just
      * an {@code onCompleted} notification.
      *
      * @param <T>
@@ -173,21 +186,21 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     public static <T> ReplayProcessor<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
-        return createWithTimeAndSize(maxAge, unit, scheduler, Integer.MAX_VALUE);
+        return new ReplayProcessor<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
 
     /**
-     * Creates a time- and size-bounded replay subject.
+     * Creates a time- and size-bounded ReplayProcessor.
      * <p>
-     * In this setting, the {@code ReplaySubject} internally tags each received item with a timestamp value
+     * In this setting, the {@code ReplayProcessor} internally tags each received item with a timestamp value
      * supplied by the {@link Scheduler} and holds at most {@code size} items in its internal buffer. It evicts
      * items from the start of the buffer if their age becomes less-than or equal to the supplied age in
      * milliseconds or the buffer reaches its {@code size} limit.
      * <p>
-     * When observers subscribe to a terminated {@code ReplaySubject}, they observe the items that remained in
+     * When observers subscribe to a terminated {@code ReplayProcessor}, they observe the items that remained in
      * the buffer after the terminal notification, regardless of their age, but at most {@code size} items.
      * <p>
-     * If an observer subscribes while the {@code ReplaySubject} is active, it will observe only those items
+     * If an observer subscribes while the {@code ReplayProcessor} is active, it will observe only those items
      * from within the buffer that have age less than the specified time and each subsequent item, even if the
      * buffer evicts items due to the time constraint in the mean time. In other words, once an observer
      * subscribes, it observes items without gaps in the sequence except for the outdated items at the beginning
@@ -195,7 +208,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * <p>
      * Note that terminal notifications ({@code onError} and {@code onCompleted}) trigger eviction as well. For
      * example, with a max age of 5, the first item is observed at T=0, then an {@code onCompleted} notification
-     * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplaySubject} with just
+     * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplayProcessor} with just
      * an {@code onCompleted} notification.
      *
      * @param <T>
@@ -204,40 +217,49 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      *          the maximum age of the contained items
      * @param unit
      *          the time unit of {@code time}
-     * @param size
+     * @param maxSize
      *          the maximum number of buffered items
      * @param scheduler
      *          the {@link Scheduler} that provides the current time
      * @return the created subject
      */
-    public static <T> ReplayProcessor<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int size) {
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        if (size <= 0) {
-            throw new IllegalArgumentException("size > 0 required but it was " + size);
-        }
-        SizeAndTimeBoundReplayBuffer<T> buffer = new SizeAndTimeBoundReplayBuffer<T>(size, maxAge, unit, scheduler);
-        return createWithBuffer(buffer);
+    public static <T> ReplayProcessor<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
+        return new ReplayProcessor<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
     }
     
-    static <T> ReplayProcessor<T> createWithBuffer(ReplayBuffer<T> buffer) {
-        State<T> state = new State<T>(buffer);
-        return new ReplayProcessor<T>(state);
-    }
-
-
-    protected ReplayProcessor(State<T> state) {
-        this.state = state;
+    /**
+     * Constructs a ReplayProcessor with the given custom ReplayBuffer instance.
+     * @param buffer the ReplayBuffer instance, not null (not verified)
+     */
+    @SuppressWarnings("unchecked")
+    ReplayProcessor(ReplayBuffer<T> buffer) {
+        this.buffer = buffer;
+        this.subscribers = new AtomicReference<ReplaySubscription<T>[]>(EMPTY);
     }
     
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        state.subscribe(s);
+        ReplaySubscription<T> rs = new ReplaySubscription<T>(s, this);
+        s.onSubscribe(rs);
+        
+        if (!rs.cancelled) {
+            if (add(rs)) {
+                if (rs.cancelled) {
+                    remove(rs);
+                    return;
+                }
+            }
+            buffer.replay(rs);
+        }
     }
     
     @Override
     public void onSubscribe(Subscription s) {
-        state.onSubscribe(s);
+        if (done) {
+            s.cancel();
+            return;
+        }
+        s.request(Long.MAX_VALUE);
     }
 
     @Override
@@ -246,7 +268,16 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             onError(new NullPointerException());
             return;
         }
-        state.onNext(t);
+        if (done) {
+            return;
+        }
+
+        ReplayBuffer<T> b = buffer;
+        b.add(t);
+        
+        for (ReplaySubscription<T> rs : subscribers.get()) {
+            b.replay(rs);
+        }
     }
 
     @Override
@@ -254,26 +285,53 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         if (t == null) {
             t = new NullPointerException();
         }
-        state.onError(t);
+        if (done) {
+            RxJavaPlugins.onError(t);
+            return;
+        }
+        done = true;
+
+        Object o = NotificationLite.error(t);
+        
+        ReplayBuffer<T> b = buffer;
+        
+        b.addFinal(o);
+        
+        for (ReplaySubscription<T> rs : terminate(o)) {
+            b.replay(rs);
+        }
     }
 
     @Override
     public void onComplete() {
-        state.onComplete();
+        if (done) {
+            return;
+        }
+        done = true;
+
+        Object o = NotificationLite.complete();
+        
+        ReplayBuffer<T> b = buffer;
+        
+        b.addFinal(o);
+        
+        for (ReplaySubscription<T> rs : terminate(o)) {
+            b.replay(rs);
+        }
     }
 
     @Override
     public boolean hasSubscribers() {
-        return state.subscribers.get().length != 0;
+        return subscribers.get().length != 0;
     }
 
     /* test */ int subscriberCount() {
-        return state.subscribers.get().length;
+        return subscribers.get().length;
     }
 
     @Override
     public Throwable getThrowable() {
-        Object o = state.get();
+        Object o = buffer.get();
         if (NotificationLite.isError(o)) {
             return NotificationLite.getError(o);
         }
@@ -286,12 +344,9 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return a single value the Subject currently has or null if no such value exists
      */
     public T getValue() {
-        return state.buffer.getValue();
+        return buffer.getValue();
     }
     
-    /** An empty array to avoid allocation in getValues(). */
-    private static final Object[] EMPTY = new Object[0];
-
     /**
      * Returns an Object array containing snapshot all values of the Subject.
      * <p>The method is thread-safe.
@@ -299,9 +354,9 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      */
     public Object[] getValues() {
         @SuppressWarnings("unchecked")
-        T[] a = (T[])EMPTY;
+        T[] a = (T[])EMPTY_ARRAY;
         T[] b = getValues(a);
-        if (b == EMPTY) {
+        if (b == EMPTY_ARRAY) {
             return new Object[0];
         }
         return b;
@@ -317,18 +372,18 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the given array if the values fit into it or a new array containing all values
      */
     public T[] getValues(T[] array) {
-        return state.buffer.getValues(array);
+        return buffer.getValues(array);
     }
     
     @Override
     public boolean hasComplete() {
-        Object o = state.get();
+        Object o = buffer.get();
         return NotificationLite.isComplete(o);
     }
     
     @Override
     public boolean hasThrowable() {
-        Object o = state.get();
+        Object o = buffer.get();
         return NotificationLite.isError(o);
     }
     
@@ -338,170 +393,77 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return true if the subject has any value
      */
     public boolean hasValue() {
-        return state.buffer.size() != 0; // NOPMD
+        return buffer.size() != 0; // NOPMD
     }
     
     /* test*/ int size() {
-        return state.buffer.size();
+        return buffer.size();
     }
-    
-    static final class State<T> extends AtomicReference<Object> implements Publisher<T>, Subscriber<T> {
-        /** */
-        private static final long serialVersionUID = -4673197222000219014L;
 
-        final ReplayBuffer<T> buffer;
-        
-        boolean done;
-        
-        final AtomicReference<ReplaySubscription<T>[]> subscribers;
-        
-        @SuppressWarnings("rawtypes")
-        static final ReplaySubscription[] EMPTY = new ReplaySubscription[0];
-
-        @SuppressWarnings("rawtypes")
-        static final ReplaySubscription[] TERMINATED = new ReplaySubscription[0];
-        
-        @SuppressWarnings("unchecked")
-        public State(ReplayBuffer<T> buffer) {
-            this.buffer = buffer;
-            this.subscribers = new AtomicReference<ReplaySubscription<T>[]>(EMPTY);
-        }
-        
-        @Override
-        public void subscribe(Subscriber<? super T> s) {
-            ReplaySubscription<T> rs = new ReplaySubscription<T>(s, this);
-            s.onSubscribe(rs);
-            
-            if (!rs.cancelled) {
-                if (add(rs)) {
-                    if (rs.cancelled) {
-                        remove(rs);
-                        return;
-                    }
-                }
-                buffer.replay(rs);
+    boolean add(ReplaySubscription<T> rs) {
+        for (;;) {
+            ReplaySubscription<T>[] a = subscribers.get();
+            if (a == TERMINATED) {
+                return false;
             }
-        }
-        
-        public boolean add(ReplaySubscription<T> rs) {
-            for (;;) {
-                ReplaySubscription<T>[] a = subscribers.get();
-                if (a == TERMINATED) {
-                    return false;
-                }
-                int len = a.length;
-                @SuppressWarnings("unchecked")
-                ReplaySubscription<T>[] b = new ReplaySubscription[len + 1];
-                System.arraycopy(a, 0, b, 0, len);
-                b[len] = rs;
-                if (subscribers.compareAndSet(a, b)) {
-                    return true;
-                }
-            }
-        }
-        
-        @SuppressWarnings("unchecked")
-        public void remove(ReplaySubscription<T> rs) {
-            for (;;) {
-                ReplaySubscription<T>[] a = subscribers.get();
-                if (a == TERMINATED || a == EMPTY) {
-                    return;
-                }
-                int len = a.length;
-                int j = -1;
-                for (int i = 0; i < len; i++) {
-                    if (a[i] == rs) {
-                        j = i;
-                        break;
-                    }
-                }
-                
-                if (j < 0) {
-                    return;
-                }
-                ReplaySubscription<T>[] b;
-                if (len == 1) {
-                    b = EMPTY;
-                } else {
-                    b = new ReplaySubscription[len - 1];
-                    System.arraycopy(a, 0, b, 0, j);
-                    System.arraycopy(a, j + 1, b, j, len - j - 1);
-                }
-                if (subscribers.compareAndSet(a, b)) {
-                    return;
-                }
-            }
-        }
-        
-        @SuppressWarnings("unchecked")
-        public ReplaySubscription<T>[] terminate(Object terminalValue) {
-            if (compareAndSet(null, terminalValue)) {
-                return subscribers.getAndSet(TERMINATED);
-            }
-            return TERMINATED;
-        }
-        
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (done) {
-                s.cancel();
-                return;
-            }
-            s.request(Long.MAX_VALUE);
-        }
-        
-        @Override
-        public void onNext(T t) {
-            if (done) {
-                return;
-            }
-
-            ReplayBuffer<T> b = buffer;
-            b.add(t);
-            
-            for (ReplaySubscription<T> rs : subscribers.get()) {
-                b.replay(rs);
-            }
-        }
-        
-        @Override
-        public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            done = true;
-
-            Object o = NotificationLite.error(t);
-            
-            ReplayBuffer<T> b = buffer;
-            
-            b.addFinal(o);
-            
-            for (ReplaySubscription<T> rs : terminate(o)) {
-                b.replay(rs);
-            }
-        }
-        
-        @Override
-        public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-
-            Object o = NotificationLite.complete();
-            
-            ReplayBuffer<T> b = buffer;
-            
-            b.addFinal(o);
-            
-            for (ReplaySubscription<T> rs : terminate(o)) {
-                b.replay(rs);
+            int len = a.length;
+            @SuppressWarnings("unchecked")
+            ReplaySubscription<T>[] b = new ReplaySubscription[len + 1];
+            System.arraycopy(a, 0, b, 0, len);
+            b[len] = rs;
+            if (subscribers.compareAndSet(a, b)) {
+                return true;
             }
         }
     }
     
+    @SuppressWarnings("unchecked")
+    void remove(ReplaySubscription<T> rs) {
+        for (;;) {
+            ReplaySubscription<T>[] a = subscribers.get();
+            if (a == TERMINATED || a == EMPTY) {
+                return;
+            }
+            int len = a.length;
+            int j = -1;
+            for (int i = 0; i < len; i++) {
+                if (a[i] == rs) {
+                    j = i;
+                    break;
+                }
+            }
+            
+            if (j < 0) {
+                return;
+            }
+            ReplaySubscription<T>[] b;
+            if (len == 1) {
+                b = EMPTY;
+            } else {
+                b = new ReplaySubscription[len - 1];
+                System.arraycopy(a, 0, b, 0, j);
+                System.arraycopy(a, j + 1, b, j, len - j - 1);
+            }
+            if (subscribers.compareAndSet(a, b)) {
+                return;
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    ReplaySubscription<T>[] terminate(Object terminalValue) {
+        if (buffer.compareAndSet(null, terminalValue)) {
+            return subscribers.getAndSet(TERMINATED);
+        }
+        return TERMINATED;
+    }
+
+    /**
+     * Abstraction over a buffer that receives events and replays them to
+     * individual Subscribers.
+     *
+     * @param <T> the value type
+     */
     interface ReplayBuffer<T> {
         
         void add(T value);
@@ -515,13 +477,28 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         T getValue();
         
         T[] getValues(T[] array);
+        
+        /**
+         * Returns the terminal NotificationLite object or null if not yet terminated.
+         * @return the terminal NotificationLite object or null if not yet terminated
+         */
+        Object get();
+        
+        /**
+         * Atomically compares and sets the next terminal NotificationLite object if the
+         * current equals to the expected NotificationLite object.
+         * @param expected the expected NotificationLite object
+         * @param next the next NotificationLite object
+         * @return true if successful
+         */
+        boolean compareAndSet(Object expected, Object next);
     }
     
     static final class ReplaySubscription<T> extends AtomicInteger implements Subscription {
         /** */
         private static final long serialVersionUID = 466549804534799122L;
         final Subscriber<? super T> actual;
-        final State<T> state;
+        final ReplayProcessor<T> state;
         
         Object index;
         
@@ -529,7 +506,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         
         volatile boolean cancelled;
         
-        public ReplaySubscription(Subscriber<? super T> actual, State<T> state) {
+        public ReplaySubscription(Subscriber<? super T> actual, ReplayProcessor<T> state) {
             this.actual = actual;
             this.state = state;
             this.requested = new AtomicLong();
@@ -551,7 +528,12 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
     }
     
-    static final class UnboundedReplayBuffer<T> implements ReplayBuffer<T> {
+    static final class UnboundedReplayBuffer<T> 
+    extends AtomicReference<Object>
+    implements ReplayBuffer<T> {
+        /** */
+        private static final long serialVersionUID = -4457200895834877300L;
+
         final List<Object> buffer;
         
         volatile boolean done;
@@ -559,7 +541,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         volatile int size;
         
         public UnboundedReplayBuffer(int capacityHint) {
-            this.buffer = new ArrayList<Object>(capacityHint);
+            this.buffer = new ArrayList<Object>(verifyPositive(capacityHint, "capacityHint"));
         }
         
         @Override
@@ -755,7 +737,11 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
     }
     
-    static final class SizeBoundReplayBuffer<T> implements ReplayBuffer<T> {
+    static final class SizeBoundReplayBuffer<T> 
+    extends AtomicReference<Object>
+    implements ReplayBuffer<T> {
+        /** */
+        private static final long serialVersionUID = 3027920763113911982L;
         final int maxSize;
         int size;
         
@@ -766,7 +752,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         volatile boolean done;
         
         public SizeBoundReplayBuffer(int maxSize) {
-            this.maxSize = maxSize;
+            this.maxSize = verifyPositive(maxSize, "maxSize");
             Node<Object> h = new Node<Object>(null);
             this.tail = h;
             this.head = h;
@@ -787,11 +773,6 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             tail = n;
             size++;
-            /*
-             *  FIXME not sure why lazySet doesn't work here
-             *  (testReplaySubjectEmissionSubscriptionRace hangs) 
-             *  must be the lack of StoreLoad barrier?
-             */
             t.set(n); // releases both the tail and size
             
             trim();
@@ -804,7 +785,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             tail = n;
             size++;
-            t.lazySet(n); // releases both the tail and size
+            t.set(n); // releases both the tail and size
             
             done = true;
         }
@@ -972,7 +953,12 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
     }
     
-    static final class SizeAndTimeBoundReplayBuffer<T> implements ReplayBuffer<T> {
+    static final class SizeAndTimeBoundReplayBuffer<T> 
+    extends AtomicReference<Object>
+    implements ReplayBuffer<T> {
+        /** */
+        private static final long serialVersionUID = 1242561386470847675L;
+        
         final int maxSize;
         final long maxAge;
         final TimeUnit unit;
@@ -987,10 +973,10 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         
         
         public SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
-            this.maxSize = maxSize;
-            this.maxAge = maxAge;
-            this.unit = unit;
-            this.scheduler = scheduler;
+            this.maxSize = verifyPositive(maxSize, "maxSize");
+            this.maxAge = verifyPositive(maxAge, "maxAge");
+            this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
+            this.scheduler = ObjectHelper.requireNonNull(scheduler, "scheduler is null");
             TimedNode<Object> h = new TimedNode<Object>(null, 0L);
             this.tail = h;
             this.head = h;
@@ -1051,11 +1037,6 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             tail = n;
             size++;
-            /*
-             *  FIXME not sure why lazySet doesn't work here
-             *  (testReplaySubjectEmissionSubscriptionRace hangs) 
-             *  must be the lack of StoreLoad barrier?
-             */
             t.set(n); // releases both the tail and size
             
             trim();
@@ -1068,7 +1049,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             tail = n;
             size++;
-            t.lazySet(n); // releases both the tail and size
+            t.set(n); // releases both the tail and size
             trimFinal();
             
             done = true;

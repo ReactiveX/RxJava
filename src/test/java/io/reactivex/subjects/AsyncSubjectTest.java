@@ -26,7 +26,8 @@ import org.mockito.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.observers.*;
 
 public class AsyncSubjectTest {
 
@@ -275,7 +276,7 @@ public class AsyncSubjectTest {
 //        NbpAsyncSubject<String> ps = NbpAsyncSubject.create();
 //
 //        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<String>();
+//        TestObserver<String> ts = new TestObserver<String>();
 //        ps.subscribe(ts);
 //
 //        try {
@@ -299,7 +300,7 @@ public class AsyncSubjectTest {
 //
 //        ps.subscribe();
 //        ps.subscribe();
-//        TestSubscriber<String> ts = new TestSubscriber<String>();
+//        TestObserver<String> ts = new TestObserver<String>();
 //        ps.subscribe(ts);
 //        ps.subscribe();
 //        ps.subscribe();
@@ -328,10 +329,10 @@ public class AsyncSubjectTest {
         
         as.onNext(1);
         
-        assertTrue(as.hasValue());
+        assertFalse(as.hasValue()); // AS no longer reports a value until it has completed
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
-        assertEquals(1, as.getValue());
+        assertNull(as.getValue()); // AS no longer reports a value until it has completed
         assertNull(as.getThrowable());
         
         as.onComplete();
@@ -378,4 +379,45 @@ public class AsyncSubjectTest {
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
     }
+
+    
+    @Test
+    public void fusionLive() {
+        AsyncSubject<Integer> ap = new AsyncSubject<Integer>();
+        
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+        
+        ap.subscribe(ts);
+        
+        ts
+        .assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC));
+        
+        ts.assertNoValues().assertNoErrors().assertNotComplete();
+        
+        ap.onNext(1);
+        
+        ts.assertNoValues().assertNoErrors().assertNotComplete();
+        
+        ap.onComplete();
+        
+        ts.assertResult(1);
+    }
+    
+    @Test
+    public void fusionOfflie() {
+        AsyncSubject<Integer> ap = new AsyncSubject<Integer>();
+        ap.onNext(1);
+        ap.onComplete();
+        
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+        
+        ap.subscribe(ts);
+        
+        ts
+        .assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult(1);
+    }
+
 }
