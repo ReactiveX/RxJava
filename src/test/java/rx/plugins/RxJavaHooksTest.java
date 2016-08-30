@@ -26,9 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.*;
-import rx.Completable.*;
 import rx.Observable;
-import rx.Observable.*;
 import rx.Scheduler.Worker;
 import rx.exceptions.*;
 import rx.functions.*;
@@ -307,9 +305,9 @@ public class RxJavaHooksTest {
     @Test
     public void observableCreate() {
         try {
-            RxJavaHooks.setOnObservableCreate(new Func1<OnSubscribe, OnSubscribe>() {
+            RxJavaHooks.setOnObservableCreate(new Func1<Observable.OnSubscribe, Observable.OnSubscribe>() {
                 @Override
-                public OnSubscribe call(OnSubscribe t) {
+                public Observable.OnSubscribe call(Observable.OnSubscribe t) {
                     return new OnSubscribeRange(1, 2);
                 }
             });
@@ -338,9 +336,9 @@ public class RxJavaHooksTest {
     @Test
     public void observableStart() {
         try {
-            RxJavaHooks.setOnObservableStart(new Func2<Observable, OnSubscribe, OnSubscribe>() {
+            RxJavaHooks.setOnObservableStart(new Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe>() {
                 @Override
-                public OnSubscribe call(Observable o, OnSubscribe t) {
+                public Observable.OnSubscribe call(Observable o, Observable.OnSubscribe t) {
                     return new OnSubscribeRange(1, 2);
                 }
             });
@@ -400,7 +398,7 @@ public class RxJavaHooksTest {
                 public Single.OnSubscribe call(Single.OnSubscribe t) {
                     return new Single.OnSubscribe<Object>() {
                         @Override
-                        public void call(SingleSubscriber<Object> t) {
+                        public void call(SingleSubscriber<? super Object> t) {
                             t.onSuccess(10);
                         }
                     };
@@ -431,12 +429,12 @@ public class RxJavaHooksTest {
     @Test
     public void singleStart() {
         try {
-            RxJavaHooks.setOnSingleStart(new Func2<Single, OnSubscribe, OnSubscribe>() {
+            RxJavaHooks.setOnSingleStart(new Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe>() {
                 @Override
-                public OnSubscribe call(Single o, OnSubscribe t) {
-                    return new OnSubscribe<Object>() {
+                public Observable.OnSubscribe call(Single o, Observable.OnSubscribe t) {
+                    return new Observable.OnSubscribe<Object>() {
                         @Override
-                        public void call(Subscriber<Object> t) {
+                        public void call(Subscriber<? super Object> t) {
                             t.setProducer(new SingleProducer<Integer>(t, 10));
                         }
                     };
@@ -492,10 +490,10 @@ public class RxJavaHooksTest {
     @Test
     public void completableCreate() {
         try {
-            RxJavaHooks.setOnCompletableCreate(new Func1<CompletableOnSubscribe, CompletableOnSubscribe>() {
+            RxJavaHooks.setOnCompletableCreate(new Func1<Completable.OnSubscribe, Completable.OnSubscribe>() {
                 @Override
-                public CompletableOnSubscribe call(CompletableOnSubscribe t) {
-                    return new CompletableOnSubscribe() {
+                public Completable.OnSubscribe call(Completable.OnSubscribe t) {
+                    return new Completable.OnSubscribe() {
                         @Override
                         public void call(CompletableSubscriber t) {
                             t.onError(new TestException());
@@ -527,10 +525,10 @@ public class RxJavaHooksTest {
     @Test
     public void completableStart() {
         try {
-            RxJavaHooks.setOnCompletableStart(new Func2<Completable, CompletableOnSubscribe, CompletableOnSubscribe>() {
+            RxJavaHooks.setOnCompletableStart(new Func2<Completable, Completable.OnSubscribe, Completable.OnSubscribe>() {
                 @Override
-                public CompletableOnSubscribe call(Completable o, CompletableOnSubscribe t) {
-                    return new CompletableOnSubscribe() {
+                public Completable.OnSubscribe call(Completable o, Completable.OnSubscribe t) {
+                    return new Completable.OnSubscribe() {
                         @Override
                         public void call(CompletableSubscriber t) {
                             t.onError(new TestException());
@@ -772,7 +770,7 @@ public class RxJavaHooksTest {
             
             assertNull(RxJavaHooks.onCreate((Single.OnSubscribe)null));
 
-            Completable.CompletableOnSubscribe cos = new Completable.CompletableOnSubscribe() {
+            Completable.OnSubscribe cos = new Completable.OnSubscribe() {
                 @Override
                 public void call(CompletableSubscriber t) {
                     
@@ -839,7 +837,7 @@ public class RxJavaHooksTest {
             
             assertSame(oop, RxJavaHooks.onSingleLift(oop));
             
-            Completable.CompletableOperator cop = new Completable.CompletableOperator() {
+            Completable.Operator cop = new Completable.Operator() {
                 @Override
                 public CompletableSubscriber call(CompletableSubscriber t) {
                     return t;
@@ -958,7 +956,7 @@ public class RxJavaHooksTest {
     @Test
     public void onXLift() {
         try {
-            Completable.CompletableOperator cop = new Completable.CompletableOperator() {
+            Completable.Operator cop = new Completable.Operator() {
                 @Override
                 public CompletableSubscriber call(CompletableSubscriber t) {
                     return t;
@@ -974,25 +972,25 @@ public class RxJavaHooksTest {
 
             final int[] counter = { 0 };
 
-            RxJavaHooks.setOnObservableLift(new Func1<Operator, Operator>() {
+            RxJavaHooks.setOnObservableLift(new Func1<Observable.Operator, Observable.Operator>() {
                 @Override
-                public Operator call(Operator t) {
+                public Observable.Operator call(Observable.Operator t) {
                     counter[0]++;
                     return t;
                 }
             });
 
-            RxJavaHooks.setOnSingleLift(new Func1<Operator, Operator>() {
+            RxJavaHooks.setOnSingleLift(new Func1<Observable.Operator, Observable.Operator>() {
                 @Override
-                public Operator call(Operator t) {
+                public Observable.Operator call(Observable.Operator t) {
                     counter[0]++;
                     return t;
                 }
             });
 
-            RxJavaHooks.setOnCompletableLift(new Func1<CompletableOperator, CompletableOperator>() {
+            RxJavaHooks.setOnCompletableLift(new Func1<Completable.Operator, Completable.Operator>() {
                 @Override
-                public CompletableOperator call(CompletableOperator t) {
+                public Completable.Operator call(Completable.Operator t) {
                     counter[0]++;
                     return t;
                 }
@@ -1019,7 +1017,7 @@ public class RxJavaHooksTest {
             RxJavaPlugins.getInstance().reset();
             RxJavaHooks.reset();
 
-            Completable.CompletableOperator cop = new Completable.CompletableOperator() {
+            Completable.Operator cop = new Completable.Operator() {
                 @Override
                 public CompletableSubscriber call(CompletableSubscriber t) {
                     return t;
@@ -1035,17 +1033,17 @@ public class RxJavaHooksTest {
 
             final int[] counter = { 0 };
 
-            final Func1<Operator, Operator> onObservableLift = new Func1<Operator, Operator>() {
+            final Func1<Observable.Operator, Observable.Operator> onObservableLift = new Func1<Observable.Operator, Observable.Operator>() {
                 @Override
-                public Operator call(Operator t) {
+                public Observable.Operator call(Observable.Operator t) {
                     counter[0]++;
                     return t;
                 }
             };
 
-            final Func1<CompletableOperator, CompletableOperator> onCompletableLift = new Func1<CompletableOperator, CompletableOperator>() {
+            final Func1<Completable.Operator, Completable.Operator> onCompletableLift = new Func1<Completable.Operator, Completable.Operator>() {
                 @Override
-                public CompletableOperator call(CompletableOperator t) {
+                public Completable.Operator call(Completable.Operator t) {
                     counter[0]++;
                     return t;
                 }
@@ -1053,21 +1051,21 @@ public class RxJavaHooksTest {
             
             RxJavaPlugins.getInstance().registerObservableExecutionHook(new RxJavaObservableExecutionHook() {
                 @Override
-                public <T, R> Operator<? extends R, ? super T> onLift(Operator<? extends R, ? super T> lift) {
+                public <T, R> Observable.Operator<? extends R, ? super T> onLift(Observable.Operator<? extends R, ? super T> lift) {
                     return onObservableLift.call(lift);
                 }
             });
             
             RxJavaPlugins.getInstance().registerSingleExecutionHook(new RxJavaSingleExecutionHook() {
                 @Override
-                public <T, R> Operator<? extends R, ? super T> onLift(Operator<? extends R, ? super T> lift) {
+                public <T, R> Observable.Operator<? extends R, ? super T> onLift(Observable.Operator<? extends R, ? super T> lift) {
                     return onObservableLift.call(lift);
                 }
             });
             
             RxJavaPlugins.getInstance().registerCompletableExecutionHook(new RxJavaCompletableExecutionHook() {
                 @Override
-                public CompletableOperator onLift(CompletableOperator lift) {
+                public Completable.Operator onLift(Completable.Operator lift) {
                     return onCompletableLift.call(lift);
                 }
             });

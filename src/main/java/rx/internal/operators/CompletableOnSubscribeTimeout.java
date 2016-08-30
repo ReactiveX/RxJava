@@ -20,12 +20,12 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.*;
-import rx.Completable.*;
+import rx.Completable.OnSubscribe;
 import rx.functions.Action0;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
-public final class CompletableOnSubscribeTimeout implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeTimeout implements OnSubscribe {
     
     final Completable source;
     final long timeout;

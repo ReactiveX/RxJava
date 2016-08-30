@@ -20,11 +20,11 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
-import rx.Completable.*;
+import rx.Completable.OnSubscribe;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
-public final class CompletableOnSubscribeMergeIterable implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeMergeIterable implements OnSubscribe {
     final Iterable<? extends Completable> sources;
     
     public CompletableOnSubscribeMergeIterable(Iterable<? extends Completable> sources) {

@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
 
-import rx.Completable.CompletableSubscriber;
+import rx.CompletableSubscriber;
 import rx.exceptions.*;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;

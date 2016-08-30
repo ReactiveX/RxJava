@@ -19,13 +19,13 @@ package rx.internal.operators;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
-import rx.Completable.*;
+import rx.Completable.OnSubscribe;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 
-public final class CompletableOnSubscribeConcat implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeConcat implements OnSubscribe {
     final Observable<Completable> sources;
     final int prefetch;
     

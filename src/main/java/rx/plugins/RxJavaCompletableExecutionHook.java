@@ -40,18 +40,18 @@ import rx.functions.Func1;
 @Experimental
 public abstract class RxJavaCompletableExecutionHook { // NOPMD 
     /**
-     * Invoked during the construction by {@link Completable#create(Completable.CompletableOnSubscribe)}
+     * Invoked during the construction by {@link Completable#create(Completable.OnSubscribe)}
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
      * logging, metrics and other such things and pass through the function.
      *
      * @param f
-     *            original {@link rx.Completable.CompletableOnSubscribe}<{@code T}> to be executed
-     * @return {@link rx.Completable.CompletableOnSubscribe} function that can be modified, decorated, replaced or just
+     *            original {@link Completable.OnSubscribe}<{@code T}> to be executed
+     * @return {@link Completable.OnSubscribe} function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
     @Deprecated
-    public Completable.CompletableOnSubscribe onCreate(Completable.CompletableOnSubscribe f) {
+    public Completable.OnSubscribe onCreate(Completable.OnSubscribe f) {
         return f;
     }
 
@@ -63,12 +63,12 @@ public abstract class RxJavaCompletableExecutionHook { // NOPMD
      *
      * @param completableInstance the target completable instance
      * @param onSubscribe
-     *            original {@link rx.Completable.CompletableOnSubscribe}<{@code T}> to be executed
-     * @return {@link rx.Completable.CompletableOnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
+     *            original {@link Completable.OnSubscribe}<{@code T}> to be executed
+     * @return {@link Completable.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
     @Deprecated
-    public Completable.CompletableOnSubscribe onSubscribeStart(Completable completableInstance, final Completable.CompletableOnSubscribe onSubscribe) {
+    public Completable.OnSubscribe onSubscribeStart(Completable completableInstance, final Completable.OnSubscribe onSubscribe) {
         // pass through by default
         return onSubscribe;
     }
@@ -93,16 +93,16 @@ public abstract class RxJavaCompletableExecutionHook { // NOPMD
      * Invoked just as the operator functions is called to bind two operations together into a new
      * {@link Completable} and the return value is used as the lifted function
      * <p>
-     * This can be used to decorate or replace the {@link rx.Completable.CompletableOperator} instance or just perform extra
+     * This can be used to decorate or replace the {@link Completable.Operator} instance or just perform extra
      * logging, metrics and other such things and pass through the onSubscribe.
      *
      * @param lift
-     *            original {@link rx.Completable.CompletableOperator}{@code <R, T>}
-     * @return {@link rx.Completable.CompletableOperator}{@code <R, T>} function that can be modified, decorated, replaced or just
+     *            original {@link Completable.Operator}{@code <R, T>}
+     * @return {@link Completable.Operator}{@code <R, T>} function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
     @Deprecated
-    public Completable.CompletableOperator onLift(final Completable.CompletableOperator lift) {
+    public Completable.Operator onLift(final Completable.Operator lift) {
         return lift;
     }
 }

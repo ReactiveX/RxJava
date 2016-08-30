@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 
 import rx.Completable.*;
-import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
@@ -98,7 +97,7 @@ public class CompletableTest {
         /** */
         private static final long serialVersionUID = 7192337844700923752L;
         
-        public final Completable completable = Completable.create(new CompletableOnSubscribe() {
+        public final Completable completable = Completable.create(new OnSubscribe() {
             @Override
             public void call(CompletableSubscriber s) {
                 getAndIncrement();
@@ -124,7 +123,7 @@ public class CompletableTest {
         /** */
         private static final long serialVersionUID = 7192337844700923752L;
         
-        public final Completable completable = Completable.create(new CompletableOnSubscribe() {
+        public final Completable completable = Completable.create(new OnSubscribe() {
             @Override
             public void call(CompletableSubscriber s) {
                 getAndIncrement();
@@ -386,13 +385,13 @@ public class CompletableTest {
         TestSubscriber<String> ts = new TestSubscriber<String>(0);
         final AtomicBoolean hasRun = new AtomicBoolean(false);
         final Exception e = new Exception();
-        Completable.create(new CompletableOnSubscribe() {
+        Completable.create(new OnSubscribe() {
                 @Override
                 public void call(CompletableSubscriber cs) {
                     cs.onError(e);
                 }
             })
-            .andThen(Observable.<String>create(new OnSubscribe<String>() {
+            .andThen(Observable.<String>create(new Observable.OnSubscribe<String>() {
                 @Override
                 public void call(Subscriber<? super String> s) {
                     hasRun.set(true);
@@ -477,12 +476,12 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void createNull() {
-        Completable.create(null);
+        Completable.create((Completable.OnSubscribe)null);
     }
     
     @Test(timeout = 5000, expected = NullPointerException.class)
     public void createOnSubscribeThrowsNPE() {
-        Completable c = Completable.create(new CompletableOnSubscribe() {
+        Completable c = Completable.create(new OnSubscribe() {
             @Override
             public void call(CompletableSubscriber s) { throw new NullPointerException(); }
         });
@@ -493,7 +492,7 @@ public class CompletableTest {
     @Test(timeout = 5000)
     public void createOnSubscribeThrowsRuntimeException() {
         try {
-            Completable c = Completable.create(new CompletableOnSubscribe() {
+            Completable c = Completable.create(new OnSubscribe() {
                 @Override
                 public void call(CompletableSubscriber s) {
                     throw new TestException();
@@ -1578,7 +1577,7 @@ public class CompletableTest {
     
     @Test(timeout = 5000)
     public void composeNormal() {
-        Completable c = error.completable.compose(new CompletableTransformer() {
+        Completable c = error.completable.compose(new Transformer() {
             @Override
             public Completable call(Completable n) {
                 return n.onErrorComplete();
@@ -2095,12 +2094,12 @@ public class CompletableTest {
     
     @Test(expected = NullPointerException.class)
     public void liftNull() {
-        normal.completable.lift(null);
+        normal.completable.lift((Completable.Operator)null);
     }
     
     @Test(timeout = 5000, expected = NullPointerException.class)
     public void liftReturnsNull() {
-        Completable c = normal.completable.lift(new CompletableOperator() {
+        Completable c = normal.completable.lift(new Operator() {
             @Override
             public CompletableSubscriber call(CompletableSubscriber v) {
                 return null;
@@ -2110,7 +2109,7 @@ public class CompletableTest {
         c.await();
     }
 
-    final static class CompletableOperatorSwap implements CompletableOperator {
+    final static class CompletableOperatorSwap implements Operator {
         @Override
         public CompletableSubscriber call(final CompletableSubscriber v) {
             return new CompletableSubscriber() {
@@ -2720,7 +2719,7 @@ public class CompletableTest {
     public void subscribeOnNormal() {
         final AtomicReference<String> name = new  AtomicReference<String>();
         
-        Completable c = Completable.create(new CompletableOnSubscribe() {
+        Completable c = Completable.create(new OnSubscribe() {
             @Override
             public void call(CompletableSubscriber s) { 
                 name.set(Thread.currentThread().getName());
@@ -2738,7 +2737,7 @@ public class CompletableTest {
     public void subscribeOnError() {
         final AtomicReference<String> name = new  AtomicReference<String>();
         
-        Completable c = Completable.create(new CompletableOnSubscribe() {
+        Completable c = Completable.create(new OnSubscribe() {
             @Override
             public void call(CompletableSubscriber s) { 
                 name.set(Thread.currentThread().getName());
@@ -4036,24 +4035,24 @@ public class CompletableTest {
         }
     }
 
-    private Func1<CompletableOnSubscribe, CompletableOnSubscribe> onCreate;
+    private Func1<OnSubscribe, OnSubscribe> onCreate;
     
-    private Func2<Completable, CompletableOnSubscribe, CompletableOnSubscribe> onStart;
+    private Func2<Completable, OnSubscribe, OnSubscribe> onStart;
 
     @Before
     public void setUp() throws Exception {
-        onCreate = spy(new Func1<CompletableOnSubscribe, CompletableOnSubscribe>() {
+        onCreate = spy(new Func1<OnSubscribe, OnSubscribe>() {
             @Override
-            public CompletableOnSubscribe call(CompletableOnSubscribe t) {
+            public OnSubscribe call(OnSubscribe t) {
                 return t;
             }
         });
         
         RxJavaHooks.setOnCompletableCreate(onCreate);
         
-        onStart = spy(new Func2<Completable, CompletableOnSubscribe, CompletableOnSubscribe>() {
+        onStart = spy(new Func2<Completable, OnSubscribe, OnSubscribe>() {
             @Override
-            public CompletableOnSubscribe call(Completable t1, CompletableOnSubscribe t2) {
+            public OnSubscribe call(Completable t1, OnSubscribe t2) {
                 return t2;
             }
         });
@@ -4068,7 +4067,7 @@ public class CompletableTest {
 
     @Test
     public void testHookCreate() {
-        CompletableOnSubscribe subscriber = mock(CompletableOnSubscribe.class);
+        OnSubscribe subscriber = mock(OnSubscribe.class);
         Completable.create(subscriber);
 
         verify(onCreate, times(1)).call(subscriber);
@@ -4078,27 +4077,27 @@ public class CompletableTest {
     public void testHookSubscribeStart() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
-        Completable completable = Completable.create(new CompletableOnSubscribe() {
+        Completable completable = Completable.create(new OnSubscribe() {
             @Override public void call(CompletableSubscriber s) {
                 s.onCompleted();
             }
         });
         completable.subscribe(ts);
 
-        verify(onStart, times(1)).call(eq(completable), any(Completable.CompletableOnSubscribe.class));
+        verify(onStart, times(1)).call(eq(completable), any(OnSubscribe.class));
     }
 
     @Test
     public void testHookUnsafeSubscribeStart() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Completable completable = Completable.create(new CompletableOnSubscribe() {
+        Completable completable = Completable.create(new OnSubscribe() {
             @Override public void call(CompletableSubscriber s) {
                 s.onCompleted();
             }
         });
         completable.unsafeSubscribe(ts);
 
-        verify(onStart, times(1)).call(eq(completable), any(Completable.CompletableOnSubscribe.class));
+        verify(onStart, times(1)).call(eq(completable), any(OnSubscribe.class));
     }
 
     @Test

@@ -20,11 +20,11 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
-import rx.Completable.*;
+import rx.Completable.OnSubscribe;
 import rx.internal.util.unsafe.MpscLinkedQueue;
 import rx.subscriptions.CompositeSubscription;
 
-public final class CompletableOnSubscribeMergeDelayErrorIterable implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeMergeDelayErrorIterable implements OnSubscribe {
     final Iterable<? extends Completable> sources;
     
     public CompletableOnSubscribeMergeDelayErrorIterable(Iterable<? extends Completable> sources) {

@@ -20,9 +20,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Completable;
-import rx.Completable.CompletableOnSubscribe;
-import rx.Completable.CompletableSubscriber;
-import rx.Scheduler.Worker;
+import rx.Completable.OnSubscribe;
+import rx.CompletableSubscriber;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -143,7 +142,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
 		Observable<Completable> actions = actionSubject.map(new Func1<ScheduledAction, Completable>() {
 			@Override
 			public Completable call(final ScheduledAction action) {
-				return Completable.create(new CompletableOnSubscribe() {
+				return Completable.create(new OnSubscribe() {
 					@Override
 					public void call(CompletableSubscriber actionCompletable) {
 						actionCompletable.onSubscribe(action);

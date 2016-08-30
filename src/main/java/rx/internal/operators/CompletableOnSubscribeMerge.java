@@ -21,13 +21,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
-import rx.Completable.*;
+import rx.Completable.OnSubscribe;
 import rx.Observable;
 import rx.exceptions.CompositeException;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
-public final class CompletableOnSubscribeMerge implements CompletableOnSubscribe {
+public final class CompletableOnSubscribeMerge implements OnSubscribe {
     final Observable<Completable> source;
     final int maxConcurrency;
     final boolean delayErrors;

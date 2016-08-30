@@ -17,7 +17,7 @@ package rx.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Completable.CompletableSubscriber;
+import rx.CompletableSubscriber;
 import rx.Subscription;
 import rx.annotations.Experimental;
 import rx.plugins.RxJavaHooks;
