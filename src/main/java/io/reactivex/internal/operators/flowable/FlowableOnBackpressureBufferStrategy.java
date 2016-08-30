@@ -103,6 +103,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                 return;
             }
             boolean callOnOverflow = false;
+            boolean callError = false;
             Deque<T> dq = deque;
             synchronized (dq) {
                if (dq.size() == bufferSize) {
@@ -119,12 +120,11 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                        break;
                    default:
                        // signal error
+                       callError = true;
                        break;
                    }
                } else {
                    dq.offer(t);
-                   drain();
-                   return;
                }
             }
 
@@ -138,9 +138,11 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                         onError(ex);
                     }
                 }
-            } else {
+            } else if(callError) {
                 s.cancel();
                 onError(new MissingBackpressureException());
+            } else {
+                drain();
             }
         }
         
