@@ -28,6 +28,7 @@ import rx.annotations.Experimental;
  * other methods are threadsafe.
  *
  * @param <T> the value type to emit
+ * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
  */
 @Experimental
 public interface AsyncEmitter<T> extends Observer<T> {
@@ -69,14 +70,28 @@ public interface AsyncEmitter<T> extends Observer<T> {
      * Options to handle backpressure in the emitter.
      */
     enum BackpressureMode {
+        /**
+         * No backpressure is applied an the onNext calls pass through the AsyncEmitter;
+         * note that this may cause {@link rx.exceptions.MissingBackpressureException} or {@link IllegalStateException}
+         * somewhere downstream.
+         */
         NONE,
-        
+        /**
+         * Signals a {@link rx.exceptions.MissingBackpressureException} if the downstream can't keep up.
+         */
         ERROR,
-        
+        /**
+         * Buffers (unbounded) all onNext calls until the dowsntream can consume them.
+         */
         BUFFER,
-        
+        /**
+         * Drops the incoming onNext value if the downstream can't keep up.
+         */
         DROP,
-        
+        /**
+         * Keeps the latest onNext value and overwrites it with newer ones until the downstream
+         * can consume it.
+         */
         LATEST
     }
 }

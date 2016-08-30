@@ -1107,6 +1107,7 @@ public class ObservableTests {
         .forEach(null);
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     public void testExtend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();

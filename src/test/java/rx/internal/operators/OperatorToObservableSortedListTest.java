@@ -259,7 +259,7 @@ public class OperatorToObservableSortedListTest {
         testSubscriber.assertNotCompleted();
     }
 
-    private final static class NonComparable{
+    final static class NonComparable{
         public int i;
         public String s;
 

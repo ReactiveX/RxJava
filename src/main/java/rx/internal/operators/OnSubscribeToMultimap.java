@@ -49,6 +49,7 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
     /**
      * ToMultimap with key selector, custom value selector,
      * default HashMap factory and default ArrayList collection factory.
+     * @param source the source Observable instance
      * @param keySelector the function extracting the map-key from the main value
      * @param valueSelector the function extracting the map-value from the main value
      */
@@ -64,7 +65,7 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
     /**
      * ToMultimap with key selector, custom value selector,
      * custom Map factory and default ArrayList collection factory.
-     * @param the observable source
+     * @param source the source Observable instance
      * @param keySelector the function extracting the map-key from the main value
      * @param valueSelector the function extracting the map-value from the main value
      * @param mapFactory function that returns a Map instance to store keys and values into

@@ -457,6 +457,9 @@ public class Completable {
     }
 
     /**
+     * Constructs a Completable instance by wrapping the given old onSubscribe callback.
+     * @param onSubscribe the old CompletableOnSubscribe instance to wrap
+     * @return a Completable instance
      * @deprecated Use {@link #create(OnSubscribe)}.
      */
     @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
@@ -618,6 +621,44 @@ public class Completable {
                 }
             }
         });
+    }
+    
+    /**
+     * Provides an API (in a cold Completable) that bridges the Completable-reactive world
+     * with the callback-based world.
+     * <p>The {@link CompletableEmitter} allows registering a callback for
+     * cancellation/unsubscription of a resource.
+     * <p>
+     * Example:
+     * <pre><code>
+     * Completable.fromEmitter(emitter -&gt; {
+     *     Callback listener = new Callback() {
+     *         &#64;Override
+     *         public void onEvent(Event e) {
+     *             emitter.onCompleted();
+     *         }
+     *         
+     *         &#64;Override
+     *         public void onFailure(Exception e) {
+     *             emitter.onError(e);
+     *         }
+     *     };
+     *     
+     *     AutoCloseable c = api.someMethod(listener);
+     *     
+     *     emitter.setCancellation(c::close);
+     *     
+     * });
+     * </code></pre>
+     * <p>All of the CompletableEmitter's methods are thread-safe and ensure the 
+     * Completable's protocol are held.
+     * @param producer the callback invoked for each incoming CompletableSubscriber
+     * @return the new Completable instance
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public static Completable fromEmitter(Action1<CompletableEmitter> producer) {
+        return create(new CompletableFromEmitter(producer));
     }
     
     /**
@@ -1091,11 +1132,16 @@ public class Completable {
      * not null (not verified)
      * @param useHook if false, RxJavaHooks.onCreate won't be called
      */
-    private Completable(OnSubscribe onSubscribe, boolean useHook) {
+    protected Completable(OnSubscribe onSubscribe, boolean useHook) {
         this.onSubscribe = useHook ? RxJavaHooks.onCreate(onSubscribe) : onSubscribe;
     }
 
     /**
+     * Constructs a Completable instance with the given onSubscribe callback without calling the onCreate
+     * hook.
+     * @param onSubscribe the callback that will receive CompletableSubscribers when they subscribe,
+     * not null (not verified)
+     * @param useHook if false, RxJavaHooks.onCreate won't be called
      * @deprecated Use {@link #Completable(OnSubscribe, boolean)}.
      */
     @Deprecated // TODO Remove constructor after 1.2.0 release. It was never a stable API. Provided only for migration.
@@ -1661,6 +1707,10 @@ public class Completable {
     }
 
     /**
+     * Lifts a CompletableSubscriber transformation into the chain of Completables.
+     * @param onLift the lifting function that transforms the child subscriber with a parent subscriber.
+     * @return the new Completable instance
+     * @throws NullPointerException if onLift is null
      * @deprecated Use {@link #lift(Operator)}.
      */
     @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
@@ -2132,6 +2182,9 @@ public class Completable {
     }
 
     /**
+     * Subscribes the given CompletableSubscriber to this Completable instance.
+     * @param s the CompletableSubscriber, not null
+     * @throws NullPointerException if s is null
      * @deprecated Use {@link #unsafeSubscribe(rx.CompletableSubscriber)}.
      */
     @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.

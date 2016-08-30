@@ -47,6 +47,7 @@ public final class OnSubscribeToMap<T, K, V> implements OnSubscribe<Map<K, V>>, 
 
     /**
      * ToMap with key selector, value selector and default HashMap factory.
+     * @param source the source Observable instance
      * @param keySelector the function extracting the map-key from the main value
      * @param valueSelector the function extracting the map-value from the main value
      */
@@ -59,6 +60,7 @@ public final class OnSubscribeToMap<T, K, V> implements OnSubscribe<Map<K, V>>, 
 
     /**
      * ToMap with key selector, value selector and custom Map factory.
+     * @param source the source Observable instance
      * @param keySelector the function extracting the map-key from the main value
      * @param valueSelector the function extracting the map-value from the main value
      * @param mapFactory function that returns a Map instance to store keys and values into
