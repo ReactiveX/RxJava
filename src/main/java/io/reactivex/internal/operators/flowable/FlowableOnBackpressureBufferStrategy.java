@@ -108,12 +108,12 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                if (dq.size() == bufferSize) {
                    switch (strategy) {
                    case DROP_LATEST:
-                       dq.poll();
+                       dq.pollLast();
                        dq.offer(t);
                        callOnOverflow = true;
                        break;
                    case DROP_OLDEST:
-                       dq.pollLast();
+                       dq.poll();
                        dq.offer(t);
                        callOnOverflow = true;
                        break;
@@ -123,6 +123,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                    }
                } else {
                    dq.offer(t);
+                   drain();
                    return;
                }
             }
