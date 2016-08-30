@@ -2007,7 +2007,7 @@ public class Observable<T> {
      *     
      *     AutoCloseable c = api.someMethod(listener);
      *     
-     *     emitter.setCancellable(c::close);
+     *     emitter.setCancellation(c::close);
      *     
      * }, BackpressureMode.BUFFER);
      * </code></pre>
@@ -2022,10 +2022,58 @@ public class Observable<T> {
      * @see AsyncEmitter
      * @see AsyncEmitter.BackpressureMode
      * @see AsyncEmitter.Cancellable
+     * @deprecated renamed, use {@link #fromEmitter(Action1, rx.AsyncEmitter.BackpressureMode)} instead
      */
     @Experimental
+    @Deprecated // will be removed in 1.2.0
     public static <T> Observable<T> fromAsync(Action1<AsyncEmitter<T>> asyncEmitter, AsyncEmitter.BackpressureMode backpressure) {
-        return create(new OnSubscribeFromAsync<T>(asyncEmitter, backpressure));
+        return fromEmitter(asyncEmitter, backpressure);
+    }
+    
+    /**
+     * Provides an API (via a cold Observable) that bridges the reactive world with the callback-style,
+     * generally non-backpressured world.
+     * <p>
+     * Example:
+     * <pre><code>
+     * Observable.&lt;Event&gt;fromEmitter(emitter -&gt; {
+     *     Callback listener = new Callback() {
+     *         &#64;Override
+     *         public void onEvent(Event e) {
+     *             emitter.onNext(e);
+     *             if (e.isLast()) {
+     *                 emitter.onCompleted();
+     *             }
+     *         }
+     *         
+     *         &#64;Override
+     *         public void onFailure(Exception e) {
+     *             emitter.onError(e);
+     *         }
+     *     };
+     *     
+     *     AutoCloseable c = api.someMethod(listener);
+     *     
+     *     emitter.setCancellation(c::close);
+     *     
+     * }, BackpressureMode.BUFFER);
+     * </code></pre>
+     * <p>
+     * You should call the AsyncEmitter's onNext, onError and onCompleted methods in a serialized fashion. The
+     * rest of its methods are threadsafe.
+     * 
+     * @param <T> the element type
+     * @param emitter the emitter that is called when a Subscriber subscribes to the returned {@code Observable}
+     * @param backpressure the backpressure mode to apply if the downstream Subscriber doesn't request (fast) enough
+     * @return the new Observable instance
+     * @see AsyncEmitter
+     * @see AsyncEmitter.BackpressureMode
+     * @see AsyncEmitter.Cancellable
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public static <T> Observable<T> fromEmitter(Action1<AsyncEmitter<T>> emitter, AsyncEmitter.BackpressureMode backpressure) {
+        return create(new OnSubscribeFromEmitter<T>(emitter, backpressure));
     }
     
     /**

@@ -36,6 +36,7 @@ import rx.internal.operators.OnSubscribeMap;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
+@SuppressWarnings("deprecation")
 public class ObservableConversionTest {
     
     public static class Cylon {}

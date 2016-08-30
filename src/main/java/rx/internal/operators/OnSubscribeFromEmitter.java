@@ -28,13 +28,13 @@ import rx.internal.util.unsafe.*;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 
-public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
+public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
 
     final Action1<AsyncEmitter<T>> asyncEmitter;
     
     final AsyncEmitter.BackpressureMode backpressure;
     
-    public OnSubscribeFromAsync(Action1<AsyncEmitter<T>> asyncEmitter, AsyncEmitter.BackpressureMode backpressure) {
+    public OnSubscribeFromEmitter(Action1<AsyncEmitter<T>> asyncEmitter, AsyncEmitter.BackpressureMode backpressure) {
         this.asyncEmitter = asyncEmitter;
         this.backpressure = backpressure;
     }
@@ -72,6 +72,9 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
         
     }
     
+    /**
+     * A Subscription that wraps an AsyncEmitter.Cancellable instance.
+     */
     static final class CancellableSubscription 
     extends AtomicReference<AsyncEmitter.Cancellable>
     implements Subscription {
@@ -299,7 +302,7 @@ public final class OnSubscribeFromAsync<T> implements OnSubscribe<T> {
 
         @Override
         void onOverflow() {
-            onError(new MissingBackpressureException("fromAsync: could not emit value due to lack of requests"));
+            onError(new MissingBackpressureException("fromEmitter: could not emit value due to lack of requests"));
         }
         
     }

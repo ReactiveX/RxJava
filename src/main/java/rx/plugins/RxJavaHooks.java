@@ -421,7 +421,7 @@ public final class RxJavaHooks {
      * @return the original or alternative action that will be subscribed to
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Observable.OnSubscribe onObservableStart(Observable<T> instance, Observable.OnSubscribe onSubscribe) {
+    public static <T> Observable.OnSubscribe<T> onObservableStart(Observable<T> instance, Observable.OnSubscribe<T> onSubscribe) {
         Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe> f = onObservableStart;
         if (f != null) {
             return f.call(instance, onSubscribe);
@@ -479,7 +479,7 @@ public final class RxJavaHooks {
      * @return the original or alternative action that will be subscribed to
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Observable.OnSubscribe onSingleStart(Single<T> instance, Observable.OnSubscribe onSubscribe) {
+    public static <T> Observable.OnSubscribe<T> onSingleStart(Single<T> instance, Observable.OnSubscribe<T> onSubscribe) {
         Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> f = onSingleStart;
         if (f != null) {
             return f.call(instance, onSubscribe);

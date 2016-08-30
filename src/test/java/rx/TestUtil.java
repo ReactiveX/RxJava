@@ -16,7 +16,16 @@
 
 package rx;
 
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
+import rx.Scheduler.Worker;
+import rx.exceptions.Exceptions;
+import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 
 /**
  * Common test utility methods.
@@ -35,5 +44,73 @@ public enum TestUtil {
             .expectedTypeOfException(IllegalStateException.class)
             .expectedExceptionMessage("No instances!")
             .check();
+    }
+    
+    /**
+     * Runs two actions concurrently, one in the current thread and the other on
+     * the IO scheduler, synchronizing their execution as much as possible; rethrowing
+     * any exceptions they produce.
+     * <p>This helper waits until both actions have run or times out in 5 seconds.
+     * @param r1 the first action
+     * @param r2 the second action
+     */
+    public static void race(Action0 r1, final Action0 r2) {
+        final AtomicInteger counter = new AtomicInteger(2);
+        final Throwable[] errors = { null, null };
+        final CountDownLatch cdl = new CountDownLatch(1);
+        
+        Worker w = Schedulers.io().createWorker();
+        
+        try {
+            
+            w.schedule(new Action0() {
+                @Override
+                public void call() {
+                    if (counter.decrementAndGet() != 0) {
+                        while (counter.get() != 0);
+                    }
+                    
+                    try {
+                        r2.call();
+                    } catch (Throwable ex) {
+                        errors[1] = ex;
+                    }
+                    
+                    cdl.countDown();
+                }
+            });
+
+            if (counter.decrementAndGet() != 0) {
+                while (counter.get() != 0);
+            }
+            
+            try {
+                r1.call();
+            } catch (Throwable ex) {
+                errors[0] = ex;
+            }
+            
+            List<Throwable> errorList = new ArrayList<Throwable>();
+            
+            try {
+                if (!cdl.await(5, TimeUnit.SECONDS)) {
+                    errorList.add(new TimeoutException());
+                }
+            } catch (InterruptedException ex) {
+                errorList.add(ex);
+            }
+            
+            if (errors[0] != null) {
+                errorList.add(errors[0]);
+            }
+
+            if (errors[1] != null) {
+                errorList.add(errors[1]);
+            }
+
+            Exceptions.throwIfAny(errorList);
+        } finally {
+            w.unsubscribe();
+        }
     }
 }

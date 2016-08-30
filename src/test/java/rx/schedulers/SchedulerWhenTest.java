@@ -195,7 +195,8 @@ public class SchedulerWhenTest {
 					}
 				});
 				return Completable.concat(workers.map(new Func1<Completable, Completable>() {
-					public Completable call(Completable worker) {
+					@Override
+				    public Completable call(Completable worker) {
 						return worker.delay(1, SECONDS, tSched);
 					}
 				}));

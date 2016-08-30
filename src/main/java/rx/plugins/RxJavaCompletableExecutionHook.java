@@ -46,8 +46,8 @@ public abstract class RxJavaCompletableExecutionHook { // NOPMD
      * logging, metrics and other such things and pass through the function.
      *
      * @param f
-     *            original {@link Completable.OnSubscribe}<{@code T}> to be executed
-     * @return {@link Completable.OnSubscribe} function that can be modified, decorated, replaced or just
+     *            original {@link rx.Completable.OnSubscribe}<{@code T}> to be executed
+     * @return {@link rx.Completable.OnSubscribe} function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
     @Deprecated
@@ -63,8 +63,8 @@ public abstract class RxJavaCompletableExecutionHook { // NOPMD
      *
      * @param completableInstance the target completable instance
      * @param onSubscribe
-     *            original {@link Completable.OnSubscribe}<{@code T}> to be executed
-     * @return {@link Completable.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
+     *            original {@link rx.Completable.OnSubscribe}<{@code T}> to be executed
+     * @return {@link rx.Completable.OnSubscribe}<{@code T}> function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
     @Deprecated
@@ -93,12 +93,12 @@ public abstract class RxJavaCompletableExecutionHook { // NOPMD
      * Invoked just as the operator functions is called to bind two operations together into a new
      * {@link Completable} and the return value is used as the lifted function
      * <p>
-     * This can be used to decorate or replace the {@link Completable.Operator} instance or just perform extra
+     * This can be used to decorate or replace the {@link rx.Completable.Operator} instance or just perform extra
      * logging, metrics and other such things and pass through the onSubscribe.
      *
      * @param lift
-     *            original {@link Completable.Operator}{@code <R, T>}
-     * @return {@link Completable.Operator}{@code <R, T>} function that can be modified, decorated, replaced or just
+     *            original {@link rx.Completable.Operator}{@code <R, T>}
+     * @return {@link rx.Completable.Operator}{@code <R, T>} function that can be modified, decorated, replaced or just
      *         returned as a pass through
      */
     @Deprecated

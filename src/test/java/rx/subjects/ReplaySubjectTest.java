@@ -1140,5 +1140,39 @@ public class ReplaySubjectTest {
         backpressureOffline(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 10, Schedulers.immediate()));
         backpressureOffline(ReplaySubject.<Integer>createWithTimeAndSize(1, TimeUnit.DAYS, 100, Schedulers.immediate()));
     }
+    
+    @Test
+    public void filtered() {
+        ReplaySubject<Integer> subject = ReplaySubject.create();
+        
+        TestSubscriber<Integer> ts1 = TestSubscriber.create();
+        TestSubscriber<Integer> ts2 = TestSubscriber.create();
+        
+        Observable<Integer> o = subject.filter(new Func1<Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer v) {
+                return v > 0;
+            }
+        });
+        
+        o.subscribe(ts1);
+        o.subscribe(ts2);
+        
+        subject.onNext(1);
+        subject.onNext(2);
+        subject.onNext(0);
+        subject.onNext(3);
+        subject.onNext(0);
+        subject.onNext(6);
+        
+        ts1.assertValues(1, 2, 3, 6);
+        ts2.assertValues(1, 2, 3, 6);
+        
+        subject.onNext(0);
+        subject.onNext(7);
+        
+        ts1.assertValues(1, 2, 3, 6, 7);
+        ts2.assertValues(1, 2, 3, 6, 7);
+    }
 
 }
