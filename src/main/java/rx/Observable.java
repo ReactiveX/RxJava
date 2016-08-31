@@ -12040,8 +12040,8 @@ public class Observable<T> {
     @Experimental
     public final <T1, T2, T3, T4, T5, R> Observable<R> withLatestFrom(
             Observable<T1> o1, Observable<T2> o2, 
-            Observable<T1> o3, Observable<T2> o4, 
-            Observable<T1> o5, 
+            Observable<T3> o3, Observable<T4> o4,
+            Observable<T5> o5,
             Func6<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, R> combiner) {
         return create(new OperatorWithLatestFromMany<T, R>(this, 
                 new Observable<?>[] { o1, o2, o3, o4, o5 }, null, Functions.fromFunc(combiner)));
@@ -12085,8 +12085,8 @@ public class Observable<T> {
     @Experimental
     public final <T1, T2, T3, T4, T5, T6, R> Observable<R> withLatestFrom(
             Observable<T1> o1, Observable<T2> o2, 
-            Observable<T1> o3, Observable<T2> o4, 
-            Observable<T1> o5, Observable<T2> o6, 
+            Observable<T3> o3, Observable<T4> o4,
+            Observable<T5> o5, Observable<T6> o6,
             Func7<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, R> combiner) {
         return create(new OperatorWithLatestFromMany<T, R>(this, 
                 new Observable<?>[] { o1, o2, o3, o4, o5, o6 }, null, Functions.fromFunc(combiner)));
@@ -12132,9 +12132,9 @@ public class Observable<T> {
     @Experimental
     public final <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> withLatestFrom(
             Observable<T1> o1, Observable<T2> o2, 
-            Observable<T1> o3, Observable<T2> o4, 
-            Observable<T1> o5, Observable<T2> o6, 
-            Observable<T1> o7,
+            Observable<T3> o3, Observable<T4> o4,
+            Observable<T5> o5, Observable<T6> o6,
+            Observable<T7> o7,
             Func8<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, R> combiner) {
         return create(new OperatorWithLatestFromMany<T, R>(this, 
                 new Observable<?>[] { o1, o2, o3, o4, o5, o6, o7 }, null, Functions.fromFunc(combiner)));
@@ -12182,9 +12182,9 @@ public class Observable<T> {
     @Experimental
     public final <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> withLatestFrom(
             Observable<T1> o1, Observable<T2> o2, 
-            Observable<T1> o3, Observable<T2> o4, 
-            Observable<T1> o5, Observable<T2> o6, 
-            Observable<T1> o7, Observable<T2> o8, 
+            Observable<T3> o3, Observable<T4> o4,
+            Observable<T5> o5, Observable<T6> o6,
+            Observable<T7> o7, Observable<T8> o8,
             Func9<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, R> combiner) {
         return create(new OperatorWithLatestFromMany<T, R>(this, 
                 new Observable<?>[] { o1, o2, o3, o4, o5, o6, o7, o8 }, null, Functions.fromFunc(combiner)));
