@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 
 public final class SingleSubscribeOn<T> extends Single<T> {
     final SingleSource<? extends T> source;
@@ -42,7 +42,7 @@ public final class SingleSubscribeOn<T> extends Single<T> {
             }
         });
         
-        DisposableHelper.replace(parent, f);
+        parent.task.replace(f);
     
     }
     
@@ -54,8 +54,11 @@ public final class SingleSubscribeOn<T> extends Single<T> {
 
         final SingleObserver<? super T> actual;
         
+        final SequentialDisposable task;
+        
         public SubscribeOnObserver(SingleObserver<? super T> actual) {
             this.actual = actual;
+            this.task = new SequentialDisposable();
         }
         
         @Override
@@ -76,6 +79,7 @@ public final class SingleSubscribeOn<T> extends Single<T> {
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);
+            task.dispose();
         }
         
         @Override

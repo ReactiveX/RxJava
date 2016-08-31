@@ -64,7 +64,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
             } else {
                 f = executor.schedule(decoratedRun, delayTime, unit);
             }
-            return Disposables.from(f);
+            return Disposables.fromFuture(f);
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
@@ -84,7 +84,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
             Future<?> f = executor.scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
-            return Disposables.from(f);
+            return Disposables.fromFuture(f);
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;

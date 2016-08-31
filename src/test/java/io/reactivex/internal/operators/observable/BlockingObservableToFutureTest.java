@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.reactivex.internal.operators.flowable;
+package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
@@ -21,13 +21,14 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.junit.*;
-import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.subscriptions.BooleanSubscription;
 
-public class BlockingFlowableToFutureTest {
+public class BlockingObservableToFutureTest {
     @Ignore("No separate file")
     @Test
     public void constructorShouldBePrivate() {
@@ -36,14 +37,14 @@ public class BlockingFlowableToFutureTest {
 
     @Test
     public void testToFuture() throws InterruptedException, ExecutionException {
-        Flowable<String> obs = Flowable.just("one");
+        Observable<String> obs = Observable.just("one");
         Future<String> f = obs.toFuture();
         assertEquals("one", f.get());
     }
 
     @Test
     public void testToFutureList() throws InterruptedException, ExecutionException {
-        Flowable<String> obs = Flowable.just("one", "two", "three");
+        Observable<String> obs = Observable.just("one", "two", "three");
         Future<List<String>> f = obs.toList().toFuture();
         assertEquals("one", f.get().get(0));
         assertEquals("two", f.get().get(1));
@@ -52,7 +53,7 @@ public class BlockingFlowableToFutureTest {
 
     @Test(/* timeout = 5000, */expected = IndexOutOfBoundsException.class)
     public void testExceptionWithMoreThanOneElement() throws Throwable {
-        Flowable<String> obs = Flowable.just("one", "two");
+        Observable<String> obs = Observable.just("one", "two");
         Future<String> f = obs.toFuture();
         try {
             // we expect an exception since there are more than 1 element
@@ -66,11 +67,11 @@ public class BlockingFlowableToFutureTest {
 
     @Test
     public void testToFutureWithException() {
-        Flowable<String> obs = Flowable.unsafeCreate(new Publisher<String>() {
+        Observable<String> obs = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
                 observer.onNext("one");
                 observer.onError(new TestException());
             }
@@ -87,7 +88,7 @@ public class BlockingFlowableToFutureTest {
 
     @Test(expected=CancellationException.class)
     public void testGetAfterCancel() throws Exception {
-        Flowable<String> obs = Flowable.never();
+        Observable<String> obs = Observable.never();
         Future<String> f = obs.toFuture();
         boolean cancelled = f.cancel(true);
         assertTrue(cancelled);  // because OperationNeverComplete never does
@@ -96,7 +97,7 @@ public class BlockingFlowableToFutureTest {
 
     @Test(expected=CancellationException.class)
     public void testGetWithTimeoutAfterCancel() throws Exception {
-        Flowable<String> obs = Flowable.never();
+        Observable<String> obs = Observable.never();
         Future<String> f = obs.toFuture();
         boolean cancelled = f.cancel(true);
         assertTrue(cancelled);  // because OperationNeverComplete never does
@@ -105,7 +106,7 @@ public class BlockingFlowableToFutureTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testGetWithEmptyFlowable() throws Throwable {
-        Flowable<String> obs = Flowable.empty();
+        Observable<String> obs = Observable.empty();
         Future<String> f = obs.toFuture();
         try {
             f.get();
@@ -118,7 +119,7 @@ public class BlockingFlowableToFutureTest {
     @Ignore("null value is not allowed")
     @Test
     public void testGetWithASingleNullItem() throws Exception {
-        Flowable<String> obs = Flowable.just((String)null);
+        Observable<String> obs = Observable.just((String)null);
         Future<String> f = obs.toFuture();
         assertEquals(null, f.get());
     }

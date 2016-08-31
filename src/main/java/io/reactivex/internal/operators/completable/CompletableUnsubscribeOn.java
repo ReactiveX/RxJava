@@ -43,7 +43,7 @@ public final class CompletableUnsubscribeOn extends Completable {
 
             @Override
             public void onSubscribe(final Disposable d) {
-                s.onSubscribe(Disposables.from(new Runnable() {
+                s.onSubscribe(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         scheduler.scheduleDirect(new Runnable() {

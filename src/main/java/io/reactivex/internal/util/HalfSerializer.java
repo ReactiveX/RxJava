@@ -24,8 +24,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * where onNext is guaranteed to be called from a single thread but
  * onError or onCompleted may be called from any threads.
  */
-public enum HalfSerializer {
-    ;
+public final class HalfSerializer {
+    /** Utility class. */
+    private HalfSerializer() {
+        throw new IllegalStateException("No instances!");
+    }
     
     public static <T> void onNext(Subscriber<? super T> subscriber, T value, 
             AtomicInteger wip, AtomicThrowable error) {

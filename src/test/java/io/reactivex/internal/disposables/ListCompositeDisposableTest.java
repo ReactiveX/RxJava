@@ -22,6 +22,7 @@ import org.junit.Test;
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
+import io.reactivex.schedulers.Schedulers;
 
 public class ListCompositeDisposableTest {
 
@@ -174,5 +175,240 @@ public class ListCompositeDisposableTest {
         assertFalse(lcd.remove(d));
 
         assertFalse(lcd.delete(d));
+    }
+
+    @Test
+    public void disposeRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+            
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.dispose();
+                }
+            };
+            
+            TestHelper.race(run, run, Schedulers.io());
+        }
+    }
+
+    @Test
+    public void addRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+            
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.add(Disposables.empty());
+                }
+            };
+            
+            TestHelper.race(run, run, Schedulers.io());
+        }
+    }
+
+    @Test
+    public void addAllRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+            
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.addAll(Disposables.empty());
+                }
+            };
+            
+            TestHelper.race(run, run, Schedulers.io());
+        }
+    }
+
+    @Test
+    public void removeRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+            
+            final Disposable d1 = Disposables.empty();
+            
+            cd.add(d1);
+            
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.remove(d1);
+                }
+            };
+            
+            TestHelper.race(run, run, Schedulers.io());
+        }
+    }
+
+    @Test
+    public void deleteRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+            
+            final Disposable d1 = Disposables.empty();
+
+            cd.add(d1);
+
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.delete(d1);
+                }
+            };
+            
+            TestHelper.race(run, run, Schedulers.io());
+        }
+    }
+
+    @Test
+    public void clearRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+            
+            final Disposable d1 = Disposables.empty();
+
+            cd.add(d1);
+
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.clear();
+                }
+            };
+            
+            TestHelper.race(run, run, Schedulers.io());
+        }
+    }
+    
+    @Test
+    public void addDisposeRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+            
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.dispose();
+                }
+            };
+
+            Runnable run2 = new Runnable() {
+                @Override
+                public void run() {
+                    cd.add(Disposables.empty());
+                }
+            };
+
+            TestHelper.race(run, run2, Schedulers.io());
+        }
+    }
+    
+    @Test
+    public void addAllDisposeRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+            
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.dispose();
+                }
+            };
+
+            Runnable run2 = new Runnable() {
+                @Override
+                public void run() {
+                    cd.addAll(Disposables.empty());
+                }
+            };
+
+            TestHelper.race(run, run2, Schedulers.io());
+        }
+    }
+    
+    @Test
+    public void removeDisposeRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+
+            final Disposable d1 = Disposables.empty();
+
+            cd.add(d1);
+
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.dispose();
+                }
+            };
+
+            Runnable run2 = new Runnable() {
+                @Override
+                public void run() {
+                    cd.remove(d1);
+                }
+            };
+
+            TestHelper.race(run, run2, Schedulers.io());
+        }
+    }
+    
+    @Test
+    public void deleteDisposeRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+
+            final Disposable d1 = Disposables.empty();
+
+            cd.add(d1);
+
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.dispose();
+                }
+            };
+
+            Runnable run2 = new Runnable() {
+                @Override
+                public void run() {
+                    cd.delete(d1);
+                }
+            };
+
+            TestHelper.race(run, run2, Schedulers.io());
+        }
+    }
+    
+    @Test
+    public void clearDisposeRace() {
+        for (int i = 0; i < 500; i++) {
+            final ListCompositeDisposable cd = new ListCompositeDisposable();
+
+            final Disposable d1 = Disposables.empty();
+
+            cd.add(d1);
+
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    cd.dispose();
+                }
+            };
+
+            Runnable run2 = new Runnable() {
+                @Override
+                public void run() {
+                    cd.clear();
+                }
+            };
+
+            TestHelper.race(run, run2, Schedulers.io());
+        }
     }
 }

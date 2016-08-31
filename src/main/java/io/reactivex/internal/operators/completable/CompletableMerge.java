@@ -19,10 +19,8 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.*;
-import io.reactivex.internal.fuseable.SimpleQueue;
-import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableMerge extends Completable {
@@ -49,23 +47,27 @@ public final class CompletableMerge extends Completable {
         private static final long serialVersionUID = -2108443387387077490L;
         
         final CompletableObserver actual;
-        final CompositeDisposable set;
         final int maxConcurrency;
         final boolean delayErrors;
+
+        final AtomicThrowable error;
         
+        final AtomicBoolean once;
+
+        final CompositeDisposable set;
+
         Subscription s;
         
         volatile boolean done;
-        
-        final AtomicReference<SimpleQueue<Throwable>> errors = new AtomicReference<SimpleQueue<Throwable>>();
-        
-        final AtomicBoolean once = new AtomicBoolean();
+
         
         public CompletableMergeSubscriber(CompletableObserver actual, int maxConcurrency, boolean delayErrors) {
             this.actual = actual;
             this.maxConcurrency = maxConcurrency;
             this.delayErrors = delayErrors;
             this.set = new CompositeDisposable();
+            this.error = new AtomicThrowable();
+            this.once = new AtomicBoolean();
             lazySet(1);
         }
         
@@ -84,7 +86,6 @@ public final class CompletableMerge extends Completable {
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
-                set.add(Disposables.from(s));
                 actual.onSubscribe(this);
                 if (maxConcurrency == Integer.MAX_VALUE) {
                     s.request(Long.MAX_VALUE);
@@ -94,20 +95,6 @@ public final class CompletableMerge extends Completable {
             }
         }
         
-        SimpleQueue<Throwable> getOrCreateErrors() {
-            SimpleQueue<Throwable> q = errors.get();
-            
-            if (q != null) {
-                return q;
-            }
-            
-            q = new MpscLinkedQueue<Throwable>();
-            if (errors.compareAndSet(null, q)) {
-                return q;
-            }
-            return errors.get();
-        }
-
         @Override
         public void onNext(CompletableSource t) {
             if (done) {
@@ -116,57 +103,16 @@ public final class CompletableMerge extends Completable {
 
             getAndIncrement();
             
-            t.subscribe(new CompletableObserver() {
-                Disposable d;
-                boolean innerDone;
-                @Override
-                public void onSubscribe(Disposable d) {
-                    this.d = d;
-                    set.add(d);
-                }
-                
-                @Override
-                public void onError(Throwable e) {
-                    if (innerDone) {
-                        RxJavaPlugins.onError(e);
-                        return;
-                    }
-                    innerDone = true;
-                    set.remove(d);
-                    
-                    getOrCreateErrors().offer(e);
-                    
-                    terminate();
-                    
-                    if (delayErrors && !done) {
-                        s.request(1);
-                    }
-                }
-                
-                @Override
-                public void onComplete() {
-                    if (innerDone) {
-                        return;
-                    }
-                    innerDone = true;
-                    set.remove(d);
-                    
-                    terminate();
-                    
-                    if (!done) {
-                        s.request(1);
-                    }
-                }
-            });
+            t.subscribe(new InnerObserver());
         }
 
         @Override
         public void onError(Throwable t) {
-            if (done) {
+            if (done || !error.addThrowable(t)) {
                 RxJavaPlugins.onError(t);
                 return;
             }
-            getOrCreateErrors().offer(t);
+            
             done = true;
             terminate();
         }
@@ -182,75 +128,69 @@ public final class CompletableMerge extends Completable {
 
         void terminate() {
             if (decrementAndGet() == 0) {
-                SimpleQueue<Throwable> q = errors.get();
-                if (q == null || q.isEmpty()) {
+                Throwable ex = error.terminate();
+                if (ex == null && ex != ExceptionHelper.TERMINATED) {
                     actual.onComplete();
                 } else {
-                    Throwable e = collectErrors(q);
-                    if (once.compareAndSet(false, true)) {
-                        actual.onError(e);
-                    } else {
-                        RxJavaPlugins.onError(e);
-                    }
+                    actual.onError(ex);
                 }
-            } else
-            if (!delayErrors) {
-                SimpleQueue<Throwable> q = errors.get();
-                if (q != null && !q.isEmpty()) {
-                    Throwable e = collectErrors(q);
+            }
+            else if (!delayErrors) {
+                Throwable ex = error.get();
+                if (ex != null && ex != ExceptionHelper.TERMINATED) {
+                    s.cancel();
+                    set.dispose();
                     if (once.compareAndSet(false, true)) {
-                        actual.onError(e);
+                        actual.onError(error.terminate());
                     } else {
-                        RxJavaPlugins.onError(e);
+                        RxJavaPlugins.onError(ex);
                     }
                 }
             }
         }
-    }
-    
-    /**
-     * Collects the Throwables from the queue, adding subsequent Throwables as suppressed to
-     * the first Throwable and returns it.
-     * @param q the queue to drain
-     * @return the Throwable containing all other Throwables as suppressed
-     */
-    public static Throwable collectErrors(SimpleQueue<Throwable> q) {
-        CompositeException composite = null;
-        Throwable first = null;
         
-        Throwable t;
-        int count = 0;
-        for (;;) {
-            
-            try {
-                t = q.poll();
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                if (composite == null) {
-                    composite = new CompositeException(first);
+        final class InnerObserver implements CompletableObserver {
+            Disposable d;
+            boolean innerDone;
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                this.d = d;
+                set.add(d);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                if (innerDone || !error.addThrowable(e)) {
+                    RxJavaPlugins.onError(e);
+                    return;
                 }
-                composite.suppress(ex);
-                break;
-            }
-            
-            if (t == null) {
-                break;
-            }
-            
-            if (count == 0) {
-                first = t;
-            } else {
-                if (composite == null) {
-                    composite = new CompositeException(first);
+                
+                set.delete(d);
+                innerDone = true;
+                
+                terminate();
+                
+                if (delayErrors && !done) {
+                    s.request(1);
                 }
-                composite.suppress(t);
             }
-            
-            count++;
+
+            @Override
+            public void onComplete() {
+                if (innerDone) {
+                    return;
+                }
+                
+                set.delete(d);
+                innerDone = true;
+                
+                terminate();
+                
+                if (!done) {
+                    s.request(1);
+                }
+            }
         }
-        if (composite != null) {
-            return composite;
-        }
-        return first;
     }
 }

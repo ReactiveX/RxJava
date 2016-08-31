@@ -429,7 +429,7 @@ public class ObservableRetryTest {
             @Override
             public void subscribe(Observer<? super String> s) {
                 subsCount.incrementAndGet();
-                s.onSubscribe(Disposables.from(new Runnable() {
+                s.onSubscribe(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                             subsCount.decrementAndGet();
@@ -533,7 +533,7 @@ public class ObservableRetryTest {
         @Override
         public void subscribe(final Observer<? super Long> NbpSubscriber) {
             final AtomicBoolean terminate = new AtomicBoolean(false);
-            NbpSubscriber.onSubscribe(Disposables.from(new Runnable() {
+            NbpSubscriber.onSubscribe(Disposables.fromRunnable(new Runnable() {
                 @Override
                 public void run() {
                         terminate.set(true);

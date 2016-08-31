@@ -19,8 +19,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Utility class to help with backpressure-related operations such as request aggregation.
  */
-public enum BackpressureHelper {
-    ;
+public final class BackpressureHelper {
+    /** Utility class. */
+    private BackpressureHelper() {
+        throw new IllegalStateException("No instances!");
+    }
+    
     /**
      * Adds two long values and caps the sum at Long.MAX_VALUE.
      * @param a the first value

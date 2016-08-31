@@ -23,8 +23,12 @@ import io.reactivex.schedulers.Timed;
 /**
  * Utility methods to convert the Function3..Function9 instances to Function of Object array.
  */
-public enum Functions {
-    ;
+public final class Functions {
+
+    /** Utility class. */
+    private Functions() {
+        throw new IllegalStateException("No instances!");
+    }
     
     @SuppressWarnings("unchecked")
     public static <T1, T2, R> Function<Object[], R> toFunction(final BiFunction<? super T1, ? super T2, ? extends R> biFunction) {

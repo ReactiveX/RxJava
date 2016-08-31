@@ -16,7 +16,8 @@ package io.reactivex.internal.operators.completable;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.*;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class CompletableFromPublisher<T> extends Completable {
 
@@ -28,30 +29,56 @@ public final class CompletableFromPublisher<T> extends Completable {
 
     @Override
     protected void subscribeActual(final CompletableObserver cs) {
-        flowable.subscribe(new Subscriber<T>() {
+        flowable.subscribe(new FromPublisherSubscriber<T>(cs));
+    }
+    
+    static final class FromPublisherSubscriber<T> implements Subscriber<T>, Disposable {
 
-            @Override
-            public void onComplete() {
-                cs.onComplete();
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                cs.onError(t);
-            }
-
-            @Override
-            public void onNext(T t) {
-                // ignored
-            }
-
-            @Override
-            public void onSubscribe(Subscription s) {
-                cs.onSubscribe(Disposables.from(s));
+        final CompletableObserver cs;
+        
+        Subscription s;
+        
+        public FromPublisherSubscriber(CompletableObserver actual) {
+            this.cs = actual;
+        }
+        
+        @Override
+        public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validate(this.s, s)) {
+                this.s = s;
+                
+                cs.onSubscribe(this);
+                
                 s.request(Long.MAX_VALUE);
             }
-            
-        });
+        }
+
+
+        @Override
+        public void onNext(T t) {
+            // ignored
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            cs.onError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            cs.onComplete();
+        }
+
+        @Override
+        public void dispose() {
+            s.cancel();
+            s = SubscriptionHelper.CANCELLED;
+        }
+        
+        @Override
+        public boolean isDisposed() {
+            return s == SubscriptionHelper.CANCELLED;
+        }
     }
 
 }

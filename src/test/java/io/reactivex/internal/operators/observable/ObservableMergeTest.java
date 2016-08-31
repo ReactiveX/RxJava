@@ -132,7 +132,7 @@ public class ObservableMergeTest {
             @Override
             public void subscribe(final Observer<? super Observable<Long>> NbpObserver) {
                 // verbose on purpose so I can track the inside of it
-                final Disposable s = Disposables.from(new Runnable() {
+                final Disposable s = Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         System.out.println("*** unsubscribed");
@@ -502,7 +502,7 @@ public class ObservableMergeTest {
                 .subscribe(new Observer<Long>() {
                     @Override
                     public void onSubscribe(final Disposable s) {
-                        child.onSubscribe(Disposables.from(new Runnable() {
+                        child.onSubscribe(Disposables.fromRunnable(new Runnable() {
                             @Override
                             public void run() {
                                 unsubscribed.set(true);

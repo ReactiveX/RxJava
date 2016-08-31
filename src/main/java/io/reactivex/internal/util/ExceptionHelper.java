@@ -21,8 +21,12 @@ import io.reactivex.exceptions.CompositeException;
 /**
  * Terminal atomics for Throwable containers.
  */
-public enum ExceptionHelper {
-    ;
+public final class ExceptionHelper {
+
+    /** Utility class. */
+    private ExceptionHelper() {
+        throw new IllegalStateException("No instances!");
+    }
     
     /**
      * If the provided Throwable is an Error this method

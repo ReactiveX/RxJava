@@ -17,12 +17,14 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.fuseable.SimpleQueue;
-import io.reactivex.internal.queue.MpscLinkedQueue;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.operators.completable.CompletableMergeDelayErrorArray.MergeInnerCompletableObserver;
+import io.reactivex.internal.util.AtomicThrowable;
 
 public final class CompletableMergeDelayErrorIterable extends Completable {
+
     final Iterable<? extends CompletableSource> sources;
     
     public CompletableMergeDelayErrorIterable(Iterable<? extends CompletableSource> sources) {
@@ -51,8 +53,8 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
         }
 
         final AtomicInteger wip = new AtomicInteger(1);
-        
-        final SimpleQueue<Throwable> queue = new MpscLinkedQueue<Throwable>();
+
+        final AtomicThrowable error = new AtomicThrowable();
 
         for (;;) {
             if (set.isDisposed()) {
@@ -64,15 +66,8 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
                 b = iterator.hasNext();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                queue.offer(e);
-                if (wip.decrementAndGet() == 0) {
-                    if (queue.isEmpty()) {
-                        s.onComplete();
-                    } else {
-                        s.onError(CompletableMerge.collectErrors(queue));
-                    }
-                }
-                return;
+                error.addThrowable(e);
+                break;
             }
                     
             if (!b) {
@@ -86,73 +81,28 @@ public final class CompletableMergeDelayErrorIterable extends Completable {
             CompletableSource c;
             
             try {
-                c = iterator.next();
+                c = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null CompletableSource");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                queue.offer(e);
-                if (wip.decrementAndGet() == 0) {
-                    if (queue.isEmpty()) {
-                        s.onComplete();
-                    } else {
-                        s.onError(CompletableMerge.collectErrors(queue));
-                    }
-                }
-                return;
+                error.addThrowable(e);
+                break;
             }
             
             if (set.isDisposed()) {
                 return;
             }
             
-            if (c == null) {
-                NullPointerException e = new NullPointerException("A completable source is null");
-                queue.offer(e);
-                if (wip.decrementAndGet() == 0) {
-                    if (queue.isEmpty()) {
-                        s.onComplete();
-                    } else {
-                        s.onError(CompletableMerge.collectErrors(queue));
-                    }
-                }
-                return;
-            }
-            
             wip.getAndIncrement();
             
-            c.subscribe(new CompletableObserver() {
-                @Override
-                public void onSubscribe(Disposable d) {
-                    set.add(d);
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    queue.offer(e);
-                    tryTerminate();
-                }
-
-                @Override
-                public void onComplete() {
-                    tryTerminate();
-                }
-                
-                void tryTerminate() {
-                    if (wip.decrementAndGet() == 0) {
-                        if (queue.isEmpty()) {
-                            s.onComplete();
-                        } else {
-                            s.onError(CompletableMerge.collectErrors(queue));
-                        }
-                    }
-                }
-            });
+            c.subscribe(new MergeInnerCompletableObserver(s, set, error, wip));
         }
         
         if (wip.decrementAndGet() == 0) {
-            if (queue.isEmpty()) {
+            Throwable ex = error.terminate();
+            if (ex == null) {
                 s.onComplete();
             } else {
-                s.onError(CompletableMerge.collectErrors(queue));
+                s.onError(ex);
             }
         }
     }

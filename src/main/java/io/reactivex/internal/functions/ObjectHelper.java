@@ -18,8 +18,13 @@ import io.reactivex.functions.BiPredicate;
  * Utility methods containing the backport of Java 7's Objects utility class.
  * <p>Named as such to avoid clash with java.util.Objects.
  */
-public enum ObjectHelper {
-    ;
+public final class ObjectHelper {
+    
+    /** Utility class. */
+    private ObjectHelper() {
+        throw new IllegalStateException("No instances!");
+    }
+    
     /**
      * Verifies if the object is not null and returns it or throws a NullPointerException
      * with the given message.
