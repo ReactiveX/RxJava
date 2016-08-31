@@ -45,7 +45,7 @@ public final class ExecutorScheduler extends Scheduler {
         try {
             if (executor instanceof ExecutorService) {
                 Future<?> f = ((ExecutorService)executor).submit(decoratedRun);
-                return Disposables.from(f);
+                return Disposables.fromFuture(f);
             }
             
             BooleanRunnable br = new BooleanRunnable(decoratedRun);
@@ -63,7 +63,7 @@ public final class ExecutorScheduler extends Scheduler {
         if (executor instanceof ScheduledExecutorService) {
             try {
                 Future<?> f = ((ScheduledExecutorService)executor).schedule(decoratedRun, delay, unit);
-                return Disposables.from(f);
+                return Disposables.fromFuture(f);
             } catch (RejectedExecutionException ex) {
                 RxJavaPlugins.onError(ex);
                 return EmptyDisposable.INSTANCE;
@@ -91,7 +91,7 @@ public final class ExecutorScheduler extends Scheduler {
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             try {
                 Future<?> f = ((ScheduledExecutorService)executor).scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
-                return Disposables.from(f);
+                return Disposables.fromFuture(f);
             } catch (RejectedExecutionException ex) {
                 RxJavaPlugins.onError(ex);
                 return EmptyDisposable.INSTANCE;

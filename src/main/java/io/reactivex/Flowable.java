@@ -5086,7 +5086,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public final Future<T> toFuture() {
-        return FlowableToFuture.toFuture(this);
+        return subscribeWith(new FutureSubscriber<T>());
     }
     
     /**

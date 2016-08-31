@@ -25,13 +25,12 @@ import io.reactivex.TestHelper;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 
-
 public class DisposablesTest {
 
     @Test
     public void testUnsubscribeOnlyOnce() {
         Runnable dispose = mock(Runnable.class);
-        Disposable subscription = Disposables.from(dispose);
+        Disposable subscription = Disposables.fromRunnable(dispose);
         subscription.dispose();
         subscription.dispose();
         verify(dispose, times(1)).run();
@@ -70,7 +69,7 @@ public class DisposablesTest {
         
         AtomicAction aa = new AtomicAction();
         
-        Disposables.from(aa).dispose();
+        Disposables.fromAction(aa).dispose();
         
         assertTrue(aa.get());
     }
@@ -78,7 +77,7 @@ public class DisposablesTest {
     @Test
     public void fromActionThrows() {
         try {
-            Disposables.from(new Action() {
+            Disposables.fromAction(new Action() {
                 @Override
                 public void run() throws Exception {
                     throw new IllegalArgumentException();
@@ -90,7 +89,7 @@ public class DisposablesTest {
         }
         
         try {
-            Disposables.from(new Action() {
+            Disposables.fromAction(new Action() {
                 @Override
                 public void run() throws Exception {
                     throw new InternalError();
@@ -102,7 +101,7 @@ public class DisposablesTest {
         }
         
         try {
-            Disposables.from(new Action() {
+            Disposables.fromAction(new Action() {
                 @Override
                 public void run() throws Exception {
                     throw new IOException();

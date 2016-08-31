@@ -4538,7 +4538,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public final Future<T> toFuture() {
-        return ObservableToFuture.toFuture(this);
+        return subscribeWith(new FutureObserver<T>());
     }
     
     /**

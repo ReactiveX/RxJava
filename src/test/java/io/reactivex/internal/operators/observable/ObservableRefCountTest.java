@@ -301,7 +301,7 @@ public class ObservableRefCountTest {
             @Override
             public void subscribe(Observer<? super Long> NbpSubscriber) {
                 final AtomicBoolean cancel = new AtomicBoolean();
-                NbpSubscriber.onSubscribe(Disposables.from(new Runnable() {
+                NbpSubscriber.onSubscribe(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         cancel.set(true);
@@ -329,7 +329,7 @@ public class ObservableRefCountTest {
             @Override
             public void subscribe(Observer<? super Integer> NbpObserver) {
                 subscriptionCount.incrementAndGet();
-                NbpObserver.onSubscribe(Disposables.from(new Runnable() {
+                NbpObserver.onSubscribe(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                             unsubscriptionCount.incrementAndGet();

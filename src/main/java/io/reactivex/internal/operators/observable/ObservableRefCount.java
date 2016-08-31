@@ -115,7 +115,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
     }
 
     private Disposable disconnect(final CompositeDisposable current) {
-        return Disposables.from(new Runnable() {
+        return Disposables.fromRunnable(new Runnable() {
             @Override
             public void run() {
                 lock.lock();

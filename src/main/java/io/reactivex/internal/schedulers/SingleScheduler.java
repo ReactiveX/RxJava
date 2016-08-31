@@ -85,7 +85,7 @@ public final class SingleScheduler extends Scheduler {
             } else {
                 f = executor.get().schedule(decoratedRun, delay, unit);
             }
-            return Disposables.from(f);
+            return Disposables.fromFuture(f);
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
@@ -97,7 +97,7 @@ public final class SingleScheduler extends Scheduler {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
             Future<?> f = executor.get().scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
-            return Disposables.from(f);
+            return Disposables.fromFuture(f);
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;

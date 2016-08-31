@@ -265,7 +265,7 @@ public class SingleTest {
                     }
 
                 });
-                sd.replace(Disposables.from(new Runnable() {
+                sd.replace(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         unsubscribed.set(true);
@@ -339,7 +339,7 @@ public class SingleTest {
                     }
 
                 });
-                sd.replace(Disposables.from(new Runnable() {
+                sd.replace(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         unsubscribed.set(true);
@@ -395,7 +395,7 @@ public class SingleTest {
                     }
 
                 });
-                sd.replace(Disposables.from(new Runnable() {
+                sd.replace(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         unsubscribed.set(true);

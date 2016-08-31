@@ -130,7 +130,7 @@ public final class CompletableUsing<R> extends Completable {
             @Override
             public void onSubscribe(Disposable d) {
                 this.d = d;
-                s.onSubscribe(Disposables.from(new Runnable() {
+                s.onSubscribe(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         disposeThis();

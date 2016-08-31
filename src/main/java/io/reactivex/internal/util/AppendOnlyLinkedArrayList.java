@@ -63,27 +63,6 @@ public class AppendOnlyLinkedArrayList<T> {
     }
     
     /**
-     * Loops through all elements of the list.
-     * @param consumer the consumer of elements
-     * @throws Exception if the consumer throws
-     */
-    @SuppressWarnings("unchecked")
-    public void forEach(Consumer<? super T> consumer) throws Exception {
-        Object[] a = head;
-        final int c = capacity;
-        while (a != null) {
-            for (int i = 0; i < c; i++) {
-                Object o = a[i];
-                if (o == null) {
-                    return;
-                }
-                consumer.accept((T)o);
-            }
-            a = (Object[])a[c];
-        }
-    }
-    
-    /**
      * Loops over all elements of the array until a null element is encountered or
      * the given predicate returns true.
      * @param consumer the consumer of values that returns true if the forEach should terminate
@@ -107,6 +86,14 @@ public class AppendOnlyLinkedArrayList<T> {
         }
     }
     
+    /**
+     * Loops over all elements of the array until a null element is encountered or
+     * the given predicate returns true.
+     * @param <S> the extra state type
+     * @param state the extra state passed into the consumer
+     * @param consumer the consumer of values that returns true if the forEach should terminate
+     * @throws Exception if the predicate throws
+     */
     @SuppressWarnings("unchecked")
     public <S> void forEachWhile(S state, BiPredicate<? super S, ? super T> consumer) throws Exception {
         Object[] a = head;

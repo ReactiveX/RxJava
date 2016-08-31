@@ -24,13 +24,23 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Utility methods to validate Subscriptions in the various onSubscribe calls.
  */
-public enum SubscriptionHelper {
-    ;
+public enum SubscriptionHelper implements Subscription {
     /**
      * Represents a cancelled Subscription.
      * <p>Don't leak this instance!
      */
-    public static final Subscription CANCELLED = Cancelled.INSTANCE;
+    CANCELLED
+    ;
+
+    @Override
+    public void request(long n) {
+        // deliberately ignored
+    }
+    
+    @Override
+    public void cancel() {
+        // deliberately ignored
+    }
     
     /**
      * Verifies that current is null, next is not null, otherwise signals errors
@@ -53,7 +63,8 @@ public enum SubscriptionHelper {
     }
     
     /**
-     * Reports that the subscription is already set to the RxJavaPlugins error handler.
+     * Reports that the subscription is already set to the RxJavaPlugins error handler, 
+     * which is an indication of a onSubscribe management bug.
      */
     public static void reportSubscriptionSet() {
         RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
@@ -72,6 +83,11 @@ public enum SubscriptionHelper {
         return true;
     }
     
+    /**
+     * Reports to the plugin error handler that there were more values produced than requested, which
+     * is a sign of internal backpressure handling bug.
+     * @param n the overproduction amount
+     */
     public static void reportMoreProduced(long n) {
         RxJavaPlugins.onError(new IllegalStateException("More produced than requested: " + n));
     }
@@ -178,24 +194,12 @@ public enum SubscriptionHelper {
     }
     
     /**
-     * The common cancelled instance implemented as a singleton enum.
+     * Atomically sets the new Subscription on the field and requests any accumulated amount
+     * from the requested field.
+     * @param field the target field for the new Subscription
+     * @param requested the current requested amount
+     * @param s the new Subscription, not null (verified)
      */
-    enum Cancelled implements Subscription {
-        INSTANCE
-        ;
-
-        @Override
-        public void request(long n) {
-            // deliberately ignored
-        }
-
-        @Override
-        public void cancel() {
-            // deliberately ignored
-        }
-        
-    }
-    
     public static void deferredSetOnce(AtomicReference<Subscription> field, AtomicLong requested, 
             Subscription s) {
         if (SubscriptionHelper.setOnce(field, s)) {
@@ -206,6 +210,13 @@ public enum SubscriptionHelper {
         }
     }
     
+    /**
+     * Atomically requests from the Subscription in the field if not null, otherwise accumulates
+     * the request amount in the requested field to be requested once the field is set to non-null.
+     * @param field the target field that may already contain a Subscription
+     * @param requested the current requested amount
+     * @param n the request amount, positive (verified)
+     */
     public static void deferredRequest(AtomicReference<Subscription> field, AtomicLong requested, long n) {
         Subscription s = field.get();
         if (s != null) {

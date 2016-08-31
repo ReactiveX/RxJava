@@ -206,7 +206,7 @@ public class ObservableUsingTest {
         Callable<Disposable> resourceFactory = new Callable<Disposable>() {
             @Override
             public Disposable call() {
-                return Disposables.from(unsubscribe);
+                return Disposables.fromRunnable(unsubscribe);
             }
         };
 
@@ -244,7 +244,7 @@ public class ObservableUsingTest {
         Callable<Disposable> resourceFactory = new Callable<Disposable>() {
             @Override
             public Disposable call() {
-                return Disposables.from(unsubscribe);
+                return Disposables.fromRunnable(unsubscribe);
             }
         };
 

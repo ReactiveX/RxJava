@@ -33,7 +33,7 @@ public class CompositeDisposableTest {
     public void testSuccess() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable s = new CompositeDisposable();
-        s.add(Disposables.from(new Runnable() {
+        s.add(Disposables.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -42,7 +42,7 @@ public class CompositeDisposableTest {
 
         }));
 
-        s.add(Disposables.from(new Runnable() {
+        s.add(Disposables.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -63,7 +63,7 @@ public class CompositeDisposableTest {
         final int count = 10;
         final CountDownLatch start = new CountDownLatch(1);
         for (int i = 0; i < count; i++) {
-            s.add(Disposables.from(new Runnable() {
+            s.add(Disposables.fromRunnable(new Runnable() {
 
                 @Override
                 public void run() {
@@ -101,7 +101,7 @@ public class CompositeDisposableTest {
     public void testException() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable s = new CompositeDisposable();
-        s.add(Disposables.from(new Runnable() {
+        s.add(Disposables.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -110,7 +110,7 @@ public class CompositeDisposableTest {
 
         }));
 
-        s.add(Disposables.from(new Runnable() {
+        s.add(Disposables.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -135,7 +135,7 @@ public class CompositeDisposableTest {
     public void testCompositeException() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable s = new CompositeDisposable();
-        s.add(Disposables.from(new Runnable() {
+        s.add(Disposables.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -144,7 +144,7 @@ public class CompositeDisposableTest {
 
         }));
 
-        s.add(Disposables.from(new Runnable() {
+        s.add(Disposables.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -152,7 +152,7 @@ public class CompositeDisposableTest {
             }
         }));
 
-        s.add(Disposables.from(new Runnable() {
+        s.add(Disposables.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -219,7 +219,7 @@ public class CompositeDisposableTest {
     public void testUnsubscribeIdempotence() {
         final AtomicInteger counter = new AtomicInteger();
         CompositeDisposable s = new CompositeDisposable();
-        s.add(Disposables.from(new Runnable() {
+        s.add(Disposables.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -244,7 +244,7 @@ public class CompositeDisposableTest {
 
         final int count = 10;
         final CountDownLatch start = new CountDownLatch(1);
-        s.add(Disposables.from(new Runnable() {
+        s.add(Disposables.fromRunnable(new Runnable() {
 
             @Override
             public void run() {
@@ -443,7 +443,7 @@ public class CompositeDisposableTest {
     
     @Test
     public void disposeRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
             
             Runnable run = new Runnable() {
@@ -459,7 +459,7 @@ public class CompositeDisposableTest {
 
     @Test
     public void addRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
             
             Runnable run = new Runnable() {
@@ -475,7 +475,7 @@ public class CompositeDisposableTest {
 
     @Test
     public void addAllRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
             
             Runnable run = new Runnable() {
@@ -491,7 +491,7 @@ public class CompositeDisposableTest {
 
     @Test
     public void removeRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
             
             final Disposable d1 = Disposables.empty();
@@ -511,7 +511,7 @@ public class CompositeDisposableTest {
 
     @Test
     public void deleteRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
             
             final Disposable d1 = Disposables.empty();
@@ -531,7 +531,7 @@ public class CompositeDisposableTest {
 
     @Test
     public void clearRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
             
             final Disposable d1 = Disposables.empty();
@@ -551,7 +551,7 @@ public class CompositeDisposableTest {
     
     @Test
     public void addDisposeRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
             
             Runnable run = new Runnable() {
@@ -574,7 +574,7 @@ public class CompositeDisposableTest {
     
     @Test
     public void addAllDisposeRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
             
             Runnable run = new Runnable() {
@@ -597,7 +597,7 @@ public class CompositeDisposableTest {
     
     @Test
     public void removeDisposeRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -624,7 +624,7 @@ public class CompositeDisposableTest {
     
     @Test
     public void deleteDisposeRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -651,7 +651,7 @@ public class CompositeDisposableTest {
     
     @Test
     public void clearDisposeRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -678,7 +678,7 @@ public class CompositeDisposableTest {
     
     @Test
     public void sizeDisposeRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -707,7 +707,7 @@ public class CompositeDisposableTest {
     public void disposeThrowsIAE() {
         CompositeDisposable cd = new CompositeDisposable();
         
-        cd.add(Disposables.from(new Action() {
+        cd.add(Disposables.fromAction(new Action() {
             @Override
             public void run() throws Exception {
                 throw new IllegalArgumentException();
@@ -732,7 +732,7 @@ public class CompositeDisposableTest {
     public void disposeThrowsError() {
         CompositeDisposable cd = new CompositeDisposable();
         
-        cd.add(Disposables.from(new Action() {
+        cd.add(Disposables.fromAction(new Action() {
             @Override
             public void run() throws Exception {
                 throw new AssertionError();
@@ -757,7 +757,7 @@ public class CompositeDisposableTest {
     public void disposeThrowsCheckedException() {
         CompositeDisposable cd = new CompositeDisposable();
         
-        cd.add(Disposables.from(new Action() {
+        cd.add(Disposables.fromAction(new Action() {
             @Override
             public void run() throws Exception {
                 throw new IOException();

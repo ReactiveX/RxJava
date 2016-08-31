@@ -71,7 +71,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                 if (eager) {
                     CompositeDisposable set = new CompositeDisposable();
                     set.add(d);
-                    set.add(Disposables.from(new Runnable() {
+                    set.add(Disposables.fromRunnable(new Runnable() {
                         @Override
                         public void run() {
                             try {

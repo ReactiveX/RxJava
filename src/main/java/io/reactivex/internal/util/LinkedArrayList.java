@@ -79,13 +79,7 @@ public class LinkedArrayList {
     public Object[] head() {
         return head; // NOPMD
     }
-    /**
-     * Returns the tail buffer segment or null if the list is empty.
-     * @return the tail object array
-     */
-    public Object[] tail() {
-        return tail; // NOPMD
-    }
+
     /**
      * Returns the total size of the list.
      * @return the total size of the list
@@ -93,21 +87,8 @@ public class LinkedArrayList {
     public int size() {
         return size;
     }
-    /**
-     * Returns the index of the next slot in the tail buffer segment.
-     * @return the index of the next slot in the tail buffer segment
-     */
-    public int indexInTail() {
-        return indexInTail;
-    }
-    /**
-     * Returns the capacity hint that indicates the capacity of each buffer segment.
-     * @return the capacity hint that indicates the capacity of each buffer segment
-     */
-    public int capacityHint() {
-        return capacityHint;
-    }
-    /* Test support */List<Object> toList() {
+    @Override
+    public String toString() {
         final int cap = capacityHint;
         final int s = size;
         final List<Object> list = new ArrayList<Object>(s + 1);
@@ -124,10 +105,6 @@ public class LinkedArrayList {
             }
         }
         
-        return list;
-    }
-    @Override
-    public String toString() {
-        return toList().toString();
+        return list.toString();
     }
 }

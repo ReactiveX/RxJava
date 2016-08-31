@@ -103,7 +103,7 @@ public final class CompletablePeek extends Completable {
                     return;
                 }
                 
-                s.onSubscribe(Disposables.from(new Runnable() {
+                s.onSubscribe(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         try {

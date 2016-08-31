@@ -179,7 +179,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
     }
 
     private Disposable disconnect(final CompositeDisposable current) {
-        return Disposables.from(new Runnable() {
+        return Disposables.fromRunnable(new Runnable() {
             @Override
             public void run() {
                 lock.lock();

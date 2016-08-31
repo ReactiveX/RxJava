@@ -18,11 +18,6 @@
 
 package io.reactivex.internal.util;
 
-import java.util.Arrays;
-
-import io.reactivex.exceptions.*;
-import io.reactivex.functions.Consumer;
-
 /**
  * A simple open hash set with add, remove and clear capabilities only.
  * <p>Doesn't support nor checks for {@code null}s.
@@ -136,20 +131,6 @@ public final class OpenHashSet<T> {
         }
     }
     
-    public void clear(Consumer<? super T> clearAction) throws Exception {
-        if (size == 0) {
-            return;
-        }
-        T[] a = keys;
-        for (T e : a) {
-            if (e != null) {
-                clearAction.accept(e);
-            }
-        }
-        Arrays.fill(a, null);
-        size = 0;
-    }
-    
     @SuppressWarnings("unchecked")
     void rehash() {
         T[] a = keys;
@@ -182,47 +163,6 @@ public final class OpenHashSet<T> {
     static int mix(int x) {
         final int h = x * INT_PHI;
         return h ^ (h >>> 16);
-    }
-    
-    public void forEach(Consumer<? super T> consumer) throws Exception  {
-        for (T k : keys) {
-            if (k != null) {
-                consumer.accept(k);
-            }
-        }
-    }
-
-    /**
-     * Loops through all values in the set and collects any exceptions from the consumer
-     * into a Throwable.
-     * @param consumer the consumer to call
-     * @return if not null, contains a CompositeException with all the suppressed exceptions
-     */
-    public Throwable forEachSuppress(Consumer<? super T> consumer) {
-        CompositeException ex = null;
-        int count = 0;
-        for (T k : keys) {
-            if (k != null) {
-                try {
-                    consumer.accept(k);
-                } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    if (ex == null) {
-                        ex = new CompositeException();
-                    }
-                    count++;
-                    ex.suppress(e);
-                }
-            }
-        }
-        if (count == 1) {
-            return ex.getExceptions().get(0);
-        }
-        return ex;
-    }
-    
-    public boolean isEmpty() {
-        return size == 0;
     }
     
     public Object[] keys() {
