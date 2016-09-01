@@ -22,16 +22,17 @@ import java.util.concurrent.Callable;
 import org.junit.*;
 
 import io.reactivex.Observable;
-import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.TestHelper;
 import io.reactivex.functions.Function;
 
 public class ObservableToMapTest {
-    Observer<Object> objectObserver;
+    SingleObserver<Object> objectObserver;
 
     @Before
     public void before() {
-        objectObserver = TestHelper.mockObserver();
+        objectObserver = TestHelper.mockSingleObserver();
     }
 
     Function<String, Integer> lengthFunc = new Function<String, Integer>() {
@@ -51,7 +52,7 @@ public class ObservableToMapTest {
     public void testToMap() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc);
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc);
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "a");
@@ -62,15 +63,14 @@ public class ObservableToMapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectObserver, times(1)).onSuccess(expected);
     }
 
     @Test
     public void testToMapWithValueSelector() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "aa");
@@ -81,8 +81,7 @@ public class ObservableToMapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectObserver, times(1)).onSuccess(expected);
     }
 
     @Test
@@ -98,7 +97,7 @@ public class ObservableToMapTest {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFuncErr);
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFuncErr);
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "a");
@@ -108,8 +107,7 @@ public class ObservableToMapTest {
 
         mapped.subscribe(objectObserver);
 
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectObserver, never()).onSuccess(expected);
         verify(objectObserver, times(1)).onError(any(Throwable.class));
 
     }
@@ -128,7 +126,7 @@ public class ObservableToMapTest {
             }
         };
 
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr);
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr);
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "aa");
@@ -138,8 +136,7 @@ public class ObservableToMapTest {
 
         mapped.subscribe(objectObserver);
 
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectObserver, never()).onSuccess(expected);
         verify(objectObserver, times(1)).onError(any(Throwable.class));
 
     }
@@ -169,7 +166,7 @@ public class ObservableToMapTest {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
             @Override
             public String apply(String v) {
                 return v;
@@ -184,8 +181,7 @@ public class ObservableToMapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectObserver, times(1)).onSuccess(expected);
     }
 
     @Test
@@ -205,7 +201,7 @@ public class ObservableToMapTest {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
             @Override
             public String apply(String v) {
                 return v;
@@ -219,8 +215,7 @@ public class ObservableToMapTest {
 
         mapped.subscribe(objectObserver);
 
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectObserver, never()).onSuccess(expected);
         verify(objectObserver, times(1)).onError(any(Throwable.class));
     }
 

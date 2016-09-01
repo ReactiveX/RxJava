@@ -22,16 +22,17 @@ import java.util.concurrent.Callable;
 import org.junit.*;
 
 import io.reactivex.Observable;
-import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.TestHelper;
 import io.reactivex.functions.Function;
 
 public class ObservableToMultimapTest {
-    Observer<Object> objectObserver;
+    SingleObserver<Object> objectObserver;
 
     @Before
     public void before() {
-        objectObserver = TestHelper.mockObserver();
+        objectObserver = TestHelper.mockSingleObserver();
     }
 
     Function<String, Integer> lengthFunc = new Function<String, Integer>() {
@@ -51,7 +52,7 @@ public class ObservableToMultimapTest {
     public void testToMultimap() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd");
 
-        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc);
+        Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(1, Arrays.asList("a", "b"));
@@ -60,15 +61,14 @@ public class ObservableToMultimapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectObserver, times(1)).onSuccess(expected);
     }
 
     @Test
     public void testToMultimapWithValueSelector() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd");
 
-        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicate);
+        Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicate);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(1, Arrays.asList("aa", "bb"));
@@ -77,8 +77,7 @@ public class ObservableToMultimapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectObserver, times(1)).onSuccess(expected);
     }
 
     @Test
@@ -107,7 +106,7 @@ public class ObservableToMultimapTest {
             }
         };
         
-        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(
+        Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(
                 lengthFunc, identity,
                 mapFactory, new Function<Integer, Collection<String>>() {
                     @Override
@@ -123,8 +122,7 @@ public class ObservableToMultimapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectObserver, times(1)).onSuccess(expected);
     }
 
     @Test
@@ -155,7 +153,7 @@ public class ObservableToMultimapTest {
             }
         };
         
-        Observable<Map<Integer, Collection<String>>> mapped = source
+        Single<Map<Integer, Collection<String>>> mapped = source
                 .toMultimap(lengthFunc, identity, mapSupplier, collectionFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
@@ -165,8 +163,7 @@ public class ObservableToMultimapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectObserver, times(1)).onSuccess(expected);
     }
 
     @Test
@@ -183,7 +180,7 @@ public class ObservableToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFuncErr);
+        Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFuncErr);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(1, Arrays.asList("a", "b"));
@@ -192,8 +189,7 @@ public class ObservableToMultimapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, times(1)).onError(any(Throwable.class));
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectObserver, never()).onSuccess(expected);
     }
 
     @Test
@@ -210,7 +206,7 @@ public class ObservableToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicateErr);
+        Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicateErr);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(1, Arrays.asList("aa", "bb"));
@@ -219,8 +215,7 @@ public class ObservableToMultimapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, times(1)).onError(any(Throwable.class));
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectObserver, never()).onSuccess(expected);
     }
 
     @Test
@@ -234,7 +229,7 @@ public class ObservableToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = source
+        Single<Map<Integer, Collection<String>>> mapped = source
                 .toMultimap(lengthFunc, new Function<String, String>() {
                     @Override
                     public String apply(String v) {
@@ -249,8 +244,7 @@ public class ObservableToMultimapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, times(1)).onError(any(Throwable.class));
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectObserver, never()).onSuccess(expected);
     }
 
     @Test
@@ -281,7 +275,7 @@ public class ObservableToMultimapTest {
             }
         };
         
-        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, 
+        Single<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, 
                 identity, mapSupplier, collectionFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
@@ -291,7 +285,6 @@ public class ObservableToMultimapTest {
         mapped.subscribe(objectObserver);
 
         verify(objectObserver, times(1)).onError(any(Throwable.class));
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectObserver, never()).onSuccess(expected);
     }
 }

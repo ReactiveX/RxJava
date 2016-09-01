@@ -16,25 +16,26 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.operators.single.AbstractSingleWithUpstreamObservable;
 
-public final class ObservableCount<T> extends AbstractObservableWithUpstream<T, Long> {
+public final class ObservableCount<T> extends AbstractSingleWithUpstreamObservable<T, Long> {
     public ObservableCount(ObservableSource<T> source) {
         super(source);
     }
 
     @Override
-    public void subscribeActual(Observer<? super Long> t) {
+    public void subscribeActual(SingleObserver<? super Long> t) {
         source.subscribe(new CountSubscriber(t));
     }
     
     static final class CountSubscriber implements Observer<Object>, Disposable {
-        final Observer<? super Long> actual;
+        final SingleObserver<? super Long> actual;
         
         Disposable s;
         
         long count;
         
-        public CountSubscriber(Observer<? super Long> actual) {
+        public CountSubscriber(SingleObserver<? super Long> actual) {
             this.actual = actual;
         }
         
@@ -69,8 +70,7 @@ public final class ObservableCount<T> extends AbstractObservableWithUpstream<T, 
         
         @Override
         public void onComplete() {
-            actual.onNext(count);
-            actual.onComplete();
+            actual.onSuccess(count);
         }
     }
 }

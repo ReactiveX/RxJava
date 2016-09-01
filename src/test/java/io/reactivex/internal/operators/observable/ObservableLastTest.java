@@ -29,21 +29,15 @@ public class ObservableLastTest {
 
     @Test
     public void testLastWithElements() {
-        Observable<Integer> last = Observable.just(1, 2, 3).last();
-        assertEquals(3, last.blockingSingle().intValue());
-    }
-
-    @Test(expected = NoSuchElementException.class)
-    public void testLastWithNoElements() {
-        Observable<?> last = Observable.empty().last();
-        last.blockingSingle();
+        Maybe<Integer> last = Observable.just(1, 2, 3).last();
+        assertEquals(3, last.blockingGet(-1).intValue());
     }
 
     @Test
     public void testLastMultiSubscribe() {
-        Observable<Integer> last = Observable.just(1, 2, 3).last();
-        assertEquals(3, last.blockingSingle().intValue());
-        assertEquals(3, last.blockingSingle().intValue());
+        Maybe<Integer> last = Observable.just(1, 2, 3).last();
+        assertEquals(3, last.blockingGet(-1).intValue());
+        assertEquals(3, last.blockingGet(-1).intValue());
     }
 
     @Test
@@ -53,35 +47,35 @@ public class ObservableLastTest {
 
     @Test
     public void testLast() {
-        Observable<Integer> o = Observable.just(1, 2, 3).last();
+        Maybe<Integer> o = Observable.just(1, 2, 3).last();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        MaybeObserver<Integer> NbpObserver = TestHelper.mockMaybeObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(3);
+        inOrder.verify(NbpObserver, times(1)).onSuccess(3);
         inOrder.verify(NbpObserver, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testLastWithOneElement() {
-        Observable<Integer> o = Observable.just(1).last();
+        Maybe<Integer> o = Observable.just(1).last();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        MaybeObserver<Integer> NbpObserver = TestHelper.mockMaybeObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(1);
+        inOrder.verify(NbpObserver, times(1)).onSuccess(1);
         inOrder.verify(NbpObserver, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testLastWithEmpty() {
-        Observable<Integer> o = Observable.<Integer> empty().last();
+        Maybe<Integer> o = Observable.<Integer> empty().last();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        MaybeObserver<Integer> NbpObserver = TestHelper.mockMaybeObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -92,7 +86,7 @@ public class ObservableLastTest {
 
     @Test
     public void testLastWithPredicate() {
-        Observable<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
+        Maybe<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
 
                     @Override
@@ -102,18 +96,18 @@ public class ObservableLastTest {
                 })
                 .last();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        MaybeObserver<Integer> NbpObserver = TestHelper.mockMaybeObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(6);
+        inOrder.verify(NbpObserver, times(1)).onSuccess(6);
         inOrder.verify(NbpObserver, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testLastWithPredicateAndOneElement() {
-        Observable<Integer> o = Observable.just(1, 2)
+        Maybe<Integer> o = Observable.just(1, 2)
             .filter(
                 new Predicate<Integer>() {
 
@@ -124,18 +118,18 @@ public class ObservableLastTest {
                 })
             .last();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        MaybeObserver<Integer> NbpObserver = TestHelper.mockMaybeObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(2);
+        inOrder.verify(NbpObserver, times(1)).onSuccess(2);
         inOrder.verify(NbpObserver, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testLastWithPredicateAndEmpty() {
-        Observable<Integer> o = Observable.just(1)
+        Maybe<Integer> o = Observable.just(1)
             .filter(
                 new Predicate<Integer>() {
 
@@ -145,7 +139,7 @@ public class ObservableLastTest {
                     }
                 }).last();
         
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        MaybeObserver<Integer> NbpObserver = TestHelper.mockMaybeObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
@@ -156,48 +150,45 @@ public class ObservableLastTest {
 
     @Test
     public void testLastOrDefault() {
-        Observable<Integer> o = Observable.just(1, 2, 3)
+        Single<Integer> o = Observable.just(1, 2, 3)
                 .last(4);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        SingleObserver<Integer> NbpObserver = TestHelper.mockSingleObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(3);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(NbpObserver, times(1)).onSuccess(3);
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testLastOrDefaultWithOneElement() {
-        Observable<Integer> o = Observable.just(1).last(2);
+        Single<Integer> o = Observable.just(1).last(2);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        SingleObserver<Integer> NbpObserver = TestHelper.mockSingleObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(1);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(NbpObserver, times(1)).onSuccess(1);
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testLastOrDefaultWithEmpty() {
-        Observable<Integer> o = Observable.<Integer> empty()
+        Single<Integer> o = Observable.<Integer> empty()
                 .last(1);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        SingleObserver<Integer> NbpObserver = TestHelper.mockSingleObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(1);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(NbpObserver, times(1)).onSuccess(1);
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testLastOrDefaultWithPredicate() {
-        Observable<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
+        Single<Integer> o = Observable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
 
                     @Override
@@ -207,18 +198,17 @@ public class ObservableLastTest {
                 })
                 .last(8);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        SingleObserver<Integer> NbpObserver = TestHelper.mockSingleObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(6);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(NbpObserver, times(1)).onSuccess(6);
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testLastOrDefaultWithPredicateAndOneElement() {
-        Observable<Integer> o = Observable.just(1, 2)
+        Single<Integer> o = Observable.just(1, 2)
                 .filter(new Predicate<Integer>() {
 
                     @Override
@@ -228,18 +218,17 @@ public class ObservableLastTest {
                 })
                 .last(4);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        SingleObserver<Integer> NbpObserver = TestHelper.mockSingleObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(2);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(NbpObserver, times(1)).onSuccess(2);
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testLastOrDefaultWithPredicateAndEmpty() {
-        Observable<Integer> o = Observable.just(1)
+        Single<Integer> o = Observable.just(1)
                 .filter(
                 new Predicate<Integer>() {
 
@@ -250,12 +239,11 @@ public class ObservableLastTest {
                 })
                 .last(2);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        SingleObserver<Integer> NbpObserver = TestHelper.mockSingleObserver();
         o.subscribe(NbpObserver);
 
         InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(2);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(NbpObserver, times(1)).onSuccess(2);
         inOrder.verifyNoMoreInteractions();
     }
 }

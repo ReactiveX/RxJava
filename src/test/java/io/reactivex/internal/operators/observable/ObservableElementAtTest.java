@@ -23,7 +23,7 @@ public class ObservableElementAtTest {
 
     @Test
     public void testElementAt() {
-        assertEquals(2, Observable.fromArray(1, 2).elementAt(1).blockingSingle()
+        assertEquals(2, Observable.fromArray(1, 2).elementAt(1).blockingGet(-1)
                 .intValue());
     }
 
@@ -34,17 +34,17 @@ public class ObservableElementAtTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testElementAtWithIndexOutOfBounds() {
-        Observable.fromArray(1, 2).elementAt(2).blockingSingle();
+        Observable.fromArray(1, 2).elementAt(2).blockingGet(-1);
     }
 
     @Test
     public void testElementAtOrDefault() {
-        assertEquals(2, Observable.fromArray(1, 2).elementAt(1, 0).blockingSingle().intValue());
+        assertEquals(2, Observable.fromArray(1, 2).elementAt(1, 0).blockingGet().intValue());
     }
 
     @Test
     public void testElementAtOrDefaultWithIndexOutOfBounds() {
-        assertEquals(0, Observable.fromArray(1, 2).elementAt(2, 0).blockingSingle().intValue());
+        assertEquals(0, Observable.fromArray(1, 2).elementAt(2, 0).blockingGet().intValue());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

@@ -56,6 +56,21 @@ public enum SingleInternalHelper {
         return (Function)ToFlowable.INSTANCE;
     }
 
+    @SuppressWarnings("rawtypes")
+    enum ToObservable implements Function<SingleSource, Observable> {
+        INSTANCE;
+        @SuppressWarnings("unchecked")
+        @Override 
+        public Observable apply(SingleSource v){
+            return new SingleToObservable(v);
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Function<SingleSource<? extends T>, Observable<? extends T>> toObservable() {
+        return (Function)ToObservable.INSTANCE;
+    }
+
     static final class ToFlowableIterator<T> implements Iterator<Flowable<T>> {
         private final Iterator<? extends SingleSource<? extends T>> sit;
 
