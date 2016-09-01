@@ -4174,4 +4174,39 @@ public class CompletableTest {
         assertSame(expectedResult, actualResult);
         assertSame(c, completableRef.get());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void doOnEachNullAction() {
+        Completable.complete().doOnEach(null);
+    }
+
+    @Test
+    public void doOnEachCompleted() {
+        final AtomicInteger atomicInteger = new AtomicInteger(0);
+        Completable.complete().doOnEach(new Action1<Notification<Void>>() {
+            @Override
+            public void call(final Notification<Void> notification) {
+                if (notification.isOnCompleted()) {
+                    atomicInteger.incrementAndGet();
+                }
+            }
+        }).subscribe();
+
+        assertEquals(1, atomicInteger.get());
+    }
+
+    @Test
+    public void doOnEachError() {
+        final AtomicInteger atomicInteger = new AtomicInteger(0);
+        Completable.error(new RuntimeException("What?")).doOnEach(new Action1<Notification<Void>>() {
+            @Override
+            public void call(final Notification<Void> notification) {
+                if (notification.isOnError()) {
+                    atomicInteger.incrementAndGet();
+                }
+            }
+        }).subscribe();
+
+        assertEquals(1, atomicInteger.get());
+    }
 }
