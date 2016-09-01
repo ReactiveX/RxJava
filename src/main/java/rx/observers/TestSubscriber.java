@@ -355,13 +355,17 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @param timeout the time to wait for the events
      * @param unit the time unit of waiting
      * @return true if the expected number of onNext events happened
-     * @throws InterruptedException if the sleep is interrupted
+     * @throws RuntimeException if the sleep is interrupted
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
-    public final boolean awaitValueCount(int expected, long timeout, TimeUnit unit) throws InterruptedException {
+    public final boolean awaitValueCount(int expected, long timeout, TimeUnit unit) {
         while (timeout != 0 && valueCount < expected) {
-            unit.sleep(1);
+            try {
+                unit.sleep(1);
+            } catch (InterruptedException e) {
+                throw new IllegalStateException("Interrupted", e);
+            }
             timeout--;
         }
         return valueCount >= expected;
