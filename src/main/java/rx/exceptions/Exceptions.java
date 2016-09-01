@@ -191,6 +191,20 @@ public final class Exceptions {
     }
 
     /**
+     * Forwards a fatal exception or reports it along with the value
+     * caused it to the given SingleSubscriber.
+     * @param t the exception
+     * @param o the observer to report to
+     * @param value the value that caused the exception
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public static void throwOrReport(Throwable t, SingleSubscriber<?> o, Object value) {
+        Exceptions.throwIfFatal(t);
+        o.onError(OnErrorThrowable.addValueAsLastCause(t, value));
+    }
+
+    /**
      * Forwards a fatal exception or reports it to the given Observer.
      * @param t the exception
      * @param o the observer to report to

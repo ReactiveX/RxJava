@@ -2409,24 +2409,35 @@ public class Single<T> {
      */
     @Experimental
     public final Single<T> doOnError(final Action1<Throwable> onError) {
-        Observer<T> observer = new Observer<T>() {
-            @Override
-            public void onCompleted() {
-                // deliberately ignored
-            }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError is null");
+        }
 
+        return Single.create(new SingleDoOnEvent<T>(this, Actions.empty(), new Action1<Throwable>() {
             @Override
-            public void onError(Throwable e) {
-                onError.call(e);
+            public void call(final Throwable throwable) {
+                onError.call(throwable);
             }
+        }));
+    }
 
+    @Experimental
+    public final Single<T> doOnEach(final Action1<Notification<? extends T>> onNotification) {
+        if (onNotification == null) {
+            throw new IllegalArgumentException("onNotification is null");
+        }
+
+        return Single.create(new SingleDoOnEvent<T>(this, new Action1<T>() {
             @Override
-            public void onNext(T t) {
-                // deliberately ignored
+            public void call(final T t) {
+                onNotification.call(Notification.<T>createOnNext(t));
             }
-        };
-
-        return Observable.create(new OnSubscribeDoOnEach<T>(this.toObservable(), observer)).toSingle();
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(final Throwable throwable) {
+                onNotification.call(Notification.<T>createOnError(throwable));
+            }
+        }));
     }
     
     /**
@@ -2445,24 +2456,21 @@ public class Single<T> {
      */
     @Experimental
     public final Single<T> doOnSuccess(final Action1<? super T> onSuccess) {
-        Observer<T> observer = new Observer<T>() {
-            @Override
-            public void onCompleted() {
-                // deliberately ignored
-            }
+        if (onSuccess == null) {
+            throw new IllegalArgumentException("onSuccess is null");
+        }
 
+        return Single.create(new SingleDoOnEvent<T>(this, new Action1<T>() {
             @Override
-            public void onError(Throwable e) {
-                // deliberately ignored
-            }
-
-            @Override
-            public void onNext(T t) {
+            public void call(final T t) {
                 onSuccess.call(t);
             }
-        };
-
-        return Observable.create(new OnSubscribeDoOnEach<T>(this.toObservable(), observer)).toSingle();
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(final Throwable throwable) {
+                // Do nothing.
+            }
+        }));
     }
 
     /**

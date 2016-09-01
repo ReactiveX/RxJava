@@ -869,6 +869,11 @@ public class SingleTest {
         testSubscriber.assertNotCompleted();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void doOnErrorNull() {
+        Single.just(1).doOnError(null);
+    }
+
     @Test
     public void doOnErrorShouldNotCallActionIfNoErrorHasOccurred() {
         @SuppressWarnings("unchecked")
@@ -972,6 +977,11 @@ public class SingleTest {
         testSubscriber.assertError(error);
 
         verify(callable).call();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void doOnSuccessNull() {
+        Single.just(1).doOnSuccess(null);
     }
 
     @Test
@@ -2085,5 +2095,45 @@ public class SingleTest {
 
         assertSame(expectedResult, actualResult);
         assertSame(s, singleRef.get());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void doOnEachNull() {
+        Single.just(1).doOnEach(null);
+    }
+
+    @Test
+    public void doOnEachError() {
+        final AtomicInteger atomicInteger = new AtomicInteger(0);
+        Single.error(new RuntimeException()).doOnEach(new Action1<Notification<?>>() {
+            @Override
+            public void call(final Notification<?> notification) {
+                if (notification.isOnError()) {
+                    atomicInteger.incrementAndGet();
+                }
+            }
+        }).subscribe(Actions.empty(), new Action1<Throwable>() {
+            @Override
+            public void call(final Throwable throwable) {
+                // Do nothing this is expected.
+            }
+        });
+
+        assertEquals(1, atomicInteger.get());
+    }
+
+    @Test
+    public void doOnEachSuccess() {
+        final AtomicInteger atomicInteger = new AtomicInteger(0);
+        Single.just(1).doOnEach(new Action1<Notification<? extends Integer>>() {
+            @Override
+            public void call(final Notification<? extends Integer> notification) {
+                if (notification.isOnNext()) {
+                    atomicInteger.getAndAdd(notification.getValue());
+                }
+            }
+        }).subscribe();
+
+        assertEquals(1, atomicInteger.get());
     }
 }
