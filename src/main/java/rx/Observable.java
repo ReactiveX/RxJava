@@ -1820,7 +1820,7 @@ public class Observable<T> {
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param exception
+     * @param throwable
      *            the particular Throwable to pass to {@link Observer#onError onError}
      * @param <T>
      *            the type of the items (ostensibly) emitted by the Observable
@@ -1828,8 +1828,8 @@ public class Observable<T> {
      *         the Observer subscribes to it
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
-    public static <T> Observable<T> error(Throwable exception) {
-        return create(new OnSubscribeThrow<T>(exception));
+    public static <T> Observable<T> error(Throwable throwable) {
+        return create(new OnSubscribeThrow<T>(throwable));
     }
 
     /**
