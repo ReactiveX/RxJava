@@ -215,6 +215,19 @@ public class TestSubscriberTest {
         }
         fail("Not unsubscribed but not reported!");
     }
+
+    @Test
+    public void testSubscribed() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.unsubscribe();
+        try {
+            ts.assertSubscribed();
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Not subscribed but not reported!");
+    }
     
     @Test
     public void testNoErrors() {

@@ -404,6 +404,18 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
+     * Asserts that this {@code Subscriber} is subscribed.
+     *
+     * @throws AssertionError
+     *          if this {@code Subscriber} is not subscribed
+     */
+    public void assertSubscribed() {
+        if (isUnsubscribed()) {
+            throw new AssertionError("Not subscribed.");
+        }
+    }
+
+    /**
      * Asserts that this {@code Subscriber} has received no {@code onError} notifications.
      * 
      * @throws AssertionError
