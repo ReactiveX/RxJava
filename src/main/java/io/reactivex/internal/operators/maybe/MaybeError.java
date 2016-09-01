@@ -13,35 +13,25 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import java.util.concurrent.Callable;
-
 import io.reactivex.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.disposables.Disposables;
 
+/**
+ * Signals a constant Throwable.
+ *
+ * @param <T> the value type
+ */
 public final class MaybeError<T> extends Maybe<T> {
 
-    final Callable<? extends Throwable> errorSupplier;
+    final Throwable error;
     
-    public MaybeError(Callable<? extends Throwable> errorSupplier) {
-        this.errorSupplier = errorSupplier;
+    public MaybeError(Throwable error) {
+        this.error = error;
     }
-
+    
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> s) {
-        Throwable error;
-        
-        try {
-            error = errorSupplier.call();
-        } catch (Throwable e) {
-            error = e;
-        }
-        
-        if (error == null) {
-            error = new NullPointerException();
-        }
-        
-        s.onSubscribe(EmptyDisposable.INSTANCE);
-        s.onError(error);
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        observer.onSubscribe(Disposables.disposed());
+        observer.onError(error);
     }
-
 }

@@ -60,12 +60,18 @@ public final class RxJavaPlugins {
     static volatile Function<ConnectableObservable, ConnectableObservable> onConnectableObservableAssembly;
 
     @SuppressWarnings("rawtypes")
+    static volatile Function<Maybe, Maybe> onMaybeAssembly;
+
+    @SuppressWarnings("rawtypes")
     static volatile Function<Single, Single> onSingleAssembly;
     
     static volatile Function<Completable, Completable> onCompletableAssembly;
     
     @SuppressWarnings("rawtypes")
     static volatile BiFunction<Flowable, Subscriber, Subscriber> onFlowableSubscribe;
+
+    @SuppressWarnings("rawtypes")
+    static volatile BiFunction<Maybe, MaybeObserver, MaybeObserver> onMaybeSubscribe;
 
     @SuppressWarnings("rawtypes")
     static volatile BiFunction<Observable, Observer, Observer> onObservableSubscribe;
@@ -358,6 +364,9 @@ public final class RxJavaPlugins {
 
         setOnConnectableFlowableAssembly(null);
         setOnConnectableObservableAssembly(null);
+        
+        setOnMaybeAssembly(null);
+        setOnMaybeSubscribe(null);
     }
 
     /**
@@ -525,6 +534,24 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @SuppressWarnings("rawtypes")
+    public static BiFunction<Maybe, MaybeObserver, MaybeObserver> getOnMaybeSubscribe() {
+        return onMaybeSubscribe;
+    }
+    
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
+    @SuppressWarnings("rawtypes")
+    public static Function<Maybe, Maybe> getOnMaybeAssembly() {
+        return onMaybeAssembly;
+    }
+
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     */
+    @SuppressWarnings("rawtypes")
     public static Function<Single, Single> getOnSingleAssembly() {
         return onSingleAssembly;
     }
@@ -602,6 +629,18 @@ public final class RxJavaPlugins {
     
     /**
      * Sets the specific hook function.
+     * @param onMaybeAssembly the hook function to set, null allowed
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnMaybeAssembly(Function<Maybe, Maybe> onMaybeAssembly) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onMaybeAssembly = onMaybeAssembly;
+    }
+    
+    /**
+     * Sets the specific hook function.
      * @param onConnectableFlowableAssembly the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
@@ -624,6 +663,18 @@ public final class RxJavaPlugins {
         RxJavaPlugins.onFlowableSubscribe = onFlowableSubscribe;
     }
     
+    /**
+     * Sets the specific hook function.
+     * @param onFlowableSubscribe the hook function to set, null allowed
+     */
+    @SuppressWarnings("rawtypes")
+    public static void setOnMaybeSubscribe(BiFunction<Maybe, MaybeObserver, MaybeObserver> onFlowableSubscribe) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onMaybeSubscribe = onMaybeSubscribe;
+    }
+
     /**
      * Sets the specific hook function.
      * @param onObservableAssembly the hook function to set, null allowed
@@ -745,6 +796,37 @@ public final class RxJavaPlugins {
             return apply(f, source, observer);
         }
         return observer;
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @param subscriber the subscriber
+     * @return the value returned by the hook
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> MaybeObserver<? super T> onSubscribe(Maybe<T> source, MaybeObserver<? super T> subscriber) {
+        BiFunction<Maybe, MaybeObserver, MaybeObserver> f = onMaybeSubscribe;
+        if (f != null) {
+            return apply(f, source, subscriber);
+        }
+        return subscriber;
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type
+     * @param source the hook's input value
+     * @return the value returned by the hook
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Maybe<T> onAssembly(Maybe<T> source) {
+        Function<Maybe, Maybe> f = onMaybeAssembly;
+        if (f != null) {
+            return apply(f, source);
+        }
+        return source;
     }
 
     /**

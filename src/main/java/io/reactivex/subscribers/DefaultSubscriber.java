@@ -49,8 +49,9 @@ public abstract class DefaultSubscriber<T> implements Subscriber<T> {
      * Cancels the upstream's Subscription.
      */
     protected final void cancel() {
+        Subscription s = this.s;
+        this.s = SubscriptionHelper.CANCELLED;
         s.cancel();
-        s = null;
     }
     /**
      * Called once the subscription has been set on this observer; override this

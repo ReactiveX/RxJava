@@ -827,7 +827,8 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @see #assertFailureAndMessage(Class, String, Object...)
      */
     public final TestObserver<T> assertResult(T... values) {
-        return assertValues(values)
+        return assertSubscribed()
+                .assertValues(values)
                 .assertNoErrors()
                 .assertComplete();
     }
@@ -840,7 +841,8 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      * @return this
      */
     public final TestObserver<T> assertFailure(Class<? extends Throwable> error, T... values) {
-        return assertValues(values)
+        return assertSubscribed()
+                .assertValues(values)
                 .assertError(error)
                 .assertNotComplete();
     }
@@ -856,7 +858,8 @@ public class TestObserver<T> implements Observer<T>, Disposable {
      */
     public final TestObserver<T> assertFailureAndMessage(Class<? extends Throwable> error, 
             String message, T... values) {
-        return assertValues(values)
+        return assertSubscribed()
+                .assertValues(values)
                 .assertError(error)
                 .assertErrorMessage(message)
                 .assertNotComplete();

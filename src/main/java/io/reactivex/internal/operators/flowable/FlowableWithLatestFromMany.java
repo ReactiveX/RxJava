@@ -32,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the main sequence's type
  * @param <R> the output type
  */
-public class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWithUpstream<T, R> {
+public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
     final Publisher<?>[] otherArray;
     

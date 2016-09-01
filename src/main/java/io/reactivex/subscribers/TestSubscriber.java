@@ -888,7 +888,8 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @see #assertFailureAndMessage(Class, String, Object...)
      */
     public final TestSubscriber<T> assertResult(T... values) {
-        return assertValues(values)
+        return  assertSubscribed()
+                .assertValues(values)
                 .assertNoErrors()
                 .assertComplete();
     }
@@ -901,7 +902,8 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertFailure(Class<? extends Throwable> error, T... values) {
-        return assertValues(values)
+        return assertSubscribed()
+                .assertValues(values)
                 .assertError(error)
                 .assertNotComplete();
     }
@@ -917,7 +919,8 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     public final TestSubscriber<T> assertFailureAndMessage(Class<? extends Throwable> error, 
             String message, T... values) {
-        return assertValues(values)
+        return assertSubscribed()
+                .assertValues(values)
                 .assertError(error)
                 .assertErrorMessage(message)
                 .assertNotComplete();

@@ -16,35 +16,35 @@ package io.reactivex.internal.operators.maybe;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 
+/**
+ * Defers the creation of the actual Maybe the incoming MaybeObserver is subscribed to.
+ *
+ * @param <T> the value type
+ */
 public final class MaybeDefer<T> extends Maybe<T> {
 
     final Callable<? extends MaybeSource<? extends T>> maybeSupplier;
-    
+
     public MaybeDefer(Callable<? extends MaybeSource<? extends T>> maybeSupplier) {
         this.maybeSupplier = maybeSupplier;
     }
-
+    
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> s) {
-        MaybeSource<? extends T> next;
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        MaybeSource<? extends T> source;
         
         try {
-            next = maybeSupplier.call();
-        } catch (Throwable e) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(e);
+            source = ObjectHelper.requireNonNull(maybeSupplier.call(), "The maybeSupplier returned a null MaybeSource");
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            EmptyDisposable.error(ex, observer);
             return;
         }
         
-        if (next == null) {
-            s.onSubscribe(EmptyDisposable.INSTANCE);
-            s.onError(new NullPointerException("The Maybe supplied was null"));
-            return;
-        }
-        
-        next.subscribe(s);
+        source.subscribe(observer);
     }
-
 }

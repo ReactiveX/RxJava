@@ -292,7 +292,7 @@ public class SingleTest {
     }
 
     /**
-     * Assert that unsubscribe propagates when passing in a SingleSubscriber and not a Subscriber
+     * Assert that unsubscribe propagates when passing in a SingleObserver and not a Subscriber
      * @throws InterruptedException if the test is interrupted
      */
     @Test
@@ -367,7 +367,7 @@ public class SingleTest {
     }
 
     /**
-     * Assert that unsubscribe propagates when passing in a SingleSubscriber and not a Subscriber
+     * Assert that unsubscribe propagates when passing in a SingleObserver and not a Subscriber
      * @throws InterruptedException if the test is interrupted
      */
     @Test

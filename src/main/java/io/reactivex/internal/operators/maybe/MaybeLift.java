@@ -14,37 +14,37 @@
 package io.reactivex.internal.operators.maybe;
 
 import io.reactivex.*;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 
-public final class MaybeLift<T, R> extends Maybe<R> {
+/**
+ * Calls a MaybeOperator for the incoming MaybeObserver.
+ *
+ * @param <T> the upstream value type
+ * @param <R> the downstream value type
+ */
+public final class MaybeLift<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
-    final MaybeSource<T> source;
-    
-    final MaybeOperator<? extends R, ? super T> onLift;
-    
-    public MaybeLift(MaybeSource<T> source, MaybeOperator<? extends R, ? super T> onLift) {
-        this.source = source;
-        this.onLift = onLift;
+    final MaybeOperator<? extends R, ? super T> operator;
+
+    public MaybeLift(MaybeSource<T> source, MaybeOperator<? extends R, ? super T> operator) {
+        super(source);
+        this.operator = operator;
     }
-
+    
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> s) {
+    protected void subscribeActual(MaybeObserver<? super R> observer) {
+        MaybeObserver<? super T> lifted;
+        
         try {
-            MaybeObserver<? super T> sr = onLift.apply(s);
-            
-            if (sr == null) {
-                throw new NullPointerException("The onLift returned a null subscriber");
-            }
-            // TODO plugin wrapper
-            source.subscribe(sr);
-        } catch (NullPointerException ex) { // NOPMD
-            throw ex;
+            lifted = ObjectHelper.requireNonNull(operator.apply(observer), "The operator returned a null MaybeObserver");
         } catch (Throwable ex) {
-            RxJavaPlugins.onError(ex);
-            NullPointerException npe = new NullPointerException("Not really but can't throw other than NPE");
-            npe.initCause(ex);
-            throw npe;
+            Exceptions.throwIfFatal(ex);
+            EmptyDisposable.error(ex, observer);
+            return;
         }
+        
+        source.subscribe(lifted);
     }
-
 }

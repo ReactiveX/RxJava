@@ -11,17 +11,21 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.flowable;
+package io.reactivex.internal.fuseable;
 
-import org.reactivestreams.Publisher;
+import io.reactivex.SingleSource;
 
-public interface FlowableWithUpstream<T> {
+/**
+ * Interface indicating the implementor has an upstream SingleSource-like source available
+ * via {@link #source()} method.
+ *
+ * @param <T> the value type
+ */
+public interface HasUpstreamSingleSource<T> {
     /**
-     * Returns the source Publisher.
-     * <p>
-     * This method is intended to discover the assembly
-     * graph of sequences.
-     * @return the source Publisher
+     * Returns the upstream source of this Single.
+     * <p>Allows discovering the chain of observables.
+     * @return the source SingleSource
      */
-    Publisher<T> source();
+    SingleSource<T> source();
 }

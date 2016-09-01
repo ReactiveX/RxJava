@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the main sequence's type
  * @param <R> the output type
  */
-public class ObservableWithLatestFromMany<T, R> extends AbstractObservableWithUpstream<T, R> {
+public final class ObservableWithLatestFromMany<T, R> extends AbstractObservableWithUpstream<T, R> {
 
     final ObservableSource<?>[] otherArray;
     

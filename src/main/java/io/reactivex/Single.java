@@ -17,12 +17,14 @@ import java.util.concurrent.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.annotations.SchedulerSupport;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.internal.operators.maybe.*;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.subscribers.single.*;
 import io.reactivex.internal.util.*;
@@ -246,9 +248,9 @@ public abstract class Single<T> implements SingleSource<T> {
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param source the emitter that is called when a Subscriber subscribes to the returned {@code Flowable}
+     * @param source the emitter that is called when a SingleObserver subscribes to the returned {@code Flowable}
      * @return the new Single instance
-     * @see FlowableOnSubscribe
+     * @see SingleOnSubscribe
      * @see Cancellable
      */
     public static <T> Single<T> create(SingleOnSubscribe<T> source) {
@@ -482,16 +484,16 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param value
+     * @param item
      *            the item to emit
      * @param <T>
      *            the type of that item
-     * @return a {@code Single} that emits {@code value}
+     * @return a {@code Single} that emits {@code item}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
-    public static <T> Single<T> just(final T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        return RxJavaPlugins.onAssembly(new SingleJust<T>(value));
+    public static <T> Single<T> just(final T item) {
+        ObjectHelper.requireNonNull(item, "value is null");
+        return RxJavaPlugins.onAssembly(new SingleJust<T>(item));
     }
 
     /**
@@ -723,16 +725,19 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code unsafeCreate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param source the function that is called with the subscribing SingleObserver
+     * @param onSubscribe the function that is called with the subscribing SingleObserver
      * @return the new Single instance
+     * @throws IllegalArgumentException if {@code source} is a subclass of {@code Single}; such
+     * instances don't need conversion and is possibly a port remnant from 1.x or one should use {@link #hide()}
+     * instead.
      * @since 2.0
      */
-    public static <T> Single<T> unsafeCreate(SingleSource<T> source) {
-        ObjectHelper.requireNonNull(source, "source is null");
-        if (source instanceof Single) {
+    public static <T> Single<T> unsafeCreate(SingleSource<T> onSubscribe) {
+        ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
+        if (onSubscribe instanceof Single) {
             throw new IllegalArgumentException("unsafeCreate(Single) should be upgraded");
         }
-        return RxJavaPlugins.onAssembly(new SingleFromUnsafeSource<T>(source));
+        return RxJavaPlugins.onAssembly(new SingleFromUnsafeSource<T>(onSubscribe));
     }
     
     /**
@@ -797,6 +802,10 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Wraps a SingleSource instance into a new Single instance if not already a Single
      * instance.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code wrap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param <T> the value type
      * @param source the source to wrap
      * @return the Single wrapper or the source cast to Single (if possible)
@@ -1294,8 +1303,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Transform a Single by applying a particular Transformer function to it.
      * <p>
-     * This method operates on the Single itself whereas {@link #lift} operates on the Single's Subscribers or
-     * Observers.
+     * This method operates on the Single itself whereas {@link #lift} operates on the Single's SingleObservers.
      * <p>
      * If the operator you are creating is designed to act on the individual item emitted by a Single, use
      * {@link #lift}. If your operator is designed to transform the source Single as a whole (for instance, by
@@ -1581,8 +1589,31 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Filters the success item of the Single via a predicate function and emitting it if the predicate
+     * returns true, completing otherwise.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param predicate
+     *            a function that evaluates the item emitted by the source Maybe, returning {@code true}
+     *            if it passes the filter
+     * @return a Maybe that emit the item emitted by the source Maybe that the filter
+     *         evaluates as {@code true}
+     * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> filter(Predicate<? super T> predicate) {
+        ObjectHelper.requireNonNull(predicate, "predicate is null");
+        return RxJavaPlugins.onAssembly(new MaybeFilterSingle<T>(this, predicate));
+    }
+    
+    /**
      * Returns a Single that is based on applying a specified function to the item emitted by the source Single,
-     * where that function returns a Single.
+     * where that function returns a SingleSource.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
      * <dl>
@@ -1592,7 +1623,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * 
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source Single, returns a Single
+     *            a function that, when applied to the item emitted by the source Single, returns a SingleSource
      * @return the Single returned from {@code func} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -2385,19 +2416,42 @@ public abstract class Single<T> implements SingleSource<T> {
      * Converts this Single into an {@link Flowable}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
-     * @return an {@link Observable} that emits a single item T.
+     * @return an {@link Flowable} that emits a single item T or an error.
      */
     public final Flowable<T> toFlowable() {
         return RxJavaPlugins.onAssembly(new SingleToFlowable<T>(this));
     }
     
+    
+    /**
+     * Converts this Single into a {@link Maybe}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @return an {@link Maybe} that emits a single item T or an error.
+     */
+    public final Maybe<T> toMaybe() {
+        return RxJavaPlugins.onAssembly(new MaybeFromSingle<T>(this));
+    }
     /**
      * Converts this Single into an {@link Observable}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
-     * @return an {@link Observable} that emits a single item T.
+     * @return an {@link Observable} that emits a single item T or an error.
      */
     public final Observable<T> toObservable() {
         return RxJavaPlugins.onAssembly(new SingleToObservable<T>(this));
@@ -2448,7 +2502,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Creates a TestSubscriber optionally in cancelled state, then subscribes it to this Single.
      * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
-     * Completable.
+     * Single.
      * @return the new TestSubscriber instance
      * @since 2.0
      */

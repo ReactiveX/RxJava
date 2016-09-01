@@ -1,48 +1,57 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
+
 package io.reactivex.internal.operators.maybe;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
+import io.reactivex.internal.subscribers.observable.DeferredScalarDisposable;
 
 /**
- * Wraps a Maybe and exposes it as a Flowable.
+ * Wraps a MaybeSource and exposes it as a Flowable, relaying signals in a backpressure-aware manner
+ * and composes cancellation through.
  *
  * @param <T> the value type
  */
-public final class MaybeToObservable<T> extends Observable<T> {
+public final class MaybeToObservable<T> extends Observable<T> implements HasUpstreamMaybeSource<T> {
+
+    final MaybeSource<T> source;
     
-    final MaybeSource<? extends T> source;
-    
-    public MaybeToObservable(MaybeSource<? extends T> source) {
+    public MaybeToObservable(MaybeSource<T> source) {
         this.source = source;
     }
-    
-    @Override
-    public void subscribeActual(final Observer<? super T> s) {
-        source.subscribe(new MaybeToObservableObserver<T>(s));
-    }
-    
-    static final class MaybeToObservableObserver<T> 
-    implements MaybeObserver<T>, Disposable {
 
-        final Observer<? super T> actual;
+    @Override
+    public MaybeSource<T> source() {
+        return source;
+    }
+
+    @Override
+    protected void subscribeActual(Observer<? super T> s) {
+        source.subscribe(new MaybeToFlowableSubscriber<T>(s));
+    }
+
+    static final class MaybeToFlowableSubscriber<T> extends DeferredScalarDisposable<T>
+    implements MaybeObserver<T> {
+        /** */
+        private static final long serialVersionUID = 7603343402964826922L;
         
-        Disposable d;
+        Disposable d; 
         
-        public MaybeToObservableObserver(Observer<? super T> actual) {
-            this.actual = actual;
+        public MaybeToFlowableSubscriber(Observer<? super T> actual) {
+            super(actual);
         }
 
         @Override
@@ -56,28 +65,23 @@ public final class MaybeToObservable<T> extends Observable<T> {
 
         @Override
         public void onSuccess(T value) {
-            actual.onNext(value);
-            actual.onComplete();
-        }
-
-        @Override
-        public void onComplete() {
-            actual.onComplete();
+            complete(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            error(e);
         }
 
         @Override
-        public void dispose() {
-            d.dispose();
+        public void onComplete() {
+            complete();
         }
         
         @Override
-        public boolean isDisposed() {
-            return d.isDisposed();
+        public void dispose() {
+            super.dispose();
+            d.dispose();
         }
     }
 }

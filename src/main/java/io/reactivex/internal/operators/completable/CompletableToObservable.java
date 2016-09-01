@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.completable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 
-public class CompletableToObservable<T> extends Observable<T> {
+public final class CompletableToObservable<T> extends Observable<T> {
 
     final CompletableSource source;
     

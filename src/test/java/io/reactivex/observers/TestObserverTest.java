@@ -819,7 +819,7 @@ public class TestObserverTest {
         
         ts.onSubscribe(null);
         
-        ts.assertFailure(NullPointerException.class);
+        ts.assertError(NullPointerException.class);
 
         ts = TestObserver.create();
         

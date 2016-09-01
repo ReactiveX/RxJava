@@ -11,15 +11,23 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.observable;
+package io.reactivex.internal.fuseable;
 
-import io.reactivex.ObservableSource;
+import org.reactivestreams.Publisher;
 
-public interface ObservableWithUpstream<T> {
+/**
+ * Interface indicating the implementor has an upstream Publisher-like source available
+ * via {@link #source()} method.
+ *
+ * @param <T> the value type
+ */
+public interface HasUpstreamPublisher<T> {
     /**
-     * Returns the upstream source of this Observable.
-     * <p>Allows discovering the chain of observables.
-     * @return the source ObservableConsumable
+     * Returns the source Publisher.
+     * <p>
+     * This method is intended to discover the assembly
+     * graph of sequences.
+     * @return the source Publisher
      */
-    ObservableSource<T> source();
+    Publisher<T> source();
 }

@@ -14,16 +14,17 @@
 package io.reactivex.internal.operators.maybe;
 
 import io.reactivex.*;
+import io.reactivex.internal.disposables.EmptyDisposable;
 
-public final class MaybeFromUnsafeSource<T> extends Maybe<T> {
-    final MaybeSource<T> source;
+/**
+ * Signals an onComplete.
+ */
+public final class MaybeEmpty extends Maybe<Object> {
 
-    public MaybeFromUnsafeSource(MaybeSource<T> source) {
-        this.source = source;
-    }
-    
+    public static final MaybeEmpty INSTANCE = new MaybeEmpty();
+
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(observer);
+    protected void subscribeActual(MaybeObserver<? super Object> observer) {
+        EmptyDisposable.complete(observer);
     }
 }

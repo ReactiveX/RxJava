@@ -82,6 +82,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                             }
                         }
                     }));
+                    s.onSubscribe(set);
                 } else {
                     s.onSubscribe(d);
                 }

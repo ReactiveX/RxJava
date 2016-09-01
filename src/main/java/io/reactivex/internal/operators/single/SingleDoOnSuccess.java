@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
 
-public class SingleDoOnSuccess<T> extends Single<T> {
+public final class SingleDoOnSuccess<T> extends Single<T> {
 
     final SingleSource<T> source;
     
