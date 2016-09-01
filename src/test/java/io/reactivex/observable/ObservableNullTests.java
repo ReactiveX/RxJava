@@ -1267,8 +1267,8 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void doOnCancelNull() {
-        just1.doOnCancel(null);
+    public void doOnDisposeNull() {
+        just1.doOnDispose(null);
     }
     
     @Test(expected = NullPointerException.class)
@@ -1297,7 +1297,7 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void doOnLifecycleOnCancelNull() {
+    public void doOnLifecycleOnDisposeNull() {
         just1.doOnLifecycle(new Consumer<Disposable>() {
             @Override
             public void accept(Disposable s) { }

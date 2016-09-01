@@ -212,7 +212,7 @@ public class ObservableDelayTest {
     }
 
     @Test
-    public void testDelaySubscriptionCancelBeforeTime() {
+    public void testDelaySubscriptionDisposeBeforeTime() {
         Observable<Integer> result = Observable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Observer<Object> o = TestHelper.mockObserver();

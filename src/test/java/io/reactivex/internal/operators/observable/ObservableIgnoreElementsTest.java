@@ -80,7 +80,7 @@ public class ObservableIgnoreElementsTest {
     @Test
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Observable.range(1, 10).doOnCancel(new Action() {
+        Observable.range(1, 10).doOnDispose(new Action() {
             @Override
             public void run() {
                 unsub.set(true);

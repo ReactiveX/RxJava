@@ -1579,13 +1579,13 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param onCancel the runnable called when the subscription is cancelled (disposed)
+     * @param onDispose the runnable called when the subscription is disposed
      * @return the new Single instance
      * @since 2.0
      */
-    public final Single<T> doOnCancel(final Action onCancel) {
-        ObjectHelper.requireNonNull(onCancel, "onCancel is null");
-        return RxJavaPlugins.onAssembly(new SingleDoOnCancel<T>(this, onCancel));
+    public final Single<T> doOnDispose(final Action onDispose) {
+        ObjectHelper.requireNonNull(onDispose, "onDispose is null");
+        return RxJavaPlugins.onAssembly(new SingleDoOnDispose<T>(this, onDispose));
     }
 
     /**

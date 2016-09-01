@@ -602,8 +602,8 @@ public class SingleNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void doOnCancelNull() {
-        just1.doOnCancel(null);
+    public void doOnDisposeNull() {
+        just1.doOnDispose(null);
     }
     
     @Test(expected = NullPointerException.class)

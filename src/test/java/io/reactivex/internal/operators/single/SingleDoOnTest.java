@@ -25,10 +25,10 @@ import io.reactivex.functions.*;
 public class SingleDoOnTest {
 
     @Test
-    public void doOnCancel() {
+    public void doOnDispose() {
         final int[] count = { 0 };
         
-        Single.never().doOnCancel(new Action() {
+        Single.never().doOnDispose(new Action() {
             @Override
             public void run() throws Exception { 
                 count[0]++; 

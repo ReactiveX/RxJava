@@ -20,38 +20,38 @@ import io.reactivex.functions.Action;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class SingleDoOnCancel<T> extends Single<T> {
+public final class SingleDoOnDispose<T> extends Single<T> {
     final SingleSource<T> source;
 
-    final Action onCancel;
+    final Action onDispose;
 
-    public SingleDoOnCancel(SingleSource<T> source, Action onCancel) {
+    public SingleDoOnDispose(SingleSource<T> source, Action onDispose) {
         this.source = source;
-        this.onCancel = onCancel;
+        this.onDispose = onDispose;
     }
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        source.subscribe(new DoOnCancelObserver<T>(s, onCancel));
+        source.subscribe(new DoOnDisposeObserver<T>(s, onDispose));
     }
     
-    static final class DoOnCancelObserver<T> implements SingleObserver<T>, Disposable {
+    static final class DoOnDisposeObserver<T> implements SingleObserver<T>, Disposable {
         final SingleObserver<? super T> actual;
         
-        final Action onCancel;
+        final Action onDispose;
 
         Disposable d;
         
-        public DoOnCancelObserver(SingleObserver<? super T> actual, Action onCancel) {
+        public DoOnDisposeObserver(SingleObserver<? super T> actual, Action onDispose) {
             this.actual = actual;
-            this.onCancel = onCancel;
+            this.onDispose = onDispose;
         }
 
         @Override
         public void dispose() {
             try {
-                onCancel.run();
+                onDispose.run();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 RxJavaPlugins.onError(ex);

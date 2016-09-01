@@ -19,17 +19,17 @@ import io.reactivex.internal.subscribers.observable.SubscriptionLambdaObserver;
 
 public final class ObservableDoOnLifecycle<T> extends AbstractObservableWithUpstream<T, T> {
     private final Consumer<? super Disposable> onSubscribe;
-    private final Action onCancel;
+    private final Action onDispose;
 
     public ObservableDoOnLifecycle(Observable<T> upstream, Consumer<? super Disposable> onSubscribe,
-            Action onCancel) {
+            Action onDispose) {
         super(upstream);
         this.onSubscribe = onSubscribe;
-        this.onCancel = onCancel;
+        this.onDispose = onDispose;
     }
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new SubscriptionLambdaObserver<T>(observer, onSubscribe, onCancel));
+        source.subscribe(new SubscriptionLambdaObserver<T>(observer, onSubscribe, onDispose));
     }
 }
