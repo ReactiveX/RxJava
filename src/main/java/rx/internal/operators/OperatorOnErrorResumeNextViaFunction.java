@@ -44,9 +44,9 @@ import rx.subscriptions.SerialSubscription;
  */
 public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T, T> {
 
-    final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction;
+    final Func1<? super Throwable, ? extends Observable<? extends T>> resumeFunction;
 
-    public static <T> OperatorOnErrorResumeNextViaFunction<T> withSingle(final Func1<Throwable, ? extends T> resumeFunction) {
+    public static <T> OperatorOnErrorResumeNextViaFunction<T> withSingle(final Func1<? super Throwable, ? extends T> resumeFunction) {
         return new OperatorOnErrorResumeNextViaFunction<T>(new Func1<Throwable, Observable<? extends T>>() {
             @Override
             public Observable<? extends T> call(Throwable t) {
@@ -76,7 +76,7 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
         });
     }
 
-    public OperatorOnErrorResumeNextViaFunction(Func1<Throwable, ? extends Observable<? extends T>> f) {
+    public OperatorOnErrorResumeNextViaFunction(Func1<? super Throwable, ? extends Observable<? extends T>> f) {
         this.resumeFunction = f;
     }
 

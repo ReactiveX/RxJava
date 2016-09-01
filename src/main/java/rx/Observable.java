@@ -8035,7 +8035,7 @@ public class Observable<T> {
      * @return the original Observable, with appropriately modified behavior
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
-    public final Observable<T> onErrorResumeNext(final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
+    public final Observable<T> onErrorResumeNext(final Func1<? super Throwable, ? extends Observable<? extends T>> resumeFunction) {
         return lift(new OperatorOnErrorResumeNextViaFunction<T>(resumeFunction));
     }
 
@@ -8111,7 +8111,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     @SuppressWarnings("cast")
-    public final Observable<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
+    public final Observable<T> onErrorReturn(Func1<? super Throwable, ? extends T> resumeFunction) {
         return lift((Operator<T, T>)OperatorOnErrorResumeNextViaFunction.withSingle(resumeFunction));
     }
 
