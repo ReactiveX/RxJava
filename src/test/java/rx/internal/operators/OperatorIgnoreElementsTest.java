@@ -17,9 +17,11 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -141,6 +143,41 @@ public class OperatorIgnoreElementsTest {
                 });
         assertEquals(num, upstreamCount.get());
         assertEquals(0, count.get());
+    }
+    
+    @Test
+    public void testIgnoreElementsThen() {
+        final AtomicBoolean firstCompleted = new AtomicBoolean(false);
+        List<Integer> list = Observable
+                .just("a","b","c")
+                .doOnCompleted(new Action0() {
+                    @Override
+                    public void call() {
+                        firstCompleted.set(true);
+                    }})
+                .ignoreElementsThen(Observable.just(1, 2, 3))
+                .toList().toBlocking().single();
+        assertEquals(Arrays.asList(1, 2, 3), list          );
+        assertTrue(firstCompleted.get());
+    }
+    
+    @Test
+    public void testIgnoreElementsThenWhenFirstObservableErrorsThatSecondObservableDoesNotGetSubscribedTo() {
+        final AtomicBoolean secondSubscribed = new AtomicBoolean(false);
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        Observable
+                .error(new RuntimeException())
+                .ignoreElementsThen(
+                     Observable.just(1, 2, 3)
+                        .doOnSubscribe(new Action0() {
+                            @Override
+                            public void call() {
+                                secondSubscribed.set(true);
+                            }}))
+                .subscribe(ts);
+        ts.assertError(RuntimeException.class);
+        ts.assertNoValues();
+        assertFalse(secondSubscribed.get());
     }
     
 }
