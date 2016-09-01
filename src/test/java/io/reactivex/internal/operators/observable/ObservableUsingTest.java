@@ -291,7 +291,7 @@ public class ObservableUsingTest {
         
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), true)
-        .doOnCancel(unsub)
+        .doOnDispose(unsub)
         .doOnComplete(completion);
         
         o.safeSubscribe(NbpObserver);
@@ -318,7 +318,7 @@ public class ObservableUsingTest {
         
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), false)
-        .doOnCancel(unsub)
+        .doOnDispose(unsub)
         .doOnComplete(completion);
         
         o.safeSubscribe(NbpObserver);
@@ -348,7 +348,7 @@ public class ObservableUsingTest {
         
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), true)
-        .doOnCancel(unsub)
+        .doOnDispose(unsub)
         .doOnError(onError);
         
         o.safeSubscribe(NbpObserver);
@@ -376,7 +376,7 @@ public class ObservableUsingTest {
         
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), false)
-        .doOnCancel(unsub)
+        .doOnDispose(unsub)
         .doOnError(onError);
         
         o.safeSubscribe(NbpObserver);

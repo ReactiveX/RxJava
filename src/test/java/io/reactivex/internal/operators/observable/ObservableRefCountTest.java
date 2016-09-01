@@ -170,7 +170,7 @@ public class ObservableRefCountTest {
                             subscribeCount.incrementAndGet();
                     }
                 })
-                .doOnCancel(new Action() {
+                .doOnDispose(new Action() {
                     @Override
                     public void run() {
                             System.out.println("******************************* Unsubscribe received");
@@ -215,7 +215,7 @@ public class ObservableRefCountTest {
                             subscribeLatch.countDown();
                     }
                 })
-                .doOnCancel(new Action() {
+                .doOnDispose(new Action() {
                     @Override
                     public void run() {
                             System.out.println("******************************* Unsubscribe received");
@@ -253,7 +253,7 @@ public class ObservableRefCountTest {
     public void testConnectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
         Observable<Long> o = synchronousInterval()
-                .doOnCancel(new Action() {
+                .doOnDispose(new Action() {
                     @Override
                     public void run() {
                             System.out.println("******************************* Unsubscribe received");

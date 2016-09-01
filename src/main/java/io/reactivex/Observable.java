@@ -6294,17 +6294,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnUnsubscribe.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code doOnUnsubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param onCancel
-     *            the action that gets called when the source {@code ObservableSource}'s Subscription is cancelled
+     * @param onDispose
+     *            the action that gets called when the source {@code ObservableSource}'s Subscription is disposed
      * @return the source {@code ObservableSource} modified so as to call this Action when appropriate
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnCancel(Action onCancel) {
-        return doOnLifecycle(Functions.emptyConsumer(), onCancel);
+    public final Observable<T> doOnDispose(Action onDispose) {
+        return doOnLifecycle(Functions.emptyConsumer(), onDispose);
     }
 
     /**
@@ -6437,16 +6437,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * 
      * @param onSubscribe
      *              a Consumer called with the Subscription sent via Subscriber.onSubscribe()
-     * @param onCancel
-     *              called when the downstream cancels the Subscription via cancel()
+     * @param onDispose
+     *              called when the downstream disposes the Subscription via dispose()
      * @return the source ObservableSource with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> doOnLifecycle(final Consumer<? super Disposable> onSubscribe, final Action onCancel) {
+    public final Observable<T> doOnLifecycle(final Consumer<? super Disposable> onSubscribe, final Action onDispose) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
-        ObjectHelper.requireNonNull(onCancel, "onCancel is null");
-        return RxJavaPlugins.onAssembly(new ObservableDoOnLifecycle<T>(this, onSubscribe, onCancel));
+        ObjectHelper.requireNonNull(onDispose, "onDispose is null");
+        return RxJavaPlugins.onAssembly(new ObservableDoOnLifecycle<T>(this, onSubscribe, onDispose));
     }
 
     /**

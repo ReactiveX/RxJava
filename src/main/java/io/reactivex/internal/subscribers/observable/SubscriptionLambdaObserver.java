@@ -23,16 +23,16 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class SubscriptionLambdaObserver<T> implements Observer<T>, Disposable {
     final Observer<? super T> actual;
     final Consumer<? super Disposable> onSubscribe;
-    final Action onCancel;
+    final Action onDispose;
     
     Disposable s;
     
     public SubscriptionLambdaObserver(Observer<? super T> actual, 
             Consumer<? super Disposable> onSubscribe,
-            Action onCancel) {
+            Action onDispose) {
         this.actual = actual;
         this.onSubscribe = onSubscribe;
-        this.onCancel = onCancel;
+        this.onDispose = onDispose;
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class SubscriptionLambdaObserver<T> implements Observer<T>, Disposa
     @Override
     public void dispose() {
         try {
-            onCancel.run();
+            onDispose.run();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             RxJavaPlugins.onError(e);

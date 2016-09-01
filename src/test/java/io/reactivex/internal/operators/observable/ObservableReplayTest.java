@@ -522,7 +522,7 @@ public class ObservableReplayTest {
 
         ConnectableObservable<Integer> replay = source
                 .doOnNext(sourceNext)
-                .doOnCancel(sourceUnsubscribed)
+                .doOnDispose(sourceUnsubscribed)
                 .doOnComplete(sourceCompleted)
                 .replay();
 
@@ -572,7 +572,7 @@ public class ObservableReplayTest {
         // NbpObservable under test
         ConnectableObservable<Integer> replay = Observable.just(1, 2, 3)
                 .doOnNext(sourceNext)
-                .doOnCancel(sourceUnsubscribed)
+                .doOnDispose(sourceUnsubscribed)
                 .doOnComplete(sourceCompleted)
                 .subscribeOn(mockScheduler).replay();
 
@@ -629,7 +629,7 @@ public class ObservableReplayTest {
         when(mockFunc.apply(2)).thenThrow(illegalArgumentException);
         ConnectableObservable<Integer> replay = Observable.just(1, 2, 3).map(mockFunc)
                 .doOnNext(sourceNext)
-                .doOnCancel(sourceUnsubscribed)
+                .doOnDispose(sourceUnsubscribed)
                 .doOnComplete(sourceCompleted)
                 .doOnError(sourceError)
                 .subscribeOn(mockScheduler).replay();
@@ -850,7 +850,7 @@ public class ObservableReplayTest {
     @Test
     public void testUnsubscribeSource() throws Exception {
         Action unsubscribe = mock(Action.class);
-        Observable<Integer> o = Observable.just(1).doOnCancel(unsubscribe).cache();
+        Observable<Integer> o = Observable.just(1).doOnDispose(unsubscribe).cache();
         o.subscribe();
         o.subscribe();
         o.subscribe();

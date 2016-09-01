@@ -956,7 +956,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param onDispose the callback to call when the child subscriber cancels the subscription
+     * @param onDispose the callback to call when the child subscriber disposes the subscription
      * @return the new Completable instance
      * @throws NullPointerException if onDispose is null
      */
@@ -995,7 +995,7 @@ public abstract class Completable implements CompletableSource {
      * @param onError the consumer called when this emits an onError event
      * @param onComplete the runnable called just before when this Completable completes normally
      * @param onAfterTerminate the runnable called after this Completable completes normally
-     * @param onDisposed the runnable called when the child cancels the subscription
+     * @param onDispose the runnable called when the child disposes the subscription
      * @return the new Completable instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1005,14 +1005,14 @@ public abstract class Completable implements CompletableSource {
             final Action onComplete, 
             final Action onTerminate,
             final Action onAfterTerminate,
-            final Action onDisposed) {
+            final Action onDispose) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
         ObjectHelper.requireNonNull(onTerminate, "onTerminate is null");
         ObjectHelper.requireNonNull(onAfterTerminate, "onAfterTerminate is null");
-        ObjectHelper.requireNonNull(onDisposed, "onDisposed is null");
-        return RxJavaPlugins.onAssembly(new CompletablePeek(this, onSubscribe, onError, onComplete, onTerminate, onAfterTerminate, onDisposed));
+        ObjectHelper.requireNonNull(onDispose, "onDispose is null");
+        return RxJavaPlugins.onAssembly(new CompletablePeek(this, onSubscribe, onError, onComplete, onTerminate, onAfterTerminate, onDispose));
     }
     
     /**

@@ -108,7 +108,7 @@ public class ObservableCacheTest {
     @Test
     public void testUnsubscribeSource() throws Exception {
         Action unsubscribe = mock(Action.class);
-        Observable<Integer> o = Observable.just(1).doOnCancel(unsubscribe).cache();
+        Observable<Integer> o = Observable.just(1).doOnDispose(unsubscribe).cache();
         o.subscribe();
         o.subscribe();
         o.subscribe();

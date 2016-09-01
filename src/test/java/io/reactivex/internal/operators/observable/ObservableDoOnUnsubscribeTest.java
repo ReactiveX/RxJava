@@ -41,7 +41,7 @@ public class ObservableDoOnUnsubscribeTest {
                 // The stream needs to be infinite to ensure the stream does not terminate
                 // before it is unsubscribed
                 .interval(50, TimeUnit.MILLISECONDS)
-                .doOnCancel(new Action() {
+                .doOnDispose(new Action() {
                     @Override
                     public void run() {
                         // Test that upper stream will be notified for un-subscription
@@ -57,7 +57,7 @@ public class ObservableDoOnUnsubscribeTest {
                             onNextLatch.countDown();
                     }
                 })
-                .doOnCancel(new Action() {
+                .doOnDispose(new Action() {
                     @Override
                     public void run() {
                         // Test that lower stream will be notified for a direct un-subscription
@@ -103,7 +103,7 @@ public class ObservableDoOnUnsubscribeTest {
                 // The stream needs to be infinite to ensure the stream does not terminate
                 // before it is unsubscribed
                 .interval(50, TimeUnit.MILLISECONDS)
-                .doOnCancel(new Action() {
+                .doOnDispose(new Action() {
                     @Override
                     public void run() {
                         // Test that upper stream will be notified for un-subscription
@@ -118,7 +118,7 @@ public class ObservableDoOnUnsubscribeTest {
                             onNextLatch.countDown();
                     }
                 })
-                .doOnCancel(new Action() {
+                .doOnDispose(new Action() {
                     @Override
                     public void run() {
                         // Test that lower stream will be notified for un-subscription

@@ -192,7 +192,7 @@ public class ObservablePublishTest {
                         sourceEmission.incrementAndGet();
                     }
                 })
-                .doOnCancel(new Action() {
+                .doOnDispose(new Action() {
                     @Override
                     public void run() {
                         sourceUnsubscribed.set(true);
@@ -209,7 +209,7 @@ public class ObservablePublishTest {
             @Override
             public void onNext(Integer t) {
                 if (valueCount() == 2) {
-                    source.doOnCancel(new Action() {
+                    source.doOnDispose(new Action() {
                         @Override
                         public void run() {
                             child2Unsubscribed.set(true);
@@ -220,7 +220,7 @@ public class ObservablePublishTest {
             }
         };
         
-        source.doOnCancel(new Action() {
+        source.doOnDispose(new Action() {
             @Override
             public void run() {
                 child1Unsubscribed.set(true);

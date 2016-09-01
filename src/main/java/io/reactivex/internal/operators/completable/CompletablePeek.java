@@ -28,21 +28,21 @@ public final class CompletablePeek extends Completable {
     final Action onComplete;
     final Action onTerminate;
     final Action onAfterTerminate;
-    final Action onDisposed;
+    final Action onDispose;
     
     public CompletablePeek(CompletableSource source, Consumer<? super Disposable> onSubscribe,
                            Consumer<? super Throwable> onError,
                            Action onComplete,
                            Action onTerminate,
                            Action onAfterTerminate,
-                           Action onDisposed) {
+                           Action onDispose) {
         this.source = source;
         this.onSubscribe = onSubscribe;
         this.onError = onError;
         this.onComplete = onComplete;
         this.onTerminate = onTerminate;
         this.onAfterTerminate = onAfterTerminate;
-        this.onDisposed = onDisposed;
+        this.onDispose = onDispose;
     }
 
     @Override
@@ -107,7 +107,7 @@ public final class CompletablePeek extends Completable {
                     @Override
                     public void run() {
                         try {
-                            onDisposed.run();
+                            onDispose.run();
                         } catch (Throwable e) {
                             Exceptions.throwIfFatal(e);
                             RxJavaPlugins.onError(e);
