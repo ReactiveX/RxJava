@@ -27,6 +27,7 @@ import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.completable.CompletableFromPublisher;
 import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.internal.operators.maybe.MaybeFromPublisher;
 import io.reactivex.internal.operators.observable.ObservableFromPublisher;
 import io.reactivex.internal.operators.single.SingleFromPublisher;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
@@ -13600,6 +13601,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> toSingle() {
         return RxJavaPlugins.onAssembly(new SingleFromPublisher<T>(this));
+    }
+
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> toMaybe() {
+        return new MaybeFromPublisher<T>(this);
     }
 
     /**
