@@ -24,11 +24,11 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.ScalarCallable;
-import io.reactivex.internal.operators.completable.CompletableFromObservable;
-import io.reactivex.internal.operators.flowable.FlowableFromObservable;
-import io.reactivex.internal.operators.maybe.MaybeFromObservable;
+import io.reactivex.internal.operators.completable.*;
+import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.internal.operators.maybe.*;
 import io.reactivex.internal.operators.observable.*;
-import io.reactivex.internal.operators.single.SingleFromObservable;
+import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.observables.*;
@@ -3427,7 +3427,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new ObservableToList(sources, 16)
-                .flatMap(ObservableInternalHelper.zipIterable(zipper)));
+                .flatMapObservable(ObservableInternalHelper.zipIterable(zipper)));
     }
 
     /**
@@ -4181,9 +4181,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/all.html">ReactiveX operators documentation: All</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Boolean> all(Predicate<? super T> predicate) {
+    public final Single<Boolean> all(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return RxJavaPlugins.onAssembly(new ObservableAll<T>(this, predicate));
+        return RxJavaPlugins.onAssembly(new SingleAll<T>(this, predicate));
     }
 
     /**
@@ -4230,9 +4230,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Boolean> any(Predicate<? super T> predicate) {
+    public final Single<Boolean> any(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return RxJavaPlugins.onAssembly(new ObservableAny<T>(this, predicate));
+        return RxJavaPlugins.onAssembly(new SingleAny<T>(this, predicate));
     }
 
     /**
@@ -4475,7 +4475,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     public final T blockingSingle() {
-        return single().blockingFirst();
+        return toSingle().blockingGet();
     }
     
     /**
@@ -4496,7 +4496,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
     public final T blockingSingle(T defaultItem) {
-        return single(defaultItem).blockingFirst();
+        return toSingle(defaultItem).blockingGet();
     }
     
     /**
@@ -4518,7 +4518,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public final Future<T> toFuture() {
-        return subscribeWith(new FutureObserver<T>());
+        return toSingle().toFuture();
     }
     
     /**
@@ -5331,7 +5331,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Observable<U> collect(Callable<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Single<U> collect(Callable<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
         ObjectHelper.requireNonNull(initialValueSupplier, "initialValueSupplier is null");
         ObjectHelper.requireNonNull(collector, "collector is null");
         return RxJavaPlugins.onAssembly(new ObservableCollect<T, U>(this, initialValueSupplier, collector));
@@ -5360,7 +5360,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Observable<U> collectInto(final U initialValue, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Single<U> collectInto(final U initialValue, BiConsumer<? super U, ? super T> collector) {
         ObjectHelper.requireNonNull(initialValue, "initialValue is null");
         return collect(Functions.justCallable(initialValue), collector);
     }
@@ -5700,7 +5700,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Boolean> contains(final Object element) {
+    public final Single<Boolean> contains(final Object element) {
         ObjectHelper.requireNonNull(element, "element is null");
         return any(Functions.equalsWith(element));
     }
@@ -5721,7 +5721,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see #count()
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Long> count() {
+    public final Single<Long> count() {
         return RxJavaPlugins.onAssembly(new ObservableCount<T>(this));
     }
 
@@ -6518,11 +6518,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> elementAt(long index) {
+    public final Maybe<T> elementAt(long index) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
-        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(this, index, null));
+        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(this, index));
     }
 
     /**
@@ -6546,12 +6546,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> elementAt(long index, T defaultItem) {
+    public final Single<T> elementAt(long index, T defaultItem) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
         ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
-        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(this, index, defaultItem));
+        return RxJavaPlugins.onAssembly(new ObservableElementAtWithDefualt<T>(this, index, defaultItem));
     }
 
     /**
@@ -6591,8 +6591,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> first() {
-        return take(1).single();
+    public final Maybe<T> first() {
+        return take(1).toMaybe();
     }
 
     /**
@@ -6612,8 +6612,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> first(T defaultItem) {
-        return take(1).single(defaultItem);
+    public final Single<T> first(T defaultItem) {
+        return take(1).toSingle(defaultItem);
     }
 
     /**
@@ -7460,24 +7460,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Ignores all items emitted by the source ObservableSource and only calls {@code onComplete} or {@code onError}.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code ignoreElements} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @return an empty ObservableSource that only calls {@code onComplete} or {@code onError}, based on which one is
-     *         called by the source ObservableSource
-     * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElements</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> ignoreElements() {
-        return RxJavaPlugins.onAssembly(new ObservableIgnoreElements<T>(this));
-    }
-
-    /**
      * Returns a Observable that emits {@code true} if the source ObservableSource is empty, otherwise {@code false}.
      * <p>
      * In Rx.Net this is negated as the {@code any} Observer but we renamed this in RxJava to better match Java
@@ -7493,7 +7475,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Boolean> isEmpty() {
+    public final Single<Boolean> isEmpty() {
         return all(Functions.alwaysFalse());
     }
 
@@ -7554,8 +7536,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> last() {
-        return takeLast(1).single();
+    public final Maybe<T> last() {
+        return takeLast(1).toMaybe();
     }
 
     /**
@@ -7575,8 +7557,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> last(T defaultItem) {
-        return takeLast(1).single(defaultItem);
+    public final Single<T> last(T defaultItem) {
+        return takeLast(1).toSingle(defaultItem);
     }
 
     /**
@@ -8094,7 +8076,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> reduce(BiFunction<T, T, T> reducer) {
+    public final Maybe<T> reduce(BiFunction<T, T, T> reducer) {
         return scan(reducer).last();
     }
 
@@ -8140,8 +8122,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
-        return scan(seed, reducer).last();
+    public final <R> Single<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
+        return scan(seed, reducer).last(seed);
     }
 
     /**
@@ -8186,8 +8168,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
-        return scanWith(seedSupplier, reducer).last();
+    public final <R> Single<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
+        return scanWith(seedSupplier, reducer).toSingle();
     }
 
     /**
@@ -9206,54 +9188,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Observable that emits the single item emitted by the source ObservableSource, if that ObservableSource
-     * emits only a single item. If the source ObservableSource emits more than one item or no items, notify of an
-     * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @return a Observable that emits the single item emitted by the source ObservableSource
-     * @throws IllegalArgumentException
-     *             if the source emits more than one item
-     * @throws NoSuchElementException
-     *             if the source emits no items
-     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> single() {
-        return RxJavaPlugins.onAssembly(new ObservableSingle<T>(this, null));
-    }
-
-    /**
-     * Returns a Observable that emits the single item emitted by the source ObservableSource, if that ObservableSource
-     * emits only a single item, or a default item if the source ObservableSource emits no items. If the source
-     * ObservableSource emits more than one item, throw an {@code IllegalArgumentException}.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrDefault.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param defaultItem
-     *            a default value to emit if the source ObservableSource emits no item
-     * @return a Observable that emits the single item emitted by the source ObservableSource, or a default item if
-     *         the source ObservableSource is empty
-     * @throws IllegalArgumentException
-     *             if the source ObservableSource emits more than one item
-     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> single(T defaultItem) {
-        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
-        return RxJavaPlugins.onAssembly(new ObservableSingle<T>(this, defaultItem));
-    }
-
-    /**
      * Returns a Observable that skips the first {@code count} items emitted by the source ObservableSource and emits
      * the remainder.
      * <p>
@@ -9572,7 +9506,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits the items emitted by the source ObservableSource in sorted order
      */
     public final Observable<T> sorted(){
-        return toSortedList().flatMapIterable(Functions.<List<T>>identity());
+        return toSortedList().toObservable().flatMapIterable(Functions.<List<T>>identity());
     }
 
     /**
@@ -9593,7 +9527,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a Observable that emits the items emitted by the source ObservableSource in sorted order
      */
     public final Observable<T> sorted(Comparator<? super T> sortFunction) {
-        return toSortedList(sortFunction).flatMapIterable(Functions.<List<T>>identity());
+        return toSortedList(sortFunction).toObservable().flatMapIterable(Functions.<List<T>>identity());
     }
 
     /**
@@ -10178,7 +10112,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         } else
         if (count == 0) {
-            return ignoreElements();
+            return toCompletable().toObservable();
         } else
         if (count == 1) {
             return RxJavaPlugins.onAssembly(new ObservableTakeLastOne<T>(this));
@@ -11178,7 +11112,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toList() {
+    public final Single<List<T>> toList() {
         return toList(16);
     }
 
@@ -11208,7 +11142,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toList(final int capacityHint) {
+    public final Single<List<T>> toList(final int capacityHint) {
         ObjectHelper.verifyPositive(capacityHint, "capacityHint");
         return RxJavaPlugins.onAssembly(new ObservableToList<T, List<T>>(this, capacityHint));
     }
@@ -11240,7 +11174,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U extends Collection<? super T>> Observable<U> toList(Callable<U> collectionSupplier) {
+    public final <U extends Collection<? super T>> Single<U> toList(Callable<U> collectionSupplier) {
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
         return RxJavaPlugins.onAssembly(new ObservableToList<T, U>(this, collectionSupplier));
     }
@@ -11265,7 +11199,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K> Observable<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
+    public final <K> Single<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
         return collect(HashMapSupplier.<K, T>asCallable(), Functions.toMapKeySelector(keySelector));
     }
 
@@ -11293,7 +11227,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Observable<Map<K, V>> toMap(
+    public final <K, V> Single<Map<K, V>> toMap(
             final Function<? super T, ? extends K> keySelector, 
             final Function<? super T, ? extends V> valueSelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
@@ -11324,7 +11258,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Observable<Map<K, V>> toMap(
+    public final <K, V> Single<Map<K, V>> toMap(
             final Function<? super T, ? extends K> keySelector, 
             final Function<? super T, ? extends V> valueSelector,
             Callable<? extends Map<K, V>> mapSupplier) {
@@ -11349,7 +11283,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K> Observable<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
+    public final <K> Single<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
         @SuppressWarnings({ "rawtypes", "unchecked" })
         Function<? super T, ? extends T> valueSelector = (Function)Functions.identity();
         Callable<Map<K, Collection<T>>> mapSupplier = HashMapSupplier.asCallable();
@@ -11379,7 +11313,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
+    public final <K, V> Single<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
         Callable<Map<K, Collection<V>>> mapSupplier = HashMapSupplier.asCallable();
         Function<K, List<V>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
@@ -11411,7 +11345,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(
+    public final <K, V> Single<Map<K, Collection<V>>> toMultimap(
             final Function<? super T, ? extends K> keySelector, 
             final Function<? super T, ? extends V> valueSelector, 
             final Callable<? extends Map<K, Collection<V>>> mapSupplier,
@@ -11447,7 +11381,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(
+    public final <K, V> Single<Map<K, Collection<V>>> toMultimap(
             Function<? super T, ? extends K> keySelector, 
             Function<? super T, ? extends V> valueSelector,
             Callable<Map<K, Collection<V>>> mapSupplier
@@ -11517,7 +11451,32 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> toSingle() {
-        return RxJavaPlugins.onAssembly(new SingleFromObservable<T>(this));
+        return RxJavaPlugins.onAssembly(new SingleFromObservable<T>(this, null));
+    }
+
+    /**
+     * Returns a Single that emits the single item emitted by the source ObservableSource, if that ObservableSource
+     * emits only a single item. If the source ObservableSource emits more than one item or no items, notify of an
+     * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
+     * <p>
+     * <img width="640" height="295" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toSingle.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a Single that emits the single item emitted by the source ObservableSource
+     * @throws IllegalArgumentException
+     *             if the source ObservableSource emits more than one item
+     * @throws NoSuchElementException
+     *             if the source ObservableSource emits no items
+     * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
+     * @since 2.0
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<T> toSingle(T defualtIfEmpty) {
+        ObjectHelper.requireNonNull(defualtIfEmpty, "defualtIfEmpty is null");
+        return RxJavaPlugins.onAssembly(new SingleFromObservable<T>(this, defualtIfEmpty));
     }
 
     /**
@@ -11539,7 +11498,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toSortedList() {
+    public final Single<List<T>> toSortedList() {
         return toSortedList(Functions.naturalOrder());
     }
 
@@ -11561,7 +11520,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toSortedList(final Comparator<? super T> comparator) {
+    public final Single<List<T>> toSortedList(final Comparator<? super T> comparator) {
         ObjectHelper.requireNonNull(comparator, "comparator is null");
         return toList().map(Functions.listSorter(comparator));
     }
@@ -11587,7 +11546,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toSortedList(final Comparator<? super T> comparator, int capacityHint) {
+    public final Single<List<T>> toSortedList(final Comparator<? super T> comparator, int capacityHint) {
         ObjectHelper.requireNonNull(comparator, "comparator is null");
         return toList(capacityHint).map(Functions.listSorter(comparator));
     }
@@ -11614,7 +11573,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toSortedList(int capacityHint) {
+    public final Single<List<T>> toSortedList(int capacityHint) {
         return toSortedList(Functions.<T>naturalOrder(), capacityHint);
     }
 

@@ -11,13 +11,12 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.subscribers.observable;
+package io.reactivex.internal.subscribers.single;
 
-import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -28,15 +27,15 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class FutureObserver<T> extends CountDownLatch
-implements Observer<T>, Future<T>, Disposable {
+public final class FutureSingleObserver<T> extends CountDownLatch
+implements SingleObserver<T>, Future<T>, Disposable {
 
     T value;
     Throwable error;
     
     final AtomicReference<Disposable> s;
     
-    public FutureObserver() {
+    public FutureSingleObserver() {
         super(1);
         this.s = new AtomicReference<Disposable>();
     }
@@ -110,7 +109,7 @@ implements Observer<T>, Future<T>, Disposable {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onSuccess(T t) {
         if (value != null) {
             s.get().dispose();
             onError(new IndexOutOfBoundsException("More than one element received"));
@@ -137,24 +136,6 @@ implements Observer<T>, Future<T>, Disposable {
             }
         } else {
             RxJavaPlugins.onError(t);
-        }
-    }
-
-    @Override
-    public void onComplete() {
-        if (value == null) {
-            onError(new NoSuchElementException("The source is empty"));
-            return;
-        }
-        for (;;) {
-            Disposable a = s.get();
-            if (a == this || a == DisposableHelper.DISPOSED) {
-                return;
-            }
-            if (s.compareAndSet(a, this)) {
-                countDown();
-                return;
-            }
         }
     }
     

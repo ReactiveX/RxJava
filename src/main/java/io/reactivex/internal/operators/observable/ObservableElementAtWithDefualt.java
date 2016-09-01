@@ -13,37 +13,40 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.NoSuchElementException;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.operators.single.AbstractSingleWithUpstreamObservable;
 
-public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T, T> {
-    
+public final class ObservableElementAtWithDefualt<T> extends AbstractSingleWithUpstreamObservable<T, T> {
+    final long index;
     final T defaultValue;
-    
-    public ObservableSingle(ObservableSource<T> source, T defaultValue) {
+
+    public ObservableElementAtWithDefualt(ObservableSource<T> source, long index, T defaultValue) {
         super(source);
+        this.index = index;
         this.defaultValue = defaultValue;
     }
+
     @Override
-    public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new SingleElementSubscriber<T>(t, defaultValue));
+    public void subscribeActual(SingleObserver<? super T> t) {
+        source.subscribe(new ElementAtSubscriber<T>(t, index, defaultValue));
     }
     
-    static final class SingleElementSubscriber<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+    static final class ElementAtSubscriber<T> implements Observer<T>, Disposable {
+        final SingleObserver<? super T> actual;
+        final long index;
         final T defaultValue;
         
         Disposable s;
         
-        T value;
+        long count;
         
         boolean done;
         
-        public SingleElementSubscriber(Observer<? super T> actual, T defaultValue) {
+        public ElementAtSubscriber(SingleObserver<? super T> actual, long index, T defaultValue) {
             this.actual = actual;
+            this.index = index;
             this.defaultValue = defaultValue;
         }
         
@@ -72,13 +75,14 @@ public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T,
             if (done) {
                 return;
             }
-            if (value != null) {
+            long c = count;
+            if (c == index) {
                 done = true;
                 s.dispose();
-                actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
+                actual.onSuccess(t);
                 return;
             }
-            value = t;
+            count = c + 1;
         }
         
         @Override
@@ -92,20 +96,9 @@ public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T,
         
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            T v = value;
-            value = null;
-            if (v == null) {
-                v = defaultValue;
-            }
-            if (v == null) {
-                actual.onError(new NoSuchElementException());
-            } else {
-                actual.onNext(v);
-                actual.onComplete();
+            if (index <= count && !done) {
+                done = true;
+                actual.onSuccess(defaultValue);
             }
         }
     }

@@ -18,9 +18,10 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.operators.single.AbstractSingleWithUpstreamObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableCollect<T, U> extends AbstractObservableWithUpstream<T, U> {
+public final class ObservableCollect<T, U> extends AbstractSingleWithUpstreamObservable<T, U> {
     final Callable<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
     
@@ -32,7 +33,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
     }
 
     @Override
-    protected void subscribeActual(Observer<? super U> t) {
+    protected void subscribeActual(SingleObserver<? super U> t) {
         U u;
         try {
             u = initialSupplier.call();
@@ -51,7 +52,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
     }
     
     static final class CollectSubscriber<T, U> implements Observer<T>, Disposable {
-        final Observer<? super U> actual;
+        final SingleObserver<? super U> actual;
         final BiConsumer<? super U, ? super T> collector;
         final U u;
         
@@ -59,7 +60,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
         
         boolean done;
         
-        public CollectSubscriber(Observer<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
+        public CollectSubscriber(SingleObserver<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
             this.actual = actual;
             this.collector = collector;
             this.u = u;
@@ -114,8 +115,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
                 return;
             }
             done = true;
-            actual.onNext(u);
-            actual.onComplete();
+            actual.onSuccess(u);
         }
     }
 }

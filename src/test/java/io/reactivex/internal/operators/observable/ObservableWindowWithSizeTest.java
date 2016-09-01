@@ -24,6 +24,7 @@ import org.junit.Test;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.Single;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
@@ -34,9 +35,9 @@ public class ObservableWindowWithSizeTest {
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
 
         final List<List<T>> lists = new ArrayList<List<T>>();
-        Observable.concat(observables.map(new Function<Observable<T>, Observable<List<T>>>() {
+        Single.concat(observables.map(new Function<Observable<T>, Single<List<T>>>() {
             @Override
-            public Observable<List<T>> apply(Observable<T> xs) {
+            public Single<List<T>> apply(Observable<T> xs) {
                 return xs.toList();
             }
         }))

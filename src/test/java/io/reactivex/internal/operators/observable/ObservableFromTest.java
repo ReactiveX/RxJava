@@ -28,6 +28,7 @@ public class ObservableFromTest {
     @Test
     public void fromFutureTimeout() throws Exception {
         Observable.fromFuture(Observable.never()
+        .toSingle()
         .toFuture(), 100, TimeUnit.MILLISECONDS, Schedulers.io())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)

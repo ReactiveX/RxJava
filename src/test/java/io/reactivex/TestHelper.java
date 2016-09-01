@@ -72,7 +72,17 @@ public enum TestHelper {
     public static <T> Observer<T> mockObserver() {
         return mock(Observer.class);
     }
-    
+
+    @SuppressWarnings("unchecked")
+    public static <T> SingleObserver<T> mockSingleObserver() {
+        return mock(SingleObserver.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> MaybeObserver<T> mockMaybeObserver() {
+        return mock(MaybeObserver.class);
+    }
+
     /**
      * Validates that the given class, when forcefully instantiated throws
      * an IllegalArgumentException("No instances!") exception.

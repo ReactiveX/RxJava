@@ -23,6 +23,8 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
@@ -36,7 +38,12 @@ import io.reactivex.subjects.*;
 
 public class ObservableTests {
 
+    @Mock
     Observer<Number> w;
+    @Mock
+    SingleObserver<Number> s;
+    @Mock
+    MaybeObserver<Number> m;
 
     private static final Predicate<Integer> IS_EVEN = new Predicate<Integer>() {
         @Override
@@ -47,13 +54,13 @@ public class ObservableTests {
 
     @Before
     public void before() {
-        w = TestHelper.mockObserver();
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
     public void fromArray() {
         String[] items = new String[] { "one", "two", "three" };
-        assertEquals((Long)3L, Observable.fromArray(items).count().blockingSingle());
+        assertEquals((Long)3L, Observable.fromArray(items).count().blockingGet());
         assertEquals("two", Observable.fromArray(items).skip(1).take(1).blockingSingle());
         assertEquals("three", Observable.fromArray(items).takeLast(1).blockingSingle());
     }
@@ -65,7 +72,7 @@ public class ObservableTests {
         items.add("two");
         items.add("three");
 
-        assertEquals((Long)3L, Observable.fromIterable(items).count().blockingSingle());
+        assertEquals((Long)3L, Observable.fromIterable(items).count().blockingGet());
         assertEquals("two", Observable.fromIterable(items).skip(1).take(1).blockingSingle());
         assertEquals("three", Observable.fromIterable(items).takeLast(1).blockingSingle());
     }
@@ -74,7 +81,7 @@ public class ObservableTests {
     public void fromArityArgs3() {
         Observable<String> items = Observable.just("one", "two", "three");
 
-        assertEquals((Long)3L, items.count().blockingSingle());
+        assertEquals((Long)3L, items.count().blockingGet());
         assertEquals("two", items.skip(1).take(1).blockingSingle());
         assertEquals("three", items.takeLast(1).blockingSingle());
     }
@@ -83,7 +90,7 @@ public class ObservableTests {
     public void fromArityArgs1() {
         Observable<String> items = Observable.just("one");
 
-        assertEquals((Long)1L, items.count().blockingSingle());
+        assertEquals((Long)1L, items.count().blockingGet());
         assertEquals("one", items.takeLast(1).blockingSingle());
     }
 
@@ -107,24 +114,21 @@ public class ObservableTests {
     public void testCountAFewItems() {
         Observable<String> o = Observable.just("a", "b", "c", "d");
         
-        o.count().subscribe(w);
+        o.count().subscribe(s);
         
         // we should be called only once
-        verify(w, times(1)).onNext(anyLong());
-        verify(w).onNext(4L);
-        verify(w, never()).onError(any(Throwable.class));
-        verify(w, times(1)).onComplete();
+        verify(s, times(1)).onSuccess(anyLong());
+        verify(s).onSuccess(4L);
+        verify(s, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testCountZeroItems() {
         Observable<String> o = Observable.empty();
-        o.count().subscribe(w);
+        o.count().subscribe(s);
         // we should be called only once
-        verify(w, times(1)).onNext(anyLong());
-        verify(w).onNext(0L);
-        verify(w, never()).onError(any(Throwable.class));
-        verify(w, times(1)).onComplete();
+        verify(s, times(1)).onSuccess(0L);
+        verify(s, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -136,10 +140,9 @@ public class ObservableTests {
             }
         });
         
-        o.count().subscribe(w);
-        verify(w, never()).onNext(anyInt());
-        verify(w, never()).onComplete();
-        verify(w, times(1)).onError(any(RuntimeException.class));
+        o.count().subscribe(s);
+        verify(s, never()).onSuccess(anyInt());
+        verify(s, times(1)).onError(any(RuntimeException.class));
     }
 
     @Test
@@ -183,19 +186,19 @@ public class ObservableTests {
     @Test
     public void testFirstOfNone() {
         Observable<Integer> o = Observable.empty();
-        o.first().subscribe(w);
-        verify(w, never()).onNext(anyInt());
-        verify(w, never()).onComplete();
-        verify(w, times(1)).onError(isA(NoSuchElementException.class));
+        o.first().subscribe(m);
+        verify(m, never()).onSuccess(anyInt());
+        verify(m, times(1)).onComplete();
+        verify(m, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testFirstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> o = Observable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        o.filter(IS_EVEN).first().subscribe(w);
-        verify(w, never()).onNext(anyInt());
-        verify(w, never()).onComplete();
-        verify(w, times(1)).onError(isA(NoSuchElementException.class));
+        o.filter(IS_EVEN).first().subscribe(m);
+        verify(m, never()).onSuccess(anyInt());
+        verify(m, never()).onComplete();
+        verify(m, times(1)).onError(isA(NoSuchElementException.class));
     }
 
     @Test
@@ -207,10 +210,9 @@ public class ObservableTests {
                 return t1 + t2;
             }
         })
-        .subscribe(w);
+        .subscribe(m);
         // we should be called only once
-        verify(w, times(1)).onNext(anyInt());
-        verify(w).onNext(10);
+        verify(m, times(1)).onSuccess(10);
     }
 
     /**
@@ -225,12 +227,7 @@ public class ObservableTests {
                 return t1 + t2;
             }
         })
-        .blockingForEach(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t1) {
-                // do nothing ... we expect an exception instead
-            }
-        });
+        .blockingGet(-1);
 
         fail("Expected an exception to be thrown");
     }
@@ -248,8 +245,7 @@ public class ObservableTests {
             public Integer apply(Integer t1, Integer t2) {
                 return t1 + t2;
             }
-        })
-                .blockingLast();
+        }).blockingGet();
 
         assertEquals(1, value);
     }
@@ -263,10 +259,9 @@ public class ObservableTests {
                 return t1 + t2;
             }
         })
-        .subscribe(w);
+        .subscribe(s);
         // we should be called only once
-        verify(w, times(1)).onNext(anyInt());
-        verify(w).onNext(60);
+        verify(s, times(1)).onSuccess(60);
     }
 
     @Ignore("Throwing is not allowed from the unsafeCreate?!")
@@ -756,76 +751,59 @@ public class ObservableTests {
 
     @Test
     public void testContains() {
-        Observable<Boolean> o = Observable.just("a", "b", "c").contains("b"); // FIXME nulls not allowed, changed to "c"
+        Single<Boolean> o = Observable.just("a", "b", "c").contains("b"); // FIXME nulls not allowed, changed to "c"
 
-        Observer<Boolean> observer = TestHelper.mockObserver();
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
         o.subscribe(observer);
         
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onNext(false);
+        verify(observer, times(1)).onSuccess(true);
+        verify(observer, never()).onSuccess(false);
         verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testContainsWithInexistence() {
-        Observable<Boolean> o = Observable.just("a", "b").contains("c"); // FIXME null values are not allowed, removed
+        Single<Boolean> o = Observable.just("a", "b").contains("c"); // FIXME null values are not allowed, removed
 
-        Observer<Object> observer = TestHelper.mockObserver();
+        SingleObserver<Object> observer = TestHelper.mockSingleObserver();
         
         o.subscribe(observer);
         
-        verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onNext(true);
+        verify(observer, times(1)).onSuccess(false);
+        verify(observer, never()).onSuccess(true);
         verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(observer, times(1)).onComplete();
     }
 
     @Test
     @Ignore("null values are not allowed")
     public void testContainsWithNull() {
-        Observable<Boolean> o = Observable.just("a", "b", null).contains(null);
+        Single<Boolean> o = Observable.just("a", "b", null).contains(null);
 
-        Observer<Object> observer = TestHelper.mockObserver();
+        SingleObserver<Object> observer = TestHelper.mockSingleObserver();
 
         o.subscribe(observer);
         
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onNext(false);
+        verify(observer, times(1)).onSuccess(true);
+        verify(observer, never()).onSuccess(false);
         verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testContainsWithEmptyObservable() {
-        Observable<Boolean> o = Observable.<String> empty().contains("a");
+        Single<Boolean> o = Observable.<String> empty().contains("a");
 
-        Observer<Object> observer = TestHelper.mockObserver();
+        SingleObserver<Object> observer = TestHelper.mockSingleObserver();
         
         o.subscribe(observer);
         
-        verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onNext(true);
+        verify(observer, times(1)).onSuccess(false);
+        verify(observer, never()).onSuccess(true);
         verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-    }
-
-    @Test
-    public void testIgnoreElements() {
-        Observable<Integer> o = Observable.just(1, 2, 3).ignoreElements();
-
-        Observer<Object> observer = TestHelper.mockObserver();
-
-        o.subscribe(observer);
-        
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
     }
 
     @Test
@@ -932,7 +910,7 @@ public class ObservableTests {
                         }
                     })
                     .toList()
-                    .doOnNext(new Consumer<List<Boolean>>() {
+                    .doOnSuccess(new Consumer<List<Boolean>>() {
                         @Override
                         public void accept(List<Boolean> booleans) {
                             count.incrementAndGet();

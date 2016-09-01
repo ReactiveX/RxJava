@@ -20,6 +20,7 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.*;
 
 public class ObservableWindowTests {
@@ -28,12 +29,12 @@ public class ObservableWindowTests {
     public void testWindow() {
         final ArrayList<List<Integer>> lists = new ArrayList<List<Integer>>();
 
-        Observable.concat(
+        Single.concat(
             Observable.just(1, 2, 3, 4, 5, 6)
             .window(3)
-            .map(new Function<Observable<Integer>, Observable<List<Integer>>>() {
+            .map(new Function<Observable<Integer>, Single<List<Integer>>>() {
                 @Override
-                public Observable<List<Integer>> apply(Observable<Integer> xs) {
+                public Single<List<Integer>> apply(Observable<Integer> xs) {
                     return xs.toList();
                 }
             })

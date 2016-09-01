@@ -18,17 +18,22 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 
 public class ObservableReduceTest {
-    Observer<Object> NbpObserver;
+    @Mock
+    SingleObserver<Object> NbpSingleObserver;
+    @Mock
+    MaybeObserver<Object> NbpMaybeObserver;
 
     @Before
     public void before() {
-        NbpObserver = TestHelper.mockObserver();
+        MockitoAnnotations.initMocks(this);
     }
 
     BiFunction<Integer, Integer, Integer> sum = new BiFunction<Integer, Integer, Integer>() {
@@ -41,7 +46,7 @@ public class ObservableReduceTest {
     @Test
     public void testAggregateAsIntSum() {
 
-        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum)
+        Single<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum)
                 .map(new Function<Integer, Integer>() {
                     @Override
                     public Integer apply(Integer v) {
@@ -49,16 +54,15 @@ public class ObservableReduceTest {
                     }
                 });
 
-        result.subscribe(NbpObserver);
+        result.subscribe(NbpSingleObserver);
 
-        verify(NbpObserver).onNext(1 + 2 + 3 + 4 + 5);
-        verify(NbpObserver).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(NbpSingleObserver).onSuccess(1 + 2 + 3 + 4 + 5);
+        verify(NbpSingleObserver, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testAggregateAsIntSumSourceThrows() {
-        Observable<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
+        Single<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
                 .reduce(0, sum).map(new Function<Integer, Integer>() {
                     @Override
@@ -67,11 +71,10 @@ public class ObservableReduceTest {
                     }
                 });
 
-        result.subscribe(NbpObserver);
+        result.subscribe(NbpSingleObserver);
 
-        verify(NbpObserver, never()).onNext(any());
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, times(1)).onError(any(TestException.class));
+        verify(NbpSingleObserver, never()).onSuccess(any());
+        verify(NbpSingleObserver, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -83,7 +86,7 @@ public class ObservableReduceTest {
             }
         };
 
-        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
+        Single<Integer> result = Observable.just(1, 2, 3, 4, 5)
                 .reduce(0, sumErr).map(new Function<Integer, Integer>() {
                     @Override
                     public Integer apply(Integer v) {
@@ -91,11 +94,10 @@ public class ObservableReduceTest {
                     }
                 });
 
-        result.subscribe(NbpObserver);
+        result.subscribe(NbpSingleObserver);
 
-        verify(NbpObserver, never()).onNext(any());
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, times(1)).onError(any(TestException.class));
+        verify(NbpSingleObserver, never()).onSuccess(any());
+        verify(NbpSingleObserver, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -109,31 +111,30 @@ public class ObservableReduceTest {
             }
         };
 
-        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
+        Single<Integer> result = Observable.just(1, 2, 3, 4, 5)
                 .reduce(0, sum).map(error);
 
-        result.subscribe(NbpObserver);
+        result.subscribe(NbpSingleObserver);
 
-        verify(NbpObserver, never()).onNext(any());
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, times(1)).onError(any(TestException.class));
+        verify(NbpSingleObserver, never()).onSuccess(any());
+        verify(NbpSingleObserver, times(1)).onError(any(TestException.class));
     }
 
     @Test
     public void testBackpressureWithNoInitialValue() throws InterruptedException {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Observable<Integer> reduced = source.reduce(sum);
+        Maybe<Integer> reduced = source.reduce(sum);
 
-        Integer r = reduced.blockingFirst();
+        Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());
     }
 
     @Test
     public void testBackpressureWithInitialValue() throws InterruptedException {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Observable<Integer> reduced = source.reduce(0, sum);
+        Single<Integer> reduced = source.reduce(0, sum);
 
-        Integer r = reduced.blockingFirst();
+        Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());
     }
 

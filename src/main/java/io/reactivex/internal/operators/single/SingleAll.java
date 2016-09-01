@@ -10,36 +10,38 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-package io.reactivex.internal.operators.observable;
+package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.operators.single.AbstractSingleWithUpstreamObservable;
 
-public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Boolean> {
+public final class SingleAll<T> extends AbstractSingleWithUpstreamObservable<T, Boolean> {
     final Predicate<? super T> predicate;
-    public ObservableAny(ObservableSource<T> source, Predicate<? super T> predicate) {
+
+    public SingleAll(ObservableSource<T> source, Predicate<? super T> predicate) {
         super(source);
         this.predicate = predicate;
     }
     
     @Override
-    protected void subscribeActual(Observer<? super Boolean> t) {
-        source.subscribe(new AnySubscriber<T>(t, predicate));
+    protected void subscribeActual(SingleObserver<? super Boolean> t) {
+        source.subscribe(new AllSubscriber<T>(t, predicate));
     }
     
-    static final class AnySubscriber<T> implements Observer<T>, Disposable {
-        
-        final Observer<? super Boolean> actual;
+    static final class AllSubscriber<T> implements Observer<T>, Disposable {
+        final SingleObserver<? super Boolean> actual;
         final Predicate<? super T> predicate;
         
         Disposable s;
         
         boolean done;
-
-        public AnySubscriber(Observer<? super Boolean> actual, Predicate<? super T> predicate) {
+        
+        public AllSubscriber(SingleObserver<? super Boolean> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }
@@ -65,31 +67,32 @@ public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Bo
                 onError(e);
                 return;
             }
-            if (b) {
+            if (!b) {
                 done = true;
                 s.dispose();
-                actual.onNext(true);
-                actual.onComplete();
+                actual.onSuccess(false);
             }
         }
         
         @Override
         public void onError(Throwable t) {
-            if (!done) {
-                done = true;
-                actual.onError(t);
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
             }
+            done = true;
+            actual.onError(t);
         }
         
         @Override
         public void onComplete() {
-            if (!done) {
-                done = true;
-                actual.onNext(false);
-                actual.onComplete();
+            if (done) {
+                return;
             }
+            done = true;
+            actual.onSuccess(true);
         }
-
+        
         @Override
         public void dispose() {
             s.dispose();

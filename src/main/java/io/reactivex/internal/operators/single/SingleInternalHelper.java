@@ -19,6 +19,7 @@ import java.util.concurrent.Callable;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 
 /**
@@ -53,6 +54,21 @@ public enum SingleInternalHelper {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Function<SingleSource<? extends T>, Publisher<? extends T>> toFlowable() {
         return (Function)ToFlowable.INSTANCE;
+    }
+
+    @SuppressWarnings("rawtypes")
+    enum ToObservable implements Function<SingleSource, Observable> {
+        INSTANCE;
+        @SuppressWarnings("unchecked")
+        @Override 
+        public Observable apply(SingleSource v){
+            return new SingleToObservable(v);
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Function<SingleSource<? extends T>, Observable<? extends T>> toObservable() {
+        return (Function)ToObservable.INSTANCE;
     }
 
     static final class ToFlowableIterator<T> implements Iterator<Flowable<T>> {

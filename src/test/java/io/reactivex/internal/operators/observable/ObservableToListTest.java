@@ -23,7 +23,8 @@ import org.junit.*;
 import org.mockito.Mockito;
 
 import io.reactivex.Observable;
-import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.TestHelper;
 
 public class ObservableToListTest {
@@ -31,66 +32,61 @@ public class ObservableToListTest {
     @Test
     public void testList() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> NbpObservable = w.toList();
+        Single<List<String>> NbpObservable = w.toList();
 
-        Observer<List<String>> NbpObserver = TestHelper.mockObserver();
+        SingleObserver<List<String>> NbpObserver = TestHelper.mockSingleObserver();
         NbpObservable.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(NbpObserver, times(1)).onSuccess(Arrays.asList("one", "two", "three"));
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
     }
     
     @Test
     public void testListViaObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> NbpObservable = w.toList();
+        Single<List<String>> NbpObservable = w.toList();
 
-        Observer<List<String>> NbpObserver = TestHelper.mockObserver();
+        SingleObserver<List<String>> NbpObserver = TestHelper.mockSingleObserver();
         NbpObservable.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(NbpObserver, times(1)).onSuccess(Arrays.asList("one", "two", "three"));
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
     }
 
     @Test
     public void testListMultipleSubscribers() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> NbpObservable = w.toList();
+        Single<List<String>> NbpObservable = w.toList();
 
-        Observer<List<String>> o1 = TestHelper.mockObserver();
+        SingleObserver<List<String>> o1 = TestHelper.mockSingleObserver();
         NbpObservable.subscribe(o1);
 
-        Observer<List<String>> o2 = TestHelper.mockObserver();
+        SingleObserver<List<String>> o2 = TestHelper.mockSingleObserver();
         NbpObservable.subscribe(o2);
 
         List<String> expected = Arrays.asList("one", "two", "three");
 
-        verify(o1, times(1)).onNext(expected);
+        verify(o1, times(1)).onSuccess(expected);
         verify(o1, Mockito.never()).onError(any(Throwable.class));
-        verify(o1, times(1)).onComplete();
 
-        verify(o2, times(1)).onNext(expected);
+        verify(o2, times(1)).onSuccess(expected);
         verify(o2, Mockito.never()).onError(any(Throwable.class));
-        verify(o2, times(1)).onComplete();
     }
 
     @Test
     @Ignore("Null values are not allowed")
     public void testListWithNullValue() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", null, "three"));
-        Observable<List<String>> NbpObservable = w.toList();
+        Single<List<String>> NbpObservable = w.toList();
 
-        Observer<List<String>> NbpObserver = TestHelper.mockObserver();
+        SingleObserver<Object> NbpObserver = TestHelper.mockSingleObserver();
         NbpObservable.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext(Arrays.asList("one", null, "three"));
+        verify(NbpObserver, times(1)).onSuccess(Arrays.asList("one", null, "three"));
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
     }
 
     @Test
     public void testListWithBlockingFirst() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        List<String> actual = o.toList().blockingFirst();
+        List<String> actual = o.toList().blockingGet();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 

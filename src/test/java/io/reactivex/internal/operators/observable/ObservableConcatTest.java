@@ -606,9 +606,9 @@ public class ObservableConcatTest {
             }
         });
         
-        Observable<List<Integer>> result = Observable.concat(source).toList();
+        Single<List<Integer>> result = Observable.concat(source).toList();
         
-        Observer<List<Integer>> o = TestHelper.mockObserver();
+        SingleObserver<List<Integer>> o = TestHelper.mockSingleObserver();
         InOrder inOrder = inOrder(o);
         
         result.subscribe(o);
@@ -617,8 +617,7 @@ public class ObservableConcatTest {
         for (int i = 0; i < n; i++) {
             list.add(i);
         }
-        inOrder.verify(o).onNext(list);
-        inOrder.verify(o).onComplete();
+        inOrder.verify(o).onSuccess(list);
         verify(o, never()).onError(any(Throwable.class));
     }
     @Test
@@ -631,9 +630,9 @@ public class ObservableConcatTest {
             }
         });
         
-        Observable<List<Integer>> result = Observable.concat(source).take(n / 2).toList();
+        Single<List<Integer>> result = Observable.concat(source).take(n / 2).toList();
         
-        Observer<List<Integer>> o = TestHelper.mockObserver();
+        SingleObserver<List<Integer>> o = TestHelper.mockSingleObserver();
         InOrder inOrder = inOrder(o);
         
         result.subscribe(o);
@@ -642,8 +641,7 @@ public class ObservableConcatTest {
         for (int i = 0; i < n / 2; i++) {
             list.add(i);
         }
-        inOrder.verify(o).onNext(list);
-        inOrder.verify(o).onComplete();
+        inOrder.verify(o).onSuccess(list);
         verify(o, never()).onError(any(Throwable.class));
     }
     

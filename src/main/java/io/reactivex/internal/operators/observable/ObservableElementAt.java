@@ -16,24 +16,23 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.operators.maybe.AbstractMaybeWithUpstreamObservable;
 
-public final class ObservableElementAt<T> extends AbstractObservableWithUpstream<T, T> {
+public final class ObservableElementAt<T> extends AbstractMaybeWithUpstreamObservable<T, T> {
     final long index;
-    final T defaultValue;
-    public ObservableElementAt(ObservableSource<T> source, long index, T defaultValue) {
+    public ObservableElementAt(ObservableSource<T> source, long index) {
         super(source);
         this.index = index;
-        this.defaultValue = defaultValue;
     }
+
     @Override
-    public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new ElementAtSubscriber<T>(t, index, defaultValue));
+    public void subscribeActual(MaybeObserver<? super T> t) {
+        source.subscribe(new ElementAtSubscriber<T>(t, index));
     }
     
     static final class ElementAtSubscriber<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final MaybeObserver<? super T> actual;
         final long index;
-        final T defaultValue;
         
         Disposable s;
         
@@ -41,10 +40,9 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
         
         boolean done;
         
-        public ElementAtSubscriber(Observer<? super T> actual, long index, T defaultValue) {
+        public ElementAtSubscriber(MaybeObserver<? super T> actual, long index) {
             this.actual = actual;
             this.index = index;
-            this.defaultValue = defaultValue;
         }
         
         @Override
@@ -76,8 +74,7 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
             if (c == index) {
                 done = true;
                 s.dispose();
-                actual.onNext(t);
-                actual.onComplete();
+                actual.onSuccess(t);
                 return;
             }
             count = c + 1;
@@ -96,13 +93,7 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
         public void onComplete() {
             if (index <= count && !done) {
                 done = true;
-                T v = defaultValue;
-                if (v == null) {
-                    actual.onError(new IndexOutOfBoundsException());
-                } else {
-                    actual.onNext(v);
-                    actual.onComplete();
-                }
+                actual.onComplete();
             }
         }
     }

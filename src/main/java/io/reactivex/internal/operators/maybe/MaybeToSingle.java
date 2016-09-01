@@ -29,9 +29,11 @@ import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
 public final class MaybeToSingle<T> extends Single<T> implements HasUpstreamMaybeSource<T> {
 
     final MaybeSource<T> source;
+    final T defaultValue;
 
-    public MaybeToSingle(MaybeSource<T> source) {
+    public MaybeToSingle(MaybeSource<T> source, T defaultValue) {
         this.source = source;
+        this.defaultValue = defaultValue;
     }
     
     @Override
@@ -41,16 +43,18 @@ public final class MaybeToSingle<T> extends Single<T> implements HasUpstreamMayb
     
     @Override
     protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new ToSingleMaybeSubscriber<T>(observer));
+        source.subscribe(new ToSingleMaybeSubscriber<T>(observer, defaultValue));
     }
     
     static final class ToSingleMaybeSubscriber<T> implements MaybeObserver<T>, Disposable {
         final SingleObserver<? super T> actual;
+        final T defaultValue;
 
         Disposable d;
         
-        public ToSingleMaybeSubscriber(SingleObserver<? super T> actual) {
+        public ToSingleMaybeSubscriber(SingleObserver<? super T> actual, T defaultValue) {
             this.actual = actual;
+            this.defaultValue = defaultValue;
         }
 
         @Override
@@ -88,9 +92,11 @@ public final class MaybeToSingle<T> extends Single<T> implements HasUpstreamMayb
         @Override
         public void onComplete() {
             d = DisposableHelper.DISPOSED;
-            actual.onError(new NoSuchElementException("The MaybeSource is empty"));
+            if (defaultValue != null) {
+                actual.onSuccess(defaultValue);
+            } else {
+                actual.onError(new NoSuchElementException("The MaybeSource is empty"));
+            }
         }
-        
-        
     }
 }

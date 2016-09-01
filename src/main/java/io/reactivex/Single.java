@@ -25,6 +25,7 @@ import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.*;
+import io.reactivex.internal.operators.observable.ObservableConcatMap;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.subscribers.single.*;
 import io.reactivex.internal.util.*;
@@ -145,6 +146,23 @@ public abstract class Single<T> implements SingleSource<T> {
     public static <T> Flowable<T> concat(Publisher<? extends SingleSource<? extends T>> sources, int prefetch) {
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new FlowableConcatMap(sources, SingleInternalHelper.toFlowable(), prefetch, ErrorMode.IMMEDIATE));
+    }
+    
+    /**
+     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * a Publisher sequence. 
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources the Publisher of SingleSource instances
+     * @return the new Flowable instance
+     * @since 2.0
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Observable<T> concat(Observable<? extends SingleSource<? extends T>> sources) {
+        return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, SingleInternalHelper.toObservable(), 2, ErrorMode.IMMEDIATE));
     }
 
     /**
@@ -1668,6 +1686,26 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Returns a Single that is based on applying a specified function to the item emitted by the source Single,
+     * where that function returns a SingleSource.
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R> the result value type
+     * @param mapper
+     *            a function that, when applied to the item emitted by the source Single, returns a SingleSource
+     * @return the Single returned from {@code func} when applied to the item emitted by the source Single
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    public final <R> Observable<R> flatMapObservable(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
+        return toObservable().flatMap(mapper);
+    }
+
+    /**
      * Returns a Flowable that emits items based on applying a specified function to the item emitted by the
      * source Single, where that function returns a Publisher.
      * <p>
@@ -2462,6 +2500,21 @@ public abstract class Single<T> implements SingleSource<T> {
         return RxJavaPlugins.onAssembly(new SingleToFlowable<T>(this));
     }
     
+    /**
+     * Returns a {@link Future} representing the single value emitted by this {@code Single}.
+     * <p>
+     * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a {@link Future} that expects a single item to be emitted by this {@code Single}
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
+     */
+    public final Future<T> toFuture() {
+        return subscribeWith(new FutureSingleObserver<T>());
+    }
     
     /**
      * Converts this Single into a {@link Maybe}.

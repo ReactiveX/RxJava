@@ -26,7 +26,7 @@ public class ObservableStartWithTests {
     @Test
     public void startWith1() {
         List<String> values = Observable.just("one", "two")
-                .startWithArray("zero").toList().blockingSingle();
+                .startWithArray("zero").toList().blockingGet();
 
         assertEquals("zero", values.get(0));
         assertEquals("two", values.get(2));
@@ -37,7 +37,7 @@ public class ObservableStartWithTests {
         List<String> li = new ArrayList<String>();
         li.add("alpha");
         li.add("beta");
-        List<String> values = Observable.just("one", "two").startWith(li).toList().blockingSingle();
+        List<String> values = Observable.just("one", "two").startWith(li).toList().blockingGet();
 
         assertEquals("alpha", values.get(0));
         assertEquals("beta", values.get(1));
@@ -53,7 +53,7 @@ public class ObservableStartWithTests {
         List<String> values = Observable.just("one", "two")
                 .startWith(Observable.fromIterable(li))
                 .toList()
-                .blockingSingle();
+                .blockingGet();
 
         assertEquals("alpha", values.get(0));
         assertEquals("beta", values.get(1));

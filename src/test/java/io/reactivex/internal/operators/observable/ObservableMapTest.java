@@ -213,7 +213,7 @@ public class ObservableMapTest {
                 return i;
             }
 
-        }).blockingSingle();
+        }).blockingGet();
     }
 
     /**
@@ -244,7 +244,7 @@ public class ObservableMapTest {
                 return i / 0;
             }
 
-        }).blockingSingle();
+        }).blockingGet(-1);
     }
 
     // FIXME RS subscribers can't throw
