@@ -750,7 +750,7 @@ public class TestSubscriberTest {
     }
     
     @Test
-    public void awaitValueCount() throws Exception {
+    public void awaitValueCount() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
         
         Observable.range(1, 5).delay(100, TimeUnit.MILLISECONDS)
@@ -763,7 +763,7 @@ public class TestSubscriberTest {
     }
     
     @Test
-    public void awaitValueCountFails() throws Exception {
+    public void awaitValueCountFails() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
         
         Observable.range(1, 2).delay(100, TimeUnit.MILLISECONDS)
