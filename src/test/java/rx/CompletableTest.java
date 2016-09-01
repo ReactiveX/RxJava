@@ -4183,9 +4183,9 @@ public class CompletableTest {
     @Test
     public void doOnEachCompleted() {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
-        Completable.complete().doOnEach(new Action1<Notification<Void>>() {
+        Completable.complete().doOnEach(new Action1<Notification<Object>>() {
             @Override
-            public void call(final Notification<Void> notification) {
+            public void call(final Notification<Object> notification) {
                 if (notification.isOnCompleted()) {
                     atomicInteger.incrementAndGet();
                 }
@@ -4198,9 +4198,9 @@ public class CompletableTest {
     @Test
     public void doOnEachError() {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
-        Completable.error(new RuntimeException("What?")).doOnEach(new Action1<Notification<Void>>() {
+        Completable.error(new RuntimeException("What?")).doOnEach(new Action1<Notification<Object>>() {
             @Override
-            public void call(final Notification<Void> notification) {
+            public void call(final Notification<Object> notification) {
                 if (notification.isOnError()) {
                     atomicInteger.incrementAndGet();
                 }

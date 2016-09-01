@@ -1449,7 +1449,7 @@ public class Completable {
      * @return the new Completable instance
      * @throws NullPointerException if onNotification is null
      */
-    public final Completable doOnEach(final Action1<Notification<Void>> onNotification) {
+    public final Completable doOnEach(final Action1<Notification<Object>> onNotification) {
         if (onNotification == null) {
             throw new IllegalArgumentException("onNotification is null");
         }
