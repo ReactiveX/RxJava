@@ -23,7 +23,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
  * 
  * @since 2.0
  */
-public class ObservableHide<T> extends AbstractObservableWithUpstream<T, T> {
+public final class ObservableHide<T> extends AbstractObservableWithUpstream<T, T> {
 
     public ObservableHide(ObservableSource<T> source) {
         super(source);

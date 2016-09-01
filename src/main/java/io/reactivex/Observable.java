@@ -18,15 +18,15 @@ import java.util.concurrent.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.annotations.SchedulerSupport;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
-import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.functions.*;
+import io.reactivex.internal.fuseable.ScalarCallable;
 import io.reactivex.internal.operators.completable.CompletableFromObservable;
-import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.internal.operators.flowable.FlowableFromObservable;
+import io.reactivex.internal.operators.maybe.MaybeFromObservable;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.operators.single.SingleFromObservable;
 import io.reactivex.internal.subscribers.observable.*;
@@ -1197,7 +1197,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         public void onEvent(Event e) {
      *             emitter.onNext(e);
      *             if (e.isLast()) {
-     *                 emitter.onCompleted();
+     *                 emitter.onComplete();
      *             }
      *         }
      *         
@@ -1273,7 +1273,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T>
      *            the type of the items (ostensibly) emitted by the ObservableSource
      * @return a Observable that emits no items to the {@link Observer} but immediately invokes the
-     *         {@link Subscriber}'s {@link Subscriber#onComplete() onCompleted} method
+     *         {@link Subscriber}'s {@link Subscriber#onComplete() onComplete} method
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Empty</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -3369,10 +3369,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(Arrays.asList(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2)), (a) -&gt; a)</code></pre>
+     * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -3416,10 +3416,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(just(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2)), (a) -&gt; a)</code></pre>
+     * <pre><code>zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -3468,10 +3468,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -3520,10 +3520,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -3573,10 +3573,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -3628,10 +3628,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c) -&gt; a + b)</code></pre>
+     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -3684,10 +3684,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d) -&gt; a + b)</code></pre>
+     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -3744,10 +3744,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d, e) -&gt; a + b)</code></pre>
+     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -3806,10 +3806,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d, e, f) -&gt; a + b)</code></pre>
+     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -3871,10 +3871,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d, e, f, g) -&gt; a + b)</code></pre>
+     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -3940,10 +3940,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d, e, f, g, h) -&gt; a + b)</code></pre>
+     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -4012,10 +4012,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2), ..., (a, b, c, d, e, f, g, h, i) -&gt; a + b)</code></pre>
+     * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h, i) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -4084,10 +4084,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(new ObservableSource[]{range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2)}, (a) -&gt;
+     * <pre><code>zip(new ObservableSource[]{range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)}, (a) -&gt;
      * a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4140,10 +4140,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>zip(Arrays.asList(range(1, 5).doOnCompleted(action1), range(6, 5).doOnCompleted(action2)), (a) -&gt; a)</code></pre>
+     * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -4426,9 +4426,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * waiting if necessary for one to become available.
      * <p>
      * If this {@code Observable} produces items faster than {@code Iterator.next} takes them,
-     * {@code onNext} events might be skipped, but {@code onError} or {@code onCompleted} events are not.
+     * {@code onNext} events might be skipped, but {@code onError} or {@code onComplete} events are not.
      * <p>
-     * Note also that an {@code onNext} directly followed by {@code onCompleted} might hide the {@code onNext}
+     * Note also that an {@code onNext} directly followed by {@code onComplete} might hide the {@code onNext}
      * event.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -6308,16 +6308,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Modifies the source ObservableSource so that it invokes an action when it calls {@code onCompleted}.
+     * Modifies the source ObservableSource so that it invokes an action when it calls {@code onComplete}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnCompleted.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code doOnCompleted} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code doOnComplete} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param onComplete
-     *            the action to invoke when the source ObservableSource calls {@code onCompleted}
+     *            the action to invoke when the source ObservableSource calls {@code onComplete}
      * @return the source ObservableSource with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
@@ -6378,7 +6378,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * In case the {@code onError} of the supplied observer throws, the downstream will receive a composite
      * exception containing the original exception and the exception thrown by {@code onError}. If either the
-     * {@code onNext} or the {@code onCompleted} method of the supplied observer throws, the downstream will be
+     * {@code onNext} or the {@code onComplete} method of the supplied observer throws, the downstream will be
      * terminated and will receive this thrown exception.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.o.png" alt="">
@@ -6388,7 +6388,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param observer
-     *            the observer to be notified about onNext, onError and onCompleted events on its
+     *            the observer to be notified about onNext, onError and onComplete events on its
      *            respective methods before the actual downstream Subscriber gets notified.
      * @return the source ObservableSource with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
@@ -6491,12 +6491,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Modifies the source ObservableSource so that it invokes an action when it calls {@code onCompleted} or
+     * Modifies the source ObservableSource so that it invokes an action when it calls {@code onComplete} or
      * {@code onError}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.png" alt="">
      * <p>
-     * This differs from {@code finallyDo} in that this happens <em>before</em> the {@code onCompleted} or
+     * This differs from {@code finallyDo} in that this happens <em>before</em> the {@code onComplete} or
      * {@code onError} notification.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -6504,7 +6504,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * 
      * @param onTerminate
-     *            the action to invoke when the source ObservableSource calls {@code onCompleted} or {@code onError}
+     *            the action to invoke when the source ObservableSource calls {@code onComplete} or {@code onError}
      * @return the source ObservableSource with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      * @see #doAfterTerminate(Action)
@@ -6784,7 +6784,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a function that returns a ObservableSource to merge for an onError notification from the source
      *            ObservableSource
      * @param onCompleteSupplier
-     *            a function that returns a ObservableSource to merge for an onCompleted notification from the source
+     *            a function that returns a ObservableSource to merge for an onComplete notification from the source
      *            ObservableSource
      * @return a Observable that emits the results of merging the ObservableSources returned from applying the
      *         specified functions to the emissions and notifications of the source ObservableSource
@@ -6820,7 +6820,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a function that returns a ObservableSource to merge for an onError notification from the source
      *            ObservableSource
      * @param onCompleteSupplier
-     *            a function that returns a ObservableSource to merge for an onCompleted notification from the source
+     *            a function that returns a ObservableSource to merge for an onComplete notification from the source
      *            ObservableSource
      * @param maxConcurrency
      *         the maximum number of ObservableSources that may be subscribed to concurrently
@@ -7480,7 +7480,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Ignores all items emitted by the source ObservableSource and only calls {@code onCompleted} or {@code onError}.
+     * Ignores all items emitted by the source ObservableSource and only calls {@code onComplete} or {@code onError}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.png" alt="">
      * <dl>
@@ -7488,7 +7488,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code ignoreElements} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @return an empty ObservableSource that only calls {@code onCompleted} or {@code onError}, based on which one is
+     * @return an empty ObservableSource that only calls {@code onComplete} or {@code onError}, based on which one is
      *         called by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElements</a>
      */
@@ -8283,10 +8283,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Observable that emits the same values as the source ObservableSource with the exception of an
-     * {@code onCompleted}. An {@code onCompleted} notification from the source will result in the emission of
+     * {@code onComplete}. An {@code onComplete} notification from the source will result in the emission of
      * a {@code void} item to the ObservableSource provided as an argument to the {@code notificationHandler}
      * function. If that ObservableSource calls {@code onComplete} or {@code onError} then {@code repeatWhen} will
-     * call {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this ObservableSource will
+     * call {@code onComplete} or {@code onError} on the child subscription. Otherwise, this ObservableSource will
      * resubscribe to the source ObservableSource.
      * <p>
      * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
@@ -8782,7 +8782,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Any and all items emitted by the source ObservableSource will be emitted by the resulting ObservableSource, even
      * those emitted during failed subscriptions. For example, if a ObservableSource fails at first but emits
      * {@code [1, 2]} then succeeds the second time and emits {@code [1, 2, 3, 4, 5]} then the complete sequence
-     * of emissions and notifications would be {@code [1, 2, 1, 2, 3, 4, 5, onCompleted]}.
+     * of emissions and notifications would be {@code [1, 2, 1, 2, 3, 4, 5, onComplete]}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8833,7 +8833,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Any and all items emitted by the source ObservableSource will be emitted by the resulting ObservableSource, even
      * those emitted during failed subscriptions. For example, if a ObservableSource fails at first but emits
      * {@code [1, 2]} then succeeds the second time and emits {@code [1, 2, 3, 4, 5]} then the complete sequence
-     * of emissions and notifications would be {@code [1, 2, 1, 2, 3, 4, 5, onCompleted]}.
+     * of emissions and notifications would be {@code [1, 2, 1, 2, 3, 4, 5, onComplete]}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8905,7 +8905,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * {@code onError}. An {@code onError} notification from the source will result in the emission of a
      * {@link Throwable} item to the ObservableSource provided as an argument to the {@code notificationHandler}
      * function. If that ObservableSource calls {@code onComplete} or {@code onError} then {@code retry} will call
-     * {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this ObservableSource will
+     * {@code onComplete} or {@code onError} on the child subscription. Otherwise, this ObservableSource will
      * resubscribe to the source ObservableSource.    
      * <p>
      * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.png" alt="">
@@ -9184,7 +9184,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * It is possible for a ObservableSource to invoke its Subscribers' methods asynchronously, perhaps from
      * different threads. This could make such a ObservableSource poorly-behaved, in that it might try to invoke
-     * {@code onCompleted} or {@code onError} before one of its {@code onNext} invocations, or it might call
+     * {@code onComplete} or {@code onError} before one of its {@code onNext} invocations, or it might call
      * {@code onNext} from two different threads concurrently. You can force such a ObservableSource to be
      * well-behaved and sequential by applying the {@code serialize} method to it.
      * <p>
@@ -9711,7 +9711,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Subscribes to a ObservableSource and ignores {@code onNext} and {@code onCompleted} emissions. 
+     * Subscribes to a ObservableSource and ignores {@code onNext} and {@code onComplete} emissions. 
      * <p>
      * If the Observable emits an error, it is routed to the RxJavaPlugins.onError handler. 
      * <dl>
@@ -10071,7 +10071,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * This method returns a ObservableSource that will invoke a subscribing {@link Observer}'s
      * {@link Subscriber#onNext onNext} function a maximum of {@code count} times before invoking
-     * {@link Subscriber#onComplete onCompleted}.
+     * {@link Subscriber#onComplete onComplete}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code take} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -11138,8 +11138,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Completable that discards all onNext emissions (similar to
-     * {@code ignoreAllElements()}) and calls onCompleted when this source ObservableSource calls
-     * onCompleted. Error terminal events are propagated.
+     * {@code ignoreAllElements()}) and calls onComplete when this source ObservableSource calls
+     * onComplete. Error terminal events are propagated.
      * <p>
      * <img width="640" height="295" src=
      * "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toCompletable.png"
@@ -11149,8 +11149,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a Completable that calls onCompleted on it's subscriber when the source ObservableSource
-     *         calls onCompleted
+     * @return a Completable that calls onComplete on it's subscriber when the source ObservableSource
+     *         calls onComplete
      * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
      *      Completable</a>
      * @since 2.0
@@ -11484,6 +11484,22 @@ public abstract class Observable<T> implements ObservableSource<T> {
         default:
             return o.onBackpressureBuffer();
         }
+    }
+
+    /**
+     * Converts this Observable into a Maybe and expects this Flowable to have at most one item
+     * or a completion signal; otherwise the resulting Maybe will signal an IndexOutOfBoundsException.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Maybe instance
+     * @since 2.0
+     */
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> toMaybe() {
+        return new MaybeFromObservable<T>(this);
     }
 
     /**
@@ -12438,10 +12454,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>range(1, 5).doOnCompleted(action1).zipWith(range(6, 5).doOnCompleted(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -12481,10 +12497,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>range(1, 5).doOnCompleted(action1).zipWith(range(6, 5).doOnCompleted(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 
@@ -12526,10 +12542,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * The operator subscribes to its sources in order they are specified and completes eagerly if 
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it 
      * is possible those other sources will never be able to run to completion (and thus not calling 
-     * {@code doOnCompleted()}). This can also happen if the sources are exactly the same length; if
+     * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
      * be sending further values and it will unsubscribe B immediately. For example:
-     * <pre><code>range(1, 5).doOnCompleted(action1).zipWith(range(6, 5).doOnCompleted(action2), (a, b) -&gt; a + b)</code></pre>
+     * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion 

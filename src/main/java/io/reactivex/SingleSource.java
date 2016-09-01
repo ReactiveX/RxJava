@@ -23,6 +23,11 @@ package io.reactivex;
  * @since 2.0
  */
 public interface SingleSource<T> {
-
-    void subscribe(SingleObserver<? super T> s);
+    
+    /**
+     * Subscribes the given SingleObserver to this SingleSource instance.
+     * @param observer the SingleObserver, not null
+     * @throws NullPointerException if {@code observer} is null
+     */
+    void subscribe(SingleObserver<? super T> observer);
 }

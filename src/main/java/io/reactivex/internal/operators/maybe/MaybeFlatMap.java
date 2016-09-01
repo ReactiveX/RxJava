@@ -13,96 +13,120 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.*;
-import io.reactivex.disposables.*;
-import io.reactivex.functions.Function;
+import java.util.concurrent.atomic.AtomicReference;
 
-public final class MaybeFlatMap<T, R> extends Maybe<R> {
-    final MaybeSource<? extends T> source;
-    
+import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Function;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
+
+/**
+ * Maps a value into a MaybeSource and relays its signal.
+ *
+ * @param <T> the source value type
+ * @param <R> the result value type
+ */
+public final class MaybeFlatMap<T, R> extends AbstractMaybeWithUpstream<T, R> {
+
     final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
 
-    public MaybeFlatMap(MaybeSource<? extends T> source, Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+    public MaybeFlatMap(MaybeSource<T> source, Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+        super(source);
         this.mapper = mapper;
-        this.source = source;
     }
-    
+            
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> subscriber) {
-        MaybeFlatMapCallback<T, R> parent = new MaybeFlatMapCallback<T, R>(subscriber, mapper);
-        subscriber.onSubscribe(parent.sd);
-        source.subscribe(parent);
+    protected void subscribeActual(MaybeObserver<? super R> observer) {
+        source.subscribe(new FlatMapMaybeObserver<T, R>(observer, mapper));
     }
     
-    static final class MaybeFlatMapCallback<T, R> implements MaybeObserver<T> {
+    static final class FlatMapMaybeObserver<T, R> 
+    extends AtomicReference<Disposable>
+    implements MaybeObserver<T>, Disposable {
+        
+        /** */
+        private static final long serialVersionUID = 4375739915521278546L;
+
         final MaybeObserver<? super R> actual;
+        
         final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
         
-        final SerialDisposable sd;
+        Disposable d;
 
-        public MaybeFlatMapCallback(MaybeObserver<? super R> actual,
+        public FlatMapMaybeObserver(MaybeObserver<? super R> actual,
                 Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
-            this.sd = new SerialDisposable();
         }
-        
+
+        @Override
+        public void dispose() {
+            DisposableHelper.dispose(this);
+            d.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(get());
+        }
+
         @Override
         public void onSubscribe(Disposable d) {
-            sd.replace(d);
+            if (DisposableHelper.validate(this.d, d)) {
+                this.d = d;
+                
+                actual.onSubscribe(this);
+            }
         }
-        
+
         @Override
         public void onSuccess(T value) {
-            MaybeSource<? extends R> o;
+            MaybeSource<? extends R> source;
             
             try {
-                o = mapper.apply(value);
-            } catch (Throwable e) {
-                actual.onError(e);
+                source = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null MaybeSource");
+            } catch (Exception ex) {
+                Exceptions.throwIfFatal(ex);
+                actual.onError(ex);
                 return;
             }
             
-            if (o == null) {
-                actual.onError(new NullPointerException("The single returned by the mapper is null"));
-                return;
-            }
-            
-            if (sd.isDisposed()) {
-                return;
-            }
-            
-            o.subscribe(new MaybeObserver<R>() {
-                @Override
-                public void onSubscribe(Disposable d) {
-                    sd.replace(d);
-                }
-                
-                @Override
-                public void onSuccess(R value) {
-                    actual.onSuccess(value);
-                }
+            source.subscribe(new InnerObserver());
+        }
 
-                @Override
-                public void onComplete() {
-                    actual.onComplete();
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    actual.onError(e);
-                }
-            });
+        @Override
+        public void onError(Throwable e) {
+            actual.onError(e);
         }
 
         @Override
         public void onComplete() {
             actual.onComplete();
         }
+        
+        final class InnerObserver implements MaybeObserver<R> {
 
-        @Override
-        public void onError(Throwable e) {
-            actual.onError(e);
+            @Override
+            public void onSubscribe(Disposable d) {
+                DisposableHelper.setOnce(FlatMapMaybeObserver.this, d);
+            }
+
+            @Override
+            public void onSuccess(R value) {
+                actual.onSuccess(value);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                actual.onError(e);
+            }
+
+            @Override
+            public void onComplete() {
+                actual.onComplete();
+            }
         }
     }
 }

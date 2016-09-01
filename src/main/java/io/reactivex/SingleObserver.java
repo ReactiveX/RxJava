@@ -18,15 +18,15 @@ import io.reactivex.disposables.Disposable;
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
- * After a SingleSubscriber calls a {@link Single}'s {@link Single#subscribe subscribe} method, 
+ * After a SingleObserver calls a {@link Single}'s {@link Single#subscribe subscribe} method, 
  * first the Single calls {@link #onSubscribe(Disposable)} with a {@link Disposable} that allows
  * cancelling the sequence at any time, then the
- * {@code Single} calls only one of the SingleSubscriber's {@link #onSuccess} and {@link #onError} methods to provide
+ * {@code Single} calls only one of the SingleObserver {@link #onSuccess} and {@link #onError} methods to provide
  * notifications.
  * 
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
- *          the type of item the SingleSubscriber expects to observe
+ *          the type of item the SingleObserver expects to observe
  * @since 2.0
  */
 public interface SingleObserver<T> {
@@ -42,7 +42,7 @@ public interface SingleObserver<T> {
     void onSubscribe(Disposable d);
     
     /**
-     * Notifies the SingleSubscriber with a single item and that the {@link Single} has finished sending
+     * Notifies the SingleObserver with a single item and that the {@link Single} has finished sending
      * push-based notifications.
      * <p>
      * The {@link Single} will not call this method if it calls {@link #onError}.
@@ -53,7 +53,7 @@ public interface SingleObserver<T> {
     void onSuccess(T value);
 
     /**
-     * Notifies the SingleSubscriber that the {@link Single} has experienced an error condition.
+     * Notifies the SingleObserver that the {@link Single} has experienced an error condition.
      * <p>
      * If the {@link Single} calls this method, it will not thereafter call {@link #onSuccess}.
      * 

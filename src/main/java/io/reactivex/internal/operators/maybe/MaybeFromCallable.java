@@ -16,9 +16,15 @@ package io.reactivex.internal.operators.maybe;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.plugins.RxJavaPlugins;
 
+/**
+ * Executes a callable and signals its value as success or signals an exception.
+ *
+ * @param <T> the value type
+ */
 public final class MaybeFromCallable<T> extends Maybe<T> {
 
     final Callable<? extends T> callable;
@@ -26,21 +32,35 @@ public final class MaybeFromCallable<T> extends Maybe<T> {
     public MaybeFromCallable(Callable<? extends T> callable) {
         this.callable = callable;
     }
-
+    
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> s) {
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        Disposable d = Disposables.empty();
+        observer.onSubscribe(d);
 
-        s.onSubscribe(EmptyDisposable.INSTANCE);
-        try {
-            T v = callable.call();
-            if (v != null) {
-                s.onSuccess(v);
-            } else {
-                s.onComplete();
+        if (!d.isDisposed()) {
+            
+            T v;
+            
+            try {
+                v = callable.call();
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                if (!d.isDisposed()) {
+                    observer.onError(ex);
+                } else {
+                    RxJavaPlugins.onError(ex);
+                }
+                return;
             }
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            s.onError(e);
+            
+            if (!d.isDisposed()) {
+                if (v == null) {
+                    observer.onComplete();
+                } else {
+                    observer.onSuccess(v);
+                }
+            }
         }
     }
 }

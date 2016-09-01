@@ -15,48 +15,91 @@ package io.reactivex.internal.operators.maybe;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
 
-public final class MaybeMap<T, R> extends Maybe<R> {
-    final MaybeSource<? extends T> source;
-    
+/**
+ * Maps the upstream success value into some other value.
+ *
+ * @param <T> the upstream value type
+ * @param <R> the downstream value type
+ */
+public final class MaybeMap<T, R> extends AbstractMaybeWithUpstream<T, R> {
+
     final Function<? super T, ? extends R> mapper;
-
-    public MaybeMap(MaybeSource<? extends T> source, Function<? super T, ? extends R> mapper) {
-        this.source = source;
+    
+    public MaybeMap(MaybeSource<T> source, Function<? super T, ? extends R> mapper) {
+        super(source);
         this.mapper = mapper;
     }
 
     @Override
-    protected void subscribeActual(final MaybeObserver<? super R> t) {
-        source.subscribe(new MaybeObserver<T>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                t.onSubscribe(d);
-            }
-
-            @Override
-            public void onSuccess(T value) {
-                R v;
-                try {
-                    v = mapper.apply(value);
-                } catch (Throwable e) {
-                    onError(e);
-                    return;
-                }
-                
-                t.onSuccess(v);
-            }
-
-            @Override
-            public void onComplete() {
-                t.onComplete();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                t.onError(e);
-            }
-        });
+    protected void subscribeActual(MaybeObserver<? super R> observer) {
+        source.subscribe(new MapMaybeObserver<T, R>(observer, mapper));
     }
+    
+    static final class MapMaybeObserver<T, R> implements MaybeObserver<T>, Disposable {
+        
+        final MaybeObserver<? super R> actual;
+        
+        final Function<? super T, ? extends R> mapper;
+
+        Disposable d;
+        
+        public MapMaybeObserver(MaybeObserver<? super R> actual, Function<? super T, ? extends R> mapper) {
+            this.actual = actual;
+            this.mapper = mapper;
+        }
+
+        @Override
+        public void dispose() {
+            Disposable d = this.d;
+            this.d = DisposableHelper.DISPOSED;
+            d.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return d.isDisposed();
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.d, d)) {
+                this.d = d;
+                
+                actual.onSubscribe(this);
+            }
+        }
+
+        @Override
+        public void onSuccess(T value) {
+            R v;
+            
+            try {
+                v = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null item");
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                actual.onError(ex);
+                return;
+            }
+            
+            actual.onSuccess(v);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            actual.onError(e);
+        }
+
+        @Override
+        public void onComplete() {
+            actual.onComplete();
+        }
+        
+        
+    }
+
 }

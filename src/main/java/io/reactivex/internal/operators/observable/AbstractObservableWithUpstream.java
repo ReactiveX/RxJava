@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
+import io.reactivex.internal.fuseable.HasUpstreamObservableSource;
 
 /**
  * Base class for operators with a source consumable.
@@ -21,7 +22,7 @@ import io.reactivex.*;
  * @param <T> the input source type
  * @param <U> the output type
  */
-abstract class AbstractObservableWithUpstream<T, U> extends Observable<U> implements ObservableWithUpstream<T> {
+abstract class AbstractObservableWithUpstream<T, U> extends Observable<U> implements HasUpstreamObservableSource<T> {
 
     /** The source consumable Observable. */
     protected final ObservableSource<T> source;

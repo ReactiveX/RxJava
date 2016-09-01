@@ -13,36 +13,50 @@
 
 package io.reactivex.internal.operators.maybe;
 
+import java.util.NoSuchElementException;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
 
-public final class MaybeHide<T> extends Maybe<T> {
+/**
+ * Wraps a MaybeSource and exposes its onSuccess and onError signals and signals
+ * NoSuchElementException for onComplete.
+ *
+ * @param <T> the value type
+ */
+public final class MaybeToSingle<T> extends Single<T> implements HasUpstreamMaybeSource<T> {
 
-    final MaybeSource<? extends T> source;
-    
-    public MaybeHide(MaybeSource<? extends T> source) {
+    final MaybeSource<T> source;
+
+    public MaybeToSingle(MaybeSource<T> source) {
         this.source = source;
     }
-
+    
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> subscriber) {
-        source.subscribe(new HideMaybeObserver<T>(subscriber));
+    public MaybeSource<T> source() {
+        return source;
     }
     
-    static final class HideMaybeObserver<T> implements MaybeObserver<T>, Disposable {
+    @Override
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        source.subscribe(new ToSingleMaybeSubscriber<T>(observer));
+    }
+    
+    static final class ToSingleMaybeSubscriber<T> implements MaybeObserver<T>, Disposable {
+        final SingleObserver<? super T> actual;
 
-        final MaybeObserver<? super T> actual;
-        
         Disposable d;
         
-        public HideMaybeObserver(MaybeObserver<? super T> actual) {
+        public ToSingleMaybeSubscriber(SingleObserver<? super T> actual) {
             this.actual = actual;
         }
 
         @Override
         public void dispose() {
             d.dispose();
+            d = DisposableHelper.DISPOSED;
         }
 
         @Override
@@ -54,24 +68,29 @@ public final class MaybeHide<T> extends Maybe<T> {
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
+                
                 actual.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
+            d = DisposableHelper.DISPOSED;
             actual.onSuccess(value);
         }
 
         @Override
-        public void onComplete() {
-            actual.onComplete();
+        public void onError(Throwable e) {
+            d = DisposableHelper.DISPOSED;
+            actual.onError(e);
         }
 
         @Override
-        public void onError(Throwable e) {
-            actual.onError(e);
+        public void onComplete() {
+            d = DisposableHelper.DISPOSED;
+            actual.onError(new NoSuchElementException("The MaybeSource is empty"));
         }
+        
+        
     }
-
 }

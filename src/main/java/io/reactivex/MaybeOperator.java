@@ -15,6 +15,12 @@ package io.reactivex;
 
 import io.reactivex.functions.Function;
 
+/**
+ * Interface to map/wrap a downstream subscriber to an upstream MaybeObserver.
+ *
+ * @param <Downstream> the value type of the downstream
+ * @param <Upstream> the value type of the upstream
+ */
 public interface MaybeOperator<Downstream, Upstream> extends Function<MaybeObserver<? super Downstream>, MaybeObserver<? super Upstream>> {
 
 }

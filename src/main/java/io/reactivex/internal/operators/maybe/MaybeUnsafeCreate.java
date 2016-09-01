@@ -11,16 +11,24 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.functions;
+package io.reactivex.internal.operators.maybe;
+
+import io.reactivex.*;
 
 /**
- * A functional interface (callback) that returns an Object value.
+ * Wraps a MaybeSource without safeguard and calls its subscribe() method for each MaybeObserver.
+ *
+ * @param <T> the value type
  */
-public interface Supplier<R> {
-    /**
-     * Returns an Object value.
-     * @return an Object value
-     * @throws Exception on error
-     */
-    R get() throws Exception; // NOPMD
+public final class MaybeUnsafeCreate<T> extends AbstractMaybeWithUpstream<T, T> {
+
+    public MaybeUnsafeCreate(MaybeSource<T> source) {
+        super(source);
+    }
+
+    @Override
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        source.subscribe(observer);
+    }
+
 }

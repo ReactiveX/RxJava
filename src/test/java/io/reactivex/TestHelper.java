@@ -348,4 +348,50 @@ public enum TestHelper {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
+    
+    /**
+     * Returns an Consumer that asserts the TestSubscriber has exaclty one value + completed
+     * normally and that single value is not the value specified
+     * @param <T> the value type
+     * @param value the value not expected
+     * @return the consumer
+     */
+    public static <T> Consumer<TestSubscriber<T>> subscriberSingleNot(final T value) {
+        return new Consumer<TestSubscriber<T>>() {
+            @Override
+            public void accept(TestSubscriber<T> ts) throws Exception {
+                ts
+                .assertSubscribed()
+                .assertValueCount(1)
+                .assertNoErrors()
+                .assertComplete();
+                
+                T v = ts.values().get(0);
+                assertNotEquals(value, v);
+            }
+        };
+    }
+    
+    /**
+     * Returns an Consumer that asserts the TestObserver has exaclty one value + completed
+     * normally and that single value is not the value specified
+     * @param <T> the value type
+     * @param value the value not expected
+     * @return the consumer
+     */
+    public static <T> Consumer<TestObserver<T>> observerSingleNot(final T value) {
+        return new Consumer<TestObserver<T>>() {
+            @Override
+            public void accept(TestObserver<T> ts) throws Exception {
+                ts
+                .assertSubscribed()
+                .assertValueCount(1)
+                .assertNoErrors()
+                .assertComplete();
+                
+                T v = ts.values().get(0);
+                assertNotEquals(value, v);
+            }
+        };
+    }
 }

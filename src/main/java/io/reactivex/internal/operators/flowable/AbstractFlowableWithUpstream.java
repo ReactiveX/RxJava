@@ -17,6 +17,7 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.Flowable;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.fuseable.HasUpstreamPublisher;
 
 /**
  * Abstract base class for operators that take an upstream
@@ -25,7 +26,7 @@ import io.reactivex.internal.functions.ObjectHelper;
  * @param <T> the upstream value type
  * @param <R> the output value type
  */
-abstract class AbstractFlowableWithUpstream<T, R> extends Flowable<R> implements FlowableWithUpstream<T> {
+abstract class AbstractFlowableWithUpstream<T, R> extends Flowable<R> implements HasUpstreamPublisher<T> {
     
     /**
      * The upstream source Publisher.

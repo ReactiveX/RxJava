@@ -18,7 +18,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.internal.subscribers.completable.SubscriberCompletableObserver;
 
-public class CompletableToFlowable<T> extends Flowable<T> {
+public final class CompletableToFlowable<T> extends Flowable<T> {
 
     final CompletableSource source;
     

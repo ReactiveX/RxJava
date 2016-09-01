@@ -104,21 +104,21 @@ public enum SubscriptionHelper implements Subscription {
      * Atomically sets the subscription on the field and cancels the
      * previous subscription if any.
      * @param field the target field to set the new subscription on
-     * @param d the new subscription
+     * @param s the new subscription
      * @return true if the operation succeeded, false if the target field
      * holds the {@link #CANCELLED} instance.
      * @see #replace(AtomicReference, Subscription)
      */
-    public static boolean set(AtomicReference<Subscription> field, Subscription d) {
+    public static boolean set(AtomicReference<Subscription> field, Subscription s) {
         for (;;) {
             Subscription current = field.get();
             if (current == CANCELLED) {
-                if (d != null) {
-                    d.cancel();
+                if (s != null) {
+                    s.cancel();
                 }
                 return false;
             }
-            if (field.compareAndSet(current, d)) {
+            if (field.compareAndSet(current, s)) {
                 if (current != null) {
                     current.cancel();
                 }
@@ -132,13 +132,13 @@ public enum SubscriptionHelper implements Subscription {
      * <p>If the field is not null and doesn't contain the {@link #CANCELLED}
      * instance, the {@link #reportSubscriptionSet()} is called.
      * @param field the target field
-     * @param d the new subscription to set
+     * @param s the new subscription to set
      * @return true if the operation succeeded, false if the target field was not null.
      */
-    public static boolean setOnce(AtomicReference<Subscription> field, Subscription d) {
-        ObjectHelper.requireNonNull(d, "d is null");
-        if (!field.compareAndSet(null, d)) {
-            d.cancel();
+    public static boolean setOnce(AtomicReference<Subscription> field, Subscription s) {
+        ObjectHelper.requireNonNull(s, "d is null");
+        if (!field.compareAndSet(null, s)) {
+            s.cancel();
             if (field.get() != CANCELLED) {
                 reportSubscriptionSet();
             }

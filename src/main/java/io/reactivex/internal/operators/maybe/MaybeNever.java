@@ -16,15 +16,15 @@ package io.reactivex.internal.operators.maybe;
 import io.reactivex.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
+/**
+ * Doesn't signal any event other than onSubscribe.
+ */
 public final class MaybeNever extends Maybe<Object> {
-    public static final Maybe<Object> INSTANCE = new MaybeNever();
 
-    private MaybeNever() {
-    }
+    public static final MaybeNever INSTANCE = new MaybeNever();
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super Object> s) {
-        s.onSubscribe(EmptyDisposable.INSTANCE);
+    protected void subscribeActual(MaybeObserver<? super Object> observer) {
+        observer.onSubscribe(EmptyDisposable.INSTANCE);
     }
-
 }

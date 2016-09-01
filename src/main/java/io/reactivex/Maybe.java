@@ -13,838 +13,797 @@
 
 package io.reactivex;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
 
-import org.reactivestreams.*;
-
+import io.reactivex.annotations.SchedulerSupport;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.maybe.*;
-import io.reactivex.internal.subscribers.maybe.*;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Represents a deferred computation and emission of a maybe value or exception.
- * 
+ * <p>
+ * The main consumer type of Maybe is {@link MaybeObserver} whose methods are called
+ * in a sequential fashion following this protocol:<br>
+ * {@code onSubscribe (onSuccess | onError | onComplete)?}.
+ * <p>
  * @param <T> the value type
+ * @since 2.0
  */
 public abstract class Maybe<T> implements MaybeSource<T> {
-    static <T> Maybe<T> wrap(MaybeSource<T> source) {
-        ObjectHelper.requireNonNull(source, "source is null");
-        if (source instanceof Maybe) {
-            return (Maybe<T>)source;
-        }
-        return new MaybeFromUnsafeSource<T>(source);
-    }
-    
-    public static <T> Maybe<T> amb(final Iterable<? extends MaybeSource<? extends T>> sources) {
-        ObjectHelper.requireNonNull(sources, "sources is null");
-        return new MaybeAmbIterable<T>(sources);
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Maybe<T> amb(final MaybeSource<? extends T>... sources) {
-        if (sources.length == 0) {
-            return Maybe.complete();
-        }
-        if (sources.length == 1) {
-            return wrap((MaybeSource<T>)sources[0]);
-        }
-        return new MaybeAmbArray<T>(sources);
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Maybe<T> complete() {
-        return (Maybe<T>) MaybeComplete.INSTANCE;
-    }
 
-    public static <T> Flowable<T> concat(Iterable<? extends MaybeSource<? extends T>> sources) {
-        return concat(Flowable.fromIterable(sources));
+    /**
+     * Provides an API (via a cold Maybe) that bridges the reactive world with the callback-style world.
+     * <p>
+     * Example:
+     * <pre><code>
+     * Maybe.&lt;Event&gt;create(emitter -&gt; {
+     *     Callback listener = new Callback() {
+     *         &#64;Override
+     *         public void onEvent(Event e) {
+     *             if (e.isNothing()) {
+     *                 emitter.onComplete();
+     *             } else {
+     *                 emitter.onSuccess(e);
+     *             }
+     *         }
+     *         
+     *         &#64;Override
+     *         public void onFailure(Exception e) {
+     *             emitter.onError(e);
+     *         }
+     *     };
+     *     
+     *     AutoCloseable c = api.someMethod(listener);
+     *     
+     *     emitter.setCancellable(c::close);
+     *     
+     * });
+     * </code></pre>
+     * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param onSubscribe the emitter that is called when a MaybeObserver subscribes to the returned {@code Flowable}
+     * @return the new Maybe instance
+     * @see MaybeOnSubscribe
+     * @see Cancellable
+     */
+    public static <T> Maybe<T> create(MaybeOnSubscribe<T> onSubscribe) {
+        ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
+        return RxJavaPlugins.onAssembly(new MaybeCreate<T>(onSubscribe));
     }
     
-    public static <T> Flowable<T> concat(Flowable<? extends MaybeSource<? extends T>> sources) { // FIXME Publisher
-        return sources.concatMap(new Function<MaybeSource<? extends T>, Publisher<? extends T>>() {
-            @Override 
-            public Publisher<? extends T> apply(MaybeSource<? extends T> v){
-                return new MaybeToFlowable<T>(v);
-            }
-        });
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> concat(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        return concat(Flowable.fromArray(s1, s2));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> concat(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        return concat(Flowable.fromArray(s1, s2, s3));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> concat(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        return concat(Flowable.fromArray(s1, s2, s3, s4));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> concat(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4,
-            MaybeSource<? extends T> s5
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        return concat(Flowable.fromArray(s1, s2, s3, s4, s5));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> concat(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4,
-            MaybeSource<? extends T> s5, MaybeSource<? extends T> s6
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> concat(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4,
-            MaybeSource<? extends T> s5, MaybeSource<? extends T> s6,
-            MaybeSource<? extends T> s7
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> concat(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4,
-            MaybeSource<? extends T> s5, MaybeSource<? extends T> s6,
-            MaybeSource<? extends T> s7, MaybeSource<? extends T> s8
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        ObjectHelper.requireNonNull(s8, "s8 is null");
-        return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> concat(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4,
-            MaybeSource<? extends T> s5, MaybeSource<? extends T> s6,
-            MaybeSource<? extends T> s7, MaybeSource<? extends T> s8,
-            MaybeSource<? extends T> s9
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        ObjectHelper.requireNonNull(s8, "s8 is null");
-        ObjectHelper.requireNonNull(s9, "s9 is null");
-        return concat(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
-    }
-
-    public static <T> Maybe<T> create(MaybeSource<T> source) {
-        ObjectHelper.requireNonNull(source, "source is null");
-        // TODO plugin wrapper
-        return new MaybeFromSource<T>(source);
-    }
-
-    public static <T> Maybe<T> unsafeCreate(MaybeSource<T> source) {
-        ObjectHelper.requireNonNull(source, "source is null");
-        // TODO plugin wrapper
-        return new MaybeFromUnsafeSource<T>(source);
-    }
-    
+    /**
+     * Calls a Callable for each individual MaybeObserver to return the actual MaybeSource source to
+     * be subscribe to.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param maybeSupplier the Callable that is called for each individual MaybeObserver and
+     * returns a MaybeSource instance to subscribe to
+     * @return the new Maybe instance
+     */
     public static <T> Maybe<T> defer(final Callable<? extends MaybeSource<? extends T>> maybeSupplier) {
         ObjectHelper.requireNonNull(maybeSupplier, "maybeSupplier is null");
-        return new MaybeDefer<T>(maybeSupplier);
+        return RxJavaPlugins.onAssembly(new MaybeDefer<T>(maybeSupplier));
+    }
+
+    /**
+     * Returns a (singleton) Maybe instance that calls {@link MaybeObserver#onComplete onComplete}
+     * immediately.
+     * <p>
+     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/empty.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code empty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @return the new Maybe instance
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Maybe<T> empty() {
+        return RxJavaPlugins.onAssembly((Maybe<T>)MaybeEmpty.INSTANCE);
     }
     
-    public static <T> Maybe<T> error(final Callable<? extends Throwable> errorSupplier) {
-        ObjectHelper.requireNonNull(errorSupplier, "errorSupplier is null");
-        return new MaybeError<T>(errorSupplier);
+    /**
+     * Returns a Maybe that invokes a subscriber's {@link MaybeObserver#onError onError} method when the
+     * subscriber subscribes to it.
+     * <p>
+     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.error.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param exception
+     *            the particular Throwable to pass to {@link MaybeObserver#onError onError}
+     * @param <T>
+     *            the type of the item (ostensibly) emitted by the Maybe
+     * @return a Maybe that invokes the subscriber's {@link MaybeObserver#onError onError} method when
+     *         the subscriber subscribes to it
+     * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
+     */
+    public static <T> Maybe<T> error(Throwable exception) {
+        ObjectHelper.requireNonNull(exception, "exception is null");
+        return RxJavaPlugins.onAssembly(new MaybeError<T>(exception));
     }
     
-    public static <T> Maybe<T> error(final Throwable error) {
-        ObjectHelper.requireNonNull(error, "error is null");
-        return error(new Callable<Throwable>() {
-            @Override
-            public Throwable call() {
-                return error;
-            }
-        });
+    /**
+     * Returns a Maybe that invokes an {@link Observer}'s {@link MaybeObserver#onError onError} method when the
+     * Observer subscribes to it.
+     * <p>
+     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param supplier
+     *            a Callable factory to return a Throwable for each individual Subscriber
+     * @param <T>
+     *            the type of the items (ostensibly) emitted by the Publisher
+     * @return a Maybe that invokes the {@link MaybeObserver}'s {@link MaybeObserver#onError onError} method when
+     *         the MaybeObserver subscribes to it
+     * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
+     */
+    public static <T> Maybe<T> error(Callable<? extends Throwable> supplier) {
+        ObjectHelper.requireNonNull(supplier, "errorSupplier is null");
+        return RxJavaPlugins.onAssembly(new MaybeErrorCallable<T>(supplier));
     }
     
+    /**
+     * Returns a Maybe instance that runs the given Action for each subscriber and
+     * emits either its exception or simply completes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromAction} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the target type
+     * @param run the runnable to run for each subscriber
+     * @return the new Maybe instance
+     * @throws NullPointerException if run is null
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Maybe<T> fromAction(final Action run) {
+        ObjectHelper.requireNonNull(run, "run is null");
+        return RxJavaPlugins.onAssembly(new MaybeFromAction<T>(run));
+    }
+    
+    /**
+     * Returns a {@link Maybe} that invokes passed function and emits its result for each new MaybeObserver that subscribes
+     * while considering {@code null} value from the callable as indication for valueless completion.
+     * <p>
+     * Allows you to defer execution of passed function until MaybeObserver subscribes to the {@link Maybe}.
+     * It makes passed function "lazy".
+     * Result of the function invocation will be emitted by the {@link Maybe}.
+     * <dl>
+     *   <dt><b>Scheduler:</b></dt>
+     *   <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param callable
+     *         function which execution should be deferred, it will be invoked when MaybeObserver will subscribe to the {@link Maybe}.
+     * @param <T>
+     *         the type of the item emitted by the {@link Maybe}.
+     * @return a {@link Maybe} whose {@link MaybeObserver}s' subscriptions trigger an invocation of the given function.
+     */
     public static <T> Maybe<T> fromCallable(final Callable<? extends T> callable) {
         ObjectHelper.requireNonNull(callable, "callable is null");
-        return new MaybeFromCallable<T>(callable);
+        return RxJavaPlugins.onAssembly(new MaybeFromCallable<T>(callable));
     }
     
-    public static <T> Maybe<T> fromFuture(Future<? extends T> future) {
-        return Flowable.<T>fromFuture(future).toMaybe();
+    /**
+     * Returns a Maybe instance that runs the given Action for each subscriber and
+     * emits either its exception or simply completes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the target type
+     * @param run the runnable to run for each subscriber
+     * @return the new Maybe instance
+     * @throws NullPointerException if run is null
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Maybe<T> fromRunnable(final Runnable run) {
+        ObjectHelper.requireNonNull(run, "run is null");
+        return RxJavaPlugins.onAssembly(new MaybeFromRunnable<T>(run));
     }
 
-    public static <T> Maybe<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
-        return Flowable.<T>fromFuture(future, timeout, unit).toMaybe();
-    }
-
-    public static <T> Maybe<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
-        return Flowable.<T>fromFuture(future, timeout, unit, scheduler).toMaybe();
-    }
-
-    public static <T> Maybe<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
-        return Flowable.<T>fromFuture(future, scheduler).toMaybe();
-    }
-
-    public static <T> Maybe<T> fromPublisher(final Publisher<? extends T> publisher) {
-        ObjectHelper.requireNonNull(publisher, "publisher is null");
-        return new MaybeFromPublisher<T>(publisher);
-    }
-
-    public static <T> Maybe<T> just(final T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        return new MaybeJust<T>(value);
-    }
-
-    public static <T> Flowable<T> merge(Iterable<? extends MaybeSource<? extends T>> sources) {
-        return merge(Flowable.fromIterable(sources));
-    }
-
-    public static <T> Flowable<T> merge(Flowable<? extends MaybeSource<? extends T>> sources) { // FIXME Publisher
-        return sources.flatMap(new Function<MaybeSource<? extends T>, Publisher<? extends T>>() {
-            @Override 
-            public Publisher<? extends T> apply(MaybeSource<? extends T> v){
-                return new MaybeToFlowable<T>(v);
-            }
-        });
+    
+    /**
+     * Returns a {@code Maybe} that emits a specified item.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.just.png" alt="">
+     * <p>
+     * To convert any object into a {@code Single} that emits that object, pass that object into the
+     * {@code just} method.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param item
+     *            the item to emit
+     * @param <T>
+     *            the type of that item
+     * @return a {@code Maybe} that emits {@code item}
+     * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
+     */
+    public static <T> Maybe<T> just(T item) {
+        ObjectHelper.requireNonNull(item, "item is null");
+        return RxJavaPlugins.onAssembly(new MaybeJust<T>(item));
     }
     
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Maybe<T> merge(MaybeSource<? extends MaybeSource<? extends T>> source) {
-        ObjectHelper.requireNonNull(source, "source is null");
-        return new MaybeFlatMap<MaybeSource<? extends T>, T>(source, (Function)Functions.identity());
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> merge(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        return merge(Flowable.fromArray(s1, s2));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> merge(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        return merge(Flowable.fromArray(s1, s2, s3));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> merge(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        return merge(Flowable.fromArray(s1, s2, s3, s4));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> merge(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4,
-            MaybeSource<? extends T> s5
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        return merge(Flowable.fromArray(s1, s2, s3, s4, s5));
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> merge(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4,
-            MaybeSource<? extends T> s5, MaybeSource<? extends T> s6
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> merge(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4,
-            MaybeSource<? extends T> s5, MaybeSource<? extends T> s6,
-            MaybeSource<? extends T> s7
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> merge(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4,
-            MaybeSource<? extends T> s5, MaybeSource<? extends T> s6,
-            MaybeSource<? extends T> s7, MaybeSource<? extends T> s8
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        ObjectHelper.requireNonNull(s8, "s8 is null");
-        return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Flowable<T> merge(
-            MaybeSource<? extends T> s1, MaybeSource<? extends T> s2,
-            MaybeSource<? extends T> s3, MaybeSource<? extends T> s4,
-            MaybeSource<? extends T> s5, MaybeSource<? extends T> s6,
-            MaybeSource<? extends T> s7, MaybeSource<? extends T> s8,
-            MaybeSource<? extends T> s9
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        ObjectHelper.requireNonNull(s8, "s8 is null");
-        ObjectHelper.requireNonNull(s9, "s9 is null");
-        return merge(Flowable.fromArray(s1, s2, s3, s4, s5, s6, s7, s8, s9));
-    }
-    
+    /**
+     * Returns a Maybe that never sends any items or notifications to an {@link MaybeObserver}.
+     * <p>
+     * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.png" alt="">
+     * <p>
+     * This Publisher is useful primarily for testing purposes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code never} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T>
+     *            the type of items (not) emitted by the Publisher
+     * @return a Maybe that never emits any items or sends any notifications to an {@link MaybeObserver}
+     * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Never</a>
+     */
     @SuppressWarnings("unchecked")
     public static <T> Maybe<T> never() {
-        return (Maybe<T>) MaybeNever.INSTANCE;
+        return RxJavaPlugins.onAssembly((Maybe<T>)MaybeNever.INSTANCE);
     }
     
-    public static Maybe<Long> timer(long delay, TimeUnit unit) {
-        return timer(delay, unit, Schedulers.computation());
-    }
-    
-    public static Maybe<Long> timer(final long delay, final TimeUnit unit, final Scheduler scheduler) {
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new MaybeTimer(delay, unit, scheduler);
-    }
-    
-    public static <T> Maybe<Boolean> equals(final MaybeSource<? extends T> first, final MaybeSource<? extends T> second) { // NOPMD
-        ObjectHelper.requireNonNull(first, "first is null");
-        ObjectHelper.requireNonNull(second, "second is null");
-        return new MaybeEquals<T>(first, second);
-    }
-
-    public static <T, U> Maybe<T> using(Callable<U> resourceSupplier,
-                                         Function<? super U, ? extends MaybeSource<? extends T>> maybeFunction, Consumer<? super U> disposer) {
-        return using(resourceSupplier, maybeFunction, disposer, true);
-    }
-        
-    public static <T, U> Maybe<T> using(
-            final Callable<U> resourceSupplier, 
-            final Function<? super U, ? extends MaybeSource<? extends T>> maybeFunction,
-            final Consumer<? super U> disposer, 
-            final boolean eager) {
-        ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
-        ObjectHelper.requireNonNull(maybeFunction, "maybeFunction is null");
-        ObjectHelper.requireNonNull(disposer, "disposer is null");
-        
-        return new MaybeUsing<T, U>(resourceSupplier, maybeFunction, disposer, eager);
-    }
-
-    public static <T, R> Maybe<R> zip(final Iterable<? extends MaybeSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
-        ObjectHelper.requireNonNull(sources, "sources is null");
-        return Flowable.zipIterable(MaybeInternalHelper.iterableToFlowable(sources), zipper, false, 1).toMaybe();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, R> Maybe<R> zip(
-            MaybeSource<? extends T1> s1, MaybeSource<? extends T2> s2,
-            BiFunction<? super T1, ? super T2, ? extends R> zipper
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, R> Maybe<R> zip(
-            MaybeSource<? extends T1> s1, MaybeSource<? extends T2> s2,
-            MaybeSource<? extends T3> s3,
-            Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, R> Maybe<R> zip(
-            MaybeSource<? extends T1> s1, MaybeSource<? extends T2> s2,
-            MaybeSource<? extends T3> s3, MaybeSource<? extends T4> s4,
-            Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipper
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, T5, R> Maybe<R> zip(
-            MaybeSource<? extends T1> s1, MaybeSource<? extends T2> s2,
-            MaybeSource<? extends T3> s3, MaybeSource<? extends T4> s4,
-            MaybeSource<? extends T5> s5,
-            Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipper
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4, s5);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, T5, T6, R> Maybe<R> zip(
-            MaybeSource<? extends T1> s1, MaybeSource<? extends T2> s2,
-            MaybeSource<? extends T3> s3, MaybeSource<? extends T4> s4,
-            MaybeSource<? extends T5> s5, MaybeSource<? extends T6> s6,
-            Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipper
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4, s5, s6);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Maybe<R> zip(
-            MaybeSource<? extends T1> s1, MaybeSource<? extends T2> s2,
-            MaybeSource<? extends T3> s3, MaybeSource<? extends T4> s4,
-            MaybeSource<? extends T5> s5, MaybeSource<? extends T6> s6,
-            MaybeSource<? extends T7> s7,
-            Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipper
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4, s5, s6, s7);
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Maybe<R> zip(
-            MaybeSource<? extends T1> s1, MaybeSource<? extends T2> s2,
-            MaybeSource<? extends T3> s3, MaybeSource<? extends T4> s4,
-            MaybeSource<? extends T5> s5, MaybeSource<? extends T6> s6,
-            MaybeSource<? extends T7> s7, MaybeSource<? extends T8> s8,
-            Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipper
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        ObjectHelper.requireNonNull(s8, "s8 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4, s5, s6, s7, s8);
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Maybe<R> zip(
-            MaybeSource<? extends T1> s1, MaybeSource<? extends T2> s2,
-            MaybeSource<? extends T3> s3, MaybeSource<? extends T4> s4,
-            MaybeSource<? extends T5> s5, MaybeSource<? extends T6> s6,
-            MaybeSource<? extends T7> s7, MaybeSource<? extends T8> s8,
-            MaybeSource<? extends T9> s9,
-            Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipper
-     ) {
-        ObjectHelper.requireNonNull(s1, "s1 is null");
-        ObjectHelper.requireNonNull(s2, "s2 is null");
-        ObjectHelper.requireNonNull(s3, "s3 is null");
-        ObjectHelper.requireNonNull(s4, "s4 is null");
-        ObjectHelper.requireNonNull(s5, "s5 is null");
-        ObjectHelper.requireNonNull(s6, "s6 is null");
-        ObjectHelper.requireNonNull(s7, "s7 is null");
-        ObjectHelper.requireNonNull(s8, "s8 is null");
-        ObjectHelper.requireNonNull(s9, "s9 is null");
-        return zipArray(Functions.toFunction(zipper), s1, s2, s3, s4, s5, s6, s7, s8, s9);
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static <T, R> Maybe<R> zipArray(Function<? super Object[], ? extends R> zipper, MaybeSource<? extends T>... sources) {
-        ObjectHelper.requireNonNull(sources, "sources is null");
-        Publisher[] sourcePublishers = new Publisher[sources.length];
-        int i = 0;
-        for (MaybeSource<? extends T> s : sources) {
-            ObjectHelper.requireNonNull(s, "The " + i + "th source is null");
-            sourcePublishers[i] = new MaybeToFlowable<T>(s);
-            i++;
+    /**
+     * <strong>Advanced use only:</strong> creates a Maybe instance without 
+     * any safeguards by using a callback that is called with a MaybeObserver.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code unsafeCreate} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param onSubscribe the function that is called with the subscribing MaybeObserver
+     * @return the new Maybe instance
+     */
+    public static <T> Maybe<T> unsafeCreate(MaybeSource<T> onSubscribe) {
+        if (onSubscribe instanceof Maybe) {
+            throw new IllegalArgumentException("unsafeCreate(Maybe) should be upgraded");
         }
-        return Flowable.zipArray(zipper, false, 1, sourcePublishers).toMaybe();
+        ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
+        return RxJavaPlugins.onAssembly(new MaybeUnsafeCreate<T>(onSubscribe));
     }
+    
+    /**
+     * Wraps a MaybeSource instance into a new Maybe instance if not already a Maybe
+     * instance.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code wrap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param source the source to wrap
+     * @return the Maybe wrapper or the source cast to Maybe (if possible)
+     */
+    public static <T> Maybe<T> wrap(MaybeSource<T> source) {
+        if (source instanceof Maybe) {
+            return RxJavaPlugins.onAssembly((Maybe<T>)source);
+        }
+        ObjectHelper.requireNonNull(source, "onSubscribe is null");
+        return RxJavaPlugins.onAssembly(new MaybeUnsafeCreate<T>(source));
+    }
+    
+    // ------------------------------------------------------------------
+    // Instance methods
+    // ------------------------------------------------------------------
 
-    @SuppressWarnings("unchecked")
-    public final Maybe<T> ambWith(MaybeSource<? extends T> other) {
-        ObjectHelper.requireNonNull(other, "other is null");
-        return amb(this, other);
-    }
-    
-    public final Maybe<T> asMaybe() {
-        return new MaybeHide<T>(this);
-    }
-    
-    public final <R> Maybe<R> compose(Function<? super Maybe<T>, ? extends MaybeSource<R>> convert) {
-        return wrap(to(convert));
-    }
-
-    public final Maybe<T> cache() {
-        return new MaybeCache<T>(this);
-    }
-    
+    /**
+     * Casts the success value of the current Maybe into the target type or signals a
+     * ClassCastException if not compatible.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code cast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <U> the target type
+     * @param clazz the type token to use for casting the success result from the current Maybe
+     * @return the new Maybe instance
+     * @since 2.0
+     */
     public final <U> Maybe<U> cast(final Class<? extends U> clazz) {
         ObjectHelper.requireNonNull(clazz, "clazz is null");
-        return map(new Function<T, U>() {
-            @Override
-            public U apply(T v) {
-                return clazz.cast(v);
-            }
-        });
+        return map(Functions.castFunction(clazz));
+    }
+
+    /**
+     * Transform a Maybe by applying a particular Transformer function to it.
+     * <p>
+     * This method operates on the Maybe itself whereas {@link #lift} operates on the Maybe's MaybeObservers.
+     * <p>
+     * If the operator you are creating is designed to act on the individual item emitted by a Maybe, use
+     * {@link #lift}. If your operator is designed to transform the source Maybe as a whole (for instance, by
+     * applying a particular set of existing RxJava operators to it) use {@code compose}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R> the value type of the Maybe returned by the transformer function
+     * @param transformer
+     *            implements the function that transforms the source Maybe
+     * @return a Maybe, transformed by the transformer function
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
+     */
+    public final <R> Maybe<R> compose(Function<? super Maybe<T>, ? extends MaybeSource<R>> transformer) {
+        return wrap(to(transformer));
     }
     
-    public final Flowable<T> concatWith(MaybeSource<? extends T> other) {
-        return concat(this, other);
-    }
-    
-    public final Maybe<T> delay(long time, TimeUnit unit) {
-        return delay(time, unit, Schedulers.computation());
-    }
-    
-    public final Maybe<T> delay(final long time, final TimeUnit unit, final Scheduler scheduler) {
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new MaybeDelay<T>(this, time, unit, scheduler);
-    }
-
-    public final Maybe<T> delaySubscription(CompletableSource other) {
-        return new MaybeDelayWithCompletable<T>(this, other);
-    }
-
-    public final <U> Maybe<T> delaySubscription(MaybeSource<U> other) {
-        return new MaybeDelayWithMaybe<T, U>(this, other);
-    }
-
-    public final <U> Maybe<T> delaySubscription(ObservableSource<U> other) {
-        return new MaybeDelayWithObservable<T, U>(this, other);
-    }
-
-    public final <U> Maybe<T> delaySubscription(Publisher<U> other) {
-        return new MaybeDelayWithPublisher<T, U>(this, other);
-    }
-    
-    public final <U> Maybe<T> delaySubscription(long time, TimeUnit unit) {
-        return delaySubscription(time, unit, Schedulers.computation());
+    /**
+     * Registers an {@link Action} to be called when this Maybe invokes either
+     * {@link MaybeObserver#onComplete onSuccess},
+     * {@link MaybeObserver#onComplete onComplete} or {@link MaybeObserver#onError onError}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onAfterTerminate
+     *            an {@link Action} to be invoked when the source Publisher finishes
+     * @return a Maybe that emits the same items as the source Maybe, then invokes the
+     *         {@link Action}
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> doAfterTerminate(Action onAfterTerminate) {
+        return RxJavaPlugins.onAssembly(new MaybePeek<T>(this, 
+                Functions.emptyConsumer(), // onSubscribe
+                Functions.emptyConsumer(), // onSuccess
+                Functions.emptyConsumer(), // onError
+                Functions.EMPTY_ACTION,    // onComplete
+                ObjectHelper.requireNonNull(onAfterTerminate, "onAfterTerminate is null"),
+                Functions.EMPTY_ACTION     // dispose
+        ));
     }
 
-    public final <U> Maybe<T> delaySubscription(long time, TimeUnit unit, Scheduler scheduler) {
-        return delaySubscription(Observable.timer(time, unit, scheduler));
+    /**
+     * Calls the shared runnable if a MaybeObserver subscribed to the current Single
+     * disposes the common Disposable it received via onSubscribe.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onDispose the runnable called when the subscription is cancelled (disposed)
+     * @return the new Maybe instance
+     */
+    public final Maybe<T> doOnDispose(final Action onDispose) {
+        return RxJavaPlugins.onAssembly(new MaybePeek<T>(this, 
+                Functions.emptyConsumer(), // onSubscribe
+                Functions.emptyConsumer(), // onSuccess
+                Functions.emptyConsumer(), // onError
+                Functions.EMPTY_ACTION,    // onComplete
+                Functions.EMPTY_ACTION,    // (onSuccess | onError | onComplete) after
+                ObjectHelper.requireNonNull(onDispose, "onDispose is null")
+        ));
     }
 
-    public final Maybe<T> doOnSubscribe(final Consumer<? super Disposable> onSubscribe) {
-        ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
-        return new MaybeDoOnSubscribe<T>(this, onSubscribe);
-    }
-    
-    public final Maybe<T> doOnSuccess(final Consumer<? super T> onSuccess) {
-        ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");
-        return new MaybeDoOnSuccess<T>(this, onSuccess);
-    }
-    
-    public final Maybe<T> doOnComplete(final Action onComplete) {
-        ObjectHelper.requireNonNull(onComplete, "onComplete is null");
-        return new MaybeDoOnComplete<T>(this, onComplete);
+    /**
+     * Modifies the source Publisher so that it invokes an action when it calls {@code onCompleted}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnComplete} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param onComplete
+     *            the action to invoke when the source Publisher calls {@code onCompleted}
+     * @return the new Maybe with the side-effecting behavior applied
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> doOnComplete(Action onComplete) {
+        return RxJavaPlugins.onAssembly(new MaybePeek<T>(this, 
+                Functions.emptyConsumer(), // onSubscribe
+                Functions.emptyConsumer(), // onSuccess
+                Functions.emptyConsumer(), // onError
+                ObjectHelper.requireNonNull(onComplete, "onComplete is null"),
+                Functions.EMPTY_ACTION,    // (onSuccess | onError | onComplete)
+                Functions.EMPTY_ACTION     // dispose
+        ));
     }
 
+    /**
+     * Calls the shared consumer with the error sent via onError for each
+     * MaybeObserver that subscribes to the current Single.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onError the consumer called with the success value of onError
+     * @return the new Maybe instance
+     */
     public final Maybe<T> doOnError(final Consumer<? super Throwable> onError) {
-        ObjectHelper.requireNonNull(onError, "onError is null");
-        return new MaybeDoOnError<T>(this, onError);
-    }
-    
-    public final Maybe<T> doOnCancel(final Action onCancel) {
-        ObjectHelper.requireNonNull(onCancel, "onCancel is null");
-        return new MaybeDoOnCancel<T>(this, onCancel);
+        return RxJavaPlugins.onAssembly(new MaybePeek<T>(this, 
+                Functions.emptyConsumer(), // onSubscribe
+                Functions.emptyConsumer(), // onSuccess
+                ObjectHelper.requireNonNull(onError, "onError is null"),
+                Functions.EMPTY_ACTION,    // onComplete
+                Functions.EMPTY_ACTION,    // (onSuccess | onError | onComplete)
+                Functions.EMPTY_ACTION     // dispose
+        ));
     }
 
+    /**
+     * Calls the shared consumer with the Disposable sent through the onSubscribe for each
+     * MaybeObserver that subscribes to the current Single.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onSubscribe the consumer called with the Disposable sent via onSubscribe
+     * @return the new Maybe instance
+     */
+    public final Maybe<T> doOnSubscribe(final Consumer<? super Disposable> onSubscribe) {
+        return RxJavaPlugins.onAssembly(new MaybePeek<T>(this, 
+                ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null"),
+                Functions.emptyConsumer(), // onSuccess
+                Functions.emptyConsumer(), // onError
+                Functions.EMPTY_ACTION,    // onComplete
+                Functions.EMPTY_ACTION,    // (onSuccess | onError | onComplete)
+                Functions.EMPTY_ACTION     // dispose
+        ));
+    }
+    
+    /**
+     * Calls the shared consumer with the success value sent via onSuccess for each
+     * MaybeObserver that subscribes to the current Single.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onSuccess the consumer called with the success value of onSuccess
+     * @return the new Maybe instance
+     */
+    public final Maybe<T> doOnSuccess(final Consumer<? super T> onSuccess) {
+        return RxJavaPlugins.onAssembly(new MaybePeek<T>(this, 
+                Functions.emptyConsumer(), // onSubscribe
+                ObjectHelper.requireNonNull(onSuccess, "onSubscribe is null"),
+                Functions.emptyConsumer(), // onError
+                Functions.EMPTY_ACTION,    // onComplete
+                Functions.EMPTY_ACTION,    // (onSuccess | onError | onComplete)
+                Functions.EMPTY_ACTION     // dispose
+        ));
+    }
+
+    /**
+     * Filters the success item of the Maybe via a predicate function and emitting it if the predicate
+     * returns true, completing otherwise.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param predicate
+     *            a function that evaluates the item emitted by the source Maybe, returning {@code true}
+     *            if it passes the filter
+     * @return a Maybe that emit the item emitted by the source Maybe that the filter
+     *         evaluates as {@code true}
+     * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> filter(Predicate<? super T> predicate) {
+        ObjectHelper.requireNonNull(predicate, "predicate is null");
+        return RxJavaPlugins.onAssembly(new MaybeFilter<T>(this, predicate));
+    }
+
+    /**
+     * Returns a Maybe that is based on applying a specified function to the item emitted by the source Single,
+     * where that function returns a MaybeSource.
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R> the result value type
+     * @param mapper
+     *            a function that, when applied to the item emitted by the source Maybe, returns a MaybeSource
+     * @return the Maybe returned from {@code func} when applied to the item emitted by the source Maybe
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
     public final <R> Maybe<R> flatMap(Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        return new MaybeFlatMap<T, R>(this, mapper);
+        return RxJavaPlugins.onAssembly(new MaybeFlatMap<T, R>(this, mapper));
     }
 
-    public final <R> Flowable<R> flatMapPublisher(Function<? super T, ? extends Publisher<? extends R>> mapper) {
-        return toFlowable().flatMap(mapper);
+    /**
+     * Maps the onSuccess, onError or onComplete signals of this Maybe into MaybeSource and emits that
+     * MaybeSource's signals
+     * <p>
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R>
+     *            the result type
+     * @param onSuccessMapper
+     *            a function that returns a MaybeSource to merge for the success item emitted by this Maybe
+     * @param onErrorMapper
+     *            a function that returns a MaybeSource to merge for an onError notification from this Maybe
+     * @param onCompleteSupplier
+     *            a function that returns a MaybeSource to merge for an onCompleted notification this Maybe
+     * @return the new Maybe instance
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Maybe<R> flatMap(
+            Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper, 
+            Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper, 
+            Callable<? extends MaybeSource<? extends R>> onCompleteSupplier) {
+        ObjectHelper.requireNonNull(onSuccessMapper, "onNextMapper is null");
+        ObjectHelper.requireNonNull(onErrorMapper, "onErrorMapper is null");
+        ObjectHelper.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");
+        return new MaybeFlatMapNotification<T, R>(this, onSuccessMapper, onErrorMapper, onCompleteSupplier);
+    }
+
+    /**
+     * Ignores the item emitted by the source Maybe and only calls {@code onCompleted} or {@code onError}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code ignoreElement} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @return an empty Maybe that only calls {@code onComplete} or {@code onError}, based on which one is
+     *         called by the source Publisher
+     * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElements</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> ignoreElement() {
+        return RxJavaPlugins.onAssembly(new MaybeIgnoreElement<T>(this));
+    }
+
+    
+    /**
+     * Lifts a function to the current Maybe and returns a new Maybe that when subscribed to will pass the
+     * values of the current Maybe through the MaybeOperator function.
+     * <p>
+     * In other words, this allows chaining TaskExecutors together on a Maybe for acting on the values within
+     * the Maybe.
+     * <p>
+     * {@code task.map(...).filter(...).lift(new OperatorA()).lift(new OperatorB(...)).subscribe() }
+     * <p>
+     * If the operator you are creating is designed to act on the item emitted by a source Maybe, use
+     * {@code lift}. If your operator is designed to transform the source Maybe as a whole (for instance, by
+     * applying a particular set of existing RxJava operators to it) use {@link #compose}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R> the downstream's value type (output)
+     * @param lift
+     *            the MaybeOperator that implements the Maybe-operating function to be applied to the source Maybe
+     * @return a Maybe that is the result of applying the lifted Operator to the source Maybe
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
+     */
+    public final <R> Maybe<R> lift(final MaybeOperator<? extends R, ? super T> lift) {
+        ObjectHelper.requireNonNull(lift, "onLift is null");
+        return RxJavaPlugins.onAssembly(new MaybeLift<T, R>(this, lift));
     }
     
-    public final T get(T valueIfComplete) {
-        return MaybeAwait.get(this, valueIfComplete);
-    }
-    
-    public final <R> Maybe<R> lift(final MaybeOperator<? extends R, ? super T> onLift) {
-        ObjectHelper.requireNonNull(onLift, "onLift is null");
-        return new MaybeLift<T, R>(this, onLift);
-    }
-    
+    /**
+     * Returns a Maybe that applies a specified function to the item emitted by the source Maybe and
+     * emits the result of this function application.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.map.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the result value type
+     * @param mapper
+     *            a function to apply to the item emitted by the Maybe
+     * @return a Maybe that emits the item from the source Maybe, transformed by the specified function
+     * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
+     */
     public final <R> Maybe<R> map(Function<? super T, ? extends R> mapper) {
-        return new MaybeMap<T, R>(this, mapper);
-    }
-
-    public final Maybe<Boolean> contains(Object value) {
-        return contains(value, ObjectHelper.equalsPredicate());
-    }
-
-    public final Maybe<Boolean> contains(final Object value, final BiPredicate<Object, Object> comparer) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        ObjectHelper.requireNonNull(comparer, "comparer is null");
-        return new MaybeContains<T>(this, value, comparer);
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new MaybeMap<T, R>(this, mapper));
     }
     
-    public final Flowable<T> mergeWith(MaybeSource<? extends T> other) {
-        return merge(this, other);
-    }
     
-    public final Maybe<Maybe<T>> nest() {
-        return just(this);
-    }
-    
+    /**
+     * Wraps a Maybe to emit its item (or notify of its error) on a specified {@link Scheduler},
+     * asynchronously.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.observeOn.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     * 
+     * @param scheduler
+     *            the {@link Scheduler} to notify subscribers on
+     * @return the new Maybe instance that its subscribers are notified on the specified
+     *         {@link Scheduler}
+     * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
+     * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
+     * @see #subscribeOn
+     */
     public final Maybe<T> observeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new MaybeObserveOn<T>(this, scheduler);
+        return RxJavaPlugins.onAssembly(new MaybeObserveOn<T>(this, scheduler));
     }
-
-    public final Maybe<T> onErrorReturn(final Function<? super Throwable, ? extends T> valueFunction) {
-        ObjectHelper.requireNonNull(valueFunction, "valueFunction is null");
-        return new MaybeOnErrorReturn<T>(this, valueFunction, null);
-    }
-    
-    public final Maybe<T> onErrorReturn(final T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        return new MaybeOnErrorReturn<T>(this, null, value);
-    }
-
-    public final Maybe<T> onErrorResumeNext(
-            final Function<? super Throwable, ? extends MaybeSource<? extends T>> nextFunction) {
-        ObjectHelper.requireNonNull(nextFunction, "nextFunction is null");
-        return new MaybeOnErrorResumeNext<T>(this, nextFunction);
-    }
-    
-    public final Flowable<T> repeat() {
-        return toFlowable().repeat();
-    }
-    
-    public final Flowable<T> repeat(long times) {
-        return toFlowable().repeat(times);
-    }
-    
-    public final Flowable<T> repeatWhen(Function<? super Flowable<Object>, ? extends Publisher<Object>> handler) {
-        return toFlowable().repeatWhen(handler);
-    }
-    
-    public final Flowable<T> repeatUntil(BooleanSupplier stop) {
-        return toFlowable().repeatUntil(stop);
-    }
-    
-    public final Maybe<T> retry() {
-        return toFlowable().retry().toMaybe();
-    }
-    
-    public final Maybe<T> retry(long times) {
-        return toFlowable().retry(times).toMaybe();
-    }
-    
-    public final Maybe<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
-        return toFlowable().retry(predicate).toMaybe();
-    }
-    
-    public final Maybe<T> retry(Predicate<? super Throwable> predicate) {
-        return toFlowable().retry(predicate).toMaybe();
-    }
-    
-    public final Maybe<T> retryWhen(Function<? super Flowable<? extends Throwable>, ? extends Publisher<Object>> handler) {
-        return toFlowable().retryWhen(handler).toMaybe();
-    }
-    
-    public final void safeSubscribe(Subscriber<? super T> s) {
-        toFlowable().safeSubscribe(s);
-    }
-    
-    public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), Functions.EMPTY_ACTION, RxJavaPlugins.getErrorHandler());
-    }
-    
-    public final Disposable subscribe(Consumer<? super T> onSuccess) {
-        return subscribe(onSuccess, Functions.EMPTY_ACTION, RxJavaPlugins.getErrorHandler());
-    }
-    
-    public final Disposable subscribe(Consumer<? super T> onSuccess, final Action onComplete) {
-        return subscribe(onSuccess, onComplete, RxJavaPlugins.getErrorHandler());
-    }
-    
-    public final Disposable subscribe(final Consumer<? super T> onSuccess, final Action onComplete, final Consumer<? super Throwable> onError) {
-        ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");
-        ObjectHelper.requireNonNull(onComplete, "onComplete is null");
-        ObjectHelper.requireNonNull(onError, "onError is null");
-        
-        ConsumerMaybeObserver<T> s = new ConsumerMaybeObserver<T>(onSuccess, onComplete, onError);
-        subscribe(s);
-        return s;
-    }
-    
-    @Override
-    public final void subscribe(MaybeObserver<? super T> subscriber) {
-        ObjectHelper.requireNonNull(subscriber, "subscriber is null");
-        // TODO plugin wrapper
-        subscribeActual(subscriber);
-    }
-    
-    protected abstract void subscribeActual(MaybeObserver<? super T> subscriber);
-    
-    public final void subscribe(Subscriber<? super T> s) {
-        toFlowable().subscribe(s);
-    }
-    
-    public final void subscribe(Observer<? super T> s) {
-        toObservable().subscribe(s);
-    }
-    
-    public final Maybe<T> subscribeOn(final Scheduler scheduler) {
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new MaybeSubscribeOn<T>(this, scheduler);
-    }
-    
-    public final Maybe<T> timeout(long timeout, TimeUnit unit) {
-        return timeout0(timeout, unit, Schedulers.computation(), null);
-    }
-    
-    public final Maybe<T> timeout(long timeout, TimeUnit unit, Scheduler scheduler) {
-        return timeout0(timeout, unit, scheduler, null);
-    }
-
-    public final Maybe<T> timeout(long timeout, TimeUnit unit, Scheduler scheduler, MaybeSource<? extends T> other) {
-        ObjectHelper.requireNonNull(other, "other is null");
-        return timeout0(timeout, unit, scheduler, other);
-    }
-
-    public final Maybe<T> timeout(long timeout, TimeUnit unit, MaybeSource<? extends T> other) {
-        ObjectHelper.requireNonNull(other, "other is null");
-        return timeout0(timeout, unit, Schedulers.computation(), other);
-    }
-
-    private Maybe<T> timeout0(final long timeout, final TimeUnit unit, final Scheduler scheduler, final MaybeSource<? extends T> other) {
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return new MaybeTimeout<T>(this, timeout, unit, scheduler, other);
-    }
-
+    /**
+     * Calls the specified converter function with the current Maybe instance 
+     * during assembly time and returns its result.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the result type
+     * @param convert the function that is called with the current Maybe instance during
+     *                assembly time that should return some value to be the result
+     *                 
+     * @return the value returned by the convert function
+     */
     public final <R> R to(Function<? super Maybe<T>, R> convert) {
         try {
             return convert.apply(this);
         } catch (Throwable ex) {
-            throw Exceptions.propagate(ex);
+            Exceptions.throwIfFatal(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
+    }
+
+    /**
+     * Converts this Maybe into an Completable instance composing cancellation
+     * through and dropping a success value if emitted.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Completable instance
+     */
+    public final Completable toCompletable() {
+        return RxJavaPlugins.onAssembly(new MaybeToCompletable<T>(this));
+    }
+
+    /**
+     * Converts this Maybe into a backpressure-aware Flowable instance composing cancellation
+     * through.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Flowable instance
+     */
+    public final Flowable<T> toFlowable() {
+        return RxJavaPlugins.onAssembly(new MaybeToFlowable<T>(this));
+    }
+    
+    /**
+     * Converts this Maybe into an Observable instance composing cancellation
+     * through.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Observable instance
+     */
+    public final Observable<T> toObservable() {
+        return RxJavaPlugins.onAssembly(new MaybeToObservable<T>(this));
+    }
+
+    /**
+     * Converts this Maybe into an Single instance composing cancellation
+     * through and turing an empty Maybe into a signal of NoSuchElementException.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Single instance
+     */
+    public final Single<T> toSingle() {
+        return RxJavaPlugins.onAssembly(new MaybeToSingle<T>(this));
+    }
+
+    @Override
+    public final void subscribe(MaybeObserver<? super T> observer) {
+        ObjectHelper.requireNonNull(observer, "observer is null");
+        
+        observer = RxJavaPlugins.onSubscribe(this, observer);
+        
+        ObjectHelper.requireNonNull(observer, "observer returned by the RxJavaPlugins hook is null");
+
+        try {
+            subscribeActual(observer);
+        } catch (NullPointerException ex) {
+            throw ex;
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            NullPointerException npe = new NullPointerException("subscribeActual failed");
+            npe.initCause(ex);
+            throw npe;
         }
     }
     
-    public final Flowable<T> toFlowable() {
-        return new MaybeToFlowable<T>(this);
+    /**
+     * Override this method in subclasses to handle the incoming MaybeObservers.
+     * @param observer the MaybeObserver to handle, not null
+     */
+    protected abstract void subscribeActual(MaybeObserver<? super T> observer);
+
+    /**
+     * Asynchronously subscribes subscribers to this Maybe on the specified {@link Scheduler}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.subscribeOn.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     * 
+     * @param scheduler
+     *            the {@link Scheduler} to perform subscription actions on
+     * @return the new Maybe instance that its subscriptions happen on the specified {@link Scheduler}
+     * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
+     * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
+     * @see #observeOn
+     */
+    public final Maybe<T> subscribeOn(Scheduler scheduler) {
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new MaybeSubscribeOn<T>(this, scheduler));
     }
-    
-    public final Observable<T> toObservable() {
-        return new MaybeToObservable<T>(this);
+
+    // ------------------------------------------------------------------
+    // Test helper
+    // ------------------------------------------------------------------
+
+    /**
+     * Creates a TestSubscriber and subscribes
+     * it to this Maybe.
+     * @return the new TestSubscriber instance
+     */
+    public final TestSubscriber<T> test() {
+        TestSubscriber<T> ts = new TestSubscriber<T>();
+        toFlowable().subscribe(ts);
+        return ts;
     }
-    
-    public final <U, R> Maybe<R> zipWith(MaybeSource<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
-        return zip(this, other, zipper);
+
+    /**
+     * Creates a TestSubscriber optionally in cancelled state, then subscribes it to this Maybe.
+     * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
+     * Maybe.
+     * @return the new TestSubscriber instance
+     */
+    public final TestSubscriber<T> test(boolean cancelled) {
+        TestSubscriber<T> ts = new TestSubscriber<T>();
+
+        if (cancelled) {
+            ts.cancel();
+        }
+
+        toFlowable().subscribe(ts);
+        return ts;
     }
 }

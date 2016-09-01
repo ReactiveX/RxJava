@@ -32,10 +32,10 @@ public final class SingleFromPublisher<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
-        publisher.subscribe(new ToSingleSubscriber<T>(s));
+        publisher.subscribe(new ToSingleObserver<T>(s));
     }
     
-    static final class ToSingleSubscriber<T> implements Subscriber<T>, Disposable {
+    static final class ToSingleObserver<T> implements Subscriber<T>, Disposable {
         final SingleObserver<? super T> actual;
         
         Subscription s;
@@ -46,7 +46,7 @@ public final class SingleFromPublisher<T> extends Single<T> {
         
         volatile boolean disposed;
 
-        public ToSingleSubscriber(SingleObserver<? super T> actual) {
+        public ToSingleObserver(SingleObserver<? super T> actual) {
             this.actual = actual;
         }
         

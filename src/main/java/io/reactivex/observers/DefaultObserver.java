@@ -38,8 +38,9 @@ public abstract class DefaultObserver<T> implements Observer<T> {
      * Cancels the upstream's disposable.
      */
     protected final void cancel() {
+        Disposable s = this.s;
+        this.s = DisposableHelper.DISPOSED;;
         s.dispose();
-        s = null;
     }
     /**
      * Called once the subscription has been set on this observer; override this

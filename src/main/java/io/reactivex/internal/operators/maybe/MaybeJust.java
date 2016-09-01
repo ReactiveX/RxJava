@@ -14,8 +14,13 @@
 package io.reactivex.internal.operators.maybe;
 
 import io.reactivex.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.disposables.Disposables;
 
+/**
+ * Signals a constant value.
+ *
+ * @param <T> the value type
+ */
 public final class MaybeJust<T> extends Maybe<T> {
 
     final T value;
@@ -23,11 +28,10 @@ public final class MaybeJust<T> extends Maybe<T> {
     public MaybeJust(T value) {
         this.value = value;
     }
-
+    
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> s) {
-        s.onSubscribe(EmptyDisposable.INSTANCE);
-        s.onSuccess(value);
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        observer.onSubscribe(Disposables.disposed());
+        observer.onSuccess(value);
     }
-
 }

@@ -27,7 +27,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpstream<T, R> {
+public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
     final Function<? super T, ? extends Publisher<? extends R>> mapper;
     

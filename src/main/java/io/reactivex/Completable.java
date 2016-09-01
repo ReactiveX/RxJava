@@ -23,6 +23,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.FlowableDelaySubscriptionOther;
+import io.reactivex.internal.operators.maybe.MaybeFromCompletable;
 import io.reactivex.internal.operators.observable.ObservableDelaySubscriptionOther;
 import io.reactivex.internal.operators.single.SingleDelayWithCompletable;
 import io.reactivex.internal.subscribers.completable.*;
@@ -1622,7 +1623,23 @@ public abstract class Completable implements CompletableSource {
     public final <T> Flowable<T> toFlowable() {
         return RxJavaPlugins.onAssembly(new CompletableToFlowable<T>(this));
     }
-    
+
+    /**
+     * Converts this Single into a {@link Maybe}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T> the value type
+     * @return an {@link Maybe} that emits a single item T or an error.
+     */
+    public final <T> Maybe<T> toMaybe() {
+        return RxJavaPlugins.onAssembly(new MaybeFromCompletable<T>(this));
+    }
+
     /**
      * Returns an NbpObservable which when subscribed to subscribes to this Completable and
      * relays the terminal events to the subscriber.

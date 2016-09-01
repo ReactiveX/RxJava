@@ -13,16 +13,21 @@
 package io.reactivex;
 
 /**
- * Represents a basic {@link Single} source base interface,
- * consumable via an {@link SingleObserver}.
+ * Represents a basic {@link Maybe} source base interface,
+ * consumable via an {@link MaybeObserver}.
  * <p>
  * This class also serves the base type for custom operators wrapped into
- * Single via {@link Single#create(MaybeSource)}.
+ * Maybe via {@link Maybe#create(MaybeOnSubscribe)}.
  * 
  * @param <T> the element type
  * @since 2.0
  */
 public interface MaybeSource<T> {
 
-    void subscribe(MaybeObserver<? super T> s);
+    /**
+     * Subscribes the given MaybeObserver to this MaybeSource instance.
+     * @param observer the MaybeObserver, not null
+     * @throws NullPointerException if {@code observer} is null
+     */
+    void subscribe(MaybeObserver<? super T> observer);
 }
