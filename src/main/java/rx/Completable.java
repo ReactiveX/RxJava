@@ -186,7 +186,22 @@ public class Completable {
             s.onSubscribe(Subscriptions.unsubscribed());
         }
     }, false); // hook is handled in never()
-    
+
+    /**
+     * Passes all emitted values from this Completable to the provided conversion function to be collected and
+     * returned as a single value. Note that it is legal for a conversion function to return a Completable
+     * (enabling chaining).
+     *
+     * @param <R> the output type of the conversion function
+     * @param conversion a function that converts from the source {@code Completable} to an {@code R}
+     * @return an instance of R created by the provided conversion function
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public <R> R extend(Func1<? super CompletableOnSubscribe, ? extends R> conversion) {
+        return conversion.call(new CompletableOnSubscribeExtend(this));
+    }
+
     /**
      * Returns a Completable which terminates as soon as one of the source Completables
      * terminates (normally or with an error) and cancels all other Completables.
