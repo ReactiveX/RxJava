@@ -30,7 +30,7 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
 
     final OnSubscribe<T> source;
     
-    final String stacktrace;
+    final StackTraceElement[] stacktrace;
 
     /**
      * If set to true, the creation of PublisherOnAssembly will capture the raw
@@ -38,17 +38,10 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
      */
     public static volatile boolean fullStackTrace;
     
-    public OnSubscribeOnAssembly(OnSubscribe<T> source) {
-        this.source = source;
-        this.stacktrace = createStacktrace();
-    }
-    
-    static String createStacktrace() {
-        StackTraceElement[] stes = Thread.currentThread().getStackTrace();
+    static String stacktraceToString(StackTraceElement[] stacktrace) {
+        final StringBuilder sb = new StringBuilder(stacktrace.length * 50).append("Assembly trace:");
 
-        StringBuilder sb = new StringBuilder("Assembly trace:");
-        
-        for (StackTraceElement e : stes) {
+        for (StackTraceElement e : stacktrace) {
             String row = e.toString();
             if (!fullStackTrace) {
                 if (e.getLineNumber() <= 1) {
@@ -87,8 +80,13 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
             }
             sb.append("\n at ").append(row);
         }
-        
+
         return sb.append("\nOriginal exception:").toString();
+    }
+    
+    public OnSubscribeOnAssembly(OnSubscribe<T> source) {
+        this.source = source;
+        this.stacktrace = Thread.currentThread().getStackTrace();
     }
 
     @Override
@@ -100,9 +98,9 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
 
         final Subscriber<? super T> actual;
         
-        final String stacktrace;
+        final StackTraceElement[] stacktrace;
         
-        public OnAssemblySubscriber(Subscriber<? super T> actual, String stacktrace) {
+        public OnAssemblySubscriber(Subscriber<? super T> actual, StackTraceElement[] stacktrace) {
             super(actual);
             this.actual = actual;
             this.stacktrace = stacktrace;
@@ -115,7 +113,7 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
 
         @Override
         public void onError(Throwable e) {
-            new AssemblyStackTraceException(stacktrace).attachTo(e);
+            new AssemblyStackTraceException(stacktraceToString(stacktrace)).attachTo(e);
             actual.onError(e);
         }
 

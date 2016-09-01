@@ -30,17 +30,11 @@ public final class OnSubscribeOnAssemblyCompletable<T> implements Completable.On
 
     final Completable.OnSubscribe source;
     
-    final String stacktrace;
-
-    /**
-     * If set to true, the creation of PublisherOnAssembly will capture the raw
-     * stacktrace instead of the sanitized version.
-     */
-    public static volatile boolean fullStackTrace;
+    final StackTraceElement[] stacktrace;
     
     public OnSubscribeOnAssemblyCompletable(Completable.OnSubscribe source) {
         this.source = source;
-        this.stacktrace = OnSubscribeOnAssembly.createStacktrace();
+        this.stacktrace = Thread.currentThread().getStackTrace();
     }
     
     @Override
@@ -52,9 +46,9 @@ public final class OnSubscribeOnAssemblyCompletable<T> implements Completable.On
 
         final CompletableSubscriber actual;
         
-        final String stacktrace;
+        final StackTraceElement[] stacktrace;
         
-        public OnAssemblyCompletableSubscriber(CompletableSubscriber actual, String stacktrace) {
+        public OnAssemblyCompletableSubscriber(CompletableSubscriber actual, StackTraceElement[] stacktrace) {
             this.actual = actual;
             this.stacktrace = stacktrace;
         }
@@ -71,7 +65,7 @@ public final class OnSubscribeOnAssemblyCompletable<T> implements Completable.On
 
         @Override
         public void onError(Throwable e) {
-            new AssemblyStackTraceException(stacktrace).attachTo(e);
+            new AssemblyStackTraceException(OnSubscribeOnAssembly.stacktraceToString(stacktrace)).attachTo(e);
             actual.onError(e);
         }
     }
