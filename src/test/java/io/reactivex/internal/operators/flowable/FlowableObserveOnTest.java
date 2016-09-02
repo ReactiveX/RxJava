@@ -26,6 +26,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
@@ -946,4 +947,22 @@ public class FlowableObserveOnTest {
             assertEquals("bufferSize > 0 required but it was -99", ex.getMessage());
         }
     }
+    
+    @Test
+    public void delayError() {
+        Flowable.range(1, 5).concatWith(Flowable.<Integer>error(new TestException()))
+        .observeOn(Schedulers.computation(), true)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                if (v == 1) {
+                    Thread.sleep(100);
+                }
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
+
 }

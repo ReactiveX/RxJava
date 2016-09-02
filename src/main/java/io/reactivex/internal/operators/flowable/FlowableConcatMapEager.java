@@ -273,87 +273,88 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 
                 if (inner != null) {
                     SimpleQueue<R> q = inner.queue();
-                    
-                    while (e != r) {
-                        if (cancelled) {
-                            cancelAll();
-                            return;
-                        }
-                        
-                        if (em == ErrorMode.IMMEDIATE) {
-                            Throwable ex = error.get();
-                            if (ex != null) {
+                    if (q != null) {
+                        while (e != r) {
+                            if (cancelled) {
+                                cancelAll();
+                                return;
+                            }
+                            
+                            if (em == ErrorMode.IMMEDIATE) {
+                                Throwable ex = error.get();
+                                if (ex != null) {
+                                    current = null;
+                                    inner.cancel();
+                                    cancelAll();
+                                    
+                                    a.onError(ex);
+                                    return;
+                                }
+                            }
+                            
+                            boolean d = inner.isDone();
+                            
+                            R v;
+                            
+                            try {
+                                v = q.poll();
+                            } catch (Throwable ex) {
+                                Exceptions.throwIfFatal(ex);
                                 current = null;
                                 inner.cancel();
                                 cancelAll();
-                                
                                 a.onError(ex);
                                 return;
                             }
-                        }
-                        
-                        boolean d = inner.isDone();
-                        
-                        R v;
-                        
-                        try {
-                            v = q.poll();
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            current = null;
-                            inner.cancel();
-                            cancelAll();
-                            a.onError(ex);
-                            return;
-                        }
-                        
-                        boolean empty = v == null;
-                        
-                        if (d && empty) {
-                            inner = null;
-                            current = null;
-                            s.request(1);
-                            continue outer;
-                        }
-                        
-                        if (empty) {
-                            break;
-                        }
-                        
-                        a.onNext(v);
-                        
-                        e++;
-                        
-                        inner.requestOne();
-                    }
-
-                    if (e == r) {
-                        if (cancelled) {
-                            cancelAll();
-                            return;
-                        }
-                        
-                        if (em == ErrorMode.IMMEDIATE) {
-                            Throwable ex = error.get();
-                            if (ex != null) {
+                            
+                            boolean empty = v == null;
+                            
+                            if (d && empty) {
+                                inner = null;
                                 current = null;
-                                inner.cancel();
+                                s.request(1);
+                                continue outer;
+                            }
+                            
+                            if (empty) {
+                                break;
+                            }
+                            
+                            a.onNext(v);
+                            
+                            e++;
+                            
+                            inner.requestOne();
+                        }
+    
+                        if (e == r) {
+                            if (cancelled) {
                                 cancelAll();
-                                
-                                a.onError(ex);
                                 return;
                             }
-                        }
-                        
-                        boolean d = inner.isDone();
-                        
-                        boolean empty = inner.queue().isEmpty();
-                        
-                        if (d && empty) {
-                            inner = null;
-                            current = null;
-                            s.request(1);
-                            continue;
+                            
+                            if (em == ErrorMode.IMMEDIATE) {
+                                Throwable ex = error.get();
+                                if (ex != null) {
+                                    current = null;
+                                    inner.cancel();
+                                    cancelAll();
+                                    
+                                    a.onError(ex);
+                                    return;
+                                }
+                            }
+                            
+                            boolean d = inner.isDone();
+                            
+                            boolean empty = q.isEmpty();
+                            
+                            if (d && empty) {
+                                inner = null;
+                                current = null;
+                                s.request(1);
+                                continue;
+                            }
                         }
                     }
                 }

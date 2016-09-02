@@ -83,13 +83,13 @@ public class ObservableReduceTests {
     public void reduceCovariance() {
         // must type it to <Movie>
         Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
-        libraryFunctionActingOnMovieNbpObservables(horrorMovies);
+        libraryFunctionActingOnMovieObservables(horrorMovies);
     }
 
     /*
      * This accepts <Movie> instead of <? super Movie> since `reduce` can't handle covariants
      */
-    public void libraryFunctionActingOnMovieNbpObservables(Observable<Movie> obs) {
+    public void libraryFunctionActingOnMovieObservables(Observable<Movie> obs) {
 
         obs.reduce(new BiFunction<Movie, Movie, Movie>() {
             @Override

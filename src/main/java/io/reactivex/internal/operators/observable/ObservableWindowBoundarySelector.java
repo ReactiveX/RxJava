@@ -276,7 +276,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                         
                         if (p == null) {
                             cancelled = true;
-                            a.onError(new NullPointerException("The NbpObservable supplied is null"));
+                            a.onError(new NullPointerException("The ObservableSource supplied is null"));
                             continue;
                         }
                         

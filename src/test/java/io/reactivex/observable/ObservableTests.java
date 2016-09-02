@@ -214,10 +214,10 @@ public class ObservableTests {
     }
 
     /**
-     * A reduce should fail with an NoSuchElementException if done on an empty NbpObservable.
+     * A reduce should fail with an NoSuchElementException if done on an empty Observable.
      */
     @Test(expected = NoSuchElementException.class)
-    public void testReduceWithEmptyNbpObservable() {
+    public void testReduceWithEmptyObservable() {
         Observable<Integer> o = Observable.range(1, 0);
         o.reduce(new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -236,12 +236,12 @@ public class ObservableTests {
     }
 
     /**
-     * A reduce on an empty NbpObservable and a seed should just pass the seed through.
+     * A reduce on an empty Observable and a seed should just pass the seed through.
      * 
      * This is confirmed at https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642456
      */
     @Test
-    public void testReduceWithEmptyNbpObservableAndSeed() {
+    public void testReduceWithEmptyObservableAndSeed() {
         Observable<Integer> o = Observable.range(1, 0);
         int value = o.reduce(1, new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -309,7 +309,7 @@ public class ObservableTests {
      * @throws InterruptedException if the test is interrupted
      */
     @Test
-    public void testCustomNbpObservableWithErrorInObserverAsynchronous() throws InterruptedException {
+    public void testCustomObservableWithErrorInObserverAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
@@ -358,7 +358,7 @@ public class ObservableTests {
      * Result: Passes
      */
     @Test
-    public void testCustomNbpObservableWithErrorInObserverSynchronous() {
+    public void testCustomObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         
@@ -395,13 +395,13 @@ public class ObservableTests {
     }
 
     /**
-     * The error from the user provided NbpObservable is handled by the subscribe try/catch because this is synchronous
+     * The error from the user provided Observable is handled by the subscribe try/catch because this is synchronous
      * 
      * 
      * Result: Passes
      */
     @Test
-    public void testCustomNbpObservableWithErrorInNbpObservableSynchronous() {
+    public void testCustomObservableWithErrorInObservableSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         // FIXME custom built???
@@ -626,7 +626,7 @@ public class ObservableTests {
      * Rx Design Guidelines 5.2
      * 
      * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
-     * to rethrow the exception on the thread that the message comes out from the NbpObservable.
+     * to rethrow the exception on the thread that the message comes out from the Observable.
      * The OnCompleted behavior in this case is to do nothing."
      */
     @Test
@@ -647,7 +647,7 @@ public class ObservableTests {
      * Rx Design Guidelines 5.2
      * 
      * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
-     * to rethrow the exception on the thread that the message comes out from the NbpObservable.
+     * to rethrow the exception on the thread that the message comes out from the Observable.
      * The OnCompleted behavior in this case is to do nothing."
      * 
      * @throws InterruptedException
@@ -801,7 +801,7 @@ public class ObservableTests {
     }
 
     @Test
-    public void testContainsWithEmptyNbpObservable() {
+    public void testContainsWithEmptyObservable() {
         Observable<Boolean> o = Observable.<String> empty().contains("a");
 
         Observer<Object> observer = TestHelper.mockObserver();
@@ -909,10 +909,10 @@ public class ObservableTests {
 // FIXME Subscribers can't throw
 //    @Test(expected = OnErrorNotImplementedException.class)
 //    public void testSubscribeWithoutOnError() {
-//        NbpObservable<String> o = NbpObservable.just("a", "b").flatMap(new Func1<String, NbpObservable<String>>() {
+//        Observable<String> o = Observable.just("a", "b").flatMap(new Func1<String, Observable<String>>() {
 //            @Override
-//            public NbpObservable<String> call(String s) {
-//                return NbpObservable.error(new Exception("test"));
+//            public Observable<String> call(String s) {
+//                return Observable.error(new Exception("test"));
 //            }
 //        });
 //        o.subscribe();
@@ -997,7 +997,7 @@ public class ObservableTests {
 //    @Test // cf. https://github.com/ReactiveX/RxJava/issues/2599
 //    public void testSubscribingSubscriberAsObserverMaintainsSubscriptionChain() {
 //        NbpTestSubscriber<Object> subscriber = new NbpTestSubscriber<T>();
-//        Subscription subscription = NbpObservable.just("event").subscribe((Observer<Object>) subscriber);
+//        Subscription subscription = Observable.just("event").subscribe((Observer<Object>) subscriber);
 //        subscription.unsubscribe();
 //
 //        subscriber.assertUnsubscribed();
@@ -1006,7 +1006,7 @@ public class ObservableTests {
 // FIXME subscribers can't throw
 //    @Test(expected=OnErrorNotImplementedException.class)
 //    public void testForEachWithError() {
-//        NbpObservable.error(new Exception("boo"))
+//        Observable.error(new Exception("boo"))
 //        //
 //        .forEach(new Action1<Object>() {
 //            @Override

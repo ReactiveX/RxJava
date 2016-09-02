@@ -28,7 +28,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowableToObservableListTest {
+public class FlowableToListTest {
 
     @Test
     public void testList() {
@@ -161,5 +161,14 @@ public class FlowableToObservableListTest {
         } catch (BrokenBarrierException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void capacityHint() {
+        Flowable.range(1, 10)
+        .toList(4)
+        .test()
+        .assertResult(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 }

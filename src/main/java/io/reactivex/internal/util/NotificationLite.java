@@ -226,11 +226,11 @@ public enum NotificationLite {
     }
 
     /**
-     * Calls the appropriate NbpSubscriber method based on the type of the notification.
+     * Calls the appropriate Observer method based on the type of the notification.
      * <p>Does not check for a subscription notification.
      * @param <T> the expected value type when unwrapped
      * @param o the notification object
-     * @param s the NbpSubscriber to call methods on
+     * @param s the Observer to call methods on
      * @return true if the notification was a terminal event (i.e., complete or error)
      */
     @SuppressWarnings("unchecked")
@@ -274,7 +274,7 @@ public enum NotificationLite {
     }
     
     /**
-     * Calls the appropriate NbpSubscriber method based on the type of the notification.
+     * Calls the appropriate Observer method based on the type of the notification.
      * @param <T> the expected value type when unwrapped
      * @param o the notification object
      * @param s the subscriber to call methods on

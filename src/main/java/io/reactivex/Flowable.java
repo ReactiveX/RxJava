@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.Observable;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
@@ -164,7 +165,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<Object[], ? extends R> combiner) {
+    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super T[], ? extends R> combiner) {
         return combineLatest(sources, combiner, bufferSize());
     }
 
@@ -195,7 +196,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <T, R> Flowable<R> combineLatest(Function<Object[], ? extends R> combiner, Publisher<? extends T>... sources) {
+    public static <T, R> Flowable<R> combineLatest(Function<? super T[], ? extends R> combiner, Publisher<? extends T>... sources) {
         return combineLatest(sources, combiner, bufferSize());
     }
 
@@ -228,13 +229,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<Object[], ? extends R> combiner, int bufferSize) {
+    public static <T, R> Flowable<R> combineLatest(Publisher<? extends T>[] sources, Function<? super T[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        ObjectHelper.requireNonNull(combiner, "combiner is null");
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         if (sources.length == 0) {
             return empty();
         }
+        ObjectHelper.requireNonNull(combiner, "combiner is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new FlowableCombineLatest<T, R>(sources, combiner, bufferSize, false));
     }
 
@@ -266,7 +267,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources, 
-            Function<Object[], ? extends R> combiner) {
+            Function<? super T[], ? extends R> combiner) {
         return combineLatest(sources, combiner, bufferSize());
     }
 
@@ -300,7 +301,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T, R> Flowable<R> combineLatest(Iterable<? extends Publisher<? extends T>> sources, 
-            Function<Object[], ? extends R> combiner, int bufferSize) {
+            Function<? super T[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
@@ -335,7 +336,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T, R> Flowable<R> combineLatestDelayError(Publisher<? extends T>[] sources, 
-            Function<Object[], ? extends R> combiner) {
+            Function<? super T[], ? extends R> combiner) {
         return combineLatestDelayError(sources, combiner, bufferSize());
     }
 
@@ -368,13 +369,44 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    public static <T, R> Flowable<R> combineLatestDelayError(Function<Object[], ? extends R> combiner, 
+    public static <T, R> Flowable<R> combineLatestDelayError(Function<? super T[], ? extends R> combiner, 
             Publisher<? extends T>... sources) {
         return combineLatestDelayError(sources, combiner, bufferSize());
     }
 
     /**
      * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
+     * the source ObservableSources each time an item is received from any of the source Publisher, where this
+     * aggregation is defined by a specified function and delays any error from the sources until
+     * all source Publishers terminate.
+     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T>
+     *            the common base type of source values
+     * @param <R>
+     *            the result type
+     * @param sources
+     *            the collection of source Publishers
+     * @param combiner
+     *            the aggregation function used to combine the items emitted by the source Publishers
+     * @param bufferSize 
+     *            the internal buffer size and prefetch amount applied to every source Publisher
+     * @return a Flowable that emits items that are the result of combining the items emitted by the source
+     *         Publishers by means of the given aggregation function
+     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T, R> Flowable<R> combineLatestDelayError(Function<? super T[], ? extends R> combiner, 
+            int bufferSize, Publisher<? extends T>... sources) {
+        return combineLatestDelayError(sources, combiner, bufferSize);
+    }
+
+    /**
+     * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source Publishers terminate.
@@ -405,7 +437,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T, R> Flowable<R> combineLatestDelayError(Publisher<? extends T>[] sources, 
-            Function<Object[], ? extends R> combiner, int bufferSize) {
+            Function<? super T[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
@@ -445,7 +477,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T, R> Flowable<R> combineLatestDelayError(Iterable<? extends Publisher<? extends T>> sources, 
-            Function<Object[], ? extends R> combiner) {
+            Function<? super T[], ? extends R> combiner) {
         return combineLatestDelayError(sources, combiner, bufferSize());
     }
 
@@ -481,7 +513,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T, R> Flowable<R> combineLatestDelayError(Iterable<? extends Publisher<? extends T>> sources, 
-            Function<Object[], ? extends R> combiner, int bufferSize) {
+            Function<? super T[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
@@ -522,6 +554,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T1, T2, R> Flowable<R> combineLatest(
             Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
             BiFunction<? super T1, ? super T2, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         Function<Object[], R> f = Functions.toFunction(combiner);
         return combineLatest(f, source1, source2);
     }
@@ -564,6 +598,9 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
             Publisher<? extends T3> source3, 
             Function3<? super T1, ? super T2, ? super T3, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
         return combineLatest(Functions.toFunction(combiner), source1, source2, source3);
     }
 
@@ -608,6 +645,10 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
             Publisher<? extends T3> source3, Publisher<? extends T4> source4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
         return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4);
     }
 
@@ -656,6 +697,11 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T3> source3, Publisher<? extends T4> source4,
             Publisher<? extends T5> source5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
         return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5);
     }
 
@@ -707,6 +753,12 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T3> source3, Publisher<? extends T4> source4,
             Publisher<? extends T5> source5, Publisher<? extends T6> source6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
         return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6);
     }
 
@@ -762,6 +814,13 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T5> source5, Publisher<? extends T6> source6,
             Publisher<? extends T7> source7,
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
         return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6, source7);
     }
 
@@ -820,6 +879,14 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T5> source5, Publisher<? extends T6> source6,
             Publisher<? extends T7> source7, Publisher<? extends T8> source8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
         return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6, source7, source8);
     }
 
@@ -882,6 +949,15 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T7> source7, Publisher<? extends T8> source8,
             Publisher<? extends T9> source9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        ObjectHelper.requireNonNull(source9, "source9 is null");
         return combineLatest(Functions.toFunction(combiner), source1, source2, source3, source4, source5, source6, source7, source8, source9);
     }
 
@@ -1416,6 +1492,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> create(FlowableOnSubscribe<T> source, FlowableEmitter.BackpressureMode mode) {
+        ObjectHelper.requireNonNull(source, "source is null");
+        ObjectHelper.requireNonNull(mode, "mode is null");
         return RxJavaPlugins.onAssembly(new FlowableCreate<T>(source, mode));
     }
 
@@ -1881,8 +1959,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T, S> Flowable<T> generate(Callable<S> initialState, final BiConsumer<S, Emitter<T>> generator, 
             Consumer<? super S> disposeState) {
         ObjectHelper.requireNonNull(generator, "generator is null");
-        return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), 
-                disposeState);
+        return generate(initialState, FlowableInternalHelper.<T, S>simpleBiGenerator(generator), disposeState);
     }
 
     /**
@@ -2003,16 +2080,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> interval(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
-        if (initialDelay < 0) {
-            initialDelay = 0L;
-        }
-        if (period < 0) {
-            period = 0L;
-        }
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-
-        return RxJavaPlugins.onAssembly(new FlowableInterval(initialDelay, period, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new FlowableInterval(Math.max(0L, initialDelay), Math.max(0L, period), unit, scheduler));
     }
 
     /**
@@ -2110,25 +2180,21 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> intervalRange(long start, long count, long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
-        ObjectHelper.requireNonNull(unit, "unit is null");
-        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        if (count < 0L) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
         if (count == 0L) {
-            return RxJavaPlugins.onAssembly(Flowable.<Long>empty().delay(initialDelay, unit, scheduler));
+            return Flowable.<Long>empty().delay(initialDelay, unit, scheduler);
         }
         
         long end = start + (count - 1);
-        if (end < 0) {
+        if (start > 0 && end < 0) {
             throw new IllegalArgumentException("Overflow! start + count is bigger than Long.MAX_VALUE");
         }
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
 
-        if (initialDelay < 0) {
-            initialDelay = 0L;
-        }
-        if (period < 0) {
-            period = 0L;
-        }
-
-        return RxJavaPlugins.onAssembly(new FlowableIntervalRange(start, end, initialDelay, period, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new FlowableIntervalRange(start, end, Math.max(0L, initialDelay), Math.max(0L, period), unit, scheduler));
     }
 
     /**
@@ -3644,13 +3710,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Flowable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
-        if (delay < 0) {
-            delay = 0L;
-        }
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
 
-        return RxJavaPlugins.onAssembly(new FlowableTimer(delay, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new FlowableTimer(Math.max(0L, delay), unit, scheduler));
     }
 
     /**
@@ -3911,6 +3974,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T1, T2, R> Flowable<R> zip(
             Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
             BiFunction<? super T1, ? super T2, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2);
     }
 
@@ -3969,6 +4034,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T1, T2, R> Flowable<R> zip(
             Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
             BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2);
     }
 
@@ -4029,6 +4096,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T1, T2, R> Flowable<R> zip(
             Publisher<? extends T1> source1, Publisher<? extends T2> source2, 
             BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2);
     }
 
@@ -4090,6 +4159,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T1, T2, T3, R> Flowable<R> zip(
             Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3, 
             Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3);
     }
 
@@ -4155,6 +4227,10 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3,
             Publisher<? extends T4> source4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4);
     }
 
@@ -4223,6 +4299,11 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3,
             Publisher<? extends T4> source4, Publisher<? extends T5> source5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5);
     }
 
@@ -4293,6 +4374,12 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T1> source1, Publisher<? extends T2> source2, Publisher<? extends T3> source3,
             Publisher<? extends T4> source4, Publisher<? extends T5> source5, Publisher<? extends T6> source6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6);
     }
 
@@ -4367,6 +4454,13 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T4> source4, Publisher<? extends T5> source5, Publisher<? extends T6> source6,
             Publisher<? extends T7> source7,
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7);
     }
 
@@ -4444,6 +4538,14 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T4> source4, Publisher<? extends T5> source5, Publisher<? extends T6> source6,
             Publisher<? extends T7> source7, Publisher<? extends T8> source8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8);
     }
 
@@ -4524,6 +4626,16 @@ public abstract class Flowable<T> implements Publisher<T> {
             Publisher<? extends T4> source4, Publisher<? extends T5> source5, Publisher<? extends T6> source6,
             Publisher<? extends T7> source7, Publisher<? extends T8> source8, Publisher<? extends T9> source9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipper) {
+        
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        ObjectHelper.requireNonNull(source9, "source9 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8, source9);
     }
 
@@ -6743,7 +6855,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         
-        return RxJavaPlugins.onAssembly(new FlowableDelay<T>(this, delay, unit, scheduler, delayError));
+        return RxJavaPlugins.onAssembly(new FlowableDelay<T>(this, Math.max(0L, delay), unit, scheduler, delayError));
     }
 
     /**
@@ -9780,7 +9892,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param count
+     * @param times
      *            the number of times the source Publisher items are repeated, a count of 0 will yield an empty
      *            sequence
      * @return a Flowable that repeats the sequence of items emitted by the source Publisher at most
@@ -9791,14 +9903,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> repeat(long count) {
-        if (count < 0) {
-            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+    public final Flowable<T> repeat(long times) {
+        if (times < 0) {
+            throw new IllegalArgumentException("times >= 0 required but it was " + times);
         }
-        if (count == 0) {
+        if (times == 0) {
             return empty();
         }
-        return RxJavaPlugins.onAssembly(new FlowableRepeat<T>(this, count));
+        return RxJavaPlugins.onAssembly(new FlowableRepeat<T>(this, times));
     }
 
     /**
@@ -10025,9 +10137,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Flowable<R> replay(Function<? super Flowable<T>, ? extends Publisher<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        if (bufferSize < 0) {
-            throw new IllegalArgumentException("bufferSize < 0");
-        }
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(selector, "selector is null");
         return FlowableReplay.multicastSelector(
                 FlowableInternalHelper.replayCallable(this, bufferSize, time, unit, scheduler), selector);
@@ -10277,9 +10387,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final ConnectableFlowable<T> replay(final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        if (bufferSize < 0) {
-            throw new IllegalArgumentException("bufferSize < 0");
-        }
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return FlowableReplay.create(this, time, unit, scheduler, bufferSize);
     }
 
@@ -11657,9 +11765,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         try {
             s = RxJavaPlugins.onSubscribe(this, s);
 
-            if (s == null) {
-                throw new NullPointerException("Plugin returned null Subscriber");
-            }
+            ObjectHelper.requireNonNull(s, "Plugin returned null Subscriber");
             
             subscribeActual(s);
         } catch (NullPointerException e) { // NOPMD
@@ -11939,7 +12045,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> take(long count) {
         if (count < 0) {
-            throw new IllegalArgumentException("n >= required but it was " + count);
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
         }
         return RxJavaPlugins.onAssembly(new FlowableTake<T>(this, count));
     }
@@ -12050,7 +12156,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> takeLast(int count) {
         if (count < 0) {
-            throw new IndexOutOfBoundsException("n >= required but it was " + count);
+            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         } else
         if (count == 0) {
             return ignoreElements();
@@ -13931,6 +14037,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<Flowable<T>> window(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, int bufferSize) {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(timespan, "timespan");
+        ObjectHelper.verifyPositive(timeskip, "timeskip");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
         return RxJavaPlugins.onAssembly(new FlowableWindowTimed<T>(this, timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false));

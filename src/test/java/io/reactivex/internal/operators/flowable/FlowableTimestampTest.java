@@ -23,6 +23,8 @@ import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.functions.Function;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 
@@ -81,4 +83,59 @@ public class FlowableTimestampTest {
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onComplete();
     }
+
+    @Test
+    public void timeIntervalDefault() {
+        final TestScheduler scheduler = new TestScheduler();
+        
+        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
+            @Override
+            public Scheduler apply(Scheduler v) throws Exception {
+                return scheduler;
+            }
+        });
+        
+        try {
+            Flowable.range(1, 5)
+            .timestamp()
+            .map(new Function<Timed<Integer>, Long>() {
+                @Override
+                public Long apply(Timed<Integer> v) throws Exception {
+                    return v.time();
+                }
+            })
+            .test()
+            .assertResult(0L, 0L, 0L, 0L, 0L);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void timeIntervalDefaultSchedulerCustomUnit() {
+        final TestScheduler scheduler = new TestScheduler();
+        
+        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
+            @Override
+            public Scheduler apply(Scheduler v) throws Exception {
+                return scheduler;
+            }
+        });
+        
+        try {
+            Flowable.range(1, 5)
+            .timestamp(TimeUnit.SECONDS)
+            .map(new Function<Timed<Integer>, Long>() {
+                @Override
+                public Long apply(Timed<Integer> v) throws Exception {
+                    return v.time();
+                }
+            })
+            .test()
+            .assertResult(0L, 0L, 0L, 0L, 0L);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
 }

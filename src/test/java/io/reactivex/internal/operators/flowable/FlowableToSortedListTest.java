@@ -25,11 +25,12 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowableToObservableSortedListTest {
+public class FlowableToSortedListTest {
 
     @Test
     public void testSortedList() {
@@ -132,5 +133,45 @@ public class FlowableToObservableSortedListTest {
         } catch (BrokenBarrierException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    @Test
+    public void sorted() {
+        Flowable.just(5, 1, 2, 4, 3).sorted()
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+    
+    @Test
+    public void sortedComparator() {
+        Flowable.just(5, 1, 2, 4, 3).sorted(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                return b - a;
+            }
+        })
+        .test()
+        .assertResult(5, 4, 3, 2, 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void toSortedListCapacity() {
+        Flowable.just(5, 1, 2, 4, 3).toSortedList(4)
+        .test()
+        .assertResult(Arrays.asList(1, 2, 3, 4, 5));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void toSortedListComparatorCapacity() {
+        Flowable.just(5, 1, 2, 4, 3).toSortedList(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                return b - a;
+            }
+        }, 4)
+        .test()
+        .assertResult(Arrays.asList(5, 4, 3, 2, 1));
     }
 }

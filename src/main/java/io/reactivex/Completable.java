@@ -1331,15 +1331,15 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns an NbpObservable which first delivers the events
-     * of the other NbpObservable then runs this CompletableConsumable.
+     * Returns an Observable which first delivers the events
+     * of the other Observable then runs this CompletableConsumable.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param other the other NbpObservable to run first
-     * @return the new NbpObservable instance
+     * @param other the other Observable to run first
+     * @return the new Observable instance
      * @throws NullPointerException if other is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1641,14 +1641,14 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns an NbpObservable which when subscribed to subscribes to this Completable and
+     * Returns an Observable which when subscribed to subscribes to this Completable and
      * relays the terminal events to the subscriber.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @return the new NbpObservable created
+     * @return the new Observable created
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Observable<T> toObservable() {

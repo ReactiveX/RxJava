@@ -578,19 +578,19 @@ public class CompletableTest {
     }
     
     @Test(expected = NullPointerException.class)
-    public void fromNbpObservableNull() {
+    public void fromObservableNull() {
         Completable.fromObservable(null);
     }
     
     @Test(timeout = 1000)
-    public void fromNbpObservableEmpty() {
+    public void fromObservableEmpty() {
         Completable c = Completable.fromObservable(Observable.empty());
         
         c.blockingAwait();
     }
 
     @Test(timeout = 5000)
-    public void fromNbpObservableSome() {
+    public void fromObservableSome() {
         for (int n = 1; n < 10000; n *= 10) {
             Completable c = Completable.fromObservable(Observable.range(1, n));
             
@@ -599,7 +599,7 @@ public class CompletableTest {
     }
     
     @Test(timeout = 1000, expected = TestException.class)
-    public void fromNbpObservableError() {
+    public void fromObservableError() {
         Completable c = Completable.fromObservable(Observable.error(new Callable<Throwable>() {
             @Override
             public Throwable call() {
@@ -2585,7 +2585,7 @@ public class CompletableTest {
     }
     
     @Test(timeout = 1000)
-    public void subscribeNbpSubscriberNormal() {
+    public void subscribeObserverNormal() {
         TestObserver<Object> ts = new TestObserver<Object>();
         
         normal.completable.toObservable().subscribe(ts);
@@ -2596,7 +2596,7 @@ public class CompletableTest {
     }
 
     @Test(timeout = 1000)
-    public void subscribeNbpSubscriberError() {
+    public void subscribeObserverError() {
         TestObserver<Object> ts = new TestObserver<Object>();
         
         error.completable.toObservable().subscribe(ts);
@@ -2645,7 +2645,7 @@ public class CompletableTest {
     }
     
     @Test(expected = NullPointerException.class)
-    public void subscribeNbpSubscriberNull() {
+    public void subscribeObserverNull() {
         normal.completable.toObservable().subscribe((Observer<Object>)null);
     }
     
@@ -2799,12 +2799,12 @@ public class CompletableTest {
     }
 
     @Test(timeout = 1000)
-    public void toNbpObservableNormal() {
+    public void toObservableNormal() {
         normal.completable.toObservable().blockingForEach(Functions.emptyConsumer());
     }
     
     @Test(timeout = 1000, expected = TestException.class)
-    public void toNbpObservableError() {
+    public void toObservableError() {
         error.completable.toObservable().blockingForEach(Functions.emptyConsumer());
     }
     
@@ -3354,7 +3354,7 @@ public class CompletableTest {
     }
     
     @Test(timeout = 1000)
-    public void startWithNbpObservableNormal() {
+    public void startWithObservableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
         Observable<Object> c = normal.completable
                 .startWith(Observable.fromCallable(new Callable<Object>() {
@@ -3378,7 +3378,7 @@ public class CompletableTest {
     }
     
     @Test(timeout = 1000)
-    public void startWithNbpObservableError() {
+    public void startWithObservableError() {
         Observable<Object> c = normal.completable
                 .startWith(Observable.error(new TestException()));
         
@@ -3404,7 +3404,7 @@ public class CompletableTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void startWithNbpObservableNull() {
+    public void startWithObservableNull() {
         normal.completable.startWith((Observable<Object>)null);
     }
 
@@ -3703,34 +3703,6 @@ public class CompletableTest {
         ts.assertNoErrors();
     }
     
-    @Test(expected = NullPointerException.class)
-    public void fromObservableNull() {
-        Completable.fromObservable(null);
-    }
-    
-    @Test(timeout = 5000)
-    public void fromObservableEmpty() {
-        Completable c = Completable.fromObservable(Observable.empty());
-        
-        c.blockingAwait();
-    }
-    
-    @Test(timeout = 5000)
-    public void fromObservableSome() {
-        for (int n = 1; n < 10000; n *= 10) {
-            Completable c = Completable.fromObservable(Observable.range(1, n));
-            
-            c.blockingAwait();
-        }
-    }
-    
-    @Test(timeout = 5000, expected = TestException.class)
-    public void fromObservableError() {
-        Completable c = Completable.fromObservable(Observable.error(new TestException()));
-        
-        c.blockingAwait();
-    }
-
     private Function<Completable, Completable> onCreate;
     
     private BiFunction<Completable, CompletableObserver, CompletableObserver> onStart;
@@ -3912,22 +3884,6 @@ public class CompletableTest {
             public void run() {
                 error.completable.toSingleDefault(0).subscribe();
             }
-        });
-    }
-    
-    @Test(timeout = 5000)
-    public void toObservableNormal() {
-        normal.completable.toObservable().blockingForEach(new Consumer<Object>() {
-            @Override
-            public void accept(Object e) { }
-        });
-    }
-    
-    @Test(timeout = 5000, expected = TestException.class)
-    public void toObservableError() {
-        error.completable.toObservable().blockingForEach(new Consumer<Object>() {
-            @Override
-            public void accept(Object e) { }
         });
     }
     

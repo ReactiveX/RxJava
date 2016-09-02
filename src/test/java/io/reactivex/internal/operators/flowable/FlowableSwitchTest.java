@@ -668,4 +668,133 @@ public class FlowableSwitchTest {
         TestHelper.assertError(errors, 1, TestException.class, "Forced failure 2");
         TestHelper.assertError(errors, 2, TestException.class, "Forced failure 3");
     }
+    
+    @Test
+    public void switchOnNextPrefetch() {
+        final List<Integer> list = new ArrayList<Integer>();
+        
+        Flowable<Integer> source = Flowable.range(1, 10).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                list.add(v);
+            }
+        });
+        
+        Flowable.switchOnNext(Flowable.just(source).hide(), 2)
+        .test(1);
+        
+        assertEquals(Arrays.asList(1, 2, 3), list);
+    }
+    
+    @Test
+    public void switchOnNextDelayError() {
+        final List<Integer> list = new ArrayList<Integer>();
+        
+        Flowable<Integer> source = Flowable.range(1, 10).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                list.add(v);
+            }
+        });
+        
+        Flowable.switchOnNextDelayError(Flowable.just(source).hide())
+        .test(1);
+        
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), list);
+    }
+    
+    @Test
+    public void switchOnNextDelayErrorPrefetch() {
+        final List<Integer> list = new ArrayList<Integer>();
+        
+        Flowable<Integer> source = Flowable.range(1, 10).doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                list.add(v);
+            }
+        });
+        
+        Flowable.switchOnNextDelayError(Flowable.just(source).hide(), 2)
+        .test(1);
+        
+        assertEquals(Arrays.asList(1, 2, 3), list);
+    }
+
+    @Test
+    public void switchOnNextDelayErrorWithError() {
+        PublishProcessor<Flowable<Integer>> ps = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = Flowable.switchOnNextDelayError(ps).test();
+        
+        ps.onNext(Flowable.just(1));
+        ps.onNext(Flowable.<Integer>error(new TestException()));
+        ps.onNext(Flowable.range(2, 4));
+        ps.onComplete();
+        
+        ts.assertFailure(TestException.class, 1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void switchOnNextDelayErrorBufferSize() {
+        PublishProcessor<Flowable<Integer>> ps = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = Flowable.switchOnNextDelayError(ps, 2).test();
+        
+        ps.onNext(Flowable.just(1));
+        ps.onNext(Flowable.range(2, 4));
+        ps.onComplete();
+        
+        ts.assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void switchMapDelayErrorEmptySource() {
+        assertSame(Flowable.empty(), Flowable.<Object>empty()
+                .switchMapDelayError(new Function<Object, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(Object v) throws Exception {
+                        return Flowable.just(1);
+                    }
+                }, 16));
+    }
+
+    @Test
+    public void switchMapDelayErrorJustSource() {
+        Flowable.just(0)
+        .switchMapDelayError(new Function<Object, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Object v) throws Exception {
+                return Flowable.just(1);
+            }
+        }, 16)
+        .test()
+        .assertResult(1);
+    
+    }
+
+    @Test
+    public void switchMapErrorEmptySource() {
+        assertSame(Flowable.empty(), Flowable.<Object>empty()
+                .switchMap(new Function<Object, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(Object v) throws Exception {
+                        return Flowable.just(1);
+                    }
+                }, 16));
+    }
+
+    @Test
+    public void switchMapJustSource() {
+        Flowable.just(0)
+        .switchMap(new Function<Object, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Object v) throws Exception {
+                return Flowable.just(1);
+            }
+        }, 16)
+        .test()
+        .assertResult(1);
+    
+    }
+
 }

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,6 +27,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -1283,4 +1285,304 @@ public class FlowableZipTest {
         ts.assertNoErrors();
         ts.assertValue(11);
     }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void zipNArguments() throws Exception {
+        Flowable source = Flowable.just(1);
+        
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] types = new Class[i + 1];
+            Arrays.fill(types, Publisher.class);
+            types[i] = i == 2 ? BiFunction.class : Class.forName("io.reactivex.functions.Function" + i);
+            
+            Method m = Flowable.class.getMethod("zip", types);
+            
+            Object[] params = new Object[i + 1];
+            Arrays.fill(params, source);
+            params[i] = ArgsToString.INSTANCE;
+            
+            StringBuilder b = new StringBuilder();
+            for (int j = 0; j < i; j++) {
+                b.append('1');
+            }
+            
+            ((Flowable)m.invoke(null, params)).test().assertResult(b.toString());
+            
+            for (int j = 0; j < params.length; j++) {
+                Object[] params0 = params.clone();
+                params0[j] = null;
+                
+                try {
+                    m.invoke(null, params0);
+                    fail("Should have thrown @ " + m);
+                } catch (InvocationTargetException ex) {
+                    assertTrue(ex.toString(), ex.getCause() instanceof NullPointerException);
+                    
+                    if (j < i) {
+                        assertEquals("source" + (j + 1) + " is null", ex.getCause().getMessage());
+                    } else {
+                        assertEquals("f is null", ex.getCause().getMessage());
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    enum ArgsToString implements Function, BiFunction, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
+        INSTANCE;
+
+        @Override
+        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8,
+                Object t9) throws Exception {
+            return "" + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9;
+        }
+
+        @Override
+        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8)
+                throws Exception {
+            return "" + t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8;
+        }
+
+        @Override
+        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7)
+                throws Exception {
+            return "" + t1 + t2 + t3 + t4 + t5 + t6 + t7;
+        }
+
+        @Override
+        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6) throws Exception {
+            return "" + t1 + t2 + t3 + t4 + t5 + t6;
+        }
+
+        @Override
+        public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5) throws Exception {
+            return "" + t1 + t2 + t3 + t4 + t5;
+        }
+
+        @Override
+        public Object apply(Object t1, Object t2, Object t3, Object t4) throws Exception {
+            return "" + t1 + t2 + t3 + t4;
+        }
+
+        @Override
+        public Object apply(Object t1, Object t2, Object t3) throws Exception {
+            return "" + t1 + t2 + t3;
+        }
+
+        @Override
+        public Object apply(Object t1, Object t2) throws Exception {
+            return "" + t1 + t2;
+        }
+
+        @Override
+        public Object apply(Object t1) throws Exception {
+            return "" + t1;
+        }
+    }
+    
+    @Test
+    public void zip2DelayError() {
+        Flowable<Integer> error1 = Flowable.error(new TestException("One"));
+        Flowable<Integer> source1 = Flowable.range(1, 3).concatWith(error1);
+
+        Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
+        Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
+        
+        TestSubscriber<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return "" + a + b;
+            }
+        }, true)
+        .test()
+        .assertFailure(CompositeException.class, "11", "22");
+        
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+        TestHelper.assertError(errors, 0, TestException.class, "One");
+        TestHelper.assertError(errors, 1, TestException.class, "Two");
+        assertEquals(2, errors.size());
+    }
+
+    @Test
+    public void zip2DelayErrorPrefetch() {
+        Flowable<Integer> error1 = Flowable.error(new TestException("One"));
+        Flowable<Integer> source1 = Flowable.range(1, 3).concatWith(error1);
+
+        Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
+        Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
+        
+        TestSubscriber<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return "" + a + b;
+            }
+        }, true, 1)
+        .test()
+        .assertFailure(CompositeException.class, "11", "22");
+        
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+        TestHelper.assertError(errors, 0, TestException.class, "One");
+        TestHelper.assertError(errors, 1, TestException.class, "Two");
+        assertEquals(2, errors.size());
+    }
+    
+    @Test
+    public void zip2Prefetch() {
+        Flowable.zip(Flowable.range(1, 9),
+                Flowable.range(21, 9),
+            new BiFunction<Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b) throws Exception {
+                    return "" + a + b;
+                }
+            }, false, 2
+        )
+        .takeLast(1)
+        .test()
+        .assertResult("929");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zipArrayEmpty() {
+        assertSame(Flowable.empty(), Flowable.zipArray(Functions.<Object[]>identity(), false, 16));
+    }
+    
+    @Test
+    public void zip2() {
+        Flowable.zip(Flowable.just(1),
+                Flowable.just(2),
+            new BiFunction<Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b) throws Exception {
+                    return "" + a + b;
+                }
+            }
+        )
+        .test()
+        .assertResult("12");
+    }
+
+    @Test
+    public void zip3() {
+        Flowable.zip(Flowable.just(1),
+                Flowable.just(2), Flowable.just(3),
+            new Function3<Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c) throws Exception {
+                    return "" + a + b + c;
+                }
+            }
+        )
+        .test()
+        .assertResult("123");
+    }
+
+    @Test
+    public void zip4() {
+        Flowable.zip(Flowable.just(1),
+                Flowable.just(2), Flowable.just(3),
+                Flowable.just(4),
+            new Function4<Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d) throws Exception {
+                    return "" + a + b + c + d;
+                }
+            }
+        )
+        .test()
+        .assertResult("1234");
+    }
+
+    @Test
+    public void zip5() {
+        Flowable.zip(Flowable.just(1),
+                Flowable.just(2), Flowable.just(3),
+                Flowable.just(4), Flowable.just(5),
+            new Function5<Integer, Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e) throws Exception {
+                    return "" + a + b + c + d + e;
+                }
+            }
+        )
+        .test()
+        .assertResult("12345");
+    }
+
+    @Test
+    public void zip6() {
+        Flowable.zip(Flowable.just(1),
+                Flowable.just(2), Flowable.just(3),
+                Flowable.just(4), Flowable.just(5),
+                Flowable.just(6),
+            new Function6<Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f) throws Exception {
+                    return "" + a + b + c + d + e + f;
+                }
+            }
+        )
+        .test()
+        .assertResult("123456");
+    }
+
+    @Test
+    public void zip7() {
+        Flowable.zip(Flowable.just(1),
+                Flowable.just(2), Flowable.just(3),
+                Flowable.just(4), Flowable.just(5),
+                Flowable.just(6), Flowable.just(7),
+            new Function7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g)
+                        throws Exception {
+                    return "" + a + b + c + d + e + f + g;
+                }
+            }
+        )
+        .test()
+        .assertResult("1234567");
+    }
+
+    @Test
+    public void zip8() {
+        Flowable.zip(Flowable.just(1),
+                Flowable.just(2), Flowable.just(3),
+                Flowable.just(4), Flowable.just(5),
+                Flowable.just(6), Flowable.just(7),
+                Flowable.just(8), 
+            new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
+                        Integer h) throws Exception {
+                    return "" + a + b + c + d + e + f + g + h;
+                }
+            }
+        )
+        .test()
+        .assertResult("12345678");
+    }
+    @Test
+    public void zip9() {
+        Flowable.zip(Flowable.just(1),
+                Flowable.just(2), Flowable.just(3),
+                Flowable.just(4), Flowable.just(5),
+                Flowable.just(6), Flowable.just(7),
+                Flowable.just(8), Flowable.just(9),
+            new Function9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,
+                        Integer h, Integer i) throws Exception {
+                    return "" + a + b + c + d + e + f + g + h + i;
+                }
+            }
+        )
+        .test()
+        .assertResult("123456789");
+    }
+
+
 }

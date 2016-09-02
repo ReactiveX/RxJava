@@ -28,7 +28,7 @@ import io.reactivex.observables.GroupedObservable;
 public class ObservableZipTests {
 
     @Test
-    public void testZipNbpObservableOfNbpObservables() {
+    public void testZipObservableOfObservables() {
         ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
                 .groupBy(new Function<Event, String>() {
                     @Override
@@ -79,19 +79,19 @@ public class ObservableZipTests {
     }
 
     /**
-     * Occasionally zip may be invoked with 0 NbpObservables. Test that we don't block indefinitely instead
+     * Occasionally zip may be invoked with 0 observables. Test that we don't block indefinitely instead
      * of immediately invoking zip with 0 argument.
      * 
      * We now expect an NoSuchElementException since last() requires at least one value and nothing will be emitted.
      */
     @Test(expected = NoSuchElementException.class)
-    public void nonBlockingNbpObservable() {
+    public void nonBlockingObservable() {
 
         final Object invoked = new Object();
 
-        Collection<Observable<Object>> NbpObservables = Collections.emptyList();
+        Collection<Observable<Object>> observables = Collections.emptyList();
 
-        Observable<Object> result = Observable.zip(NbpObservables, new Function<Object[], Object>() {
+        Observable<Object> result = Observable.zip(observables, new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] args) {
                 System.out.println("received: " + args);

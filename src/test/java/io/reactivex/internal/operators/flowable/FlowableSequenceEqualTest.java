@@ -149,4 +149,12 @@ public class FlowableSequenceEqualTest {
         inOrder.verify(observer, times(1)).onError(isA(TestException.class));
         inOrder.verifyNoMoreInteractions();
     }
+    
+    @Test
+    public void prefetch() {
+        
+        Flowable.sequenceEqual(Flowable.range(1, 20), Flowable.range(1, 20), 2)
+        .test()
+        .assertResult(true);
+    }
 }

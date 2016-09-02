@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -23,9 +23,11 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
 
@@ -217,5 +219,66 @@ public class FlowableWindowWithTimeTest {
         ts.assertComplete();
         Assert.assertTrue(ts.valueCount() != 0);
     }
-    
+
+
+    @Test
+    public void timespanTimeskipCustomSchedulerBufferSize() {
+        Flowable.range(1, 10)
+        .window(1, 1, TimeUnit.MINUTES, Schedulers.io(), 2)
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void timespanDefaultSchedulerSize() {
+        Flowable.range(1, 10)
+        .window(1, TimeUnit.MINUTES, 20)
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void timespanDefaultSchedulerSizeRestart() {
+        Flowable.range(1, 10)
+        .window(1, TimeUnit.MINUTES, 20, true)
+        .flatMap(Functions.<Flowable<Integer>>identity(), true)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void invalidSpan() {
+        try {
+            Flowable.just(1).window(-99, 1, TimeUnit.SECONDS);
+            fail("Should have thrown!");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("timespan > 0 required but it was -99", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void timespanTimeskipDefaultScheduler() {
+        Flowable.just(1)
+        .window(1, 1, TimeUnit.MINUTES)
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void timespanTimeskipCustomScheduler() {
+        Flowable.just(1)
+        .window(1, 1, TimeUnit.MINUTES, Schedulers.io())
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
 }

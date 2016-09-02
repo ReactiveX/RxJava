@@ -227,7 +227,7 @@ public class ObservableFromIterableTest {
         });
         assertFalse(called.get());
     }
- 
+
     @Test
     public void fusionWithConcatMap() {
         TestObserver<Integer> to = new TestObserver<Integer>();

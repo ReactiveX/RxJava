@@ -150,4 +150,14 @@ public class FlowableThrottleFirstTest {
         inOrder.verify(observer).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
+    
+    
+    @Test
+    public void throttleFirstDefaultScheduler() {
+        Flowable.just(1).throttleFirst(100, TimeUnit.MILLISECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
 }

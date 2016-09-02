@@ -95,7 +95,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                     
                     if (p == null) {
                         dispose();
-                        EmptyDisposable.error(new NullPointerException("The first timeout NbpObservable is null"), a);
+                        EmptyDisposable.error(new NullPointerException("The first timeout Observable is null"), a);
                         return;
                     }
                     
@@ -136,7 +136,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             
             if (p == null) {
                 dispose();
-                actual.onError(new NullPointerException("The NbpObservable returned is null"));
+                actual.onError(new NullPointerException("The ObservableSource returned is null"));
                 return;
             }
             
@@ -273,7 +273,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                     
                     if (p == null) {
                         dispose();
-                        EmptyDisposable.error(new NullPointerException("The first timeout NbpObservable is null"), a);
+                        EmptyDisposable.error(new NullPointerException("The first timeout Observable is null"), a);
                         return;
                     }
                     
@@ -317,7 +317,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             }
             
             if (p == null) {
-                actual.onError(new NullPointerException("The NbpObservable returned is null"));
+                actual.onError(new NullPointerException("The ObservableSource returned is null"));
                 return;
             }
             

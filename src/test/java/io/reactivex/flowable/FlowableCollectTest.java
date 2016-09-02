@@ -13,17 +13,11 @@
 
 package io.reactivex.flowable;
 
-import static io.reactivex.internal.util.TestingHelper.addToList;
-import static io.reactivex.internal.util.TestingHelper.biConsumerThrows;
-import static io.reactivex.internal.util.TestingHelper.callableListCreator;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static io.reactivex.internal.util.TestingHelper.*;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
@@ -165,6 +159,21 @@ public final class FlowableCollectTest {
                 .assertNoValues() //
                 .assertNotComplete();
         assertFalse(added.get());
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void collectInto() {
+        Flowable.just(1, 1, 1, 1, 2)
+        .collectInto(new HashSet<Integer>(), new BiConsumer<HashSet<Integer>, Integer>() {
+            @Override
+            public void accept(HashSet<Integer> s, Integer v) throws Exception {
+                s.add(v);
+            }
+        })
+        .test()
+        .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
     }
 
 }

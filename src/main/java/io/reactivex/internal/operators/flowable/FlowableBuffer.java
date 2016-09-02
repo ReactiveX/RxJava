@@ -77,6 +77,8 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
         Subscription s;
 
         boolean done;
+        
+        int index;
 
         public PublisherBufferExactSubscriber(Subscriber<? super C> actual, int size, Callable<C> bufferSupplier) {
             this.actual = actual;
@@ -133,10 +135,14 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
             }
 
             b.add(t);
-
-            if (b.size() == size) {
+            
+            int i = index + 1;
+            if (i == size) {
+                index = 0;
                 buffer = null;
                 actual.onNext(b);
+            } else {
+                index = i;
             }
         }
 

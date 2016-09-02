@@ -262,7 +262,7 @@ public class FlowableSubscriberTest {
     }
 
     @Test
-    public void testRequestToObservable() {
+    public void testRequestToFlowable() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
@@ -731,4 +731,117 @@ public class FlowableSubscriberTest {
         }
     }
 
+    @Test
+    public void subscribeConsumerConsumerWithError() {
+        final List<Integer> list = new ArrayList<Integer>();
+        
+        Flowable.<Integer>error(new TestException()).subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                list.add(v);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                list.add(100);
+            }
+        });
+        
+        assertEquals(Arrays.asList(100), list);
+    }
+
+    @Test
+    public void methodTestCancelled() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        
+        ps.test(Long.MAX_VALUE, true);
+        
+        assertFalse(ps.hasSubscribers());
+    }
+    
+    @Test
+    public void safeSubscriberAlreadySafe() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Flowable.just(1).safeSubscribe(new SafeSubscriber<Integer>(ts));
+        
+        ts.assertResult(1);
+    }
+
+
+    @Test
+    public void methodTestNoCancel() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        
+        ps.test(Long.MAX_VALUE, false);
+        
+        assertTrue(ps.hasSubscribers());
+    }
+    
+    @Test
+    public void subscribeConsumerConsumer() {
+        final List<Integer> list = new ArrayList<Integer>();
+        
+        Flowable.just(1).subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                list.add(v);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                list.add(100);
+            }
+        });
+        
+        assertEquals(Arrays.asList(1), list);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void pluginNull() {
+        RxJavaPlugins.setOnFlowableSubscribe(new BiFunction<Flowable, Subscriber, Subscriber>() {
+            @Override
+            public Subscriber apply(Flowable a, Subscriber b) throws Exception {
+                return null;
+            }
+        });
+        
+        try {
+            try {
+                
+                Flowable.just(1).test();
+                fail("Should have thrown");
+            } catch (NullPointerException ex) {
+                assertEquals("Plugin returned null Subscriber", ex.getMessage());
+            }
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    
+    static final class BadFlowable extends Flowable<Integer> {
+        @Override
+        protected void subscribeActual(Subscriber<? super Integer> s) {
+            throw new IllegalArgumentException();
+        }
+    }
+    
+    @Test
+    public void subscribeActualThrows() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+        try {
+            try {
+                new BadFlowable().test();
+                fail("Should have thrown!");
+            } catch (NullPointerException ex) {
+                if (!(ex.getCause() instanceof IllegalArgumentException)) {
+                    fail(ex.toString() + ": Should be NPE(IAE)");
+                }
+            }
+            
+            TestHelper.assertError(list, 0, IllegalArgumentException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

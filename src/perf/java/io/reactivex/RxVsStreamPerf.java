@@ -34,15 +34,15 @@ public class RxVsStreamPerf {
     
     Flowable<Integer> range;
     
-    Observable<Integer> rangeNbp;
+    Observable<Integer> rangeObservable;
 
     Flowable<Integer> rangeFlatMap;
 
-    Observable<Integer> rangeNbpFlatMap;
+    Observable<Integer> rangeObservableFlatMap;
 
     Flowable<Integer> rangeFlatMapJust;
 
-    Observable<Integer> rangeNbpFlatMapJust;
+    Observable<Integer> rangeObservableFlatMapJust;
 
     List<Integer> values;
 
@@ -64,16 +64,16 @@ public class RxVsStreamPerf {
             }
         });
         
-        rangeNbp = Observable.range(1, times);
+        rangeObservable = Observable.range(1, times);
 
-        rangeNbpFlatMapJust = rangeNbp.flatMap(new Function<Integer, Observable<Integer>>() {
+        rangeObservableFlatMapJust = rangeObservable.flatMap(new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer v) {
                 return Observable.just(v);
             }
         });
         
-        rangeNbpFlatMap = rangeNbp.flatMap(new Function<Integer, Observable<Integer>>() {
+        rangeObservableFlatMap = rangeObservable.flatMap(new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer v) {
                 return Observable.range(v, 2);
@@ -89,8 +89,8 @@ public class RxVsStreamPerf {
     }
 
     @Benchmark
-    public void rangeNbp(Blackhole bh) {
-        rangeNbp.subscribe(new PerfObserver(bh));
+    public void rangeObservable(Blackhole bh) {
+        rangeObservable.subscribe(new PerfObserver(bh));
     }
 
     @Benchmark
@@ -99,8 +99,8 @@ public class RxVsStreamPerf {
     }
 
     @Benchmark
-    public void rangeNbpFlatMap(Blackhole bh) {
-        rangeNbpFlatMap.subscribe(new PerfObserver(bh));
+    public void rangeObservableFlatMap(Blackhole bh) {
+        rangeObservableFlatMap.subscribe(new PerfObserver(bh));
     }
     
     @Benchmark
@@ -109,8 +109,8 @@ public class RxVsStreamPerf {
     }
 
     @Benchmark
-    public void rangeNbpFlatMapJust(Blackhole bh) {
-        rangeNbpFlatMapJust.subscribe(new PerfObserver(bh));
+    public void rangeObservableFlatMapJust(Blackhole bh) {
+        rangeObservableFlatMapJust.subscribe(new PerfObserver(bh));
     }
 
 }

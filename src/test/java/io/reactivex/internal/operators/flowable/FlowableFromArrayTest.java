@@ -76,4 +76,10 @@ public class FlowableFromArrayTest {
         Assert.assertTrue(source.getClass().toString(), source instanceof ScalarCallable);
     }
 
+    @Test
+    public void just10Arguments() {
+        Flowable.just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        .test()
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
 }

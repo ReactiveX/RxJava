@@ -40,7 +40,7 @@ implements Subscriber<T>, Subscription {
     
     final int limit;
 
-    SimpleQueue<T> queue;
+    volatile SimpleQueue<T> queue;
     
     volatile boolean done;
     

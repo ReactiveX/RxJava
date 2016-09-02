@@ -157,7 +157,7 @@ public class FlowableBufferTest {
                 push(observer, "two", 98);
                 /**
                  * Changed from 100. Because scheduling the cut to 100ms happens before this
-                 * Observable even runs due how lift works, pushing at 100ms would execute after the
+                 * Flowable even runs due how lift works, pushing at 100ms would execute after the
                  * buffer cut.
                  */
                 push(observer, "three", 99);
@@ -1268,4 +1268,53 @@ public class FlowableBufferTest {
             RxJavaPlugins.reset();
         }
     }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferBoundaryHint() {
+        Flowable.range(1, 5).buffer(Flowable.timer(1, TimeUnit.MINUTES), 2)
+        .test()
+        .assertResult(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
+    static HashSet<Integer> set(Integer... values) {
+        return new HashSet<Integer>(Arrays.asList(values));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferIntoCustomCollection() {
+        Flowable.just(1, 1, 2, 2, 3, 3, 4, 4)
+        .buffer(3, new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                return new HashSet<Integer>();
+            }
+        })
+        .test()
+        .assertResult(set(1, 2), set(2, 3), set(4));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferSkipIntoCustomCollection() {
+        Flowable.just(1, 1, 2, 2, 3, 3, 4, 4)
+        .buffer(3, 3, new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                return new HashSet<Integer>();
+            }
+        })
+        .test()
+        .assertResult(set(1, 2), set(2, 3), set(4));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimeSkipDefault() {
+        Flowable.range(1, 5).buffer(1, 1, TimeUnit.MINUTES)
+        .test()
+        .assertResult(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
 }

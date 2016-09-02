@@ -151,7 +151,7 @@ public class FlowableSkipLastTimedTest {
     
     @Test
     public void skipLastTimedDefaultScheduler() {
-        Observable.just(1).concatWith(Observable.just(2).delay(500, TimeUnit.MILLISECONDS))
+        Flowable.just(1).concatWith(Flowable.just(2).delay(500, TimeUnit.MILLISECONDS))
         .skipLast(300, TimeUnit.MILLISECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -160,7 +160,7 @@ public class FlowableSkipLastTimedTest {
 
     @Test
     public void skipLastTimedDefaultSchedulerDelayError() {
-        Observable.just(1).concatWith(Observable.just(2).delay(500, TimeUnit.MILLISECONDS))
+        Flowable.just(1).concatWith(Flowable.just(2).delay(500, TimeUnit.MILLISECONDS))
         .skipLast(300, TimeUnit.MILLISECONDS, true)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
@@ -169,7 +169,7 @@ public class FlowableSkipLastTimedTest {
 
     @Test
     public void skipLastTimedCustomSchedulerDelayError() {
-        Observable.just(1).concatWith(Observable.just(2).delay(500, TimeUnit.MILLISECONDS))
+        Flowable.just(1).concatWith(Flowable.just(2).delay(500, TimeUnit.MILLISECONDS))
         .skipLast(300, TimeUnit.MILLISECONDS, Schedulers.io(), true)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)

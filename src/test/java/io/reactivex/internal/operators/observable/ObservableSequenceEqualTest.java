@@ -150,7 +150,7 @@ public class ObservableSequenceEqualTest {
     }
     
     @Test
-    public void sequenceEqualBufferSize() {
+    public void prefetch() {
         Observable.sequenceEqual(Observable.range(1, 20), Observable.range(1, 20), 2)
         .test()
         .assertResult(true);

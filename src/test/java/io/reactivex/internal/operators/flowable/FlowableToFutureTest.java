@@ -26,7 +26,7 @@ import io.reactivex.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowableToObservableFutureTest {
+public class FlowableToFutureTest {
 
     @Test
     public void testSuccess() throws Exception {

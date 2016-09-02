@@ -662,7 +662,7 @@ public class FlowableRetryTest {
         @SuppressWarnings("unchecked")
         DefaultSubscriber<Long> observer = mock(DefaultSubscriber.class);
 
-        // Observable that always fails after 100ms
+        // Flowable that always fails after 100ms
         SlowObservable so = new SlowObservable(100, 0);
         Flowable<Long> o = Flowable.unsafeCreate(so).retry(5);
 
@@ -687,7 +687,7 @@ public class FlowableRetryTest {
         @SuppressWarnings("unchecked")
         DefaultSubscriber<Long> observer = mock(DefaultSubscriber.class);
 
-        // Observable that sends every 100ms (timeout fails instead)
+        // Flowable that sends every 100ms (timeout fails instead)
         SlowObservable so = new SlowObservable(100, 10);
         Flowable<Long> o = Flowable.unsafeCreate(so).timeout(80, TimeUnit.MILLISECONDS).retry(5);
 
@@ -955,4 +955,46 @@ public class FlowableRetryTest {
         ts.assertComplete();
     }
 
+    @Test
+    public void retryPredicate() {
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .retry(new Predicate<Throwable>() {
+            @Override
+            public boolean test(Throwable v) throws Exception {
+                return true;
+            }
+        })
+        .take(5)
+        .test()
+        .assertResult(1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void retryLongPredicateInvalid() {
+        try {
+            Flowable.just(1).retry(-99, new Predicate<Throwable>() {
+                @Override
+                public boolean test(Throwable e) throws Exception {
+                    return true;
+                }
+            });
+            fail("Should have thrown");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("times >= 0 required but it was -99", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void retryUntil() {
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .retryUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return false;
+            }
+        })
+        .take(5)
+        .test()
+        .assertResult(1, 1, 1, 1, 1);
+    }
 }

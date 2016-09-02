@@ -852,6 +852,12 @@ public class ObservableCombineLatestTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void combineLatestEmpty() {
+        assertSame(Observable.empty(), Observable.combineLatest(new ObservableSource[0], Functions.<Object[]>identity(), 16));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void combineLatestDelayErrorEmpty() {
         assertSame(Observable.empty(), Observable.combineLatestDelayError(new ObservableSource[0], Functions.<Object[]>identity(), 16));
     }

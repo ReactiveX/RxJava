@@ -885,4 +885,30 @@ public class FlowableDelayTest {
 
         Assert.assertFalse(subscribed.get());
     }
+
+    @Test
+    public void delayWithTimeDelayError() throws Exception {
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .delay(100, TimeUnit.MILLISECONDS, true)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class, 1);
+    }
+    
+    @Test
+    public void testDelaySubscriptionDisposeBeforeTime() {
+        Flowable<Integer> result = Flowable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
+
+        Subscriber<Object> o = TestHelper.mockSubscriber();
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+
+        result.subscribe(ts);
+        ts.dispose();
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        verify(o, never()).onNext(any());
+        verify(o, never()).onComplete();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+
 }

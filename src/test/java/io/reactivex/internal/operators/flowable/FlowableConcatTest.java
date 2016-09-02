@@ -27,6 +27,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
@@ -141,7 +142,7 @@ public class FlowableConcatTest {
     }
     
     /**
-     * Test an async Observable that emits more async Observables
+     * Test an async Flowable that emits more async Observables
      * @throws InterruptedException if the test is interrupted
      */
     @Test
@@ -203,7 +204,7 @@ public class FlowableConcatTest {
                         } catch (Throwable e) {
                             observer.onError(e);
                         } finally {
-                            System.out.println("Done parent Observable");
+                            System.out.println("Done parent Flowable");
                             observer.onComplete();
                             parentHasFinished.countDown();
                         }
@@ -394,7 +395,7 @@ public class FlowableConcatTest {
     }
 
     /**
-     * Test unsubscribing the concatenated Observable in a single thread.
+     * Test unsubscribing the concatenated Flowable in a single thread.
      */
     @Test
     public void testConcatUnsubscribe() {
@@ -682,7 +683,7 @@ public class FlowableConcatTest {
 
     /*
      * Testing without counts aligned with buffer sizes because concat must prevent the subscription
-     * to the next Observable if request == 0 which can happen at the end of a subscription
+     * to the next Flowable if request == 0 which can happen at the end of a subscription
      * if the request size == emitted size. It needs to delay subscription until the next request when aligned, 
      * when not aligned, it just subscribesNext with the outstanding request amount.
      */
@@ -1038,4 +1039,205 @@ public class FlowableConcatTest {
         .test()
         .assertResult(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
+    
+    @Test
+    public void concat3() {
+        Flowable<Integer> source = Flowable.just(1);
+        
+        Flowable.concat(source, source, source)
+        .test()
+        .assertResult(1, 1, 1);
+    }
+
+    @Test
+    public void concat4() {
+        Flowable<Integer> source = Flowable.just(1);
+        
+        Flowable.concat(source, source, source, source)
+        .test()
+        .assertResult(1, 1, 1, 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArrayDelayError() {
+        Flowable.concatArrayDelayError(Flowable.just(1), Flowable.just(2), 
+                Flowable.just(3), Flowable.just(4))
+        .test()
+        .assertResult(1, 2, 3, 4);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArrayDelayErrorWithError() {
+        Flowable.concatArrayDelayError(Flowable.just(1), Flowable.just(2), 
+                Flowable.just(3).concatWith(Flowable.<Integer>error(new TestException())), 
+                Flowable.just(4))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatIterableDelayError() {
+        Flowable.concatDelayError(
+                Arrays.asList(Flowable.just(1), Flowable.just(2), 
+                Flowable.just(3), Flowable.just(4)))
+        .test()
+        .assertResult(1, 2, 3, 4);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatIterableDelayErrorWithError() {
+        Flowable.concatDelayError(
+                Arrays.asList(Flowable.just(1), Flowable.just(2), 
+                Flowable.just(3).concatWith(Flowable.<Integer>error(new TestException())), 
+                Flowable.just(4)))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4);
+    }
+
+    @Test
+    public void concatObservableDelayError() {
+        Flowable.concatDelayError(
+                Flowable.just(Flowable.just(1), Flowable.just(2), 
+                Flowable.just(3), Flowable.just(4)))
+        .test()
+        .assertResult(1, 2, 3, 4);
+    }
+
+    @Test
+    public void concatObservableDelayErrorWithError() {
+        Flowable.concatDelayError(
+                Flowable.just(Flowable.just(1), Flowable.just(2), 
+                Flowable.just(3).concatWith(Flowable.<Integer>error(new TestException())), 
+                Flowable.just(4)))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4);
+    }
+
+    @Test
+    public void concatObservableDelayErrorBoundary() {
+        Flowable.concatDelayError(
+                Flowable.just(Flowable.just(1), Flowable.just(2), 
+                Flowable.just(3).concatWith(Flowable.<Integer>error(new TestException())), 
+                Flowable.just(4)), 2, false)
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3);
+    }
+
+    @Test
+    public void concatObservableDelayErrorTillEnd() {
+        Flowable.concatDelayError(
+                Flowable.just(Flowable.just(1), Flowable.just(2), 
+                Flowable.just(3).concatWith(Flowable.<Integer>error(new TestException())), 
+                Flowable.just(4)), 2, true)
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3, 4);
+    }
+
+    @Test
+    public void concatMapDelayError() {
+        Flowable.just(Flowable.just(1), Flowable.just(2))
+        .concatMapDelayError(Functions.<Flowable<Integer>>identity())
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void concatMapDelayErrorWithError() {
+        Flowable.just(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())), Flowable.just(2))
+        .concatMapDelayError(Functions.<Flowable<Integer>>identity())
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+    
+    @Test
+    public void concatMapIterableBufferSize() {
+        
+        Flowable.just(1, 2).concatMapIterable(new Function<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer v) throws Exception {
+                return Arrays.asList(1, 2, 3, 4, 5);
+            }
+        }, 1)
+        .test()
+        .assertResult(1, 2, 3, 4, 5, 1, 2, 3, 4, 5);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void emptyArray() {
+        assertSame(Flowable.empty(), Flowable.concatArrayDelayError());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void singleElementArray() {
+        assertSame(Flowable.never(), Flowable.concatArrayDelayError(Flowable.never()));
+    }
+    
+    @Test
+    public void concatMapDelayErrorEmptySource() {
+        assertSame(Flowable.empty(), Flowable.<Object>empty()
+                .concatMapDelayError(new Function<Object, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Object v) throws Exception {
+                        return Flowable.just(1);
+                    }
+                }, 16, true));
+    }
+
+    @Test
+    public void concatMapDelayErrorJustSource() {
+        Flowable.just(0)
+        .concatMapDelayError(new Function<Object, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Object v) throws Exception {
+                return Flowable.just(1);
+            }
+        }, 16, true)
+        .test()
+        .assertResult(1);
+    
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArrayEmpty() {
+        assertSame(Flowable.empty(), Flowable.concatArray());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArraySingleElement() {
+        assertSame(Flowable.never(), Flowable.concatArray(Flowable.never()));
+    }
+
+    @Test
+    public void concatMapErrorEmptySource() {
+        assertSame(Flowable.empty(), Flowable.<Object>empty()
+                .concatMap(new Function<Object, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Object v) throws Exception {
+                        return Flowable.just(1);
+                    }
+                }, 16));
+    }
+
+    @Test
+    public void concatMapJustSource() {
+        Flowable.just(0)
+        .concatMap(new Function<Object, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Object v) throws Exception {
+                return Flowable.just(1);
+            }
+        }, 16)
+        .test()
+        .assertResult(1);
+    
+    }
+
 }

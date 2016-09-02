@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
@@ -216,4 +216,35 @@ public class FlowableOnBackpressureBufferTest {
         }, null);
     }
 
+    @Test
+    public void noDelayError() {
+        
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .onBackpressureBuffer(false)
+        .test(0L)
+        .assertFailure(TestException.class);
+    }
+    
+    @Test
+    public void delayError() {
+        TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .onBackpressureBuffer(true)
+        .test(0L)
+        .assertEmpty();
+        
+        ts.request(1);
+        ts.assertFailure(TestException.class, 1);
+        
+    }
+    
+    @Test
+    public void delayErrorBuffer() {
+        TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .onBackpressureBuffer(16, true)
+        .test(0L)
+        .assertEmpty();
+
+        ts.request(1);
+        ts.assertFailure(TestException.class, 1);
+    }
 }

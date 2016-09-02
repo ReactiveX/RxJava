@@ -29,6 +29,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
@@ -1631,4 +1632,34 @@ public class FlowableGroupByTest {
         .assertNoErrors()
         .assertComplete();
     }
+    
+    
+    @Test
+    public void keySelectorAndDelayError() {
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .groupBy(Functions.identity(), true)
+        .flatMap(new Function<GroupedFlowable<Object, Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(GroupedFlowable<Object, Integer> g) throws Exception {
+                return g;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void keyAndValueSelectorAndDelayError() {
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .groupBy(Functions.identity(), Functions.<Integer>identity(), true)
+        .flatMap(new Function<GroupedFlowable<Object, Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(GroupedFlowable<Object, Integer> g) throws Exception {
+                return g;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
 }
