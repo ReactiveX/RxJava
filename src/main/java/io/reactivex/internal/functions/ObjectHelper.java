@@ -96,4 +96,35 @@ public final class ObjectHelper {
     public static <T> BiPredicate<T, T> equalsPredicate() {
         return (BiPredicate<T, T>)EQUALS;
     }
+    
+    /**
+     * Validate that the given value is positive or report an IllegalArgumentException with
+     * the parameter name.
+     * @param value the value to validate
+     * @param paramName the parameter name of the value
+     * @return value
+     * @throws IllegalArgumentException if bufferSize &lt;= 0
+     */
+    public static int verifyPositive(int value, String paramName) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(paramName + " > 0 required but it was " + value);
+        }
+        return value;
+    }
+    
+    /**
+     * Validate that the given value is positive or report an IllegalArgumentException with
+     * the parameter name.
+     * @param value the value to validate
+     * @param paramName the parameter name of the value
+     * @return value
+     * @throws IllegalArgumentException if bufferSize &lt;= 0
+     */
+    public static long verifyPositive(long value, String paramName) {
+        if (value <= 0L) {
+            throw new IllegalArgumentException(paramName + " > 0 required but it was " + value);
+        }
+        return value;
+    }
+
 }

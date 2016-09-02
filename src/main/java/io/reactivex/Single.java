@@ -124,11 +124,29 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Flowable instance
      * @since 2.0
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Flowable<T> concat(Publisher<? extends SingleSource<? extends T>> sources) {
-        return RxJavaPlugins.onAssembly(new FlowableConcatMap(sources, SingleInternalHelper.toFlowable(), 2, ErrorMode.IMMEDIATE));
+        return concat(sources, 2);
     }
-    
+
+    /**
+     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * a Publisher sequence and prefetched by the specified amount. 
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources the Publisher of SingleSource instances
+     * @param prefetch the number of SingleSources to prefetch from the Publisher
+     * @return the new Flowable instance
+     * @since 2.0
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Flowable<T> concat(Publisher<? extends SingleSource<? extends T>> sources, int prefetch) {
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
+        return RxJavaPlugins.onAssembly(new FlowableConcatMap(sources, SingleInternalHelper.toFlowable(), prefetch, ErrorMode.IMMEDIATE));
+    }
+
     /**
      * Returns a Flowable that emits the items emitted by two Singles, one after the other.
      * <p>
@@ -218,6 +236,23 @@ public abstract class Single<T> implements SingleSource<T> {
         return concat(Flowable.fromArray(source1, source2, source3, source4));
     }
     
+    /**
+     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided in
+     * an array. 
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources the array of SingleSource instances
+     * @return the new Flowable instance
+     * @since 2.0
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Flowable<T> concatArray(SingleSource<? extends T>... sources) {
+        return RxJavaPlugins.onAssembly(new FlowableConcatMap(Flowable.fromArray(sources), SingleInternalHelper.toFlowable(), 2, ErrorMode.BOUNDARY));
+    }
+
     /**
      * Provides an API (via a cold Completable) that bridges the reactive world with the callback-style world.
      * <p>

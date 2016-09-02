@@ -115,7 +115,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @since 2.0
      */
     UnicastSubject(int capacityHint) {
-        this.queue = new SpscLinkedArrayQueue<T>(verifyPositive(capacityHint, "capacityHint"));
+        this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
         this.onTerminate = new AtomicReference<Runnable>();
         this.actual = new AtomicReference<Observer<? super T>>();
         this.once = new AtomicBoolean();
@@ -130,7 +130,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @since 2.0
      */
     UnicastSubject(int capacityHint, Runnable onTerminate) {
-        this.queue = new SpscLinkedArrayQueue<T>(verifyPositive(capacityHint, "capacityHint"));
+        this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
         this.onTerminate = new AtomicReference<Runnable>(ObjectHelper.requireNonNull(onTerminate, "onTerminate"));
         this.actual = new AtomicReference<Observer<? super T>>();
         this.once = new AtomicBoolean();

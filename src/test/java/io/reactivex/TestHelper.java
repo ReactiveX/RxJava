@@ -194,6 +194,11 @@ public enum TestHelper {
         }
     }
     
+    /**
+     * Assert that by consuming the Publisher with a bad request amount, it is
+     * reported to the plugin error handler promptly.
+     * @param source the source to consume
+     */
     public static void assertBadRequestReported(Publisher<?> source) {
         List<Throwable> list = trackPluginErrors();
         try {
@@ -309,6 +314,12 @@ public enum TestHelper {
         }
     }
     
+    /**
+     * Cast the given Throwable to CompositeException and returns its inner
+     * Throwable list.
+     * @param ex the target Throwable
+     * @return the list of Throwables
+     */
     public static List<Throwable> compositeList(Throwable ex) {
         return ((CompositeException)ex).getExceptions();
     }

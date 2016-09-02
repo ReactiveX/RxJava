@@ -15,13 +15,16 @@ package io.reactivex;
 
 import java.util.concurrent.Callable;
 
-import io.reactivex.annotations.SchedulerSupport;
+import org.reactivestreams.*;
+
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
+import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.*;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -36,6 +39,44 @@ import io.reactivex.subscribers.TestSubscriber;
  * @since 2.0
  */
 public abstract class Maybe<T> implements MaybeSource<T> {
+
+    /**
+     * Runs multiple Maybe sources and signals the events of the first one that signals (cancelling
+     * the rest).
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources the Iterable sequence of sources
+     * @return the new Maybe instance
+     */
+    public static <T> Maybe<T> amb(final Iterable<? extends MaybeSource<? extends T>> sources) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new MaybeAmbIterable<T>(sources));
+    }
+    
+    /**
+     * Runs multiple Maybe sources and signals the events of the first one that signals (cancelling
+     * the rest).
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources the array of sources
+     * @return the new Maybe instance
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Maybe<T> ambArray(final MaybeSource<? extends T>... sources) {
+        if (sources.length == 0) {
+            return empty();
+        }
+        if (sources.length == 1) {
+            return wrap((MaybeSource<T>)sources[0]);
+        }
+        return RxJavaPlugins.onAssembly(new MaybeAmbArray<T>(sources));
+    }
 
     /**
      * Provides an API (via a cold Maybe) that bridges the reactive world with the callback-style world.
@@ -81,6 +122,161 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         return RxJavaPlugins.onAssembly(new MaybeCreate<T>(onSubscribe));
     }
     
+    /**
+     * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources provided by
+     * an Iterable sequence. 
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources the Iterable sequence of MaybeSource instances
+     * @return the new Flowable instance
+     */
+    public static <T> Flowable<T> concat(Iterable<? extends MaybeSource<? extends T>> sources) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new MaybeConcatIterable<T>(sources));
+    }
+    
+    /**
+     * Returns a Flowable that emits the items emitted by two MaybeSources, one after the other.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T> the common value type
+     * @param source1
+     *            a MaybeSource to be concatenated
+     * @param source2
+     *            a MaybeSource to be concatenated
+     * @return a Flowable that emits items emitted by the two source MaybeSources, one after the other.
+     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Flowable<T> concat(MaybeSource<? extends T> source1, MaybeSource<? extends T> source2) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return concatArray(source1, source2);
+    }
+
+    /**
+     * Returns a Flowable that emits the items emitted by three MaybeSources, one after the other.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common value type
+     * @param source1
+     *            a MaybeSource to be concatenated
+     * @param source2
+     *            a MaybeSource to be concatenated
+     * @param source3
+     *            a MaybeSource to be concatenated
+     * @return a Flowable that emits items emitted by the three source MaybeSources, one after the other.
+     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Flowable<T> concat(
+            MaybeSource<? extends T> source1, MaybeSource<? extends T> source2, MaybeSource<? extends T> source3) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return concatArray(source1, source2, source3);
+    }
+
+    /**
+     * Returns a Flowable that emits the items emitted by four MaybeSources, one after the other.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T> the common value type
+     * @param source1
+     *            a MaybeSource to be concatenated
+     * @param source2
+     *            a MaybeSource to be concatenated
+     * @param source3
+     *            a MaybeSource to be concatenated
+     * @param source4
+     *            a MaybeSource to be concatenated
+     * @return a Flowable that emits items emitted by the four source MaybeSources, one after the other.
+     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Flowable<T> concat(
+            MaybeSource<? extends T> source1, MaybeSource<? extends T> source2, MaybeSource<? extends T> source3, MaybeSource<? extends T> source4) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return concatArray(source1, source2, source3, source4);
+    }
+
+    /**
+     * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources provided by
+     * a Publisher sequence. 
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources the Publisher of MaybeSource instances
+     * @return the new Flowable instance
+     */
+    public static <T> Flowable<T> concat(Publisher<? extends MaybeSource<? extends T>> sources) {
+        return concat(sources, 2);
+    }
+
+    /**
+     * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources provided by
+     * a Publisher sequence. 
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources the Publisher of MaybeSource instances
+     * @param prefetch the number of MaybeSources to prefetch from the Publisher
+     * @return the new Flowable instance
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Flowable<T> concat(Publisher<? extends MaybeSource<? extends T>> sources, int prefetch) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
+        return RxJavaPlugins.onAssembly(new FlowableConcatMap(sources, MaybeToPublisher.instance(), prefetch, ErrorMode.IMMEDIATE));
+    }
+
+    /**
+     * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources in the array. 
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources the Publisher of MaybeSource instances
+     * @return the new Flowable instance
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Flowable<T> concatArray(MaybeSource<? extends T>... sources) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        if (sources.length == 0) {
+            return Flowable.empty();
+        }
+        if (sources.length == 1) {
+            return RxJavaPlugins.onAssembly(new MaybeToFlowable<T>((MaybeSource<T>)sources[0]));
+        }
+        return RxJavaPlugins.onAssembly(new MaybeConcatArray<T>(sources));
+    }
+
     /**
      * Calls a Callable for each individual MaybeObserver to return the actual MaybeSource source to
      * be subscribe to.
@@ -151,7 +347,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param supplier
      *            a Callable factory to return a Throwable for each individual Subscriber
      * @param <T>
-     *            the type of the items (ostensibly) emitted by the Publisher
+     *            the type of the items (ostensibly) emitted by the Maybe
      * @return a Maybe that invokes the {@link MaybeObserver}'s {@link MaybeObserver#onError onError} method when
      *         the MaybeObserver subscribes to it
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
@@ -244,20 +440,216 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         ObjectHelper.requireNonNull(item, "item is null");
         return RxJavaPlugins.onAssembly(new MaybeJust<T>(item));
     }
+
+    /**
+     * Merges an Iterable sequence of MaybeSource instances into a single Flowable sequence,
+     * running all MaybeSources at once.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the common and resulting value type
+     * @param sources the Iterable sequence of MaybeSource sources
+     * @return the new Flowable instance
+     * @since 2.0
+     */
+    public static <T> Flowable<T> merge(Iterable<? extends MaybeSource<? extends T>> sources) {
+        return merge(Flowable.fromIterable(sources));
+    }
+
+    /**
+     * Merges a Flowable sequence of MaybeSource instances into a single Flowable sequence,
+     * running all MaybeSources at once.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the common and resulting value type
+     * @param sources the Flowable sequence of MaybeSource sources
+     * @return the new Flowable instance
+     * @since 2.0
+     */
+    public static <T> Flowable<T> merge(Publisher<? extends MaybeSource<? extends T>> sources) {
+        return merge(sources, Integer.MAX_VALUE);
+    }
     
+    /**
+     * Merges a Flowable sequence of MaybeSource instances into a single Flowable sequence,
+     * running at most maxConcurrency MaybeSources at once.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the common and resulting value type
+     * @param sources the Flowable sequence of MaybeSource sources
+     * @param maxConcurrency the maximum number of concurrently running MaybeSources
+     * @return the new Flowable instance
+     * @since 2.0
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Flowable<T> merge(Publisher<? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
+        return RxJavaPlugins.onAssembly(new FlowableFlatMap(sources, MaybeToPublisher.instance(), false, maxConcurrency, Flowable.bufferSize()));
+    }
+
+    /**
+     * Flattens a {@code Single} that emits a {@code Single} into a single {@code Single} that emits the item
+     * emitted by the nested {@code Single}, without any transformation.
+     * <p>
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.oo.png" alt="">
+     * <p>
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the value type of the sources and the output
+     * @param source
+     *            a {@code Single} that emits a {@code Single}
+     * @return a {@code Single} that emits the item that is the result of flattening the {@code Single} emitted
+     *         by {@code source}
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Maybe<T> merge(MaybeSource<? extends MaybeSource<? extends T>> source) {
+        return new MaybeFlatten(source, Functions.identity());
+    }
+    
+    /**
+     * Flattens two Singles into a single Observable, without any transformation.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by
+     * using the {@code merge} method.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T> the common value type
+     * @param source1
+     *            a Single to be merged
+     * @param source2
+     *            a Single to be merged
+     * @return a Flowable that emits all of the items emitted by the source Singles
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Flowable<T> merge(
+            MaybeSource<? extends T> source1, MaybeSource<? extends T> source2
+     ) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return mergeArray(source1, source2);
+    }
+    
+    /**
+     * Flattens three Singles into a single Observable, without any transformation.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T> the common value type
+     * @param source1
+     *            a Single to be merged
+     * @param source2
+     *            a Single to be merged
+     * @param source3
+     *            a Single to be merged
+     * @return a Flowable that emits all of the items emitted by the source Singles
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Flowable<T> merge(
+            MaybeSource<? extends T> source1, MaybeSource<? extends T> source2,
+            MaybeSource<? extends T> source3
+     ) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return mergeArray(source1, source2, source3);
+    }
+    
+    /**
+     * Flattens four Singles into a single Observable, without any transformation.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T> the common value type
+     * @param source1
+     *            a Single to be merged
+     * @param source2
+     *            a Single to be merged
+     * @param source3
+     *            a Single to be merged
+     * @param source4
+     *            a Single to be merged
+     * @return a Flowable that emits all of the items emitted by the source Singles
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Flowable<T> merge(
+            MaybeSource<? extends T> source1, MaybeSource<? extends T> source2,
+            MaybeSource<? extends T> source3, MaybeSource<? extends T> source4
+     ) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return mergeArray(source1, source2, source3, source4);
+    }
+
+    /**
+     * Merges an array sequence of MaybeSource instances into a single Flowable sequence,
+     * running all MaybeSources at once.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the common and resulting value type
+     * @param sources the array sequence of MaybeSource sources
+     * @return the new Flowable instance
+     * @since 2.0
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Flowable<T> mergeArray(MaybeSource<? extends T>... sources) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        if (sources.length == 0) {
+            return Flowable.empty();
+        }
+        if (sources.length == 1) {
+            return RxJavaPlugins.onAssembly(new MaybeToFlowable<T>((MaybeSource<T>)sources[0]));
+        }
+        return RxJavaPlugins.onAssembly(new MaybeMergeArray<T>(sources));
+    }
+
+
     /**
      * Returns a Maybe that never sends any items or notifications to an {@link MaybeObserver}.
      * <p>
      * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.png" alt="">
      * <p>
-     * This Publisher is useful primarily for testing purposes.
+     * This Maybe is useful primarily for testing purposes.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code never} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param <T>
-     *            the type of items (not) emitted by the Publisher
+     *            the type of items (not) emitted by the Maybe
      * @return a Maybe that never emits any items or sends any notifications to an {@link MaybeObserver}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Never</a>
      */
@@ -347,7 +739,28 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public final <R> Maybe<R> compose(Function<? super Maybe<T>, ? extends MaybeSource<R>> transformer) {
         return wrap(to(transformer));
     }
-    
+
+    /**
+     * Returns a Maybe that is based on applying a specified function to the item emitted by the source Maybe,
+     * where that function returns a MaybeSource.
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * <p>Note that flatMap and concatMap for Maybe is the same operation.
+     * @param <R> the result value type
+     * @param mapper
+     *            a function that, when applied to the item emitted by the source Maybe, returns a MaybeSource
+     * @return the Maybe returned from {@code func} when applied to the item emitted by the source Maybe
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    public final <R> Maybe<R> concatMap(Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new MaybeFlatten<T, R>(this, mapper));
+    }
+
     /**
      * Registers an {@link Action} to be called when this Maybe invokes either
      * {@link MaybeObserver#onComplete onSuccess},
@@ -360,7 +773,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param onAfterTerminate
-     *            an {@link Action} to be invoked when the source Publisher finishes
+     *            an {@link Action} to be invoked when the source Maybe finishes
      * @return a Maybe that emits the same items as the source Maybe, then invokes the
      *         {@link Action}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
@@ -387,7 +800,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param onDispose the runnable called when the subscription is cancelled (disposed)
      * @return the new Maybe instance
      */
-    public final Maybe<T> doOnDispose(final Action onDispose) {
+    public final Maybe<T> doOnDispose(Action onDispose) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this, 
                 Functions.emptyConsumer(), // onSubscribe
                 Functions.emptyConsumer(), // onSuccess
@@ -399,7 +812,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Modifies the source Publisher so that it invokes an action when it calls {@code onCompleted}.
+     * Modifies the source Maybe so that it invokes an action when it calls {@code onCompleted}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.png" alt="">
      * <dl>
@@ -408,7 +821,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * 
      * @param onComplete
-     *            the action to invoke when the source Publisher calls {@code onCompleted}
+     *            the action to invoke when the source Maybe calls {@code onCompleted}
      * @return the new Maybe with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
@@ -434,7 +847,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param onError the consumer called with the success value of onError
      * @return the new Maybe instance
      */
-    public final Maybe<T> doOnError(final Consumer<? super Throwable> onError) {
+    public final Maybe<T> doOnError(Consumer<? super Throwable> onError) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this, 
                 Functions.emptyConsumer(), // onSubscribe
                 Functions.emptyConsumer(), // onSuccess
@@ -443,6 +856,25 @@ public abstract class Maybe<T> implements MaybeSource<T> {
                 Functions.EMPTY_ACTION,    // (onSuccess | onError | onComplete)
                 Functions.EMPTY_ACTION     // dispose
         ));
+    }
+    
+    /**
+     * Calls the given onEvent callback with the (success value, null) for an onSuccess, (null, throwabe) for
+     * an onError or (null, null) for an onComplete signal from this Maybe before delivering said
+     * signal to the downstream.
+     * <p>
+     * Exceptions thrown from the callback will override the event so the downstream receives the
+     * error instead of the original signal.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code doOnEvent} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onEvent the callback to call with the terminal event tuple
+     * @return the new Maybe instance
+     */
+    public final Maybe<T> doOnEvent(BiConsumer<? super T, ? super Throwable> onEvent) {
+        ObjectHelper.requireNonNull(onEvent, "onEvent is null");
+        return RxJavaPlugins.onAssembly(new MaybeDoOnEvent<T>(this, onEvent));
     }
 
     /**
@@ -455,7 +887,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param onSubscribe the consumer called with the Disposable sent via onSubscribe
      * @return the new Maybe instance
      */
-    public final Maybe<T> doOnSubscribe(final Consumer<? super Disposable> onSubscribe) {
+    public final Maybe<T> doOnSubscribe(Consumer<? super Disposable> onSubscribe) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this, 
                 ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null"),
                 Functions.emptyConsumer(), // onSuccess
@@ -476,7 +908,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param onSuccess the consumer called with the success value of onSuccess
      * @return the new Maybe instance
      */
-    public final Maybe<T> doOnSuccess(final Consumer<? super T> onSuccess) {
+    public final Maybe<T> doOnSuccess(Consumer<? super T> onSuccess) {
         return RxJavaPlugins.onAssembly(new MaybePeek<T>(this, 
                 Functions.emptyConsumer(), // onSubscribe
                 ObjectHelper.requireNonNull(onSuccess, "onSubscribe is null"),
@@ -511,7 +943,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Maybe that is based on applying a specified function to the item emitted by the source Single,
+     * Returns a Maybe that is based on applying a specified function to the item emitted by the source Maybe,
      * where that function returns a MaybeSource.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
@@ -519,6 +951,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>Note that flatMap and concatMap for Maybe is the same operation.
      * 
      * @param <R> the result value type
      * @param mapper
@@ -528,7 +961,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     public final <R> Maybe<R> flatMap(Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new MaybeFlatMap<T, R>(this, mapper));
+        return RxJavaPlugins.onAssembly(new MaybeFlatten<T, R>(this, mapper));
     }
 
     /**
@@ -557,7 +990,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
             Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper, 
             Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper, 
             Callable<? extends MaybeSource<? extends R>> onCompleteSupplier) {
-        ObjectHelper.requireNonNull(onSuccessMapper, "onNextMapper is null");
+        ObjectHelper.requireNonNull(onSuccessMapper, "onSuccessMapper is null");
         ObjectHelper.requireNonNull(onErrorMapper, "onErrorMapper is null");
         ObjectHelper.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");
         return new MaybeFlatMapNotification<T, R>(this, onSuccessMapper, onErrorMapper, onCompleteSupplier);
@@ -573,7 +1006,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * 
      * @return an empty Maybe that only calls {@code onComplete} or {@code onError}, based on which one is
-     *         called by the source Publisher
+     *         called by the source Maybe
      * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElements</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -728,6 +1161,103 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         return RxJavaPlugins.onAssembly(new MaybeToSingle<T>(this));
     }
 
+    /**
+     * Subscribes to a Maybe and ignores {@code onSuccess} and {@code onComplete} emissions. 
+     * <p>
+     * If the Maybe emits an error, it is routed to the RxJavaPlugins.onError handler. 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @return a {@link Disposable} reference with which the caller can stop receiving items before
+     *         the Maybe has finished sending them
+     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Disposable subscribe() {
+        return subscribe(Functions.emptyConsumer(), Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION);
+    }
+
+    /**
+     * Subscribes to a Maybe and provides a callback to handle the items it emits.
+     * <p>
+     * If the Flowable emits an error, it is routed to the RxJavaPlugins.onError handler. 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param onSuccess
+     *             the {@code Consumer<T>} you have designed to accept a success value from the Maybe
+     * @return a {@link Disposable} reference with which the caller can stop receiving items before
+     *         the Maybe has finished sending them
+     * @throws NullPointerException
+     *             if {@code onSuccess} is null
+     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Disposable subscribe(Consumer<? super T> onSuccess) {
+        return subscribe(onSuccess, Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION);
+    }
+
+    /**
+     * Subscribes to a Maybe and provides callbacks to handle the items it emits and any error
+     * notification it issues.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param onSuccess
+     *             the {@code Consumer<T>} you have designed to accept a success value from the Maybe
+     * @param onError
+     *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
+     *             Maybe
+     * @return a {@link Subscription} reference with which the caller can stop receiving items before
+     *         the Maybe has finished sending them
+     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     * @throws IllegalArgumentException
+     *             if {@code onSuccess} is null, or
+     *             if {@code onError} is null
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Disposable subscribe(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError) {
+        return subscribe(onSuccess, onError, Functions.EMPTY_ACTION);
+    }
+
+    /**
+     * Subscribes to a Maybe and provides callbacks to handle the items it emits and any error or
+     * completion notification it issues.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param onSuccess
+     *             the {@code Consumer<T>} you have designed to accept a success value from the Maybe
+     * @param onError
+     *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
+     *             Maybe
+     * @param onComplete
+     *             the {@code Action} you have designed to accept a completion notification from the
+     *             Maybe
+     * @return a {@link Disposable} reference with which the caller can stop receiving items before
+     *         the Maybe has finished sending them
+     * @throws IllegalArgumentException
+     *             if {@code onSuccess} is null, or
+     *             if {@code onError} is null, or
+     *             if {@code onComplete} is null
+     * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Disposable subscribe(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError, 
+            Action onComplete) {
+        return subscribeWith(new MaybeCallbackObserver<T>(onSuccess, onError, onComplete));
+    }
+    
+    
+    
     @Override
     public final void subscribe(MaybeObserver<? super T> observer) {
         ObjectHelper.requireNonNull(observer, "observer is null");
@@ -774,6 +1304,31 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new MaybeSubscribeOn<T>(this, scheduler));
     }
+
+    /**
+     * Subscribes a given MaybeObserver (subclass) to this Maybe and returns the given
+     * MaybeObserver as is.
+     * <p>Usage example:
+     * <pre><code>
+     * Maybe<Integer> source = Maybe.just(1);
+     * CompositeDisposable composite = new CompositeDisposable();
+     * 
+     * MaybeObserver&lt;Integer> ms = new MaybeObserver&lt;>() {
+     *     // ...
+     * };
+     * 
+     * composite.add(source.subscribeWith(ms));
+     * </code></pre>
+     * @param <E> the type of the MaybeObserver to use and return
+     * @param observer the MaybeObserver (subclass) to use and return, not null
+     * @return the input {@code subscriber}
+     * @throws NullPointerException if {@code subscriber} is null
+     */
+    public final <E extends MaybeObserver<? super T>> E subscribeWith(E observer) {
+        subscribe(observer);
+        return observer;
+    }
+
 
     // ------------------------------------------------------------------
     // Test helper

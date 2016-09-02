@@ -28,11 +28,11 @@ import io.reactivex.internal.functions.ObjectHelper;
  * @param <T> the source value type
  * @param <R> the result value type
  */
-public final class MaybeFlatMap<T, R> extends AbstractMaybeWithUpstream<T, R> {
+public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
     final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
 
-    public MaybeFlatMap(MaybeSource<T> source, Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+    public MaybeFlatten(MaybeSource<T> source, Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         super(source);
         this.mapper = mapper;
     }
