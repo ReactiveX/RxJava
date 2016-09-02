@@ -18,214 +18,205 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.BiPredicate;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     final Publisher<? extends T> first;
     final Publisher<? extends T> second;
     final BiPredicate<? super T, ? super T> comparer;
-    final int bufferSize;
+    final int prefetch;
     
     public FlowableSequenceEqual(Publisher<? extends T> first, Publisher<? extends T> second,
-            BiPredicate<? super T, ? super T> comparer, int bufferSize) {
+            BiPredicate<? super T, ? super T> comparer, int prefetch) {
         this.first = first;
         this.second = second;
         this.comparer = comparer;
-        this.bufferSize = bufferSize;
+        this.prefetch = prefetch;
     }
     
     @Override
     public void subscribeActual(Subscriber<? super Boolean> s) {
-        EqualCoordinator<T> ec = new EqualCoordinator<T>(s, bufferSize, first, second, comparer);
-        ec.subscribe();
+        EqualCoordinator<T> parent = new EqualCoordinator<T>(s, prefetch, comparer);
+        s.onSubscribe(parent);
+        parent.subscribe(first, second);
     }
     
-    static final class EqualCoordinator<T> extends AtomicInteger implements Subscription {
+    static final class EqualCoordinator<T> extends DeferredScalarSubscription<Boolean> {
         /** */
         private static final long serialVersionUID = -6178010334400373240L;
-        final Subscriber<? super Boolean> actual;
+        
         final BiPredicate<? super T, ? super T> comparer;
-        final ArrayCompositeSubscription resources;
-        final Publisher<? extends T> first;
-        final Publisher<? extends T> second;
-        final EqualSubscriber<T>[] subscribers;
         
-        volatile boolean cancelled;
+        final int prefetch;
         
-        final AtomicBoolean once = new AtomicBoolean();
+        final EqualSubscriber<T> first;
+        
+        final EqualSubscriber<T> second;
+        
+        final AtomicThrowable error;
+        
+        final AtomicInteger wip;
         
         T v1;
         
         T v2;
         
-        public EqualCoordinator(Subscriber<? super Boolean> actual, int bufferSize,
-                Publisher<? extends T> first, Publisher<? extends T> second,
-                BiPredicate<? super T, ? super T> comparer) {
-            this.actual = actual;
-            this.first = first;
-            this.second = second;
+        public EqualCoordinator(Subscriber<? super Boolean> actual, int prefetch, BiPredicate<? super T, ? super T> comparer) {
+            super(actual);
+            this.prefetch = prefetch;
             this.comparer = comparer;
-            @SuppressWarnings("unchecked")
-            EqualSubscriber<T>[] as = new EqualSubscriber[2];
-            this.subscribers = as;
-            as[0] = new EqualSubscriber<T>(this, 0, bufferSize);
-            as[1] = new EqualSubscriber<T>(this, 1, bufferSize);
-            this.resources = new ArrayCompositeSubscription(2);
+            this.wip = new AtomicInteger();
+            this.first = new EqualSubscriber<T>(this, prefetch);
+            this.second = new EqualSubscriber<T>(this, prefetch);
+            this.error = new AtomicThrowable();
         }
         
-        boolean setSubscription(Subscription s, int index) {
-            return resources.setResource(index, s);
-        }
-        
-        void subscribe() {
-            EqualSubscriber<T>[] as = subscribers;
-            first.subscribe(as[0]);
-            second.subscribe(as[1]);
+        void subscribe(Publisher<? extends T> source1, Publisher<? extends T> source2) {
+            source1.subscribe(first);
+            source2.subscribe(second);
         }
 
         @Override
-        public void request(long n) {
-            if (!SubscriptionHelper.validate(n)) {
-                return;
-            }
-            if (once.compareAndSet(false, true)) {
-                EqualSubscriber<T>[] as = subscribers;
-                first.subscribe(as[0]);
-                second.subscribe(as[1]);
-            }
-        }
-        
-        @Override
         public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-                resources.dispose();
-                
-                if (getAndIncrement() == 0) {
-                    EqualSubscriber<T>[] as = subscribers;
-                    as[0].queue.clear();
-                    as[1].queue.clear();
-                }
+            super.cancel();
+            first.cancel();
+            second.cancel();
+            if (wip.getAndIncrement() == 0) {
+                first.clear();
+                second.clear();
             }
         }
         
-        void cancel(SpscArrayQueue<T> q1, SpscArrayQueue<T> q2) {
-            cancelled = true;
-            q1.clear();
-            q2.clear();
+        void cancelAndClear() {
+            first.cancel();
+            first.clear();
+            second.cancel();
+            second.clear();
         }
         
         void drain() {
-            if (getAndIncrement() != 0) {
+            if (wip.getAndIncrement() != 0) {
                 return;
             }
-            
+
             int missed = 1;
-            EqualSubscriber<T>[] as = subscribers;
-            
-            final EqualSubscriber<T> s1 = as[0];
-            final SpscArrayQueue<T> q1 = s1.queue;
-            final EqualSubscriber<T> s2 = as[1];
-            final SpscArrayQueue<T> q2 = s2.queue;
             
             for (;;) {
+                SimpleQueue<T> q1 = first.queue;
+                SimpleQueue<T> q2 = second.queue;
                 
-                long r = 0L;
-                for (;;) {
-                    if (cancelled) {
-                        q1.clear();
-                        q2.clear();
-                        return;
-                    }
-                    
-                    boolean d1 = s1.done;
-                    
-                    if (d1) {
-                        Throwable e = s1.error;
-                        if (e != null) {
-                            cancel(q1, q2);
-                            
-                            actual.onError(e);
+                if (q1 != null && q2 != null) {
+                    for (;;) {
+                        if (isCancelled()) {
+                            first.clear();
+                            second.clear();
                             return;
                         }
-                    }
-                    
-                    boolean d2 = s2.done;
-
-                    if (d2) {
-                        Throwable e = s2.error;
-                        if (e != null) {
-                            cancel(q1, q2);
-                            
-                            actual.onError(e);
-                            return;
-                        }
-                    }
-
-                    if (v1 == null) {
-                        v1 = q1.poll();
-                    }
-                    boolean e1 = v1 == null;
-                    
-                    if (v2 == null) {
-                        v2 = q2.poll();
-                    }
-                    boolean e2 = v2 == null;
-
-                    if (d1 && d2 && e1 && e2) {
-                        actual.onNext(true);
-                        actual.onComplete();
-                        return;
-                    }
-                    if ((d1 && d2) && (e1 != e2)) {
-                        cancel(q1, q2);
                         
-                        actual.onNext(false);
-                        actual.onComplete();
-                        return;
-                    }
-                    
-                    if (!e1 && !e2) {
+                        Throwable ex = error.get();
+                        if (ex != null) {
+                            cancelAndClear();
+                            
+                            actual.onError(error.terminate());
+                            return;
+                        }
+
+                        boolean d1 = first.done;
+                        
+                        T a = v1;
+                        if (a == null) {
+                            try {
+                                a = q1.poll();
+                            } catch (Throwable exc) {
+                                Exceptions.throwIfFatal(exc);
+                                cancelAndClear();
+                                error.addThrowable(exc);
+                                actual.onError(error.terminate());
+                                return;
+                            }
+                            v1 = a;
+                        }
+                        boolean e1 = a == null;
+                        
+                        boolean d2 = second.done;
+                        T b = v2;
+                        if (b == null) {
+                            try {
+                                b = q2.poll();
+                            } catch (Throwable exc) {
+                                Exceptions.throwIfFatal(exc);
+                                cancelAndClear();
+                                error.addThrowable(exc);
+                                actual.onError(error.terminate());
+                                return;
+                            }
+                            v2 = b;
+                        }
+
+                        boolean e2 = b == null;
+                        
+                        if (d1 && d2 && e1 && e2) {
+                            complete(true);
+                            return;
+                        }
+                        if ((d1 && d2) && (e1 != e2)) {
+                            cancelAndClear();
+                            complete(false);
+                            return;
+                        }
+                        
+                        if (e1 || e2) {
+                            break;
+                        }
+                        
                         boolean c;
                         
                         try {
-                            c = comparer.test(v1, v2);
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            cancel(q1, q2);
-                            
-                            actual.onError(ex);
+                            c = comparer.test(a, b);
+                        } catch (Throwable exc) {
+                            Exceptions.throwIfFatal(exc);
+                            cancelAndClear();
+                            error.addThrowable(exc);
+                            actual.onError(error.terminate());
                             return;
                         }
                         
                         if (!c) {
-                            cancel(q1, q2);
-                            
-                            actual.onNext(false);
-                            actual.onComplete();
+                            cancelAndClear();
+                            complete(false);
                             return;
                         }
-                        r++;
                         
                         v1 = null;
                         v2 = null;
+                        
+                        first.request();
+                        second.request();
                     }
                     
-                    if (e1 || e2) {
-                        break;
+                } else {
+                    if (isCancelled()) {
+                        first.clear();
+                        second.clear();
+                        return;
+                    }
+                    
+                    Throwable ex = error.get();
+                    if (ex != null) {
+                        cancelAndClear();
+                        
+                        actual.onError(error.terminate());
+                        return;
                     }
                 }
                 
-                if (r != 0L) {
-                    s1.s.request(r);
-                    s2.s.request(r);
-                }
-                
-                
-                missed = addAndGet(-missed);
+                missed = wip.addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
@@ -233,52 +224,109 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
         }
     }
     
-    static final class EqualSubscriber<T> implements Subscriber<T> {
+    static final class EqualSubscriber<T> 
+    extends AtomicReference<Subscription>
+    implements Subscriber<T> {
+        /** */
+        private static final long serialVersionUID = 4804128302091633067L;
+        
         final EqualCoordinator<T> parent;
-        final SpscArrayQueue<T> queue;
-        final int index;
-        final int bufferSize;
         
+        final int prefetch;
+        
+        final int limit;
+        
+        long produced;
+
+        volatile SimpleQueue<T> queue;
+
         volatile boolean done;
-        Throwable error;
         
-        Subscription s;
+        int sourceMode;
         
-        public EqualSubscriber(EqualCoordinator<T> parent, int index, int bufferSize) {
+        public EqualSubscriber(EqualCoordinator<T> parent, int prefetch) {
             this.parent = parent;
-            this.bufferSize = bufferSize;
-            this.index = index;
-            this.queue = new SpscArrayQueue<T>(bufferSize);
+            this.limit = prefetch - (prefetch >> 2);
+            this.prefetch = prefetch;
         }
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (parent.setSubscription(s, index)) {
-                this.s = s;
-                s.request(bufferSize);
+            if (SubscriptionHelper.setOnce(this, s)) {
+                if (s instanceof QueueSubscription) {
+                    @SuppressWarnings("unchecked")
+                    QueueSubscription<T> qs = (QueueSubscription<T>) s;
+                    
+                    int m = qs.requestFusion(QueueSubscription.ANY);
+                    if (m == QueueSubscription.SYNC) {
+                        sourceMode = m;
+                        queue = qs;
+                        done = true;
+                        parent.drain();
+                        return;
+                    }
+                    if (m == QueueSubscription.ASYNC) {
+                        sourceMode = m;
+                        queue = qs;
+                        s.request(prefetch);
+                        return;
+                    }
+                }
+                
+                queue = new SpscArrayQueue<T>(prefetch);
+                
+                s.request(prefetch);
             }
         }
         
         @Override
         public void onNext(T t) {
-            if (!queue.offer(t)) {
-                onError(new IllegalStateException("Queue full?!"));
-                return;
+            if (sourceMode == QueueSubscription.NONE) {
+                if (!queue.offer(t)) {
+                    onError(new MissingBackpressureException());
+                    return;
+                }
             }
             parent.drain();
         }
         
         @Override
         public void onError(Throwable t) {
-            error = t;
-            done = true;
-            parent.drain();
+            EqualCoordinator<T> p = parent;
+            if (p.error.addThrowable(t)) {
+                p.drain();
+            } else {
+                RxJavaPlugins.onError(t);
+            }
         }
         
         @Override
         public void onComplete() {
             done = true;
             parent.drain();
+        }
+        
+        public void request() {
+            if (sourceMode != QueueSubscription.SYNC) {
+                long p = produced + 1;
+                if (p >= limit) {
+                    produced = 0;
+                    get().request(p);
+                } else {
+                    produced = p;
+                }
+            }
+        }
+        
+        public void cancel() {
+            SubscriptionHelper.cancel(this);
+        }
+        
+        void clear() {
+            SimpleQueue<T> sq = queue;
+            if (sq != null) {
+                sq.clear();
+            }
         }
     }
 }

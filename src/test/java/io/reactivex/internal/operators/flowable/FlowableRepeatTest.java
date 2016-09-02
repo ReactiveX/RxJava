@@ -25,8 +25,9 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -241,6 +242,30 @@ public class FlowableRepeatTest {
         ts.assertValues(1, 1);
         ts.assertNoErrors();
         ts.assertComplete();
+    }
+    
+    @Test
+    public void repeatUntil() {
+        Flowable.just(1)
+        .repeatUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return false;
+            }
+        })
+        .take(5)
+        .test()
+        .assertResult(1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void repeatLongPredicateInvalid() {
+        try {
+            Flowable.just(1).repeat(-99);
+            fail("Should have thrown");
+        } catch (IllegalArgumentException ex) {
+            assertEquals("times >= 0 required but it was -99", ex.getMessage());
+        }
     }
 
 }

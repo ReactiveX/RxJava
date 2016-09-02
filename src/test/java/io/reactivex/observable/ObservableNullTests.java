@@ -276,9 +276,8 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void concatNbpObservableNull() {
+    public void concatObservableNull() {
         Observable.concat((Observable<Observable<Object>>)null);
-
     }
 
     @Test(expected = NullPointerException.class)
@@ -688,7 +687,7 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void usingNbpObservableSupplierNull() {
+    public void usingObservableSupplierNull() {
         Observable.using(new Callable<Object>() {
             @Override
             public Object call() {
@@ -701,7 +700,7 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void usingNbpObservableSupplierReturnsNull() {
+    public void usingObservableSupplierReturnsNull() {
         Observable.using(new Callable<Object>() {
             @Override
             public Object call() {
@@ -776,7 +775,7 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void zipNbpObservableNull() {
+    public void zipObservableNull() {
         Observable.zip((Observable<Observable<Object>>)null, new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
@@ -786,12 +785,12 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void zipNbpObservableFunctionNull() {
+    public void zipObservableFunctionNull() {
         Observable.zip((Observable.just(just1)), null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void zipNbpObservableFunctionReturnsNull() {
+    public void zipObservableFunctionReturnsNull() {
         Observable.zip((Observable.just(just1)), new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] a) {
@@ -1712,7 +1711,7 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void onErrorResumeNextNbpObservableNull() {
+    public void onErrorResumeNextObservableNull() {
         just1.onErrorResumeNext((Observable<Integer>)null);
     }
     
@@ -2007,7 +2006,7 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void sampleNbpObservableNull() {
+    public void sampleObservableNull() {
         just1.sample(null);
     }
     
@@ -2162,7 +2161,7 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void startWithNbpObservableNull() {
+    public void startWithObservableNull() {
         just1.startWith((Observable<Integer>)null);
     }
     
@@ -2282,7 +2281,7 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void takeUntilNbpObservableNull() {
+    public void takeUntilObservableNull() {
         just1.takeUntil((Observable<Integer>)null);
     }
     
@@ -2782,7 +2781,7 @@ public class ObservableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void zipWithNbpObservableNull() {
+    public void zipWithObservableNull() {
         just1.zipWith((Observable<Integer>)null, new BiFunction<Integer, Integer, Object>() {
             @Override
             public Object apply(Integer a, Integer b) {

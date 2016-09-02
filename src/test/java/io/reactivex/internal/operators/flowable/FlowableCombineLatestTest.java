@@ -17,17 +17,21 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.mockito.*;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.flowable.FlowableZipTest.ArgsToString;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
@@ -1046,5 +1050,170 @@ public class FlowableCombineLatestTest {
         ts.assertValues(11);
         ts.assertError(CompositeException.class);
         ts.assertNotComplete();
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void combineLatestNArguments() throws Exception {
+        Flowable source = Flowable.just(1);
+        
+        for (int i = 2; i < 10; i++) {
+            Class<?>[] types = new Class[i + 1];
+            Arrays.fill(types, Publisher.class);
+            types[i] = i == 2 ? BiFunction.class : Class.forName("io.reactivex.functions.Function" + i);
+            
+            Method m = Flowable.class.getMethod("combineLatest", types);
+            
+            Object[] params = new Object[i + 1];
+            Arrays.fill(params, source);
+            params[i] = ArgsToString.INSTANCE;
+            
+            StringBuilder b = new StringBuilder();
+            for (int j = 0; j < i; j++) {
+                b.append('1');
+            }
+            
+            ((Flowable)m.invoke(null, params)).test().assertResult(b.toString());
+            
+            for (int j = 0; j < params.length; j++) {
+                Object[] params0 = params.clone();
+                params0[j] = null;
+                
+                try {
+                    m.invoke(null, params0);
+                    fail("Should have thrown @ " + m);
+                } catch (InvocationTargetException ex) {
+                    assertTrue(ex.toString(), ex.getCause() instanceof NullPointerException);
+                    
+                    if (j < i) {
+                        assertEquals("source" + (j + 1) + " is null", ex.getCause().getMessage());
+                    } else {
+                        assertEquals("f is null", ex.getCause().getMessage());
+                    }
+                }
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combineLatestNSources() {
+        for (int i = 1; i < 100; i++) {
+            Flowable<Integer>[] sources = new Flowable[i];
+            Arrays.fill(sources, Flowable.just(1));
+            List<Object> expected = new ArrayList<Object>(i);
+            for (int j = 1; j <= i; j++) {
+                expected.add(1);
+            }
+            
+            Flowable.combineLatest(sources, new Function<Object[], List<Object>>() {
+                @Override
+                public List<Object> apply(Object[] t) throws Exception {
+                    return Arrays.asList(t);
+                }
+            })
+            .test()
+            .assertResult(expected);
+            
+            Flowable.combineLatestDelayError(sources, new Function<Object[], List<Object>>() {
+                @Override
+                public List<Object> apply(Object[] t) throws Exception {
+                    return Arrays.asList(t);
+                }
+            })
+            .test()
+            .assertResult(expected);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combineLatestArrayOfSources() {
+        
+        Flowable.combineLatest(new Flowable[] {
+                Flowable.just(1), Flowable.just(2)
+        }, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertResult("[1, 2]");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineLatestDelayErrorArrayOfSources() {
+        
+        Flowable.combineLatestDelayError(new Flowable[] {
+                Flowable.just(1), Flowable.just(2)
+        }, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertResult("[1, 2]");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineLatestDelayErrorArrayOfSourcesWithError() {
+        
+        Flowable.combineLatestDelayError(new Flowable[] {
+                Flowable.just(1), Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException()))
+        }, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, "[1, 2]");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineLatestDelayErrorIterableOfSources() {
+        
+        Flowable.combineLatestDelayError(Arrays.asList(
+                Flowable.just(1), Flowable.just(2)
+        ), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertResult("[1, 2]");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineLatestDelayErrorIterableOfSourcesWithError() {
+        
+        Flowable.combineLatestDelayError(Arrays.asList(
+                Flowable.just(1), Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException()))
+        ), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, "[1, 2]");
+    }
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combineLatestEmpty() {
+        assertSame(Flowable.empty(), Flowable.combineLatest(new Flowable[0], Functions.<Object[]>identity(), 16));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combineLatestDelayErrorEmpty() {
+        assertSame(Flowable.empty(), Flowable.combineLatestDelayError(new Flowable[0], Functions.<Object[]>identity(), 16));
     }
 }

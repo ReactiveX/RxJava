@@ -157,4 +157,12 @@ public class FlowableSkipTimedTest {
         verify(o, never()).onComplete();
 
     }
+
+    @Test
+    public void skipTimedDefaultScheduler() {
+        Flowable.just(1).skip(1, TimeUnit.MINUTES)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult();
+    }
 }

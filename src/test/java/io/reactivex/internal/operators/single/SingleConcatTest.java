@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import io.reactivex.Single;
@@ -44,5 +46,22 @@ public class SingleConcatTest {
         Single.concat(Single.just(1), Single.just(2), Single.just(3), Single.just(4))
         .test()
         .assertResult(1, 2, 3, 4);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArray() {
+        for (int i = 1; i < 100; i++) {
+            Single<Integer>[] array = new Single[i];
+            
+            Arrays.fill(array, Single.just(1));
+            
+            Single.concatArray(array)
+            .test()
+            .assertSubscribed()
+            .assertValueCount(i)
+            .assertNoErrors()
+            .assertComplete();
+        }
     }
 }

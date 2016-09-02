@@ -39,7 +39,7 @@ public class ObservableConcatTests {
     }
 
     @Test
-    public void testConcatWithNbpObservableOfNbpObservable() {
+    public void testConcatWithObservableOfObservable() {
         Observable<String> o1 = Observable.just("one", "two");
         Observable<String> o2 = Observable.just("three", "four");
         Observable<String> o3 = Observable.just("five", "six");
@@ -57,7 +57,7 @@ public class ObservableConcatTests {
     }
 
     @Test
-    public void testConcatWithIterableOfNbpObservable() {
+    public void testConcatWithIterableOfObservable() {
         Observable<String> o1 = Observable.just("one", "two");
         Observable<String> o2 = Observable.just("three", "four");
         Observable<String> o3 = Observable.just("five", "six");

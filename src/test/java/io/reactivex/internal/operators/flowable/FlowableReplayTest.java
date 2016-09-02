@@ -26,11 +26,13 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.flowable.FlowableReplay.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
@@ -516,7 +518,7 @@ public class FlowableReplayTest {
         Subscriber<Integer> spiedSubscriberBeforeConnect = TestHelper.mockSubscriber();
         Subscriber<Integer> spiedSubscriberAfterConnect = TestHelper.mockSubscriber();
 
-        // Observable under test
+        // Flowable under test
         Flowable<Integer> source = Flowable.just(1,2);
 
         ConnectableFlowable<Integer> replay = source
@@ -571,7 +573,7 @@ public class FlowableReplayTest {
 
         when(mockScheduler.createWorker()).thenReturn(spiedWorker);
 
-        // Observable under test
+        // Flowable under test
         ConnectableFlowable<Integer> replay = Flowable.just(1, 2, 3)
                 .doOnNext(sourceNext)
                 .doOnCancel(sourceUnsubscribed)
@@ -634,7 +636,7 @@ public class FlowableReplayTest {
 
         when(mockScheduler.createWorker()).thenReturn(spiedWorker);
 
-        // Observable under test
+        // Flowable under test
         Function<Integer, Integer> mockFunc = mock(Function.class);
         IllegalArgumentException illegalArgumentException = new IllegalArgumentException();
         when(mockFunc.apply(1)).thenReturn(1);
@@ -1232,6 +1234,68 @@ public class FlowableReplayTest {
         System.out.println(ts3.values());
         ts3.assertValues(2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts3.assertComplete();
+    }
+
+    @Test
+    public void replayScheduler() {
+        
+        Flowable.just(1).replay(Schedulers.computation())
+        .autoConnect()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+    
+    @Test
+    public void replayTime() {
+        Flowable.just(1).replay(1, TimeUnit.MINUTES)
+        .autoConnect()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void replaySizeScheduler() {
+        
+        Flowable.just(1).replay(1, Schedulers.computation())
+        .autoConnect()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void replaySizeAndTime() {
+        Flowable.just(1).replay(1, 1, TimeUnit.MILLISECONDS)
+        .autoConnect()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+    
+    @Test
+    public void replaySelectorSizeScheduler() {
+        Flowable.just(1).replay(Functions.<Flowable<Integer>>identity(), 1, Schedulers.io())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void replaySelectorScheduler() {
+        Flowable.just(1).replay(Functions.<Flowable<Integer>>identity(), Schedulers.io())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void replaySelectorTime() {
+        Flowable.just(1).replay(Functions.<Flowable<Integer>>identity(), 1, TimeUnit.MINUTES)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
     }
 
 }

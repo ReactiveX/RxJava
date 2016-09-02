@@ -260,9 +260,9 @@ public class FlowableBackpressureTests {
         ts.assertNoErrors();
         System.out.println("testFlatMapAsync => Received: " + ts.valueCount() + "  Emitted: " + c.get() + " Size: " + Flowable.bufferSize());
         assertEquals(NUM, ts.valueCount());
-        // even though we only need 10, it will request at least Observable.bufferSize(), and then as it drains keep requesting more
+        // even though we only need 10, it will request at least Flowable.bufferSize(), and then as it drains keep requesting more
         // and then it will be non-deterministic when the take() causes the unsubscribe as it is scheduled on 10 different schedulers (threads)
-        // normally this number is ~250 but can get up to ~1200 when Observable.bufferSize() == 1024
+        // normally this number is ~250 but can get up to ~1200 when Flowable.bufferSize() == 1024
         assertTrue(c.get() <= Flowable.bufferSize() * 2);
     }
 

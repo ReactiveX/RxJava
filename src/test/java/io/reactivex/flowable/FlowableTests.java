@@ -26,8 +26,8 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.FlowableTransformer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -1037,5 +1037,25 @@ public class FlowableTests {
                     return subscriber.values().get(0);
                 }
         });
+    }
+    
+    @Test
+    public void toObservableEmpty() {
+        Flowable.empty().toObservable().test().assertResult();
+    }
+
+    @Test
+    public void toObservableJust() {
+        Flowable.just(1).toObservable().test().assertResult(1);
+    }
+    
+    @Test
+    public void toObservableRange() {
+        Flowable.range(1, 5).toObservable().test().assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void toObservableError() {
+        Flowable.error(new TestException()).toObservable().test().assertFailure(TestException.class);
     }
 }

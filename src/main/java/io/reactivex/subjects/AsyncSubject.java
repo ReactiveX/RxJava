@@ -22,10 +22,10 @@ import io.reactivex.internal.subscribers.observable.DeferredScalarDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * An NbpSubject that emits the very last value followed by a completion event or the received error to NbpSubscribers.
+ * An Subject that emits the very last value followed by a completion event or the received error to Observers.
  *
  * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
- * to them may lead to undefined state in the currently subscribed NbpSubscribers.
+ * to them may lead to undefined state in the currently subscribed Observers.
  * 
  * @param <T> the value type
  */

@@ -148,6 +148,5 @@ public final class ObservableCollectTest {
         })
         .test()
         .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
-        
     }
 }

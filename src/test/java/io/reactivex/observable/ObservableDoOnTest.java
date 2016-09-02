@@ -101,6 +101,5 @@ public class ObservableDoOnTest {
         .test()
         .assertFailure(TestException.class);
         assertTrue(r.get());
-        
     }
 }

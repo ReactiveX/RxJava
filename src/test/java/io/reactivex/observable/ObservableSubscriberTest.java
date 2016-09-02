@@ -20,12 +20,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableOperator;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableSubscriberTest {
@@ -187,6 +188,55 @@ public class ObservableSubscriberTest {
         ps.test(false);
         
         assertTrue(ps.hasObservers());
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void pluginNull() {
+        RxJavaPlugins.setOnObservableSubscribe(new BiFunction<Observable, Observer, Observer>() {
+            @Override
+            public Observer apply(Observable a, Observer b) throws Exception {
+                return null;
+            }
+        });
+        
+        try {
+            try {
+                
+                Observable.just(1).test();
+                fail("Should have thrown");
+            } catch (NullPointerException ex) {
+                assertEquals("Plugin returned null Observer", ex.getMessage());
+            }
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    
+    static final class BadObservable extends Observable<Integer> {
+        @Override
+        protected void subscribeActual(Observer<? super Integer> s) {
+            throw new IllegalArgumentException();
+        }
+    }
+    
+    @Test
+    public void subscribeActualThrows() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+        try {
+            try {
+                new BadObservable().test();
+                fail("Should have thrown!");
+            } catch (NullPointerException ex) {
+                if (!(ex.getCause() instanceof IllegalArgumentException)) {
+                    fail(ex.toString() + ": Should be NPE(IAE)");
+                }
+            }
+            
+            TestHelper.assertError(list, 0, IllegalArgumentException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
 }

@@ -519,4 +519,17 @@ public class FlowableAmbTest {
             }
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambArrayEmpty() {
+        assertSame(Flowable.empty(), Flowable.ambArray());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambArraySingleElement() {
+        assertSame(Flowable.never(), Flowable.ambArray(Flowable.never()));
+    }
+
 }

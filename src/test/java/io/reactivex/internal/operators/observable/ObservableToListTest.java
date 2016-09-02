@@ -26,7 +26,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.TestHelper;
 
-public class ObservableToObservableListTest {
+public class ObservableToListTest {
 
     @Test
     public void testList() {

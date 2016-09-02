@@ -761,4 +761,60 @@ public class FlowableConcatMapEagerTest {
         }
         
     }
+    
+    @Test
+    public void concatEagerZero() {
+        Flowable.concatEager(Collections.<Flowable<Integer>>emptyList())
+        .test()
+        .assertResult();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatEagerOne() {
+        Flowable.concatEager(Arrays.asList(Flowable.just(1)))
+        .test()
+        .assertResult(1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatEagerTwo() {
+        Flowable.concatEager(Arrays.asList(Flowable.just(1), Flowable.just(2)))
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void Flowable() {
+        Flowable<Integer> source = Flowable.just(1);
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        Flowable.concatEager(Flowable.just(source, source, source)).subscribe(ts);
+        
+        ts.assertValues(1, 1, 1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+    
+    @Test
+    public void ObservableCapacityHint() {
+        Flowable<Integer> source = Flowable.just(1);
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        Flowable.concatEager(Flowable.just(source, source, source), 1, 1).subscribe(ts);
+        
+        ts.assertValues(1, 1, 1);
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatEagerIterable() {
+        Flowable.concatEager(Arrays.asList(Flowable.just(1), Flowable.just(2)))
+        .test()
+        .assertResult(1, 2);
+    }
+
 }

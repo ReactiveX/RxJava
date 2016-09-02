@@ -38,7 +38,7 @@ public class FlowableConcatTests {
     }
 
     @Test
-    public void testConcatWithObservableOfObservable() {
+    public void testConcatWithFlowableOfFlowable() {
         Flowable<String> o1 = Flowable.just("one", "two");
         Flowable<String> o2 = Flowable.just("three", "four");
         Flowable<String> o3 = Flowable.just("five", "six");
@@ -56,7 +56,7 @@ public class FlowableConcatTests {
     }
 
     @Test
-    public void testConcatWithIterableOfObservable() {
+    public void testConcatWithIterableOfFlowable() {
         Flowable<String> o1 = Flowable.just("one", "two");
         Flowable<String> o2 = Flowable.just("three", "four");
         Flowable<String> o3 = Flowable.just("five", "six");

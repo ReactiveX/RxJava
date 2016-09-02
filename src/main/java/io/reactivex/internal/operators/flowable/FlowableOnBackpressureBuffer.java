@@ -179,6 +179,15 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
                         e++;
                     }
                     
+                    if (e == r) {
+                        boolean d = done;
+                        boolean empty = q.isEmpty();
+                        
+                        if (checkTerminated(d, empty, a)) {
+                            return;
+                        }
+                    }
+                    
                     if (e != 0L) {
                         if (r != Long.MAX_VALUE) {
                             requested.addAndGet(-e);

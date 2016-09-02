@@ -27,6 +27,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -1593,5 +1594,32 @@ public class FlowableMergeTest {
         ms.drain();
         
         ts.assertValues(1, 2);
+    }
+    
+    @Test
+    public void array() {
+        for (int i = 1; i < 100; i++) {
+            
+            @SuppressWarnings("unchecked")
+            Flowable<Integer>[] sources = new Flowable[i];
+            Arrays.fill(sources, Flowable.just(1));
+            Integer[] expected = new Integer[i];
+            for (int j = 0; j < i; j++) {
+                expected[j] = 1;
+            }
+
+            Flowable.mergeArray(sources)
+            .test()
+            .assertResult(expected);
+        }
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeArray() {
+        Flowable.mergeArray(Flowable.just(1), Flowable.just(2))
+        .test()
+        .assertResult(1, 2);
     }
 }

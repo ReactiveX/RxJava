@@ -237,4 +237,37 @@ public class FlowableTakeLastTimedTest {
         ts.assertNoErrors();
         
     }
+    
+    @Test
+    public void takeLastTimeAndSize() {
+        Flowable.just(1, 2)
+        .takeLast(1, 1, TimeUnit.MINUTES)
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void takeLastTime() {
+        Flowable.just(1, 2)
+        .takeLast(1, TimeUnit.MINUTES)
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void takeLastTimeDelayError() {
+        Flowable.just(1, 2).concatWith(Flowable.<Integer>error(new TestException()))
+        .takeLast(1, TimeUnit.MINUTES, true)
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void takeLastTimeDelayErrorCustomScheduler() {
+        Flowable.just(1, 2).concatWith(Flowable.<Integer>error(new TestException()))
+        .takeLast(1, TimeUnit.MINUTES, Schedulers.io(), true)
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
 }

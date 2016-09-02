@@ -304,4 +304,13 @@ public class FlowableDebounceTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
+    
+    @Test
+    public void debounceDefault() throws Exception {
+        
+        Flowable.just(1).debounce(1, TimeUnit.SECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
 }

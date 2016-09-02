@@ -126,7 +126,7 @@ public class FlowableTakeTimedTest {
     
     @Test
     public void timedDefaultScheduler() {
-        Observable.range(1, 5).take(1, TimeUnit.MINUTES)
+        Flowable.range(1, 5).take(1, TimeUnit.MINUTES)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5);

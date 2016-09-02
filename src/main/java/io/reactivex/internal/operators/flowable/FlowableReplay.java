@@ -180,7 +180,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param unit the unit of measure of the age amount
      * @param scheduler the target scheduler providing the current time
      * @param bufferSize the maximum number of elements to hold
-     * @return the new NbpConnectableObservable instance
+     * @return the new ConnectableFlowable instance
      */
     public static <T> ConnectableFlowable<T> create(Flowable<T> source,
             final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize) {

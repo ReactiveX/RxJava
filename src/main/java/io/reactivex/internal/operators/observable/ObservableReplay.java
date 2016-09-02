@@ -55,7 +55,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * @param <R> the result value type
      * @param connectableFactory the factory that returns a ConnectableObservable for each individual subscriber
      * @param selector the function that receives a Observable and should return another Observable that will be subscribed to
-     * @return the new NbpObservable instance
+     * @return the new Observable instance
      */
     public static <U, R> Observable<R> multicastSelector(
             final Callable<? extends ConnectableObservable<U>> connectableFactory,
@@ -94,7 +94,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * @param <T> the value type
      * @param co the connectable observable instance
      * @param scheduler the target scheduler
-     * @return the new NbpConnectableObservable instance
+     * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableObservable<T> observeOn(final ConnectableObservable<T> co, final Scheduler scheduler) {
         final Observable<T> observable = co.observeOn(scheduler);
@@ -115,7 +115,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * Creates a replaying ConnectableObservable with an unbounded buffer.
      * @param <T> the value type
      * @param source the source observable
-     * @return the new NbpConnectableObservable instance
+     * @return the new ConnectableObservable instance
      */
     @SuppressWarnings("unchecked")
     public static <T> ConnectableObservable<T> createFrom(Observable<? extends T> source) {
@@ -127,7 +127,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * @param <T> the value type
      * @param source the source Flowable to use
      * @param bufferSize the maximum number of elements to hold
-     * @return the new NbpConnectableObservable instance
+     * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableObservable<T> create(Observable<T> source,
             final int bufferSize) {
@@ -149,7 +149,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * @param maxAge the maximum age of entries
      * @param unit the unit of measure of the age amount
      * @param scheduler the target scheduler providing the current time
-     * @return the new NbpConnectableObservable instance
+     * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableObservable<T> create(Observable<T> source,
             long maxAge, TimeUnit unit, Scheduler scheduler) {
@@ -164,7 +164,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * @param unit the unit of measure of the age amount
      * @param scheduler the target scheduler providing the current time
      * @param bufferSize the maximum number of elements to hold
-     * @return the new NbpConnectableObservable instance
+     * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableObservable<T> create(Observable<T> source,
             final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize) {

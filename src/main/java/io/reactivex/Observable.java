@@ -269,6 +269,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T, R> Observable<R> combineLatest(ObservableSource<? extends T>[] sources, 
             Function<? super T[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
+        if (sources.length == 0) {
+            return empty();
+        }
         ObjectHelper.requireNonNull(combiner, "combiner is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         
@@ -954,7 +957,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note: named this way because of overload conflict with concat(ObservableSource&lt;ObservableSource&gt;)
      * @param sources the array of sources
      * @param <T> the common base value type
-     * @return the new NbpObservable instance
+     * @return the new Observable instance
      * @throws NullPointerException if sources is null
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1832,9 +1835,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Observable<Long> intervalRange(long start, long count, long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
-
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+        
+        if (count == 0L) {
+            return Observable.<Long>empty().delay(initialDelay, unit, scheduler);
+        }
+        
         long end = start + (count - 1);
-        if (end < 0) {
+        if (start > 0 && end < 0) {
             throw new IllegalArgumentException("Overflow! start + count is bigger than Long.MAX_VALUE");
         }
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -9818,11 +9828,25 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     @Override
     public final void subscribe(Observer<? super T> observer) {
-        ObjectHelper.requireNonNull(observer, "observer is null");
-        
-        observer = RxJavaPlugins.onSubscribe(this, observer);
-        
-        subscribeActual(observer);
+        ObjectHelper.requireNonNull(observer, "s is null");
+        try {
+            observer = RxJavaPlugins.onSubscribe(this, observer);
+
+            ObjectHelper.requireNonNull(observer, "Plugin returned null Observer");
+            
+            subscribeActual(observer);
+        } catch (NullPointerException e) { // NOPMD
+            throw e;
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            // can't call onError because no way to know if a Disposable has been set or not
+            // can't call onSubscribe because the call might have set a Subscription already
+            RxJavaPlugins.onError(e);
+            
+            NullPointerException npe = new NullPointerException("Actually not, but can't throw other exceptions due to RS");
+            npe.initCause(e);
+            throw npe;
+        }
     }
     
     /**
@@ -10151,7 +10175,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> takeLast(int count) {
         if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= required but it was " + count);
+            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         } else
         if (count == 0) {
             return ignoreElements();

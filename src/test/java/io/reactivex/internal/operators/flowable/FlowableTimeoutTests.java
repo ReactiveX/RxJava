@@ -357,4 +357,14 @@ public class FlowableTimeoutTests {
 
         verify(s, times(1)).cancel();
     }
+
+    
+    @Test
+    public void timedAndOther() {
+        Flowable.never().timeout(100, TimeUnit.MILLISECONDS, Flowable.just(1))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
 }

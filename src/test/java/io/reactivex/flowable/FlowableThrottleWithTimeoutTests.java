@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.TestHelper;
+import io.reactivex.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 
@@ -58,5 +58,13 @@ public class FlowableThrottleWithTimeoutTests {
         inOrder.verify(observer).onNext(7);
         inOrder.verify(observer).onComplete();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void throttleFirstDefaultScheduler() {
+        Flowable.just(1).throttleWithTimeout(100, TimeUnit.MILLISECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
     }
 }

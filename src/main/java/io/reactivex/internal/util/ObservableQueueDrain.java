@@ -15,7 +15,7 @@ package io.reactivex.internal.util;
 
 import io.reactivex.Observer;
 
-public interface NbpQueueDrain<T, U> {
+public interface ObservableQueueDrain<T, U> {
     
     boolean cancelled();
     

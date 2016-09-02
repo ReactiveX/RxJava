@@ -95,7 +95,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
                 
                 if (p == null) {
                     s.dispose();
-                    a.onError(new NullPointerException("The first window NbpObservable supplied is null"));
+                    a.onError(new NullPointerException("The first window ObservableSource supplied is null"));
                     return;
                 }
                 
@@ -242,7 +242,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
                         
                         if (p == null) {
                             DisposableHelper.dispose(boundary);
-                            a.onError(new NullPointerException("The NbpObservable supplied is null"));
+                            a.onError(new NullPointerException("The ObservableSource supplied is null"));
                             return;
                         }
                         

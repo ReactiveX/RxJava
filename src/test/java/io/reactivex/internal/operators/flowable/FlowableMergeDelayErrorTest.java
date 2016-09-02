@@ -26,6 +26,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.LongConsumer;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -719,4 +720,126 @@ public class FlowableMergeDelayErrorTest {
         }
     }
 
+    @Test
+    public void array() {
+        for (int i = 1; i < 100; i++) {
+            
+            @SuppressWarnings("unchecked")
+            Flowable<Integer>[] sources = new Flowable[i];
+            Arrays.fill(sources, Flowable.just(1));
+            Integer[] expected = new Integer[i];
+            for (int j = 0; j < i; j++) {
+                expected[j] = 1;
+            }
+
+            Flowable.mergeArrayDelayError(sources)
+            .test()
+            .assertResult(expected);
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeArrayDelayError() {
+        Flowable.mergeArrayDelayError(Flowable.just(1), Flowable.just(2))
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeIterableDelayErrorWithError() {
+        Flowable.mergeDelayError(
+                Arrays.asList(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())), 
+                Flowable.just(2)))
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void mergeDelayError() {
+        Flowable.mergeDelayError(
+                Flowable.just(Flowable.just(1), 
+                Flowable.just(2)))
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void mergeDelayErrorWithError() {
+        Flowable.mergeDelayError(
+                Flowable.just(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())), 
+                Flowable.just(2)))
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void mergeDelayErrorMaxConcurrency() {
+        Flowable.mergeDelayError(
+                Flowable.just(Flowable.just(1), 
+                Flowable.just(2)), 1)
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void mergeDelayErrorWithErrorMaxConcurrency() {
+        Flowable.mergeDelayError(
+                Flowable.just(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())), 
+                Flowable.just(2)), 1)
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeIterableDelayErrorMaxConcurrency() {
+        Flowable.mergeDelayError(
+                Arrays.asList(Flowable.just(1), 
+                Flowable.just(2)), 1)
+        .test()
+        .assertResult(1, 2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeIterableDelayErrorWithErrorMaxConcurrency() {
+        Flowable.mergeDelayError(
+                Arrays.asList(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())), 
+                Flowable.just(2)), 1)
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void mergeDelayError3() {
+        Flowable.mergeDelayError(
+                Flowable.just(1), 
+                Flowable.just(2),
+                Flowable.just(3)
+        )
+        .test()
+        .assertResult(1, 2, 3);
+    }
+
+    @Test
+    public void mergeDelayError3WithError() {
+        Flowable.mergeDelayError(
+                Flowable.just(1), 
+                Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException())),
+                Flowable.just(3)
+        )
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeIterableDelayError() {
+        Flowable.mergeDelayError(Arrays.asList(Flowable.just(1), Flowable.just(2)))
+        .test()
+        .assertResult(1, 2);
+    }
 }

@@ -27,6 +27,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
@@ -542,5 +543,22 @@ public class FlowableFromIterableTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
         
+    }
+
+    @Test
+    public void fusionWithConcatMap() {
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+        
+        Flowable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
+        new Function<Integer, Flowable  <Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) {
+                return Flowable.range(v, 2);
+            }
+        }).subscribe(to);
+        
+        to.assertValues(1, 2, 2, 3, 3, 4, 4, 5);
+        to.assertNoErrors();
+        to.assertComplete();
     }
 }

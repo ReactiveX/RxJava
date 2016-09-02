@@ -61,4 +61,9 @@ public class FlowableStartWithTests {
         assertEquals("two", values.get(3));
     }
 
+    @Test
+    public void startWithEmpty() {
+        Flowable.just(1).startWithArray().test().assertResult(1);
+    }
+
 }

@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -246,4 +246,12 @@ public class FlowableOnErrorReturnTest {
     }
     
     
+    @Test
+    public void returnItem() {
+        Flowable.error(new TestException())
+        .onErrorReturnItem(1)
+        .test()
+        .assertResult(1);
+    }
+
 }

@@ -603,7 +603,7 @@ public class FlowableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void usingObservableSupplierNull() {
+    public void usingFlowableSupplierNull() {
         Flowable.using(new Callable<Object>() {
             @Override
             public Object call() {
@@ -613,7 +613,7 @@ public class FlowableNullTests {
     }
     
     @Test(expected = NullPointerException.class)
-    public void usingObservableSupplierReturnsNull() {
+    public void usingFlowableSupplierReturnsNull() {
         Flowable.using(new Callable<Object>() {
             @Override
             public Object call() {
@@ -2803,5 +2803,183 @@ public class FlowableNullTests {
         subject.onError(null);
         subject.blockingSubscribe();
     }
+    
+    @Test(expected = NullPointerException.class)
+    public void doOnLifecycleOnDisposeNull() {
+        just1.doOnLifecycle(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) { }
+        },
+        new LongConsumer() {
+            @Override
+            public void accept(long v) throws Exception { }
+        },
+        null);
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void zipWithFlowableNull() {
+        just1.zipWith((Flowable<Integer>)null, new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) {
+                return 1;
+            }
+        });
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void unsafeSubscribeNull() {
+        just1.subscribe((Subscriber<Object>)null);
+    }
 
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorIterableFunctionReturnsNull() {
+        Flowable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return null;
+            }
+        }, 128).blockingLast();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorIterableFunctionNull() {
+        Flowable.combineLatestDelayError(Arrays.asList(just1), null, 128);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorVarargsFunctionNull() {
+        Flowable.combineLatestDelayError(null, 128, Flowable.never());
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void zipFlowableNull() {
+        Flowable.zip((Flowable<Flowable<Object>>)null, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) {
+                return 1;
+            }
+        });
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void zipFlowableFunctionNull() {
+        Flowable.zip((Flowable.just(just1)), null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void zipFlowableFunctionReturnsNull() {
+        Flowable.zip((Flowable.just(just1)), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) {
+                return null;
+            }
+        }).blockingLast();
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void concatFlowableNull() {
+        Flowable.concat((Flowable<Flowable<Object>>)null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorVarargsNull() {
+        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        }, 128, (Flowable<Object>[])null);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorVarargsOneIsNull() {
+        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        }, 128, Flowable.never(), null).blockingLast();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorIterableNull() {
+        Flowable.combineLatestDelayError((Iterable<Flowable<Object>>)null, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        }, 128);
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorIterableIteratorNull() {
+        Flowable.combineLatestDelayError(new Iterable<Flowable<Object>>() {
+            @Override
+            public Iterator<Flowable<Object>> iterator() {
+                return null;
+            }
+        }, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        }, 128).blockingLast();
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void doOnDisposeNull() {
+        just1.doOnCancel(null);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorIterableOneIsNull() {
+        Flowable.combineLatestDelayError(Arrays.asList(Flowable.never(), null), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        }, 128).blockingLast();
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void takeUntilFlowableNull() {
+        just1.takeUntil((Flowable<Integer>)null);
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void startWithFlowableNull() {
+        just1.startWith((Flowable<Integer>)null);
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void delaySubscriptionOtherNull() {
+        just1.delaySubscription((Flowable<Object>)null);
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void sampleFlowableNull() {
+        just1.sample(null);
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void onErrorResumeNextFlowableNull() {
+        just1.onErrorResumeNext((Flowable<Integer>)null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
+    public void combineLatestDelayErrorVarargsFunctionReturnsNull() {
+        Flowable.combineLatestDelayError(new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return null;
+            }
+        }, 128, just1).blockingLast();
+    }
 }

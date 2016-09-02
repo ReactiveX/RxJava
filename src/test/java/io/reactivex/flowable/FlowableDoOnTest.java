@@ -19,7 +19,8 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 
 public class FlowableDoOnTest {
@@ -71,5 +72,34 @@ public class FlowableDoOnTest {
 
         assertEquals("one", output);
         assertTrue(r.get());
+    }
+    
+    @Test
+    public void doOnTerminateError() {
+        final AtomicBoolean r = new AtomicBoolean();
+        Flowable.<String>error(new TestException()).doOnTerminate(new Action() {
+            @Override
+            public void run() {
+                r.set(true);
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+        assertTrue(r.get());
+    }
+    
+    @Test
+    public void doOnTerminateComplete() {
+        final AtomicBoolean r = new AtomicBoolean();
+        String output = Flowable.just("one").doOnTerminate(new Action() {
+            @Override
+            public void run() {
+                r.set(true);
+            }
+        }).blockingSingle();
+
+        assertEquals("one", output);
+        assertTrue(r.get());
+        
     }
 }

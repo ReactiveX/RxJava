@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -25,6 +25,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
@@ -678,4 +679,69 @@ public class FlowableFlatMapTest {
         
         ts.assertError(TestException.class);
     }
+    
+    @Test
+    public void flatMapBiMapper() {
+        Flowable.just(1)
+        .flatMap(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v) throws Exception {
+                return Flowable.just(v * 10);
+            }
+        }, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }, true)
+        .test()
+        .assertResult(11);
+    }
+
+    @Test
+    public void flatMapBiMapperWithError() {
+        Flowable.just(1)
+        .flatMap(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v) throws Exception {
+                return Flowable.just(v * 10).concatWith(Flowable.<Integer>error(new TestException()));
+            }
+        }, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }, true)
+        .test()
+        .assertFailure(TestException.class, 11);
+    }
+
+    @Test
+    public void flatMapBiMapperMaxConcurrency() {
+        Flowable.just(1, 2)
+        .flatMap(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v) throws Exception {
+                return Flowable.just(v * 10);
+            }
+        }, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }, true, 1)
+        .test()
+        .assertResult(11, 22);
+    }
+
+    @Test
+    public void flatMapEmpty() {
+        assertSame(Flowable.empty(), Flowable.empty().flatMap(new Function<Object, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Object v) throws Exception {
+                return Flowable.just(v);
+            }
+        }));
+    }
+
 }

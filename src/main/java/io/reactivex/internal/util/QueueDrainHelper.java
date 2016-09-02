@@ -183,7 +183,7 @@ public final class QueueDrainHelper {
         return false;
     }
     
-    public static <T, U> void drainLoop(SimpleQueue<T> q, Observer<? super U> a, boolean delayError, Disposable dispose, NbpQueueDrain<T, U> qd) {
+    public static <T, U> void drainLoop(SimpleQueue<T> q, Observer<? super U> a, boolean delayError, Disposable dispose, ObservableQueueDrain<T, U> qd) {
         
         int missed = 1;
         
@@ -225,7 +225,7 @@ public final class QueueDrainHelper {
     }
 
     public static <T, U> boolean checkTerminated(boolean d, boolean empty, 
-            Observer<?> s, boolean delayError, SimpleQueue<?> q, Disposable disposable, NbpQueueDrain<T, U> qd) {
+            Observer<?> s, boolean delayError, SimpleQueue<?> q, Disposable disposable, ObservableQueueDrain<T, U> qd) {
         if (qd.cancelled()) {
             q.clear();
             disposable.dispose();
