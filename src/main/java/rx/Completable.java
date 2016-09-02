@@ -1442,7 +1442,31 @@ public class Completable {
     public final Completable doOnCompleted(Action0 onCompleted) {
         return doOnLifecycle(Actions.empty(), Actions.empty(), onCompleted, Actions.empty(), Actions.empty());
     }
-    
+
+    /**
+     * Returns a Completable which calls the given onNotification callback when this Completable emits an error or completes.
+     * @param onNotification the notification callback
+     * @return the new Completable instance
+     * @throws NullPointerException if onNotification is null
+     */
+    public final Completable doOnEach(final Action1<Notification<Object>> onNotification) {
+        if (onNotification == null) {
+            throw new IllegalArgumentException("onNotification is null");
+        }
+
+        return doOnLifecycle(Actions.empty(), new Action1<Throwable>() {
+            @Override
+            public void call(final Throwable throwable) {
+                onNotification.call(Notification.createOnError(throwable));
+            }
+        }, new Action0() {
+            @Override
+            public void call() {
+                onNotification.call(Notification.createOnCompleted());
+            }
+        }, Actions.empty(), Actions.empty());
+    }
+
     /**
      * Returns a Completable which calls the given onUnsubscribe callback if the child subscriber cancels
      * the subscription.
