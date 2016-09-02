@@ -521,7 +521,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         volatile int size;
         
         public UnboundedReplayBuffer(int capacityHint) {
-            this.buffer = new ArrayList<Object>(verifyPositive(capacityHint, "capacityHint"));
+            this.buffer = new ArrayList<Object>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
         }
         
         @Override
@@ -717,7 +717,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         volatile boolean done;
         
         public SizeBoundReplayBuffer(int maxSize) {
-            this.maxSize = verifyPositive(maxSize, "maxSize");
+            this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
             Node<Object> h = new Node<Object>(null);
             this.tail = h;
             this.head = h;
@@ -920,8 +920,8 @@ public final class ReplaySubject<T> extends Subject<T> {
         
         
         public SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
-            this.maxSize = verifyPositive(maxSize, "maxSize");
-            this.maxAge = verifyPositive(maxAge, "maxAge");
+            this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
+            this.maxAge = ObjectHelper.verifyPositive(maxAge, "maxAge");
             this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
             this.scheduler = ObjectHelper.requireNonNull(scheduler, "scheduler is null");
             TimedNode<Object> h = new TimedNode<Object>(null, 0L);

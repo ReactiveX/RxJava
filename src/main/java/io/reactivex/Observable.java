@@ -106,7 +106,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         int len = sources.length;
         if (len == 0) {
             return empty();
-        } else
+        }
         if (len == 1) {
             return (Observable<T>)wrap(sources[0]);
         }
@@ -208,7 +208,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super T[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
@@ -270,7 +270,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super T[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
@@ -719,7 +719,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Observable<R> combineLatestDelayError(ObservableSource<? extends T>[] sources, 
             Function<? super T[], ? extends R> combiner, int bufferSize) {
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
         if (sources.length == 0) {
             return empty();
@@ -788,7 +788,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super T[], ? extends R> combiner, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         
         // the queue holds a pair of values so we need to double the capacity
         int s = bufferSize << 1;
@@ -3006,7 +3006,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(isEqual, "isEqual is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableSequenceEqual<T>(source1, source2, isEqual, bufferSize));
     }
 
@@ -3166,7 +3166,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> switchOnNextDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        verifyPositive(prefetch, "prefetch");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new ObservableSwitchMap(sources, Functions.identity(), prefetch, true));
     }
     
@@ -3302,36 +3302,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return RxJavaPlugins.onAssembly(new ObservableUsing<T, D>(resourceSupplier, sourceSupplier, disposer, eager));
     }
 
-    /**
-     * Validate that the given value is positive or report an IllegalArgumentException with
-     * the parameter name.
-     * @param value the value to validate
-     * @param paramName the parameter name of the value
-     * @return value
-     * @throws IllegalArgumentException if bufferSize &lt;= 0
-     */
-    protected static int verifyPositive(int value, String paramName) {
-        if (value <= 0) {
-            throw new IllegalArgumentException(paramName + " > 0 required but it was " + value);
-        }
-        return value;
-    }
-    
-    /**
-     * Validate that the given value is positive or report an IllegalArgumentException with
-     * the parameter name.
-     * @param value the value to validate
-     * @param paramName the parameter name of the value
-     * @return value
-     * @throws IllegalArgumentException if bufferSize &lt;= 0
-     */
-    protected static long verifyPositive(long value, String paramName) {
-        if (value <= 0L) {
-            throw new IllegalArgumentException(paramName + " > 0 required but it was " + value);
-        }
-        return value;
-    }
-    
     /**
      * Wraps an ObservableSource into an Observable if not already an Observable.
      * 
@@ -4121,7 +4091,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             return empty();
         }
         ObjectHelper.requireNonNull(zipper, "zipper is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(sources, null, zipper, bufferSize, delayError));
     }
 
@@ -4176,7 +4146,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             int bufferSize) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.requireNonNull(sources, "sources is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableZip<T, R>(null, sources, zipper, bufferSize, delayError));
     }
 
@@ -4369,7 +4339,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
     public final Iterable<T> blockingIterable(int bufferSize) {
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return new BlockingObservableIterable<T>(this, bufferSize);
     }
     
@@ -4689,8 +4659,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U extends Collection<? super T>> Observable<U> buffer(int count, int skip, Callable<U> bufferSupplier) {
-        verifyPositive(count, "count");
-        verifyPositive(skip, "skip");
+        ObjectHelper.verifyPositive(count, "count");
+        ObjectHelper.verifyPositive(skip, "skip");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
         return RxJavaPlugins.onAssembly(new ObservableBuffer<T, U>(this, count, skip, bufferSupplier));
     }
@@ -4949,7 +4919,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier is null");
-        verifyPositive(count, "count");
+        ObjectHelper.verifyPositive(count, "count");
         return RxJavaPlugins.onAssembly(new ObservableBufferTimed<T, U>(this, timespan, timespan, unit, scheduler, bufferSupplier, count, restartTimerOnMaxSize));
     }
 
@@ -5457,7 +5427,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        verifyPositive(prefetch, "prefetch");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         if (this instanceof ScalarCallable) {
             @SuppressWarnings("unchecked")
             T v = ((ScalarCallable<T>)this).call();
@@ -5512,7 +5482,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
             int prefetch, boolean tillTheEnd) {
-        verifyPositive(prefetch, "prefetch");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         if (this instanceof ScalarCallable) {
             @SuppressWarnings("unchecked")
             T v = ((ScalarCallable<T>)this).call();
@@ -5569,8 +5539,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <R> Observable<R> concatMapEager(Function<? super T, ? extends ObservableSource<? extends R>> mapper, 
             int maxConcurrency, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        verifyPositive(maxConcurrency, "maxConcurrency");
-        verifyPositive(prefetch, "prefetch");
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new ObservableConcatMapEager<T, R>(this, mapper, ErrorMode.IMMEDIATE, maxConcurrency, prefetch));
     }
     
@@ -6753,8 +6723,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <R> Observable<R> flatMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper,
             boolean delayErrors, int maxConcurrency, int bufferSize) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        verifyPositive(maxConcurrency, "maxConcurrency");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         if (this instanceof ScalarCallable) {
             @SuppressWarnings("unchecked")
             T v = ((ScalarCallable<T>)this).call();
@@ -7414,7 +7384,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             boolean delayError, int bufferSize) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
 
         return RxJavaPlugins.onAssembly(new ObservableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError));
     }
@@ -7779,7 +7749,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableObserveOn<T>(this, scheduler, delayError, bufferSize));
     }
 
@@ -8059,7 +8029,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> publish(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, int bufferSize) {
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(selector, "selector is null");
         return ObservablePublish.create(this, selector, bufferSize);
     }
@@ -8083,7 +8053,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableObservable<T> publish(int bufferSize) {
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return ObservablePublish.create(this, bufferSize);
     }
 
@@ -8448,7 +8418,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(selector, "selector is null");
         return ObservableReplay.multicastSelector(
                 ObservableInternalHelper.replayCallable(this, bufferSize, time, unit, scheduler), selector);
@@ -8660,7 +8630,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final ConnectableObservable<T> replay(final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return ObservableReplay.create(this, time, unit, scheduler, bufferSize);
@@ -9521,7 +9491,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         // the internal buffer holds pairs of (timestamp, value) so double the default buffer size
         int s = bufferSize << 1; 
         return RxJavaPlugins.onAssembly(new ObservableSkipLastTimed<T>(this, time, unit, scheduler, s, delayError));
@@ -9719,7 +9689,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
+     * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the ObservableSource has finished sending them
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
@@ -9739,7 +9709,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * 
      * @param onNext
      *             the {@code Consumer<T>} you have designed to accept emissions from the ObservableSource
-     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
+     * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the ObservableSource has finished sending them
      * @throws NullPointerException
      *             if {@code onNext} is null
@@ -9763,7 +9733,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onError
      *             the {@code Consumer<Throwable>} you have designed to accept any error notification from the
      *             ObservableSource
-     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
+     * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the ObservableSource has finished sending them
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws IllegalArgumentException
@@ -9791,7 +9761,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onComplete
      *             the {@code Action} you have designed to accept a completion notification from the
      *             ObservableSource
-     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
+     * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the ObservableSource has finished sending them
      * @throws IllegalArgumentException
      *             if {@code onNext} is null, or
@@ -9823,7 +9793,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             ObservableSource
      * @param onSubscribe
      *             the {@code Consumer} that receives the upstream's Subscription
-     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
+     * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the ObservableSource has finished sending them
      * @throws IllegalArgumentException
      *             if {@code onNext} is null, or
@@ -9985,7 +9955,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> switchMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         if (this instanceof ScalarCallable) {
             @SuppressWarnings("unchecked")
             T v = ((ScalarCallable<T>)this).call();
@@ -10051,7 +10021,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     public final <R> Observable<R> switchMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         if (this instanceof ScalarCallable) {
             @SuppressWarnings("unchecked")
             T v = ((ScalarCallable<T>)this).call();
@@ -10284,7 +10254,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> takeLast(long count, long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         if (count < 0) {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         }
@@ -11215,7 +11185,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<List<T>> toList(final int capacityHint) {
-        verifyPositive(capacityHint, "capacityHint");
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
         return RxJavaPlugins.onAssembly(new ObservableToList<T, List<T>>(this, capacityHint));
     }
 
@@ -11721,9 +11691,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<Observable<T>> window(long count, long skip, int bufferSize) {
-        verifyPositive(count, "count");
-        verifyPositive(skip, "skip");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(count, "count");
+        ObjectHelper.verifyPositive(skip, "skip");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableWindow<T>(this, count, skip, bufferSize));
     }
 
@@ -11811,9 +11781,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<Observable<T>> window(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, int bufferSize) {
-        verifyPositive(timespan, "timespan");
-        verifyPositive(timeskip, "timeskip");
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(timespan, "timespan");
+        ObjectHelper.verifyPositive(timeskip, "timeskip");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
         return RxJavaPlugins.onAssembly(new ObservableWindowTimed<T>(this, timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false));
@@ -12041,10 +12011,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<Observable<T>> window(
             long timespan, TimeUnit unit, Scheduler scheduler, 
             long count, boolean restart, int bufferSize) {
-        verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.requireNonNull(unit, "unit is null");
-        verifyPositive(count, "count");
+        ObjectHelper.verifyPositive(count, "count");
         return RxJavaPlugins.onAssembly(new ObservableWindowTimed<T>(this, timespan, timespan, unit, scheduler, count, bufferSize, restart));
     }
 

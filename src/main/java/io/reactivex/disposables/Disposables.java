@@ -37,18 +37,6 @@ public final class Disposables {
      * executed exactly once when the Disposable is disposed.
      * @param run the Runnable to wrap
      * @return the new Disposable instance
-     * @deprecated use {@link #fromRunnable(Runnable)} to avoid lambda-ambiguity
-     */
-    @Deprecated
-    public static Disposable from(Runnable run) {
-        return fromRunnable(run);
-    }
-
-    /**
-     * Construct a Disposable by wrapping a Runnable that is
-     * executed exactly once when the Disposable is disposed.
-     * @param run the Runnable to wrap
-     * @return the new Disposable instance
      */
     public static Disposable fromRunnable(Runnable run) {
         ObjectHelper.requireNonNull(run, "run is null");
@@ -60,47 +48,10 @@ public final class Disposables {
      * executed exactly once when the Disposable is disposed.
      * @param run the Action to wrap
      * @return the new Disposable instance
-     * @deprecated use {@link #fromRunnable(Runnable)} to avoid lambda-ambiguity
-     */
-    @Deprecated
-    public static Disposable from(Action run) {
-        return fromAction(run);
-    }
-
-    /**
-     * Construct a Disposable by wrapping a Action that is
-     * executed exactly once when the Disposable is disposed.
-     * @param run the Action to wrap
-     * @return the new Disposable instance
      */
     public static Disposable fromAction(Action run) {
         ObjectHelper.requireNonNull(run, "run is null");
         return new ActionDisposable(run);
-    }
-
-    /**
-     * Construct a Disposable by wrapping a Future that is
-     * cancelled exactly once when the Disposable is disposed.
-     * @param future the Future to wrap
-     * @return the new Disposable instance
-     * @deprecated use {@link #fromRunnable(Runnable)} to avoid lambda-ambiguity
-     */
-    @Deprecated
-    public static Disposable from(Future<?> future) {
-        return fromFuture(future, true);
-    }
-
-    /**
-     * Construct a Disposable by wrapping a Runnable that is
-     * executed exactly once when the Disposable is disposed.
-     * @param future the Runnable to wrap
-     * @param allowInterrupt if true, the future cancel happens via Future.cancel(true)
-     * @return the new Disposable instance
-     * @deprecated use {@link #fromRunnable(Runnable)} to avoid lambda-ambiguity
-     */
-    @Deprecated
-    public static Disposable from(Future<?> future, boolean allowInterrupt) {
-        return fromFuture(future, allowInterrupt);
     }
 
     /**
@@ -124,18 +75,6 @@ public final class Disposables {
     public static Disposable fromFuture(Future<?> future, boolean allowInterrupt) {
         ObjectHelper.requireNonNull(future, "future is null");
         return new FutureDisposable(future, allowInterrupt);
-    }
-
-    /**
-     * Construct a Disposable by wrapping a Subscription that is
-     * cancelled exactly once when the Disposable is disposed.
-     * @param subscription the Runnable to wrap
-     * @return the new Disposable instance
-     * @deprecated use {@link #fromRunnable(Runnable)} to avoid lambda-ambiguity
-     */
-    @Deprecated
-    public static Disposable from(Subscription subscription) {
-        return fromSubscription(subscription);
     }
 
     /**

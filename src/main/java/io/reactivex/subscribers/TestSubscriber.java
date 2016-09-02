@@ -973,6 +973,17 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         }
         return this;
     }
+    
+    /**
+     * Assert that the TestSubscriber has received a Subscription but no other events.
+     * @return this
+     */
+    public final TestSubscriber<T> assertEmpty() {
+        return assertSubscribed()
+                .assertNoValues()
+                .assertNoErrors()
+                .assertNotComplete();
+    }
 
     /**
      * A subscriber that ignores all events and does not report errors.

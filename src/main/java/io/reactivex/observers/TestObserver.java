@@ -21,7 +21,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.internal.util.ExceptionHelper;
@@ -885,6 +885,17 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         return this;
     }
 
+    
+    /**
+     * Assert that the TestObserver has received a Disposable but no other events.
+     * @return this
+     */
+    public final TestObserver<T> assertEmpty() {
+        return assertSubscribed()
+                .assertNoValues()
+                .assertNoErrors()
+                .assertNotComplete();
+    }
 
     /**
      * An observer that ignores all events and does not report errors.
