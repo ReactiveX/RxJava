@@ -67,8 +67,10 @@ public final class Notification<T> {
      *
      * @param <T> the actual value type held by the Notification
      * @param type
+     * @deprecated this method does the same as {@link #createOnCompleted()} and does not use the passed in type hence it's useless.
      * @return an {@code OnCompleted} variety of {@code Notification}
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static <T> Notification<T> createOnCompleted(Class<T> type) {
         return (Notification<T>) ON_COMPLETED;
