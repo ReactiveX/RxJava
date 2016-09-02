@@ -45,7 +45,6 @@ public final class CompletableOnSubscribeConcat implements OnSubscribe {
     static final class CompletableConcatSubscriber
     extends Subscriber<Completable> {
         final CompletableSubscriber actual;
-        final int prefetch;
         final SerialSubscription sr;
         
         final SpscArrayQueue<Completable> queue;
@@ -60,7 +59,6 @@ public final class CompletableOnSubscribeConcat implements OnSubscribe {
         
         public CompletableConcatSubscriber(CompletableSubscriber actual, int prefetch) {
             this.actual = actual;
-            this.prefetch = prefetch;
             this.queue = new SpscArrayQueue<Completable>(prefetch);
             this.sr = new SerialSubscription();
             this.inner = new ConcatInnerSubscriber();

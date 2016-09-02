@@ -61,8 +61,6 @@ public final class CompletableOnSubscribeConcatIterable implements OnSubscribe {
         final CompletableSubscriber actual;
         final Iterator<? extends Completable> sources;
         
-        int index;
-        
         final SerialSubscription sd;
         
         public ConcatInnerSubscriber(CompletableSubscriber actual, Iterator<? extends Completable> sources) {

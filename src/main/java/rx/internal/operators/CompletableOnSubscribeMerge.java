@@ -50,7 +50,6 @@ public final class CompletableOnSubscribeMerge implements OnSubscribe {
     extends Subscriber<Completable> {
         final CompletableSubscriber actual;
         final CompositeSubscription set;
-        final int maxConcurrency;
         final boolean delayErrors;
         
         volatile boolean done;
@@ -63,7 +62,6 @@ public final class CompletableOnSubscribeMerge implements OnSubscribe {
         
         public CompletableMergeSubscriber(CompletableSubscriber actual, int maxConcurrency, boolean delayErrors) {
             this.actual = actual;
-            this.maxConcurrency = maxConcurrency;
             this.delayErrors = delayErrors;
             this.set = new CompositeSubscription();
             this.wip = new AtomicInteger(1);

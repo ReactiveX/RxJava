@@ -89,7 +89,6 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
         private static final long serialVersionUID = 8567835998786448817L;
         final Subscriber<? super R> actual;
         final FuncN<? extends R> combiner;
-        final int count;
         final CombinerSubscriber<T, R>[] subscribers;
         final int bufferSize;
         final Object[] latest;
@@ -116,7 +115,6 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                 int count, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.combiner = combiner;
-            this.count = count;
             this.bufferSize = bufferSize;
             this.delayError = delayError;
             this.latest = new Object[count];
