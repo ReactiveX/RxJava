@@ -44,7 +44,9 @@ public final class ArrayCompositeSubscription extends AtomicReferenceArray<Subsc
         for (;;) {
             Subscription o = get(index);
             if (o == SubscriptionHelper.CANCELLED) {
-                resource.cancel();
+                if (resource != null) {
+                    resource.cancel();
+                }
                 return false;
             }
             if (compareAndSet(index, o, resource)) {
@@ -66,7 +68,9 @@ public final class ArrayCompositeSubscription extends AtomicReferenceArray<Subsc
         for (;;) {
             Subscription o = get(index);
             if (o == SubscriptionHelper.CANCELLED) {
-                resource.cancel();
+                if (resource != null) {
+                    resource.cancel();
+                }
                 return null;
             }
             if (compareAndSet(index, o, resource)) {

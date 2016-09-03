@@ -700,9 +700,6 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         } else
         if (s == 1) {
             Throwable e = errors.get(0);
-            if (e == null) {
-                throw fail("Error is null");
-            }
             String errorMessage = e.getMessage();
             if (!ObjectHelper.equals(message, errorMessage)) {
                 throw fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
@@ -763,7 +760,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
                 throw new AssertionError("Fusion mode different. Expected: " + fusionModeToString(mode)
                 + ", actual: " + fusionModeToString(m));
             } else {
-                throw new AssertionError("Upstream is not fuseable");
+                throw fail("Upstream is not fuseable");
             }
         }
         return this;

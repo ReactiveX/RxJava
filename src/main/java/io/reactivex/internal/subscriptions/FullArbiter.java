@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -87,9 +88,13 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
 
     public boolean setSubscription(Subscription s) {
         if (cancelled) {
+            if (s != null) {
+                s.cancel();
+            }
             return false;
         }
 
+        ObjectHelper.requireNonNull(s, "s is null");
         queue.offer(this.s, NotificationLite.subscription(s));
         drain();
         return true;
@@ -143,9 +148,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
                     long mr = missedRequested.getAndSet(0L);
                     if (mr != 0L) {
                         requested = BackpressureHelper.addCap(requested, mr);
-                        if (s != null) {
-                            s.request(mr);
-                        }
+                        s.request(mr);
                     }
                 } else 
                 if (o != s) {
@@ -153,13 +156,14 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
                 } else
                 if (NotificationLite.isSubscription(v)) {
                     Subscription next = NotificationLite.getSubscription(v);
-                    if (s != null) {
-                        s.cancel();
-                    }
-                    s = next;
-                    long r = requested;
-                    if (r != 0L) {
-                        next.request(r);
+                    if (!cancelled) {
+                        s = next;
+                        long r = requested;
+                        if (r != 0L) {
+                            next.request(r);
+                        }
+                    } else {
+                        next.cancel();
                     }
                 } else 
                 if (NotificationLite.isError(v)) {

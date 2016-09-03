@@ -35,14 +35,9 @@ public final class BlockingSubscriber<T> extends AtomicReference<Subscription> i
     
     @Override
     public void onSubscribe(Subscription s) {
-        if (!compareAndSet(null, s)) {
-            s.cancel();
-            if (get() != SubscriptionHelper.CANCELLED) {
-                onError(new IllegalStateException("Subscription already set"));
-            }
-            return;
+        if (SubscriptionHelper.setOnce(this, s)) {
+            queue.offer(NotificationLite.subscription(this));
         }
-        queue.offer(NotificationLite.subscription(this));
     }
     
     @Override

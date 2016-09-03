@@ -665,10 +665,10 @@ public final class RxJavaPlugins {
     
     /**
      * Sets the specific hook function.
-     * @param onFlowableSubscribe the hook function to set, null allowed
+     * @param onMaybeSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnMaybeSubscribe(BiFunction<Maybe, MaybeObserver, MaybeObserver> onFlowableSubscribe) {
+    public static void setOnMaybeSubscribe(BiFunction<Maybe, MaybeObserver, MaybeObserver> onMaybeSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }

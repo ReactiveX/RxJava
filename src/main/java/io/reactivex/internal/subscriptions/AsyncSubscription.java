@@ -19,7 +19,6 @@ import org.reactivestreams.Subscription;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.util.BackpressureHelper;
 
 /**
  * A subscription implementation that arbitrates exactly one other Subscription and can
@@ -47,19 +46,7 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     
     @Override
     public void request(long n) {
-        Subscription s = actual.get();
-        if (s != null) {
-            s.request(n);
-        } else if (SubscriptionHelper.validate(n)) {
-            BackpressureHelper.add(this, n);
-            s = actual.get();
-            if (s != null) {
-                long mr = getAndSet(0L);
-                if (mr != 0L) {
-                    s.request(mr);
-                }
-            }
-        }
+        SubscriptionHelper.deferredRequest(actual, this, n);
     }
     
     @Override
@@ -100,27 +87,8 @@ public final class AsyncSubscription extends AtomicLong implements Subscription,
     /**
      * Sets the given subscription if there isn't any subscription held.
      * @param s the first and only subscription to set
-     * @return false if this AsyncSubscription has been cancelled/disposed
      */
-    public boolean setSubscription(Subscription s) {
-        for (;;) {
-            Subscription a = actual.get();
-            if (a == SubscriptionHelper.CANCELLED) {
-                s.cancel();
-                return false;
-            }
-            if (a != null) {
-                s.cancel();
-                SubscriptionHelper.reportSubscriptionSet();
-                return true;
-            }
-            if (actual.compareAndSet(null, s)) {
-                long mr = getAndSet(0L);
-                if (mr != 0L) {
-                    s.request(mr);
-                }
-                return true;
-            }
-        }
+    public void setSubscription(Subscription s) {
+        SubscriptionHelper.deferredSetOnce(actual, this, s);
     }
 }

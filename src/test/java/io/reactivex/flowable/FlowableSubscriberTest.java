@@ -84,7 +84,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void testRequestFromChainedOperator() throws Exception {
-        TestSubscriber<String> s = new TestSubscriber<String>();
+        TestSubscriber<String> s = new TestSubscriber<String>(10L);
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
             public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
@@ -113,7 +113,6 @@ public class FlowableSubscriberTest {
                 };
             }
         };
-        s.request(10);
         Subscriber<? super String> ns = o.apply(s);
 
         final AtomicLong r = new AtomicLong();
@@ -190,7 +189,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void testRequestFromDecoupledOperatorThatRequestsN() throws Exception {
-        TestSubscriber<String> s = new TestSubscriber<String>();
+        TestSubscriber<String> s = new TestSubscriber<String>(10L);
         final AtomicLong innerR = new AtomicLong();
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
@@ -238,7 +237,6 @@ public class FlowableSubscriberTest {
                 return as;
             }
         };
-        s.request(10);
         Subscriber<? super String> ns = o.apply(s);
 
         final AtomicLong r = new AtomicLong();
@@ -263,8 +261,7 @@ public class FlowableSubscriberTest {
 
     @Test
     public void testRequestToFlowable() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(3);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3L);
         final AtomicLong requested = new AtomicLong();
         Flowable.<Integer>unsafeCreate(new Publisher<Integer>() {
             @Override

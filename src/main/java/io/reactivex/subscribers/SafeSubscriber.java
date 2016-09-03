@@ -15,7 +15,7 @@ package io.reactivex.subscribers;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.*;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -24,11 +24,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class SafeSubscriber<T> implements Subscriber<T> {
+public final class SafeSubscriber<T> implements Subscriber<T>, Subscription {
     /** The actual Subscriber. */
     final Subscriber<? super T> actual;
     /** The subscription. */
-    Subscription subscription;
+    Subscription s;
     /** Indicates a terminal state. */
     boolean done;
     
@@ -42,63 +42,82 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
     
     @Override
     public void onSubscribe(Subscription s) {
-        if (done) {
-            return;
-        }
-        if (this.subscription != null) {
-            IllegalStateException ise = new IllegalStateException("Subscription already set!");
+        if (SubscriptionHelper.validate(this.s, s)) {
+            this.s = s;
             try {
-                s.cancel();
+                actual.onSubscribe(this);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                ise.initCause(e);
+                done = true;
+                // can't call onError because the actual's state may be corrupt at this point
+                try {
+                    s.cancel();
+                } catch (Throwable e1) {
+                    Exceptions.throwIfFatal(e1);
+                    RxJavaPlugins.onError(new CompositeException(e, e1));
+                    return;
+                }
+                RxJavaPlugins.onError(e);
             }
-            onError(ise);
-            return;
-        }
-        if (s == null) {
-            subscription = EmptySubscription.INSTANCE;
-            onError(new NullPointerException("Subscription is null!"));
-            return;
-        }
-        this.subscription = s;
-        try {
-            actual.onSubscribe(s);
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            done = true;
-            // can't call onError because the actual's state may be corrupt at this point
-            try {
-                s.cancel();
-            } catch (Throwable e1) {
-                Exceptions.throwIfFatal(e1);
-                CompositeException ce = new CompositeException(); // NOPMD
-                ce.suppress(e1);
-                ce.suppress(e);
-                e = ce;
-            }
-            RxJavaPlugins.onError(e);
         }
     }
-    
+
     @Override
     public void onNext(T t) {
         if (done) {
             return;
         }
+        if (s == null) {
+            onNextNoSubscription();
+            return;
+        }
+
         if (t == null) {
-            onError(new NullPointerException());
+            Throwable ex = new NullPointerException();
+            try {
+                s.cancel();
+            } catch (Throwable e1) {
+                Exceptions.throwIfFatal(e1);
+                onError(new CompositeException(ex, e1));
+                return;
+            }
+            onError(ex);
             return;
         }
-        if (subscription == null) {
-            onError(null); // null is okay here, onError checks for subscription == null first
-            return;
-        }
+        
         try {
             actual.onNext(t);
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
+            try {
+                s.cancel();
+            } catch (Throwable e1) {
+                Exceptions.throwIfFatal(e1);
+                onError(new CompositeException(e, e1));
+                return;
+            }
             onError(e);
+        }
+    }
+    
+    void onNextNoSubscription() {
+        done = true;
+        Throwable ex = new NullPointerException("Subscription not set!");
+        
+        try {
+            actual.onSubscribe(EmptySubscription.INSTANCE);
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            // can't call onError because the actual's state may be corrupt at this point
+            RxJavaPlugins.onError(new CompositeException(ex, e));
+            return;
+        }
+        try {
+            actual.onError(ex);
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            // if onError failed, all that's left is to report the error to plugins
+            RxJavaPlugins.onError(new CompositeException(ex, e));
         }
     }
     
@@ -109,7 +128,7 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
         }
         done = true;
         
-        if (subscription == null) {
+        if (s == null) {
             CompositeException t2 = new CompositeException(t, new NullPointerException("Subscription not set!"));
             
             try {
@@ -134,32 +153,16 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
             return;
         }
         
-        CompositeException t2 = null;
         if (t == null) {
             t = new NullPointerException();
         }
 
         try {
-            subscription.cancel();
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            t2 = new CompositeException(e, t);
-        }
-
-        try {
-            if (t2 != null) {
-                actual.onError(t2);
-            } else {
-                actual.onError(t);
-            }
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            if (t2 == null) {
-                t2 = new CompositeException(t, e);
-            } else {
-                t2.suppress(e);
-            }
-            RxJavaPlugins.onError(t2);
+            actual.onError(t);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            
+            RxJavaPlugins.onError(new CompositeException(t, ex));
         }
     }
     
@@ -168,31 +171,69 @@ public final class SafeSubscriber<T> implements Subscriber<T> {
         if (done) {
             return;
         }
-        if (subscription == null) {
-            onError(null); // null is okay here, onError checks for subscription == null first
-            return;
-        }
-
         done = true;
 
-        try {
-            subscription.cancel();
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            try {
-                actual.onError(e);
-            } catch (Throwable e1) {
-                Exceptions.throwIfFatal(e1);
-                RxJavaPlugins.onError(new CompositeException(e1, e));
-            }
+        if (s == null) {
+            onCompleteNoSubscription();
             return;
         }
-        
+
+
         try {
             actual.onComplete();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             RxJavaPlugins.onError(e);
+        }
+    }
+
+    void onCompleteNoSubscription() {
+        
+        Throwable ex = new NullPointerException("Subscription not set!");
+        
+        try {
+            actual.onSubscribe(EmptySubscription.INSTANCE);
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            // can't call onError because the actual's state may be corrupt at this point
+            RxJavaPlugins.onError(new CompositeException(ex, e));
+            return;
+        }
+        try {
+            actual.onError(ex);
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            // if onError failed, all that's left is to report the error to plugins
+            RxJavaPlugins.onError(new CompositeException(ex, e));
+        }
+    }
+    
+    @Override
+    public void request(long n) {
+        try {
+            s.request(n);
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            try {
+                s.cancel();
+            } catch (Throwable e1) {
+                Exceptions.throwIfFatal(e1);
+                RxJavaPlugins.onError(new CompositeException(e, e1));
+                return;
+            }
+            RxJavaPlugins.onError(e);
+            return;
+        }
+    }
+    
+    @Override
+    public void cancel() {
+        try {
+            s.cancel();
+        } catch (Throwable e1) {
+            Exceptions.throwIfFatal(e1);
+            RxJavaPlugins.onError(e1);
+            return;
         }
     }
 }

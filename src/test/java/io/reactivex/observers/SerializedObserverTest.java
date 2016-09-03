@@ -212,7 +212,7 @@ public class SerializedObserverTest {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
             // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
             Subscriber<String> w = serializedSubscriber(new SafeSubscriber<String>(tw));
-            w.onSubscribe(EmptySubscription.INSTANCE);
+            w.onSubscribe(new BooleanSubscription());
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
             Future<?> f2 = tp.submit(new OnNextThread(w, 5000));

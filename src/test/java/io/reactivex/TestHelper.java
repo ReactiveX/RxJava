@@ -27,9 +27,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -405,4 +407,135 @@ public enum TestHelper {
             }
         };
     }
+    
+    /**
+     * Calls onSubscribe twice and checks if it doesn't affect the first Subscription while
+     * reporting it to plugin error handler.
+     * @param subscriber the target
+     */
+    public static void doubleOnSubscribe(Subscriber<?> subscriber) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            BooleanSubscription s1 = new BooleanSubscription();
+            
+            subscriber.onSubscribe(s1);
+            
+            BooleanSubscription s2 = new BooleanSubscription();
+            
+            subscriber.onSubscribe(s2);
+            
+            assertFalse(s1.isCancelled());
+            
+            assertTrue(s2.isCancelled());
+            
+            assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
+     * reporting it to plugin error handler.
+     * @param subscriber the target
+     */
+    public static void doubleOnSubscribe(Observer<?> subscriber) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            Disposable d1 = Disposables.empty();
+            
+            subscriber.onSubscribe(d1);
+            
+            Disposable d2 = Disposables.empty();
+            
+            subscriber.onSubscribe(d2);
+            
+            assertFalse(d1.isDisposed());
+            
+            assertTrue(d2.isDisposed());
+            
+            assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
+     * reporting it to plugin error handler.
+     * @param subscriber the target
+     */
+    public static void doubleOnSubscribe(SingleObserver<?> subscriber) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            Disposable d1 = Disposables.empty();
+            
+            subscriber.onSubscribe(d1);
+            
+            Disposable d2 = Disposables.empty();
+            
+            subscriber.onSubscribe(d2);
+            
+            assertFalse(d1.isDisposed());
+            
+            assertTrue(d2.isDisposed());
+            
+            assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
+     * reporting it to plugin error handler.
+     * @param subscriber the target
+     */
+    public static void doubleOnSubscribe(CompletableObserver subscriber) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            Disposable d1 = Disposables.empty();
+            
+            subscriber.onSubscribe(d1);
+            
+            Disposable d2 = Disposables.empty();
+            
+            subscriber.onSubscribe(d2);
+            
+            assertFalse(d1.isDisposed());
+            
+            assertTrue(d2.isDisposed());
+            
+            assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
+     * reporting it to plugin error handler.
+     * @param subscriber the target
+     */
+    public static void doubleOnSubscribe(MaybeObserver<?> subscriber) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            Disposable d1 = Disposables.empty();
+            
+            subscriber.onSubscribe(d1);
+            
+            Disposable d2 = Disposables.empty();
+            
+            subscriber.onSubscribe(d2);
+            
+            assertFalse(d1.isDisposed());
+            
+            assertTrue(d2.isDisposed());
+            
+            assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
 }

@@ -43,8 +43,6 @@ import io.reactivex.internal.util.*;
 public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposable {
     /** The actual subscriber to forward events to. */
     private final Subscriber<? super T> actual;
-    /** The initial request amount if not null. */
-    private final long initialRequest;
     /** The latch that indicates an onError or onCompleted has been called. */
     private final CountDownLatch done;
     /** The list of values received. */
@@ -60,10 +58,10 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     private volatile boolean cancelled;
 
     /** Holds the current subscription if any. */
-    private final AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
+    private final AtomicReference<Subscription> subscription;
     
     /** Holds the requested amount until a subscription arrives. */
-    private final AtomicLong missedRequested = new AtomicLong();
+    private final AtomicLong missedRequested;
     
     private boolean checkSubscriptionOnce;
 
@@ -90,6 +88,16 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     public static <T> TestSubscriber<T> create(long initialRequested) {
         return new TestSubscriber<T>(initialRequested);
+    }
+    
+    /**
+     * Constructs a forwarding TestSubscriber.
+     * @param <T> the value type received
+     * @param delegate the actual Subscriber to forward events to
+     * @return the new TestObserver instance
+     */
+    public static <T> TestSubscriber<T> create(Subscriber<? super T> delegate) {
+        return new TestSubscriber<T>(delegate);
     }
 
     /**
@@ -126,10 +134,11 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     public TestSubscriber(Subscriber<? super T> actual, long initialRequest) {
         this.actual = actual;
-        this.initialRequest = initialRequest;
         this.values = new ArrayList<T>();
         this.errors = new ArrayList<Throwable>();
         this.done = new CountDownLatch(1);
+        this.subscription = new AtomicReference<Subscription>();
+        this.missedRequested = new AtomicLong(initialRequest);
     }
     
     @SuppressWarnings("unchecked")
@@ -147,10 +156,6 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
                 errors.add(new IllegalStateException("onSubscribe received multiple subscriptions: " + s));
             }
             return;
-        }
-        
-        if (cancelled) {
-            s.cancel();
         }
         
         if (initialFusionMode != 0) {
@@ -180,14 +185,6 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         
         
         actual.onSubscribe(s);
-        
-        if (cancelled) {
-            return;
-        }
-        
-        if (initialRequest != 0L) {
-            s.request(initialRequest);
-        }
         
         long mr = missedRequested.getAndSet(0L);
         if (mr != 0L) {
@@ -277,22 +274,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     
     @Override
     public final void request(long n) {
-        if (!SubscriptionHelper.validate(n)) {
-            return;
-        }
-        Subscription s = subscription.get();
-        if (s != null) {
-            s.request(n);
-        } else {
-            BackpressureHelper.add(missedRequested, n);
-            s = subscription.get();
-            if (s != null) {
-                long mr = missedRequested.getAndSet(0L);
-                if (mr != 0L) {
-                    s.request(mr);
-                }
-            }
-        }
+        SubscriptionHelper.deferredRequest(subscription, missedRequested, n);
     }
     
     @Override
@@ -412,7 +394,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * 
      * @param message the message to use
      */
-    private void fail(String message) {
+    private AssertionError fail(String message) {
         StringBuilder b = new StringBuilder(64 + message.length());
         b.append(message);
         
@@ -436,7 +418,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         if (!ce.isEmpty()) {
             ae.initCause(ce);
         }
-        throw ae;
+        return ae;
     }
     
     /**
@@ -446,10 +428,10 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final TestSubscriber<T> assertComplete() {
         long c = completions;
         if (c == 0) {
-            fail("Not completed");
+            throw fail("Not completed");
         } else
         if (c > 1) {
-            fail("Multiple completions: " + c);
+            throw fail("Multiple completions: " + c);
         }
         return this;
     }
@@ -461,10 +443,10 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final TestSubscriber<T> assertNotComplete() {
         long c = completions;
         if (c == 1) {
-            fail("Completed!");
+            throw fail("Completed!");
         } else 
         if (c > 1) {
-            fail("Multiple completions: " + c);
+            throw fail("Multiple completions: " + c);
         }
         return this;
     }
@@ -476,7 +458,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final TestSubscriber<T> assertNoErrors() {
         int s = errors.size();
         if (s != 0) {
-            fail("Error(s) present: " + errors);
+            throw fail("Error(s) present: " + errors);
         }
         return this;
     }
@@ -494,14 +476,14 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final TestSubscriber<T> assertError(Throwable error) {
         int s = errors.size();
         if (s == 0) {
-            fail("No errors");
+            throw fail("No errors");
         }
         if (errors.contains(error)) {
             if (s != 1) {
-                fail("Error present but other errors as well");
+                throw fail("Error present but other errors as well");
             }
         } else {
-            fail("Error not present");
+            throw fail("Error not present");
         }
         return this;
     }
@@ -515,7 +497,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final TestSubscriber<T> assertError(Class<? extends Throwable> errorClass) {
         int s = errors.size();
         if (s == 0) {
-            fail("No errors");
+            throw fail("No errors");
         }
         
         boolean found = false;
@@ -529,10 +511,10 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         
         if (found) {
             if (s != 1) {
-                fail("Error present but other errors as well");
+                throw fail("Error present but other errors as well");
             }
         } else {
-            fail("Error not present");
+            throw fail("Error not present");
         }
         return this;
     }
@@ -546,11 +528,11 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final TestSubscriber<T> assertValue(T value) {
         int s = values.size();
         if (s != 1) {
-            fail("Expected: " + valueAndClass(value) + ", Actual: " + values);
+            throw fail("Expected: " + valueAndClass(value) + ", Actual: " + values);
         }
         T v = values.get(0);
         if (!ObjectHelper.equals(value, v)) {
-            fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
+            throw fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
         }
         return this;
     }
@@ -571,7 +553,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final TestSubscriber<T> assertValueCount(int count) {
         int s = values.size();
         if (s != count) {
-            fail("Value counts differ; Expected: " + count + ", Actual: " + s);
+            throw fail("Value counts differ; Expected: " + count + ", Actual: " + s);
         }
         return this;
     }
@@ -593,14 +575,14 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final TestSubscriber<T> assertValues(T... values) {
         int s = this.values.size();
         if (s != values.length) {
-            fail("Value count differs; Expected: " + values.length + " " + Arrays.toString(values)
+            throw fail("Value count differs; Expected: " + values.length + " " + Arrays.toString(values)
             + ", Actual: " + s + " " + this.values);
         }
         for (int i = 0; i < s; i++) {
             T v = this.values.get(i);
             T u = values[i];
             if (!ObjectHelper.equals(u, v)) {
-                fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
+                throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
         }
         return this;
@@ -615,14 +597,13 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * @return this
      */
     public final TestSubscriber<T> assertValueSet(Collection<? extends T> expected) {
-        int s = this.values.size();
-        if (s != expected.size()) {
-            fail("Value count differs; Expected: " + expected.size() + " " + expected
-            + ", Actual: " + s + " " + this.values);
+        if (expected.isEmpty()) {
+            assertNoValues();
+            return this;
         }
         for (T v : this.values) {
             if (!expected.contains(v)) {
-                fail("Value not in the expected collection: " + valueAndClass(v));
+                throw fail("Value not in the expected collection: " + valueAndClass(v));
             }
         }
         return this;
@@ -637,23 +618,32 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         int i = 0;
         Iterator<T> vit = values.iterator();
         Iterator<? extends T> it = sequence.iterator();
-        boolean itNext = false;
-        boolean vitNext = false;
-        while ((itNext = it.hasNext()) && (vitNext = vit.hasNext())) {
+        boolean actualNext = false;
+        boolean expectedNext = false;
+        for (;;) {
+            actualNext = it.hasNext();
+            expectedNext = vit.hasNext();
+
+            if (!actualNext || !expectedNext) {
+                break;
+            }
+            
             T v = it.next();
             T u = vit.next();
             
             if (!ObjectHelper.equals(u, v)) {
-                fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
+                throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
             i++;
+            actualNext = false;
+            expectedNext = false;
         }
         
-        if (itNext && !vitNext) {
-            fail("More values received than expected (" + i + ")");
+        if (actualNext) {
+            throw fail("More values received than expected (" + i + ")");
         }
-        if (!itNext && !vitNext) {
-            fail("Fever values received than expected (" + i + ")");
+        if (expectedNext) {
+            throw fail("Fever values received than expected (" + i + ")");
         }
         return this;
     }
@@ -664,19 +654,19 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     public final TestSubscriber<T> assertTerminated() {
         if (done.getCount() != 0) {
-            fail("Subscriber still running!");
+            throw fail("Subscriber still running!");
         }
         long c = completions;
         if (c > 1) {
-            fail("Terminated with multiple completions: " + c);
+            throw fail("Terminated with multiple completions: " + c);
         }
         int s = errors.size();
         if (s > 1) {
-            fail("Terminated with multiple errors: " + s);
+            throw fail("Terminated with multiple errors: " + s);
         }
         
         if (c != 0 && s != 0) {
-            fail("Terminated with multiple completions and errors: " + c);
+            throw fail("Terminated with multiple completions and errors: " + c);
         }
         return this;
     }
@@ -687,7 +677,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     public final TestSubscriber<T> assertNotTerminated() {
         if (done.getCount() == 0) {
-            fail("Subscriber terminated!");
+            throw fail("Subscriber terminated!");
         }
         return this;
     }
@@ -698,7 +688,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     public final TestSubscriber<T> assertSubscribed() {
         if (subscription.get() == null) {
-            fail("Not subscribed!");
+            throw fail("Not subscribed!");
         }
         return this;
     }
@@ -709,10 +699,10 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     public final TestSubscriber<T> assertNotSubscribed() {
         if (subscription.get() != null) {
-            fail("Subscribed!");
+            throw fail("Subscribed!");
         } else
         if (!errors.isEmpty()) {
-            fail("Not subscribed but errors found");
+            throw fail("Not subscribed but errors found");
         }
         return this;
     }
@@ -756,20 +746,16 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     public final TestSubscriber<T> assertErrorMessage(String message) {
         int s = errors.size();
         if (s == 0) {
-            fail("No errors");
+            throw fail("No errors");
         } else
         if (s == 1) {
             Throwable e = errors.get(0);
-            if (e == null) {
-                fail("Error is null");
-                return this;
-            }
             String errorMessage = e.getMessage();
             if (!ObjectHelper.equals(message, errorMessage)) {
-                fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
+                throw fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
             }
         } else {
-            fail("Multiple errors");
+            throw fail("Multiple errors");
         }
         return this;
     }
@@ -824,13 +810,13 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
                 throw new AssertionError("Fusion mode different. Expected: " + fusionModeToString(mode)
                 + ", actual: " + fusionModeToString(m));
             } else {
-                throw new AssertionError("Upstream is not fuseable");
+                throw fail("Upstream is not fuseable");
             }
         }
         return this;
     }
     
-    private String fusionModeToString(int mode) {
+    static String fusionModeToString(int mode) {
         switch (mode) {
         case QueueSubscription.NONE : return "NONE";
         case QueueSubscription.SYNC : return "SYNC";
@@ -940,21 +926,6 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     }
     
     /**
-     * Awaits until the internal latch is counted down.
-     * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
-     * @return this
-     * @throws InterruptedException if the wait is interrupted
-     */
-    public final TestSubscriber<T> awaitDone() throws InterruptedException {
-        try {
-            done.await();
-        } catch (InterruptedException ex) {
-            cancel();
-        }
-        return this;
-    }
-    
-    /**
      * Awaits until the internal latch is counted down for the specified duration.
      * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
      * @param time the waiting time
@@ -988,7 +959,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     /**
      * A subscriber that ignores all events and does not report errors.
      */
-    private enum EmptySubscriber implements Subscriber<Object> {
+    enum EmptySubscriber implements Subscriber<Object> {
         INSTANCE;
 
         @Override

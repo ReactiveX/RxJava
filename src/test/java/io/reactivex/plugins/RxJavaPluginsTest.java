@@ -39,6 +39,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.completable.CompletableError;
 import io.reactivex.internal.operators.flowable.FlowableRange;
+import io.reactivex.internal.operators.maybe.MaybeError;
 import io.reactivex.internal.operators.observable.ObservableRange;
 import io.reactivex.internal.operators.single.SingleJust;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
@@ -1016,6 +1017,20 @@ public class RxJavaPluginsTest {
             };
 
             assertSame(cos, RxJavaPlugins.onAssembly(cos));
+
+            assertNull(RxJavaPlugins.onAssembly((Maybe)null));
+
+            assertNull(RxJavaPlugins.onSchedule(null));
+
+            Maybe myb = new Maybe() {
+                @Override
+                public void subscribeActual(MaybeObserver t) {
+                    
+                }
+            };
+
+            assertSame(myb, RxJavaPlugins.onAssembly(myb));
+            
             
             assertNull(RxJavaPlugins.onSchedule(null));
             
@@ -1023,7 +1038,7 @@ public class RxJavaPluginsTest {
             
             assertSame(action, RxJavaPlugins.onSchedule(action));
             
-            class AllSubscriber implements Subscriber, Observer, SingleObserver, CompletableObserver {
+            class AllSubscriber implements Subscriber, Observer, SingleObserver, CompletableObserver, MaybeObserver {
 
                 @Override
                 public void onSuccess(Object value) {
@@ -1074,6 +1089,10 @@ public class RxJavaPluginsTest {
             assertNull(RxJavaPlugins.onSubscribe(Completable.never(), null));
             
             assertSame(all, RxJavaPlugins.onSubscribe(Completable.never(), all));
+
+            assertNull(RxJavaPlugins.onSubscribe(Maybe.never(), null));
+            
+            assertSame(all, RxJavaPlugins.onSubscribe(Maybe.never(), all));
 
             // These hooks don't exist in 2.0
 //            Subscription subscription = Subscriptions.empty();
@@ -1597,6 +1616,83 @@ public class RxJavaPluginsTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void maybeCreate() {
+        try {
+            RxJavaPlugins.setOnMaybeAssembly(new Function<Maybe, Maybe>() {
+                @Override
+                public Maybe apply(Maybe t) {
+                    return new MaybeError(new TestException());
+                }
+            });
+            
+            Maybe.empty()
+            .test()
+            .assertNoValues()
+            .assertNotComplete()
+            .assertError(TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+        // make sure the reset worked
+        Maybe.empty()
+        .test()
+        .assertNoValues()
+        .assertNoErrors()
+        .assertComplete();
+    }
+    
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void maybeStart() {
+        try {
+            RxJavaPlugins.setOnMaybeSubscribe(new BiFunction<Maybe, MaybeObserver, MaybeObserver>() {
+                @Override
+                public MaybeObserver apply(Maybe o, final MaybeObserver t) {
+                    return new MaybeObserver() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            t.onSubscribe(d);
+                        }
+                        
+                        @SuppressWarnings("unchecked")
+                        @Override
+                        public void onSuccess(Object value) {
+                            t.onSuccess(value);
+                        }
+                        
+                        @Override
+                        public void onError(Throwable e) {
+                            t.onError(e);
+                        }
+                        
+                        @Override
+                        public void onComplete() {
+                            t.onError(new TestException());
+                        }
+                    };
+                }
+            });
+            
+            Maybe.empty()
+            .test()
+            .assertNoValues()
+            .assertNotComplete()
+            .assertError(TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+        // make sure the reset worked
+        
+        Maybe.empty()
+        .test()
+        .assertNoValues()
+        .assertNoErrors()
+        .assertComplete();
     }
 
 }

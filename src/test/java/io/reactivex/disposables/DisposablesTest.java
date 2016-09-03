@@ -14,15 +14,20 @@
 package io.reactivex.disposables;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.List;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.TestHelper;
 import io.reactivex.functions.Action;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 public class DisposablesTest {
@@ -130,6 +135,43 @@ public class DisposablesTest {
             };
             
             TestHelper.race(r, r, Schedulers.io());
+        }
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void fromSubscriptionNull() {
+        Disposables.fromSubscription(null);
+    }
+    
+    @Test
+    public void fromSubscription() {
+        Subscription s = mock(Subscription.class);
+        
+        Disposables.fromSubscription(s).dispose();
+        
+        verify(s).cancel();
+        verify(s, never()).request(anyInt());
+    }
+    
+    @Test
+    public void setOnceTwice() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+
+            AtomicReference<Disposable> target = new AtomicReference<Disposable>();
+            Disposable d = Disposables.empty();
+            
+            DisposableHelper.setOnce(target, d);
+            
+            Disposable d1 = Disposables.empty();
+            
+            DisposableHelper.setOnce(target, d1);
+            
+            assertTrue(d1.isDisposed());
+            
+            TestHelper.assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 }

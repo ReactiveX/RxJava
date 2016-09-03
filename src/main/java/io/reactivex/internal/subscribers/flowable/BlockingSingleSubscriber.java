@@ -16,11 +16,11 @@ import java.util.concurrent.CountDownLatch;
 
 import org.reactivestreams.*;
 
-import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.ExceptionHelper;
 
 public abstract class BlockingSingleSubscriber<T> extends CountDownLatch
-implements Subscriber<T>, Disposable {
+implements Subscriber<T> {
 
     T value;
     Throwable error;
@@ -35,11 +35,14 @@ implements Subscriber<T>, Disposable {
 
     @Override
     public final void onSubscribe(Subscription s) {
-        this.s = s;
-        if (!cancelled) {
-            s.request(Long.MAX_VALUE);
-            if (cancelled) {
-                s.cancel();
+        if (SubscriptionHelper.validate(this.s, s)) {
+            this.s = s;
+            if (!cancelled) {
+                s.request(Long.MAX_VALUE);
+                if (cancelled) {
+                    this.s = SubscriptionHelper.CANCELLED;
+                    s.cancel();
+                }
             }
         }
     }
@@ -47,20 +50,6 @@ implements Subscriber<T>, Disposable {
     @Override
     public final void onComplete() {
         countDown();
-    }
-    
-    @Override
-    public final void dispose() {
-        cancelled = true;
-        Subscription s = this.s;
-        if (s != null) {
-            s.cancel();
-        }
-    }
-    
-    @Override
-    public final boolean isDisposed() {
-        return cancelled;
     }
     
     /**
@@ -73,7 +62,11 @@ implements Subscriber<T>, Disposable {
             try {
                 await();
             } catch (InterruptedException ex) {
-                dispose();
+                Subscription s = this.s;
+                this.s = SubscriptionHelper.CANCELLED;
+                if (s != null) {
+                    s.cancel();
+                }
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
         }

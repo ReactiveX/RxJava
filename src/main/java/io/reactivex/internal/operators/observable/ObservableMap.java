@@ -15,11 +15,9 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.subscribers.observable.BasicFuseableObserver;
 
 public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Function<? super T, ? extends U> function;
@@ -31,75 +29,49 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
     
     @Override
     public void subscribeActual(Observer<? super U> t) {
-        source.subscribe(new MapperSubscriber<T, U>(t, function));
+        source.subscribe(new MapObserver<T, U>(t, function));
     }
     
-    static final class MapperSubscriber<T, U> implements Observer<T>, Disposable {
-        final Observer<? super U> actual;
-        final Function<? super T, ? extends U> function;
-        
-        Disposable subscription;
-        
-        boolean done;
-        
-        public MapperSubscriber(Observer<? super U> actual, Function<? super T, ? extends U> function) {
-            this.actual = actual;
-            this.function = function;
+
+    static final class MapObserver<T, U> extends BasicFuseableObserver<T, U> {
+        final Function<? super T, ? extends U> mapper;
+
+        public MapObserver(Observer<? super U> actual, Function<? super T, ? extends U> mapper) {
+            super(actual);
+            this.mapper = mapper;
         }
-        @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.subscription, s)) {
-                subscription = s;
-                actual.onSubscribe(this);
-            }
-        }
+
         @Override
         public void onNext(T t) {
             if (done) {
                 return;
             }
-            U u;
+            
+            if (sourceMode != NONE) {
+                actual.onNext(null);
+                return;
+            }
+            
+            U v;
+            
             try {
-                u = function.apply(t);
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                subscription.dispose();
-                onError(e);
+                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper function returned a null value.");
+            } catch (Throwable ex) {
+                fail(ex);
                 return;
             }
-            if (u == null) {
-                subscription.dispose();
-                onError(new NullPointerException("Value returned by the function is null"));
-                return;
-            }
-            actual.onNext(u);
+            actual.onNext(v);
         }
+
         @Override
-        public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            done = true;
-            actual.onError(t);
+        public int requestFusion(int mode) {
+            return transitiveBoundaryFusion(mode);
         }
+
         @Override
-        public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            actual.onComplete();
-        }
-        
-        @Override
-        public boolean isDisposed() {
-            return subscription.isDisposed();
-        }
-        
-        @Override
-        public void dispose() {
-            subscription.dispose();
+        public U poll() throws Exception {
+            T t = qs.poll();
+            return t != null ? ObjectHelper.<U>requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
         }
     }
 }

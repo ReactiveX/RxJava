@@ -29,7 +29,7 @@ public class AsyncSubscriptionTest {
         
         Subscription s = mock(Subscription.class);
         
-        assertTrue(as.setSubscription(s));
+        as.setSubscription(s);
         
         as.request(1);
         
@@ -47,7 +47,7 @@ public class AsyncSubscriptionTest {
         
         as.request(1);
 
-        assertTrue(as.setSubscription(s));
+        as.setSubscription(s);
         
         as.cancel();
         
@@ -64,7 +64,7 @@ public class AsyncSubscriptionTest {
         as.request(1);
         as.cancel();
 
-        assertFalse(as.setSubscription(s));
+        as.setSubscription(s);
         
         verify(s, never()).request(1);
         verify(s).cancel();
@@ -76,11 +76,11 @@ public class AsyncSubscriptionTest {
         
         Subscription s = mock(Subscription.class);
         
-        assertTrue(as.setSubscription(s));
+        as.setSubscription(s);
 
         Subscription s1 = mock(Subscription.class);
 
-        assertTrue(as.setSubscription(s1));
+        as.setSubscription(s1);
         
         assertSame(as.actual.get(), s);
         
@@ -151,7 +151,7 @@ public class AsyncSubscriptionTest {
 
         Disposable r2 = mock(Disposable.class);
         
-        assertTrue(as.replaceResource(r2));
+        as.replaceResource(r2);
 
         as.cancel();
         
@@ -167,7 +167,7 @@ public class AsyncSubscriptionTest {
         
         Disposable r = mock(Disposable.class);
         
-        assertFalse(as.setResource(r));
+        as.setResource(r);
 
         verify(r).dispose();
     }
@@ -179,7 +179,7 @@ public class AsyncSubscriptionTest {
 
         Disposable r = mock(Disposable.class);
         
-        assertFalse(as.replaceResource(r));
+        as.replaceResource(r);
         
         verify(r).dispose();
     }
@@ -190,7 +190,7 @@ public class AsyncSubscriptionTest {
         AsyncSubscription as = new AsyncSubscription(r);
         Subscription s = mock(Subscription.class);
         
-        assertTrue(as.setSubscription(s));
+        as.setSubscription(s);
         
         as.cancel();
         as.cancel();
@@ -199,5 +199,16 @@ public class AsyncSubscriptionTest {
         verify(s, never()).request(anyLong());
         verify(s).cancel();
         verify(r).dispose();
+    }
+    
+    @Test
+    public void disposed() {
+        AsyncSubscription as = new AsyncSubscription();
+        
+        assertFalse(as.isDisposed());
+        
+        as.dispose();
+        
+        assertTrue(as.isDisposed());
     }
 }

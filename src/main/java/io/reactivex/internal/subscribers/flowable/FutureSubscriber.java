@@ -123,22 +123,17 @@ implements Subscriber<T>, Future<T>, Subscription {
 
     @Override
     public void onError(Throwable t) {
-        if (error == null) {
-            error = t;
-
-            for (;;) {
-                Subscription a = s.get();
-                if (a == this || a == SubscriptionHelper.CANCELLED) {
-                    RxJavaPlugins.onError(t);
-                    return;
-                }
-                if (s.compareAndSet(a, this)) {
-                    countDown();
-                    return;
-                }
+        for (;;) {
+            Subscription a = s.get();
+            if (a == this || a == SubscriptionHelper.CANCELLED) {
+                RxJavaPlugins.onError(t);
+                return;
             }
-        } else {
-            RxJavaPlugins.onError(t);
+            error = t;
+            if (s.compareAndSet(a, this)) {
+                countDown();
+                return;
+            }
         }
     }
 

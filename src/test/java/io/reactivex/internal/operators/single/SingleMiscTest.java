@@ -235,7 +235,7 @@ public class SingleMiscTest {
     public void timeout() throws Exception {
         Single.never().timeout(100, TimeUnit.MILLISECONDS, Schedulers.io())
         .test()
-        .awaitDone()
+        .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TimeoutException.class);
     }
 
@@ -244,7 +244,7 @@ public class SingleMiscTest {
         Single.never()
         .timeout(100, TimeUnit.MILLISECONDS, Schedulers.io(), Single.just(1))
         .test()
-        .awaitDone()
+        .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
     }
     
