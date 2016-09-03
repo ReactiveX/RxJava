@@ -55,6 +55,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
                 } catch (Throwable e1) {
                     Exceptions.throwIfFatal(e1);
                     RxJavaPlugins.onError(new CompositeException(e, e1));
+                    return;
                 }
                 RxJavaPlugins.onError(e);
             }
@@ -111,6 +112,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
     }
     
     void onNextNoSubscription() {
+        done = true;
         
         Throwable ex = new NullPointerException("Subscription not set!");
         
@@ -181,12 +183,13 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
         if (done) {
             return;
         }
+
+        done = true;
+
         if (s == null) {
             onCompleteNoSubscription();
             return;
         }
-
-        done = true;
 
         try {
             actual.onComplete();

@@ -98,7 +98,7 @@ public class AppendOnlyLinkedArrayList<T> {
     public <S> void forEachWhile(S state, BiPredicate<? super S, ? super T> consumer) throws Exception {
         Object[] a = head;
         final int c = capacity;
-        while (a != null) {
+        for (;;) {
             for (int i = 0; i < c; i++) {
                 Object o = a[i];
                 if (o == null) {

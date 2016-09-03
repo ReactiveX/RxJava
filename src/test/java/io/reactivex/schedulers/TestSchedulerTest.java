@@ -13,7 +13,7 @@
 
 package io.reactivex.schedulers;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.*;
 
@@ -25,10 +25,12 @@ import org.mockito.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.schedulers.TestScheduler.*;
 
 public class TestSchedulerTest {
 
@@ -225,5 +227,32 @@ public class TestSchedulerTest {
             inner.dispose();
         }
     }
+    
+    @Test
+    public void timedRunnableToString() {
+        TimedRunnable r = new TimedRunnable((TestWorker) new TestScheduler().createWorker(), 5, new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                
+            }
+            @Override
+            public String toString() {
+                return "Runnable";
+            }
+        }, 1);
+        
+        assertEquals("TimedRunnable(time = 5, run = Runnable)", r.toString());
+    }
+    
+    @Test
+    public void workerDisposed() {
+        TestScheduler scheduler = new TestScheduler();
+        
+        Worker w = scheduler.createWorker();
+        w.dispose();
+        assertTrue(w.isDisposed());
+    }
+    
 
 }

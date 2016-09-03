@@ -82,11 +82,13 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
                 if (state == NO_REQUEST_HAS_VALUE) {
                     if (compareAndSet(NO_REQUEST_HAS_VALUE, HAS_REQUEST_HAS_VALUE)) {
                         T v = value;
-                        value = null;
-                        Subscriber<? super T> a = actual;
-                        a.onNext(v);
-                        if (get() != CANCELLED) {
-                            a.onComplete();
+                        if (v != null) {
+                            value = null;
+                            Subscriber<? super T> a = actual;
+                            a.onNext(v);
+                            if (get() != CANCELLED) {
+                                a.onComplete();
+                            }
                         }
                     }
                     return;

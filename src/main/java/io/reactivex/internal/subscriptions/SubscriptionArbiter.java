@@ -66,15 +66,6 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
     }
     
     /**
-     * When setting a new subscription via set(), should
-     * the previous subscription be cancelled?
-     * @return true if cancellation is needed
-     */
-    protected boolean shouldCancelCurrent() {
-        return true;
-    }
-    
-    /**
      * Atomically sets a new subscription.
      * @param s the subscription to set, not null (verified)
      */
@@ -89,7 +80,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
         if (get() == 0 && compareAndSet(0, 1)) {
             Subscription a = actual;
             
-            if (a != null && shouldCancelCurrent()) {
+            if (a != null) {
                 a.cancel();
             }
             
@@ -109,7 +100,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
         }
 
         Subscription a = missedSubscription.getAndSet(s);
-        if (a != null && shouldCancelCurrent()) {
+        if (a != null) {
             a.cancel();
         }
         drain();
@@ -150,38 +141,6 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
         }
     }
 
-    public final void producedOne() {
-        if (unbounded) {
-            return;
-        }
-        if (get() == 0 && compareAndSet(0, 1)) {
-            long r = requested;
-
-            if (r != Long.MAX_VALUE) {
-                r--;
-                if (r < 0L) {
-                    SubscriptionHelper.reportMoreProduced(r);
-                    r = 0;
-                }
-                requested = r;
-            } else {
-                unbounded = true;
-            }
-
-            if (decrementAndGet() == 0) {
-                return;
-            }
-
-            drainLoop();
-
-            return;
-        }
-
-        BackpressureHelper.add(missedProduced, 1L);
-
-        drain();
-    }
-
     public final void produced(long n) {
         if (unbounded) {
             return;
@@ -196,8 +155,6 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
                     u = 0;
                 }
                 requested = u;
-            } else {
-                unbounded = true;
             }
 
             if (decrementAndGet() == 0) {
@@ -283,7 +240,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
                 }
 
                 if (ms != null) {
-                    if (a != null && shouldCancelCurrent()) {
+                    if (a != null) {
                         a.cancel();
                     }
                     actual = ms;

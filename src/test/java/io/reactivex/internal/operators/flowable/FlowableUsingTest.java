@@ -297,7 +297,7 @@ public class FlowableUsingTest {
         
         observable.safeSubscribe(observer);
 
-        assertEquals(Arrays.asList("disposed", "completed", "unsub"), events);
+        assertEquals(Arrays.asList("disposed", "completed"), events);
 
     }
 
@@ -324,7 +324,7 @@ public class FlowableUsingTest {
         
         observable.safeSubscribe(observer);
 
-        assertEquals(Arrays.asList("completed", "unsub", "disposed"), events);
+        assertEquals(Arrays.asList("completed", "disposed"), events);
 
     }
 
@@ -354,7 +354,7 @@ public class FlowableUsingTest {
         
         observable.safeSubscribe(observer);
 
-        assertEquals(Arrays.asList("disposed", "error", "unsub"), events);
+        assertEquals(Arrays.asList("disposed", "error"), events);
 
     }
     
@@ -382,7 +382,7 @@ public class FlowableUsingTest {
         
         observable.safeSubscribe(observer);
 
-        assertEquals(Arrays.asList("error", "unsub", "disposed"), events);
+        assertEquals(Arrays.asList("error", "disposed"), events);
     }
 
     private static Action createUnsubAction(final List<String> events) {

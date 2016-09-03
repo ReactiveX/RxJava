@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -26,14 +26,17 @@ import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.UnicastSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class TestObserverTest {
@@ -448,7 +451,14 @@ public class TestObserverTest {
         } catch (AssertionError ex) {
             // expected
         }
-        
+
+        try {
+            ts.assertFusionMode(QueueDisposable.SYNC);
+            throw new RuntimeException("Should have thrown");
+        } catch (AssertionError ex) {
+            // expected
+        }
+
         ts = TestObserver.create();
         ts.setInitialFusionMode(QueueDisposable.ANY);
         
@@ -647,6 +657,10 @@ public class TestObserverTest {
         ts.assertValue(1);
         
         assertEquals(Arrays.asList(Arrays.asList(1), Collections.emptyList(), Collections.emptyList()), ts.getEvents());
+        
+        ts.onComplete();
+        
+        assertEquals(Arrays.asList(Arrays.asList(1), Collections.emptyList(), Collections.singletonList(Notification.createOnComplete())), ts.getEvents());
     }
     
     @Test
@@ -875,5 +889,235 @@ public class TestObserverTest {
         } catch (AssertionError ex) {
             // expected
         }
+    }
+    
+    @Test
+    public void assertEmpty() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        
+        try {
+            ts.assertEmpty();
+            throw new RuntimeException("Should have thrown!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+        
+        ts.onSubscribe(Disposables.empty());
+        
+        ts.assertEmpty();
+        
+        ts.onNext(1);
+        
+        try {
+            ts.assertEmpty();
+            throw new RuntimeException("Should have thrown!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+    
+    @Test
+    public void awaitDoneTimed() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        Thread.currentThread().interrupt();
+        
+        try {
+            ts.awaitDone(5, TimeUnit.SECONDS);
+        } catch (RuntimeException ex) {
+            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+        }
+    }
+    
+    @Test
+    public void assertNotSubscribed() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        ts.assertNotSubscribed();
+        
+        ts.errors().add(new TestException());
+ 
+        try {
+            ts.assertNotSubscribed();
+            throw new RuntimeException("Should have thrown!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+    
+    @Test
+    public void assertErrorMultiple() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        
+        TestException e = new TestException();
+        ts.errors().add(e);
+        ts.errors().add(new TestException());
+ 
+        try {
+            ts.assertError(TestException.class);
+            throw new RuntimeException("Should have thrown!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+        try {
+            ts.assertError(e);
+            throw new RuntimeException("Should have thrown!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+        try {
+            ts.assertErrorMessage("");
+            throw new RuntimeException("Should have thrown!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+    
+    @Test
+    public void assertComplete() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        ts.onSubscribe(Disposables.empty());
+        
+        try {
+            ts.assertComplete();
+            throw new RuntimeException("Should have thrown!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+        
+        ts.onComplete();
+        
+        ts.assertComplete();
+        
+        ts.onComplete();
+        
+        try {
+            ts.assertComplete();
+            throw new RuntimeException("Should have thrown!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void completeWithoutOnSubscribe() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        
+        ts.onComplete();
+        
+        ts.assertError(IllegalStateException.class);
+    }
+
+    @Test
+    public void completeDelegateThrows() {
+        TestObserver<Integer> ts = new TestObserver<Integer>(new Observer<Integer>() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                
+            }
+
+            @Override
+            public void onNext(Integer value) {
+                
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException();
+            }
+
+            @Override
+            public void onComplete() {
+                throw new TestException();
+            }
+            
+        });
+
+        ts.onSubscribe(Disposables.empty());
+
+        try {
+            ts.onComplete();
+            throw new RuntimeException("Should have thrown!");
+        } catch (TestException ex) {
+            assertTrue(ts.isTerminated());
+        }
+    }
+    
+    @Test
+    public void errorDelegateThrows() {
+        TestObserver<Integer> ts = new TestObserver<Integer>(new Observer<Integer>() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                
+            }
+
+            @Override
+            public void onNext(Integer value) {
+                
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException();
+            }
+
+            @Override
+            public void onComplete() {
+                throw new TestException();
+            }
+            
+        });
+
+        ts.onSubscribe(Disposables.empty());
+
+        try {
+            ts.onError(new IOException());
+            throw new RuntimeException("Should have thrown!");
+        } catch (TestException ex) {
+            assertTrue(ts.isTerminated());
+        }
+    }
+    
+    @Test
+    public void syncQueueThrows() {
+        TestObserver<Object> ts = new TestObserver<Object>();
+        ts.setInitialFusionMode(QueueDisposable.SYNC);
+        
+        Observable.range(1, 5)
+        .map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception { throw new TestException(); }
+        })
+        .subscribe(ts);
+        
+        ts.assertSubscribed()
+        .assertFuseable()
+        .assertFusionMode(QueueDisposable.SYNC)
+        .assertFailure(TestException.class);
+    }
+    
+    @Test
+    public void asyncQueueThrows() {
+        TestObserver<Object> ts = new TestObserver<Object>();
+        ts.setInitialFusionMode(QueueDisposable.ANY);
+        
+        UnicastSubject<Integer> up = UnicastSubject.create();
+        
+        up
+        .map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception { throw new TestException(); }
+        })
+        .subscribe(ts);
+        
+        up.onNext(1);
+        
+        ts.assertSubscribed()
+        .assertFuseable()
+        .assertFusionMode(QueueDisposable.ASYNC)
+        .assertFailure(TestException.class);
     }
 }

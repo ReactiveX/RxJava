@@ -45,8 +45,9 @@ public final class Schedulers {
         NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(NewThreadScheduler.instance());
     }
     
+    /** Utility class. */
     private Schedulers() {
-        throw new IllegalStateException("No instances");
+        throw new IllegalStateException("No instances!");
     }
     
     /**

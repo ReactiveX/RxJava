@@ -45,6 +45,8 @@ public final class ObservableRange extends Observable<Integer> {
         
         long index;
         
+        boolean fused;
+        
         public RangeDisposable(Observer<? super Integer> actual, long start, long end) {
             this.actual = actual;
             this.index = start;
@@ -52,6 +54,9 @@ public final class ObservableRange extends Observable<Integer> {
         }
         
         void run() {
+            if (fused) {
+                return;
+            }
             Observer<? super Integer> actual = this.actual;
             long e = end;
             for (long i = index; i != e && get() == 0; i++) {
@@ -107,7 +112,11 @@ public final class ObservableRange extends Observable<Integer> {
 
         @Override
         public int requestFusion(int mode) {
-            return mode & SYNC;
+            if ((mode & SYNC) != 0) {
+                fused = true;
+                return SYNC;
+            }
+            return NONE;
         }
     }
 }

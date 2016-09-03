@@ -124,10 +124,12 @@ public final class ObserverFullArbiter<T> extends FullArbiterPad1 implements Dis
                 } else
                 if (NotificationLite.isDisposable(v)) {
                     Disposable next = NotificationLite.getDisposable(v);
-                    if (s != null) {
-                        s.dispose();
+                    s.dispose();
+                    if (!cancelled) {
+                        s = next;
+                    } else {
+                        next.dispose();
                     }
-                    s = next;
                 } else 
                 if (NotificationLite.isError(v)) {
                     q.clear();

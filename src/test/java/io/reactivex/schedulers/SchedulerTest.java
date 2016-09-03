@@ -239,4 +239,9 @@ public class SchedulerTest {
             RxJavaPlugins.reset();
         }
     }
+    
+    @Test
+    public void schedulersUtility() {
+        TestHelper.checkUtilityClass(Schedulers.class);
+    }
 }
