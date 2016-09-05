@@ -2406,27 +2406,54 @@ public class Single<T> {
      *            the action to invoke if the source {@link Single} calls {@code onError}
      * @return the source {@link Single} with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public final Single<T> doOnError(final Action1<Throwable> onError) {
-        Observer<T> observer = new Observer<T>() {
-            @Override
-            public void onCompleted() {
-                // deliberately ignored
-            }
+        if (onError == null) {
+            throw new IllegalArgumentException("onError is null");
+        }
 
+        return Single.create(new SingleDoOnEvent<T>(this, Actions.empty(), new Action1<Throwable>() {
             @Override
-            public void onError(Throwable e) {
-                onError.call(e);
+            public void call(final Throwable throwable) {
+                onError.call(throwable);
             }
+        }));
+    }
 
+    /**
+     * Modifies the source {@link Single} so that it invokes an action when it calls {@code onSuccess} or {@code onError}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnEach.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onNotification
+     *            the action to invoke when the source {@link Single} calls {@code onSuccess} or {@code onError}.
+     * @return the source {@link Single} with the side-effecting behavior applied
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final Single<T> doOnEach(final Action1<Notification<? extends T>> onNotification) {
+        if (onNotification == null) {
+            throw new IllegalArgumentException("onNotification is null");
+        }
+
+        return Single.create(new SingleDoOnEvent<T>(this, new Action1<T>() {
             @Override
-            public void onNext(T t) {
-                // deliberately ignored
+            public void call(final T t) {
+                onNotification.call(Notification.<T>createOnNext(t));
             }
-        };
-
-        return Observable.create(new OnSubscribeDoOnEach<T>(this.toObservable(), observer)).toSingle();
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(final Throwable throwable) {
+                onNotification.call(Notification.<T>createOnError(throwable));
+            }
+        }));
     }
     
     /**
@@ -2442,27 +2469,25 @@ public class Single<T> {
      *            the action to invoke when the source {@link Single} calls {@code onSuccess}
      * @return the source {@link Single} with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public final Single<T> doOnSuccess(final Action1<? super T> onSuccess) {
-        Observer<T> observer = new Observer<T>() {
-            @Override
-            public void onCompleted() {
-                // deliberately ignored
-            }
+        if (onSuccess == null) {
+            throw new IllegalArgumentException("onSuccess is null");
+        }
 
+        return Single.create(new SingleDoOnEvent<T>(this, new Action1<T>() {
             @Override
-            public void onError(Throwable e) {
-                // deliberately ignored
-            }
-
-            @Override
-            public void onNext(T t) {
+            public void call(final T t) {
                 onSuccess.call(t);
             }
-        };
-
-        return Observable.create(new OnSubscribeDoOnEach<T>(this.toObservable(), observer)).toSingle();
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(final Throwable throwable) {
+                // Do nothing.
+            }
+        }));
     }
 
     /**
