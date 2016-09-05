@@ -32,7 +32,7 @@ import io.reactivex.internal.util.ExceptionHelper;
  * <p>You can override the onSubscribe, onNext, onError, onComplete and
  * cancel methods but not the others (this is by design).
  * 
- * <p>The TestSubscriber implements Disposable for convenience where dispose calls cancel.
+ * <p>The TestObserver implements Disposable for convenience where dispose calls cancel.
  * 
  * @param <T> the value type
  */
@@ -218,8 +218,8 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Returns true if this TestSubscriber has been cancelled.
-     * @return true if this TestSubscriber has been cancelled
+     * Returns true if this TestObserver has been cancelled.
+     * @return true if this TestObserver has been cancelled
      */
     public final boolean isCancelled() {
         return isDisposed();
@@ -247,7 +247,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     // state retrieval methods
     
     /**
-     * Returns the last thread which called the onXXX methods of this TestSubscriber.
+     * Returns the last thread which called the onXXX methods of this TestObserver.
      * @return the last thread which called the onXXX methods
      */
     public final Thread lastThread() {
@@ -279,8 +279,8 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
 
     /**
-     * Returns true if TestSubscriber received any onError or onComplete events.
-     * @return true if TestSubscriber received any onError or onComplete events
+     * Returns true if TestObserver received any onError or onComplete events.
+     * @return true if TestObserver received any onError or onComplete events
      */
     public final boolean isTerminated() {
         return done.getCount() == 0;
@@ -303,15 +303,15 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
 
     /**
-     * Returns true if this TestSubscriber received a subscription.
-     * @return true if this TestSubscriber received a subscription
+     * Returns true if this TestObserver received a subscription.
+     * @return true if this TestObserver received a subscription
      */
     public final boolean hasSubscription() {
         return subscription.get() != null;
     }
     
     /**
-     * Awaits until this TestSubscriber receives an onError or onComplete events.
+     * Awaits until this TestObserver receives an onError or onComplete events.
      * @return this
      * @throws InterruptedException if the current thread is interrupted while waiting
      * @see #awaitTerminalEvent()
@@ -326,11 +326,11 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Awaits the specified amount of time or until this TestSubscriber 
+     * Awaits the specified amount of time or until this TestObserver 
      * receives an onError or onComplete events, whichever happens first.
      * @param time the waiting time
      * @param unit the time unit of the waiting time
-     * @return true if the TestSubscriber terminated, false if timeout happened
+     * @return true if the TestObserver terminated, false if timeout happened
      * @throws InterruptedException if the current thread is interrupted while waiting
      * @see #awaitTerminalEvent(long, TimeUnit)
      */
@@ -372,7 +372,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that this TestSubscriber received exactly one onComplete event.
+     * Assert that this TestObserver received exactly one onComplete event.
      * @return this;
      */
     public final TestObserver<T> assertComplete() {
@@ -387,7 +387,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that this TestSubscriber has not received any onComplete event.
+     * Assert that this TestObserver has not received any onComplete event.
      * @return this;
      */
     public final TestObserver<T> assertNotComplete() {
@@ -402,7 +402,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that this TestSubscriber has not received any onError event.
+     * Assert that this TestObserver has not received any onError event.
      * @return this;
      */
     public final TestObserver<T> assertNoErrors() {
@@ -414,7 +414,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that this TestSubscriber received exactly the specified onError event value.
+     * Assert that this TestObserver received exactly the specified onError event value.
      * 
      * <p>The comparison is performed via Objects.equals(); since most exceptions don't
      * implement equals(), this assertion may fail. Use the {@link #assertError(Class)}
@@ -439,7 +439,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Asserts that this TestSubscriber received exactly one onError event which is an
+     * Asserts that this TestObserver received exactly one onError event which is an
      * instance of the specified errorClass class.
      * @param errorClass the error class to expect
      * @return this;
@@ -470,7 +470,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that this TestSubscriber received exactly one onNext value which is equal to
+     * Assert that this TestObserver received exactly one onNext value which is equal to
      * the given value with respect to Objects.equals.
      * @param value the value to expect
      * @return this;
@@ -496,7 +496,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that this TestSubscriber received the specified number onNext events.
+     * Assert that this TestObserver received the specified number onNext events.
      * @param count the expected number of onNext events
      * @return this;
      */
@@ -509,7 +509,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that this TestSubscriber has not received any onNext events.
+     * Assert that this TestObserver has not received any onNext events.
      * @return this;
      */
     public final TestObserver<T> assertNoValues() {
@@ -517,7 +517,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that the TestSubscriber received only the specified values in the specified order.
+     * Assert that the TestObserver received only the specified values in the specified order.
      * @param values the values expected
      * @return this;
      * @see #assertValueSet(Collection)
@@ -539,7 +539,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that the TestSubscriber received only the specified values in any order.
+     * Assert that the TestObserver received only the specified values in any order.
      * <p>This helps asserting when the order of the values is not guaranteed, i.e., when merging
      * asynchronous streams.
      * 
@@ -560,7 +560,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that the TestSubscriber received only the specified sequence of values in the same order.
+     * Assert that the TestObserver received only the specified sequence of values in the same order.
      * @param sequence the sequence of expected values in order
      * @return this;
      */
@@ -599,7 +599,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that the TestSubscriber terminated (i.e., the terminal latch reached zero).
+     * Assert that the TestObserver terminated (i.e., the terminal latch reached zero).
      * @return this;
      */
     public final TestObserver<T> assertTerminated() {
@@ -622,7 +622,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Assert that the TestSubscriber has not terminated (i.e., the terminal latch is still non-zero).
+     * Assert that the TestObserver has not terminated (i.e., the terminal latch is still non-zero).
      * @return this;
      */
     public final TestObserver<T> assertNotTerminated() {
@@ -658,9 +658,9 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Waits until the any terminal event has been received by this TestSubscriber
+     * Waits until the any terminal event has been received by this TestObserver
      * or returns false if the wait has been interrupted.
-     * @return true if the TestSubscriber terminated, false if the wait has been interrupted
+     * @return true if the TestObserver terminated, false if the wait has been interrupted
      */
     public final boolean awaitTerminalEvent() {
         try {
@@ -673,11 +673,11 @@ public class TestObserver<T> implements Observer<T>, Disposable {
     }
     
     /**
-     * Awaits the specified amount of time or until this TestSubscriber 
+     * Awaits the specified amount of time or until this TestObserver 
      * receives an onError or onComplete events, whichever happens first.
      * @param duration the waiting time
      * @param unit the time unit of the waiting time
-     * @return true if the TestSubscriber terminated, false if timeout or interrupt happened
+     * @return true if the TestObserver terminated, false if timeout or interrupt happened
      */
     public final boolean awaitTerminalEvent(long duration, TimeUnit unit) {
         try {
@@ -864,7 +864,7 @@ public class TestObserver<T> implements Observer<T>, Disposable {
 
     /**
      * Awaits until the internal latch is counted down.
-     * <p>If the wait times out or gets interrupted, the TestSubscriber is cancelled.
+     * <p>If the wait times out or gets interrupted, the TestObserver is cancelled.
      * @param time the waiting time
      * @param unit the time unit of the waiting time
      * @return this
