@@ -87,6 +87,7 @@ public class NotificationTest {
 
     @Test
     public void createWithClass() {
+        @SuppressWarnings("deprecation")
         Notification<Integer> n = Notification.createOnCompleted(Integer.class);
         assertTrue(n.isOnCompleted());
         assertFalse(n.hasThrowable());

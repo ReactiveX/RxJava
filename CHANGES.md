@@ -1,5 +1,38 @@
 # RxJava Releases #
 
+### Version 1.1.10 - September 5, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.10%7C))
+
+The release contains a few javadoc and internal cleanups, some enhancements and some deprecations.
+
+**Notable renames:**
+
+  - `fromAsync` is now `fromEmitter`
+  - `rx.Completable.CompletableSubscriber` is now `rx.CompletableSubscriber`
+
+#### API enhancements
+
+  - [Pull 4423](https://github.com/ReactiveX/RxJava/pull/4423): add free-form conversion operator `to(Func1)` to `Observable`, `Single` and `Completable`.
+  - [Pull 4425](https://github.com/ReactiveX/RxJava/pull/4425): Rename `Completable` helper interfaces by dropping the `Completable` prefix, move `rx.Completable.CompletableSubscriber` to `rx.CompletableSubscriber`.
+  - [Pull 4442](https://github.com/ReactiveX/RxJava/pull/4442): Rename `fromAsync` to `fromEmitter`.  
+  - [Pull 4452](https://github.com/ReactiveX/RxJava/pull/4452): Enhance generics on Observable.onErrorResumeNext and onErrorReturn 
+  - [Pull 4442](https://github.com/ReactiveX/RxJava/pull/4442): Add `Completable.fromEmitter`
+  - [Pull 4453](https://github.com/ReactiveX/RxJava/pull/4453): Remove `throws InterruptedException` from `TestSubscriber.awaitValueCount()` 
+  - [Pull 4460](https://github.com/ReactiveX/RxJava/pull/4460): Add `Completable.doOnEach(Action1)`
+  - [Pull 4461](https://github.com/ReactiveX/RxJava/pull/4461): Add `Single.doOnEach`
+
+#### Deprecations
+
+  - [Pull 4425](https://github.com/ReactiveX/RxJava/pull/4425): Deprecate `CompletableOnSubscribe`, `CompletableOperator` and `CompletableTransformer` and rename them by dropping the `Completable` prefix
+  - [Pull 4442](https://github.com/ReactiveX/RxJava/pull/4442): Deprecate `Observable.fromAsync` by renaming it to `Observable.fromEmitter`.
+  - [Pull 4466](https://github.com/ReactiveX/RxJava/pull/4466): Deprecate `Notification.createOnCompleted(Class)`
+
+#### Bugfixes
+
+  - [Pull 4397](https://github.com/ReactiveX/RxJava/pull/4397): Fix multiple values produced by `throttleFirst` with `TestScheduler`
+  - [Pull 4427](https://github.com/ReactiveX/RxJava/pull/4427): Fix `Observable.fromEmitter` (formerly `Observable.fromAsync`) post-complete event suppression
+  - [Pull 4447](https://github.com/ReactiveX/RxJava/pull/4447): Fix type parameters of `Observable.withLatestFrom`
+
+
 ### Version 1.1.9 - August 12, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.1.9%7C))
 
 This release contains mostly internal cleanups, reinforced Observable-protocol adherence and minor javadoc fixes.
