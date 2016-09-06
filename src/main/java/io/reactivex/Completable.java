@@ -985,6 +985,33 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Returns a Completable which calls the given onEvent callback with the (throwable) for an onError
+     * or (null) for an onComplete signal from this Completable before delivering said signal to the downstream.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnEvent} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onEvent the event callback
+     * @return the new Completable instance
+     * @throws NullPointerException if onEvent is null
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable doOnEvent(final Consumer<? super Throwable> onEvent) {
+        ObjectHelper.requireNonNull(onEvent, "onEvent is null");
+        return doOnLifecycle(Functions.emptyConsumer(), new Consumer<Throwable>() {
+            @Override
+            public void accept(final Throwable throwable) throws Exception {
+                onEvent.accept(throwable);
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+                onEvent.accept(null);
+            }
+        }, Functions.EMPTY_ACTION, Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
+    }
+
+    /**
      * Returns a Completable instance that calls the various callbacks on the specific
      * lifecycle events.
      * <dl>

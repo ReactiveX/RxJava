@@ -452,5 +452,42 @@ public class SingleTest {
     	ts.assertNoErrors();
     	ts.assertComplete();
     }
+
+    @Test(expected = NullPointerException.class)
+    public void doOnEventNullEvent() {
+        Single.just(1).doOnEvent(null);
+    }
+
+    @Test
+    public void doOnEventComplete() {
+        final AtomicInteger atomicInteger = new AtomicInteger(0);
+
+        Single.just(1).doOnEvent(new BiConsumer<Integer, Throwable>() {
+            @Override
+            public void accept(final Integer integer, final Throwable throwable) throws Exception {
+                if (integer != null) {
+                    atomicInteger.incrementAndGet();
+                }
+            }
+        }).subscribe();
+
+        assertEquals(1, atomicInteger.get());
+    }
+
+    @Test
+    public void doOnEventError() {
+        final AtomicInteger atomicInteger = new AtomicInteger(0);
+
+        Single.error(new RuntimeException()).doOnEvent(new BiConsumer<Object, Throwable>() {
+            @Override
+            public void accept(final Object o, final Throwable throwable) throws Exception {
+                if (throwable != null) {
+                    atomicInteger.incrementAndGet();
+                }
+            }
+        }).subscribe();
+
+        assertEquals(1, atomicInteger.get());
+    }
 }
 

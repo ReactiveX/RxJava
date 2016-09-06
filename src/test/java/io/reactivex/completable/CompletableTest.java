@@ -4463,4 +4463,41 @@ public class CompletableTest {
             exec.shutdown();
         }
     }
+
+    @Test(expected = NullPointerException.class)
+    public void doOnEventNullEvent() {
+        Completable.complete().doOnEvent(null);
+    }
+
+    @Test
+    public void doOnEventComplete() {
+        final AtomicInteger atomicInteger = new AtomicInteger(0);
+
+        Completable.complete().doOnEvent(new Consumer<Throwable>() {
+            @Override
+            public void accept(final Throwable throwable) throws Exception {
+                if (throwable == null) {
+                    atomicInteger.incrementAndGet();
+                }
+            }
+        }).subscribe();
+
+        assertEquals(1, atomicInteger.get());
+    }
+
+    @Test
+    public void doOnEventError() {
+        final AtomicInteger atomicInteger = new AtomicInteger(0);
+
+        Completable.error(new RuntimeException()).doOnEvent(new Consumer<Throwable>() {
+            @Override
+            public void accept(final Throwable throwable) throws Exception {
+                if (throwable != null) {
+                    atomicInteger.incrementAndGet();
+                }
+            }
+        }).subscribe();
+
+        assertEquals(1, atomicInteger.get());
+    }
 }

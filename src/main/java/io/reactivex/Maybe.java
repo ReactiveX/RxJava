@@ -859,7 +859,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
     
     /**
-     * Calls the given onEvent callback with the (success value, null) for an onSuccess, (null, throwabe) for
+     * Calls the given onEvent callback with the (success value, null) for an onSuccess, (null, throwable) for
      * an onError or (null, null) for an onComplete signal from this Maybe before delivering said
      * signal to the downstream.
      * <p>
