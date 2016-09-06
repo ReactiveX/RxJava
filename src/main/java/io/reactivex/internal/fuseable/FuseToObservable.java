@@ -25,7 +25,7 @@ import io.reactivex.Observable;
  * </pre>
  * 
  * The {@code Single.toObservable()} will check for this interface and call the {@link #fuseToObservable()}
- * to return a Observable which could be the Observable-specific implementation of reduce(BiFunction).
+ * to return an Observable which could be the Observable-specific implementation of reduce(BiFunction).
  * <p>
  * This causes a slight overhead in assembly time (1 instanceof check, 1 operator allocation and 1 dropped
  * operator) but does not incur the conversion overhead at runtime. 
