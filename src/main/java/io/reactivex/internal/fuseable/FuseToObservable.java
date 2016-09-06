@@ -21,11 +21,11 @@ import io.reactivex.Observable;
  * for toObservable again:
  * <pre>
  * Single&lt;Integer> single = Observable.range(1, 10).reduce((a, b) -> a + b);
- * Observable&lt;Integer> flowable = single.toObservable();
+ * Observable&lt;Integer> observable = single.toObservable();
  * </pre>
  * 
  * The {@code Single.toObservable()} will check for this interface and call the {@link #fuseToObservable()}
- * to return a Flowable which could be the Flowable-specific implementation of reduce(BiFunction).
+ * to return a Observable which could be the Observable-specific implementation of reduce(BiFunction).
  * <p>
  * This causes a slight overhead in assembly time (1 instanceof check, 1 operator allocation and 1 dropped
  * operator) but does not incur the conversion overhead at runtime. 
