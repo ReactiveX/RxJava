@@ -123,9 +123,9 @@ public class FlowableReduceTest {
     @Test
     public void testBackpressureWithNoInitialValue() throws InterruptedException {
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
-        Flowable<Integer> reduced = source.reduce(sum);
+        Single<Integer> reduced = source.reduce(sum);
 
-        Integer r = reduced.blockingFirst();
+        Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());
     }
 

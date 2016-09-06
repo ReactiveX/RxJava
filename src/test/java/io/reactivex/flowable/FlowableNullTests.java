@@ -1711,7 +1711,7 @@ public class FlowableNullTests {
             public Integer apply(Integer a, Integer b) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).toFlowable().blockingSubscribe();
     }
     
     @Test(expected = NullPointerException.class)

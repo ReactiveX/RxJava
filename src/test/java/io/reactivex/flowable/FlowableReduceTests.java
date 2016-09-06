@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.flowable.FlowableCovarianceTest.*;
 import io.reactivex.functions.BiFunction;
 
@@ -31,7 +31,7 @@ public class FlowableReduceTests {
             public Integer apply(Integer t1, Integer t2) {
                 return t1 + t2;
             }
-        }).blockingSingle();
+        }).toFlowable().blockingSingle();
 
         assertEquals(6, value);
     }
@@ -48,7 +48,7 @@ public class FlowableReduceTests {
             }
         }).takeLast(1);
 
-        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
+        Single<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
             @Override
             public Movie apply(Movie t1, Movie t2) {
                 return t2;
@@ -66,7 +66,7 @@ public class FlowableReduceTests {
     public void reduceWithCovariantObjects() {
         Flowable<Movie> horrorMovies = Flowable.<Movie> just(new HorrorMovie());
 
-        Flowable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
+        Single<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
             @Override
             public Movie apply(Movie t1, Movie t2) {
                 return t2;
