@@ -701,6 +701,34 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     // ------------------------------------------------------------------
 
     /**
+     * Waits in a blocking fashion until the current Maybe signals a success value (which is returned) or
+     * defaultValue if completed or an exception (which is propagated).
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the success value
+     */
+    public T blockingGet() {
+        return MaybeAwait.get(this, null);
+    }
+    
+    /**
+     * Waits in a blocking fashion until the current Maybe signals a success value (which is returned) or
+     * defaultValue if completed or an exception (which is propagated).
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param defaultValue the default item to return if this Maybe is empty
+     * @return the success value
+     */
+    public T blockingGet(T defaultValue) {
+        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
+        return MaybeAwait.get(this, defaultValue);
+    }
+    
+    /**
      * Casts the success value of the current Maybe into the target type or signals a
      * ClassCastException if not compatible.
      * <dl>
@@ -997,6 +1025,69 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Returns a Observable that is based on applying a specified function to the item emitted by the source Maybe,
+     * where that function returns a ObservableSource.
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMap.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R> the result value type
+     * @param mapper
+     *            a function that, when applied to the item emitted by the source Maybe, returns a ObservableSource
+     * @return the Observable returned from {@code func} when applied to the item emitted by the source Maybe
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    public final <R> Observable<R> flatMapObservable(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
+        return toObservable().flatMap(mapper);
+    }
+    
+    /**
+     * Returns a Flowable that emits items based on applying a specified function to the item emitted by the
+     * source Maybe, where that function returns a Publisher.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMapObservable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R> the result value type
+     * @param mapper
+     *            a function that, when applied to the item emitted by the source Maybe, returns an
+     *            Flowable
+     * @return the Flowable returned from {@code func} when applied to the item emitted by the source Maybe
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    public final <R> Flowable<R> flatMapPublisher(Function<? super T, ? extends Publisher<? extends R>> mapper) {
+        return toFlowable().flatMap(mapper);
+    }
+    
+    /**
+     * Returns a {@link Completable} that completes based on applying a specified function to the item emitted by the
+     * source {@link Single}, where that function returns a {@link Completable}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapCompletable.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param mapper
+     *            a function that, when applied to the item emitted by the source Single, returns a
+     *            Completable
+     * @return the Completable returned from {@code func} when applied to the item emitted by the source Single
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 2.0
+     */
+    public final Completable flatMapCompletable(final Function<? super T, ? extends Completable> mapper) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapCompletable<T>(this, mapper));
+    }
+    
+    /**
      * Ignores the item emitted by the source Maybe and only calls {@code onCompleted} or {@code onError}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.png" alt="">
@@ -1155,10 +1246,25 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * @param defaultValue the default item to signal in Single if this Maybe is empty
+     * @return the new Single instance
+     */
+    public final Single<T> toSingle(T defaultValue) {
+            ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
+            return RxJavaPlugins.onAssembly(new MaybeToSingle<T>(this, defaultValue));
+        }
+
+    /**
+     * Converts this Maybe into an Single instance composing cancellation
+     * through and turing an empty Maybe into a signal of NoSuchElementException.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @return the new Single instance
      */
     public final Single<T> toSingle() {
-        return RxJavaPlugins.onAssembly(new MaybeToSingle<T>(this));
+        return RxJavaPlugins.onAssembly(new MaybeToSingle<T>(this, null));
     }
 
     /**
