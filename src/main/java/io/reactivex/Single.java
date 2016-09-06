@@ -1592,6 +1592,22 @@ public abstract class Single<T> implements SingleSource<T> {
     }
     
     /**
+     * Calls the shared consumer with the error sent via onError or the value
+     * via onSuccess for each SingleObserver that subscribes to the current Single.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onEvent the consumer called with the success value of onEvent
+     * @return the new Single instance
+     * @since 2.0
+     */
+    public final Single<T> doOnEvent(final BiConsumer<? super T, ? super Throwable> onEvent) {
+        ObjectHelper.requireNonNull(onEvent, "onEvent is null");
+        return RxJavaPlugins.onAssembly(new SingleDoOnEvent<T>(this, onEvent));
+    }
+
+    /**
      * Calls the shared consumer with the error sent via onError for each
      * SingleObserver that subscribes to the current Single.
      * <dl>
