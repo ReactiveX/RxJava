@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.observable.ObservableCovarianceTest.*;
@@ -31,7 +32,7 @@ public class ObservableReduceTests {
             public Integer apply(Integer t1, Integer t2) {
                 return t1 + t2;
             }
-        }).blockingSingle();
+        }).blockingGet(-1);
 
         assertEquals(6, value);
     }
@@ -48,7 +49,7 @@ public class ObservableReduceTests {
             }
         }).takeLast(1);
 
-        Observable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
+        Maybe<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
             @Override
             public Movie apply(Movie t1, Movie t2) {
                 return t2;
@@ -66,7 +67,7 @@ public class ObservableReduceTests {
     public void reduceWithCovariantObjects() {
         Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
 
-        Observable<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
+        Maybe<Movie> reduceResult2 = horrorMovies.reduce(new BiFunction<Movie, Movie, Movie>() {
             @Override
             public Movie apply(Movie t1, Movie t2) {
                 return t2;

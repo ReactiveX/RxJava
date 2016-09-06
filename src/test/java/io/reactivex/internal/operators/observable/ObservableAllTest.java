@@ -24,7 +24,6 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
-import io.reactivex.observers.TestObserver;
 
 public class ObservableAllTest {
 
@@ -32,7 +31,7 @@ public class ObservableAllTest {
     public void testAll() {
         Observable<String> obs = Observable.just("one", "two", "six");
 
-        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
+        SingleObserver <Boolean> NbpObserver = TestHelper.mockSingleObserver();
         
         obs.all(new Predicate<String>() {
             @Override
@@ -43,8 +42,7 @@ public class ObservableAllTest {
         .subscribe(NbpObserver);
 
         verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver).onNext(true);
-        verify(NbpObserver).onComplete();
+        verify(NbpObserver).onSuccess(true);
         verifyNoMoreInteractions(NbpObserver);
     }
 
@@ -52,7 +50,7 @@ public class ObservableAllTest {
     public void testNotAll() {
         Observable<String> obs = Observable.just("one", "two", "three", "six");
 
-        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
+        SingleObserver <Boolean> NbpObserver = TestHelper.mockSingleObserver();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -63,8 +61,7 @@ public class ObservableAllTest {
         .subscribe(NbpObserver);
 
         verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver).onNext(false);
-        verify(NbpObserver).onComplete();
+        verify(NbpObserver).onSuccess(false);
         verifyNoMoreInteractions(NbpObserver);
     }
 
@@ -72,7 +69,7 @@ public class ObservableAllTest {
     public void testEmpty() {
         Observable<String> obs = Observable.empty();
 
-        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
+        SingleObserver <Boolean> NbpObserver = TestHelper.mockSingleObserver();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -83,8 +80,7 @@ public class ObservableAllTest {
         .subscribe(NbpObserver);
 
         verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver).onNext(true);
-        verify(NbpObserver).onComplete();
+        verify(NbpObserver).onSuccess(true);
         verifyNoMoreInteractions(NbpObserver);
     }
 
@@ -93,7 +89,7 @@ public class ObservableAllTest {
         Throwable error = new Throwable();
         Observable<String> obs = Observable.error(error);
 
-        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
+        SingleObserver <Boolean> NbpObserver = TestHelper.mockSingleObserver();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -111,38 +107,38 @@ public class ObservableAllTest {
     @Test
     public void testFollowingFirst() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
-        Observable<Boolean> allOdd = o.all(new Predicate<Integer>() {
+        Single<Boolean> allOdd = o.all(new Predicate<Integer>() {
             @Override
             public boolean test(Integer i) {
                 return i % 2 == 1;
             }
         });
         
-        assertFalse(allOdd.blockingFirst());
+        assertFalse(allOdd.blockingGet());
     }
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
-        Observable<Integer> source = Observable.just(1)
+        Single<Integer> source = Observable.just(1)
             .all(new Predicate<Integer>() {
                 @Override
                 public boolean test(Integer t1) {
                     return false;
                 }
             })
-            .flatMap(new Function<Boolean, Observable<Integer>>() {
+            .flatMap(new Function<Boolean, Single<Integer>>() {
                 @Override
-                public Observable<Integer> apply(Boolean t1) {
-                    return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
+                public Single<Integer> apply(Boolean t1) {
+                    return Single.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
         
-        assertEquals((Object)2, source.blockingFirst());
+        assertEquals((Object)2, source.blockingGet());
     }
     
     
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        SingleObserver<Boolean> ts = TestHelper.mockSingleObserver();
         
         final IllegalArgumentException ex = new IllegalArgumentException();
         
@@ -154,10 +150,8 @@ public class ObservableAllTest {
         })
         .subscribe(ts);
         
-        ts.assertTerminated();
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(ex);
+        verify(ts, never()).onSuccess(anyBoolean());
+        verify(ts, times(1)).onError(ex);
         // FIXME need to decide about adding the value that probably caused the crash in some way
 //        assertTrue(ex.getCause().getMessage().contains("Boo!"));
     }

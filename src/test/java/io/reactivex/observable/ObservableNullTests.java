@@ -1008,7 +1008,7 @@ public class ObservableNullTests {
         }, new BiConsumer<Object, Integer>() {
             @Override
             public void accept(Object a, Integer b) { }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1767,7 +1767,7 @@ public class ObservableNullTests {
             public Integer apply(Integer a, Integer b) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet(-1);
     }
     
     @Test(expected = NullPointerException.class)
@@ -1792,7 +1792,7 @@ public class ObservableNullTests {
             public Integer apply(Integer a, Integer b) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
     
     @Test(expected = NullPointerException.class)
@@ -1817,7 +1817,7 @@ public class ObservableNullTests {
             public Object apply(Object a, Integer b) {
                 return 1;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2102,7 +2102,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void singleNull() {
-        just1.single(null);
+        just1.toSingle(null);
     }
     
     @Test(expected = NullPointerException.class)
@@ -2447,7 +2447,7 @@ public class ObservableNullTests {
             public Collection<Integer> call() {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2482,7 +2482,7 @@ public class ObservableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2517,7 +2517,7 @@ public class ObservableNullTests {
             public Map<Object, Object> call() {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2547,7 +2547,7 @@ public class ObservableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
     
     @Test(expected = NullPointerException.class)
@@ -2582,7 +2582,7 @@ public class ObservableNullTests {
             public Map<Object, Collection<Object>> call() {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2627,7 +2627,7 @@ public class ObservableNullTests {
             public Collection<Integer> apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
     
     @Test(expected = NullPointerException.class)

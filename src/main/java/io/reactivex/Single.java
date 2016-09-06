@@ -165,6 +165,23 @@ public abstract class Single<T> implements SingleSource<T> {
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new FlowableConcatMap(sources, SingleInternalHelper.toFlowable(), prefetch, ErrorMode.IMMEDIATE));
     }
+    
+    /**
+     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * a Publisher sequence. 
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources the Publisher of SingleSource instances
+     * @return the new Flowable instance
+     * @since 2.0
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> Observable<T> concat(Observable<? extends SingleSource<? extends T>> sources) {
+        return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, SingleInternalHelper.toObservable(), 2, ErrorMode.IMMEDIATE));
+    }
 
     /**
      * Returns a Flowable that emits the items emitted by two Singles, one after the other.
@@ -1700,6 +1717,26 @@ public abstract class Single<T> implements SingleSource<T> {
     public final <R> Single<R> flatMap(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleFlatMap<T, R>(this, mapper));
+    }
+
+    /**
+     * Returns a Single that is based on applying a specified function to the item emitted by the source Single,
+     * where that function returns a SingleSource.
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R> the result value type
+     * @param mapper
+     *            a function that, when applied to the item emitted by the source Single, returns a SingleSource
+     * @return the Single returned from {@code func} when applied to the item emitted by the source Single
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    public final <R> Observable<R> flatMapObservable(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
+        return toObservable().flatMap(mapper);
     }
 
     /**

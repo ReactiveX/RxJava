@@ -142,7 +142,7 @@ public class ObservableTakeLastTest {
     @Test
     public void testIssue1522() {
         // https://github.com/ReactiveX/RxJava/issues/1522
-        assertEquals(0, Observable
+        assertEquals(0l, Observable
                 .empty()
                 .count()
                 .filter(new Predicate<Long>() {
@@ -151,8 +151,7 @@ public class ObservableTakeLastTest {
                         return false;
                     }
                 })
-                .toList()
-                .blockingSingle().size());
+                .blockingGet(-1l).longValue());
     }
 
     @Test

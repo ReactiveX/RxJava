@@ -302,16 +302,20 @@ public class PublishSubjectTest {
             String v = "" + i;
             System.out.printf("Turn: %d%n", i);
             src.first()
-                .flatMap(new Function<String, Observable<String>>() {
+                .flatMap(new Function<String, Maybe<String>>() {
 
                     @Override
-                    public Observable<String> apply(String t1) {
-                        return Observable.just(t1 + ", " + t1);
+                    public Maybe<String> apply(String t1) {
+                        return Maybe.just(t1 + ", " + t1);
                     }
                 })
-                .subscribe(new DefaultObserver<String>() {
+                .subscribe(new MaybeObserver<String>() {
                     @Override
-                    public void onNext(String t) {
+                    public void onSubscribe(Disposable s) {
+                    }
+
+                    @Override
+                    public void onSuccess(String t) {
                         o.onNext(t);
                     }
 

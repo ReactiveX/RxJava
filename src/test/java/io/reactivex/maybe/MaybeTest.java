@@ -337,7 +337,7 @@ public class MaybeTest {
 
     @Test
     public void singleMaybeSingle() {
-        Single.just(1).toMaybe().toSingle().test().assertResult(1);
+        Single.just(1).toMaybe().toSingle(-1).test().assertResult(1);
     }
 
     @Test

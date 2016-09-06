@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -30,7 +31,7 @@ public final class ObservableCollectTest {
     
     @Test
     public void testCollectToList() {
-        Observable<List<Integer>> o = Observable.just(1, 2, 3)
+        Single<List<Integer>> o = Observable.just(1, 2, 3)
         .collect(new Callable<List<Integer>>() {
             @Override
             public List<Integer> call() {
@@ -43,7 +44,7 @@ public final class ObservableCollectTest {
             }
         });
         
-        List<Integer> list =  o.blockingLast();
+        List<Integer> list =  o.blockingGet();
 
         assertEquals(3, list.size());
         assertEquals(1, list.get(0).intValue());
@@ -51,7 +52,7 @@ public final class ObservableCollectTest {
         assertEquals(3, list.get(2).intValue());
         
         // test multiple subscribe
-        List<Integer> list2 =  o.blockingLast();
+        List<Integer> list2 =  o.blockingGet();
 
         assertEquals(3, list2.size());
         assertEquals(1, list2.get(0).intValue());
@@ -75,7 +76,7 @@ public final class ObservableCollectTest {
                 }
                 sb.append(v);
       }
-            }).blockingLast().toString();
+            }).blockingGet().toString();
 
         assertEquals("1-2-3", value);
     }

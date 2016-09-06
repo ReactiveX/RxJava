@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Single;
 import io.reactivex.TestHelper;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
@@ -172,7 +173,7 @@ public class ObservableScanTest {
      */
     @Test
     public void testSeedFactory() {
-        Observable<List<Integer>> o = Observable.range(1, 10)
+        Single<List<Integer>> o = Observable.range(1, 10)
                 .collect(new Callable<List<Integer>>() {
 
                     @Override
@@ -187,10 +188,10 @@ public class ObservableScanTest {
                         list.add(t2);
                     }
 
-                }).takeLast(1);
+                });
 
-        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingSingle());
-        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingSingle());
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingGet());
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingGet());
     }
 
     @Test
