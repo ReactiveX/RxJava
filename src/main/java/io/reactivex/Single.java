@@ -22,6 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
+import io.reactivex.internal.fuseable.FuseToFlowable;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.*;
@@ -2474,7 +2475,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * 
      * @return an {@link Flowable} that emits a single item T or an error.
      */
+    @SuppressWarnings("unchecked")
     public final Flowable<T> toFlowable() {
+        if (this instanceof FuseToFlowable) {
+            return ((FuseToFlowable<T>)this).fuseToFlowable();
+        }
         return RxJavaPlugins.onAssembly(new SingleToFlowable<T>(this));
     }
     

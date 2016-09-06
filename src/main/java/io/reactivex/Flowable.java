@@ -17,20 +17,18 @@ import java.util.concurrent.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.functions.*;
+import io.reactivex.internal.fuseable.ScalarCallable;
 import io.reactivex.internal.operators.completable.CompletableFromPublisher;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.MaybeFromPublisher;
 import io.reactivex.internal.operators.observable.ObservableFromPublisher;
-import io.reactivex.internal.operators.single.SingleFromPublisher;
+import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.flowable.*;
 import io.reactivex.internal.util.*;
@@ -9729,6 +9727,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Publisher into the same function, and so on until all items have been emitted by the source Publisher,
      * and emits the final result from the final call to your function as its sole item.
      * <p>
+     * If the source is empty, a {@code NoSuchElementException} is signalled.
+     * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduce.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
@@ -9745,17 +9745,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param reducer
      *            an accumulator function to be invoked on each item emitted by the source Publisher, whose
      *            result will be used in the next accumulator call
-     * @return a Flowable that emits a single item that is the result of accumulating the items emitted by
-     *         the source Publisher
-     * @throws IllegalArgumentException
-     *             if the source Publisher emits no items
+     * @return a Single that emits a single item that is the result of accumulating the items emitted by
+     *         the source Flowable
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> reduce(BiFunction<T, T, T> reducer) {
-        return scan(reducer).last();
+    public final Single<T> reduce(BiFunction<T, T, T> reducer) {
+        ObjectHelper.requireNonNull(reducer, "reducer is null");
+//        return RxJavaPlugins.onAssembly(new FlowableReduce<T>(this, reducer));
+        return RxJavaPlugins.onAssembly(new SingleReduceFlowable<T>(this, reducer));
     }
 
     /**

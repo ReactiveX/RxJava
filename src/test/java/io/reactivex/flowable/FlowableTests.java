@@ -207,6 +207,7 @@ public class FlowableTests {
                 return t1 + t2;
             }
         })
+        .toFlowable()
         .subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
@@ -225,6 +226,7 @@ public class FlowableTests {
                 return t1 + t2;
             }
         })
+        .toFlowable()
         .blockingForEach(new Consumer<Integer>() {
             @Override
             public void accept(Integer t1) {
