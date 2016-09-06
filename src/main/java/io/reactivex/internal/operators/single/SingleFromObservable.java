@@ -12,42 +12,58 @@
  */
 package io.reactivex.internal.operators.single;
 
+import java.util.NoSuchElementException;
+
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import java.util.NoSuchElementException;
 
 public final class SingleFromObservable<T> extends Single<T> {
     private final Observable<T> upstream;
+    private final T defaultValue;
 
-    public SingleFromObservable(Observable<T> upstream) {
+    public SingleFromObservable(Observable<T> upstream, T defaultValue) {
         this.upstream = upstream;
+        this.defaultValue = defaultValue;
     }
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
         upstream.subscribe(new Observer<T>() {
             T last;
+            boolean done;
             @Override
             public void onSubscribe(Disposable d) {
                 s.onSubscribe(d);
             }
+
             @Override
             public void onNext(T value) {
-                last = value;
+                if (last == null) {
+                    last = value;
+                } else {
+                    s.onError(new IndexOutOfBoundsException());
+                    done = true;
+                }
             }
+
             @Override
             public void onError(Throwable e) {
-                s.onError(e);
+                if (!done) {
+                    s.onError(e);
+                }
             }
+
             @Override
             public void onComplete() {
                 T v = last;
                 last = null;
                 if (v != null) {
                     s.onSuccess(v);
+                } else if (defaultValue != null) { 
+                    s.onSuccess(defaultValue);
                 } else {
                     s.onError(new NoSuchElementException());
                 }
