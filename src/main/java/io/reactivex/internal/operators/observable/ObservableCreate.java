@@ -105,11 +105,6 @@ public final class ObservableCreate<T> extends Observable<T> {
         }
 
         @Override
-        public boolean isCancelled() {
-            return isDisposed();
-        }
-
-        @Override
         public ObservableEmitter<T> serialize() {
             return new SerializedEmitter<T>(this);
         }
@@ -152,7 +147,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         @Override
         public void onNext(T t) {
-            if (emitter.isCancelled() || done) {
+            if (emitter.isDisposed() || done) {
                 return;
             }
             if (t == null) {
@@ -178,7 +173,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         @Override
         public void onError(Throwable t) {
-            if (emitter.isCancelled() || done) {
+            if (emitter.isDisposed() || done) {
                 RxJavaPlugins.onError(t);
                 return;
             }
@@ -195,7 +190,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         @Override
         public void onComplete() {
-            if (emitter.isCancelled() || done) {
+            if (emitter.isDisposed() || done) {
                 return;
             }
             done = true;
@@ -216,7 +211,7 @@ public final class ObservableCreate<T> extends Observable<T> {
             for (;;) {
                 
                 for (;;) {
-                    if (e.isCancelled()) {
+                    if (e.isDisposed()) {
                         q.clear();
                         return;
                     }
@@ -270,8 +265,8 @@ public final class ObservableCreate<T> extends Observable<T> {
         }
 
         @Override
-        public boolean isCancelled() {
-            return emitter.isCancelled();
+        public boolean isDisposed() {
+            return emitter.isDisposed();
         }
 
         @Override

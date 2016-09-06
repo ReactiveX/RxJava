@@ -52,8 +52,8 @@ public interface CompletableEmitter {
     void setCancellable(Cancellable c);
     
     /**
-     * Returns true if the downstream cancelled the sequence.
-     * @return true if the downstream cancelled the sequence
+     * Returns true if the downstream disposed the sequence.
+     * @return true if the downstream disposed the sequence
      */
-    boolean isCancelled();
+    boolean isDisposed();
 }

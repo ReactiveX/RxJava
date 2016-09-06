@@ -42,13 +42,13 @@ public interface ObservableEmitter<T> extends Emitter<T> {
      * @param c the cancellable resource, null is allowed
      */
     void setCancellable(Cancellable c);
-    
+
     /**
-     * Returns true if the downstream cancelled the sequence.
-     * @return true if the downstream cancelled the sequence
+     * Returns true if the downstream disposed the sequence.
+     * @return true if the downstream disposed the sequence
      */
-    boolean isCancelled();
-    
+    boolean isDisposed();
+
     /**
      * Ensures that calls to onNext, onError and onComplete are properly serialized.
      * @return the serialized FlowableEmitter

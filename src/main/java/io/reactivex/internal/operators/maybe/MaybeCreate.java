@@ -130,11 +130,6 @@ public final class MaybeCreate<T> extends Maybe<T> {
         }
 
         @Override
-        public boolean isCancelled() {
-            return DisposableHelper.isDisposed(get());
-        }
-
-        @Override
         public void dispose() {
             DisposableHelper.dispose(this);
         }

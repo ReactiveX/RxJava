@@ -108,11 +108,6 @@ public final class SingleCreate<T> extends Single<T> {
         }
 
         @Override
-        public boolean isCancelled() {
-            return DisposableHelper.isDisposed(get());
-        }
-
-        @Override
         public void dispose() {
             DisposableHelper.dispose(this);
         }
