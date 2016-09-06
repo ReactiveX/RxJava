@@ -874,7 +874,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
-    public static <T, R> Single<R> zip(final Iterable<? extends SingleSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
+    public static <T, R> Single<? extends R> zip(final Iterable<? extends SingleSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         return Flowable.zipIterable(SingleInternalHelper.iterableToFlowable(sources), zipper, false, 1).toSingle();
     }
