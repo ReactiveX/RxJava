@@ -21,12 +21,12 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
+import io.reactivex.internal.observers.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.FlowableDelaySubscriptionOther;
 import io.reactivex.internal.operators.maybe.MaybeFromCompletable;
 import io.reactivex.internal.operators.observable.ObservableDelaySubscriptionOther;
 import io.reactivex.internal.operators.single.SingleDelayWithCompletable;
-import io.reactivex.internal.subscribers.completable.*;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
@@ -795,7 +795,9 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingAwait() {
-        CompletableAwait.await(this);
+        BlockingObserver<Void> observer = new BlockingObserver<Void>();
+        subscribe(observer);
+        observer.blockingGet();
     }
     
     /**
@@ -813,7 +815,9 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final boolean blockingAwait(long timeout, TimeUnit unit) {
-        return CompletableAwait.await(this, timeout, unit);
+        BlockingObserver<Void> observer = new BlockingObserver<Void>();
+        subscribe(observer);
+        return observer.blockingAwait(timeout, unit);
     }
 
     /**
@@ -828,7 +832,9 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Throwable blockingGet() {
-        return CompletableAwait.get(this);
+        BlockingObserver<Void> observer = new BlockingObserver<Void>();
+        subscribe(observer);
+        return observer.blockingGetError();
     }
     
     /**
@@ -842,7 +848,10 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Throwable blockingGet(long timeout, TimeUnit unit) {
-        return CompletableAwait.get(this, timeout, unit);
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        BlockingObserver<Void> observer = new BlockingObserver<Void>();
+        subscribe(observer);
+        return observer.blockingGetError(timeout, unit);
     }
 
     /**

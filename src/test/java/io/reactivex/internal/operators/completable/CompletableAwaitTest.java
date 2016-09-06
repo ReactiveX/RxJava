@@ -26,11 +26,6 @@ import io.reactivex.processors.PublishProcessor;
 public class CompletableAwaitTest {
 
     @Test
-    public void emptyEnum() {
-        TestHelper.assertEmptyEnum(CompletableAwait.class);
-    }
-    
-    @Test
     public void awaitInterrupted() {
         
         Thread.currentThread().interrupt();

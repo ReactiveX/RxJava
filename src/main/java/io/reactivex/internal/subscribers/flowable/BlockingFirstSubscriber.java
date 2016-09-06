@@ -18,7 +18,7 @@ package io.reactivex.internal.subscribers.flowable;
  *
  * @param <T> the value type
  */
-public final class BlockingFirstSubscriber<T> extends BlockingSingleSubscriber<T> {
+public final class BlockingFirstSubscriber<T> extends BlockingBaseSubscriber<T> {
 
     @Override
     public void onNext(T t) {
