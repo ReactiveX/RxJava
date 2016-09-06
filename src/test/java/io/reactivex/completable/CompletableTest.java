@@ -4465,7 +4465,37 @@ public class CompletableTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void doOnEventNullEvent() {
+    public void doOnErrorNullValue() {
+        Completable.complete().doOnError(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void doOnSubscribeNullValue() {
+        Completable.complete().doOnSubscribe(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void doAfterTerminateNullValue() {
+        Completable.complete().doAfterTerminate(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void doOnTerminateNullValue() {
+        Completable.complete().doOnTerminate(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void doOnCompleteNullValue() {
+        Completable.complete().doOnComplete(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void doOnDisposeNullValue() {
+        Completable.complete().doOnDispose(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void doOnEventNullValue() {
         Completable.complete().doOnEvent(null);
     }
 

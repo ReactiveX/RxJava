@@ -948,7 +948,7 @@ public abstract class Completable implements CompletableSource {
                 onComplete, Functions.EMPTY_ACTION,
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
-    
+
     /**
      * Returns a Completable which calls the given onDispose callback if the child subscriber cancels
      * the subscription.
@@ -966,7 +966,7 @@ public abstract class Completable implements CompletableSource {
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION,
                 Functions.EMPTY_ACTION, onDispose);
     }
-    
+
     /**
      * Returns a Completable which calls the given onError callback if this Completable emits an error.
      * <dl>
@@ -998,17 +998,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable doOnEvent(final Consumer<? super Throwable> onEvent) {
         ObjectHelper.requireNonNull(onEvent, "onEvent is null");
-        return doOnLifecycle(Functions.emptyConsumer(), new Consumer<Throwable>() {
-            @Override
-            public void accept(final Throwable throwable) throws Exception {
-                onEvent.accept(throwable);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                onEvent.accept(null);
-            }
-        }, Functions.EMPTY_ACTION, Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
+        return RxJavaPlugins.onAssembly(new CompletableDoOnEvent(this, onEvent));
     }
 
     /**
@@ -1027,9 +1017,9 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     private Completable doOnLifecycle(
-            final Consumer<? super Disposable> onSubscribe, 
-            final Consumer<? super Throwable> onError, 
-            final Action onComplete, 
+            final Consumer<? super Disposable> onSubscribe,
+            final Consumer<? super Throwable> onError,
+            final Action onComplete,
             final Action onTerminate,
             final Action onAfterTerminate,
             final Action onDispose) {
