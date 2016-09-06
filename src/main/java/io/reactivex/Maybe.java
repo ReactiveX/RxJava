@@ -701,8 +701,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     // ------------------------------------------------------------------
 
     /**
-     * Waits in a blocking fashion until the current Maybe signals a success value (which is returned) or
-     * defaultValue if completed or an exception (which is propagated).
+     * Waits in a blocking fashion until the current Maybe signals a success value (which is returned),
+     * null if completed or an exception (which is propagated).
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -714,7 +714,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
     
     /**
-     * Waits in a blocking fashion until the current Maybe signals a success value (which is returned) or
+     * Waits in a blocking fashion until the current Maybe signals a success value (which is returned),
      * defaultValue if completed or an exception (which is propagated).
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -1250,9 +1250,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the new Single instance
      */
     public final Single<T> toSingle(T defaultValue) {
-            ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-            return RxJavaPlugins.onAssembly(new MaybeToSingle<T>(this, defaultValue));
-        }
+        ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
+        return RxJavaPlugins.onAssembly(new MaybeToSingle<T>(this, defaultValue));
+    }
 
     /**
      * Converts this Maybe into an Single instance composing cancellation

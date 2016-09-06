@@ -11499,7 +11499,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns a Single that emits the single item emitted by the source ObservableSource, if that ObservableSource
      * emits only a single item. If the source ObservableSource emits more than one item or no items, notify of an
-     * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
+     * {@code IndexOutOfBoundsException} or {@code NoSuchElementException} respectively.
      * <p>
      * <img width="640" height="295" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toSingle.png" alt="">
      * <dl>
@@ -11508,10 +11508,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @return a Single that emits the single item emitted by the source ObservableSource
-     * @throws IllegalArgumentException
-     *             if the source ObservableSource emits more than one item
-     * @throws NoSuchElementException
-     *             if the source ObservableSource emits no items
      * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
      * @since 2.0
      */
@@ -11522,8 +11518,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Single that emits the single item emitted by the source ObservableSource, if that ObservableSource
-     * emits only a single item. If the source ObservableSource emits more than one item or no items, notify of an
-     * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
+     * emits only a single item or emits the given defaultIfEmpty value if the ObservableSource is empty. 
+     * If the source ObservableSource emits more than one item a {@link IndexOutOfBoundsException} is signalled.
      * <p>
      * <img width="640" height="295" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toSingle.png" alt="">
      * <dl>
@@ -11532,10 +11528,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * @param defaultIfEmpty the value the Single will signal if this Observable is empty
      * @return a Single that emits the single item emitted by the source ObservableSource
-     * @throws IllegalArgumentException
-     *             if the source ObservableSource emits more than one item
-     * @throws NoSuchElementException
-     *             if the source ObservableSource emits no items
      * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
      * @since 2.0
      */
