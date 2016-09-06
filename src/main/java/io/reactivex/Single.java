@@ -1588,7 +1588,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public final Single<T> doOnSuccess(final Consumer<? super T> onSuccess) {
         ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");
-        return RxJavaPlugins.onAssembly(new SingleDoOnSuccess<T>(this, onSuccess));
+        return RxJavaPlugins.onAssembly(new SingleDoOnEvent<T>(this, onSuccess, Functions.emptyConsumer()));
     }
     
     /**
@@ -1604,7 +1604,17 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public final Single<T> doOnEvent(final BiConsumer<? super T, ? super Throwable> onEvent) {
         ObjectHelper.requireNonNull(onEvent, "onEvent is null");
-        return RxJavaPlugins.onAssembly(new SingleDoOnEvent<T>(this, onEvent));
+        return RxJavaPlugins.onAssembly(new SingleDoOnEvent<T>(this, new Consumer<T>() {
+            @Override
+            public void accept(final T t) throws Exception {
+                onEvent.accept(t, null);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(final Throwable throwable) throws Exception {
+                onEvent.accept(null, throwable);
+            }
+        }));
     }
 
     /**
@@ -1620,7 +1630,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     public final Single<T> doOnError(final Consumer<? super Throwable> onError) {
         ObjectHelper.requireNonNull(onError, "onError is null");
-        return RxJavaPlugins.onAssembly(new SingleDoOnError<T>(this, onError));
+        return RxJavaPlugins.onAssembly(new SingleDoOnEvent<T>(this, Functions.emptyConsumer(), onError));
     }
     
     /**

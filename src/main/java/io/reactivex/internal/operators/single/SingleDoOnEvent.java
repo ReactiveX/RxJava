@@ -19,16 +19,18 @@ import io.reactivex.SingleSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.Consumer;
 
 public final class SingleDoOnEvent<T> extends Single<T> {
     final SingleSource<T> source;
 
-    final BiConsumer<? super T, ? super Throwable> onEvent;
+    final Consumer<? super T> onSuccess;
+    final Consumer<? super Throwable> onError;
 
-    public SingleDoOnEvent(SingleSource<T> source, BiConsumer<? super T, ? super Throwable> onEvent) {
+    public SingleDoOnEvent(final SingleSource<T> source, final Consumer<? super T> onSuccess, final Consumer<? super Throwable> onError) {
         this.source = source;
-        this.onEvent = onEvent;
+        this.onSuccess = onSuccess;
+        this.onError = onError;
     }
 
     @Override
@@ -43,7 +45,7 @@ public final class SingleDoOnEvent<T> extends Single<T> {
             @Override
             public void onSuccess(T value) {
                 try {
-                    onEvent.accept(value, null);
+                    onSuccess.accept(value);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     s.onError(ex);
@@ -56,7 +58,7 @@ public final class SingleDoOnEvent<T> extends Single<T> {
             @Override
             public void onError(Throwable e) {
                 try {
-                    onEvent.accept(null, e);
+                    onError.accept(e);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     e = new CompositeException(ex, e);
