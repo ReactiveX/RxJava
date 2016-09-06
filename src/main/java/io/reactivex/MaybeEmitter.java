@@ -63,5 +63,5 @@ public interface MaybeEmitter<T> {
      * Returns true if the downstream cancelled the sequence.
      * @return true if the downstream cancelled the sequence
      */
-    boolean isCancelled();
+    boolean isDisposed();
 }

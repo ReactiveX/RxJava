@@ -58,5 +58,5 @@ public interface SingleEmitter<T> {
      * Returns true if the downstream cancelled the sequence.
      * @return true if the downstream cancelled the sequence
      */
-    boolean isCancelled();
+    boolean isDisposed();
 }

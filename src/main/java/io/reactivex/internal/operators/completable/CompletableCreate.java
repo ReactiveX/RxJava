@@ -104,11 +104,6 @@ public final class CompletableCreate extends Completable {
         }
 
         @Override
-        public boolean isCancelled() {
-            return DisposableHelper.isDisposed(get());
-        }
-
-        @Override
         public void dispose() {
             DisposableHelper.dispose(this);
         }
