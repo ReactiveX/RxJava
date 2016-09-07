@@ -16,12 +16,13 @@ package io.reactivex.internal.operators.single;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 
-public class SingleFlatMapCompletableTest {
+public class SingleFlatMapTest {
 
     @Test
     public void normal() {
@@ -101,4 +102,28 @@ public class SingleFlatMapCompletableTest {
         assertFalse(b[0]);
     }
 
+    
+    @Test
+    public void flatMapObservable() {
+        Single.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer v) throws Exception {
+                return Observable.range(v, 5);
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+    
+    @Test
+    public void flatMapPublisher() {
+        Single.just(1).flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v) throws Exception {
+                return Flowable.range(v, 5);
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
 }

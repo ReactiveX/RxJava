@@ -116,6 +116,7 @@ implements SingleObserver<T>, Future<T>, Disposable {
             return;
         }
         value = t;
+        countDown();
     }
 
     @Override

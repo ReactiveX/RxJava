@@ -1401,7 +1401,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * in order, each one after the previous one completes.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Backpressure is honored towards the downstream and both the outer and inner Publishers are
+     *  <dd>Backpressure is honored towards the downstream and the inner Publishers are
      *  expected to support backpressure. Violating this assumption, the operator will 
      *  signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -1680,7 +1680,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
      * method.
      * <p>
-     * <em>Important note:</em> This Publisher is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Publisher is blocking on the thread it gets subscribed on; you cannot unsubscribe from it.
      * <p>
      * Unlike 1.x, cancelling the Flowable won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futurePublisher.doOnCancel(() -> future.cancel(true));}.
@@ -1712,13 +1712,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
      * <p>
      * You can convert any object that supports the {@link Future} interface into a Publisher that emits the
-     * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
+     * return value of the {@link Future#get} method of that object, by passing the object into the {@code fromFuture}
      * method.
      * <p>
      * Unlike 1.x, cancelling the Flowable won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futurePublisher.doOnCancel(() -> future.cancel(true));}.
      * <p>
-     * <em>Important note:</em> This Publisher is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Publisher is blocking on the thread it gets subscribed on; you cannot unsubscribe from it.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -3156,7 +3156,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens an Iterable of Publishers into one Publisher, in a way that allows an Subscriber to receive all
+     * Flattens an array of Publishers into one Flowable, in a way that allows an Subscriber to receive all
      * successfully emitted items from each of the source Publishers without being interrupted by an error
      * notification from one of them.
      * <p>
@@ -3426,7 +3426,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function used to compare items emitted by each Publisher
      * @param <T>
      *            the type of items emitted by each Publisher
-     * @return a Flowable that emits a Boolean value that indicates whether the two Publisher two sequences
+     * @return a Flowable that emits a Boolean value that indicates whether the two Publisher sequences
      *         are the same according to the specified function
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
@@ -3461,7 +3461,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of items to prefetch from the first and second source Publisher
      * @param <T>
      *            the type of items emitted by each Publisher
-     * @return a Flowable that emits a Boolean value that indicates whether the two Publisher two sequences
+     * @return a Flowable that emits a Boolean value that indicates whether the two Publisher sequences
      *         are the same according to the specified function
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
