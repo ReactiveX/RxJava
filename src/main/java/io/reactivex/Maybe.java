@@ -22,6 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
+import io.reactivex.internal.observers.BlockingObserver;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.*;
 import io.reactivex.internal.util.*;
@@ -710,7 +711,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the success value
      */
     public T blockingGet() {
-        return MaybeAwait.get(this, null);
+        BlockingObserver<T> observer = new BlockingObserver<T>();
+        subscribe(observer);
+        return observer.blockingGet();
     }
     
     /**
@@ -725,7 +728,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     public T blockingGet(T defaultValue) {
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        return MaybeAwait.get(this, defaultValue);
+        BlockingObserver<T> observer = new BlockingObserver<T>();
+        subscribe(observer);
+        return observer.blockingGet(defaultValue);
     }
     
     /**

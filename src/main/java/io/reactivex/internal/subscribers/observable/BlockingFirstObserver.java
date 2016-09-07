@@ -18,7 +18,7 @@ package io.reactivex.internal.subscribers.observable;
  *
  * @param <T> the value type
  */
-public final class BlockingFirstObserver<T> extends BlockingSingleObserver<T> {
+public final class BlockingFirstObserver<T> extends BlockingBaseObserver<T> {
 
     @Override
     public void onNext(T t) {

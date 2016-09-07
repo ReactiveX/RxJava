@@ -23,12 +23,12 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.FuseToFlowable;
+import io.reactivex.internal.observers.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.*;
 import io.reactivex.internal.operators.observable.ObservableConcatMap;
 import io.reactivex.internal.operators.single.*;
-import io.reactivex.internal.subscribers.single.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
@@ -1775,7 +1775,9 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the success value
      */
     public final T blockingGet() {
-        return SingleAwait.get(this);
+        BlockingObserver<T> observer = new BlockingObserver<T>();
+        subscribe(observer);
+        return observer.blockingGet();
     }
     
     /**

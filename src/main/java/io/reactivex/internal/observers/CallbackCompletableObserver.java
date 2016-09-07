@@ -11,31 +11,51 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.subscribers.single;
+package io.reactivex.internal.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.SingleObserver;
+import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
-import io.reactivex.functions.Consumer;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ConsumerSingleObserver<T>
-extends AtomicReference<Disposable>
-implements SingleObserver<T>, Disposable {
+public final class CallbackCompletableObserver
+extends AtomicReference<Disposable> implements CompletableObserver, Disposable, Consumer<Throwable> {
 
     /** */
-    private static final long serialVersionUID = -7012088219455310787L;
+    private static final long serialVersionUID = -4361286194466301354L;
 
-    final Consumer<? super T> onSuccess;
-    
     final Consumer<? super Throwable> onError;
+    final Action onComplete;
+    
+    public CallbackCompletableObserver(Action onComplete) {
+        this.onError = this;
+        this.onComplete = onComplete;
+    }
 
-    public ConsumerSingleObserver(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError) {
-        this.onSuccess = onSuccess;
+    public CallbackCompletableObserver(Consumer<? super Throwable> onError, Action onComplete) {
         this.onError = onError;
+        this.onComplete = onComplete;
+    }
+
+    @Override
+    public void accept(Throwable e) {
+        RxJavaPlugins.onError(e);
+    }
+
+    @Override
+    public void onComplete() {
+        try {
+            onComplete.run();
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            onError(ex);
+        } finally {
+            lazySet(DisposableHelper.DISPOSED);
+        }
     }
 
     @Override
@@ -44,25 +64,17 @@ implements SingleObserver<T>, Disposable {
             onError.accept(e);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            RxJavaPlugins.onError(new CompositeException(e, ex));
+            RxJavaPlugins.onError(ex);
+        } finally {
+            lazySet(DisposableHelper.DISPOSED);
         }
     }
-    
+
     @Override
     public void onSubscribe(Disposable d) {
         DisposableHelper.setOnce(this, d);
     }
-    
-    @Override
-    public void onSuccess(T value) {
-        try {
-            onSuccess.accept(value);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            RxJavaPlugins.onError(ex);
-        }
-    }
-    
+
     @Override
     public void dispose() {
         DisposableHelper.dispose(this);

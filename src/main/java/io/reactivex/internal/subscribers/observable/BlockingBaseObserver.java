@@ -10,46 +10,53 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-package io.reactivex.internal.subscribers.flowable;
+package io.reactivex.internal.subscribers.observable;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.reactivestreams.*;
-
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.util.ExceptionHelper;
 
-public abstract class BlockingSingleSubscriber<T> extends CountDownLatch
-implements Subscriber<T> {
+public abstract class BlockingBaseObserver<T> extends CountDownLatch
+implements Observer<T>, Disposable {
 
     T value;
     Throwable error;
     
-    Subscription s;
+    Disposable d;
     
     volatile boolean cancelled;
 
-    public BlockingSingleSubscriber() {
+    public BlockingBaseObserver() {
         super(1);
     }
 
     @Override
-    public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validate(this.s, s)) {
-            this.s = s;
-            if (!cancelled) {
-                s.request(Long.MAX_VALUE);
-                if (cancelled) {
-                    this.s = SubscriptionHelper.CANCELLED;
-                    s.cancel();
-                }
-            }
+    public final void onSubscribe(Disposable d) {
+        this.d = d;
+        if (cancelled) {
+            d.dispose();
         }
     }
     
     @Override
     public final void onComplete() {
         countDown();
+    }
+    
+    @Override
+    public final void dispose() {
+        cancelled = true;
+        Disposable d = this.d;
+        if (d != null) {
+            d.dispose();
+        }
+    }
+    
+    @Override
+    public final boolean isDisposed() {
+        return cancelled;
     }
     
     /**
@@ -62,11 +69,7 @@ implements Subscriber<T> {
             try {
                 await();
             } catch (InterruptedException ex) {
-                Subscription s = this.s;
-                this.s = SubscriptionHelper.CANCELLED;
-                if (s != null) {
-                    s.cancel();
-                }
+                dispose();
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
         }
