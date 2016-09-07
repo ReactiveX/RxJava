@@ -18,8 +18,10 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
@@ -28,7 +30,8 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueSubscription;
-import io.reactivex.internal.operators.maybe.MaybeToPublisher;
+import io.reactivex.internal.operators.flowable.FlowableZipTest.ArgsToString;
+import io.reactivex.internal.operators.maybe.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -2275,5 +2278,530 @@ public class MaybeTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArrayDelayError() {
+        Maybe.concatArrayDelayError(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException()))
+        .test()
+        .assertFailure(TestException.class, 1);
+        
+        Maybe.concatArrayDelayError(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1))
+        .test()
+        .assertFailure(TestException.class, 1);
+        
+        assertSame(Flowable.empty(), Maybe.concatArrayDelayError());
+        
+        assertFalse(Maybe.concatArrayDelayError(Maybe.never()) instanceof MaybeConcatArrayDelayError);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatIterableDelayError() {
+        Maybe.concatDelayError(Arrays.asList(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())))
+        .test()
+        .assertFailure(TestException.class, 1);
+        
+        Maybe.concatDelayError(Arrays.asList(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)))
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+    
+    @Test
+    public void concatPublisherDelayError() {
+        Maybe.concatDelayError(Flowable.just(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())))
+        .test()
+        .assertFailure(TestException.class, 1);
+        
+        Maybe.concatDelayError(Flowable.just(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)))
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatEagerArray() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = Maybe.concatArrayEager(pp1.toMaybe(), pp2.toMaybe()).test();
+        
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+        
+        pp2.onNext(2);
+        pp2.onComplete();
+        
+        ts.assertEmpty();
+        
+        pp1.onNext(1);
+        pp1.onComplete();
+        
+        ts.assertResult(1, 2);
+        
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatEagerIterable() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = Maybe.concatEager(Arrays.asList(pp1.toMaybe(), pp2.toMaybe())).test();
+        
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+        
+        pp2.onNext(2);
+        pp2.onComplete();
+        
+        ts.assertEmpty();
+        
+        pp1.onNext(1);
+        pp1.onComplete();
+        
+        ts.assertResult(1, 2);
+        
+    }
+    
+    @Test
+    public void concatEagerPublisher() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        
+        TestSubscriber<Integer> ts = Maybe.concatEager(Flowable.just(pp1.toMaybe(), pp2.toMaybe())).test();
+        
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+        
+        pp2.onNext(2);
+        pp2.onComplete();
+        
+        ts.assertEmpty();
+        
+        pp1.onNext(1);
+        pp1.onComplete();
+        
+        ts.assertResult(1, 2);
+        
+    }
+    
+    static Future<Integer> emptyFuture() {
+        final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        
+        return exec.schedule(new Callable<Integer>() {
+
+            @Override
+            public Integer call() throws Exception {
+                exec.shutdown();
+                return null;
+            }
+        }, 200, TimeUnit.MILLISECONDS);
+    }
+    
+    @Test
+    public void fromFuture() {
+        Maybe.fromFuture(Flowable.just(1).delay(200, TimeUnit.MILLISECONDS).toFuture())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1)
+        ;
+
+        Maybe.fromFuture(emptyFuture())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult()
+        ;
+
+        Maybe.fromFuture(Flowable.error(new TestException()).delay(200, TimeUnit.MILLISECONDS, true).toFuture())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class)
+        ;
+
+        Maybe.fromFuture(Flowable.empty().delay(10, TimeUnit.SECONDS).toFuture(), 100, TimeUnit.MILLISECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TimeoutException.class)
+        ;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeArrayDelayError() {
+        Maybe.mergeArrayDelayError(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException()))
+        .test()
+        .assertFailure(TestException.class, 1);
+        
+        Maybe.mergeArrayDelayError(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1))
+        .test()
+        .assertFailure(TestException.class, 1);
+        
+        assertSame(Flowable.empty(), Maybe.mergeArrayDelayError());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeIterableDelayError() {
+        Maybe.mergeDelayError(Arrays.asList(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())))
+        .test()
+        .assertFailure(TestException.class, 1);
+        
+        Maybe.mergeDelayError(Arrays.asList(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)))
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+    
+    @Test
+    public void mergePublisherDelayError() {
+        Maybe.mergeDelayError(Flowable.just(Maybe.empty(), Maybe.just(1), Maybe.error(new TestException())))
+        .test()
+        .assertFailure(TestException.class, 1);
+        
+        Maybe.mergeDelayError(Flowable.just(Maybe.error(new TestException()), Maybe.empty(), Maybe.just(1)))
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void mergeDelayError2() {
+        Maybe.mergeDelayError(Maybe.just(1), Maybe.error(new TestException()))
+        .test()
+        .assertFailure(TestException.class, 1);
+        
+        Maybe.mergeDelayError(Maybe.error(new TestException()), Maybe.just(1))
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void mergeDelayError3() {
+        Maybe.mergeDelayError(Maybe.just(1), Maybe.error(new TestException()), Maybe.just(2))
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+        
+        Maybe.mergeDelayError(Maybe.error(new TestException()), Maybe.just(1), Maybe.just(2))
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+        
+        Maybe.mergeDelayError(Maybe.just(1), Maybe.just(2), Maybe.error(new TestException()))
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void mergeDelayError4() {
+        Maybe.mergeDelayError(Maybe.just(1), Maybe.error(new TestException()), Maybe.just(2), Maybe.just(3))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3);
+        
+        Maybe.mergeDelayError(Maybe.error(new TestException()), Maybe.just(1), Maybe.just(2), Maybe.just(3))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3);
+        
+        Maybe.mergeDelayError(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.error(new TestException()))
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3);
+    }
+    
+    @Test
+    public void sequenceEqual() {
+        Maybe.sequenceEqual(Maybe.just(1), Maybe.just(new Integer(1))).test().assertResult(true);
+
+        Maybe.sequenceEqual(Maybe.just(1), Maybe.just(2)).test().assertResult(false);
+
+        Maybe.sequenceEqual(Maybe.just(1), Maybe.empty()).test().assertResult(false);
+
+        Maybe.sequenceEqual(Maybe.empty(), Maybe.just(2)).test().assertResult(false);
+        
+        Maybe.sequenceEqual(Maybe.empty(), Maybe.empty()).test().assertResult(true);
+        
+        Maybe.sequenceEqual(Maybe.just(1), Maybe.error(new TestException())).test().assertFailure(TestException.class);
+        
+        Maybe.sequenceEqual(Maybe.error(new TestException()), Maybe.just(1)).test().assertFailure(TestException.class);
+        
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        
+        try {
+            Maybe.sequenceEqual(Maybe.error(new TestException("One")), Maybe.error(new TestException("Two"))).test().assertFailureAndMessage(TestException.class, "One");
+            
+            TestHelper.assertError(errors, 0, TestException.class, "Two");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+        
+        Maybe.sequenceEqual(Maybe.just(1), Maybe.error(new TestException()), new BiPredicate<Object, Object>() {
+            @Override
+            public boolean test(Object t1, Object t2) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test().assertFailure(TestException.class);
+    }
+
+    @Test
+    public void timer() {
+        Maybe.timer(100, TimeUnit.MILLISECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(0L);
+    }
+    
+    @Test
+    public void blockingGet() {
+        assertEquals(1, Maybe.just(1).blockingGet().intValue());
+        
+        assertEquals(100, Maybe.empty().blockingGet(100));
+        
+        try {
+            Maybe.error(new TestException()).blockingGet();
+            fail("Should have thrown!");
+        } catch (TestException ex) {
+            // expected
+        }
+        
+        try {
+            Maybe.error(new TestException()).blockingGet(100);
+            fail("Should have thrown!");
+        } catch (TestException ex) {
+            // expected
+        }
+    }
+    
+    @Test
+    public void toSingleDefault() {
+        Maybe.just(1).toSingle(100)
+        .test().assertResult(1);
+        
+        Maybe.empty().toSingle(100)
+        .test().assertResult(100);
+    }
+    
+    @Test
+    public void flatMapContinuation() {
+        Maybe.just(1).flatMapCompletable(new Function<Integer, Completable>() {
+            @Override
+            public Completable apply(Integer v) throws Exception {
+                return Completable.complete();
+            }
+        })
+        .test().assertResult();
+        
+        Maybe.just(1).flatMapCompletable(new Function<Integer, Completable>() {
+            @Override
+            public Completable apply(Integer v) throws Exception {
+                return Completable.error(new TestException());
+            }
+        })
+        .test().assertFailure(TestException.class);
+        
+        Maybe.just(1).flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v) throws Exception {
+                return Flowable.range(1, 5);
+            }
+        })
+        .test().assertResult(1, 2, 3, 4, 5);
+        
+        Maybe.just(1).flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v) throws Exception {
+                return Flowable.error(new TestException());
+            }
+        })
+        .test().assertFailure(TestException.class);
+        
+        Maybe.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer v) throws Exception {
+                return Observable.range(1, 5);
+            }
+        })
+        .test().assertResult(1, 2, 3, 4, 5);
+        
+        Maybe.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer v) throws Exception {
+                return Observable.error(new TestException());
+            }
+        })
+        .test().assertFailure(TestException.class);
+    }
+    
+    @Test
+    public void using() {
+        final AtomicInteger disposeCount = new AtomicInteger();
+        
+        Maybe.using(Functions.justCallable(1), new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.just(v);
+            }
+        }, new Consumer<Integer>() {
+            @Override
+            public void accept(Integer d) throws Exception { 
+                disposeCount.set(d);
+            }
+        })
+        .map(new Function<Integer, Object>() {
+            @Override
+            public String apply(Integer v) throws Exception {
+                return "" + disposeCount.get() + v * 10;
+            }
+        })
+        .test()
+        .assertResult("110");
+    }
+    
+    @Test
+    public void usingNonEager() {
+        final AtomicInteger disposeCount = new AtomicInteger();
+        
+        Maybe.using(Functions.justCallable(1), new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.just(v);
+            }
+        }, new Consumer<Integer>() {
+            @Override
+            public void accept(Integer d) throws Exception { 
+                disposeCount.set(d);
+            }
+        }, false)
+        .map(new Function<Integer, Object>() {
+            @Override
+            public String apply(Integer v) throws Exception {
+                return "" + disposeCount.get() + v * 10;
+            }
+        })
+        .test()
+        .assertResult("010");
+        
+        assertEquals(1, disposeCount.get());
+    }
+    
+    Function<Object[], String> arrayToString = new Function<Object[], String>() {
+        @Override
+        public String apply(Object[] a) throws Exception {
+            return Arrays.toString(a);
+        }
+    };
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zipArray() {
+        Maybe.zipArray(arrayToString, Maybe.just(1), Maybe.just(2))
+        .test()
+        .assertResult("[1, 2]");
+        
+        Maybe.zipArray(arrayToString, Maybe.just(1), Maybe.empty())
+        .test()
+        .assertResult();
+        
+        Maybe.zipArray(arrayToString, Maybe.just(1), Maybe.error(new TestException()))
+        .test()
+        .assertFailure(TestException.class);
+        
+        assertSame(Maybe.empty(), Maybe.zipArray(ArgsToString.INSTANCE));
+        
+        Maybe.zipArray(arrayToString, Maybe.just(1))
+        .test()
+        .assertResult("[1]");
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zipIterable() {
+        Maybe.zip(
+        Arrays.asList(Maybe.just(1), Maybe.just(2)),
+        arrayToString)
+        .test()
+        .assertResult("[1, 2]");
+        
+        Maybe.zip(Collections.<Maybe<Integer>>emptyList(), arrayToString)
+        .test()
+        .assertResult();
+        
+        Maybe.zip(Collections.singletonList(Maybe.just(1)), arrayToString)
+        .test()
+        .assertResult("[1]");
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zip2() {
+        Maybe.zip(Maybe.just(1), Maybe.just(2), ArgsToString.INSTANCE)
+        .test()
+        .assertResult("12");
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zip3() {
+        Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3), 
+            ArgsToString.INSTANCE)
+        .test()
+        .assertResult("123");
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zip4() {
+        Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4), 
+            ArgsToString.INSTANCE)
+        .test()
+        .assertResult("1234");
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zip5() {
+        Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4),
+                Maybe.just(5), 
+            ArgsToString.INSTANCE)
+        .test()
+        .assertResult("12345");
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zip6() {
+        Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4),
+                Maybe.just(5), Maybe.just(6),
+            ArgsToString.INSTANCE)
+        .test()
+        .assertResult("123456");
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zip7() {
+        Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4),
+                Maybe.just(5), Maybe.just(6), Maybe.just(7),
+            ArgsToString.INSTANCE)
+        .test()
+        .assertResult("1234567");
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zip8() {
+        Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4),
+                Maybe.just(5), Maybe.just(6), Maybe.just(7), Maybe.just(8),
+            ArgsToString.INSTANCE)
+        .test()
+        .assertResult("12345678");
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void zip9() {
+        Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3), Maybe.just(4),
+                Maybe.just(5), Maybe.just(6), Maybe.just(7), Maybe.just(8), Maybe.just(9),
+            ArgsToString.INSTANCE)
+        .test()
+        .assertResult("123456789");
     }
 }

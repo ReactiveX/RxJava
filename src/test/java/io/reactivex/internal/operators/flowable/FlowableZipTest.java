@@ -1329,8 +1329,11 @@ public class FlowableZipTest {
         }
     }
 
+    /**
+     * Implements all Function types which return a String concatenating their inputs.
+     */
     @SuppressWarnings("rawtypes")
-    enum ArgsToString implements Function, BiFunction, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
+    public enum ArgsToString implements Function, BiFunction, Function3, Function4, Function5, Function6, Function7, Function8, Function9 {
         INSTANCE;
 
         @Override

@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import io.reactivex.Single;
+import io.reactivex.*;
 
 public class SingleConcatTest {
     @Test
@@ -57,6 +57,23 @@ public class SingleConcatTest {
             Arrays.fill(array, Single.just(1));
             
             Single.concatArray(array)
+            .test()
+            .assertSubscribed()
+            .assertValueCount(i)
+            .assertNoErrors()
+            .assertComplete();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatObservable() {
+        for (int i = 1; i < 100; i++) {
+            Single<Integer>[] array = new Single[i];
+            
+            Arrays.fill(array, Single.just(1));
+            
+            Single.concat(Observable.fromArray(array))
             .test()
             .assertSubscribed()
             .assertValueCount(i)

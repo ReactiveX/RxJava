@@ -23,6 +23,7 @@ import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -489,5 +490,20 @@ public class SingleTest {
 
         assertEquals(1, atomicInteger.get());
     }
+
+    @Test//(timeout = 5000)
+    public void toFuture() throws Exception {
+        assertEquals(1, Single.just(1).toFuture().get().intValue());
+    }
+
+    @Test(timeout = 5000)
+    public void toFutureThrows() throws Exception {
+        try {
+            Single.error(new TestException()).toFuture().get();
+        } catch (ExecutionException ex) {
+            assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+        }
+    }
+
 }
 
