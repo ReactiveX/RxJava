@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -221,7 +221,7 @@ public class BlockingFlowableNextTest {
      * Confirm that no buffering or blocking of the Observable onNext calls occurs and it just grabs the next emitted value.
      * <p/>
      * This results in output such as => a: 1 b: 2 c: 89
-     * 
+     *
      * @throws Throwable
      */
     @Test
@@ -307,14 +307,14 @@ public class BlockingFlowableNextTest {
             terminal.onNext(1);
         }
     }
-    
+
     @Test
     public void testSynchronousNext() {
         assertEquals(1, BehaviorProcessor.createDefault(1).take(1).blockingSingle().intValue());
         assertEquals(2, BehaviorProcessor.createDefault(2).blockingIterable().iterator().next().intValue());
         assertEquals(3, BehaviorProcessor.createDefault(3).blockingNext().iterator().next().intValue());
     }
-    
+
     @Ignore("THe target is an enum")
     @Test
     public void constructorshouldbeprivate() {

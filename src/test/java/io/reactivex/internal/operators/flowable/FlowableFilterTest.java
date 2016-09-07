@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -45,7 +45,7 @@ public class FlowableFilterTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, Mockito.never()).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, Mockito.never()).onNext("three");
@@ -118,19 +118,19 @@ public class FlowableFilterTest {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
-            
+
             @Override
             public void onComplete() {
                 System.out.println("onCompleted");
                 latch.countDown();
             }
-            
+
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
                 latch.countDown();
             }
-            
+
             @Override
             public void onNext(Integer t) {
                 System.out.println("Received: " + t);
@@ -146,7 +146,7 @@ public class FlowableFilterTest {
         // this will wait forever unless OperatorTake handles the request(n) on filtered items
         latch.await();
     }
-    
+
     @Test
     @Ignore("subscribers are not allowed to throw")
     public void testFatalError() {
@@ -175,37 +175,37 @@ public class FlowableFilterTest {
 
     @Test
     public void functionCrashUnsubscribes() {
-        
+
         PublishProcessor<Integer> ps = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         ps.filter(new Predicate<Integer>() {
             @Override
-            public boolean test(Integer v) { 
-                throw new TestException(); 
+            public boolean test(Integer v) {
+                throw new TestException();
             }
         }).subscribe(ts);
-        
+
         Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
-        
+
         ps.onNext(1);
-        
+
         Assert.assertFalse("Subscribed?", ps.hasSubscribers());
-        
+
         ts.assertError(TestException.class);
     }
 
     @Test
     public void doesntRequestOnItsOwn() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
-        
+
         Flowable.range(1, 10).filter(Functions.alwaysTrue()).subscribe(ts);
-        
+
         ts.assertNoValues();
-        
+
         ts.request(10);
-        
+
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts.assertNoErrors();
         ts.assertComplete();

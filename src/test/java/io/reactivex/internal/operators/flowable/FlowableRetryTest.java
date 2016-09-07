@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -40,7 +40,7 @@ public class FlowableRetryTest {
     @Test
     public void iterativeBackoff() {
         Subscriber<String> consumer = TestHelper.mockSubscriber();
-        
+
         Flowable<String> producer = Flowable.unsafeCreate(new Publisher<String>() {
 
             private AtomicInteger count = new AtomicInteger(4);
@@ -55,10 +55,10 @@ public class FlowableRetryTest {
                     t1.onNext("hello");
                     t1.onComplete();
                 }
-                else 
+                else
                     t1.onError(new RuntimeException());
             }
-            
+
         });
         TestSubscriber<String> ts = new TestSubscriber<String>(consumer);
         producer.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
@@ -81,7 +81,7 @@ public class FlowableRetryTest {
                         @Override
                         public Flowable<Object> apply(Tuple t) {
                             System.out.println("Retry # "+t.count);
-                            return t.count > 20 ? 
+                            return t.count > 20 ?
                                 Flowable.<Object>error(t.n) :
                                 Flowable.timer(t.count *1L, TimeUnit.MILLISECONDS)
                                 .cast(Object.class);
@@ -397,7 +397,7 @@ public class FlowableRetryTest {
                 // 0 = not set, 1 = fast path, 2 = backpressure
                 final AtomicInteger path = new AtomicInteger(0);
                 volatile boolean done = false;
-                
+
                 @Override
                 public void request(long n) {
                     if (n == Long.MAX_VALUE && path.compareAndSet(0, 1)) {
@@ -436,7 +436,7 @@ public class FlowableRetryTest {
                 @Override
                 public void cancel() {
                     // TODO Auto-generated method stub
-                    
+
                 }
             });
         }
@@ -469,15 +469,15 @@ public class FlowableRetryTest {
 
                     @Override
                     public void request(long n) {
-                        
+
                     }
-                    
+
                     @Override
                     public void cancel() {
                         subsCount.decrementAndGet();
                     }
                 });
-                
+
             }
         };
         Flowable<String> stream = Flowable.unsafeCreate(onSubscribe);
@@ -579,9 +579,9 @@ public class FlowableRetryTest {
                 @Override
                 public void request(long n) {
                     // TODO Auto-generated method stub
-                    
+
                 }
-                
+
                 @Override
                 public void cancel() {
                     terminate.set(true);
@@ -619,9 +619,9 @@ public class FlowableRetryTest {
 
         protected Subscriber<T> target;
 
-        /** 
+        /**
          * Wrap existing Observer
-         * @param target the target subscriber 
+         * @param target the target subscriber
          */
         public AsyncObserver(Subscriber<T> target) {
             this.target = target;
@@ -704,7 +704,7 @@ public class FlowableRetryTest {
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
-    
+
     @Test//(timeout = 15000)
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
@@ -716,7 +716,7 @@ public class FlowableRetryTest {
                 TestSubscriber<String> ts = new TestSubscriber<String>(observer);
                 origin.retry().observeOn(Schedulers.computation()).subscribe(ts);
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
-                
+
                 InOrder inOrder = inOrder(observer);
                 // should have no errors
                 verify(observer, never()).onError(any(Throwable.class));
@@ -730,7 +730,7 @@ public class FlowableRetryTest {
             }
         }
     }
-    
+
     @Test//(timeout = 15000)
     public void testRetryWithBackpressureParallel() throws InterruptedException {
         final int NUM_LOOPS = 1;
@@ -843,7 +843,7 @@ public class FlowableRetryTest {
                         return "msg: " + count.incrementAndGet();
                     }
                 });
-        
+
         origin.retry()
         .groupBy(new Function<String, String>() {
             @Override
@@ -858,7 +858,7 @@ public class FlowableRetryTest {
             }
         })
         .subscribe(new TestSubscriber<String>(observer));
-        
+
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
         inOrder.verify(observer, times(NUM_MSG)).onNext(any(java.lang.String.class));
@@ -883,11 +883,11 @@ public class FlowableRetryTest {
                 o.onSubscribe(new BooleanSubscription());
                 for(int i=0; i<NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());
-                }   
+                }
                 o.onComplete();
             }
         });
-        
+
         origin.retry()
         .groupBy(new Function<String, String>() {
             @Override
@@ -902,7 +902,7 @@ public class FlowableRetryTest {
             }
         })
         .subscribe(new TestSubscriber<String>(observer));
-        
+
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
         inOrder.verify(observer, times(NUM_MSG)).onNext(any(java.lang.String.class));
@@ -919,7 +919,7 @@ public class FlowableRetryTest {
     @Test
     public void retryWhenDefaultScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.just(1)
         .concatWith(Flowable.<Integer>error(new TestException()))
         .retryWhen((Function)new Function<Flowable, Flowable>() {
@@ -928,18 +928,18 @@ public class FlowableRetryTest {
                 return o.take(2);
             }
         }).subscribe(ts);
-        
+
         ts.assertValues(1, 1);
         ts.assertNoErrors();
         ts.assertComplete();
-        
+
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void retryWhenTrampolineScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.just(1)
         .concatWith(Flowable.<Integer>error(new TestException()))
         .subscribeOn(Schedulers.trampoline())
@@ -949,7 +949,7 @@ public class FlowableRetryTest {
                 return o.take(2);
             }
         }).subscribe(ts);
-        
+
         ts.assertValues(1, 1);
         ts.assertNoErrors();
         ts.assertComplete();

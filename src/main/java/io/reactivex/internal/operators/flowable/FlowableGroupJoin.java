@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,15 +36,15 @@ import io.reactivex.processors.UnicastProcessor;
 public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends AbstractFlowableWithUpstream<TLeft, R> {
 
     final Publisher<? extends TRight> other;
-    
+
     final Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd;
-    
+
     final Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
-    
+
     final BiFunction<? super TLeft, ? super Flowable<TRight>, ? extends R> resultSelector;
-    
+
     public FlowableGroupJoin(
-            Publisher<TLeft> source, 
+            Publisher<TLeft> source,
             Publisher<? extends TRight> other,
             Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
             Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
@@ -59,75 +59,75 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
 
-        GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent = 
+        GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
                 new GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>(s, leftEnd, rightEnd, resultSelector);
-        
+
         s.onSubscribe(parent);
-        
+
         LeftRightSubscriber left = new LeftRightSubscriber(parent, true);
         parent.disposables.add(left);
         LeftRightSubscriber right = new LeftRightSubscriber(parent, false);
         parent.disposables.add(right);
-        
+
         source.subscribe(left);
         other.subscribe(right);
     }
-    
+
     interface JoinSupport {
-        
+
         void innerError(Throwable ex);
-        
+
         void innerComplete(LeftRightSubscriber sender);
-        
+
         void innerValue(boolean isLeft, Object o);
-        
+
         void innerClose(boolean isLeft, LeftRightEndSubscriber index);
-        
+
         void innerCloseError(Throwable ex);
     }
-    
-    static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> 
+
+    static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Subscription, JoinSupport {
 
         /** */
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Subscriber<? super R> actual;
-        
+
         final AtomicLong requested;
-        
+
         final SpscLinkedArrayQueue<Object> queue;
-        
+
         final CompositeDisposable disposables;
-        
+
         final Map<Integer, UnicastProcessor<TRight>> lefts;
-        
+
         final Map<Integer, TRight> rights;
 
         final AtomicReference<Throwable> error;
-        
+
         final Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd;
-        
+
         final Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
-        
+
         final BiFunction<? super TLeft, ? super Flowable<TRight>, ? extends R> resultSelector;
-        
+
         final AtomicInteger active;
-        
+
         int leftIndex;
-        
+
         int rightIndex;
 
         volatile boolean cancelled;
-        
+
         static final Integer LEFT_VALUE = 1;
-        
+
         static final Integer RIGHT_VALUE = 2;
-        
+
         static final Integer LEFT_CLOSE = 3;
-        
+
         static final Integer RIGHT_CLOSE = 4;
-        
+
         public GroupJoinSubscription(Subscriber<? super R> actual, Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
                         BiFunction<? super TLeft, ? super Flowable<TRight>, ? extends R> resultSelector) {
@@ -143,7 +143,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
             this.resultSelector = resultSelector;
             this.active = new AtomicInteger(2);
         }
-        
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
@@ -162,24 +162,24 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                 queue.clear();
             }
         }
-        
+
         void cancelAll() {
             disposables.dispose();
         }
-        
+
         void errorAll(Subscriber<?> a) {
             Throwable ex = ExceptionHelper.terminate(error);
-            
+
             for (UnicastProcessor<TRight> up : lefts.values()) {
                 up.onError(ex);
             }
-            
+
             lefts.clear();
             rights.clear();
-            
+
             a.onError(ex);
         }
-        
+
         void fail(Throwable exc, Subscriber<?> a, SimpleQueue<?> q) {
             Exceptions.throwIfFatal(exc);
             ExceptionHelper.addThrowable(error, exc);
@@ -187,23 +187,23 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
             cancelAll();
             errorAll(a);
         }
-        
+
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
-            
+
             int missed = 1;
             SpscLinkedArrayQueue<Object> q = queue;
             Subscriber<? super R> a = actual;
-            
+
             for (;;) {
                 for (;;) {
                     if (cancelled) {
                         q.clear();
                         return;
                     }
-                    
+
                     Throwable ex = error.get();
                     if (ex != null) {
                         q.clear();
@@ -211,13 +211,13 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                         errorAll(a);
                         return;
                     }
-                    
+
                     boolean d = active.get() == 0;
-                    
+
                     Integer mode = (Integer)q.poll();
-                    
+
                     boolean empty = mode == null;
-                    
+
                     if (d && empty) {
                         for (UnicastProcessor<?> up : lefts.values()) {
                             up.onComplete();
@@ -226,39 +226,39 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                         lefts.clear();
                         rights.clear();
                         disposables.dispose();
-                        
+
                         a.onComplete();
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     Object val = q.poll();
-                    
+
                     if (mode == LEFT_VALUE) {
                         @SuppressWarnings("unchecked")
                         TLeft left = (TLeft)val;
-                        
+
                         UnicastProcessor<TRight> up = UnicastProcessor.<TRight>create();
                         int idx = leftIndex++;
                         lefts.put(idx, up);
-                        
+
                         Publisher<TLeftEnd> p;
-                        
+
                         try {
                             p = ObjectHelper.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
                         }
-                        
+
                         LeftRightEndSubscriber end = new LeftRightEndSubscriber(this, true, idx);
                         disposables.add(end);
-                        
+
                         p.subscribe(end);
-                        
+
                         ex = error.get();
                         if (ex != null) {
                             q.clear();
@@ -266,16 +266,16 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                             errorAll(a);
                             return;
                         }
-                        
+
                         R w;
-                        
+
                         try {
                             w = ObjectHelper.requireNonNull(resultSelector.apply(left, up), "The resultSelector returned a null value");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
                         }
-                        
+
                         // TODO since only left emission calls the actual, it is possible to link downstream backpressure with left's source and not error out
                         if (requested.get() != 0L) {
                             a.onNext(w);
@@ -284,33 +284,33 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                             fail(new MissingBackpressureException("Could not emit value due to lack of requests"), a, q);
                             return;
                         }
-                        
+
                         for (TRight right : rights.values()) {
                             up.onNext(right);
                         }
-                    } 
+                    }
                     else if (mode == RIGHT_VALUE) {
                         @SuppressWarnings("unchecked")
                         TRight right = (TRight)val;
-                        
+
                         int idx = rightIndex++;
-                        
+
                         rights.put(idx, right);
-                        
+
                         Publisher<TRightEnd> p;
-                        
+
                         try {
                             p = ObjectHelper.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
                         }
-                        
+
                         LeftRightEndSubscriber end = new LeftRightEndSubscriber(this, false, idx);
                         disposables.add(end);
-                        
+
                         p.subscribe(end);
-                        
+
                         ex = error.get();
                         if (ex != null) {
                             q.clear();
@@ -318,14 +318,14 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                             errorAll(a);
                             return;
                         }
-                        
+
                         for (UnicastProcessor<TRight> up : lefts.values()) {
                             up.onNext(right);
                         }
                     }
                     else if (mode == LEFT_CLOSE) {
                         LeftRightEndSubscriber end = (LeftRightEndSubscriber)val;
-                        
+
                         UnicastProcessor<TRight> up = lefts.remove(end.index);
                         disposables.remove(end);
                         if (up != null) {
@@ -334,7 +334,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                     }
                     else if (mode == RIGHT_CLOSE) {
                         LeftRightEndSubscriber end = (LeftRightEndSubscriber)val;
-                        
+
                         rights.remove(end.index);
                         disposables.remove(end);
                     }
@@ -346,7 +346,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                 }
             }
         }
-        
+
         @Override
         public void innerError(Throwable ex) {
             if (ExceptionHelper.addThrowable(error, ex)) {
@@ -356,14 +356,14 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
                 RxJavaPlugins.onError(ex);
             }
         }
-        
+
         @Override
         public void innerComplete(LeftRightSubscriber sender) {
             disposables.delete(sender);
             active.decrementAndGet();
             drain();
         }
-        
+
         @Override
         public void innerValue(boolean isLeft, Object o) {
             synchronized (this) {
@@ -371,7 +371,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
             }
             drain();
         }
-        
+
         @Override
         public void innerClose(boolean isLeft, LeftRightEndSubscriber index) {
             synchronized (this) {
@@ -379,7 +379,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
             }
             drain();
         }
-        
+
         @Override
         public void innerCloseError(Throwable ex) {
             if (ExceptionHelper.addThrowable(error, ex)) {
@@ -389,8 +389,8 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
             }
         }
     }
-    
-    static final class LeftRightSubscriber 
+
+    static final class LeftRightSubscriber
     extends AtomicReference<Subscription>
     implements Subscriber<Object>, Disposable {
         /** */
@@ -399,12 +399,12 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
         final JoinSupport parent;
 
         final boolean isLeft;
-        
+
         public LeftRightSubscriber(JoinSupport parent, boolean isLeft) {
             this.parent = parent;
             this.isLeft = isLeft;
         }
-        
+
         @Override
         public void dispose() {
             SubscriptionHelper.cancel(this);
@@ -436,10 +436,10 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
         public void onComplete() {
             parent.innerComplete(this);
         }
-        
+
     }
-    
-    static final class LeftRightEndSubscriber 
+
+    static final class LeftRightEndSubscriber
     extends AtomicReference<Subscription>
     implements Subscriber<Object>, Disposable {
         /** */
@@ -448,16 +448,16 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
         final JoinSupport parent;
 
         final boolean isLeft;
-        
+
         final int index;
-        
-        public LeftRightEndSubscriber(JoinSupport parent, 
+
+        public LeftRightEndSubscriber(JoinSupport parent,
                 boolean isLeft, int index) {
             this.parent = parent;
             this.isLeft = isLeft;
             this.index = index;
         }
-        
+
         @Override
         public void dispose() {
             SubscriptionHelper.cancel(this);
@@ -491,7 +491,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
         public void onComplete() {
             parent.innerClose(isLeft, this);
         }
-        
+
     }
 
 }

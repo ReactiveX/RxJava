@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -33,12 +33,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowableWithUpstream<T, T> {
 
     final long bufferSize;
-    
+
     final Action onOverflow;
-    
+
     final BackpressureOverflowStrategy strategy;
-    
-    public FlowableOnBackpressureBufferStrategy(Publisher<T> source, 
+
+    public FlowableOnBackpressureBufferStrategy(Publisher<T> source,
             long bufferSize, Action onOverflow, BackpressureOverflowStrategy strategy) {
         super(source);
         this.bufferSize = bufferSize;
@@ -50,32 +50,32 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
     protected void subscribeActual(Subscriber<? super T> s) {
         source.subscribe(new OnBackpressureBufferStrategySubscriber<T>(s, onOverflow, strategy, bufferSize));
     }
-    
-    static final class OnBackpressureBufferStrategySubscriber<T> 
+
+    static final class OnBackpressureBufferStrategySubscriber<T>
     extends AtomicInteger
     implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = 3240706908776709697L;
 
         final Subscriber<? super T> actual;
-        
+
         final Action onOverflow;
-        
+
         final BackpressureOverflowStrategy strategy;
 
         final long bufferSize;
 
         final AtomicLong requested;
-        
+
         final Deque<T> deque;
-        
+
         Subscription s;
-        
+
         volatile boolean cancelled;
-        
+
         volatile boolean done;
         Throwable error;
-        
+
         public OnBackpressureBufferStrategySubscriber(Subscriber<? super T> actual, Action onOverflow,
                 BackpressureOverflowStrategy strategy, long bufferSize) {
             this.actual = actual;
@@ -85,18 +85,18 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
             this.requested = new AtomicLong();
             this.deque = new ArrayDeque<T>();
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 actual.onSubscribe(this);
-                
+
                 s.request(Long.MAX_VALUE);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
@@ -145,7 +145,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                 drain();
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -156,13 +156,13 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
             done = true;
             drain();
         }
-        
+
         @Override
         public void onComplete() {
             done = true;
             drain();
         }
-        
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
@@ -170,28 +170,28 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                 drain();
             }
         }
-        
+
         @Override
         public void cancel() {
             cancelled = true;
             s.cancel();
-            
+
             if (getAndIncrement() == 0) {
                 clear(deque);
             }
         }
-        
+
         void clear(Deque<T> dq) {
             synchronized (dq) {
                 dq.clear();
             }
         }
-        
+
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
-            
+
             int missed = 1;
             Deque<T> dq = deque;
             Subscriber<? super T> a = actual;
@@ -203,17 +203,17 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                         clear(dq);
                         return;
                     }
-                    
+
                     boolean d = done;
-                    
+
                     T v;
-                    
+
                     synchronized (dq) {
                         v = dq.poll();
                     }
-                    
+
                     boolean empty = v == null;
-                    
+
                     if (d) {
                         Throwable ex = error;
                         if (ex != null) {
@@ -226,30 +226,30 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                             return;
                         }
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     a.onNext(v);
-                    
+
                     e++;
                 }
-                
+
                 if (e == r) {
                     if (cancelled) {
                         clear(dq);
                         return;
                     }
-                    
+
                     boolean d = done;
-                    
+
                     boolean empty;
-                    
+
                     synchronized (dq) {
                         empty = dq.isEmpty();
                     }
-                    
+
                     if (d) {
                         Throwable ex = error;
                         if (ex != null) {
@@ -263,11 +263,11 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                         }
                     }
                 }
-                
+
                 if (e != 0L && r != Long.MAX_VALUE) {
                     BackpressureHelper.produced(requested, e);
                 }
-                
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -81,7 +81,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
         Flowable<String> observable = w.onErrorResumeNext(resume);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        
+
         observable.subscribe(observer);
 
         try {
@@ -98,7 +98,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
         verify(observer, times(1)).onNext("twoResume");
         verify(observer, times(1)).onNext("threeResume");
     }
-    
+
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribe() {
@@ -108,7 +108,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
             public void subscribe(Subscriber<? super String> t1) {
                 throw new RuntimeException("force failure");
             }
-            
+
         });
         Flowable<String> resume = Flowable.just("resume");
         Flowable<String> observable = testObservable.onErrorResumeNext(resume);
@@ -120,7 +120,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
         verify(observer, times(1)).onComplete();
         verify(observer, times(1)).onNext("resume");
     }
-    
+
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribeAsync() {
@@ -130,7 +130,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
             public void subscribe(Subscriber<? super String> t1) {
                 throw new RuntimeException("force failure");
             }
-            
+
         });
         Flowable<String> resume = Flowable.just("resume");
         Flowable<String> observable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeNext(resume);
@@ -141,7 +141,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
         observable.subscribe(ts);
 
         ts.awaitTerminalEvent();
-        
+
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
         verify(observer, times(1)).onNext("resume");
@@ -188,7 +188,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
             System.out.println("done starting TestObservable thread");
         }
     }
-    
+
     @Test
     public void testBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -220,13 +220,13 @@ public class FlowableOnErrorResumeNextViaObservableTest {
     @Test
     public void normalBackpressure() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        
+
         PublishProcessor<Integer> ps = PublishProcessor.create();
-        
+
         ps.onErrorResumeNext(Flowable.range(3, 2)).subscribe(ts);
-        
+
         ts.request(2);
-        
+
         ps.onNext(1);
         ps.onNext(2);
         ps.onError(new TestException("Forced failure"));
@@ -236,7 +236,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
         ts.assertNotComplete();
 
         ts.request(2);
-        
+
         ts.assertValues(1, 2, 3, 4);
         ts.assertNoErrors();
         ts.assertComplete();

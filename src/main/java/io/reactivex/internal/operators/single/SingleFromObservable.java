@@ -62,7 +62,7 @@ public final class SingleFromObservable<T> extends Single<T> {
                 last = null;
                 if (v != null) {
                     s.onSuccess(v);
-                } else if (defaultValue != null) { 
+                } else if (defaultValue != null) {
                     s.onSuccess(defaultValue);
                 } else {
                     s.onError(new NoSuchElementException());

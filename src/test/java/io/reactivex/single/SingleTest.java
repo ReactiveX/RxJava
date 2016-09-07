@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -44,9 +44,9 @@ public class SingleTest {
 
             @Override
             public void onSubscribe(Disposable d) {
-                
+
             }
-            
+
             @Override
             public void onSuccess(String value) {
                 v.set(value);
@@ -126,7 +126,7 @@ public class SingleTest {
     @Test
     public void testCreateSuccess() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
-        
+
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
             public void subscribe(SingleObserver<? super Object> s) {
@@ -134,7 +134,7 @@ public class SingleTest {
                 s.onSuccess("Hello");
             }
         }).toFlowable().subscribe(ts);
-        
+
         ts.assertValueSequence(Arrays.asList("Hello"));
     }
 
@@ -148,7 +148,7 @@ public class SingleTest {
                 s.onError(new RuntimeException("fail"));
             }
         }).toFlowable().subscribe(ts);
-        
+
         ts.assertError(RuntimeException.class);
         ts.assertErrorMessage("fail");
     }
@@ -305,7 +305,7 @@ public class SingleTest {
             public void onSubscribe(Disposable d) {
                 sd.replace(d);
             }
-            
+
             @Override
             public void onSuccess(String value) {
                 // not interested in value
@@ -422,7 +422,7 @@ public class SingleTest {
             fail("timed out waiting for latch");
         }
     }
-    
+
     @Test
     public void testBackpressureAsObservable() {
         Single<String> s = Single.unsafeCreate(new SingleSource<String>() {
@@ -443,7 +443,7 @@ public class SingleTest {
 
         ts.assertValue("hello");
     }
-    
+
     @Test
     public void testToObservable() {
     	Flowable<String> a = Single.just("a").toFlowable();

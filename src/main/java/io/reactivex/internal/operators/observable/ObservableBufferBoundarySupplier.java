@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -27,11 +27,11 @@ import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableBufferBoundarySupplier<T, U extends Collection<? super T>, B> 
+public final class ObservableBufferBoundarySupplier<T, U extends Collection<? super T>, B>
 extends AbstractObservableWithUpstream<T, U> {
     final Callable<? extends ObservableSource<B>> boundarySupplier;
     final Callable<U> bufferSupplier;
-    
+
     public ObservableBufferBoundarySupplier(ObservableSource<T> source, Callable<? extends ObservableSource<B>> boundarySupplier, Callable<U> bufferSupplier) {
         super(source);
         this.boundarySupplier = boundarySupplier;
@@ -42,35 +42,35 @@ extends AbstractObservableWithUpstream<T, U> {
     protected void subscribeActual(Observer<? super U> t) {
         source.subscribe(new BufferBoundarySupplierSubscriber<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundarySupplier));
     }
-    
+
     static final class BufferBoundarySupplierSubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
         /** */
         final Callable<U> bufferSupplier;
         final Callable<? extends ObservableSource<B>> boundarySupplier;
-        
+
         Disposable s;
-        
+
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
-        
+
         U buffer;
-        
+
         public BufferBoundarySupplierSubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
                                                 Callable<? extends ObservableSource<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
             this.boundarySupplier = boundarySupplier;
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 Observer<? super U> actual = this.actual;
-                
+
                 U b;
-                
+
                 try {
                     b = bufferSupplier.call();
                 } catch (Throwable e) {
@@ -80,7 +80,7 @@ extends AbstractObservableWithUpstream<T, U> {
                     EmptyDisposable.error(e, actual);
                     return;
                 }
-                
+
                 if (b == null) {
                     cancelled = true;
                     s.dispose();
@@ -88,9 +88,9 @@ extends AbstractObservableWithUpstream<T, U> {
                     return;
                 }
                 buffer = b;
-                
+
                 ObservableSource<B> boundary;
-                
+
                 try {
                     boundary = boundarySupplier.call();
                 } catch (Throwable ex) {
@@ -100,25 +100,25 @@ extends AbstractObservableWithUpstream<T, U> {
                     EmptyDisposable.error(ex, actual);
                     return;
                 }
-                
+
                 if (boundary == null) {
                     cancelled = true;
                     s.dispose();
                     EmptyDisposable.error(new NullPointerException("The boundary publisher supplied is null"), actual);
                     return;
                 }
-                
+
                 BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
                 other.set(bs);
-                
+
                 actual.onSubscribe(this);
-                
+
                 if (!cancelled) {
                     boundary.subscribe(bs);
                 }
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             synchronized (this) {
@@ -129,13 +129,13 @@ extends AbstractObservableWithUpstream<T, U> {
                 b.add(t);
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             dispose();
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             U b;
@@ -152,14 +152,14 @@ extends AbstractObservableWithUpstream<T, U> {
                 QueueDrainHelper.drainLoop(queue, actual, false, this, this);
             }
         }
-        
+
         @Override
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
                 s.dispose();
                 disposeOther();
-                
+
                 if (enter()) {
                     queue.clear();
                 }
@@ -174,11 +174,11 @@ extends AbstractObservableWithUpstream<T, U> {
         void disposeOther() {
             DisposableHelper.dispose(other);
         }
-        
+
         void next() {
-            
+
             U next;
-            
+
             try {
                 next = bufferSupplier.call();
             } catch (Throwable e) {
@@ -187,7 +187,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 actual.onError(e);
                 return;
             }
-            
+
             if (next == null) {
                 dispose();
                 actual.onError(new NullPointerException("The buffer supplied is null"));
@@ -195,7 +195,7 @@ extends AbstractObservableWithUpstream<T, U> {
             }
 
             ObservableSource<B> boundary;
-            
+
             try {
                 boundary = boundarySupplier.call();
             } catch (Throwable ex) {
@@ -205,22 +205,22 @@ extends AbstractObservableWithUpstream<T, U> {
                 actual.onError(ex);
                 return;
             }
-            
+
             if (boundary == null) {
                 cancelled = true;
                 s.dispose();
                 actual.onError(new NullPointerException("The boundary publisher supplied is null"));
                 return;
             }
-            
+
             BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
 
             Disposable o = other.get();
-            
+
             if (!other.compareAndSet(o, bs)) {
                 return;
             }
-            
+
             U b;
             synchronized (this) {
                 b = buffer;
@@ -229,25 +229,25 @@ extends AbstractObservableWithUpstream<T, U> {
                 }
                 buffer = next;
             }
-            
+
             boundary.subscribe(bs);
-            
+
             fastPathEmit(b, false, this);
         }
-        
+
         @Override
         public void accept(Observer<? super U> a, U v) {
             actual.onNext(v);
         }
-        
+
     }
-    
-    static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B> 
+
+    static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B>
     extends DisposableObserver<B> {
         final BufferBoundarySupplierSubscriber<T, U, B> parent;
-        
+
         boolean once;
-        
+
         public BufferBoundarySubscriber(BufferBoundarySupplierSubscriber<T, U, B> parent) {
             this.parent = parent;
         }
@@ -261,7 +261,7 @@ extends AbstractObservableWithUpstream<T, U> {
             dispose();
             parent.next();
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (once) {
@@ -271,7 +271,7 @@ extends AbstractObservableWithUpstream<T, U> {
             once = true;
             parent.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (once) {

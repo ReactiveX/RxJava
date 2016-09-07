@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -28,18 +28,18 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class CompletableConcat extends Completable {
     final Publisher<? extends CompletableSource> sources;
     final int prefetch;
-    
+
     public CompletableConcat(Publisher<? extends CompletableSource> sources, int prefetch) {
         this.sources = sources;
         this.prefetch = prefetch;
     }
-    
+
     @Override
     public void subscribeActual(CompletableObserver s) {
         CompletableConcatSubscriber parent = new CompletableConcatSubscriber(s, prefetch);
         sources.subscribe(parent);
     }
-    
+
     static final class CompletableConcatSubscriber
     extends AtomicInteger
     implements Subscriber<CompletableSource>, Disposable {
@@ -48,17 +48,17 @@ public final class CompletableConcat extends Completable {
         final CompletableObserver actual;
         final int prefetch;
         final SequentialDisposable sd;
-        
+
         final SpscArrayQueue<CompletableSource> queue;
-        
+
         Subscription s;
-        
+
         volatile boolean done;
 
         final AtomicBoolean once = new AtomicBoolean();
-        
+
         final ConcatInnerObserver inner;
-        
+
         public CompletableConcatSubscriber(CompletableObserver actual, int prefetch) {
             this.actual = actual;
             this.prefetch = prefetch;
@@ -66,7 +66,7 @@ public final class CompletableConcat extends Completable {
             this.sd = new SequentialDisposable();
             this.inner = new ConcatInnerObserver();
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
@@ -75,7 +75,7 @@ public final class CompletableConcat extends Completable {
                 s.request(prefetch);
             }
         }
-        
+
         @Override
         public void onNext(CompletableSource t) {
             if (!queue.offer(t)) {
@@ -86,7 +86,7 @@ public final class CompletableConcat extends Completable {
                 next();
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (once.compareAndSet(false, true)) {
@@ -96,7 +96,7 @@ public final class CompletableConcat extends Completable {
             done = true;
             RxJavaPlugins.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
@@ -107,12 +107,12 @@ public final class CompletableConcat extends Completable {
                 next();
             }
         }
-        
+
         void innerError(Throwable e) {
             s.cancel();
             onError(e);
         }
-        
+
         void innerComplete() {
             if (decrementAndGet() != 0) {
                 next();
@@ -121,7 +121,7 @@ public final class CompletableConcat extends Completable {
                 s.request(1);
             }
         }
-        
+
         @Override
         public void dispose() {
             s.cancel();
@@ -146,21 +146,21 @@ public final class CompletableConcat extends Completable {
                 RxJavaPlugins.onError(new IllegalStateException("Queue is empty?!"));
                 return;
             }
-            
+
             c.subscribe(inner);
         }
-        
+
         final class ConcatInnerObserver implements CompletableObserver {
             @Override
             public void onSubscribe(Disposable d) {
                 sd.update(d);
             }
-            
+
             @Override
             public void onError(Throwable e) {
                 innerError(e);
             }
-            
+
             @Override
             public void onComplete() {
                 innerComplete();

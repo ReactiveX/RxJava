@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -28,7 +28,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 public final class MaybeFilter<T> extends AbstractMaybeWithUpstream<T, T> {
 
     final Predicate<? super T> predicate;
-    
+
     public MaybeFilter(MaybeSource<T> source, Predicate<? super T> predicate) {
         super(source);
         this.predicate = predicate;
@@ -38,15 +38,15 @@ public final class MaybeFilter<T> extends AbstractMaybeWithUpstream<T, T> {
     protected void subscribeActual(MaybeObserver<? super T> observer) {
         source.subscribe(new FilterMaybeObserver<T>(observer, predicate));
     }
-    
+
     static final class FilterMaybeObserver<T> implements MaybeObserver<T>, Disposable {
-        
+
         final MaybeObserver<? super T> actual;
-        
+
         final Predicate<? super T> predicate;
 
         Disposable d;
-        
+
         public FilterMaybeObserver(MaybeObserver<? super T> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
@@ -68,7 +68,7 @@ public final class MaybeFilter<T> extends AbstractMaybeWithUpstream<T, T> {
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
-                
+
                 actual.onSubscribe(this);
             }
         }
@@ -76,7 +76,7 @@ public final class MaybeFilter<T> extends AbstractMaybeWithUpstream<T, T> {
         @Override
         public void onSuccess(T value) {
             boolean b;
-            
+
             try {
                 b = predicate.test(value);
             } catch (Throwable ex) {
@@ -84,7 +84,7 @@ public final class MaybeFilter<T> extends AbstractMaybeWithUpstream<T, T> {
                 actual.onError(ex);
                 return;
             }
-            
+
             if (b) {
                 actual.onSuccess(value);
             } else {
@@ -101,8 +101,8 @@ public final class MaybeFilter<T> extends AbstractMaybeWithUpstream<T, T> {
         public void onComplete() {
             actual.onComplete();
         }
-        
-        
+
+
     }
 
 }

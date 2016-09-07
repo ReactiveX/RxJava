@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -34,7 +34,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
     final SpscLinkedArrayQueue<Object> queue;
 
     long requested;
-    
+
     volatile Subscription s;
     static final Subscription INITIAL = new Subscription() {
         @Override
@@ -46,8 +46,8 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
             // deliberately no op
         }
     };
-    
-    
+
+
     Disposable resource;
 
     volatile boolean cancelled;
@@ -77,7 +77,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
             dispose();
         }
     }
-    
+
     void dispose() {
         Disposable d = resource;
         resource = null;
@@ -128,29 +128,29 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
         if (wip.getAndIncrement() != 0) {
             return;
         }
-        
+
         int missed = 1;
-        
+
         final SpscLinkedArrayQueue<Object> q = queue;
         final Subscriber<? super T> a = actual;
-        
+
         for (;;) {
-            
+
             for (;;) {
-                
+
                 Object o = q.poll();
                 if (o == null) {
                     break;
                 }
                 Object v = q.poll();
-                
+
                 if (o == REQUEST) {
                     long mr = missedRequested.getAndSet(0L);
                     if (mr != 0L) {
                         requested = BackpressureHelper.addCap(requested, mr);
                         s.request(mr);
                     }
-                } else 
+                } else
                 if (o != s) {
                     continue;
                 } else
@@ -165,11 +165,11 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
                     } else {
                         next.cancel();
                     }
-                } else 
+                } else
                 if (NotificationLite.isError(v)) {
                     q.clear();
                     dispose();
-                    
+
                     Throwable ex = NotificationLite.getError(v);
                     if (!cancelled) {
                         cancelled = true;
@@ -194,7 +194,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
                     }
                 }
             }
-            
+
             missed = wip.addAndGet(-missed);
             if (missed == 0) {
                 break;

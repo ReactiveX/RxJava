@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -84,7 +84,7 @@ public class ObservableUsingTest {
         };
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        
+
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), disposeEagerly);
         o.subscribe(NbpObserver);
@@ -264,7 +264,7 @@ public class ObservableUsingTest {
             Observable
             .using(resourceFactory, observableFactory, disposeSubscription, disposeEagerly)
             .blockingLast();
-            
+
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {
             // Make sure that unsubscribe is called so that users can close
@@ -288,12 +288,12 @@ public class ObservableUsingTest {
         };
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        
+
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), true)
         .doOnDispose(unsub)
         .doOnComplete(completion);
-        
+
         o.safeSubscribe(NbpObserver);
 
         assertEquals(Arrays.asList("disposed", "completed" /* , "unsub" */), events);
@@ -315,27 +315,27 @@ public class ObservableUsingTest {
         };
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        
+
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), false)
         .doOnDispose(unsub)
         .doOnComplete(completion);
-        
+
         o.safeSubscribe(NbpObserver);
 
         assertEquals(Arrays.asList("completed", /*"unsub",*/ "disposed"), events);
 
     }
 
-    
-    
+
+
     @Test
     public void testUsingDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
-        
+
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
             @Override
             public Observable<String> apply(Resource resource) {
@@ -345,25 +345,25 @@ public class ObservableUsingTest {
         };
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        
+
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), true)
         .doOnDispose(unsub)
         .doOnError(onError);
-        
+
         o.safeSubscribe(NbpObserver);
 
         assertEquals(Arrays.asList("disposed", "error" /*, "unsub"*/), events);
 
     }
-    
+
     @Test
     public void testUsingDoesNotDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
         final Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
-        
+
         Function<Resource, Observable<String>> observableFactory = new Function<Resource, Observable<String>>() {
             @Override
             public Observable<String> apply(Resource resource) {
@@ -373,12 +373,12 @@ public class ObservableUsingTest {
         };
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        
+
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), false)
         .doOnDispose(unsub)
         .doOnError(onError);
-        
+
         o.safeSubscribe(NbpObserver);
 
         assertEquals(Arrays.asList("error", /* "unsub",*/ "disposed"), events);
@@ -421,7 +421,7 @@ public class ObservableUsingTest {
             }
         };
     }
-    
+
     private static Action createOnCompletedAction(final List<String> events) {
         return new Action() {
             @Override
@@ -430,5 +430,5 @@ public class ObservableUsingTest {
             }
         };
     }
-    
+
 }

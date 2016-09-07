@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, T> {
     /** The cache and replay state. */
     final CacheState<T> state;
-    
+
     final AtomicBoolean once;
 
     /**
@@ -43,7 +43,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     public static <T> Observable<T> from(Observable<T> source) {
         return from(source, 16);
     }
-    
+
     /**
      * Creates a cached Observable with the given capacity hint.
      * @param <T> the value type
@@ -58,7 +58,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         CacheState<T> state = new CacheState<T>(source, capacityHint);
         return RxJavaPlugins.onAssembly(new ObservableCache<T>(source, state));
     }
-    
+
     /**
      * Private constructor because state needs to be shared between the Observable body and
      * the onSubscribe function.
@@ -76,17 +76,17 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         // we can connect first because we replay everything anyway
         ReplayDisposable<T> rp = new ReplayDisposable<T>(t, state);
         state.addProducer(rp);
-        
+
         t.onSubscribe(rp);
 
         // we ensure a single connection here to save an instance field of AtomicBoolean in state.
         if (!once.get() && once.compareAndSet(false, true)) {
             state.connect();
         }
-        
+
         rp.replay();
     }
-    
+
     /**
      * Check if this cached observable is connected to its source.
      * @return true if already connected
@@ -94,7 +94,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     /* public */boolean isConnected() {
         return state.isConnected;
     }
-    
+
     /**
      * Returns true if there are observers subscribed to this observable.
      * @return true if the cache has downstream Observers
@@ -102,7 +102,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     /* public */ boolean hasObservers() {
         return state.producers.length != 0;
     }
-    
+
     /**
      * Returns the number of events currently cached.
      * @return the current number of elements in the cache
@@ -110,7 +110,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     /* public */ int cachedEventCount() {
         return state.size();
     }
-    
+
     /**
      * Contains the active child producers and the values to replay.
      *
@@ -125,15 +125,15 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         volatile ReplayDisposable<?>[] producers;
         /** The default empty array of producers. */
         static final ReplayDisposable<?>[] EMPTY = new ReplayDisposable<?>[0];
-        
+
         /** Set to true after connection. */
         volatile boolean isConnected;
-        /** 
+        /**
          * Indicates that the source has completed emitting values or the
          * Observable was forcefully terminated.
          */
         boolean sourceDone;
-        
+
         public CacheState(Observable<? extends T> source, int capacityHint) {
             super(capacityHint);
             this.source = source;
@@ -184,12 +184,12 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                 producers = b;
             }
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             connection.update(s);
         }
-        
+
         /**
          * Connects the cache to the source.
          * Make sure this is called only once.
@@ -236,7 +236,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
             }
         }
     }
-    
+
     /**
      * Keeps track of the current request amount and the replay position for a child Subscriber.
      *
@@ -247,14 +247,14 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         final Observer<? super T> child;
         /** The cache state object. */
         final CacheState<T> state;
-        
-        /** 
+
+        /**
          * Contains the reference to the buffer segment in replay.
          * Accessed after reading state.size() and when emitting == true.
          */
         Object[] currentBuffer;
-        /** 
-         * Contains the index into the currentBuffer where the next value is expected. 
+        /**
+         * Contains the index into the currentBuffer where the next value is expected.
          * Accessed after reading state.size() and when emitting == true.
          */
         int currentIndexInBuffer;
@@ -267,10 +267,10 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         boolean emitting;
         /** Indicates there were some state changes/replay attempts; guarded by this. */
         boolean missed;
-        
+
         /** Set if the Subscription has been cancelled/disposed. */
         volatile boolean cancelled;
-        
+
         public ReplayDisposable(Observer<? super T> child, CacheState<T> state) {
             this.child = child;
             this.state = state;
@@ -287,7 +287,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                 state.removeProducer(this);
             }
         }
-        
+
         /**
          * Continue replaying available values if there are requests for them.
          */
@@ -303,20 +303,20 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
             boolean skipFinal = false;
             try {
                 final Observer<? super T> child = this.child;
-                
+
                 for (;;) {
-                    
+
                     if (cancelled) {
                         skipFinal = true;
                         return;
                     }
-                        
+
                     // read the size, if it is non-zero, we can safely read the head and
                     // read values up to the given absolute index
                     int s = state.size();
                     if (s != 0) {
                         Object[] b = currentBuffer;
-                        
+
                         // latch onto the very first buffer now that it is available.
                         if (b == null) {
                             b = state.head();
@@ -336,7 +336,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                                 k = 0;
                             }
                             Object o = b[k];
-                            
+
                             try {
                                 if (NotificationLite.accept(o, child)) {
                                     skipFinal = true;
@@ -352,22 +352,22 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                                 }
                                 return;
                             }
-                            
+
                             k++;
                             j++;
                         }
-                        
+
                         if (cancelled) {
                             skipFinal = true;
                             return;
                         }
-                        
+
                         index = j;
                         currentIndexInBuffer = k;
                         currentBuffer = b;
-                    
+
                     }
-                    
+
                     synchronized (this) {
                         if (!missed) {
                             emitting = false;

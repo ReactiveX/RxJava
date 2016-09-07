@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -33,16 +33,16 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         super(source);
         this.handler = handler;
     }
-    
+
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
-        
+
         SerializedSubscriber<T> z = new SerializedSubscriber<T>(s);
-        
+
         FlowableProcessor<Object> processor = UnicastProcessor.<Object>create(8).toSerialized();
-        
+
         Publisher<?> when;
-        
+
         try {
             when = ObjectHelper.requireNonNull(handler.apply(processor), "handler returned a null Publisher");
         } catch (Throwable ex) {
@@ -50,46 +50,46 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
             EmptySubscription.error(ex, s);
             return;
         }
-        
+
         WhenReceiver<T, Object> receiver = new WhenReceiver<T, Object>(source);
-        
+
         RepeatWhenSubscriber<T> subscriber = new RepeatWhenSubscriber<T>(z, processor, receiver);
-        
+
         receiver.subscriber = subscriber;
-        
+
         s.onSubscribe(subscriber);
-        
+
         when.subscribe(receiver);
-        
+
         receiver.onNext(0);
     }
-    
-    static final class WhenReceiver<T, U> 
+
+    static final class WhenReceiver<T, U>
     extends AtomicInteger
     implements Subscriber<Object>, Subscription {
-        
+
         /** */
         private static final long serialVersionUID = 2827772011130406689L;
 
         final Publisher<T> source;
-        
+
         final AtomicReference<Subscription> subscription;
-        
+
         final AtomicLong requested;
-        
+
         WhenSourceSubscriber<T, U> subscriber;
-        
+
         public WhenReceiver(Publisher<T> source) {
             this.source = source;
             this.subscription = new AtomicReference<Subscription>();
             this.requested = new AtomicLong();
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             SubscriptionHelper.deferredSetOnce(subscription, requested, s);
         }
-        
+
         @Override
         public void onNext(Object t) {
             if (getAndIncrement() == 0) {
@@ -97,70 +97,70 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
                     if (SubscriptionHelper.isCancelled(subscription.get())) {
                         return;
                     }
-                    
+
                     source.subscribe(subscriber);
-                    
+
                     if (decrementAndGet() == 0) {
                         break;
                     }
                 }
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             subscriber.cancel();
             subscriber.actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             subscriber.cancel();
             subscriber.actual.onComplete();
         }
-        
+
         @Override
         public void request(long n) {
             SubscriptionHelper.deferredRequest(subscription, requested, n);
         }
-        
+
         @Override
         public void cancel() {
             SubscriptionHelper.cancel(subscription);
         }
     }
-    
+
     static abstract class WhenSourceSubscriber<T, U> extends SubscriptionArbiter implements Subscriber<T> {
-        
+
         /** */
         private static final long serialVersionUID = -5604623027276966720L;
 
         protected final Subscriber<? super T> actual;
-        
+
         protected final FlowableProcessor<U> processor;
-        
+
         protected final Subscription receiver;
-        
+
         private long produced;
-        
+
         public WhenSourceSubscriber(Subscriber<? super T> actual, FlowableProcessor<U> processor,
                 Subscription receiver) {
             this.actual = actual;
             this.processor = processor;
             this.receiver = receiver;
         }
-        
+
         @Override
         public final void onSubscribe(Subscription s) {
             setSubscription(s);
         }
-        
+
         @Override
         public final void onNext(T t) {
             produced++;
             actual.onNext(t);
         }
-        
+
         protected final void again(U signal) {
             long p = produced;
             if (p != 0L) {
@@ -170,14 +170,14 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
             receiver.request(1);
             processor.onNext(signal);
         }
-        
+
         @Override
         public final void cancel() {
             super.cancel();
             receiver.cancel();
         }
     }
-    
+
     static final class RepeatWhenSubscriber<T> extends WhenSourceSubscriber<T, Object> {
 
         /** */
@@ -187,13 +187,13 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
                 Subscription receiver) {
             super(actual, processor, receiver);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             receiver.cancel();
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             again(0);

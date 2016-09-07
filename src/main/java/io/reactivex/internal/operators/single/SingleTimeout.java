@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -22,15 +22,15 @@ import io.reactivex.disposables.*;
 public final class SingleTimeout<T> extends Single<T> {
 
     final SingleSource<T> source;
-    
+
     final long timeout;
-    
+
     final TimeUnit unit;
-    
+
     final Scheduler scheduler;
-    
+
     final SingleSource<? extends T> other;
-    
+
     public SingleTimeout(SingleSource<T> source, long timeout, TimeUnit unit, Scheduler scheduler,
                          SingleSource<? extends T> other) {
         this.source = source;
@@ -45,9 +45,9 @@ public final class SingleTimeout<T> extends Single<T> {
 
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
-        
+
         final AtomicBoolean once = new AtomicBoolean();
-        
+
         Disposable timer = scheduler.scheduleDirect(new Runnable() {
             @Override
             public void run() {
@@ -72,7 +72,7 @@ public final class SingleTimeout<T> extends Single<T> {
                                 set.dispose();
                                 s.onSuccess(value);
                             }
-                            
+
                         });
                     } else {
                         set.dispose();
@@ -81,9 +81,9 @@ public final class SingleTimeout<T> extends Single<T> {
                 }
             }
         }, timeout, unit);
-        
+
         set.add(timer);
-        
+
         source.subscribe(new SingleObserver<T>() {
 
             @Override
@@ -106,9 +106,9 @@ public final class SingleTimeout<T> extends Single<T> {
                     s.onSuccess(value);
                 }
             }
-            
+
         });
-    
+
     }
 
 }

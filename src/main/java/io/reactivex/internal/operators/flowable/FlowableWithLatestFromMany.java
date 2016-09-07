@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -35,11 +35,11 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
     final Publisher<?>[] otherArray;
-    
+
     final Iterable<? extends Publisher<?>> otherIterable;
-    
+
     final Function<? super Object[], R> combiner;
-    
+
     public FlowableWithLatestFromMany(Publisher<T> source, Publisher<?>[] otherArray, Function<? super Object[], R> combiner) {
         super(source);
         this.otherArray = otherArray;
@@ -60,7 +60,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         int n = 0;
         if (others == null) {
             others = new Publisher[8];
-            
+
             try {
                 for (Publisher<?> p : otherIterable) {
                     if (n == others.length) {
@@ -73,11 +73,11 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 EmptySubscription.error(ex, s);
                 return;
             }
-            
+
         } else {
             n = others.length;
         }
-        
+
         if (n == 0) {
             new FlowableMap<T, R>(source, new Function<T, R>() {
                 @Override
@@ -87,36 +87,36 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             }).subscribeActual(s);
             return;
         }
-        
+
         WithLatestFromSubscriber<T, R> parent = new WithLatestFromSubscriber<T, R>(s, combiner, n);
         s.onSubscribe(parent);
         parent.subscribe(others, n);
-        
+
         source.subscribe(parent);
     }
-    
-    static final class WithLatestFromSubscriber<T, R> 
+
+    static final class WithLatestFromSubscriber<T, R>
     extends AtomicInteger
     implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = 1577321883966341961L;
 
         final Subscriber<? super R> actual;
-        
+
         final Function<? super Object[], R> combiner;
-        
+
         final WithLatestInnerSubscriber[] subscribers;
-        
+
         final AtomicReferenceArray<Object> values;
-        
+
         final AtomicReference<Subscription> s;
-        
+
         final AtomicLong requested;
-        
+
         final AtomicThrowable error;
-        
+
         volatile boolean done;
-        
+
         public WithLatestFromSubscriber(Subscriber<? super R> actual, Function<? super Object[], R> combiner, int n) {
             this.actual = actual;
             this.combiner = combiner;
@@ -130,7 +130,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             this.requested = new AtomicLong();
             this.error = new AtomicThrowable();
         }
-        
+
         void subscribe(Publisher<?>[] others, int n) {
             WithLatestInnerSubscriber[] subscribers = this.subscribers;
             AtomicReference<Subscription> s = this.s;
@@ -141,12 +141,12 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 others[i].subscribe(subscribers[i]);
             }
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             SubscriptionHelper.deferredSetOnce(this.s, requested, s);
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
@@ -156,7 +156,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             int n = ara.length();
             Object[] objects = new Object[n + 1];
             objects[0] = t;
-            
+
             for (int i = 0; i < n; i++) {
                 Object o = ara.get(i);
                 if (o == null) {
@@ -166,9 +166,9 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 }
                 objects[i + 1] = o;
             }
-            
+
             R v;
-            
+
             try {
                 v = ObjectHelper.requireNonNull(combiner.apply(objects), "combiner returned a null value");
             } catch (Throwable ex) {
@@ -177,10 +177,10 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 onError(ex);
                 return;
             }
-            
+
             HalfSerializer.onNext(actual, v, this, error);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -191,7 +191,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             cancelAllBut(-1);
             HalfSerializer.onError(actual, t, this, error);
         }
-        
+
         @Override
         public void onComplete() {
             if (!done) {
@@ -200,12 +200,12 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 HalfSerializer.onComplete(actual, this, error);
             }
         }
-        
+
         @Override
         public void request(long n) {
             SubscriptionHelper.deferredRequest(s, requested, n);
         }
-        
+
         @Override
         public void cancel() {
             SubscriptionHelper.cancel(s);
@@ -213,18 +213,18 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 s.dispose();
             }
         }
-        
+
         void innerNext(int index, Object o) {
             values.set(index, o);
         }
-        
+
         void innerError(int index, Throwable t) {
             done = true;
             SubscriptionHelper.cancel(s);
             cancelAllBut(index);
             HalfSerializer.onError(actual, t, this, error);
         }
-        
+
         void innerComplete(int index, boolean nonEmpty) {
             if (!nonEmpty) {
                 done = true;
@@ -232,7 +232,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 HalfSerializer.onComplete(actual, this, error);
             }
         }
-        
+
         void cancelAllBut(int index) {
             WithLatestInnerSubscriber[] subscribers = this.subscribers;
             for (int i = 0; i < subscribers.length; i++) {
@@ -243,30 +243,30 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         }
     }
 
-    static final class WithLatestInnerSubscriber 
+    static final class WithLatestInnerSubscriber
     extends AtomicReference<Subscription>
     implements Subscriber<Object>, Disposable {
         /** */
         private static final long serialVersionUID = 3256684027868224024L;
 
         final WithLatestFromSubscriber<?, ?> parent;
-        
+
         final int index;
-        
+
         boolean hasValue;
-        
+
         public WithLatestInnerSubscriber(WithLatestFromSubscriber<?, ?> parent, int index) {
             this.parent = parent;
             this.index = index;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(this, s)) {
                 s.request(Long.MAX_VALUE);
             }
         }
-        
+
         @Override
         public void onNext(Object t) {
             if (!hasValue) {
@@ -274,12 +274,12 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             }
             parent.innerNext(index, t);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             parent.innerError(index, t);
         }
-        
+
         @Override
         public void onComplete() {
             parent.innerComplete(index, hasValue);
@@ -289,7 +289,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         public boolean isDisposed() {
             return SubscriptionHelper.isCancelled(get());
         }
-        
+
         @Override
         public void dispose() {
             SubscriptionHelper.cancel(this);

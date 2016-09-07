@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -199,7 +199,7 @@ public class FlowablePublishTest {
                     }
                 }).share();
         ;
-        
+
         final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
         final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
 
@@ -219,7 +219,7 @@ public class FlowablePublishTest {
                 super.onNext(t);
             }
         };
-        
+
         source.doOnCancel(new Action() {
             @Override
             public void run() {
@@ -227,20 +227,20 @@ public class FlowablePublishTest {
             }
         }).take(5)
         .subscribe(ts1);
-        
+
         ts1.awaitTerminalEvent();
         ts2.awaitTerminalEvent();
-        
+
         ts1.assertNoErrors();
         ts2.assertNoErrors();
-        
+
         assertTrue(sourceUnsubscribed.get());
         assertTrue(child1Unsubscribed.get());
         assertTrue(child2Unsubscribed.get());
-        
+
         ts1.assertValues(1, 2, 3, 4, 5);
         ts2.assertValues(4, 5, 6, 7, 8);
-        
+
         assertEquals(8, sourceEmission.get());
     }
 
@@ -259,7 +259,7 @@ public class FlowablePublishTest {
         subscriber.assertNoErrors();
         subscriber.assertTerminated();
     }
-    
+
     @Test
     public void testSubscribeAfterDisconnectThenConnect() {
         ConnectableFlowable<Integer> source = Flowable.just(1).publish();
@@ -287,7 +287,7 @@ public class FlowablePublishTest {
         System.out.println(s);
         System.out.println(s2);
     }
-    
+
     @Test
     public void testNoSubscriberRetentionOnCompleted() {
         FlowablePublish<Integer> source = (FlowablePublish<Integer>)Flowable.just(1).publish();
@@ -299,7 +299,7 @@ public class FlowablePublishTest {
         ts1.assertNoValues();
         ts1.assertNoErrors();
         ts1.assertNotComplete();
-        
+
         source.connect();
 
         ts1.assertValue(1);
@@ -308,58 +308,58 @@ public class FlowablePublishTest {
 
         assertNull(source.current.get());
     }
-    
+
     @Test
     public void testNonNullConnection() {
         ConnectableFlowable<Object> source = Flowable.never().publish();
-        
+
         assertNotNull(source.connect());
         assertNotNull(source.connect());
     }
-    
+
     @Test
     public void testNoDisconnectSomeoneElse() {
         ConnectableFlowable<Object> source = Flowable.never().publish();
 
         Disposable s1 = source.connect();
         Disposable s2 = source.connect();
-        
+
         s1.dispose();
-        
+
         Disposable s3 = source.connect();
-        
+
         s2.dispose();
-        
+
         assertTrue(checkPublishDisposed(s1));
         assertTrue(checkPublishDisposed(s2));
         assertFalse(checkPublishDisposed(s3));
     }
-    
+
     @SuppressWarnings("unchecked")
     static boolean checkPublishDisposed(Disposable d) {
         return ((FlowablePublish.PublishSubscriber<Object>)d).isDisposed();
     }
-    
+
     @Test
     public void testZeroRequested() {
         ConnectableFlowable<Integer> source = Flowable.just(1).publish();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
-        
+
         source.subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotComplete();
-        
+
         source.connect();
 
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotComplete();
-        
+
         ts.request(5);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertTerminated();
@@ -374,18 +374,18 @@ public class FlowablePublishTest {
                 calls.getAndIncrement();
             }
         });
-        
+
         ConnectableFlowable<Integer> conn = source.publish();
 
         assertEquals(0, calls.get());
 
         conn.connect();
         conn.connect();
-        
+
         assertEquals(1, calls.get());
-        
+
         conn.connect().dispose();
-        
+
         conn.connect();
         conn.connect();
 
@@ -403,9 +403,9 @@ public class FlowablePublishTest {
                     tss.add(ts);
                     obs.subscribe(ts);
                 }
-                
+
                 Disposable s = co.connect();
-                
+
                 for (TestSubscriber<Integer> ts : tss) {
                     ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
                     ts.assertTerminated();

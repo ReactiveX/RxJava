@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -52,19 +52,19 @@ public class FlowableAmbTest {
             @Override
             public void subscribe(final Subscriber<? super String> subscriber) {
                 final CompositeDisposable parentSubscription = new CompositeDisposable();
-                
+
                 subscriber.onSubscribe(new Subscription() {
                     @Override
                     public void request(long n) {
-                        
+
                     }
-                    
+
                     @Override
                     public void cancel() {
                         parentSubscription.dispose();
                     }
                 });
-                
+
                 long delay = interval;
                 for (final String value : values) {
                     parentSubscription.add(innerScheduler.schedule(new Runnable() {
@@ -192,7 +192,7 @@ public class FlowableAmbTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
                 });
             }
@@ -212,7 +212,7 @@ public class FlowableAmbTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
                 });
             }
@@ -236,8 +236,8 @@ public class FlowableAmbTest {
         ts.assertNoErrors();
         assertEquals(Flowable.bufferSize() * 2, ts.values().size());
     }
-    
-    
+
+
     @SuppressWarnings("unchecked")
     @Test
     public void testSubscriptionOnlyHappensOnce() throws InterruptedException {
@@ -248,7 +248,7 @@ public class FlowableAmbTest {
                 count.incrementAndGet();
             }
         };
-        
+
         //this aync stream should emit first
         Flowable<Integer> o1 = Flowable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
@@ -262,7 +262,7 @@ public class FlowableAmbTest {
         ts.assertNoErrors();
         assertEquals(2, count.get());
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testSecondaryRequestsPropagatedToChildren() throws InterruptedException {
@@ -273,7 +273,7 @@ public class FlowableAmbTest {
         Flowable<Integer> o2 = Flowable.fromArray(4, 5, 6)
                 .delay(200, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
-        
+
         Flowable.ambArray(o1, o2).subscribe(ts);
         // before first emission request 20 more
         // this request should suffice to emit all
@@ -302,43 +302,43 @@ public class FlowableAmbTest {
         }).ambWith(Flowable.just(2)).blockingSingle();
         assertEquals(1, result);
     }
- 
+
     @SuppressWarnings("unchecked")
     @Test
     public void testAmbCancelsOthers() {
         PublishProcessor<Integer> source1 = PublishProcessor.create();
         PublishProcessor<Integer> source2 = PublishProcessor.create();
         PublishProcessor<Integer> source3 = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         Flowable.ambArray(source1, source2, source3).subscribe(ts);
-        
+
         assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
         assertTrue("Source 2 doesn't have subscribers!", source2.hasSubscribers());
         assertTrue("Source 3 doesn't have subscribers!", source3.hasSubscribers());
-        
+
         source1.onNext(1);
 
         assertTrue("Source 1 doesn't have subscribers!", source1.hasSubscribers());
         assertFalse("Source 2 still has subscribers!", source2.hasSubscribers());
         assertFalse("Source 2 still has subscribers!", source3.hasSubscribers());
-        
+
     }
-    
+
     @Test(timeout = 1000)
     public void testMultipleUse() {
         TestSubscriber<Long> ts1 = new TestSubscriber<Long>();
         TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
 
         Flowable<Long> amb = Flowable.timer(100, TimeUnit.MILLISECONDS).ambWith(Flowable.timer(200, TimeUnit.MILLISECONDS));
-        
+
         amb.subscribe(ts1);
         amb.subscribe(ts2);
-        
+
         ts1.awaitTerminalEvent();
         ts2.awaitTerminalEvent();
-        
+
         ts1.assertValue(0L);
         ts1.assertComplete();
         ts1.assertNoErrors();
@@ -347,22 +347,22 @@ public class FlowableAmbTest {
         ts2.assertComplete();
         ts2.assertNoErrors();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void ambIterable() {
         PublishProcessor<Integer> ps1 = PublishProcessor.create();
         PublishProcessor<Integer> ps2 = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.amb(Arrays.asList(ps1, ps2)).subscribe(ts);
-        
+
         ts.assertNoValues();
-        
+
         ps1.onNext(1);
         ps1.onComplete();
-        
+
         assertFalse(ps1.hasSubscribers());
         assertFalse(ps2.hasSubscribers());
 
@@ -370,22 +370,22 @@ public class FlowableAmbTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void ambIterable2() {
         PublishProcessor<Integer> ps1 = PublishProcessor.create();
         PublishProcessor<Integer> ps2 = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.amb(Arrays.asList(ps1, ps2)).subscribe(ts);
-        
+
         ts.assertNoValues();
-        
+
         ps2.onNext(2);
         ps2.onComplete();
-        
+
         assertFalse(ps1.hasSubscribers());
         assertFalse(ps2.hasSubscribers());
 
@@ -393,7 +393,7 @@ public class FlowableAmbTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Ignore("No 2-9 arg overloads")
     @SuppressWarnings("unchecked")
     @Test
@@ -405,37 +405,37 @@ public class FlowableAmbTest {
             PublishProcessor<Integer>[] ps = new PublishProcessor[i];
 
             for (int j = 0; j < i; j++) {
-                
+
                 for (int k = 0; k < i; k++) {
                     ps[k] = PublishProcessor.create();
                 }
-                
+
                 Method m = Flowable.class.getMethod("amb", clazz);
-                
+
                 Flowable<Integer> obs = (Flowable<Integer>)m.invoke(null, (Object[])ps);
-            
+
                 TestSubscriber<Integer> ts = TestSubscriber.create();
-                
+
                 obs.subscribe(ts);
-                
+
                 for (int k = 0; k < i; k++) {
                     assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasSubscribers());
                 }
-                
+
                 ps[j].onNext(j);
                 ps[j].onComplete();
-                
+
                 for (int k = 0; k < i; k++) {
                     assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasSubscribers());
                 }
-                
+
                 ts.assertValue(j);
                 ts.assertNoErrors();
                 ts.assertComplete();
             }
         }
     }
-    
+
     @Ignore("No 2-9 arg overloads")
     @SuppressWarnings("unchecked")
     @Test
@@ -447,38 +447,38 @@ public class FlowableAmbTest {
             PublishProcessor<Integer>[] ps = new PublishProcessor[i];
 
             for (int j = 0; j < i; j++) {
-                
+
                 for (int k = 0; k < i; k++) {
                     ps[k] = PublishProcessor.create();
                 }
-                
+
                 Method m = Flowable.class.getMethod("amb", clazz);
-                
+
                 Flowable<Integer> obs = (Flowable<Integer>)m.invoke(null, (Object[])ps);
-            
+
                 TestSubscriber<Integer> ts = TestSubscriber.create();
-                
+
                 obs.subscribe(ts);
-                
+
                 for (int k = 0; k < i; k++) {
                     assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasSubscribers());
                 }
-                
+
                 ps[j].onError(new TestException(Integer.toString(j)));
-                
+
                 for (int k = 0; k < i; k++) {
                     assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasSubscribers());
                 }
-                
+
                 ts.assertNoValues();
                 ts.assertError(TestException.class);
                 ts.assertNotComplete();
-                
+
                 assertEquals(Integer.toString(j), ts.errors().get(0).getMessage());
             }
         }
     }
-    
+
     @Ignore("No 2-9 arg overloads")
     @SuppressWarnings("unchecked")
     @Test
@@ -490,29 +490,29 @@ public class FlowableAmbTest {
             PublishProcessor<Integer>[] ps = new PublishProcessor[i];
 
             for (int j = 0; j < i; j++) {
-                
+
                 for (int k = 0; k < i; k++) {
                     ps[k] = PublishProcessor.create();
                 }
-                
+
                 Method m = Flowable.class.getMethod("amb", clazz);
-                
+
                 Flowable<Integer> obs = (Flowable<Integer>)m.invoke(null, (Object[])ps);
-            
+
                 TestSubscriber<Integer> ts = TestSubscriber.create();
-                
+
                 obs.subscribe(ts);
-                
+
                 for (int k = 0; k < i; k++) {
                     assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasSubscribers());
                 }
-                
+
                 ps[j].onComplete();
-                
+
                 for (int k = 0; k < i; k++) {
                     assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasSubscribers());
                 }
-                
+
                 ts.assertNoValues();
                 ts.assertNoErrors();
                 ts.assertComplete();

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,13 +30,13 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
     final Function<? super T, ? extends Publisher<? extends R>> mapper;
-    
+
     final int maxConcurrency;
-    
+
     final int prefetch;
-    
+
     final ErrorMode errorMode;
-    
+
     public FlowableConcatMapEager(Publisher<T> source,
             Function<? super T, ? extends Publisher<? extends R>> mapper,
             int maxConcurrency,
@@ -63,17 +63,17 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
         private static final long serialVersionUID = -4255299542215038287L;
 
         final Subscriber<? super R> actual;
-        
+
         final Function<? super T, ? extends Publisher<? extends R>> mapper;
-        
+
         final int maxConcurrency;
-        
+
         final int prefetch;
-        
+
         final ErrorMode errorMode;
 
         final AtomicReference<Throwable> error;
-        
+
         final AtomicLong requested;
 
         final SpscLinkedArrayQueue<InnerQueuedSubscriber<R>> subscribers;
@@ -81,11 +81,11 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
         Subscription s;
 
         volatile boolean cancelled;
-        
+
         volatile boolean done;
-        
+
         volatile InnerQueuedSubscriber<R> current;
-        
+
         public ConcatMapEagerDelayErrorSubscriber(Subscriber<? super R> actual,
                 Function<? super T, ? extends Publisher<? extends R>> mapper, int maxConcurrency, int prefetch,
                 ErrorMode errorMode) {
@@ -98,23 +98,23 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
             this.error = new AtomicReference<Throwable>();
             this.requested = new AtomicLong();
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 actual.onSubscribe(this);
-                
+
                 s.request(maxConcurrency == Integer.MAX_VALUE ? Long.MAX_VALUE : maxConcurrency);
             }
-            
+
         }
-        
+
         @Override
         public void onNext(T t) {
             Publisher<? extends R> p;
-            
+
             try {
                 p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
@@ -123,27 +123,27 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 onError(ex);
                 return;
             }
-            
+
             InnerQueuedSubscriber<R> inner = new InnerQueuedSubscriber<R>(this, prefetch);
-            
+
             if (cancelled) {
                 return;
             }
 
             subscribers.offer(inner);
-            
+
             if (cancelled) {
                 return;
             }
-            
+
             p.subscribe(inner);
-            
+
             if (cancelled) {
                 inner.cancel();
                 drainAndCancel();
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (ExceptionHelper.addThrowable(error, t)) {
@@ -153,13 +153,13 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 RxJavaPlugins.onError(t);
             }
         }
-        
+
         @Override
         public void onComplete() {
             done = true;
             drain();
         }
-        
+
         @Override
         public void cancel() {
             if (cancelled) {
@@ -167,10 +167,10 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
             }
             cancelled = true;
             s.cancel();
-            
+
             drainAndCancel();
         }
-        
+
         void drainAndCancel() {
             if (getAndIncrement() == 0) {
                 do {
@@ -178,15 +178,15 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 } while (decrementAndGet() != 0);
             }
         }
-        
+
         void cancelAll() {
             InnerQueuedSubscriber<R> inner;
-            
+
             while ((inner = subscribers.poll()) != null) {
                 inner.cancel();
             }
         }
-        
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
@@ -194,7 +194,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 drain();
             }
         }
-        
+
         @Override
         public void innerNext(InnerQueuedSubscriber<R> inner, R value) {
             if (inner.queue().offer(value)) {
@@ -204,7 +204,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 innerError(inner, new MissingBackpressureException());
             }
         }
-        
+
         @Override
         public void innerError(InnerQueuedSubscriber<R> inner, Throwable e) {
             if (ExceptionHelper.addThrowable(this.error, e)) {
@@ -217,45 +217,45 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 RxJavaPlugins.onError(e);
             }
         }
-        
+
         @Override
         public void innerComplete(InnerQueuedSubscriber<R> inner) {
             inner.setDone();
             drain();
         }
-        
+
         @Override
         public void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
-            
+
             int missed = 1;
             InnerQueuedSubscriber<R> inner = current;
             Subscriber<? super R> a = actual;
             long r = requested.get();
             long e = 0L;
             ErrorMode em = errorMode;
-            
+
             outer:
             for (;;) {
-                
+
                 if (inner == null) {
 
                     if (em != ErrorMode.END) {
                         Throwable ex = error.get();
                         if (ex != null) {
                             cancelAll();
-                            
+
                             a.onError(ex);
                             return;
                         }
                     }
 
                     boolean outerDone = done;
-                    
+
                     inner = subscribers.poll();
-                    
+
                     if (outerDone && inner == null) {
                         Throwable ex = error.get();
                         if (ex != null) {
@@ -265,12 +265,12 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                         }
                         return;
                     }
-                    
+
                     if (inner != null) {
                         current = inner;
                     }
                 }
-                
+
                 if (inner != null) {
                     SimpleQueue<R> q = inner.queue();
                     if (q != null) {
@@ -279,23 +279,23 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                                 cancelAll();
                                 return;
                             }
-                            
+
                             if (em == ErrorMode.IMMEDIATE) {
                                 Throwable ex = error.get();
                                 if (ex != null) {
                                     current = null;
                                     inner.cancel();
                                     cancelAll();
-                                    
+
                                     a.onError(ex);
                                     return;
                                 }
                             }
-                            
+
                             boolean d = inner.isDone();
-                            
+
                             R v;
-                            
+
                             try {
                                 v = q.poll();
                             } catch (Throwable ex) {
@@ -306,49 +306,49 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                                 a.onError(ex);
                                 return;
                             }
-                            
+
                             boolean empty = v == null;
-                            
+
                             if (d && empty) {
                                 inner = null;
                                 current = null;
                                 s.request(1);
                                 continue outer;
                             }
-                            
+
                             if (empty) {
                                 break;
                             }
-                            
+
                             a.onNext(v);
-                            
+
                             e++;
-                            
+
                             inner.requestOne();
                         }
-    
+
                         if (e == r) {
                             if (cancelled) {
                                 cancelAll();
                                 return;
                             }
-                            
+
                             if (em == ErrorMode.IMMEDIATE) {
                                 Throwable ex = error.get();
                                 if (ex != null) {
                                     current = null;
                                     inner.cancel();
                                     cancelAll();
-                                    
+
                                     a.onError(ex);
                                     return;
                                 }
                             }
-                            
+
                             boolean d = inner.isDone();
-                            
+
                             boolean empty = q.isEmpty();
-                            
+
                             if (d && empty) {
                                 inner = null;
                                 current = null;
@@ -358,12 +358,12 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                         }
                     }
                 }
-                
+
                 if (e != 0L && r != Long.MAX_VALUE) {
                     r = requested.addAndGet(-e);
                     e = 0L;
                 }
-                
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;

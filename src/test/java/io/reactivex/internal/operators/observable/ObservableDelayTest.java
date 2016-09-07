@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -42,7 +42,7 @@ public class ObservableDelayTest {
     public void before() {
         NbpObserver = TestHelper.mockObserver();
         observer2 = TestHelper.mockObserver();
-        
+
         scheduler = new TestScheduler();
     }
 
@@ -663,7 +663,7 @@ public class ObservableDelayTest {
         ts.assertNoErrors();
         assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
     }
-    
+
     @Test
     public void testBackpressureWithSubscriptionTimedDelay() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
@@ -763,88 +763,88 @@ public class ObservableDelayTest {
         ts.assertNoErrors();
         assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
     }
-    
+
     @Test
     public void testErrorRunsBeforeOnNext() {
         TestScheduler test = new TestScheduler();
-        
+
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         ps.delay(1, TimeUnit.SECONDS, test).subscribe(ts);
-        
+
         ps.onNext(1);
-        
+
         test.advanceTimeBy(500, TimeUnit.MILLISECONDS);
-        
+
         ps.onError(new TestException());
-        
+
         test.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotComplete();
     }
-    
+
     public void testDelaySupplierSimple() {
         final PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         Observable<Integer> source = Observable.range(1, 5);
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         source.delaySubscription(ps).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotComplete();
-        
+
         ps.onNext(1);
-        
+
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertComplete();
         ts.assertNoErrors();
     }
-    
+
     @Test
     public void testDelaySupplierCompletes() {
         final PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         Observable<Integer> source = Observable.range(1, 5);
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         source.delaySubscription(ps).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotComplete();
-        
+
         // FIXME should this complete the source instead of consuming it?
         ps.onComplete();
-        
+
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertComplete();
         ts.assertNoErrors();
     }
-    
+
     @Test
     public void testDelaySupplierErrors() {
         final PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         Observable<Integer> source = Observable.range(1, 5);
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         source.delaySubscription(ps).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotComplete();
-        
+
         ps.onError(new TestException());
-        
+
         ts.assertNoValues();
         ts.assertNotComplete();
         ts.assertError(TestException.class);

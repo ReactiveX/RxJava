@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -35,23 +35,23 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
         this.unit = unit;
         this.scheduler = scheduler;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super T> t) {
         source.subscribe(new DebounceTimedSubscriber<T>(
-                new SerializedObserver<T>(t), 
+                new SerializedObserver<T>(t),
                 timeout, unit, scheduler.createWorker()));
     }
-    
+
     static final class DebounceTimedSubscriber<T>
     implements Observer<T>, Disposable, Runnable {
         final Observer<? super T> actual;
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
-        
+
         Disposable s;
-        
+
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
         static final Disposable NEW_TIMER = new Disposable() {
@@ -65,9 +65,9 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
         };
 
         volatile boolean gate;
-        
+
         boolean done;
-        
+
         public DebounceTimedSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
             this.timeout = timeout;
@@ -82,7 +82,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
@@ -91,15 +91,15 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
 
             if (!gate) {
                 gate = true;
-                
+
                 actual.onNext(t);
-                
+
                 // FIXME should this be a periodic blocking or a value-relative blocking?
                 Disposable d = timer.get();
                 if (d != null) {
                     d.dispose();
                 }
-                
+
                 if (timer.compareAndSet(d, NEW_TIMER)) {
                     d = worker.schedule(this, timeout, unit);
                     if (!timer.compareAndSet(NEW_TIMER, d)) {
@@ -107,15 +107,15 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
                     }
                 }
             }
-            
-            
+
+
         }
-        
+
         @Override
         public void run() {
             gate = false;
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -126,7 +126,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
             DisposableHelper.dispose(timer);
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
@@ -137,7 +137,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
             worker.dispose();
             actual.onComplete();
         }
-        
+
         @Override
         public void dispose() {
             DisposableHelper.dispose(timer);

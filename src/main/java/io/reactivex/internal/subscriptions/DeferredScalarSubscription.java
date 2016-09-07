@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -38,10 +38,10 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
 
     /** The Subscriber to emit the value to. */
     protected final Subscriber<? super T> actual;
-    
+
     /** The value is stored here if there is no request yet or in fusion mode. */
     protected T value;
-    
+
     /** Indicates this Subscription has no value and not requested yet. */
     static final int NO_REQUEST_NO_VALUE = 0;
     /** Indicates this Subscription has a value but not requested yet. */
@@ -50,17 +50,17 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
     static final int HAS_REQUEST_NO_VALUE = 2;
     /** Indicates this Subscription has both request and value. */
     static final int HAS_REQUEST_HAS_VALUE = 3;
-    
+
     /** Indicates the Subscription has been cancelled. */
     static final int CANCELLED = 4;
-    
+
     /** Indicates this Subscription is in fusion mode and is currently empty. */
     static final int FUSED_EMPTY = 8;
     /** Indicates this Subscription is in fusion mode and has a value. */
     static final int FUSED_READY = 16;
     /** Indicates this Subscription is in fusion mode and its value has been consumed. */
     static final int FUSED_CONSUMED = 32;
-    
+
     /**
      * Creates a DeferredScalarSubscription by wrapping the given Subscriber.
      * @param actual the Subscriber to wrap, not null (not verified)
@@ -68,7 +68,7 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
     public DeferredScalarSubscription(Subscriber<? super T> actual) {
         this.actual = actual;
     }
-    
+
     @Override
     public final void request(long n) {
         if (SubscriptionHelper.validate(n)) {
@@ -112,7 +112,7 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
             if (state == FUSED_EMPTY) {
                 value = v;
                 lazySet(FUSED_READY);
-                
+
                 Subscriber<? super T> a = actual;
                 a.onNext(v);
                 if (get() != CANCELLED) {
@@ -120,12 +120,12 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
                 }
                 return;
             }
-            
+
             // if state is >= CANCELLED or bit zero is set (*_HAS_VALUE) case, return
             if ((state & ~HAS_REQUEST_NO_VALUE) != 0) {
                 return;
             }
-            
+
             if (state == HAS_REQUEST_NO_VALUE) {
                 lazySet(HAS_REQUEST_HAS_VALUE);
                 Subscriber<? super T> a = actual;
@@ -146,7 +146,7 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
             }
         }
     }
-    
+
     @Override
     public final int requestFusion(int mode) {
         if ((mode & ASYNC) != 0) {
@@ -191,7 +191,7 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
     public final boolean isCancelled() {
         return get() == CANCELLED;
     }
-    
+
     /**
      * Atomically sets a cancelled state and returns true if
      * the current thread did it successfully.

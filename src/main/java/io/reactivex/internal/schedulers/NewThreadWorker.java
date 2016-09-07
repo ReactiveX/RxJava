@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -29,7 +29,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
     private final ScheduledExecutorService executor;
 
     volatile boolean disposed;
-    
+
     public NewThreadWorker(ThreadFactory threadFactory) {
         executor = SchedulerPoolFactory.create(threadFactory);
     }
@@ -91,7 +91,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
         }
     }
 
-    
+
     /**
      * Wraps the given runnable into a ScheduledRunnable and schedules it
      * on the underlying ScheduledExecutorService.
@@ -105,15 +105,15 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      */
     public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, TimeUnit unit, DisposableContainer parent) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
-        
+
         ScheduledRunnable sr = new ScheduledRunnable(decoratedRun, parent);
-        
+
         if (parent != null) {
             if (!parent.add(sr)) {
                 return sr;
             }
         }
-        
+
         Future<?> f;
         try {
             if (delayTime <= 0) {

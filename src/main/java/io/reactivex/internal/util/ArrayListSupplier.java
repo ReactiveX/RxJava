@@ -20,7 +20,7 @@ import io.reactivex.functions.Function;
 
 public enum ArrayListSupplier implements Callable<List<Object>>, Function<Object, List<Object>> {
     INSTANCE;
-  
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Callable<List<T>> asCallable() {
         return (Callable)INSTANCE;

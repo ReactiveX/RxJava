@@ -41,84 +41,84 @@ public class DeferredScalarSubscriberTest {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.setupDownstream();
-        
+
         ds.onNext(1);
 
         ts.assertNoValues();
 
         ds.onComplete();
-        
+
         ts.assertNoValues();
-        
+
         ts.request(1);
-        
+
         ts.assertValues(1);
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void requestFirst() {
         TestSubscriber<Integer> ts = TestSubscriber.create(1);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.setupDownstream();
-        
+
         ds.onNext(1);
 
         ts.assertNoValues();
-        
+
         ds.onComplete();
-        
+
         ts.assertValues(1);
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void empty() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.setupDownstream();
-        
+
         ts.assertNoValues();
 
         ds.onComplete();
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void error() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.setupDownstream();
-        
+
         ts.assertNoValues();
 
         ds.onError(new TestException());
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotComplete();
     }
-    
+
     @Test
     public void unsubscribeComposes() {
         PublishProcessor<Integer> ps = PublishProcessor.create();
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
-        
+
         ps.subscribe(ds);
-        
+
         assertTrue("No subscribers?", ps.hasSubscribers());
-        
+
         ts.cancel();
-        
+
         ds.onNext(1);
         ds.onComplete();
-        
+
         ts.request(1);
 
         ts.assertNoValues();
@@ -128,30 +128,30 @@ public class DeferredScalarSubscriberTest {
         assertFalse("Subscribers?", ps.hasSubscribers());
         assertTrue("Deferred not unsubscribed?", ds.isCancelled());
     }
-    
+
     @Test
     public void emptySource() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         Flowable.just(1).ignoreElements().subscribe(ds); // we need a producer from upstream
-        
+
         ts.assertNoValues();
 
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void justSource() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.subscribeTo(Flowable.just(1));
-        
+
         ts.assertNoValues();
 
         ts.request(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
@@ -162,11 +162,11 @@ public class DeferredScalarSubscriberTest {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.subscribeTo(Flowable.range(1, 10));
-        
+
         ts.assertNoValues();
 
         ts.request(1);
-        
+
         ts.assertValue(10);
         ts.assertNoErrors();
         ts.assertComplete();
@@ -184,16 +184,16 @@ public class DeferredScalarSubscriberTest {
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.setupDownstream();
         ds.onNext(1);
-        
+
         ts.assertNoValues();
 
         ds.onComplete();
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertNotComplete();
     }
-    
+
     @Test
     public void completeAfterNextViaRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) {
@@ -207,75 +207,75 @@ public class DeferredScalarSubscriberTest {
         ds.setupDownstream();
         ds.onNext(1);
         ds.onComplete();
-        
+
         ts.assertNoValues();
 
         ts.request(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertNotComplete();
     }
-    
+
     @Test
     public void doubleComplete() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.setupDownstream();
-        
+
         ds.onNext(1);
-        
+
         ts.request(1);
-        
+
         ds.onComplete();
         ds.onComplete();
-        
-        
+
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void doubleComplete2() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.setupDownstream();
-        
+
         ds.onNext(1);
-        
+
         ds.onComplete();
         ds.onComplete();
-        
+
         ts.request(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void doubleRequest() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.setupDownstream();
-        
+
         ds.onNext(1);
-        
+
         ts.request(1);
         ts.request(1);
-        
+
         ds.onComplete();
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void negativeRequest() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.setupDownstream();
@@ -291,14 +291,14 @@ public class DeferredScalarSubscriberTest {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
         ds.setupDownstream();
-        
+
         ts.cancel();
-        
+
         ds.downstreamRequest(1);
         ds.onNext(1);
         ds.onComplete();
         ds.onComplete();
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotComplete();
@@ -308,14 +308,14 @@ public class DeferredScalarSubscriberTest {
         Worker w = Schedulers.computation().createWorker();
         try {
             for (int i = 0; i < 10000; i++) {
-    
+
                 final TestSubscriber<Integer> ts = TestSubscriber.create(0L);
                 TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
                 ds.setupDownstream();
                 ds.onNext(1);
-    
+
                 final AtomicInteger ready = new AtomicInteger(2);
-                
+
                 w.schedule(new Runnable() {
                     @Override
                     public void run() {
@@ -325,23 +325,23 @@ public class DeferredScalarSubscriberTest {
                         ts.request(1);
                     }
                 });
-                
+
                 ready.decrementAndGet();
                 while (ready.get() != 0) ;
-                
+
                 ds.onComplete();
-                
+
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
                 ts.assertValues(1);
                 ts.assertNoErrors();
                 ts.assertComplete();
-    
+
             }
         } finally {
             w.dispose();
         }
     }
-    
+
     @Test
     public void emissionRequestRace2() {
         Worker w = Schedulers.io().createWorker();
@@ -352,14 +352,14 @@ public class DeferredScalarSubscriberTest {
         }
         try {
             for (int i = 0; i < m; i++) {
-    
+
                 final TestSubscriber<Integer> ts = TestSubscriber.create(0L);
                 TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
                 ds.setupDownstream();
                 ds.onNext(1);
-    
+
                 final AtomicInteger ready = new AtomicInteger(3);
-                
+
                 w.schedule(new Runnable() {
                     @Override
                     public void run() {
@@ -382,21 +382,21 @@ public class DeferredScalarSubscriberTest {
 
                 ready.decrementAndGet();
                 while (ready.get() != 0) ;
-                
+
                 ds.onComplete();
-                
+
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
                 ts.assertValues(1);
                 ts.assertNoErrors();
                 ts.assertComplete();
-    
+
             }
         } finally {
             w.dispose();
             w2.dispose();
         }
     }
-    
+
     static final class TestingDeferredScalarSubscriber extends DeferredScalarSubscriber<Integer, Integer> {
 
         /** */
@@ -411,15 +411,15 @@ public class DeferredScalarSubscriberTest {
             value = t;
             hasValue = true;
         }
-        
+
         public void setupDownstream() {
             onSubscribe(new BooleanSubscription());
         }
-        
+
         public void subscribeTo(Publisher<Integer> p) {
             p.subscribe(this);
         }
-        
+
         public void downstreamRequest(long n) {
             request(n);
         }

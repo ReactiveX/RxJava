@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -64,7 +64,7 @@ public class PublishProcessorTest {
         Subscriber<Object> observerC = TestHelper.mockSubscriber();
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(observerA);
-        
+
         channel.subscribe(ts);
         channel.subscribe(observerB);
 
@@ -326,14 +326,14 @@ public class PublishProcessorTest {
                     }
                 });
             src.onNext(v);
-            
+
             inOrder.verify(o).onNext(v + ", " + v);
             inOrder.verify(o).onComplete();
             verify(o, never()).onError(any(Throwable.class));
         }
     }
-    
-    
+
+
     // FIXME RS subscribers are not allowed to throw
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery() {
@@ -349,10 +349,10 @@ public class PublishProcessorTest {
 //        } catch (OnErrorNotImplementedException e) {
 //            // ignore
 //        }
-//        // even though the onError above throws we should still receive it on the other subscriber 
+//        // even though the onError above throws we should still receive it on the other subscriber
 //        assertEquals(1, ts.getOnErrorEvents().size());
 //    }
-    
+
     // FIXME RS subscribers are not allowed to throw
 //    /**
 //     * This one has multiple failures so should get a CompositeException
@@ -376,40 +376,40 @@ public class PublishProcessorTest {
 //            // we should have 5 of them
 //            assertEquals(5, e.getExceptions().size());
 //        }
-//        // even though the onError above throws we should still receive it on the other subscriber 
+//        // even though the onError above throws we should still receive it on the other subscriber
 //        assertEquals(1, ts.getOnErrorEvents().size());
 //    }
     @Test
     public void testCurrentStateMethodsNormal() {
         PublishProcessor<Object> as = PublishProcessor.create();
-        
+
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getThrowable());
-        
+
         as.onNext(1);
-        
+
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getThrowable());
-        
+
         as.onComplete();
-        
+
         assertFalse(as.hasThrowable());
         assertTrue(as.hasComplete());
         assertNull(as.getThrowable());
     }
-    
+
     @Test
     public void testCurrentStateMethodsEmpty() {
         PublishProcessor<Object> as = PublishProcessor.create();
-        
+
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getThrowable());
-        
+
         as.onComplete();
-        
+
         assertFalse(as.hasThrowable());
         assertTrue(as.hasComplete());
         assertNull(as.getThrowable());
@@ -417,38 +417,38 @@ public class PublishProcessorTest {
     @Test
     public void testCurrentStateMethodsError() {
         PublishProcessor<Object> as = PublishProcessor.create();
-        
+
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getThrowable());
-        
+
         as.onError(new TestException());
-        
+
         assertTrue(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertTrue(as.getThrowable() instanceof TestException);
     }
-    
+
     @Test
     public void subscribeTo() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
-        
+
         Flowable.range(1, 10).subscribe(pp);
-        
+
         assertTrue(pp.hasComplete());
-        
+
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
-        
+
         pp2.subscribe(pp);
-        
+
         assertFalse(pp2.hasSubscribers());
     }
-    
+
     @Test
     public void requestValidation() {
         TestHelper.assertBadRequestReported(PublishProcessor.create());
     }
-    
+
     @Test
     public void crossCancel() {
         final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
@@ -459,16 +459,16 @@ public class PublishProcessorTest {
                 ts1.cancel();
             }
         };
-        
+
         PublishProcessor<Integer> pp = PublishProcessor.create();
-        
+
         pp.subscribe(ts2);
         pp.subscribe(ts1);
-        
+
         pp.onNext(1);
-        
+
         ts2.assertValue(1);
-        
+
         ts1.assertNoValues();
     }
 
@@ -482,16 +482,16 @@ public class PublishProcessorTest {
                 ts1.cancel();
             }
         };
-        
+
         PublishProcessor<Integer> pp = PublishProcessor.create();
-        
+
         pp.subscribe(ts2);
         pp.subscribe(ts1);
-        
+
         pp.onError(new TestException());
-        
+
         ts2.assertError(TestException.class);
-        
+
         ts1.assertNoErrors();
     }
 
@@ -505,40 +505,40 @@ public class PublishProcessorTest {
                 ts1.cancel();
             }
         };
-        
+
         PublishProcessor<Integer> pp = PublishProcessor.create();
-        
+
         pp.subscribe(ts2);
         pp.subscribe(ts1);
-        
+
         pp.onComplete();
-        
+
         ts2.assertComplete();
-        
+
         ts1.assertNotComplete();
     }
-    
+
     @Test
     public void backpressureOverflow() {
-        
+
         PublishProcessor<Integer> pp = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = pp.test(0L);
-        
+
         pp.onNext(1);
-        
+
         ts.assertNoValues()
         .assertNotComplete()
         .assertError(MissingBackpressureException.class)
         ;
     }
-    
+
     @Test
     public void onSubscribeCancelsImmediately() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = pp.test();
-        
+
         pp.subscribe(new Subscriber<Integer>() {
 
             @Override
@@ -548,34 +548,34 @@ public class PublishProcessorTest {
 
             @Override
             public void onNext(Integer t) {
-                
+
             }
 
             @Override
             public void onError(Throwable t) {
-                
+
             }
 
             @Override
             public void onComplete() {
-                
+
             }
-            
+
         });
-        
+
         ts.cancel();
-        
+
         assertFalse(pp.hasSubscribers());
     }
-    
+
     @Test
     public void terminateRace() throws Exception {
-        
+
         for (int i = 0; i < 100; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
-            
+
             TestSubscriber<Integer> ts = pp.test();
-            
+
             Runnable task = new Runnable() {
                 @Override
                 public void run() {
@@ -584,21 +584,21 @@ public class PublishProcessorTest {
             };
 
             TestHelper.race(task, task, Schedulers.io());
-            
+
             ts
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult();
         }
     }
-    
+
     @Test
     public void addRemoveRance() throws Exception {
-        
+
         for (int i = 0; i < 100; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
-            
+
             final TestSubscriber<Integer> ts = pp.test();
-            
+
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {

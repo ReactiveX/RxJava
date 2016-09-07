@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,11 +30,11 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
         this.accumulator = accumulator;
         this.seedSupplier = seedSupplier;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super R> t) {
         R r;
-        
+
         try {
             r = seedSupplier.call();
         } catch (Throwable e) {
@@ -42,25 +42,25 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
             EmptyDisposable.error(e, t);
             return;
         }
-        
+
         if (r == null) {
             EmptyDisposable.error(new NullPointerException("The seed supplied is null"), t);
             return;
         }
-        
+
         source.subscribe(new ScanSeedSubscriber<T, R>(t, accumulator, r));
     }
-    
+
     static final class ScanSeedSubscriber<T, R> implements Observer<T>, Disposable {
         final Observer<? super R> actual;
         final BiFunction<R, ? super T, R> accumulator;
-        
+
         R value;
-        
+
         Disposable s;
-        
+
         boolean done;
-        
+
         public ScanSeedSubscriber(Observer<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
             this.actual = actual;
             this.accumulator = accumulator;
@@ -71,19 +71,19 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 actual.onSubscribe(this);
-                
+
                 actual.onNext(value);
             }
         }
-        
+
 
         @Override
         public void dispose() {
             s.dispose();
         }
-        
+
         @Override
         public boolean isDisposed() {
             return s.isDisposed();
@@ -92,9 +92,9 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
         @Override
         public void onNext(T t) {
             R v = value;
-            
+
             R u;
-            
+
             try {
                 u = accumulator.apply(v, t);
             } catch (Throwable e) {
@@ -103,18 +103,18 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
                 onError(e);
                 return;
             }
-            
+
             if (u == null) {
                 s.dispose();
                 onError(new NullPointerException("The accumulator returned a null value"));
                 return;
             }
-            
+
             value = u;
-            
+
             actual.onNext(u);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -124,7 +124,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
             done = true;
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {

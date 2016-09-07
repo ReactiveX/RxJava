@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -24,7 +24,7 @@ public final class SingleEquals<T> extends Single<Boolean> {
 
     final SingleSource<? extends T> first;
     final SingleSource<? extends T> second;
-    
+
     public SingleEquals(SingleSource<? extends T> first, SingleSource<? extends T> second) {
         this.first = first;
         this.second = second;
@@ -35,10 +35,10 @@ public final class SingleEquals<T> extends Single<Boolean> {
 
         final AtomicInteger count = new AtomicInteger();
         final Object[] values = { null, null };
-        
+
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
-        
+
         class InnerObserver implements SingleObserver<T> {
             final int index;
             public InnerObserver(int index) {
@@ -52,7 +52,7 @@ public final class SingleEquals<T> extends Single<Boolean> {
             @Override
             public void onSuccess(T value) {
                 values[index] = value;
-                
+
                 if (count.incrementAndGet() == 2) {
                     s.onSuccess(ObjectHelper.equals(values[0], values[1]));
                 }
@@ -72,9 +72,9 @@ public final class SingleEquals<T> extends Single<Boolean> {
                     }
                 }
             }
-            
+
         }
-        
+
         first.subscribe(new InnerObserver(0));
         second.subscribe(new InnerObserver(1));
     }

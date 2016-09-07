@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -35,7 +35,7 @@ import io.reactivex.plugins.RxJavaPlugins;
     AppendOnlyLinkedArrayList<Object> queue;
     /** Indicates a terminal event has been received and all further events will be dropped. */
     volatile boolean done;
-    
+
     /**
      * Constructor that wraps an actual subject.
      * @param actual the subject wrapped
@@ -48,7 +48,7 @@ import io.reactivex.plugins.RxJavaPlugins;
     protected void subscribeActual(Subscriber<? super T> s) {
         actual.subscribe(s);
     }
-    
+
     @Override
     public void onSubscribe(Subscription s) {
         if (done) {
@@ -72,7 +72,7 @@ import io.reactivex.plugins.RxJavaPlugins;
         actual.onSubscribe(s);
         emitLoop();
     }
-    
+
     @Override
     public void onNext(T t) {
         if (done) {
@@ -96,7 +96,7 @@ import io.reactivex.plugins.RxJavaPlugins;
         actual.onNext(t);
         emitLoop();
     }
-    
+
     @Override
     public void onError(Throwable t) {
         if (done) {
@@ -128,7 +128,7 @@ import io.reactivex.plugins.RxJavaPlugins;
         }
         actual.onError(t);
     }
-    
+
     @Override
     public void onComplete() {
         if (done) {
@@ -152,7 +152,7 @@ import io.reactivex.plugins.RxJavaPlugins;
         }
         actual.onComplete();
     }
-    
+
     /** Loops until all notifications in the queue has been processed. */
     void emitLoop() {
         for (;;) {
@@ -174,34 +174,34 @@ import io.reactivex.plugins.RxJavaPlugins;
             }
         }
     }
-    
+
     final Predicate<Object> consumer = new Predicate<Object>() {
         @Override
         public boolean test(Object v) {
             return SerializedProcessor.this.accept(v);
         }
     };
-    
+
     /** Delivers the notification to the actual subscriber. */
     boolean accept(Object o) {
         return NotificationLite.acceptFull(o, actual);
     }
-    
+
     @Override
     public boolean hasSubscribers() {
         return actual.hasSubscribers();
     }
-    
+
     @Override
     public boolean hasThrowable() {
         return actual.hasThrowable();
     }
-    
+
     @Override
     public Throwable getThrowable() {
         return actual.getThrowable();
     }
-    
+
     @Override
     public boolean hasComplete() {
         return actual.hasComplete();

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -169,7 +169,7 @@ public class ObservableGroupByTest {
 
     /**
      * Assert that only a single subscription to a stream occurs and that all events are received.
-     * 
+     *
      * @throws Throwable
      */
     @Test
@@ -1118,7 +1118,7 @@ public class ObservableGroupByTest {
          * baR bar BAR
          * Baz baz bAZ
          * qux
-         * 
+         *
          */
         Function<String, String> keysel = new Function<String, String>() {
             @Override
@@ -1382,7 +1382,7 @@ public class ObservableGroupByTest {
                 }
         );
         TestObserver<Object> ts = new TestObserver<Object>();
-        
+
         o.groupBy(new Function<Integer, Integer>() {
 
             @Override
@@ -1390,9 +1390,9 @@ public class ObservableGroupByTest {
                 return null;
             }
         }).subscribe(ts);
-        
+
         ts.dispose();
-        
+
         verify(s).dispose();
     }
 
@@ -1443,7 +1443,7 @@ public class ObservableGroupByTest {
         assertEquals(Arrays.asList(e), inner1.errors());
         assertEquals(Arrays.asList(e), inner2.errors());
     }
-    
+
     @Test
     public void keySelectorAndDelayError() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))

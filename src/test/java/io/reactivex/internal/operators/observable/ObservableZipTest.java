@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -880,7 +880,7 @@ public class ObservableZipTest {
         assertEquals("null-b", list.get(1));
         assertEquals("3-null", list.get(2));
     }
-    
+
     @SuppressWarnings("rawtypes")
     static String kind(Notification notification) {
         if (notification.isOnError()) {
@@ -891,7 +891,7 @@ public class ObservableZipTest {
         }
         return "OnComplete";
     }
-    
+
     @SuppressWarnings("rawtypes")
     static String value(Notification notification) {
         if (notification.isOnNext()) {
@@ -1129,7 +1129,7 @@ public class ObservableZipTest {
     public void testZipRace() {
         long startTime = System.currentTimeMillis();
         Observable<Integer> src = Observable.just(1).subscribeOn(Schedulers.computation());
-        
+
         // now try and generate a hang by zipping src with itself repeatedly. A
         // time limit of 9 seconds ( 1 second less than the test timeout) is
         // used so that this test will not timeout on slow machines.
@@ -1141,7 +1141,7 @@ public class ObservableZipTest {
                     return t1 + t2 * 10;
                 }
             }).blockingSingle(0);
-            
+
             Assert.assertEquals(11, value);
         }
     }
@@ -1249,7 +1249,7 @@ public class ObservableZipTest {
                 Observable.just(2), Observable.just(3),
                 Observable.just(4), Observable.just(5),
                 Observable.just(6), Observable.just(7),
-                Observable.just(8), 
+                Observable.just(8),
             new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
                 @Override
                 public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,

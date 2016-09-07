@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -25,53 +25,53 @@ import io.reactivex.internal.subscribers.observable.BasicIntQueueDisposable;
 
 /**
  * Subject that allows only a single Subscriber to subscribe to it during its lifetime.
- * 
+ *
  * <p>This subject buffers notifications and replays them to the Subscriber as requested.
- * 
+ *
  * <p>This subject holds an unbounded internal buffer.
- * 
+ *
  * <p>If more than one Subscriber attempts to subscribe to this Subject, they
  * will receive an IllegalStateException if this Subject hasn't terminated yet,
  * or the Subscribers receive the terminal event (error or completion) if this
  * Subject has terminated.
- * 
+ *
  * @param <T> the value type received and emitted by this Subject subclass
  * @since 2.0
  */
 public final class UnicastSubject<T> extends Subject<T> {
     /** The queue that buffers the source events. */
     final SpscLinkedArrayQueue<T> queue;
-    
+
     /** The single Observer. */
     final AtomicReference<Observer<? super T>> actual;
-    
+
     /** The optional callback when the Subject gets cancelled or terminates. */
     final AtomicReference<Runnable> onTerminate;
 
     /** Indicates the single observer has cancelled. */
     volatile boolean disposed;
-    
+
     /** Indicates the source has terminated. */
     volatile boolean done;
-    /** 
-     * The terminal error if not null. 
+    /**
+     * The terminal error if not null.
      * Must be set before writing to done and read after done == true.
      */
     Throwable error;
 
     /** Set to 1 atomically for the first and only Subscriber. */
     final AtomicBoolean once;
-    
-    /** 
+
+    /**
      * Called when the Subscriber has called cancel.
      * This allows early termination for those who emit into this
-     * subject so that they can stop immediately 
+     * subject so that they can stop immediately
      */
     Runnable onCancelled;
 
     /** The wip counter and QueueDisposable surface. */
     final BasicIntQueueDisposable<T> wip;
-    
+
     boolean enableOperatorFusion;
 
     /**
@@ -82,7 +82,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     public static <T> UnicastSubject<T> create() {
         return new UnicastSubject<T>(bufferSize());
     }
-    
+
     /**
      * Creates an UnicastSubject with the given internal buffer capacity hint.
      * @param <T> the value type
@@ -96,10 +96,10 @@ public final class UnicastSubject<T> extends Subject<T> {
     /**
      * Creates an UnicastSubject with the given internal buffer capacity hint and a callback for
      * the case when the single Subscriber cancels its subscription.
-     * 
+     *
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
-     * 
+     *
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
      * @param onCancelled the optional callback
@@ -136,7 +136,7 @@ public final class UnicastSubject<T> extends Subject<T> {
         this.once = new AtomicBoolean();
         this.wip = new UnicastQueueDisposable();
     }
-    
+
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
         if (!once.get() && once.compareAndSet(false, true)) {
@@ -151,7 +151,7 @@ public final class UnicastSubject<T> extends Subject<T> {
             EmptyDisposable.error(new IllegalStateException("Only a single observer allowed."), observer);
         }
     }
-    
+
     void notifyOnCancelled() {
         Runnable r = onCancelled;
         onCancelled = null;
@@ -189,7 +189,7 @@ public final class UnicastSubject<T> extends Subject<T> {
         queue.offer(t);
         drain();
     }
-    
+
     @Override
     public void onError(Throwable t) {
         if (done || disposed) {
@@ -202,7 +202,7 @@ public final class UnicastSubject<T> extends Subject<T> {
         done = true;
         drain();
     }
-    
+
     @Override
     public void onComplete() {
         if (done || disposed) {
@@ -217,16 +217,16 @@ public final class UnicastSubject<T> extends Subject<T> {
         SimpleQueue<T> q = queue;
         for (;;) {
             for (;;) {
-                
+
                 if (disposed) {
                     clearAndNotify(q);
                     return;
                 }
-    
+
                 boolean d = done;
                 T v = queue.poll();
                 boolean empty = v == null;
-                
+
                 if (d && empty) {
                     actual.lazySet(null);
                     notifyOnCancelled();
@@ -238,40 +238,40 @@ public final class UnicastSubject<T> extends Subject<T> {
                     }
                     return;
                 }
-                
+
                 if (empty) {
                     break;
                 }
-                
+
                 a.onNext(v);
             }
-            
+
             missed = wip.addAndGet(-missed);
             if (missed == 0) {
                 break;
             }
         }
     }
-    
+
     void drainFused(Observer<? super T> a) {
         int missed = 1;
-        
+
         final SpscLinkedArrayQueue<T> q = queue;
-        
+
         for (;;) {
-            
+
             if (disposed) {
                 clearAndNotify(q);
                 return;
             }
-            
+
             boolean d = done;
-            
+
             a.onNext(null);
-            
+
             if (d) {
                 actual.lazySet(null);
-                
+
                 Throwable ex = error;
                 if (ex != null) {
                     a.onError(ex);
@@ -280,24 +280,24 @@ public final class UnicastSubject<T> extends Subject<T> {
                 }
                 return;
             }
-            
+
             missed = wip.addAndGet(-missed);
             if (missed == 0) {
                 break;
             }
         }
     }
-    
+
     void drain() {
         if (wip.getAndIncrement() != 0) {
             return;
         }
-        
+
         Observer<? super T> a = actual.get();
         int missed = 1;
-        
+
         for (;;) {
-            
+
             if (a != null) {
                 if (enableOperatorFusion) {
                     drainFused(a);
@@ -306,23 +306,23 @@ public final class UnicastSubject<T> extends Subject<T> {
                 }
                 return;
             }
-            
+
             missed = wip.addAndGet(-missed);
             if (missed == 0) {
                 break;
             }
-            
+
             if (a == null) {
                 a = actual.get();
             }
         }
     }
-    
+
     @Override
     public boolean hasObservers() {
         return actual.get() != null;
     }
-    
+
     @Override
     public Throwable getThrowable() {
         if (done) {
@@ -330,17 +330,17 @@ public final class UnicastSubject<T> extends Subject<T> {
         }
         return null;
     }
-    
+
     @Override
     public boolean hasThrowable() {
         return done && error != null;
     }
-    
+
     @Override
     public boolean hasComplete() {
         return done && error == null;
     }
-    
+
     final class UnicastQueueDisposable extends BasicIntQueueDisposable<T> {
 
         /** */
@@ -385,6 +385,6 @@ public final class UnicastSubject<T> extends Subject<T> {
         public boolean isDisposed() {
             return disposed;
         }
-        
+
     }
 }

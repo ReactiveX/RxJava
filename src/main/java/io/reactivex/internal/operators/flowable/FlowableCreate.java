@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -32,18 +32,18 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FlowableCreate<T> extends Flowable<T> {
 
     final FlowableOnSubscribe<T> source;
-    
+
     final FlowableEmitter.BackpressureMode backpressure;
-    
+
     public FlowableCreate(FlowableOnSubscribe<T> source, FlowableEmitter.BackpressureMode backpressure) {
         this.source = source;
         this.backpressure = backpressure;
     }
-    
+
     @Override
     public void subscribeActual(Subscriber<? super T> t) {
         BaseEmitter<T> emitter;
-        
+
         switch (backpressure) {
         case NONE: {
             emitter = new NoneEmitter<T>(t);
@@ -75,26 +75,26 @@ public final class FlowableCreate<T> extends Flowable<T> {
             emitter.onError(ex);
         }
     }
-    
+
     /**
      * Serializes calls to onNext, onError and onComplete.
      *
      * @param <T> the value type
      */
-    static final class SerializedEmitter<T> 
+    static final class SerializedEmitter<T>
     extends AtomicInteger
     implements FlowableEmitter<T> {
         /** */
         private static final long serialVersionUID = 4883307006032401862L;
 
         final BaseEmitter<T> emitter;
-        
+
         final AtomicThrowable error;
-        
+
         final SimpleQueue<T> queue;
-        
+
         volatile boolean done;
-        
+
         public SerializedEmitter(BaseEmitter<T> emitter) {
             this.emitter = emitter;
             this.error = new AtomicThrowable();
@@ -152,20 +152,20 @@ public final class FlowableCreate<T> extends Flowable<T> {
             done = true;
             drain();
         }
-        
+
         void drain() {
             if (getAndIncrement() == 0) {
                 drainLoop();
             }
         }
-        
+
         void drainLoop() {
             BaseEmitter<T> e = emitter;
             SimpleQueue<T> q = queue;
             AtomicThrowable error = this.error;
             int missed = 1;
             for (;;) {
-                
+
                 for (;;) {
                     if (e.isCancelled()) {
                         q.clear();
@@ -177,10 +177,10 @@ public final class FlowableCreate<T> extends Flowable<T> {
                         e.onError(error.terminate());
                         return;
                     }
-                    
+
                     boolean d = done;
                     T v;
-                    
+
                     try {
                         v = q.poll();
                     } catch (Throwable ex) {
@@ -188,21 +188,21 @@ public final class FlowableCreate<T> extends Flowable<T> {
                         // should never happen
                         v = null;
                     }
-                    
+
                     boolean empty = v == null;
-                    
+
                     if (d && empty) {
                         e.onComplete();
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     e.onNext(v);
                 }
-                
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
@@ -235,7 +235,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             return this;
         }
     }
-    
+
     static abstract class BaseEmitter<T>
     extends AtomicLong
     implements FlowableEmitter<T>, Subscription {
@@ -243,7 +243,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         private static final long serialVersionUID = 7326289992464377023L;
 
         final Subscriber<? super T> actual;
-        
+
         final SequentialDisposable serial;
 
         public BaseEmitter(Subscriber<? super T> actual) {
@@ -280,7 +280,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             serial.dispose();
             onUnsubscribed();
         }
-        
+
         void onUnsubscribed() {
             // default is no-op
         }
@@ -301,7 +301,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         void onRequested() {
             // default is no-op
         }
-        
+
         @Override
         public final void setDisposable(Disposable s) {
             serial.update(s);
@@ -316,13 +316,13 @@ public final class FlowableCreate<T> extends Flowable<T> {
         public final long requested() {
             return get();
         }
-        
+
         @Override
         public final FlowableEmitter<T> serialize() {
             return new SerializedEmitter<T>(this);
         }
     }
-    
+
     static final class NoneEmitter<T> extends BaseEmitter<T> {
 
         /** */
@@ -339,7 +339,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             }
 
             actual.onNext(t);
-            
+
             for (;;) {
                 long r = get();
                 if (r == 0L || compareAndSet(r, r - 1)) {
@@ -349,7 +349,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
     }
-    
+
     static abstract class NoOverflowBaseAsyncEmitter<T> extends BaseEmitter<T> {
 
         /** */
@@ -372,10 +372,10 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 onOverflow();
             }
         }
-        
+
         abstract void onOverflow();
     }
-    
+
     static final class DropAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
 
         /** */
@@ -389,7 +389,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         void onOverflow() {
             // nothing to do
         }
-        
+
     }
 
     static final class ErrorAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
@@ -405,21 +405,21 @@ public final class FlowableCreate<T> extends Flowable<T> {
         void onOverflow() {
             onError(new MissingBackpressureException("create: could not emit value due to lack of requests"));
         }
-        
+
     }
-    
+
     static final class BufferAsyncEmitter<T> extends BaseEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 2427151001689639875L;
 
         final SpscLinkedArrayQueue<T> queue;
-        
+
         Throwable error;
         volatile boolean done;
-        
+
         final AtomicInteger wip;
-        
+
         public BufferAsyncEmitter(Subscriber<? super T> actual, int capacityHint) {
             super(actual);
             this.queue = new SpscLinkedArrayQueue<T>(capacityHint);
@@ -431,7 +431,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             queue.offer(t);
             drain();
         }
-        
+
         @Override
         public void onError(Throwable e) {
             error = e;
@@ -444,7 +444,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             done = true;
             drain();
         }
-        
+
         @Override
         void onRequested() {
             drain();
@@ -456,32 +456,32 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 queue.clear();
             }
         }
-        
+
         void drain() {
             if (wip.getAndIncrement() != 0) {
                 return;
             }
-            
+
             int missed = 1;
             final Subscriber<? super T> a = actual;
             final SpscLinkedArrayQueue<T> q = queue;
-            
+
             for (;;) {
                 long r = get();
                 long e = 0L;
-                
+
                 while (e != r) {
                     if (isCancelled()) {
                         q.clear();
                         return;
                     }
-                    
+
                     boolean d = done;
-                    
+
                     T o = q.poll();
-                    
+
                     boolean empty = o == null;
-                    
+
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
@@ -491,26 +491,26 @@ public final class FlowableCreate<T> extends Flowable<T> {
                         }
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     a.onNext(o);
-                    
+
                     e++;
                 }
-                
+
                 if (e == r) {
                     if (isCancelled()) {
                         q.clear();
                         return;
                     }
-                    
+
                     boolean d = done;
-                    
+
                     boolean empty = q.isEmpty();
-                    
+
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
@@ -521,11 +521,11 @@ public final class FlowableCreate<T> extends Flowable<T> {
                         return;
                     }
                 }
-                
+
                 if (e != 0) {
                     BackpressureHelper.produced(this, e);
                 }
-                
+
                 missed = wip.addAndGet(-missed);
                 if (missed == 0) {
                     break;
@@ -543,9 +543,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         Throwable error;
         volatile boolean done;
-        
+
         final AtomicInteger wip;
-        
+
         public LatestAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
             this.queue = new AtomicReference<T>();
@@ -557,7 +557,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             queue.set(t);
             drain();
         }
-        
+
         @Override
         public void onError(Throwable e) {
             error = e;
@@ -570,7 +570,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             done = true;
             drain();
         }
-        
+
         @Override
         void onRequested() {
             drain();
@@ -582,32 +582,32 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 queue.lazySet(null);
             }
         }
-        
+
         void drain() {
             if (wip.getAndIncrement() != 0) {
                 return;
             }
-            
+
             int missed = 1;
             final Subscriber<? super T> a = actual;
             final AtomicReference<T> q = queue;
-            
+
             for (;;) {
                 long r = get();
                 long e = 0L;
-                
+
                 while (e != r) {
                     if (isCancelled()) {
                         q.lazySet(null);
                         return;
                     }
-                    
+
                     boolean d = done;
-                    
+
                     T o = q.getAndSet(null);
-                    
+
                     boolean empty = o == null;
-                    
+
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
@@ -617,26 +617,26 @@ public final class FlowableCreate<T> extends Flowable<T> {
                         }
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     a.onNext(o);
-                    
+
                     e++;
                 }
-                
+
                 if (e == r) {
                     if (isCancelled()) {
                         q.lazySet(null);
                         return;
                     }
-                    
+
                     boolean d = done;
-                    
+
                     boolean empty = q.get() == null;
-                    
+
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
@@ -647,11 +647,11 @@ public final class FlowableCreate<T> extends Flowable<T> {
                         return;
                     }
                 }
-                
+
                 if (e != 0) {
                     BackpressureHelper.produced(this, e);
                 }
-                
+
                 missed = wip.addAndGet(-missed);
                 if (missed == 0) {
                     break;

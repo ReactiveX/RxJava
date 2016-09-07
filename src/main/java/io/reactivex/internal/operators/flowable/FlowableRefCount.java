@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 /**
  * Returns an observable sequence that stays connected to the source as long as
  * there is at least one subscription to the observable sequence.
- * 
+ *
  * @param <T>
  *            the value type
  */
@@ -46,7 +46,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
         final Disposable resource;
 
         Subscription s;
-        
+
         ConnectionSubscriber(Subscriber<? super T> subscriber,
                 CompositeDisposable currentBase, Disposable resource) {
             this.subscriber = subscriber;
@@ -78,12 +78,12 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
             cleanup();
             subscriber.onComplete();
         }
-        
+
         @Override
         public void request(long n) {
             s.request(n);
         }
-        
+
         @Override
         public void cancel() {
             s.cancel();
@@ -92,7 +92,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
 
         void cleanup() {
             // on error or completion we need to unsubscribe the base subscription
-            // and set the subscriptionCount to 0 
+            // and set the subscriptionCount to 0
             lock.lock();
             try {
                 if (baseSubscription == currentBase) {
@@ -108,7 +108,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
 
     /**
      * Constructor.
-     * 
+     *
      * @param source
      *            observable to apply ref count to
      */
@@ -168,13 +168,13 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
             }
         };
     }
-    
+
     void doSubscribe(final Subscriber<? super T> subscriber, final CompositeDisposable currentBase) {
         // handle unsubscribing from the base subscription
         Disposable d = disconnect(currentBase);
-        
+
         ConnectionSubscriber s = new ConnectionSubscriber(subscriber, currentBase, d);
-        
+
         source.subscribe(s);
     }
 

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -93,9 +93,9 @@ public class ObservableTest {
         Observable<String> o = Observable.just("one", "two", "three");
 
         Observer<String> observer = TestHelper.mockObserver();
-        
+
         o.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
@@ -106,9 +106,9 @@ public class ObservableTest {
     @Test
     public void testCountAFewItems() {
         Observable<String> o = Observable.just("a", "b", "c", "d");
-        
+
         o.count().subscribe(w);
-        
+
         // we should be called only once
         verify(w, times(1)).onNext(anyLong());
         verify(w).onNext(4L);
@@ -135,7 +135,7 @@ public class ObservableTest {
                 return new RuntimeException();
             }
         });
-        
+
         o.count().subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onComplete();
@@ -237,7 +237,7 @@ public class ObservableTest {
 
     /**
      * A reduce on an empty Observable and a seed should just pass the seed through.
-     * 
+     *
      * This is confirmed at https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642456
      */
     @Test
@@ -279,7 +279,7 @@ public class ObservableTest {
             @Override
             public void subscribe(Observer<? super String> s) { throw re; }
         });
-        
+
         o.subscribe(observer);
         verify(observer, times(0)).onNext(anyString());
         verify(observer, times(0)).onComplete();
@@ -302,9 +302,9 @@ public class ObservableTest {
 
     /**
      * The error from the user provided Observer is not handled by the subscribe method try/catch.
-     * 
+     *
      * It is handled by the AtomicObserver that wraps the provided Observer.
-     * 
+     *
      * Result: Passes (if AtomicObserver functionality exists)
      * @throws InterruptedException if the test is interrupted
      */
@@ -313,7 +313,7 @@ public class ObservableTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        
+
         // FIXME custom built???
         Observable.just("1", "2", "three", "4")
         .subscribeOn(Schedulers.newThread())
@@ -354,14 +354,14 @@ public class ObservableTest {
 
     /**
      * The error from the user provided Observer is handled by the subscribe try/catch because this is synchronous
-     * 
+     *
      * Result: Passes
      */
     @Test
     public void testCustomObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        
+
         // FIXME custom built???
         Observable.just("1", "2", "three", "4")
         .safeSubscribe(new DefaultObserver<String>() {
@@ -396,8 +396,8 @@ public class ObservableTest {
 
     /**
      * The error from the user provided Observable is handled by the subscribe try/catch because this is synchronous
-     * 
-     * 
+     *
+     *
      * Result: Passes
      */
     @Test
@@ -622,9 +622,9 @@ public class ObservableTest {
 
     /**
      * https://github.com/ReactiveX/RxJava/issues/198
-     * 
+     *
      * Rx Design Guidelines 5.2
-     * 
+     *
      * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
      * to rethrow the exception on the thread that the message comes out from the Observable.
      * The OnCompleted behavior in this case is to do nothing."
@@ -643,13 +643,13 @@ public class ObservableTest {
 
     /**
      * https://github.com/ReactiveX/RxJava/issues/198
-     * 
+     *
      * Rx Design Guidelines 5.2
-     * 
+     *
      * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
      * to rethrow the exception on the thread that the message comes out from the Observable.
      * The OnCompleted behavior in this case is to do nothing."
-     * 
+     *
      * @throws InterruptedException
      */
     @Test
@@ -720,9 +720,9 @@ public class ObservableTest {
         Observable<String> o = Observable.just(1, "abc", false, 2L).ofType(String.class);
 
         Observer<Object> observer = TestHelper.mockObserver();
-        
+
         o.subscribe(observer);
-        
+
         verify(observer, never()).onNext(1);
         verify(observer, times(1)).onNext("abc");
         verify(observer, never()).onNext(false);
@@ -743,9 +743,9 @@ public class ObservableTest {
         Observable<List> o = Observable.<Object> just(l1, l2, "123").ofType(List.class);
 
         Observer<Object> observer = TestHelper.mockObserver();
-        
+
         o.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(l1);
         verify(observer, times(1)).onNext(l2);
         verify(observer, never()).onNext("123");
@@ -761,7 +761,7 @@ public class ObservableTest {
         Observer<Boolean> observer = TestHelper.mockObserver();
 
         o.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(
@@ -774,9 +774,9 @@ public class ObservableTest {
         Observable<Boolean> o = Observable.just("a", "b").contains("c"); // FIXME null values are not allowed, removed
 
         Observer<Object> observer = TestHelper.mockObserver();
-        
+
         o.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(
@@ -792,7 +792,7 @@ public class ObservableTest {
         Observer<Object> observer = TestHelper.mockObserver();
 
         o.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(
@@ -805,9 +805,9 @@ public class ObservableTest {
         Observable<Boolean> o = Observable.<String> empty().contains("a");
 
         Observer<Object> observer = TestHelper.mockObserver();
-        
+
         o.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(
@@ -822,7 +822,7 @@ public class ObservableTest {
         Observer<Object> observer = TestHelper.mockObserver();
 
         o.subscribe(observer);
-        
+
         verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
@@ -834,7 +834,7 @@ public class ObservableTest {
         Observable<Integer> o = Observable.fromArray(1, 2).subscribeOn(scheduler);
 
         Observer<Integer> observer = TestHelper.mockObserver();
-        
+
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
@@ -852,7 +852,7 @@ public class ObservableTest {
         Observable<Integer> o = Observable.just(3, 4).startWith(Arrays.asList(1, 2)).subscribeOn(scheduler);
 
         Observer<Integer> observer = TestHelper.mockObserver();
-        
+
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
@@ -892,14 +892,14 @@ public class ObservableTest {
         Observable.just(1).mergeWith(Observable.just(2)).subscribe(ts);
         ts.assertValues(1, 2);
     }
-    
+
     @Test
     public void testConcatWith() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         Observable.just(1).concatWith(Observable.just(2)).subscribe(ts);
         ts.assertValues(1, 2);
     }
-    
+
     @Test
     public void testAmbWith() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
@@ -942,7 +942,7 @@ public class ObservableTest {
         }
         assertEquals(expectedCount, count.get());
     }
-    
+
     @Test
     public void testCompose() {
         TestObserver<String> ts = new TestObserver<String>();
@@ -962,7 +962,7 @@ public class ObservableTest {
         ts.assertNoErrors();
         ts.assertValues("1", "2", "3");
     }
-    
+
     @Test
     public void testErrorThrownIssue1685() {
         Subject<Object> subject = ReplaySubject.create();
@@ -983,17 +983,17 @@ public class ObservableTest {
     public void testEmptyIdentity() {
         assertEquals(Observable.empty(), Observable.empty());
     }
-    
+
     @Test
     public void testEmptyIsEmpty() {
         Observable.<Integer>empty().subscribe(w);
-        
+
         verify(w).onComplete();
         verify(w, never()).onNext(any(Integer.class));
         verify(w, never()).onError(any(Throwable.class));
     }
 
-// FIXME this test doesn't make sense 
+// FIXME this test doesn't make sense
 //    @Test // cf. https://github.com/ReactiveX/RxJava/issues/2599
 //    public void testSubscribingSubscriberAsObserverMaintainsSubscriptionChain() {
 //        NbpTestSubscriber<Object> subscriber = new NbpTestSubscriber<T>();
@@ -1014,14 +1014,14 @@ public class ObservableTest {
 //                //do nothing
 //            }});
 //    }
-    
+
     @Test(expected = NullPointerException.class)
     public void testForEachWithNull() {
         Observable.error(new Exception("boo"))
         //
         .forEach(null);
     }
-    
+
     @Test
     public void testExtend() {
         final TestObserver<Object> subscriber = new TestObserver<Object>();
@@ -1037,7 +1037,7 @@ public class ObservableTest {
                 }
         });
     }
-    
+
     @Test
     public void testFlatMap() {
         List<Integer> list = Observable.range(1, 5).flatMap(new Function<Integer, Observable<Integer>>() {
@@ -1046,14 +1046,14 @@ public class ObservableTest {
                 return Observable.range(v, 2);
             }
         }).toList().blockingFirst();
-        
+
         Assert.assertEquals(Arrays.asList(1, 2, 2, 3, 3, 4, 4, 5, 5, 6), list);
     }
-    
+
     @Test
     public void singleDefault() {
         Observable.just(1).toSingle(100).test().assertResult(1);
-        
+
         Observable.empty().toSingle(100).test().assertResult(100);
     }
 }

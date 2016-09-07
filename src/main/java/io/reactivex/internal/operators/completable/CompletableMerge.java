@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -27,40 +27,40 @@ public final class CompletableMerge extends Completable {
     final Publisher<? extends CompletableSource> source;
     final int maxConcurrency;
     final boolean delayErrors;
-    
+
     public CompletableMerge(Publisher<? extends CompletableSource> source, int maxConcurrency, boolean delayErrors) {
         this.source = source;
         this.maxConcurrency = maxConcurrency;
         this.delayErrors = delayErrors;
     }
-    
+
     @Override
     public void subscribeActual(CompletableObserver s) {
         CompletableMergeSubscriber parent = new CompletableMergeSubscriber(s, maxConcurrency, delayErrors);
         source.subscribe(parent);
     }
-    
+
     static final class CompletableMergeSubscriber
     extends AtomicInteger
     implements Subscriber<CompletableSource>, Disposable {
         /** */
         private static final long serialVersionUID = -2108443387387077490L;
-        
+
         final CompletableObserver actual;
         final int maxConcurrency;
         final boolean delayErrors;
 
         final AtomicThrowable error;
-        
+
         final AtomicBoolean once;
 
         final CompositeDisposable set;
 
         Subscription s;
-        
+
         volatile boolean done;
 
-        
+
         public CompletableMergeSubscriber(CompletableObserver actual, int maxConcurrency, boolean delayErrors) {
             this.actual = actual;
             this.maxConcurrency = maxConcurrency;
@@ -70,7 +70,7 @@ public final class CompletableMerge extends Completable {
             this.once = new AtomicBoolean();
             lazySet(1);
         }
-        
+
         @Override
         public void dispose() {
             s.cancel();
@@ -94,7 +94,7 @@ public final class CompletableMerge extends Completable {
                 }
             }
         }
-        
+
         @Override
         public void onNext(CompletableSource t) {
             if (done) {
@@ -102,7 +102,7 @@ public final class CompletableMerge extends Completable {
             }
 
             getAndIncrement();
-            
+
             t.subscribe(new InnerObserver());
         }
 
@@ -112,7 +112,7 @@ public final class CompletableMerge extends Completable {
                 RxJavaPlugins.onError(t);
                 return;
             }
-            
+
             done = true;
             terminate();
         }
@@ -148,7 +148,7 @@ public final class CompletableMerge extends Completable {
                 }
             }
         }
-        
+
         final class InnerObserver implements CompletableObserver {
             Disposable d;
             boolean innerDone;
@@ -165,12 +165,12 @@ public final class CompletableMerge extends Completable {
                     RxJavaPlugins.onError(e);
                     return;
                 }
-                
+
                 set.delete(d);
                 innerDone = true;
-                
+
                 terminate();
-                
+
                 if (delayErrors && !done) {
                     s.request(1);
                 }
@@ -181,12 +181,12 @@ public final class CompletableMerge extends Completable {
                 if (innerDone) {
                     return;
                 }
-                
+
                 set.delete(d);
                 innerDone = true;
-                
+
                 terminate();
-                
+
                 if (!done) {
                     s.request(1);
                 }

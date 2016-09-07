@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -25,14 +25,14 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
     final long count;
     final long skip;
     final int capacityHint;
-    
+
     public ObservableWindow(ObservableSource<T> source, long count, long skip, int capacityHint) {
         super(source);
         this.count = count;
         this.skip = skip;
         this.capacityHint = capacityHint;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super Observable<T>> t) {
         if (count == skip) {
@@ -41,7 +41,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             source.subscribe(new WindowSkipSubscriber<T>(t, count, skip, capacityHint));
         }
     }
-    
+
     static final class WindowExactSubscriber<T>
     extends AtomicInteger
     implements Observer<T>, Disposable, Runnable {
@@ -50,30 +50,30 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         final Observer<? super Observable<T>> actual;
         final long count;
         final int capacityHint;
-        
+
         long size;
-        
+
         Disposable s;
-        
+
         UnicastSubject<T> window;
-        
+
         volatile boolean cancelled;
-        
+
         public WindowExactSubscriber(Observer<? super Observable<T>> actual, long count, int capacityHint) {
             this.actual = actual;
             this.count = count;
             this.capacityHint = capacityHint;
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             UnicastSubject<T> w = window;
@@ -95,7 +95,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
                 }
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             UnicastSubject<T> w = window;
@@ -105,7 +105,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             }
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             UnicastSubject<T> w = window;
@@ -115,7 +115,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             }
             actual.onComplete();
         }
-        
+
         @Override
         public void dispose() {
             cancelled = true;
@@ -133,8 +133,8 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             }
         }
     }
-    
-    static final class WindowSkipSubscriber<T> extends AtomicBoolean 
+
+    static final class WindowSkipSubscriber<T> extends AtomicBoolean
     implements Observer<T>, Disposable, Runnable {
         /** */
         private static final long serialVersionUID = 3366976432059579510L;
@@ -143,18 +143,18 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         final long skip;
         final int capacityHint;
         final ArrayDeque<UnicastSubject<T>> windows;
-        
+
         long index;
-        
+
         volatile boolean cancelled;
-        
+
         /** Counts how many elements were emitted to the very first window in windows. */
         long firstEmission;
-        
+
         Disposable s;
-        
+
         final AtomicInteger wip = new AtomicInteger();
-        
+
         public WindowSkipSubscriber(Observer<? super Observable<T>> actual, long count, long skip, int capacityHint) {
             this.actual = actual;
             this.count = count;
@@ -162,12 +162,12 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             this.capacityHint = capacityHint;
             this.windows = new ArrayDeque<UnicastSubject<T>>();
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 actual.onSubscribe(this);
             }
         }
@@ -175,11 +175,11 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         @Override
         public void onNext(T t) {
             final ArrayDeque<UnicastSubject<T>> ws = windows;
-            
+
             long i = index;
-            
+
             long s = skip;
-            
+
             if (i % s == 0 && !cancelled) {
                 wip.getAndIncrement();
                 UnicastSubject<T> w = UnicastSubject.create(capacityHint, this);
@@ -188,11 +188,11 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             }
 
             long c = firstEmission + 1;
-            
+
             for (UnicastSubject<T> w : ws) {
                 w.onNext(t);
             }
-            
+
             if (c >= count) {
                 ws.poll().onComplete();
                 if (ws.isEmpty() && cancelled) {
@@ -203,10 +203,10 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             } else {
                 firstEmission = c;
             }
-            
+
             index = i + 1;
         }
-        
+
         @Override
         public void onError(Throwable t) {
             final ArrayDeque<UnicastSubject<T>> ws = windows;
@@ -215,7 +215,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             }
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             final ArrayDeque<UnicastSubject<T>> ws = windows;
@@ -224,7 +224,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             }
             actual.onComplete();
         }
-        
+
         @Override
         public void dispose() {
             cancelled = true;

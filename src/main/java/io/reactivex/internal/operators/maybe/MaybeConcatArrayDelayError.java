@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -33,7 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
 
     final MaybeSource<? extends T>[] sources;
-    
+
     public MaybeConcatArrayDelayError(MaybeSource<? extends T>[] sources) {
         this.sources = sources;
     }
@@ -45,28 +45,28 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
         parent.drain();
     }
 
-    static final class ConcatMaybeObserver<T> 
+    static final class ConcatMaybeObserver<T>
     extends AtomicInteger
     implements MaybeObserver<T>, Subscription {
         /** */
         private static final long serialVersionUID = 3520831347801429610L;
 
         final Subscriber<? super T> actual;
-        
+
         final AtomicLong requested;
-        
+
         final AtomicReference<Object> current;
-        
+
         final SequentialDisposable disposables;
 
         final MaybeSource<? extends T>[] sources;
-        
+
         final AtomicThrowable errors;
 
         int index;
-        
+
         long produced;
-        
+
         public ConcatMaybeObserver(Subscriber<? super T> actual, MaybeSource<? extends T>[] sources) {
             this.actual = actual;
             this.sources = sources;
@@ -75,7 +75,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
             this.current = new AtomicReference<Object>(NotificationLite.COMPLETE); // as if a previous completed
             this.errors = new AtomicThrowable();
         }
-        
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
@@ -115,7 +115,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
             current.lazySet(NotificationLite.COMPLETE);
             drain();
         }
-        
+
         @SuppressWarnings("unchecked")
         void drain() {
             if (getAndIncrement() != 0) {
@@ -132,7 +132,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
                 }
 
                 Object o = c.get();
-                
+
                 if (o != null) {
                     boolean goNextSource;
                     if (o != NotificationLite.COMPLETE) {
@@ -141,7 +141,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
                             produced = p + 1;
                             c.lazySet(null);
                             goNextSource = true;
-                            
+
                             a.onNext((T)o);
                         } else {
                             goNextSource = false;
@@ -150,7 +150,7 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
                         goNextSource = true;
                         c.lazySet(null);
                     }
-                    
+
                     if (goNextSource) {
                         int i = index;
                         if (i == sources.length) {
@@ -163,11 +163,11 @@ public final class MaybeConcatArrayDelayError<T> extends Flowable<T> {
                             return;
                         }
                         index = i + 1;
-                        
+
                         sources[i].subscribe(this);
                     }
                 }
-                
+
                 if (decrementAndGet() == 0) {
                     break;
                 }

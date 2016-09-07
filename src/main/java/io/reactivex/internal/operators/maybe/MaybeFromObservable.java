@@ -29,22 +29,22 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class MaybeFromObservable<T> extends Maybe<T> implements HasUpstreamObservableSource<T> {
 
     final ObservableSource<T> source;
-    
+
     public MaybeFromObservable(ObservableSource<T> source) {
         this.source = source;
     }
-    
+
     @Override
     public ObservableSource<T> source() {
         return source;
     }
-    
+
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
         source.subscribe(new FromObservableToMaybeObserver<T>(observer));
     }
-    
-    static final class FromObservableToMaybeObserver<T> 
+
+    static final class FromObservableToMaybeObserver<T>
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable {
         /** */
@@ -53,7 +53,7 @@ public final class MaybeFromObservable<T> extends Maybe<T> implements HasUpstrea
         final MaybeObserver<? super T> actual;
 
         T value;
-        
+
         public FromObservableToMaybeObserver(MaybeObserver<? super T> observer) {
             this.actual = observer;
         }
@@ -111,7 +111,7 @@ public final class MaybeFromObservable<T> extends Maybe<T> implements HasUpstrea
                 }
             }
         }
-        
-        
+
+
     }
 }

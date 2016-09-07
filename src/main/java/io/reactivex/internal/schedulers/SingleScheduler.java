@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -21,15 +21,15 @@ import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleScheduler extends Scheduler {
-    
+
     final AtomicReference<ScheduledExecutorService> executor = new AtomicReference<ScheduledExecutorService>();
-    
+
     static final ScheduledExecutorService SHUTDOWN;
     static {
         SHUTDOWN = Executors.newScheduledThreadPool(0);
         SHUTDOWN.shutdown();
     }
-    
+
     public SingleScheduler() {
         executor.lazySet(createExecutor());
     }
@@ -37,7 +37,7 @@ public final class SingleScheduler extends Scheduler {
     static ScheduledExecutorService createExecutor() {
         return SchedulerPoolFactory.create(new RxThreadFactory("RxSingleScheduler"));
     }
-    
+
     @Override
     public void start() {
         ScheduledExecutorService next = null;
@@ -55,10 +55,10 @@ public final class SingleScheduler extends Scheduler {
             if (executor.compareAndSet(current, next)) {
                 return;
             }
-            
+
         }
     }
-    
+
     @Override
     public void shutdown() {
         ScheduledExecutorService current = executor.get();
@@ -69,12 +69,12 @@ public final class SingleScheduler extends Scheduler {
             }
         }
     }
-    
+
     @Override
     public Worker createWorker() {
         return new ScheduledWorker(executor.get());
     }
-    
+
     @Override
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
@@ -91,7 +91,7 @@ public final class SingleScheduler extends Scheduler {
             return EmptyDisposable.INSTANCE;
         }
     }
-    
+
     @Override
     public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
@@ -103,31 +103,31 @@ public final class SingleScheduler extends Scheduler {
             return EmptyDisposable.INSTANCE;
         }
     }
-    
+
     static final class ScheduledWorker extends Scheduler.Worker {
-        
+
         final ScheduledExecutorService executor;
-        
+
         final CompositeDisposable tasks;
-        
+
         volatile boolean disposed;
-        
+
         public ScheduledWorker(ScheduledExecutorService executor) {
             this.executor = executor;
             this.tasks = new CompositeDisposable();
         }
-        
+
         @Override
         public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
-            
+
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
-            
+
             ScheduledRunnable sr = new ScheduledRunnable(decoratedRun, tasks);
             tasks.add(sr);
-            
+
             try {
                 Future<?> f;
                 if (delay <= 0L) {
@@ -135,17 +135,17 @@ public final class SingleScheduler extends Scheduler {
                 } else {
                     f = executor.schedule((Callable<Object>)sr, delay, unit);
                 }
-                
+
                 sr.setFuture(f);
             } catch (RejectedExecutionException ex) {
                 dispose();
                 RxJavaPlugins.onError(ex);
                 return EmptyDisposable.INSTANCE;
             }
-            
+
             return sr;
         }
-        
+
         @Override
         public void dispose() {
             if (!disposed) {

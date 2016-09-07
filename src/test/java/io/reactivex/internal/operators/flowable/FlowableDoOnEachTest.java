@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -193,11 +193,11 @@ public class FlowableDoOnEachTest {
 //            System.out.println("Received exception: " + e);
 //        }
     }
-    
+
     @Test
     public void testOnErrorThrows() {
         TestSubscriber<Object> ts = TestSubscriber.create();
-        
+
         Flowable.error(new TestException())
         .doOnError(new Consumer<Throwable>() {
             @Override
@@ -205,13 +205,13 @@ public class FlowableDoOnEachTest {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNotComplete();
         ts.assertError(CompositeException.class);
-        
+
         CompositeException ex = (CompositeException)ts.errors().get(0);
-        
+
         List<Throwable> exceptions = ex.getExceptions();
         assertEquals(2, exceptions.size());
         Assert.assertTrue(exceptions.get(0) instanceof TestException);

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -191,67 +191,67 @@ public class ObservableWindowWithStartEndObservableTest {
             }
         };
     }
-    
+
     @Test
     public void testNoUnsubscribeAndNoLeak() {
         PublishSubject<Integer> source = PublishSubject.create();
-        
+
         PublishSubject<Integer> open = PublishSubject.create();
         final PublishSubject<Integer> close = PublishSubject.create();
-        
+
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
-        
+
         source.window(open, new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer t) {
                 return close;
             }
         }).subscribe(ts);
-        
+
         open.onNext(1);
         source.onNext(1);
-        
+
         assertTrue(open.hasObservers());
         assertTrue(close.hasObservers());
 
         close.onNext(1);
-        
+
         assertFalse(close.hasObservers());
-        
+
         source.onComplete();
-        
+
         ts.assertComplete();
         ts.assertNoErrors();
         ts.assertValueCount(1);
-        
+
         assertFalse(ts.isCancelled());
         assertFalse(open.hasObservers());
         assertFalse(close.hasObservers());
     }
-    
+
     @Test
     public void testUnsubscribeAll() {
         PublishSubject<Integer> source = PublishSubject.create();
-        
+
         PublishSubject<Integer> open = PublishSubject.create();
         final PublishSubject<Integer> close = PublishSubject.create();
-        
+
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
-        
+
         source.window(open, new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer t) {
                 return close;
             }
         }).subscribe(ts);
-        
+
         open.onNext(1);
-        
+
         assertTrue(open.hasObservers());
         assertTrue(close.hasObservers());
 
         ts.dispose();
-        
+
         // FIXME subject has subscribers because of the open window
         assertTrue(open.hasObservers());
         // FIXME subject has subscribers because of the open window

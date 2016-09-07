@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -22,7 +22,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.ExceptionHelper;
 
-public final class BlockingObservableIterator<T> 
+public final class BlockingObservableIterator<T>
 extends AtomicReference<Disposable>
 implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
 
@@ -30,16 +30,16 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
     private static final long serialVersionUID = 6695226475494099826L;
 
     final SpscLinkedArrayQueue<T> queue;
-    
+
     final Lock lock;
-    
+
     final Condition condition;
-    
+
     volatile boolean done;
     Throwable error;
 
     volatile boolean cancelled;
-    
+
     public BlockingObservableIterator(int batchSize) {
         this.queue = new SpscLinkedArrayQueue<T>(batchSize);
         this.lock = new ReentrantLock();
@@ -85,13 +85,13 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
     public T next() {
         if (hasNext()) {
             T v = queue.poll();
-            
+
             if (v == null) {
                 run();
-                
+
                 throw new IllegalStateException("Queue empty?!");
             }
-            
+
             return v;
         }
         throw new NoSuchElementException();
@@ -106,7 +106,7 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
     public void onNext(T t) {
         if (!queue.offer(t)) {
             DisposableHelper.dispose(this);
-            
+
             onError(new IllegalStateException("Queue full?!"));
         } else {
             signalConsumer();
@@ -125,7 +125,7 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
         done = true;
         signalConsumer();
     }
-    
+
     void signalConsumer() {
         lock.lock();
         try {
@@ -140,17 +140,17 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
         DisposableHelper.dispose(this);
         signalConsumer();
     }
-    
+
     @Override // otherwise default method which isn't available in Java 7
     public void remove() {
         throw new UnsupportedOperationException("remove");
     }
-    
+
     @Override
     public void dispose() {
         DisposableHelper.dispose(this);
     }
-    
+
     @Override
     public boolean isDisposed() {
         return DisposableHelper.isDisposed(get());

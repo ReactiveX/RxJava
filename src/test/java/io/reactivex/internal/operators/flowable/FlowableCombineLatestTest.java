@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -69,7 +69,7 @@ public class FlowableCombineLatestTest {
         PublishProcessor<String> w2 = PublishProcessor.create();
         PublishProcessor<String> w3 = PublishProcessor.create();
 
-        Flowable<String> combineLatestW = Flowable.combineLatest(w1, w2, w3, 
+        Flowable<String> combineLatestW = Flowable.combineLatest(w1, w2, w3,
                 getConcat3StringsCombineLatestFunction());
         combineLatestW.subscribe(w);
 
@@ -518,7 +518,7 @@ public class FlowableCombineLatestTest {
         Flowable<Integer> s1 = Flowable.just(1);
         Flowable<Integer> s2 = Flowable.just(2);
 
-        Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2, 
+        Flowable<List<Integer>> result = Flowable.combineLatest(s1, s2,
                 new BiFunction<Integer, Integer, List<Integer>>() {
                     @Override
                     public List<Integer> apply(Integer t1, Integer t2) {
@@ -745,7 +745,7 @@ public class FlowableCombineLatestTest {
             testBackpressure();
         }
     }
-    
+
     @Test//(timeout = 2000)
     public void testBackpressure() {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
@@ -754,7 +754,7 @@ public class FlowableCombineLatestTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Flowable.combineLatest(
                 Flowable.just("one", "two"),
-                Flowable.range(2, NUM), 
+                Flowable.range(2, NUM),
                 combineLatestFunction
         )
         .observeOn(Schedulers.computation())
@@ -801,11 +801,11 @@ public class FlowableCombineLatestTest {
 
         assertEquals(SIZE, count.get());
     }
-    
+
     @Test(timeout=10000)
     public void testCombineLatestRequestOverflow() throws InterruptedException {
         @SuppressWarnings("unchecked")
-        List<Flowable<Integer>> sources = Arrays.asList(Flowable.fromArray(1, 2, 3, 4), 
+        List<Flowable<Integer>> sources = Arrays.asList(Flowable.fromArray(1, 2, 3, 4),
                 Flowable.fromArray(5,6,7,8));
         Flowable<Integer> o = Flowable.combineLatest(sources,new Function<Object[], Integer>() {
             @Override
@@ -815,7 +815,7 @@ public class FlowableCombineLatestTest {
         //should get at least 4
         final CountDownLatch latch = new CountDownLatch(4);
         o.subscribeOn(Schedulers.computation()).subscribe(new DefaultSubscriber<Integer>() {
-            
+
             @Override
             public void onStart() {
                 request(2);
@@ -838,7 +838,7 @@ public class FlowableCombineLatestTest {
             }});
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
-    
+
     private static final Function<Object[], Integer> THROW_NON_FATAL = new Function<Object[], Integer>() {
         @Override
         public Integer apply(Object[] args) {
@@ -846,7 +846,7 @@ public class FlowableCombineLatestTest {
         }
 
     };
-    
+
     @Test
     public void testNonFatalExceptionThrownByCombinatorForSingleSourceIsNotReportedByUpstreamOperator() {
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
@@ -865,22 +865,22 @@ public class FlowableCombineLatestTest {
           .subscribe(ts);
         assertFalse(errorOccurred.get());
     }
-    
+
     @Ignore("Nulls are not allowed")
     @Test
     public void testCombineManyNulls() {
         int n = Flowable.bufferSize() * 3;
-        
+
         Flowable<Integer> source = Flowable.just((Integer)null);
-        
+
         List<Flowable<Integer>> sources = new ArrayList<Flowable<Integer>>();
-        
+
         for (int i = 0; i < n; i++) {
             sources.add(source);
         }
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.combineLatest(sources, new Function<Object[], Integer>() {
             @Override
             public Integer apply(Object[] args) {
@@ -893,20 +893,20 @@ public class FlowableCombineLatestTest {
                 return sum;
             }
         }).subscribe(ts);
-        
+
         ts.assertValue(n);
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void combineLatestIterable() {
         Flowable<Integer> source = Flowable.just(1);
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
-        Flowable.combineLatest(Arrays.asList(source, source), 
+
+        Flowable.combineLatest(Arrays.asList(source, source),
         new Function<Object[], Integer>() {
             @Override
             public Integer apply(Object[] args) {
@@ -914,7 +914,7 @@ public class FlowableCombineLatestTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertValue(2);
         ts.assertNoErrors();
         ts.assertComplete();
@@ -923,18 +923,18 @@ public class FlowableCombineLatestTest {
     @Test
     public void testCombineMany() {
         int n = Flowable.bufferSize() * 3;
-        
+
         List<Flowable<Integer>> sources = new ArrayList<Flowable<Integer>>();
-        
+
         StringBuilder expected = new StringBuilder(n * 2);
-        
+
         for (int i = 0; i < n; i++) {
             sources.add(Flowable.just(i));
             expected.append(i);
         }
-        
+
         TestSubscriber<String> ts = TestSubscriber.create();
-        
+
         Flowable.combineLatest(sources, new Function<Object[], String>() {
             @Override
             public String apply(Object[] args) {
@@ -945,17 +945,17 @@ public class FlowableCombineLatestTest {
                 return b.toString();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertValue(expected.toString());
         ts.assertComplete();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void firstJustError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.combineLatestDelayError(
                 Arrays.asList(Flowable.just(1), Flowable.<Integer>error(new TestException())),
                 new Function<Object[], Integer>() {
@@ -965,7 +965,7 @@ public class FlowableCombineLatestTest {
                     }
                 }
         ).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotComplete();
@@ -975,7 +975,7 @@ public class FlowableCombineLatestTest {
     @Test
     public void secondJustError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.combineLatestDelayError(
                 Arrays.asList(Flowable.<Integer>error(new TestException()), Flowable.just(1)),
                 new Function<Object[], Integer>() {
@@ -985,7 +985,7 @@ public class FlowableCombineLatestTest {
                     }
                 }
         ).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotComplete();
@@ -995,7 +995,7 @@ public class FlowableCombineLatestTest {
     @Test
     public void oneErrors() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.combineLatestDelayError(
                 Arrays.asList(Flowable.just(10).concatWith(Flowable.<Integer>error(new TestException())), Flowable.just(1)),
                 new Function<Object[], Integer>() {
@@ -1005,7 +1005,7 @@ public class FlowableCombineLatestTest {
                     }
                 }
         ).subscribe(ts);
-        
+
         ts.assertValues(11);
         ts.assertError(TestException.class);
         ts.assertNotComplete();
@@ -1015,7 +1015,7 @@ public class FlowableCombineLatestTest {
     @Test
     public void twoErrors() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.combineLatestDelayError(
                 Arrays.asList(Flowable.just(1), Flowable.just(10).concatWith(Flowable.<Integer>error(new TestException()))),
                 new Function<Object[], Integer>() {
@@ -1025,7 +1025,7 @@ public class FlowableCombineLatestTest {
                     }
                 }
         ).subscribe(ts);
-        
+
         ts.assertValues(11);
         ts.assertError(TestException.class);
         ts.assertNotComplete();
@@ -1035,9 +1035,9 @@ public class FlowableCombineLatestTest {
     @Test
     public void bothError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.combineLatestDelayError(
-                Arrays.asList(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())), 
+                Arrays.asList(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
                         Flowable.just(10).concatWith(Flowable.<Integer>error(new TestException()))),
                 new Function<Object[], Integer>() {
                     @Override
@@ -1046,45 +1046,45 @@ public class FlowableCombineLatestTest {
                     }
                 }
         ).subscribe(ts);
-        
+
         ts.assertValues(11);
         ts.assertError(CompositeException.class);
         ts.assertNotComplete();
     }
-    
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void combineLatestNArguments() throws Exception {
         Flowable source = Flowable.just(1);
-        
+
         for (int i = 2; i < 10; i++) {
             Class<?>[] types = new Class[i + 1];
             Arrays.fill(types, Publisher.class);
             types[i] = i == 2 ? BiFunction.class : Class.forName("io.reactivex.functions.Function" + i);
-            
+
             Method m = Flowable.class.getMethod("combineLatest", types);
-            
+
             Object[] params = new Object[i + 1];
             Arrays.fill(params, source);
             params[i] = ArgsToString.INSTANCE;
-            
+
             StringBuilder b = new StringBuilder();
             for (int j = 0; j < i; j++) {
                 b.append('1');
             }
-            
+
             ((Flowable)m.invoke(null, params)).test().assertResult(b.toString());
-            
+
             for (int j = 0; j < params.length; j++) {
                 Object[] params0 = params.clone();
                 params0[j] = null;
-                
+
                 try {
                     m.invoke(null, params0);
                     fail("Should have thrown @ " + m);
                 } catch (InvocationTargetException ex) {
                     assertTrue(ex.toString(), ex.getCause() instanceof NullPointerException);
-                    
+
                     if (j < i) {
                         assertEquals("source" + (j + 1) + " is null", ex.getCause().getMessage());
                     } else {
@@ -1094,7 +1094,7 @@ public class FlowableCombineLatestTest {
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void combineLatestNSources() {
@@ -1105,7 +1105,7 @@ public class FlowableCombineLatestTest {
             for (int j = 1; j <= i; j++) {
                 expected.add(1);
             }
-            
+
             Flowable.combineLatest(sources, new Function<Object[], List<Object>>() {
                 @Override
                 public List<Object> apply(Object[] t) throws Exception {
@@ -1114,7 +1114,7 @@ public class FlowableCombineLatestTest {
             })
             .test()
             .assertResult(expected);
-            
+
             Flowable.combineLatestDelayError(sources, new Function<Object[], List<Object>>() {
                 @Override
                 public List<Object> apply(Object[] t) throws Exception {
@@ -1129,7 +1129,7 @@ public class FlowableCombineLatestTest {
     @SuppressWarnings("unchecked")
     @Test
     public void combineLatestArrayOfSources() {
-        
+
         Flowable.combineLatest(new Flowable[] {
                 Flowable.just(1), Flowable.just(2)
         }, new Function<Object[], Object>() {
@@ -1145,7 +1145,7 @@ public class FlowableCombineLatestTest {
     @Test
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorArrayOfSources() {
-        
+
         Flowable.combineLatestDelayError(new Flowable[] {
                 Flowable.just(1), Flowable.just(2)
         }, new Function<Object[], Object>() {
@@ -1161,7 +1161,7 @@ public class FlowableCombineLatestTest {
     @Test
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorArrayOfSourcesWithError() {
-        
+
         Flowable.combineLatestDelayError(new Flowable[] {
                 Flowable.just(1), Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException()))
         }, new Function<Object[], Object>() {
@@ -1177,7 +1177,7 @@ public class FlowableCombineLatestTest {
     @Test
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorIterableOfSources() {
-        
+
         Flowable.combineLatestDelayError(Arrays.asList(
                 Flowable.just(1), Flowable.just(2)
         ), new Function<Object[], Object>() {
@@ -1193,7 +1193,7 @@ public class FlowableCombineLatestTest {
     @Test
     @SuppressWarnings("unchecked")
     public void combineLatestDelayErrorIterableOfSourcesWithError() {
-        
+
         Flowable.combineLatestDelayError(Arrays.asList(
                 Flowable.just(1), Flowable.just(2).concatWith(Flowable.<Integer>error(new TestException()))
         ), new Function<Object[], Object>() {

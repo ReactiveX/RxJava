@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -35,7 +35,7 @@ public class SingleMiscTest {
         .assertNoErrors()
         .assertNotComplete();
     }
-    
+
     @Test
     public void timer() throws Exception {
         Single.timer(100, TimeUnit.MILLISECONDS)
@@ -43,11 +43,11 @@ public class SingleMiscTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(0L);
     }
-    
+
     @Test
     public void wrap() {
         assertSame(Single.never(), Single.wrap(Single.never()));
-        
+
         Single.wrap(new SingleSource<Object>() {
             @Override
             public void subscribe(SingleObserver<? super Object> s) {
@@ -58,7 +58,7 @@ public class SingleMiscTest {
         .test()
         .assertResult(1);
     }
-    
+
     @Test
     public void cast() {
         Single<Number> source = Single.just(1d)
@@ -66,17 +66,17 @@ public class SingleMiscTest {
         source.test()
         .assertResult((Number)1d);
     }
-    
+
     @Test
     public void contains() {
         Single.just(1).contains(1).test().assertResult(true);
-        
+
         Single.just(2).contains(1).test().assertResult(false);
     }
-    
+
     @Test
     public void compose() {
-        
+
         Single.just(1)
         .compose(new Function<Single<Integer>, SingleSource<Object>>() {
             @Override
@@ -92,12 +92,12 @@ public class SingleMiscTest {
         .test()
         .assertResult(2);
     }
-    
+
     @Test
     public void hide() {
         assertNotSame(Single.never(), Single.never().hide());
     }
-    
+
     @Test
     public void onErrorResumeNext() {
         Single.<Integer>error(new TestException())
@@ -105,7 +105,7 @@ public class SingleMiscTest {
         .test()
         .assertResult(1);
     }
-    
+
     @Test
     public void onErrorReturnValue() {
         Single.<Integer>error(new TestException())
@@ -113,34 +113,34 @@ public class SingleMiscTest {
         .test()
         .assertResult(1);
     }
-    
+
     @Test
     public void repeat() {
         Single.just(1).repeat().take(5)
         .test()
         .assertResult(1, 1, 1, 1, 1);
     }
-    
+
     @Test
     public void repeatTimes() {
         Single.just(1).repeat(5)
         .test()
         .assertResult(1, 1, 1, 1, 1);
     }
-    
+
     @Test
     public void repeatUntil() {
         final AtomicBoolean flag = new AtomicBoolean();
-        
+
         Single.just(1)
         .doOnSuccess(new Consumer<Integer>() {
             int c;
             @Override
-            public void accept(Integer v) throws Exception { 
+            public void accept(Integer v) throws Exception {
                 if (++c == 5) {
                     flag.set(true);
                 }
-                
+
             }
         })
         .repeatUntil(new BooleanSupplier() {
@@ -230,7 +230,7 @@ public class SingleMiscTest {
         .test()
         .assertResult(1);
     }
-    
+
     @Test
     public void timeout() throws Exception {
         Single.never().timeout(100, TimeUnit.MILLISECONDS, Schedulers.io())
@@ -247,7 +247,7 @@ public class SingleMiscTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
     }
-    
+
     @Test
     public void toCompletable() {
         Single.just(1)

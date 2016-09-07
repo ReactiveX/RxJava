@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -57,14 +57,14 @@ public class ObservableMulticastTest {
 //
 //        Subscription sub = multicasted.connect();
 //        Subscription sub2 = multicasted.connect();
-//        
+//
 //        source.onNext("two");
 //        source.onCompleted();
 //
 //        verify(NbpObserver, never()).onNext("one");
 //        verify(NbpObserver, times(1)).onNext("two");
 //        verify(NbpObserver, times(1)).onCompleted();
-//        
+//
 //        assertEquals(sub, sub2);
 //
 //    }
@@ -101,13 +101,13 @@ public class ObservableMulticastTest {
 //        verify(NbpObserver, times(1)).onCompleted();
 //
 //    }
-//    
+//
 //    private static final class PublishSubjectFactory implements Func0<Subject<String, String>> {
 //
 //        @Override
 //        public Subject<String, String> call() {
 //            return NbpPublishSubject.<String> create();
 //        }
-//        
+//
 //    }
 }

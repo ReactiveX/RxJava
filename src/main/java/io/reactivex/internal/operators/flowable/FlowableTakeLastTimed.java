@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -32,7 +32,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
     final boolean delayError;
 
     public FlowableTakeLastTimed(Publisher<T> source,
-            long count, long time, TimeUnit unit, Scheduler scheduler, 
+            long count, long time, TimeUnit unit, Scheduler scheduler,
             int bufferSize, boolean delayError) {
         super(source);
         this.count = count;
@@ -42,12 +42,12 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
         this.bufferSize = bufferSize;
         this.delayError = delayError;
     }
-    
+
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         source.subscribe(new TakeLastTimedSubscriber<T>(s, count, time, unit, scheduler, bufferSize, delayError));
     }
-    
+
     static final class TakeLastTimedSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -5677354903406201275L;
@@ -58,13 +58,13 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
         final Scheduler scheduler;
         final SpscLinkedArrayQueue<Object> queue;
         final boolean delayError;
-        
+
         Subscription s;
-        
+
         final AtomicLong requested = new AtomicLong();
 
         volatile boolean cancelled;
-        
+
         volatile boolean done;
         Throwable error;
 
@@ -77,7 +77,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
             this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
             this.delayError = delayError;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
@@ -86,7 +86,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
                 s.request(Long.MAX_VALUE);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             final SpscLinkedArrayQueue<Object> q = queue;
@@ -94,10 +94,10 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
             long now = scheduler.now(unit);
 
             q.offer(now, t);
-            
+
             trim(now, q);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (delayError) {
@@ -107,14 +107,14 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
             done = true;
             drain();
         }
-        
+
         @Override
         public void onComplete() {
             trim(scheduler.now(unit), queue);
             done = true;
             drain();
         }
-        
+
         void trim(long now, SpscLinkedArrayQueue<Object> q) {
             long time = this.time;
             long c = count;
@@ -130,7 +130,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
                 }
             }
         }
-        
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
@@ -138,55 +138,55 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
                 drain();
             }
         }
-        
+
         @Override
         public void cancel() {
             if (cancelled) {
                 cancelled = true;
-                
+
                 if (getAndIncrement() == 0) {
                     queue.clear();
                     s.cancel();
                 }
             }
         }
-        
+
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
-            
+
             int missed = 1;
-            
+
             final Subscriber<? super T> a = actual;
             final SpscLinkedArrayQueue<Object> q = queue;
             final boolean delayError = this.delayError;
-            
+
             for (;;) {
-                
+
                 if (done) {
                     boolean empty = q.isEmpty();
-                    
+
                     if (checkTerminated(empty, a, delayError)) {
                         return;
                     }
-                    
+
                     long r = requested.get();
                     boolean unbounded = r == Long.MAX_VALUE; // NOPMD
                     long e = 0L;
-                    
+
                     for (;;) {
                         Object ts = q.peek(); // the timestamp long
                         empty = ts == null;
-                        
+
                         if (checkTerminated(empty, a, delayError)) {
                             return;
                         }
-                        
+
                         if (empty || r == 0L) {
                             break;
                         }
-                        
+
                         q.poll();
                         @SuppressWarnings("unchecked")
                         T o = (T)q.poll();
@@ -195,27 +195,27 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
                             a.onError(new IllegalStateException("Queue empty?!"));
                             return;
                         }
-                        
+
                         a.onNext(o);
-                        
+
                         r--;
                         e--;
                     }
-                    
+
                     if (e != 0L) {
                         if (!unbounded) {
                             requested.addAndGet(e);
                         }
                     }
                 }
-                
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
-        
+
         boolean checkTerminated(boolean empty, Subscriber<? super T> a, boolean delayError) {
             if (cancelled) {
                 queue.clear();

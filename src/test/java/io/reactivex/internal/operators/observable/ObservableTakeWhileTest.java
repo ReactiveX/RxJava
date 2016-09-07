@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -212,7 +212,7 @@ public class ObservableTakeWhileTest {
             System.out.println("done starting TestObservable thread");
         }
     }
-    
+
     @Test
     public void testNoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.range(1, 1000).takeWhile(new Predicate<Integer>() {
@@ -222,15 +222,15 @@ public class ObservableTakeWhileTest {
             }
         });
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         source.subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertValue(1);
-        
+
         Assert.assertFalse("Unsubscribed!", ts.isCancelled());
     }
-    
+
     @Test
     public void testErrorCauseIncludesLastValue() {
         TestObserver<String> ts = new TestObserver<String>();
@@ -240,12 +240,12 @@ public class ObservableTakeWhileTest {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertTerminated();
         ts.assertNoValues();
         ts.assertError(TestException.class);
         // FIXME last cause value not recorded
 //        assertTrue(ts.getOnErrorEvents().get(0).getCause().getMessage().contains("abc"));
     }
-    
+
 }

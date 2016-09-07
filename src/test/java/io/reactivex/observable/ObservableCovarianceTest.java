@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ import io.reactivex.observers.TestObserver;
 
 /**
  * Test super/extends of generics.
- * 
+ *
  * See https://github.com/Netflix/RxJava/pull/331
  */
 public class ObservableCovarianceTest {
@@ -123,7 +123,7 @@ public class ObservableCovarianceTest {
             }
         });
     }
-    
+
     @SuppressWarnings("unused")
     @Test
     public void testCovarianceOfCompose2() {
@@ -135,7 +135,7 @@ public class ObservableCovarianceTest {
             }
         });
     }
-    
+
     @SuppressWarnings("unused")
     @Test
     public void testCovarianceOfCompose3() {
@@ -170,7 +170,7 @@ public class ObservableCovarianceTest {
             }
         });
     }
-    
+
     @Test
     public void testComposeWithDeltaLogic() {
         List<Movie> list1 = Arrays.asList(new Movie(), new HorrorMovie(), new ActionMovie());
@@ -206,7 +206,7 @@ public class ObservableCovarianceTest {
             }
         }
     };
-    
+
     static ObservableTransformer<List<Movie>, Movie> deltaTransformer = new ObservableTransformer<List<Movie>, Movie>() {
         @Override
         public Observable<Movie> apply(Observable<List<Movie>> movieList) {

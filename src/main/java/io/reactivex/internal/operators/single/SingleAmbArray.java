@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -22,7 +22,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class SingleAmbArray<T> extends Single<T> {
 
     final SingleSource<? extends T>[] sources;
-    
+
     public SingleAmbArray(SingleSource<? extends T>[] sources) {
         this.sources = sources;
     }
@@ -33,12 +33,12 @@ public final class SingleAmbArray<T> extends Single<T> {
         final AtomicBoolean once = new AtomicBoolean();
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
-        
+
         for (SingleSource<? extends T> s1 : sources) {
             if (once.get()) {
                 return;
             }
-            
+
             if (s1 == null) {
                 set.dispose();
                 Throwable e = new NullPointerException("One of the sources is null");
@@ -49,7 +49,7 @@ public final class SingleAmbArray<T> extends Single<T> {
                 }
                 return;
             }
-            
+
             s1.subscribe(new SingleObserver<T>() {
 
                 @Override
@@ -74,7 +74,7 @@ public final class SingleAmbArray<T> extends Single<T> {
                         RxJavaPlugins.onError(e);
                     }
                 }
-                
+
             });
         }
     }

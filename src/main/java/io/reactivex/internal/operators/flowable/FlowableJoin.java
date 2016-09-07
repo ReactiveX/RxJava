@@ -32,15 +32,15 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends AbstractFlowableWithUpstream<TLeft, R> {
 
     final Publisher<? extends TRight> other;
-    
+
     final Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd;
-    
+
     final Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
-    
+
     final BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector;
-    
+
     public FlowableJoin(
-            Publisher<TLeft> source, 
+            Publisher<TLeft> source,
             Publisher<? extends TRight> other,
             Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
             Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
@@ -55,62 +55,62 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
 
-        GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent = 
+        GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
                 new GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>(s, leftEnd, rightEnd, resultSelector);
-        
+
         s.onSubscribe(parent);
-        
+
         LeftRightSubscriber left = new LeftRightSubscriber(parent, true);
         parent.disposables.add(left);
         LeftRightSubscriber right = new LeftRightSubscriber(parent, false);
         parent.disposables.add(right);
-        
+
         source.subscribe(left);
         other.subscribe(right);
     }
-    
-    static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> 
+
+    static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Subscription, JoinSupport {
 
         /** */
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Subscriber<? super R> actual;
-        
+
         final AtomicLong requested;
-        
+
         final SpscLinkedArrayQueue<Object> queue;
-        
+
         final CompositeDisposable disposables;
-        
+
         final Map<Integer, TLeft> lefts;
-        
+
         final Map<Integer, TRight> rights;
 
         final AtomicReference<Throwable> error;
-        
+
         final Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd;
-        
+
         final Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd;
-        
+
         final BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector;
-        
+
         final AtomicInteger active;
-        
+
         int leftIndex;
-        
+
         int rightIndex;
 
         volatile boolean cancelled;
-        
+
         static final Integer LEFT_VALUE = 1;
-        
+
         static final Integer RIGHT_VALUE = 2;
-        
+
         static final Integer LEFT_CLOSE = 3;
-        
+
         static final Integer RIGHT_CLOSE = 4;
-        
+
         public GroupJoinSubscription(Subscriber<? super R> actual, Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
                         BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {
@@ -126,7 +126,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
             this.resultSelector = resultSelector;
             this.active = new AtomicInteger(2);
         }
-        
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
@@ -145,20 +145,20 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                 queue.clear();
             }
         }
-        
+
         void cancelAll() {
             disposables.dispose();
         }
-        
+
         void errorAll(Subscriber<?> a) {
             Throwable ex = ExceptionHelper.terminate(error);
-            
+
             lefts.clear();
             rights.clear();
-            
+
             a.onError(ex);
         }
-        
+
         void fail(Throwable exc, Subscriber<?> a, SimpleQueue<?> q) {
             Exceptions.throwIfFatal(exc);
             ExceptionHelper.addThrowable(error, exc);
@@ -166,23 +166,23 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
             cancelAll();
             errorAll(a);
         }
-        
+
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
-            
+
             int missed = 1;
             SpscLinkedArrayQueue<Object> q = queue;
             Subscriber<? super R> a = actual;
-            
+
             for (;;) {
                 for (;;) {
                     if (cancelled) {
                         q.clear();
                         return;
                     }
-                    
+
                     Throwable ex = error.get();
                     if (ex != null) {
                         q.clear();
@@ -190,50 +190,50 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                         errorAll(a);
                         return;
                     }
-                    
+
                     boolean d = active.get() == 0;
-                    
+
                     Integer mode = (Integer)q.poll();
-                    
+
                     boolean empty = mode == null;
-                    
+
                     if (d && empty) {
 
                         lefts.clear();
                         rights.clear();
                         disposables.dispose();
-                        
+
                         a.onComplete();
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     Object val = q.poll();
-                    
+
                     if (mode == LEFT_VALUE) {
                         @SuppressWarnings("unchecked")
                         TLeft left = (TLeft)val;
-                        
+
                         int idx = leftIndex++;
                         lefts.put(idx, left);
-                        
+
                         Publisher<TLeftEnd> p;
-                        
+
                         try {
                             p = ObjectHelper.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
                         }
-                        
+
                         LeftRightEndSubscriber end = new LeftRightEndSubscriber(this, true, idx);
                         disposables.add(end);
-                        
+
                         p.subscribe(end);
-                        
+
                         ex = error.get();
                         if (ex != null) {
                             q.clear();
@@ -241,24 +241,24 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                             errorAll(a);
                             return;
                         }
-                        
+
                         long r = requested.get();
                         long e = 0L;
-                        
+
                         for (TRight right : rights.values()) {
-                            
+
                             R w;
-                            
+
                             try {
                                 w = ObjectHelper.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
                             } catch (Throwable exc) {
                                 fail(exc, a, q);
                                 return;
                             }
-                            
+
                             if (e != r) {
                                 a.onNext(w);
-                                
+
                                 e++;
                             } else {
                                 ExceptionHelper.addThrowable(error, new MissingBackpressureException("Could not emit value due to lack of requests"));
@@ -268,33 +268,33 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                                 return;
                             }
                         }
-                        
+
                         if (e != 0L) {
                             BackpressureHelper.produced(requested, e);
                         }
-                    } 
+                    }
                     else if (mode == RIGHT_VALUE) {
                         @SuppressWarnings("unchecked")
                         TRight right = (TRight)val;
-                        
+
                         int idx = rightIndex++;
-                        
+
                         rights.put(idx, right);
-                        
+
                         Publisher<TRightEnd> p;
-                        
+
                         try {
                             p = ObjectHelper.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
                         }
-                        
+
                         LeftRightEndSubscriber end = new LeftRightEndSubscriber(this, false, idx);
                         disposables.add(end);
-                        
+
                         p.subscribe(end);
-                        
+
                         ex = error.get();
                         if (ex != null) {
                             q.clear();
@@ -302,24 +302,24 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                             errorAll(a);
                             return;
                         }
-                        
+
                         long r = requested.get();
                         long e = 0L;
-                        
+
                         for (TLeft left : lefts.values()) {
-                            
+
                             R w;
-                            
+
                             try {
                                 w = ObjectHelper.requireNonNull(resultSelector.apply(left, right), "The resultSelector returned a null value");
                             } catch (Throwable exc) {
                                 fail(exc, a, q);
                                 return;
                             }
-                            
+
                             if (e != r) {
                                 a.onNext(w);
-                                
+
                                 e++;
                             } else {
                                 ExceptionHelper.addThrowable(error, new MissingBackpressureException("Could not emit value due to lack of requests"));
@@ -329,20 +329,20 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                                 return;
                             }
                         }
-                        
+
                         if (e != 0L) {
                             BackpressureHelper.produced(requested, e);
                         }
                     }
                     else if (mode == LEFT_CLOSE) {
                         LeftRightEndSubscriber end = (LeftRightEndSubscriber)val;
-                        
+
                         lefts.remove(end.index);
                         disposables.remove(end);
                     }
                     else if (mode == RIGHT_CLOSE) {
                         LeftRightEndSubscriber end = (LeftRightEndSubscriber)val;
-                        
+
                         rights.remove(end.index);
                         disposables.remove(end);
                     }
@@ -354,7 +354,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                 }
             }
         }
-        
+
         @Override
         public void innerError(Throwable ex) {
             if (ExceptionHelper.addThrowable(error, ex)) {
@@ -364,14 +364,14 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
                 RxJavaPlugins.onError(ex);
             }
         }
-        
+
         @Override
         public void innerComplete(LeftRightSubscriber sender) {
             disposables.delete(sender);
             active.decrementAndGet();
             drain();
         }
-        
+
         @Override
         public void innerValue(boolean isLeft, Object o) {
             synchronized (this) {
@@ -379,7 +379,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
             }
             drain();
         }
-        
+
         @Override
         public void innerClose(boolean isLeft, LeftRightEndSubscriber index) {
             synchronized (this) {
@@ -387,7 +387,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
             }
             drain();
         }
-        
+
         @Override
         public void innerCloseError(Throwable ex) {
             if (ExceptionHelper.addThrowable(error, ex)) {

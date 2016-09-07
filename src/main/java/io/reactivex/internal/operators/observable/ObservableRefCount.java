@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -25,16 +25,16 @@ import io.reactivex.observables.ConnectableObservable;
 /**
  * Returns an observable sequence that stays connected to the source as long as
  * there is at least one subscription to the observable sequence.
- * 
+ *
  * @param <T>
  *            the value type
  */
 public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<T, T> {
 
     final ConnectableObservable<? extends T> source;
-    
+
     volatile CompositeDisposable baseSubscription = new CompositeDisposable();
-    
+
     final AtomicInteger subscriptionCount = new AtomicInteger();
 
     /**
@@ -44,7 +44,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
 
     /**
      * Constructor.
-     * 
+     *
      * @param source
      *            observable to apply ref count to
      */
@@ -104,13 +104,13 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
             }
         };
     }
-    
+
     void doSubscribe(final Observer<? super T> subscriber, final CompositeDisposable currentBase) {
         // handle unsubscribing from the base subscription
         Disposable d = disconnect(currentBase);
-        
+
         ConnectionSubscriber s = new ConnectionSubscriber(subscriber, currentBase, d);
-        
+
         source.subscribe(s);
     }
 
@@ -141,7 +141,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
         final Disposable resource;
 
         Disposable s;
-        
+
         ConnectionSubscriber(Observer<? super T> subscriber,
                 CompositeDisposable currentBase, Disposable resource) {
             this.subscriber = subscriber;
@@ -173,7 +173,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
             cleanup();
             subscriber.onComplete();
         }
-        
+
         @Override
         public void dispose() {
             s.dispose();
@@ -187,7 +187,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
 
         void cleanup() {
             // on error or completion we need to unsubscribe the base subscription
-            // and set the subscriptionCount to 0 
+            // and set the subscriptionCount to 0
             lock.lock();
             try {
                 if (baseSubscription == currentBase) {

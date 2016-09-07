@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -79,7 +79,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         Observable<String> NbpObservable = w.onErrorResumeNext(resume);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        
+
         NbpObservable.subscribe(NbpObserver);
 
         try {
@@ -96,7 +96,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         verify(NbpObserver, times(1)).onNext("twoResume");
         verify(NbpObserver, times(1)).onNext("threeResume");
     }
-    
+
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribe() {
@@ -106,7 +106,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
             public void subscribe(Observer<? super String> t1) {
                 throw new RuntimeException("force failure");
             }
-            
+
         });
         Observable<String> resume = Observable.just("resume");
         Observable<String> NbpObservable = testObservable.onErrorResumeNext(resume);
@@ -118,7 +118,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         verify(NbpObserver, times(1)).onComplete();
         verify(NbpObserver, times(1)).onNext("resume");
     }
-    
+
     @Test
     @Ignore("Publishers should not throw")
     public void testResumeNextWithFailureOnSubscribeAsync() {
@@ -128,7 +128,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
             public void subscribe(Observer<? super String> t1) {
                 throw new RuntimeException("force failure");
             }
-            
+
         });
         Observable<String> resume = Observable.just("resume");
         Observable<String> NbpObservable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeNext(resume);
@@ -139,7 +139,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         NbpObservable.subscribe(ts);
 
         ts.awaitTerminalEvent();
-        
+
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
         verify(NbpObserver, times(1)).onComplete();
         verify(NbpObserver, times(1)).onNext("resume");
@@ -186,7 +186,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
             System.out.println("done starting TestObservable thread");
         }
     }
-    
+
     @Test
     public void testBackpressure() {
         TestObserver<Integer> ts = new TestObserver<Integer>();

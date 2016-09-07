@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -21,7 +21,7 @@ import io.reactivex.Flowable;
  * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
  * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they
  * may discard their buffers by applying an operator like {@link Flowable#take take}{@code (0)} to them.
- * 
+ *
  * @param <K>
  *            the type of the key
  * @param <T>
@@ -32,7 +32,7 @@ import io.reactivex.Flowable;
 public abstract class GroupedFlowable<K, T> extends Flowable<T> {
 
     final K key;
-    
+
     /**
      * Constructs a GroupedFlowable with the given key.
      * @param key the key
@@ -40,10 +40,10 @@ public abstract class GroupedFlowable<K, T> extends Flowable<T> {
     protected GroupedFlowable(K key) {
         this.key = key;
     }
-    
+
     /**
      * Returns the key that identifies the group of items emitted by this {@code GroupedObservable}
-     * 
+     *
      * @return the key that the items emitted by this {@code GroupedObservable} were grouped by
      */
     public K getKey() {

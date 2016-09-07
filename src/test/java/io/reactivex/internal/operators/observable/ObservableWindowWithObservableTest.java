@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -76,7 +76,7 @@ public class ObservableWindowWithObservableTest {
         verify(o, never()).onError(any(Throwable.class));
 
         assertEquals(n / 3, values.size());
-        
+
         int j = 0;
         for (Observer<Object> mo : values) {
             verify(mo, never()).onError(any(Throwable.class));
@@ -280,7 +280,7 @@ public class ObservableWindowWithObservableTest {
         ts.assertValueCount(1);
         tsw.assertValues(1, 2);
     }
-    
+
     @Test
     public void testWindowViaObservableNoUnsubscribe() {
         Observable<Integer> source = Observable.range(1, 10);
@@ -290,13 +290,13 @@ public class ObservableWindowWithObservableTest {
                 return Observable.empty();
             }
         };
-        
+
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
         source.window(boundary).subscribe(ts);
-        
+
         assertFalse(ts.isCancelled());
     }
-    
+
     @Test
     public void testBoundaryUnsubscribedOnMainCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -307,18 +307,18 @@ public class ObservableWindowWithObservableTest {
                 return boundary;
             }
         };
-        
+
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
-        
+
         assertTrue(source.hasObservers());
         assertTrue(boundary.hasObservers());
-        
+
         source.onComplete();
 
         assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());
-        
+
         ts.assertComplete();
         ts.assertNoErrors();
         ts.assertValueCount(1);
@@ -333,24 +333,24 @@ public class ObservableWindowWithObservableTest {
                 return boundary;
             }
         };
-        
+
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
-        
+
         assertTrue(source.hasObservers());
         assertTrue(boundary.hasObservers());
-        
+
         boundary.onComplete();
 
         // FIXME source still active because the open window
         assertTrue(source.hasObservers());
         assertFalse(boundary.hasObservers());
-        
+
         ts.assertComplete();
         ts.assertNoErrors();
         ts.assertValueCount(1);
     }
-    
+
     @Test
     public void testChildUnsubscribed() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -361,10 +361,10 @@ public class ObservableWindowWithObservableTest {
                 return boundary;
             }
         };
-        
+
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
-        
+
         assertTrue(source.hasObservers());
         assertTrue(boundary.hasObservers());
 
@@ -374,12 +374,12 @@ public class ObservableWindowWithObservableTest {
         assertTrue(source.hasObservers());
         // FIXME boundary has subscribers because the open window
         assertTrue(boundary.hasObservers());
-        
+
         ts.assertNotComplete();
         ts.assertNoErrors();
         ts.assertValueCount(1);
     }
-    
+
     @Test
     public void newBoundaryCalledAfterWindowClosed() {
         final AtomicInteger calls = new AtomicInteger();
@@ -392,10 +392,10 @@ public class ObservableWindowWithObservableTest {
                 return boundary;
             }
         };
-        
+
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
         source.window(boundaryFunc).subscribe(ts);
-        
+
         source.onNext(1);
         boundary.onNext(1);
         assertTrue(boundary.hasObservers());
@@ -407,10 +407,10 @@ public class ObservableWindowWithObservableTest {
         source.onNext(3);
         boundary.onNext(3);
         assertTrue(boundary.hasObservers());
-        
+
         source.onNext(4);
         source.onComplete();
-        
+
         ts.assertNoErrors();
         ts.assertValueCount(4);
         ts.assertComplete();

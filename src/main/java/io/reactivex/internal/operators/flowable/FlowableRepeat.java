@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -25,21 +25,21 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
         super(source);
         this.count = count;
     }
-    
+
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         SubscriptionArbiter sa = new SubscriptionArbiter();
         s.onSubscribe(sa);
-        
+
         RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sa, source);
         rs.subscribeNext();
     }
-    
+
     // FIXME update to a fresh Rsc algorithm
     static final class RepeatSubscriber<T> extends AtomicInteger implements Subscriber<T> {
         /** */
         private static final long serialVersionUID = -7098360935104053232L;
-        
+
         final Subscriber<? super T> actual;
         final SubscriptionArbiter sa;
         final Publisher<? extends T> source;
@@ -50,12 +50,12 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
             this.source = source;
             this.remaining = count;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             sa.setSubscription(s);
         }
-        
+
         @Override
         public void onNext(T t) {
             actual.onNext(t);
@@ -65,7 +65,7 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
         public void onError(Throwable t) {
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             long r = remaining;
@@ -78,7 +78,7 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
                 actual.onComplete();
             }
         }
-        
+
         /**
          * Subscribes to the source again via trampolining.
          */
@@ -90,7 +90,7 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
                         return;
                     }
                     source.subscribe(this);
-                    
+
                     missed = addAndGet(-missed);
                     if (missed == 0) {
                         break;

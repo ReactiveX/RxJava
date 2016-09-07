@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -71,10 +71,10 @@ public class FlowableSwitchIfEmptyTest {
                             subscriber.onComplete();
                         }
                     }
-                    
+
                     @Override
                     public void cancel() {
-                        
+
                     }
                 });
             }
@@ -88,7 +88,7 @@ public class FlowableSwitchIfEmptyTest {
     public void testSwitchTriggerUnsubscribe() throws Exception {
 
         final BooleanSubscription bs = new BooleanSubscription();
-        
+
         Flowable<Long> withProducer = Flowable.unsafeCreate(new Publisher<Long>() {
             @Override
             public void subscribe(final Subscriber<? super Long> subscriber) {
@@ -117,7 +117,7 @@ public class FlowableSwitchIfEmptyTest {
                     public void onNext(Long aLong) {
                         cancel();
                     }
-                    
+
                 };
             }
         }).subscribe();
@@ -131,7 +131,7 @@ public class FlowableSwitchIfEmptyTest {
     @Test
     public void testSwitchShouldTriggerUnsubscribe() {
         final BooleanSubscription bs = new BooleanSubscription();
-        
+
         Flowable.unsafeCreate(new Publisher<Long>() {
             @Override
             public void subscribe(final Subscriber<? super Long> subscriber) {
@@ -146,9 +146,9 @@ public class FlowableSwitchIfEmptyTest {
     public void testSwitchRequestAlternativeObservableWithBackpressure() {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
-        
+
         Flowable.<Integer>empty().switchIfEmpty(Flowable.just(1, 2, 3)).subscribe(ts);
-        
+
         assertEquals(Arrays.asList(1), ts.values());
         ts.assertNoErrors();
         ts.request(1);
@@ -163,7 +163,7 @@ public class FlowableSwitchIfEmptyTest {
         ts.assertNoValues();
         ts.assertNoErrors();
     }
-    
+
     @Test
     public void testBackpressureOnFirstObservable() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
@@ -172,7 +172,7 @@ public class FlowableSwitchIfEmptyTest {
         ts.assertNoErrors();
         ts.assertNoValues();
     }
-    
+
     @Test(timeout = 10000)
     public void testRequestsNotLost() throws InterruptedException {
         final TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
@@ -192,10 +192,10 @@ public class FlowableSwitchIfEmptyTest {
                                 }}, 100, TimeUnit.MILLISECONDS);
                         }
                     }
-                    
+
                     @Override
                     public void cancel() {
-                        
+
                     }
                 });
             }})

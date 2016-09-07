@@ -35,7 +35,7 @@ public final class ObservableCreate<T> extends Observable<T> {
     protected void subscribeActual(Observer<? super T> observer) {
         CreateEmitter<T> parent = new CreateEmitter<T>(observer);
         observer.onSubscribe(parent);
-        
+
         try {
             source.subscribe(parent);
         } catch (Throwable ex) {
@@ -43,20 +43,20 @@ public final class ObservableCreate<T> extends Observable<T> {
             parent.onError(ex);
         }
     }
-    
-    static final class CreateEmitter<T> 
+
+    static final class CreateEmitter<T>
     extends AtomicReference<Disposable>
     implements ObservableEmitter<T>, Disposable {
 
         /** */
         private static final long serialVersionUID = -3434801548987643227L;
-        
+
         final Observer<? super T> observer;
-        
+
         public CreateEmitter(Observer<? super T> observer) {
             this.observer = observer;
         }
-        
+
         @Override
         public void onNext(T t) {
             if (t == null) {
@@ -113,32 +113,32 @@ public final class ObservableCreate<T> extends Observable<T> {
         public void dispose() {
             DisposableHelper.dispose(this);
         }
-        
+
         @Override
         public boolean isDisposed() {
             return DisposableHelper.isDisposed(get());
         }
     }
-    
+
     /**
      * Serializes calls to onNext, onError and onComplete.
      *
      * @param <T> the value type
      */
-    static final class SerializedEmitter<T> 
+    static final class SerializedEmitter<T>
     extends AtomicInteger
     implements ObservableEmitter<T> {
         /** */
         private static final long serialVersionUID = 4883307006032401862L;
 
         final ObservableEmitter<T> emitter;
-        
+
         final AtomicThrowable error;
-        
+
         final SimpleQueue<T> queue;
-        
+
         volatile boolean done;
-        
+
         public SerializedEmitter(ObservableEmitter<T> emitter) {
             this.emitter = emitter;
             this.error = new AtomicThrowable();
@@ -196,20 +196,20 @@ public final class ObservableCreate<T> extends Observable<T> {
             done = true;
             drain();
         }
-        
+
         void drain() {
             if (getAndIncrement() == 0) {
                 drainLoop();
             }
         }
-        
+
         void drainLoop() {
             ObservableEmitter<T> e = emitter;
             SimpleQueue<T> q = queue;
             AtomicThrowable error = this.error;
             int missed = 1;
             for (;;) {
-                
+
                 for (;;) {
                     if (e.isDisposed()) {
                         q.clear();
@@ -221,10 +221,10 @@ public final class ObservableCreate<T> extends Observable<T> {
                         e.onError(error.terminate());
                         return;
                     }
-                    
+
                     boolean d = done;
                     T v;
-                    
+
                     try {
                         v = q.poll();
                     } catch (Throwable ex) {
@@ -232,21 +232,21 @@ public final class ObservableCreate<T> extends Observable<T> {
                         // should never happen
                         v = null;
                     }
-                    
+
                     boolean empty = v == null;
-                    
+
                     if (d && empty) {
                         e.onComplete();
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     e.onNext(v);
                 }
-                
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;

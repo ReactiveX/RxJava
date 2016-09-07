@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -880,7 +880,7 @@ public class FlowableZipTest {
         assertEquals("null-b", list.get(1));
         assertEquals("3-null", list.get(2));
     }
-    
+
     @SuppressWarnings("rawtypes")
     static String kind(Notification notification) {
         if (notification.isOnError()) {
@@ -891,7 +891,7 @@ public class FlowableZipTest {
         }
         return "OnComplete";
     }
-    
+
     @SuppressWarnings("rawtypes")
     static String value(Notification notification) {
         if (notification.isOnNext()) {
@@ -1230,7 +1230,7 @@ public class FlowableZipTest {
                 return t1 + 10 * t2;
             }
         });
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -1238,9 +1238,9 @@ public class FlowableZipTest {
                 request(5);
             }
         };
-        
+
         source.subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertTerminated();
         ts.assertValues(11, 22);
@@ -1249,7 +1249,7 @@ public class FlowableZipTest {
     public void testZipRace() {
         long startTime = System.currentTimeMillis();
         Flowable<Integer> src = Flowable.just(1).subscribeOn(Schedulers.computation());
-        
+
         // now try and generate a hang by zipping src with itself repeatedly. A
         // time limit of 9 seconds ( 1 second less than the test timeout) is
         // used so that this test will not timeout on slow machines.
@@ -1261,11 +1261,11 @@ public class FlowableZipTest {
                     return t1 + t2 * 10;
                 }
             }).blockingSingle(0);
-            
+
             Assert.assertEquals(11, value);
         }
     }
-    /** 
+    /**
      * Request only a single value and don't wait for another request just
      * to emit an onCompleted.
      */
@@ -1273,52 +1273,52 @@ public class FlowableZipTest {
     public void testZipRequest1() {
         Flowable<Integer> src = Flowable.just(1).subscribeOn(Schedulers.computation());
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
-        
+
         Flowable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
                 return t1 + t2 * 10;
             }
         }).subscribe(ts);
-        
+
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertValue(11);
     }
-    
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void zipNArguments() throws Exception {
         Flowable source = Flowable.just(1);
-        
+
         for (int i = 2; i < 10; i++) {
             Class<?>[] types = new Class[i + 1];
             Arrays.fill(types, Publisher.class);
             types[i] = i == 2 ? BiFunction.class : Class.forName("io.reactivex.functions.Function" + i);
-            
+
             Method m = Flowable.class.getMethod("zip", types);
-            
+
             Object[] params = new Object[i + 1];
             Arrays.fill(params, source);
             params[i] = ArgsToString.INSTANCE;
-            
+
             StringBuilder b = new StringBuilder();
             for (int j = 0; j < i; j++) {
                 b.append('1');
             }
-            
+
             ((Flowable)m.invoke(null, params)).test().assertResult(b.toString());
-            
+
             for (int j = 0; j < params.length; j++) {
                 Object[] params0 = params.clone();
                 params0[j] = null;
-                
+
                 try {
                     m.invoke(null, params0);
                     fail("Should have thrown @ " + m);
                 } catch (InvocationTargetException ex) {
                     assertTrue(ex.toString(), ex.getCause() instanceof NullPointerException);
-                    
+
                     if (j < i) {
                         assertEquals("source" + (j + 1) + " is null", ex.getCause().getMessage());
                     } else {
@@ -1384,7 +1384,7 @@ public class FlowableZipTest {
             return "" + t1;
         }
     }
-    
+
     @Test
     public void zip2DelayError() {
         Flowable<Integer> error1 = Flowable.error(new TestException("One"));
@@ -1392,7 +1392,7 @@ public class FlowableZipTest {
 
         Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
-        
+
         TestSubscriber<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
             @Override
             public Object apply(Integer a, Integer b) throws Exception {
@@ -1401,7 +1401,7 @@ public class FlowableZipTest {
         }, true)
         .test()
         .assertFailure(CompositeException.class, "11", "22");
-        
+
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
         TestHelper.assertError(errors, 0, TestException.class, "One");
         TestHelper.assertError(errors, 1, TestException.class, "Two");
@@ -1415,7 +1415,7 @@ public class FlowableZipTest {
 
         Flowable<Integer> error2 = Flowable.error(new TestException("Two"));
         Flowable<Integer> source2 = Flowable.range(1, 2).concatWith(error2);
-        
+
         TestSubscriber<Object> ts = Flowable.zip(source1, source2, new BiFunction<Integer, Integer, Object>() {
             @Override
             public Object apply(Integer a, Integer b) throws Exception {
@@ -1424,13 +1424,13 @@ public class FlowableZipTest {
         }, true, 1)
         .test()
         .assertFailure(CompositeException.class, "11", "22");
-        
+
         List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
         TestHelper.assertError(errors, 0, TestException.class, "One");
         TestHelper.assertError(errors, 1, TestException.class, "Two");
         assertEquals(2, errors.size());
     }
-    
+
     @Test
     public void zip2Prefetch() {
         Flowable.zip(Flowable.range(1, 9),
@@ -1452,7 +1452,7 @@ public class FlowableZipTest {
     public void zipArrayEmpty() {
         assertSame(Flowable.empty(), Flowable.zipArray(Functions.<Object[]>identity(), false, 16));
     }
-    
+
     @Test
     public void zip2() {
         Flowable.zip(Flowable.just(1),
@@ -1556,7 +1556,7 @@ public class FlowableZipTest {
                 Flowable.just(2), Flowable.just(3),
                 Flowable.just(4), Flowable.just(5),
                 Flowable.just(6), Flowable.just(7),
-                Flowable.just(8), 
+                Flowable.just(8),
             new Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Object>() {
                 @Override
                 public Object apply(Integer a, Integer b, Integer c, Integer d, Integer e, Integer f, Integer g,

@@ -41,7 +41,7 @@ public class BackpressureHelperTest {
         assertEquals(Long.MAX_VALUE, BackpressureHelper.addCap(Long.MAX_VALUE - 1, Long.MAX_VALUE - 1));
         assertEquals(Long.MAX_VALUE, BackpressureHelper.addCap(Long.MAX_VALUE, Long.MAX_VALUE));
     }
-    
+
     @Test
     public void testMultiplyCap() {
         assertEquals(6, BackpressureHelper.multiplyCap(2, 3));
@@ -50,102 +50,102 @@ public class BackpressureHelperTest {
         assertEquals(Long.MAX_VALUE, BackpressureHelper.multiplyCap(1L << 32, 1L << 32));
 
     }
-    
+
     @Test
     public void producedMore() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             AtomicLong requested = new AtomicLong(1);
-            
+
             assertEquals(0, BackpressureHelper.produced(requested, 2));
-            
+
             TestHelper.assertError(list, 0, IllegalStateException.class, "More produced than requested: -1");
         } finally {
             RxJavaPlugins.reset();
         }
     }
-    
+
     @Test
     public void requestProduceRace() {
         final AtomicLong requested = new AtomicLong(1);
 
         for (int i = 0; i < 500; i++) {
-            
+
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
                     BackpressureHelper.produced(requested, 1);
                 }
             };
-            
+
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
                     BackpressureHelper.add(requested, 1);
                 }
             };
-            
+
             TestHelper.race(r1, r2, Schedulers.single());
         }
     }
-    
+
     @Test
     public void requestCancelProduceRace() {
         final AtomicLong requested = new AtomicLong(1);
 
         for (int i = 0; i < 500; i++) {
-            
+
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
                     BackpressureHelper.produced(requested, 1);
                 }
             };
-            
+
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
                     BackpressureHelper.addCancel(requested, 1);
                 }
             };
-            
+
             TestHelper.race(r1, r2, Schedulers.single());
         }
     }
-    
+
     @Test
     public void utilityClass() {
         TestHelper.checkUtilityClass(BackpressureHelper.class);
     }
-    
+
     @Test
     public void capped() {
         final AtomicLong requested = new AtomicLong(Long.MIN_VALUE);
 
         assertEquals(Long.MIN_VALUE, BackpressureHelper.addCancel(requested, 1));
         assertEquals(Long.MIN_VALUE, BackpressureHelper.addCancel(requested, Long.MAX_VALUE));
-        
+
         requested.set(0);
-        
+
         assertEquals(0, BackpressureHelper.addCancel(requested, Long.MAX_VALUE));
         assertEquals(Long.MAX_VALUE, BackpressureHelper.addCancel(requested, 1));
         assertEquals(Long.MAX_VALUE, BackpressureHelper.addCancel(requested, Long.MAX_VALUE));
-        
+
         requested.set(0);
-        
+
         assertEquals(0, BackpressureHelper.add(requested, Long.MAX_VALUE));
         assertEquals(Long.MAX_VALUE, BackpressureHelper.add(requested, 1));
         assertEquals(Long.MAX_VALUE, BackpressureHelper.add(requested, Long.MAX_VALUE));
-        
+
         assertEquals(Long.MAX_VALUE, BackpressureHelper.produced(requested, 1));
         assertEquals(Long.MAX_VALUE, BackpressureHelper.produced(requested, Long.MAX_VALUE));
     }
-    
+
     @Test
     public void multiplyCap() {
         assertEquals(Long.MAX_VALUE, BackpressureHelper.multiplyCap(3, Long.MAX_VALUE >> 1));
-        
+
         assertEquals(Long.MAX_VALUE, BackpressureHelper.multiplyCap(1, Long.MAX_VALUE));
     }
 }

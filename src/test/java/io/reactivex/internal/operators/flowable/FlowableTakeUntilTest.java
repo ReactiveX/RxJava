@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -181,28 +181,28 @@ public class FlowableTakeUntilTest {
             observer.onSubscribe(s);
         }
     }
-    
+
     @Test
     public void testUntilFires() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.takeUntil(until).subscribe(ts);
 
         assertTrue(source.hasSubscribers());
         assertTrue(until.hasSubscribers());
 
         source.onNext(1);
-        
+
         ts.assertValue(1);
         until.onNext(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertTerminated();
-        
+
         assertFalse("Source still has observers", source.hasSubscribers());
         assertFalse("Until still has observers", until.hasSubscribers());
         assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
@@ -211,9 +211,9 @@ public class FlowableTakeUntilTest {
     public void testMainCompletes() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.takeUntil(until).subscribe(ts);
 
         assertTrue(source.hasSubscribers());
@@ -221,11 +221,11 @@ public class FlowableTakeUntilTest {
 
         source.onNext(1);
         source.onComplete();
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertTerminated();
-        
+
         assertFalse("Source still has observers", source.hasSubscribers());
         assertFalse("Until still has observers", until.hasSubscribers());
         assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
@@ -234,39 +234,39 @@ public class FlowableTakeUntilTest {
     public void testDownstreamUnsubscribes() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> until = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.takeUntil(until).take(1).subscribe(ts);
 
         assertTrue(source.hasSubscribers());
         assertTrue(until.hasSubscribers());
 
         source.onNext(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertTerminated();
-        
+
         assertFalse("Source still has observers", source.hasSubscribers());
         assertFalse("Until still has observers", until.hasSubscribers());
         assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
     }
     public void testBackpressure() {
         PublishProcessor<Integer> until = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
-        
+
         Flowable.range(1, 10).takeUntil(until).subscribe(ts);
 
         assertTrue(until.hasSubscribers());
 
         ts.request(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertNotComplete();
-        
+
         assertFalse("Until still has observers", until.hasSubscribers());
         assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
     }

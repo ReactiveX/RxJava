@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -31,7 +31,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     final Publisher<? extends T> second;
     final BiPredicate<? super T, ? super T> comparer;
     final int prefetch;
-    
+
     public FlowableSequenceEqual(Publisher<? extends T> first, Publisher<? extends T> second,
             BiPredicate<? super T, ? super T> comparer, int prefetch) {
         this.first = first;
@@ -39,34 +39,34 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
         this.comparer = comparer;
         this.prefetch = prefetch;
     }
-    
+
     @Override
     public void subscribeActual(Subscriber<? super Boolean> s) {
         EqualCoordinator<T> parent = new EqualCoordinator<T>(s, prefetch, comparer);
         s.onSubscribe(parent);
         parent.subscribe(first, second);
     }
-    
+
     static final class EqualCoordinator<T> extends DeferredScalarSubscription<Boolean> {
         /** */
         private static final long serialVersionUID = -6178010334400373240L;
-        
+
         final BiPredicate<? super T, ? super T> comparer;
-        
+
         final int prefetch;
-        
+
         final EqualSubscriber<T> first;
-        
+
         final EqualSubscriber<T> second;
-        
+
         final AtomicThrowable error;
-        
+
         final AtomicInteger wip;
-        
+
         T v1;
-        
+
         T v2;
-        
+
         public EqualCoordinator(Subscriber<? super Boolean> actual, int prefetch, BiPredicate<? super T, ? super T> comparer) {
             super(actual);
             this.prefetch = prefetch;
@@ -76,7 +76,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
             this.second = new EqualSubscriber<T>(this, prefetch);
             this.error = new AtomicThrowable();
         }
-        
+
         void subscribe(Publisher<? extends T> source1, Publisher<? extends T> source2) {
             source1.subscribe(first);
             source2.subscribe(second);
@@ -92,25 +92,25 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                 second.clear();
             }
         }
-        
+
         void cancelAndClear() {
             first.cancel();
             first.clear();
             second.cancel();
             second.clear();
         }
-        
+
         void drain() {
             if (wip.getAndIncrement() != 0) {
                 return;
             }
 
             int missed = 1;
-            
+
             for (;;) {
                 SimpleQueue<T> q1 = first.queue;
                 SimpleQueue<T> q2 = second.queue;
-                
+
                 if (q1 != null && q2 != null) {
                     for (;;) {
                         if (isCancelled()) {
@@ -118,17 +118,17 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                             second.clear();
                             return;
                         }
-                        
+
                         Throwable ex = error.get();
                         if (ex != null) {
                             cancelAndClear();
-                            
+
                             actual.onError(error.terminate());
                             return;
                         }
 
                         boolean d1 = first.done;
-                        
+
                         T a = v1;
                         if (a == null) {
                             try {
@@ -143,7 +143,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                             v1 = a;
                         }
                         boolean e1 = a == null;
-                        
+
                         boolean d2 = second.done;
                         T b = v2;
                         if (b == null) {
@@ -160,7 +160,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                         }
 
                         boolean e2 = b == null;
-                        
+
                         if (d1 && d2 && e1 && e2) {
                             complete(true);
                             return;
@@ -170,13 +170,13 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                             complete(false);
                             return;
                         }
-                        
+
                         if (e1 || e2) {
                             break;
                         }
-                        
+
                         boolean c;
-                        
+
                         try {
                             c = comparer.test(a, b);
                         } catch (Throwable exc) {
@@ -186,36 +186,36 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                             actual.onError(error.terminate());
                             return;
                         }
-                        
+
                         if (!c) {
                             cancelAndClear();
                             complete(false);
                             return;
                         }
-                        
+
                         v1 = null;
                         v2 = null;
-                        
+
                         first.request();
                         second.request();
                     }
-                    
+
                 } else {
                     if (isCancelled()) {
                         first.clear();
                         second.clear();
                         return;
                     }
-                    
+
                     Throwable ex = error.get();
                     if (ex != null) {
                         cancelAndClear();
-                        
+
                         actual.onError(error.terminate());
                         return;
                     }
                 }
-                
+
                 missed = wip.addAndGet(-missed);
                 if (missed == 0) {
                     break;
@@ -223,40 +223,40 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
             }
         }
     }
-    
-    static final class EqualSubscriber<T> 
+
+    static final class EqualSubscriber<T>
     extends AtomicReference<Subscription>
     implements Subscriber<T> {
         /** */
         private static final long serialVersionUID = 4804128302091633067L;
-        
+
         final EqualCoordinator<T> parent;
-        
+
         final int prefetch;
-        
+
         final int limit;
-        
+
         long produced;
 
         volatile SimpleQueue<T> queue;
 
         volatile boolean done;
-        
+
         int sourceMode;
-        
+
         public EqualSubscriber(EqualCoordinator<T> parent, int prefetch) {
             this.parent = parent;
             this.limit = prefetch - (prefetch >> 2);
             this.prefetch = prefetch;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(this, s)) {
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")
                     QueueSubscription<T> qs = (QueueSubscription<T>) s;
-                    
+
                     int m = qs.requestFusion(QueueSubscription.ANY);
                     if (m == QueueSubscription.SYNC) {
                         sourceMode = m;
@@ -272,13 +272,13 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                         return;
                     }
                 }
-                
+
                 queue = new SpscArrayQueue<T>(prefetch);
-                
+
                 s.request(prefetch);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (sourceMode == QueueSubscription.NONE) {
@@ -289,7 +289,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
             }
             parent.drain();
         }
-        
+
         @Override
         public void onError(Throwable t) {
             EqualCoordinator<T> p = parent;
@@ -299,13 +299,13 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                 RxJavaPlugins.onError(t);
             }
         }
-        
+
         @Override
         public void onComplete() {
             done = true;
             parent.drain();
         }
-        
+
         public void request() {
             if (sourceMode != QueueSubscription.SYNC) {
                 long p = produced + 1;
@@ -317,11 +317,11 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                 }
             }
         }
-        
+
         public void cancel() {
             SubscriptionHelper.cancel(this);
         }
-        
+
         void clear() {
             SimpleQueue<T> sq = queue;
             if (sq != null) {

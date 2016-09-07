@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,13 +43,13 @@ public final class TrampolineScheduler extends Scheduler {
 
     /* package accessible for unit tests */TrampolineScheduler() {
     }
-    
+
     @Override
     public Disposable scheduleDirect(Runnable run) {
         run.run();
         return EmptyDisposable.INSTANCE;
     }
-    
+
     @Override
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         try {
@@ -64,11 +64,11 @@ public final class TrampolineScheduler extends Scheduler {
 
     static final class TrampolineWorker extends Scheduler.Worker implements Disposable {
         final PriorityBlockingQueue<TimedRunnable> queue = new PriorityBlockingQueue<TimedRunnable>();
-        
+
         private final AtomicInteger wip = new AtomicInteger();
 
         final AtomicInteger counter = new AtomicInteger();
-        
+
         volatile boolean disposed;
 
         @Override
@@ -82,7 +82,7 @@ public final class TrampolineScheduler extends Scheduler {
 
             return enqueue(new SleepingRunnable(action, this, execTime), execTime);
         }
-        
+
         Disposable enqueue(Runnable action, long execTime) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
@@ -107,7 +107,7 @@ public final class TrampolineScheduler extends Scheduler {
                         break;
                     }
                 }
-                
+
                 return EmptyDisposable.INSTANCE;
             } else {
                 // queue wasn't empty, a parent is already processing so we just add to the end of the queue
@@ -136,7 +136,7 @@ public final class TrampolineScheduler extends Scheduler {
         final Runnable run;
         final long execTime;
         final int count; // In case if time between enqueueing took less than 1ms
-        
+
         volatile boolean disposed;
 
         TimedRunnable(Runnable run, Long execTime, int count) {
@@ -154,7 +154,7 @@ public final class TrampolineScheduler extends Scheduler {
             return result;
         }
     }
-    
+
     static final class SleepingRunnable implements Runnable {
         private final Runnable run;
         private final TrampolineWorker worker;

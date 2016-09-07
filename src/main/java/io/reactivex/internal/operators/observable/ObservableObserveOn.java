@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -33,29 +33,29 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
         this.delayError = delayError;
         this.bufferSize = bufferSize;
     }
-    
+
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
         if (scheduler instanceof TrampolineScheduler) {
             source.subscribe(observer);
         } else {
             Scheduler.Worker w = scheduler.createWorker();
-            
+
             source.subscribe(new ObserveOnSubscriber<T>(observer, w, delayError, bufferSize));
         }
     }
-    
+
     /**
      * Pads the base atomic integer used for wip counting.
      */
     static class Padding0 extends AtomicInteger {
         /** */
         private static final long serialVersionUID = 3172843496016154809L;
-        
+
         volatile long p01, p02, p03, p04, p05, p06, p07;
         volatile long p08, p09, p0A, p0B, p0C, p0D, p0E, p0F;
     }
-    
+
     static final class ObserveOnSubscriber<T> extends Padding0 implements Observer<T>, Disposable, Runnable {
         /** */
         private static final long serialVersionUID = 6576896619930983584L;
@@ -64,14 +64,14 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
         final boolean delayError;
         final int bufferSize;
         final SpscLinkedArrayQueue<T> queue;
-        
+
         Disposable s;
-        
+
         Throwable error;
         volatile boolean done;
-        
+
         volatile boolean cancelled;
-        
+
         public ObserveOnSubscriber(Observer<? super T> actual, Scheduler.Worker worker, boolean delayError, int bufferSize) {
             this.actual = actual;
             this.worker = worker;
@@ -79,7 +79,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             this.bufferSize = bufferSize;
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
@@ -87,13 +87,13 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
                 return;
             }
-            
+
             if (!queue.offer(t)) {
                 s.dispose();
                 onError(new MissingBackpressureException("Queue full?!"));
@@ -101,7 +101,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             }
             schedule();
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -112,7 +112,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             done = true;
             schedule();
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
@@ -121,7 +121,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             done = true;
             schedule();
         }
-        
+
         @Override
         public void dispose() {
             if (!cancelled) {
@@ -141,19 +141,19 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                 worker.schedule(this);
             }
         }
-        
+
         @Override
         public void run() {
             int missed = 1;
-            
+
             final SpscLinkedArrayQueue<T> q = queue;
             final Observer<? super T> a = actual;
-            
+
             for (;;) {
                 if (checkTerminated(done, q.isEmpty(), a)) {
                     return;
                 }
-                
+
                 for (;;) {
                     boolean d = done;
                     T v = q.poll();
@@ -162,21 +162,21 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                     if (checkTerminated(d, empty, a)) {
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     a.onNext(v);
                 }
-                
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
-        
+
         boolean checkTerminated(boolean d, boolean empty, Observer<? super T> a) {
             if (cancelled) {
                 s.dispose();

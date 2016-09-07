@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -56,12 +56,12 @@ public class FlowableRetryWithPredicateTest {
     @Test
     public void testWithNothingToRetry() {
         Flowable<Integer> source = Flowable.range(0, 3);
-        
+
         Subscriber<Integer> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
-        
+
         inOrder.verify(o).onNext(0);
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onNext(2);
@@ -87,11 +87,11 @@ public class FlowableRetryWithPredicateTest {
                 t1.onComplete();
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -102,7 +102,7 @@ public class FlowableRetryWithPredicateTest {
         inOrder.verify(o).onNext(3);
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
-        
+
     }
     @Test
     public void testRetryTwiceAndGiveUp() {
@@ -115,11 +115,11 @@ public class FlowableRetryWithPredicateTest {
                 t1.onError(new TestException());
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -130,7 +130,7 @@ public class FlowableRetryWithPredicateTest {
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onError(any(TestException.class));
         verify(o, never()).onComplete();
-        
+
     }
     @Test
     public void testRetryOnSpecificException() {
@@ -151,11 +151,11 @@ public class FlowableRetryWithPredicateTest {
                 t1.onComplete();
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryOnTestException).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -188,11 +188,11 @@ public class FlowableRetryWithPredicateTest {
                 t1.onError(te);
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryOnTestException).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -205,7 +205,7 @@ public class FlowableRetryWithPredicateTest {
         verify(o, never()).onError(ioe);
         verify(o, never()).onComplete();
     }
-    
+
     @Test
     public void testUnsubscribeFromRetry() {
         PublishProcessor<Integer> subject = PublishProcessor.create();
@@ -221,7 +221,7 @@ public class FlowableRetryWithPredicateTest {
         subject.onNext(2);
         assertEquals(1, count.get());
     }
-    
+
     @Test(timeout = 10000)
     public void testUnsubscribeAfterError() {
 
@@ -273,7 +273,7 @@ public class FlowableRetryWithPredicateTest {
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
-    
+
     @Test
     public void testIssue2826() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -306,7 +306,7 @@ public class FlowableRetryWithPredicateTest {
 
         assertEquals(1, value);
     }
-    
+
     @Test
     public void testIssue3008RetryWithPredicate() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
@@ -334,7 +334,7 @@ public class FlowableRetryWithPredicateTest {
             }});
         assertEquals(Arrays.asList(1L,1L,2L,3L), list);
     }
-    
+
     @Test
     public void testIssue3008RetryInfinite() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
@@ -358,11 +358,11 @@ public class FlowableRetryWithPredicateTest {
             }});
         assertEquals(Arrays.asList(1L,1L,2L,3L), list);
     }
-    
+
     @Test
     public void testBackpressure() {
         final List<Long> requests = new ArrayList<Long>();
-        
+
         Flowable<Integer> source = Flowable
                 .just(1)
                 .concatWith(Flowable.<Integer>error(new TestException()))
@@ -372,7 +372,7 @@ public class FlowableRetryWithPredicateTest {
                         requests.add(t);
                     }
                 });
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3L);
         source
         .retry(new BiPredicate<Integer, Throwable>() {
@@ -381,7 +381,7 @@ public class FlowableRetryWithPredicateTest {
                 return t1 < 4; // FIXME was 3 in 1.x for some reason
             }
         }).subscribe(ts);
-        
+
         assertEquals(Arrays.asList(3L, 2L, 1L), requests);
         ts.assertValues(1, 1, 1);
         ts.assertNotComplete();

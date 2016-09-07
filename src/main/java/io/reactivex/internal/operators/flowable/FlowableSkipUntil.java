@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,15 +26,15 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
         super(source);
         this.other = other;
     }
-    
+
     @Override
     protected void subscribeActual(Subscriber<? super T> child) {
         final SerializedSubscriber<T> serial = new SerializedSubscriber<T>(child);
-        
+
         final ArrayCompositeSubscription frc = new ArrayCompositeSubscription(2);
-        
+
         final SkipUntilSubscriber<T> sus = new SkipUntilSubscriber<T>(serial, frc);
-        
+
         other.subscribe(new Subscriber<U>() {
             Subscription s;
             @Override
@@ -46,13 +46,13 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
                     }
                 }
             }
-            
+
             @Override
             public void onNext(U t) {
                 s.cancel();
                 sus.notSkipping = true;
             }
-            
+
             @Override
             public void onError(Throwable t) {
                 frc.dispose();
@@ -63,25 +63,25 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
                     serial.onError(t);
                 }
             }
-            
+
             @Override
             public void onComplete() {
                 sus.notSkipping = true;
             }
         });
-        
+
         source.subscribe(sus);
     }
-    
-    
+
+
     static final class SkipUntilSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -1113667257122396604L;
         final Subscriber<? super T> actual;
         final ArrayCompositeSubscription frc;
-        
+
         Subscription s;
-        
+
         volatile boolean notSkipping;
         boolean notSkippingLocal;
 
@@ -89,7 +89,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
             this.actual = actual;
             this.frc = frc;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
@@ -101,7 +101,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
                 }
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (notSkippingLocal) {
@@ -114,24 +114,24 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
                 s.request(1);
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             frc.dispose();
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             frc.dispose();
             actual.onComplete();
         }
-        
+
         @Override
         public void request(long n) {
             s.request(n);
         }
-        
+
         @Override
         public void cancel() {
             frc.dispose();

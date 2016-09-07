@@ -30,7 +30,7 @@ import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstreamMaybeSource<T> {
 
     final MaybeSource<T> source;
-    
+
     public MaybeToFlowable(MaybeSource<T> source) {
         this.source = source;
     }
@@ -49,9 +49,9 @@ public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstream
     implements MaybeObserver<T> {
         /** */
         private static final long serialVersionUID = 7603343402964826922L;
-        
-        Disposable d; 
-        
+
+        Disposable d;
+
         public MaybeToFlowableSubscriber(Subscriber<? super T> actual) {
             super(actual);
         }
@@ -60,7 +60,7 @@ public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstream
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
-                
+
                 actual.onSubscribe(this);
             }
         }
@@ -79,7 +79,7 @@ public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstream
         public void onComplete() {
             actual.onComplete();
         }
-        
+
         @Override
         public void cancel() {
             super.cancel();

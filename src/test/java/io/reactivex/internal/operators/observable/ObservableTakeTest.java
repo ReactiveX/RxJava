@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -162,7 +162,7 @@ public class ObservableTakeTest {
         Observable<String> w = Observable.unsafeCreate(f);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        
+
         Observable<String> take = w.take(1);
         take.subscribe(NbpObserver);
 
@@ -278,23 +278,23 @@ public class ObservableTakeTest {
         }
 
     });
-    
+
     @Test(timeout = 2000)
     public void testTakeObserveOn() {
         Observer<Object> o = TestHelper.mockObserver();
         TestObserver<Object> ts = new TestObserver<Object>(o);
-        
+
         INFINITE_OBSERVABLE
         .observeOn(Schedulers.newThread()).take(1).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        
+
         verify(o).onNext(1L);
         verify(o, never()).onNext(2L);
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testInterrupt() throws InterruptedException {
         final AtomicReference<Object> exception = new AtomicReference<Object>();
@@ -319,45 +319,45 @@ public class ObservableTakeTest {
         latch.await();
         assertNull(exception.get());
     }
-    
+
     @Test
     public void takeFinalValueThrows() {
         Observable<Integer> source = Observable.just(1).take(1);
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
             }
         };
-        
+
         source.safeSubscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotComplete();
     }
-    
+
     @Test
     public void testReentrantTake() {
         final PublishSubject<Integer> source = PublishSubject.create();
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         source.take(1).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) {
                 source.onNext(2);
             }
         }).subscribe(ts);
-        
+
         source.onNext(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void takeNegative() {
         try {

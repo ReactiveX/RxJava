@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -33,7 +33,7 @@ public class FlowableDefaultIfEmptyTest {
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, never()).onNext(10);
         verify(observer).onNext(1);
         verify(observer).onNext(2);
@@ -50,17 +50,17 @@ public class FlowableDefaultIfEmptyTest {
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer).onNext(10);
         verify(observer).onComplete();
         verify(observer, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     @Ignore("Subscribers should not throw")
     public void testEmptyButClientThrows() {
         final Subscriber<Integer> o = TestHelper.mockSubscriber();
-        
+
         Flowable.<Integer>empty().defaultIfEmpty(1).subscribe(new DefaultSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -77,12 +77,12 @@ public class FlowableDefaultIfEmptyTest {
                 o.onComplete();
             }
         });
-        
+
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onComplete();
     }
-    
+
     @Test
     public void testBackpressureEmpty() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
@@ -94,7 +94,7 @@ public class FlowableDefaultIfEmptyTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void testBackpressureNonEmpty() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);

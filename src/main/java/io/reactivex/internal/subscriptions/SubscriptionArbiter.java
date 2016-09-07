@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -14,12 +14,12 @@
 package io.reactivex.internal.subscriptions;
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -38,7 +38,7 @@ import io.reactivex.internal.util.BackpressureHelper;
 public class SubscriptionArbiter extends AtomicInteger implements Subscription {
     /** */
     private static final long serialVersionUID = -2189523197179400958L;
-    
+
     /**
      * The current subscription which may null if no Subscriptions have been set.
      */
@@ -58,13 +58,13 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
     volatile boolean cancelled;
 
     protected boolean unbounded;
-    
+
     public SubscriptionArbiter() {
         missedSubscription = new AtomicReference<Subscription>();
         missedRequested = new AtomicLong();
         missedProduced = new AtomicLong();
     }
-    
+
     /**
      * Atomically sets a new subscription.
      * @param s the subscription to set, not null (verified)
@@ -76,18 +76,18 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
         }
 
         ObjectHelper.requireNonNull(s, "s is null");
-        
+
         if (get() == 0 && compareAndSet(0, 1)) {
             Subscription a = actual;
-            
+
             if (a != null) {
                 a.cancel();
             }
-            
+
             actual = s;
-            
+
             long r = requested;
-            
+
             if (decrementAndGet() != 0) {
                 drainLoop();
             }
@@ -192,7 +192,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
 
         long requestAmount = 0L;
         Subscription requestTarget = null;
-        
+
         for (; ; ) {
 
             Subscription ms = missedSubscription.get();
@@ -271,7 +271,7 @@ public class SubscriptionArbiter extends AtomicInteger implements Subscription {
     public final boolean isUnbounded() {
         return unbounded;
     }
-    
+
     /**
      * Returns true if the arbiter has been cancelled.
      * @return true if the arbiter has been cancelled

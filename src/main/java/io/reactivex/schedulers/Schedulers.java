@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -24,32 +24,32 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class Schedulers {
     static final Scheduler SINGLE;
-    
+
     static final Scheduler COMPUTATION;
-    
+
     static final Scheduler IO;
-    
+
     static final Scheduler TRAMPOLINE;
-    
+
     static final Scheduler NEW_THREAD;
-    
+
     static {
         SINGLE = RxJavaPlugins.initSingleScheduler(new SingleScheduler());
-        
+
         COMPUTATION = RxJavaPlugins.initComputationScheduler(new ComputationScheduler());
-        
+
         IO = RxJavaPlugins.initIoScheduler(new IoScheduler());
-        
+
         TRAMPOLINE = TrampolineScheduler.instance();
-        
+
         NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(NewThreadScheduler.instance());
     }
-    
+
     /** Utility class. */
     private Schedulers() {
         throw new IllegalStateException("No instances!");
     }
-    
+
     /**
      * Creates and returns a {@link Scheduler} intended for computational work.
      * <p>
@@ -64,7 +64,7 @@ public final class Schedulers {
     public static Scheduler computation() {
         return RxJavaPlugins.onComputationScheduler(COMPUTATION);
     }
-    
+
     /**
      * Creates and returns a {@link Scheduler} intended for IO-bound work.
      * <p>
@@ -102,7 +102,7 @@ public final class Schedulers {
     public static Scheduler newThread() {
         return RxJavaPlugins.onNewThreadScheduler(NEW_THREAD);
     }
-    
+
     /**
      * Returns the common, single-thread backed Scheduler instance.
      * <p>
@@ -110,7 +110,7 @@ public final class Schedulers {
      * <ul>
      * <li>main event loop</li>
      * <li>support Schedulers.from(Executor) and from(ExecutorService) with delayed scheduling</li>
-     * <li>support benchmarks that pipeline data from the main thread to some other thread and 
+     * <li>support benchmarks that pipeline data from the main thread to some other thread and
      * avoid core-bashing of computation's round-robin nature</li>
      * </ul>
      * @return a {@link Scheduler} that shares a single backing thread.
@@ -119,7 +119,7 @@ public final class Schedulers {
     public static Scheduler single() {
         return RxJavaPlugins.onSingleScheduler(SINGLE);
     }
-    
+
     /**
      * Converts an {@link Executor} into a new Scheduler instance.
      *
@@ -130,7 +130,7 @@ public final class Schedulers {
     public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
     }
-    
+
     /**
      * Shuts down those standard Schedulers which support the SchedulerLifecycle interface.
      * <p>The operation is idempotent and thread-safe.
@@ -143,7 +143,7 @@ public final class Schedulers {
         trampoline().shutdown();
         SchedulerPoolFactory.shutdown();
     }
-    
+
     /**
      * Starts those standard Schedulers which support the SchedulerLifecycle interface.
      * <p>The operation is idempotent and thread-safe.

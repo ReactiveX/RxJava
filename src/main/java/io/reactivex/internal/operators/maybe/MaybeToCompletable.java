@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -31,22 +31,22 @@ public final class MaybeToCompletable<T> extends Completable implements HasUpstr
     public MaybeToCompletable(MaybeSource<T> source) {
         this.source = source;
     }
-    
+
     @Override
     public MaybeSource<T> source() {
         return source;
     }
-    
+
     @Override
     protected void subscribeActual(CompletableObserver observer) {
         source.subscribe(new ToSingleMaybeSubscriber<T>(observer));
     }
-    
+
     static final class ToSingleMaybeSubscriber<T> implements MaybeObserver<T>, Disposable {
         final CompletableObserver actual;
 
         Disposable d;
-        
+
         public ToSingleMaybeSubscriber(CompletableObserver actual) {
             this.actual = actual;
         }
@@ -66,7 +66,7 @@ public final class MaybeToCompletable<T> extends Completable implements HasUpstr
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
-                
+
                 actual.onSubscribe(this);
             }
         }

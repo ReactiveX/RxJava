@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -27,9 +27,9 @@ public final class SingleUsing<T, U> extends Single<T> {
 
     final Callable<U> resourceSupplier;
     final Function<? super U, ? extends SingleSource<? extends T>> singleFunction;
-    final Consumer<? super U> disposer; 
+    final Consumer<? super U> disposer;
     final boolean eager;
-    
+
     public SingleUsing(Callable<U> resourceSupplier,
                        Function<? super U, ? extends SingleSource<? extends T>> singleFunction, Consumer<? super U> disposer,
                        boolean eager) {
@@ -45,7 +45,7 @@ public final class SingleUsing<T, U> extends Single<T> {
     protected void subscribeActual(final SingleObserver<? super T> s) {
 
         final U resource; // NOPMD
-        
+
         try {
             resource = resourceSupplier.call();
         } catch (Throwable ex) {
@@ -53,9 +53,9 @@ public final class SingleUsing<T, U> extends Single<T> {
             EmptyDisposable.error(ex, s);
             return;
         }
-        
+
         SingleSource<? extends T> s1;
-        
+
         try {
             s1 = ObjectHelper.requireNonNull(singleFunction.apply(resource), "The singleFunction returned a null SingleSource");
         } catch (Throwable ex) {
@@ -63,7 +63,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             EmptyDisposable.error(ex, s);
             return;
         }
-        
+
         s1.subscribe(new SingleObserver<T>() {
 
             @Override
@@ -130,7 +130,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                     }
                 }
             }
-            
+
         });
     }
 

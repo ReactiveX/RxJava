@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -190,67 +190,67 @@ public class FlowableWindowWithStartEndObservableTest {
             }
         };
     }
-    
+
     @Test
     public void testNoUnsubscribeAndNoLeak() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        
+
         PublishProcessor<Integer> open = PublishProcessor.create();
         final PublishProcessor<Integer> close = PublishProcessor.create();
-        
+
         TestSubscriber<Flowable<Integer>> ts = new TestSubscriber<Flowable<Integer>>();
-        
+
         source.window(open, new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t) {
                 return close;
             }
         }).subscribe(ts);
-        
+
         open.onNext(1);
         source.onNext(1);
-        
+
         assertTrue(open.hasSubscribers());
         assertTrue(close.hasSubscribers());
 
         close.onNext(1);
-        
+
         assertFalse(close.hasSubscribers());
-        
+
         source.onComplete();
-        
+
         ts.assertComplete();
         ts.assertNoErrors();
         ts.assertValueCount(1);
-        
+
         assertFalse(ts.isCancelled());
         assertFalse(open.hasSubscribers());
         assertFalse(close.hasSubscribers());
     }
-    
+
     @Test
     public void testUnsubscribeAll() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        
+
         PublishProcessor<Integer> open = PublishProcessor.create();
         final PublishProcessor<Integer> close = PublishProcessor.create();
-        
+
         TestSubscriber<Flowable<Integer>> ts = new TestSubscriber<Flowable<Integer>>();
-        
+
         source.window(open, new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t) {
                 return close;
             }
         }).subscribe(ts);
-        
+
         open.onNext(1);
-        
+
         assertTrue(open.hasSubscribers());
         assertTrue(close.hasSubscribers());
 
         ts.dispose();
-        
+
         // FIXME subject has subscribers because of the open window
         assertTrue(open.hasSubscribers());
         // FIXME subject has subscribers because of the open window

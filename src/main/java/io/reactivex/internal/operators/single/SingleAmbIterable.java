@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -24,7 +24,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class SingleAmbIterable<T> extends Single<T> {
 
     final Iterable<? extends SingleSource<? extends T>> sources;
-    
+
     public SingleAmbIterable(Iterable<? extends SingleSource<? extends T>> sources) {
         this.sources = sources;
     }
@@ -33,9 +33,9 @@ public final class SingleAmbIterable<T> extends Single<T> {
     protected void subscribeActual(final SingleObserver<? super T> s) {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
-        
+
         Iterator<? extends SingleSource<? extends T>> iterator;
-        
+
         try {
             iterator = sources.iterator();
         } catch (Throwable e) {
@@ -43,7 +43,7 @@ public final class SingleAmbIterable<T> extends Single<T> {
             s.onError(e);
             return;
         }
-        
+
         if (iterator == null) {
             s.onError(new NullPointerException("The iterator returned is null"));
             return;
@@ -51,14 +51,14 @@ public final class SingleAmbIterable<T> extends Single<T> {
 
         final AtomicBoolean once = new AtomicBoolean();
         int c = 0;
-        
+
         for (;;) {
             if (once.get()) {
                 return;
             }
-            
+
             boolean b;
-            
+
             try {
                 b = iterator.hasNext();
             } catch (Throwable e) {
@@ -66,7 +66,7 @@ public final class SingleAmbIterable<T> extends Single<T> {
                 s.onError(e);
                 return;
             }
-            
+
             if (once.get()) {
                 return;
             }
@@ -74,7 +74,7 @@ public final class SingleAmbIterable<T> extends Single<T> {
             if (!b) {
                 break;
             }
-            
+
             if (once.get()) {
                 return;
             }
@@ -89,13 +89,13 @@ public final class SingleAmbIterable<T> extends Single<T> {
                 s.onError(e);
                 return;
             }
-            
+
             if (s1 == null) {
                 set.dispose();
                 s.onError(new NullPointerException("The single source returned by the iterator is null"));
                 return;
             }
-            
+
             s1.subscribe(new SingleObserver<T>() {
 
                 @Override
@@ -118,11 +118,11 @@ public final class SingleAmbIterable<T> extends Single<T> {
                         RxJavaPlugins.onError(e);
                     }
                 }
-                
+
             });
             c++;
         }
-        
+
         if (c == 0 && !set.isDisposed()) {
             s.onError(new NoSuchElementException());
         }

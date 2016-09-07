@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,16 +32,16 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Multicasts a Flowable over a selector function.
- * 
+ *
  * @param <T> the input value type
  * @param <R> the output value type
  */
 public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
     final Function<? super Flowable<T>, ? extends Publisher<? extends R>> selector;
-    
+
     final int prefetch;
-    
+
     final boolean delayError;
 
     public FlowablePublishMulticast(Publisher<T> source,
@@ -52,13 +52,13 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         this.prefetch = prefetch;
         this.delayError = delayError;
     }
-    
+
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
         MulticastProcessor<T> mp = new MulticastProcessor<T>(prefetch, delayError);
-        
+
         Publisher<? extends R> other;
-        
+
         try {
             other = ObjectHelper.requireNonNull(selector.apply(mp), "selector returned a null Publisher");
         } catch (Throwable ex) {
@@ -66,40 +66,40 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             EmptySubscription.error(ex, s);
             return;
         }
-        
+
         OutputCanceller<R> out = new OutputCanceller<R>(s, mp);
-        
+
         other.subscribe(out);
-        
+
         source.subscribe(mp);
     }
-    
+
     static final class OutputCanceller<R> implements Subscriber<R>, Subscription {
         final Subscriber<? super R> actual;
-        
+
         final MulticastProcessor<?> processor;
 
         Subscription s;
-        
+
         public OutputCanceller(Subscriber<? super R> actual, MulticastProcessor<?> processor) {
             this.actual = actual;
             this.processor = processor;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(R t) {
             actual.onNext(t);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             try {
@@ -108,7 +108,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 processor.dispose();
             }
         }
-        
+
         @Override
         public void onComplete() {
             try {
@@ -117,46 +117,46 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 processor.dispose();
             }
         }
-        
+
         @Override
         public void request(long n) {
             s.request(n);
         }
-        
+
         @Override
         public void cancel() {
             s.cancel();
             processor.dispose();
         }
     }
-    
+
     static final class MulticastProcessor<T> extends Flowable<T> implements Subscriber<T>, Disposable {
-        
+
         @SuppressWarnings("rawtypes")
         static final MulticastSubscription[] EMPTY = new MulticastSubscription[0];
-        
+
         @SuppressWarnings("rawtypes")
         static final MulticastSubscription[] TERMINATED = new MulticastSubscription[0];
-        
+
         final AtomicInteger wip;
-        
+
         final AtomicReference<MulticastSubscription<T>[]> subscribers;
-        
+
         final int prefetch;
-        
+
         final int limit;
-        
+
         final boolean delayError;
-        
+
         final AtomicReference<Subscription> s;
-        
+
         SimpleQueue<T> queue;
-        
+
         int sourceMode;
-        
+
         volatile boolean done;
         Throwable error;
-        
+
         @SuppressWarnings("unchecked")
         public MulticastProcessor(int prefetch, boolean delayError) {
             this.prefetch = prefetch;
@@ -166,14 +166,14 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             this.s = new AtomicReference<Subscription>();
             this.subscribers = new AtomicReference<MulticastSubscription<T>[]>(EMPTY);
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(this.s, s)) {
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")
                     QueueSubscription<T> qs = (QueueSubscription<T>) s;
-                    
+
                     int m = qs.requestFusion(QueueSubscription.ANY);
                     if (m == QueueSubscription.SYNC) {
                         sourceMode = m;
@@ -189,13 +189,13 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                         return;
                     }
                 }
-                
+
                 queue = QueueDrainHelper.createQueue(prefetch);
-                
+
                 QueueDrainHelper.request(s, prefetch);
             }
         }
-        
+
         @Override
         public void dispose() {
             SubscriptionHelper.cancel(s);
@@ -203,12 +203,12 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 queue.clear();
             }
         }
-        
+
         @Override
         public boolean isDisposed() {
             return SubscriptionHelper.isCancelled(s.get());
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
@@ -223,7 +223,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             }
             drain();
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -234,7 +234,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             done = true;
             drain();
         }
-        
+
         @Override
         public void onComplete() {
             if (!done) {
@@ -259,7 +259,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 }
             }
         }
-        
+
         @SuppressWarnings("unchecked")
         void remove(MulticastSubscription<T> s) {
             for (;;) {
@@ -269,14 +269,14 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 }
                 int n = current.length;
                 int j = -1;
-                
+
                 for (int i = 0; i < n; i++) {
                     if (current[i] == s) {
                         j = i;
                         break;
                     }
                 }
-                
+
                 if (j < 0) {
                     return;
                 }
@@ -293,7 +293,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 }
             }
         }
-        
+
         @Override
         protected void subscribeActual(Subscriber<? super T> s) {
             MulticastSubscription<T> ms = new MulticastSubscription<T>(s, this);
@@ -313,24 +313,24 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 }
             }
         }
-        
+
         void drain() {
             if (wip.getAndIncrement() != 0) {
                 return;
             }
-            
+
             int missed = 1;
-            
+
             SimpleQueue<T> q = queue;
-            
+
             for (;;) {
                 MulticastSubscription<T>[] array = subscribers.get();
 
                 int n = array.length;
-                
+
                 if (q != null && n != 0) {
                     long r = Long.MAX_VALUE;
-                    
+
                     for (MulticastSubscription<T> ms : array) {
                         long u = ms.get();
                         if (u != Long.MIN_VALUE) {
@@ -339,16 +339,16 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                             }
                         }
                     }
-                    
+
                     long e = 0L;
                     while (e != r) {
                         if (isDisposed()) {
                             q.clear();
                             return;
                         }
-                        
+
                         boolean d = done;
-                        
+
                         if (d && !delayError) {
                             Throwable ex = error;
                             if (ex != null) {
@@ -356,9 +356,9 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                                 return;
                             }
                         }
-                        
+
                         T v;
-                        
+
                         try {
                             v = q.poll();
                         } catch (Throwable ex) {
@@ -367,9 +367,9 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                             errorAll(ex);
                             return;
                         }
-                        
+
                         boolean empty = v == null;
-                        
+
                         if (d && empty) {
                             Throwable ex = error;
                             if (ex != null) {
@@ -379,28 +379,28 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                             }
                             return;
                         }
-                        
+
                         if (empty) {
                             break;
                         }
-                        
+
                         for (MulticastSubscription<T> ms : array) {
                             if (ms.get() != Long.MIN_VALUE) {
                                 ms.actual.onNext(v);
                             }
                         }
-                        
+
                         e++;
                     }
-                    
+
                     if (e == r) {
                         if (isDisposed()) {
                             q.clear();
                             return;
                         }
-                        
+
                         boolean d = done;
-                        
+
                         if (d && !delayError) {
                             Throwable ex = error;
                             if (ex != null) {
@@ -408,7 +408,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                                 return;
                             }
                         }
-                        
+
                         if (d && q.isEmpty()) {
                             Throwable ex = error;
                             if (ex != null) {
@@ -419,7 +419,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                             return;
                         }
                     }
-                    
+
                     for (MulticastSubscription<T> ms : array) {
                         BackpressureHelper.produced(ms, e);
                     }
@@ -434,7 +434,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 }
             }
         }
-        
+
         @SuppressWarnings("unchecked")
         void errorAll(Throwable ex) {
             for (MulticastSubscription<T> ms : subscribers.getAndSet(TERMINATED)) {
@@ -443,7 +443,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 }
             }
         }
-        
+
         @SuppressWarnings("unchecked")
         void completeAll() {
             for (MulticastSubscription<T> ms : subscribers.getAndSet(TERMINATED)) {
@@ -453,23 +453,23 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             }
         }
     }
-    
-    static final class MulticastSubscription<T> 
+
+    static final class MulticastSubscription<T>
     extends AtomicLong
     implements Subscription {
-        
+
         /** */
         private static final long serialVersionUID = 8664815189257569791L;
-        
+
         final Subscriber<? super T> actual;
-        
+
         final MulticastProcessor<T> parent;
-        
+
         public MulticastSubscription(Subscriber<? super T> actual, MulticastProcessor<T> parent) {
             this.actual = actual;
             this.parent = parent;
         }
-        
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
@@ -490,13 +490,13 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 parent.drain();
             }
         }
-        
+
         @Override
         public void cancel() {
             getAndSet(Long.MIN_VALUE);
             parent.remove(this);
         }
-        
+
         public boolean isCancelled() {
             return get() == Long.MIN_VALUE;
         }

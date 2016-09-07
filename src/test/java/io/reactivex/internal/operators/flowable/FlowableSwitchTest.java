@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -430,7 +430,7 @@ public class FlowableSwitchTest {
         PublishProcessor<String> o1 = PublishProcessor.create();
         PublishProcessor<String> o2 = PublishProcessor.create();
         PublishProcessor<String> o3 = PublishProcessor.create();
-        
+
         PublishProcessor<PublishProcessor<String>> o = PublishProcessor.create();
 
         publishNext(o, 0, o1);
@@ -448,7 +448,7 @@ public class FlowableSwitchTest {
         publishCompleted(o2, 50);
         publishCompleted(o3, 55);
 
-        
+
         final TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
         Flowable.switchOnNext(o).subscribe(new DefaultSubscriber<String>() {
 
@@ -507,7 +507,7 @@ public class FlowableSwitchTest {
     @Test
     public void testIssue2654() {
         Flowable<String> oneItem = Flowable.just("Hello").mergeWith(Flowable.<String>never());
-        
+
         Flowable<String> src = oneItem.switchMap(new Function<String, Flowable<String>>() {
             @Override
             public Flowable<String> apply(final String s) {
@@ -523,7 +523,7 @@ public class FlowableSwitchTest {
         })
         .share()
         ;
-        
+
         TestSubscriber<String> ts = new TestSubscriber<String>() {
             @Override
             public void onNext(String t) {
@@ -535,17 +535,17 @@ public class FlowableSwitchTest {
             }
         };
         src.subscribe(ts);
-        
+
         ts.awaitTerminalEvent(10, TimeUnit.SECONDS);
-        
+
         System.out.println("> testIssue2654: " + ts.valueCount());
-        
+
         ts.assertTerminated();
         ts.assertNoErrors();
-        
+
         Assert.assertEquals(250, ts.valueCount());
     }
-    
+
     @Test(timeout = 10000)
     public void testInitialRequestsAreAdditive() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
@@ -564,7 +564,7 @@ public class FlowableSwitchTest {
         ts.request(1);
         ts.awaitTerminalEvent();
     }
-    
+
     @Test(timeout = 10000)
     public void testInitialRequestsDontOverflow() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
@@ -581,8 +581,8 @@ public class FlowableSwitchTest {
         ts.awaitTerminalEvent();
         assertTrue(ts.valueCount() > 0);
     }
-    
-    
+
+
     @Test(timeout = 10000)
     public void testSecondaryRequestsDontOverflow() throws InterruptedException {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
@@ -602,7 +602,7 @@ public class FlowableSwitchTest {
         ts.awaitTerminalEvent();
         ts.assertValueCount(7);
     }
-    
+
     @Test(timeout = 10000)
     @Ignore("Request pattern changed and I can't decide if this is okay or not")
     public void testSecondaryRequestsAdditivelyAreMoreThanLongMaxValueInducesMaxValueRequestFromUpstream()
@@ -638,112 +638,112 @@ public class FlowableSwitchTest {
     @Test
     public void delayErrors() {
         PublishProcessor<Publisher<Integer>> source = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = source.switchMapDelayError(Functions.<Publisher<Integer>>identity())
         .test();
-        
+
         ts.assertNoValues()
         .assertNoErrors()
         .assertNotComplete();
-        
+
         source.onNext(Flowable.just(1));
-        
+
         source.onNext(Flowable.<Integer>error(new TestException("Forced failure 1")));
-        
+
         source.onNext(Flowable.just(2, 3, 4));
-        
+
         source.onNext(Flowable.<Integer>error(new TestException("Forced failure 2")));
-        
+
         source.onNext(Flowable.just(5));
-        
+
         source.onError(new TestException("Forced failure 3"));
-        
+
         ts.assertValues(1, 2, 3, 4, 5)
         .assertNotComplete()
         .assertError(CompositeException.class);
-        
+
         List<Throwable> errors = ExceptionHelper.flatten(ts.errors().get(0));
-        
+
         TestHelper.assertError(errors, 0, TestException.class, "Forced failure 1");
         TestHelper.assertError(errors, 1, TestException.class, "Forced failure 2");
         TestHelper.assertError(errors, 2, TestException.class, "Forced failure 3");
     }
-    
+
     @Test
     public void switchOnNextPrefetch() {
         final List<Integer> list = new ArrayList<Integer>();
-        
+
         Flowable<Integer> source = Flowable.range(1, 10).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
                 list.add(v);
             }
         });
-        
+
         Flowable.switchOnNext(Flowable.just(source).hide(), 2)
         .test(1);
-        
+
         assertEquals(Arrays.asList(1, 2, 3), list);
     }
-    
+
     @Test
     public void switchOnNextDelayError() {
         final List<Integer> list = new ArrayList<Integer>();
-        
+
         Flowable<Integer> source = Flowable.range(1, 10).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
                 list.add(v);
             }
         });
-        
+
         Flowable.switchOnNextDelayError(Flowable.just(source).hide())
         .test(1);
-        
+
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), list);
     }
-    
+
     @Test
     public void switchOnNextDelayErrorPrefetch() {
         final List<Integer> list = new ArrayList<Integer>();
-        
+
         Flowable<Integer> source = Flowable.range(1, 10).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
                 list.add(v);
             }
         });
-        
+
         Flowable.switchOnNextDelayError(Flowable.just(source).hide(), 2)
         .test(1);
-        
+
         assertEquals(Arrays.asList(1, 2, 3), list);
     }
 
     @Test
     public void switchOnNextDelayErrorWithError() {
         PublishProcessor<Flowable<Integer>> ps = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = Flowable.switchOnNextDelayError(ps).test();
-        
+
         ps.onNext(Flowable.just(1));
         ps.onNext(Flowable.<Integer>error(new TestException()));
         ps.onNext(Flowable.range(2, 4));
         ps.onComplete();
-        
+
         ts.assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
     @Test
     public void switchOnNextDelayErrorBufferSize() {
         PublishProcessor<Flowable<Integer>> ps = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = Flowable.switchOnNextDelayError(ps, 2).test();
-        
+
         ps.onNext(Flowable.just(1));
         ps.onNext(Flowable.range(2, 4));
         ps.onComplete();
-        
+
         ts.assertResult(1, 2, 3, 4, 5);
     }
 
@@ -769,7 +769,7 @@ public class FlowableSwitchTest {
         }, 16)
         .test()
         .assertResult(1);
-    
+
     }
 
     @Test
@@ -794,7 +794,7 @@ public class FlowableSwitchTest {
         }, 16)
         .test()
         .assertResult(1);
-    
+
     }
 
 }

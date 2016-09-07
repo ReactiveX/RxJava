@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -169,7 +169,7 @@ public class FlowableGroupByTest {
 
     /**
      * Assert that only a single subscription to a stream occurs and that all events are received.
-     * 
+     *
      * @throws Throwable
      */
     @Test
@@ -1118,7 +1118,7 @@ public class FlowableGroupByTest {
          * baR bar BAR
          * Baz baz bAZ
          * qux
-         * 
+         *
          */
         Function<String, String> keysel = new Function<String, String>() {
             @Override
@@ -1389,7 +1389,7 @@ public class FlowableGroupByTest {
                 }
         );
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
-        
+
         o.groupBy(new Function<Integer, Integer>() {
 
             @Override
@@ -1397,9 +1397,9 @@ public class FlowableGroupByTest {
                 return null;
             }
         }).subscribe(ts);
-        
+
         ts.dispose();
-        
+
         verify(s).cancel();
     }
 
@@ -1450,7 +1450,7 @@ public class FlowableGroupByTest {
         assertEquals(Arrays.asList(e), inner1.errors());
         assertEquals(Arrays.asList(e), inner2.errors());
     }
-    
+
     @Test
     public void testRequestOverflow() {
         final AtomicBoolean completed = new AtomicBoolean(false);
@@ -1471,7 +1471,7 @@ public class FlowableGroupByTest {
                     }
                 })
                 .subscribe(new DefaultSubscriber<Integer>() {
-                    
+
                     @Override
                     public void onStart() {
                         request(2);
@@ -1480,12 +1480,12 @@ public class FlowableGroupByTest {
                     @Override
                     public void onComplete() {
                         completed.set(true);
-                        
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        
+
                     }
 
                     @Override
@@ -1496,10 +1496,10 @@ public class FlowableGroupByTest {
                     }});
         assertTrue(completed.get());
     }
-    
+
     /**
      * Issue #3425.
-     * 
+     *
      * The problem is that a request of 1 may create a new group, emit to the desired group
      * or emit to a completely different group. In this test, the merge requests N which
      * must be produced by the range, however it will create a bunch of groups before the actual
@@ -1520,14 +1520,14 @@ public class FlowableGroupByTest {
             ).blockingLast();
         }
     }
-    
+
     /**
      * Synchronous verification of issue #3425.
      */
     @Test
     public void testBackpressureInnerDoesntOverflowOuter() {
         TestSubscriber<GroupedFlowable<Integer, Integer>> ts = new TestSubscriber<GroupedFlowable<Integer, Integer>>(0L);
-        
+
         Flowable.fromArray(1, 2)
                 .groupBy(new Function<Integer, Integer>() {
                     @Override
@@ -1544,17 +1544,17 @@ public class FlowableGroupByTest {
                 .subscribe(ts)
                 ;
         ts.request(1);
-        
+
         ts.assertNotComplete();
         ts.assertNoErrors();
         ts.assertValueCount(1);
     }
-    
+
     @Test
     public void testOneGroupInnerRequestsTwiceBuffer() {
         TestSubscriber<Object> ts1 = new TestSubscriber<Object>(0L);
         final TestSubscriber<Object> ts2 = new TestSubscriber<Object>(0L);
-        
+
         Flowable.range(1, Flowable.bufferSize() * 2)
         .groupBy(new Function<Integer, Object>() {
             @Override
@@ -1569,32 +1569,32 @@ public class FlowableGroupByTest {
             }
         })
         .subscribe(ts1);
-        
+
         ts1.assertNoValues();
         ts1.assertNoErrors();
         ts1.assertNotComplete();
-        
+
         ts2.assertNoValues();
         ts2.assertNoErrors();
         ts2.assertNotComplete();
-        
+
         ts1.request(1);
-        
+
         ts1.assertValueCount(1);
         ts1.assertNoErrors();
         ts1.assertNotComplete();
-        
+
         ts2.assertNoValues();
         ts2.assertNoErrors();
         ts2.assertNotComplete();
-        
+
         ts2.request(Flowable.bufferSize() * 2);
-        
+
         ts2.assertValueCount(Flowable.bufferSize() * 2);
         ts2.assertNoErrors();
         ts2.assertComplete();
     }
-    
+
     @Test
     public void outerInnerFusion() {
         final TestSubscriber<Integer> ts1 = SubscriberFusion.newTest(QueueSubscription.ANY);
@@ -1614,12 +1614,12 @@ public class FlowableGroupByTest {
         })
         .doOnNext(new Consumer<GroupedFlowable<Integer, Integer>>() {
             @Override
-            public void accept(GroupedFlowable<Integer, Integer> g) { 
-                g.subscribe(ts1); 
-            } 
+            public void accept(GroupedFlowable<Integer, Integer> g) {
+                g.subscribe(ts1);
+            }
         })
         .subscribe(ts2);
-        
+
         ts1
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
         .assertValues(2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
@@ -1632,8 +1632,8 @@ public class FlowableGroupByTest {
         .assertNoErrors()
         .assertComplete();
     }
-    
-    
+
+
     @Test
     public void keySelectorAndDelayError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))

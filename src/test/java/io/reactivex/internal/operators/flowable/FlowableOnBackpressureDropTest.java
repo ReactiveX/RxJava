@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -57,7 +57,7 @@ public class FlowableOnBackpressureDropTest {
             @Override
             protected void onStart() {
             }
-            
+
             @Override
             public void onComplete() {
             }
@@ -89,7 +89,7 @@ public class FlowableOnBackpressureDropTest {
         ts.assertNoErrors();
         assertEquals(0, ts.values().get(0).intValue());
     }
-    
+
     @Test
     public void testRequestOverflow() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
@@ -100,7 +100,7 @@ public class FlowableOnBackpressureDropTest {
             public void onStart() {
                 request(10);
             }
-            
+
             @Override
             public void onComplete() {
             }
@@ -132,7 +132,7 @@ public class FlowableOnBackpressureDropTest {
         }
 
     });
-    
+
     private static final Flowable<Long> range(final long n) {
         return Flowable.unsafeCreate(new Publisher<Long>() {
 
@@ -148,7 +148,7 @@ public class FlowableOnBackpressureDropTest {
                 }
                 s.onComplete();
             }
-    
+
         });
     }
 
@@ -157,12 +157,12 @@ public class FlowableOnBackpressureDropTest {
         public void accept(Long n) {
             throw new RuntimeException();
         }
-    }; 
+    };
 
     @Test
     public void testNonFatalExceptionFromOverflowActionIsNotReportedFromUpstreamOperator() {
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
-        //request 0 
+        //request 0
         TestSubscriber<Long> ts = TestSubscriber.create(0);
         //range method emits regardless of requests so should trigger onBackpressureDrop action
         range(2)
@@ -176,7 +176,7 @@ public class FlowableOnBackpressureDropTest {
             })
           .onBackpressureDrop(THROW_NON_FATAL)
           .subscribe(ts);
-        
+
         assertFalse(errorOccurred.get());
     }
 }

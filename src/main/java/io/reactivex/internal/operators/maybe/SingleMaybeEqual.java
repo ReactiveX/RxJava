@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -25,14 +25,14 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Compares two MaybeSources to see if they are both empty or emit the same value compared
  * via a BiPredicate.
- * 
+ *
  * @param <T> the common base type of the sources
  */
 public final class SingleMaybeEqual<T> extends Single<Boolean> {
     final MaybeSource<? extends T> source1;
-    
+
     final MaybeSource<? extends T> source2;
-    
+
     final BiPredicate<? super T, ? super T> isEqual;
 
     public SingleMaybeEqual(MaybeSource<? extends T> source1, MaybeSource<? extends T> source2,
@@ -41,24 +41,24 @@ public final class SingleMaybeEqual<T> extends Single<Boolean> {
         this.source2 = source2;
         this.isEqual = isEqual;
     }
-    
+
     @Override
     protected void subscribeActual(SingleObserver<? super Boolean> observer) {
         EqualCoordinator<T> parent = new EqualCoordinator<T>(observer, isEqual);
         observer.onSubscribe(parent);
         parent.subscribe(source1, source2);
     }
-    
+
     @SuppressWarnings("serial")
-    static final class EqualCoordinator<T> 
+    static final class EqualCoordinator<T>
     extends AtomicInteger
     implements Disposable {
         final SingleObserver<? super Boolean> actual;
-        
+
         final EqualObserver<T> observer1;
-        
+
         final EqualObserver<T> observer2;
-        
+
         final BiPredicate<? super T, ? super T> isEqual;
 
         public EqualCoordinator(SingleObserver<? super Boolean> actual, BiPredicate<? super T, ? super T> isEqual) {
@@ -73,7 +73,7 @@ public final class SingleMaybeEqual<T> extends Single<Boolean> {
             source1.subscribe(observer1);
             source2.subscribe(observer2);
         }
-        
+
         @Override
         public void dispose() {
             observer1.dispose();
@@ -84,16 +84,16 @@ public final class SingleMaybeEqual<T> extends Single<Boolean> {
         public boolean isDisposed() {
             return observer1.isDisposed();
         }
-        
+
         @SuppressWarnings("unchecked")
         void done() {
             if (decrementAndGet() == 0) {
                 Object o1 = observer1.value;
                 Object o2 = observer2.value;
-                
+
                 if (o1 != null && o2 != null) {
                     boolean b;
-                    
+
                     try {
                         b = isEqual.test((T)o1, (T)o2);
                     } catch (Throwable ex) {
@@ -101,14 +101,14 @@ public final class SingleMaybeEqual<T> extends Single<Boolean> {
                         actual.onError(ex);
                         return;
                     }
-                    
+
                     actual.onSuccess(b);
                 } else {
                     actual.onSuccess(o1 == null && o2 == null);
                 }
             }
         }
-        
+
         void error(EqualObserver<T> sender, Throwable ex) {
             if (getAndSet(0) > 0) {
                 if (sender == observer1) {
@@ -122,8 +122,8 @@ public final class SingleMaybeEqual<T> extends Single<Boolean> {
             }
         }
     }
-    
-    static final class EqualObserver<T> 
+
+    static final class EqualObserver<T>
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
@@ -131,13 +131,13 @@ public final class SingleMaybeEqual<T> extends Single<Boolean> {
         private static final long serialVersionUID = -3031974433025990931L;
 
         final EqualCoordinator<T> parent;
-        
+
         Object value;
-        
+
         public EqualObserver(EqualCoordinator<T> parent) {
             this.parent = parent;
         }
-        
+
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);
@@ -168,6 +168,6 @@ public final class SingleMaybeEqual<T> extends Single<Boolean> {
         public void onComplete() {
             parent.done();
         }
-        
+
     }
 }

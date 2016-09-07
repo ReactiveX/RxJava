@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -34,62 +34,62 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class MaybeMergeArray<T> extends Flowable<T> {
 
     final MaybeSource<? extends T>[] sources;
-    
+
     public MaybeMergeArray(MaybeSource<? extends T>[] sources) {
         this.sources = sources;
     }
-    
+
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         MaybeSource<? extends T>[] maybes = sources;
         int n = maybes.length;
-        
+
         SimpleQueueWithConsumerIndex<Object> queue;
-        
+
         if (n <= bufferSize()) {
             queue = new MpscFillOnceSimpleQueue<Object>(n);
         } else {
             queue = new ClqSimpleQueue<Object>();
         }
         MergeMaybeObserver<T> parent = new MergeMaybeObserver<T>(s, n, queue);
-        
+
         s.onSubscribe(parent);
-        
+
         AtomicThrowable e = parent.error;
-        
+
         for (MaybeSource<? extends T> source : maybes) {
             if (parent.isCancelled() || e.get() != null) {
                 return;
             }
-            
+
             source.subscribe(parent);
         }
     }
-    
-    static final class MergeMaybeObserver<T> 
+
+    static final class MergeMaybeObserver<T>
     extends BasicIntQueueSubscription<T> implements MaybeObserver<T> {
 
         /** */
         private static final long serialVersionUID = -660395290758764731L;
 
         final Subscriber<? super T> actual;
-        
+
         final CompositeDisposable set;
-        
+
         final AtomicLong requested;
-        
+
         final SimpleQueueWithConsumerIndex<Object> queue;
-        
+
         final AtomicThrowable error;
-        
-        final int sourceCount; 
-        
+
+        final int sourceCount;
+
         volatile boolean cancelled;
-        
+
         boolean outputFused;
-        
+
         long consumed;
-        
+
         public MergeMaybeObserver(Subscriber<? super T> actual, int sourceCount, SimpleQueueWithConsumerIndex<Object> queue) {
             this.actual = actual;
             this.sourceCount = sourceCount;
@@ -98,7 +98,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             this.error = new AtomicThrowable();
             this.queue = queue;
         }
-        
+
         @Override
         public int requestFusion(int mode) {
             if ((mode & ASYNC) != 0) {
@@ -179,49 +179,49 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         boolean isCancelled() {
             return cancelled;
         }
-        
+
         @SuppressWarnings("unchecked")
         void drainNormal() {
             int missed = 1;
             Subscriber<? super T> a = actual;
             SimpleQueueWithConsumerIndex<Object> q = queue;
             long e = consumed;
-            
+
             for (;;) {
-                
+
                 long r = requested.get();
-                
+
                 while (e != r) {
                     if (cancelled) {
                         q.clear();
                         return;
                     }
-                    
+
                     Throwable ex = error.get();
                     if (ex != null) {
                         q.clear();
                         a.onError(error.terminate());
                         return;
                     }
-                    
+
                     if (q.consumerIndex() == sourceCount) {
                         a.onComplete();
                         return;
                     }
-                    
+
                     Object v = q.poll();
-                    
+
                     if (v == null) {
                         break;
                     }
-                    
+
                     if (v != NotificationLite.COMPLETE) {
                         a.onNext((T)v);
-                        
+
                         e++;
                     }
                 }
-                
+
                 if (e == r) {
                     Throwable ex = error.get();
                     if (ex != null) {
@@ -229,31 +229,31 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                         a.onError(error.terminate());
                         return;
                     }
-                    
+
                     while (q.peek() == NotificationLite.COMPLETE) {
                         q.drop();
                     }
-                    
+
                     if (q.consumerIndex() == sourceCount) {
                         a.onComplete();
                         return;
                     }
                 }
-                
+
                 consumed = e;
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
-            
+
         }
-        
+
         void drainFused() {
             int missed = 1;
             Subscriber<? super T> a = actual;
             SimpleQueueWithConsumerIndex<Object> q = queue;
-            
+
             for (;;) {
                 if (cancelled) {
                     q.clear();
@@ -267,29 +267,29 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                 }
 
                 boolean d = q.producerIndex() == sourceCount;
-                
+
                 if (!q.isEmpty()) {
                     a.onNext(null);
                 }
-                
+
                 if (d) {
                     a.onComplete();
                     return;
                 }
-                
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
-            
+
         }
-        
+
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
-            
+
             if (outputFused) {
                 drainFused();
             } else {
@@ -297,31 +297,31 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             }
         }
     }
-    
+
     interface SimpleQueueWithConsumerIndex<T> extends SimpleQueue<T> {
-        
+
         @Override
         T poll();
-        
+
         T peek();
-        
+
         void drop();
-        
+
         int consumerIndex();
-        
+
         int producerIndex();
     }
-    
-    static final class MpscFillOnceSimpleQueue<T> 
+
+    static final class MpscFillOnceSimpleQueue<T>
     extends AtomicReferenceArray<T>
     implements SimpleQueueWithConsumerIndex<T> {
 
         /** */
         private static final long serialVersionUID = -7969063454040569579L;
         final AtomicInteger producerIndex;
-        
+
         int consumerIndex;
-        
+
         public MpscFillOnceSimpleQueue(int length) {
             super(length);
             this.producerIndex = new AtomicInteger();
@@ -362,7 +362,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
                 }
             }
         }
-        
+
         @Override
         public T peek() {
             int ci = consumerIndex;
@@ -371,7 +371,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             }
             return get(ci);
         }
-        
+
         @Override
         public void drop() {
             int ci = consumerIndex;
@@ -388,42 +388,42 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         public void clear() {
             while (poll() != null && !isEmpty());
         }
-        
+
         @Override
         public int consumerIndex() {
             return consumerIndex;
         }
-        
+
         @Override
         public int producerIndex() {
             return producerIndex.get();
         }
     }
-    
+
     static final class ClqSimpleQueue<T> extends ConcurrentLinkedQueue<T> implements SimpleQueueWithConsumerIndex<T> {
 
         /** */
         private static final long serialVersionUID = -4025173261791142821L;
 
         int consumerIndex;
-        
+
         final AtomicInteger producerIndex;
-        
+
         public ClqSimpleQueue() {
             this.producerIndex = new AtomicInteger();
         }
-        
+
         @Override
         public boolean offer(T v1, T v2) {
             throw new UnsupportedOperationException();
         }
-        
+
         @Override
         public boolean offer(T e) {
             producerIndex.getAndIncrement();
             return super.offer(e);
         }
-        
+
         @Override
         public T poll() {
             T v = super.poll();
@@ -432,17 +432,17 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             }
             return v;
         }
-        
+
         @Override
         public int consumerIndex() {
             return consumerIndex;
         }
-        
+
         @Override
         public int producerIndex() {
             return producerIndex.get();
         }
-        
+
         @Override
         public void drop() {
             poll();

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -32,15 +32,15 @@ public class ObservableTimerTest {
     Observer<Object> NbpObserver;
     @Mock
     Observer<Long> observer2;
-    
+
     TestScheduler scheduler;
 
     @Before
     public void before() {
         NbpObserver = TestHelper.mockObserver();
-        
+
         observer2 = TestHelper.mockObserver();
-        
+
         scheduler = new TestScheduler();
     }
 
@@ -57,9 +57,9 @@ public class ObservableTimerTest {
     @Test
     public void testTimerPeriodically() {
         TestObserver<Long> ts = new TestObserver<Long>();
-        
+
         Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler).subscribe(ts);
-        
+
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
         ts.assertValue(0L);
@@ -97,7 +97,7 @@ public class ObservableTimerTest {
         ts.assertNotComplete();
 
         ts.dispose();
-        
+
         scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
         ts.assertValues(0L, 1L);
         ts.assertNoErrors();
@@ -107,10 +107,10 @@ public class ObservableTimerTest {
     @Test
     public void testWithMultipleSubscribersStartingAtSameTime() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
-        
+
         TestObserver<Long> ts1 = new TestObserver<Long>();
         TestObserver<Long> ts2 = new TestObserver<Long>();
-        
+
         w.subscribe(ts1);
         w.subscribe(ts2);
 
@@ -129,7 +129,7 @@ public class ObservableTimerTest {
 
         ts1.dispose();
         ts2.dispose();
-        
+
         scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
 
         ts1.assertValues(0L, 1L);
@@ -144,23 +144,23 @@ public class ObservableTimerTest {
     @Test
     public void testWithMultipleStaggeredSubscribers() {
         Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
-        
+
         TestObserver<Long> ts1 = new TestObserver<Long>();
-        
+
         w.subscribe(ts1);
 
         ts1.assertNoErrors();
-        
+
         scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
-        
+
         TestObserver<Long> ts2 = new TestObserver<Long>();
-        
+
         w.subscribe(ts2);
 
         ts1.assertValues(0L, 1L);
         ts1.assertNoErrors();
         ts1.assertNotComplete();
-        
+
         ts2.assertNoValues();
 
         scheduler.advanceTimeTo(4, TimeUnit.SECONDS);
@@ -184,16 +184,16 @@ public class ObservableTimerTest {
     @Test
     public void testWithMultipleStaggeredSubscribersAndPublish() {
         ConnectableObservable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler).publish();
-        
+
         TestObserver<Long> ts1 = new TestObserver<Long>();
-        
+
         w.subscribe(ts1);
         w.connect();
-        
+
         ts1.assertNoValues();
 
         scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
-        
+
         TestObserver<Long> ts2 = new TestObserver<Long>();
         w.subscribe(ts2);
 
@@ -215,7 +215,7 @@ public class ObservableTimerTest {
         ts1.assertValues(0L, 1L, 2L, 3L);
         ts1.assertNoErrors();
         ts1.assertNotComplete();
-        
+
         ts2.assertValues(2L, 3L);
         ts2.assertNoErrors();
         ts2.assertNotComplete();
@@ -223,7 +223,7 @@ public class ObservableTimerTest {
     @Test
     public void testOnceObserverThrows() {
         Observable<Long> source = Observable.timer(100, TimeUnit.MILLISECONDS, scheduler);
-        
+
         source.safeSubscribe(new DefaultObserver<Long>() {
 
             @Override
@@ -241,9 +241,9 @@ public class ObservableTimerTest {
                 NbpObserver.onComplete();
             }
         });
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         verify(NbpObserver).onError(any(TestException.class));
         verify(NbpObserver, never()).onNext(anyLong());
         verify(NbpObserver, never()).onComplete();
@@ -251,9 +251,9 @@ public class ObservableTimerTest {
     @Test
     public void testPeriodicObserverThrows() {
         Observable<Long> source = Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
-        
+
         InOrder inOrder = inOrder(NbpObserver);
-        
+
         source.safeSubscribe(new DefaultObserver<Long>() {
 
             @Override
@@ -274,9 +274,9 @@ public class ObservableTimerTest {
                 NbpObserver.onComplete();
             }
         });
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         inOrder.verify(NbpObserver).onNext(0L);
         inOrder.verify(NbpObserver).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();

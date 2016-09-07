@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -32,14 +32,14 @@ public class SerializedProcessorTest {
         ts.awaitTerminalEvent();
         ts.assertValue("hello");
     }
-    
+
     @Test
     public void testAsyncSubjectValueRelay() {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
         async.onNext(1);
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -56,7 +56,7 @@ public class SerializedProcessorTest {
         AsyncProcessor<Integer> async = AsyncProcessor.create();
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -74,7 +74,7 @@ public class SerializedProcessorTest {
         TestException te = new TestException();
         async.onError(te);
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
@@ -92,19 +92,19 @@ public class SerializedProcessorTest {
         async.onNext(1);
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
     }
-    
+
     @Test
     public void testPublishSubjectValueEmpty() {
         PublishProcessor<Integer> async = PublishProcessor.create();
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -116,7 +116,7 @@ public class SerializedProcessorTest {
         TestException te = new TestException();
         async.onError(te);
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
@@ -129,7 +129,7 @@ public class SerializedProcessorTest {
         async.onNext(1);
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -146,7 +146,7 @@ public class SerializedProcessorTest {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         async.onNext(1);
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -162,7 +162,7 @@ public class SerializedProcessorTest {
     public void testBehaviorSubjectIncompleteEmpty() {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -179,7 +179,7 @@ public class SerializedProcessorTest {
         BehaviorProcessor<Integer> async = BehaviorProcessor.create();
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -197,7 +197,7 @@ public class SerializedProcessorTest {
         TestException te = new TestException();
         async.onError(te);
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
@@ -209,14 +209,14 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
-    
+
     @Test
     public void testReplaySubjectValueRelay() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         async.onNext(1);
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -233,7 +233,7 @@ public class SerializedProcessorTest {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         async.onNext(1);
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -252,7 +252,7 @@ public class SerializedProcessorTest {
         async.onNext(1);
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -270,7 +270,7 @@ public class SerializedProcessorTest {
         async.onNext(0);
         async.onNext(1);
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -286,7 +286,7 @@ public class SerializedProcessorTest {
     public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -302,7 +302,7 @@ public class SerializedProcessorTest {
     public void testReplaySubjectValueRelayEmptyIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -314,13 +314,13 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
-    
+
     @Test
     public void testReplaySubjectEmpty() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -338,7 +338,7 @@ public class SerializedProcessorTest {
         TestException te = new TestException();
         async.onError(te);
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
@@ -350,13 +350,13 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
-    
+
     @Test
     public void testReplaySubjectBoundedEmpty() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
         async.onComplete();
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertTrue(serial.hasComplete());
         assertFalse(serial.hasThrowable());
@@ -374,7 +374,7 @@ public class SerializedProcessorTest {
         TestException te = new TestException();
         async.onError(te);
         FlowableProcessor<Integer> serial = async.toSerialized();
-        
+
         assertFalse(serial.hasSubscribers());
         assertFalse(serial.hasComplete());
         assertTrue(serial.hasThrowable());
@@ -386,7 +386,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
-    
+
     @Test
     public void testDontWrapSerializedSubjectAgain() {
         PublishProcessor<Object> s = PublishProcessor.create();

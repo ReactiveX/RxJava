@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -106,7 +106,7 @@ public class FlowableScanTest {
         verify(observer, times(1)).onComplete();
         verify(observer, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -124,12 +124,12 @@ public class FlowableScanTest {
                 // this will cause request(1) when 0 is emitted
                 return t1 > 0;
             }
-            
+
         }).subscribe(ts);
-        
+
         assertEquals(100, ts.values().size());
     }
-    
+
     @Test
     public void testBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
@@ -170,7 +170,7 @@ public class FlowableScanTest {
         // we only expect to receive 10 since we request(10)
         assertEquals(10, count.get());
     }
-    
+
     @Test
     public void testBackpressureWithoutInitialValue() {
         final AtomicInteger count = new AtomicInteger();
@@ -211,7 +211,7 @@ public class FlowableScanTest {
         // we only expect to receive 10 since we request(10)
         assertEquals(10, count.get());
     }
-    
+
     @Test
     public void testNoBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
@@ -260,7 +260,7 @@ public class FlowableScanTest {
                     public List<Integer> call() {
                         return new ArrayList<Integer>();
                     }
-                    
+
                 }, new BiConsumer<List<Integer>, Integer>() {
 
                     @Override
@@ -308,10 +308,10 @@ public class FlowableScanTest {
                             subscriber.onComplete();
                         }
                     }
-                    
+
                     @Override
                     public void cancel() {
-                        
+
                     }
                 });
                 producer.set(p);
@@ -337,38 +337,38 @@ public class FlowableScanTest {
         verify(producer.get(), never()).request(0);
         verify(producer.get(), times(3)).request(1); // FIXME this was 2 in 1.x
     }
-    
+
     @Test
     public void testInitialValueEmittedNoProducer() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.scan(0, new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         }).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertNotComplete();
         ts.assertValue(0);
     }
-    
+
     @Test
     public void testInitialValueEmittedWithProducer() {
         Flowable<Integer> source = Flowable.never();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.scan(0, new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         }).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertNotComplete();
         ts.assertValue(0);

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -24,7 +24,7 @@ import io.reactivex.internal.fuseable.*;
  */
 public enum ObserverFusion {
     ;
-    
+
     /**
      * Returns a function that takes a Flowable and returns a TestObserver that
      * is set up according to the parameters and is subscribed to the Flowable.
@@ -55,7 +55,7 @@ public enum ObserverFusion {
             }
         };
     }
-    
+
     /**
      * Returns a Consumer that asserts on its TestObserver parameter that
      * the upstream is Fuseable (sent a QueueDisposable subclass in onSubscribe).
@@ -73,7 +73,7 @@ public enum ObserverFusion {
     public static <T> Consumer<TestObserver<T>> assertFuseable() {
         return (Consumer)AssertFuseable.INSTANCE;
     }
-    
+
     enum AssertFuseable implements Consumer<TestObserver<Object>> {
         INSTANCE;
         @Override

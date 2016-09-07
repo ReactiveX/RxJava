@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ import io.reactivex.internal.functions.ObjectHelper;
 public enum NotificationLite {
     COMPLETE
     ;
-    
+
     /**
      * Wraps a Throwable.
      */
@@ -37,17 +37,17 @@ public enum NotificationLite {
         ErrorNotification(Throwable e) {
             this.e = e;
         }
-        
+
         @Override
         public String toString() {
             return "NotificationLite.Error[" + e + "]";
         }
-        
+
         @Override
         public int hashCode() {
             return e.hashCode();
         }
-        
+
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof ErrorNotification) {
@@ -57,7 +57,7 @@ public enum NotificationLite {
             return false;
         }
     }
-    
+
     /**
      * Wraps a Subscription.
      */
@@ -68,13 +68,13 @@ public enum NotificationLite {
         SubscriptionNotification(Subscription s) {
             this.s = s;
         }
-        
+
         @Override
         public String toString() {
             return "NotificationLite.Subscription[" + s + "]";
         }
     }
-    
+
     /**
      * Wraps a Disposable.
      */
@@ -82,17 +82,17 @@ public enum NotificationLite {
         /** */
         private static final long serialVersionUID = -7482590109178395495L;
         final Disposable d;
-        
+
         DisposableNotification(Disposable d) {
             this.d = d;
         }
-        
+
         @Override
         public String toString() {
             return "NotificationLite.Disposable[" + d + "]";
         }
     }
-    
+
     /**
      * Converts a value into a notification value.
      * @param <T> the actual value type
@@ -102,7 +102,7 @@ public enum NotificationLite {
     public static <T> Object next(T value) {
         return value;
     }
-    
+
     /**
      * Returns a complete notification.
      * @return a complete notification
@@ -110,7 +110,7 @@ public enum NotificationLite {
     public static Object complete() {
         return COMPLETE;
     }
-    
+
     /**
      * Converts a Throwable into a notification value.
      * @param e the Throwable to convert
@@ -119,7 +119,7 @@ public enum NotificationLite {
     public static Object error(Throwable e) {
         return new ErrorNotification(e);
     }
-    
+
     /**
      * Converts a Subscription into a notification value.
      * @param s the Subscription to convert
@@ -128,7 +128,7 @@ public enum NotificationLite {
     public static Object subscription(Subscription s) {
         return new SubscriptionNotification(s);
     }
-    
+
     /**
      * Converts a Disposable into a notification value.
      * @param d the disposable to convert
@@ -137,7 +137,7 @@ public enum NotificationLite {
     public static Object disposable(Disposable d) {
         return new DisposableNotification(d);
     }
-    
+
     /**
      * Checks if the given object represents a complete notification.
      * @param o the object to check
@@ -146,7 +146,7 @@ public enum NotificationLite {
     public static boolean isComplete(Object o) {
         return o == COMPLETE;
     }
-    
+
     /**
      * Checks if the given object represents a error notification.
      * @param o the object to check
@@ -155,7 +155,7 @@ public enum NotificationLite {
     public static boolean isError(Object o) {
         return o instanceof ErrorNotification;
     }
-    
+
     /**
      * Checks if the given object represents a subscription notification.
      * @param o the object to check
@@ -164,11 +164,11 @@ public enum NotificationLite {
     public static boolean isSubscription(Object o) {
         return o instanceof SubscriptionNotification;
     }
-    
+
     public static boolean isDisposable(Object o) {
         return o instanceof DisposableNotification;
     }
-    
+
     /**
      * Extracts the value from the notification object
      * @param <T> the expected value type when unwrapped
@@ -179,7 +179,7 @@ public enum NotificationLite {
     public static <T> T getValue(Object o) {
         return (T)o;
     }
-    
+
     /**
      * Extracts the Throwable from the notification object
      * @param o the notification object
@@ -188,7 +188,7 @@ public enum NotificationLite {
     public static Throwable getError(Object o) {
         return ((ErrorNotification)o).e;
     }
-    
+
     /**
      * Extracts the Subscription from the notification object
      * @param o the notification object
@@ -197,11 +197,11 @@ public enum NotificationLite {
     public static Subscription getSubscription(Object o) {
         return ((SubscriptionNotification)o).s;
     }
-    
+
     public static Disposable getDisposable(Object o) {
         return ((DisposableNotification)o).d;
     }
-    
+
     /**
      * Calls the appropriate Subscriber method based on the type of the notification.
      * <p>Does not check for a subscription notification, see {@link #acceptFull(Object, Subscriber)}.
@@ -272,7 +272,7 @@ public enum NotificationLite {
         s.onNext((T)o);
         return false;
     }
-    
+
     /**
      * Calls the appropriate Observer method based on the type of the notification.
      * @param <T> the expected value type when unwrapped

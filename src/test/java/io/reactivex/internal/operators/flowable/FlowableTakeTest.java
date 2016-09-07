@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -163,7 +163,7 @@ public class FlowableTakeTest {
         Flowable<String> w = Flowable.unsafeCreate(f);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        
+
         Flowable<String> take = w.take(1);
         take.subscribe(observer);
 
@@ -279,23 +279,23 @@ public class FlowableTakeTest {
         }
 
     });
-    
+
     @Test(timeout = 2000)
     public void testTakeObserveOn() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
-        
+
         INFINITE_OBSERVABLE.onBackpressureDrop()
         .observeOn(Schedulers.newThread()).take(1).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        
+
         verify(o).onNext(1L);
         verify(o, never()).onNext(2L);
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testProducerRequestThroughTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3);
@@ -313,7 +313,7 @@ public class FlowableTakeTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
                 });
             }
@@ -321,7 +321,7 @@ public class FlowableTakeTest {
         }).take(3).subscribe(ts);
         assertEquals(Long.MAX_VALUE, requested.get());
     }
-    
+
     @Test
     public void testProducerRequestThroughTakeIsModified() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3);
@@ -339,7 +339,7 @@ public class FlowableTakeTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
                 });
             }
@@ -348,7 +348,7 @@ public class FlowableTakeTest {
         //FIXME take triggers fast path if downstream requests more than the limit
         assertEquals(Long.MAX_VALUE, requested.get());
     }
-    
+
     @Test
     public void testInterrupt() throws InterruptedException {
         final AtomicReference<Object> exception = new AtomicReference<Object>();
@@ -373,7 +373,7 @@ public class FlowableTakeTest {
         latch.await();
         assertNull(exception.get());
     }
-    
+
     @Test
     public void testDoesntRequestMoreThanNeededFromUpstream() throws InterruptedException {
         final AtomicLong requests = new AtomicLong();
@@ -399,46 +399,46 @@ public class FlowableTakeTest {
         ts.assertNoErrors();
         assertEquals(3, requests.get());
     }
-    
+
     @Test
     public void takeFinalValueThrows() {
         Flowable<Integer> source = Flowable.just(1).take(1);
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
             }
         };
-        
+
         source.safeSubscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotComplete();
     }
-    
+
     @Test
     public void testReentrantTake() {
         final PublishProcessor<Integer> source = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.take(1).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) {
                 source.onNext(2);
             }
         }).subscribe(ts);
-        
+
         source.onNext(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
     }
 
-    
+
     @Test
     public void takeNegative() {
         try {

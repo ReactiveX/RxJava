@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -29,7 +29,7 @@ public final class Functions {
     private Functions() {
         throw new IllegalStateException("No instances!");
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T1, T2, R> Function<Object[], R> toFunction(final BiFunction<? super T1, ? super T2, ? extends R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
@@ -43,7 +43,7 @@ public final class Functions {
             }
         };
     }
-    
+
     public static <T1, T2, T3, R> Function<Object[], R> toFunction(final Function3<T1, T2, T3, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
         return new Function<Object[], R>() {
@@ -57,7 +57,7 @@ public final class Functions {
             }
         };
     }
-    
+
     public static <T1, T2, T3, T4, R> Function<Object[], R> toFunction(final Function4<T1, T2, T3, T4, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
         return new Function<Object[], R>() {
@@ -71,7 +71,7 @@ public final class Functions {
             }
         };
     }
-    
+
     public static <T1, T2, T3, T4, T5, R> Function<Object[], R> toFunction(final Function5<T1, T2, T3, T4, T5, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
         return new Function<Object[], R>() {
@@ -85,7 +85,7 @@ public final class Functions {
             }
         };
     }
-    
+
     public static <T1, T2, T3, T4, T5, T6, R> Function<Object[], R> toFunction(
             final Function6<T1, T2, T3, T4, T5, T6, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
@@ -100,7 +100,7 @@ public final class Functions {
             }
         };
     }
-    
+
     public static <T1, T2, T3, T4, T5, T6, T7, R> Function<Object[], R> toFunction(
             final Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
@@ -115,7 +115,7 @@ public final class Functions {
             }
         };
     }
-    
+
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function<Object[], R> toFunction(
             final Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
@@ -130,7 +130,7 @@ public final class Functions {
             }
         };
     }
-    
+
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Function<Object[], R> toFunction(
             final Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
@@ -145,7 +145,7 @@ public final class Functions {
             }
         };
     }
-    
+
     /** A singleton identity function. */
     static final Function<Object, Object> IDENTITY = new Function<Object, Object>() {
         @Override
@@ -158,7 +158,7 @@ public final class Functions {
             return "IdentityFunction";
         }
     };
-    
+
     /**
      * Returns an identity function that simply returns its argument.
      * @param <T> the input and output value type
@@ -168,11 +168,11 @@ public final class Functions {
     public static <T> Function<T, T> identity() {
         return (Function<T, T>)IDENTITY;
     }
-    
+
     public static final Runnable EMPTY_RUNNABLE = new Runnable() {
         @Override
         public void run() { }
-        
+
         @Override
         public String toString() {
             return "EmptyRunnable";
@@ -198,7 +198,7 @@ public final class Functions {
             return "EmptyConsumer";
         }
     };
-    
+
     /**
      * Returns an empty consumer that does nothing.
      * @param <T> the consumed value type, the value is ignored
@@ -234,14 +234,14 @@ public final class Functions {
             return false;
         }
     };
-    
+
     static final Callable<Object> NULL_SUPPLIER = new Callable<Object>() {
         @Override
         public Object call() {
             return null;
         }
     };
-    
+
     static final Comparator<Object> NATURAL_COMPARATOR = new Comparator<Object>() {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
@@ -249,7 +249,7 @@ public final class Functions {
             return ((Comparable)a).compareTo(b);
         }
     };
-    
+
     @SuppressWarnings("unchecked")
     public static <T> Predicate<T> alwaysTrue() {
         return (Predicate<T>)ALWAYS_TRUE;
@@ -264,7 +264,7 @@ public final class Functions {
     public static <T> Callable<T> nullSupplier() {
         return (Callable<T>)NULL_SUPPLIER;
     }
-    
+
     /**
      * Returns a natural order comparator which casts the parameters to Comparable.
      * @param <T> the value type
@@ -274,20 +274,20 @@ public final class Functions {
     public static <T> Comparator<T> naturalOrder() {
         return (Comparator<T>)NATURAL_COMPARATOR;
     }
-    
+
     static final class FutureAction implements Action {
         final Future<?> future;
-        
+
         public FutureAction(Future<?> future) {
             this.future = future;
         }
-        
+
         @Override
         public void run() throws Exception {
             future.get();
         }
     }
-    
+
     /**
      * Wraps the blocking get call of the Future into an Action.
      * @param future the future to call get() on, not null
@@ -296,25 +296,25 @@ public final class Functions {
     public static Action futureAction(Future<?> future) {
         return new FutureAction(future);
     }
-    
+
     static final class JustValue<T, U> implements Callable<U>, Function<T, U> {
         final U value;
-        
+
         public JustValue(U value) {
             this.value = value;
         }
-        
+
         @Override
         public U call() throws Exception {
             return value;
         }
-        
+
         @Override
         public U apply(T t) throws Exception {
             return value;
         }
     }
-    
+
     /**
      * Returns a Callable that returns the given value.
      * @param <T> the value type
@@ -338,17 +338,17 @@ public final class Functions {
 
     static final class CastToClass<T, U> implements Function<T, U> {
         final Class<U> clazz;
-        
+
         public CastToClass(Class<U> clazz) {
             this.clazz = clazz;
         }
-        
+
         @Override
         public U apply(T t) throws Exception {
             return clazz.cast(t);
         }
     }
-    
+
     /**
      * Returns a function that cast the incoming values via a Class object.
      * @param <T> the input value type
@@ -362,34 +362,34 @@ public final class Functions {
 
     static final class ArrayListCapacityCallable<T> implements Callable<List<T>> {
         final int capacity;
-        
+
         public ArrayListCapacityCallable(int capacity) {
             this.capacity = capacity;
         }
-        
+
         @Override
         public List<T> call() throws Exception {
             return new ArrayList<T>(capacity);
         }
     }
-    
+
     public static <T> Callable<List<T>> createArrayList(int capacity) {
         return new ArrayListCapacityCallable<T>(capacity);
     }
-    
+
     static final class EqualsPredicate<T> implements Predicate<T> {
         final T value;
-        
+
         public EqualsPredicate(T value) {
             this.value = value;
         }
-        
+
         @Override
         public boolean test(T t) throws Exception {
             return ObjectHelper.equals(t, value);
         }
     }
-    
+
     public static <T> Predicate<T> equalsWith(T value) {
         return new EqualsPredicate<T>(value);
     }
@@ -401,55 +401,55 @@ public final class Functions {
             return new HashSet<Object>();
         }
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Callable<Set<T>> createHashSet() {
         return (Callable)HashSetCallable.INSTANCE;
     }
-    
+
     static final class NotificationOnNext<T> implements Consumer<T> {
         final Consumer<? super Notification<T>> onNotification;
-        
+
         public NotificationOnNext(Consumer<? super Notification<T>> onNotification) {
             this.onNotification = onNotification;
         }
-        
+
         @Override
         public void accept(T v) throws Exception {
             onNotification.accept(Notification.createOnNext(v));
         }
     }
-    
+
     static final class NotificationOnError<T> implements Consumer<Throwable> {
         final Consumer<? super Notification<T>> onNotification;
-        
+
         public NotificationOnError(Consumer<? super Notification<T>> onNotification) {
             this.onNotification = onNotification;
         }
-        
+
         @Override
         public void accept(Throwable v) throws Exception {
             onNotification.accept(Notification.<T>createOnError(v));
         }
     }
-    
+
     static final class NotificationOnComplete<T> implements Action {
         final Consumer<? super Notification<T>> onNotification;
-        
+
         public NotificationOnComplete(Consumer<? super Notification<T>> onNotification) {
             this.onNotification = onNotification;
         }
-        
+
         @Override
         public void run() throws Exception {
             onNotification.accept(Notification.<T>createOnComplete());
         }
     }
-    
+
     public static <T> Consumer<T> notificationOnNext(Consumer<? super Notification<T>> onNotification) {
         return new NotificationOnNext<T>(onNotification);
     }
-    
+
     public static <T> Consumer<Throwable> notificationOnError(Consumer<? super Notification<T>> onNotification) {
         return new NotificationOnError<T>(onNotification);
     }
@@ -457,20 +457,20 @@ public final class Functions {
     public static <T> Action notificationOnComplete(Consumer<? super Notification<T>> onNotification) {
         return new NotificationOnComplete<T>(onNotification);
     }
-    
+
     static final class ActionConsumer<T> implements Consumer<T> {
         final Action action;
-        
+
         public ActionConsumer(Action action) {
             this.action = action;
         }
-        
+
         @Override
         public void accept(T t) throws Exception {
             action.run();
         }
     }
-    
+
     public static <T> Consumer<T> actionConsumer(Action action) {
         return new ActionConsumer<T>(action);
     }
@@ -481,50 +481,50 @@ public final class Functions {
         public ClassFilter(Class<U> clazz) {
             this.clazz = clazz;
         }
-        
+
         @Override
         public boolean test(T t) throws Exception {
             return clazz.isInstance(t);
         }
     }
-    
+
     public static <T, U> Predicate<T> isInstanceOf(Class<U> clazz) {
         return new ClassFilter<T, U>(clazz);
     }
-    
+
     static final class BooleanSupplierPredicateReverse<T> implements Predicate<T> {
         final BooleanSupplier supplier;
 
         public BooleanSupplierPredicateReverse(BooleanSupplier supplier) {
             this.supplier = supplier;
         }
-        
+
         @Override
         public boolean test(T t) throws Exception {
             return !supplier.getAsBoolean();
         }
     }
-    
+
     public static <T> Predicate<T> predicateReverseFor(BooleanSupplier supplier) {
         return new BooleanSupplierPredicateReverse<T>(supplier);
     }
 
     static final class TimestampFunction<T> implements Function<T, Timed<T>> {
         final TimeUnit unit;
-        
+
         final Scheduler scheduler;
 
         public TimestampFunction(TimeUnit unit, Scheduler scheduler) {
             this.unit = unit;
             this.scheduler = scheduler;
         }
-        
+
         @Override
         public Timed<T> apply(T t) throws Exception {
             return new Timed<T>(t, scheduler.now(unit), unit);
         }
     }
-    
+
     public static <T> Function<T, Timed<T>> timestampWith(TimeUnit unit, Scheduler scheduler) {
         return new TimestampFunction<T>(unit, scheduler);
     }
@@ -603,17 +603,17 @@ public final class Functions {
             final Function<? super K, ? extends Collection<? super V>> collectionFactory) {
         return new ToMultimapKeyValueSelector<K, V, T>(collectionFactory, valueSelector, keySelector);
     }
-    
+
     enum NaturalComparator implements Comparator<Object> {
         INSTANCE;
-        
+
         @SuppressWarnings("unchecked")
         @Override
         public int compare(Object o1, Object o2) {
             return ((Comparable<Object>)o1).compareTo(o2);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> Comparator<T> naturalComparator() {
         return (Comparator<T>)NaturalComparator.INSTANCE;

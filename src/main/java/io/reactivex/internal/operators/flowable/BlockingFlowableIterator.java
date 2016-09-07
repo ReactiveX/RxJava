@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -24,7 +24,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.ExceptionHelper;
 
-public final class BlockingFlowableIterator<T> 
+public final class BlockingFlowableIterator<T>
 extends AtomicReference<Subscription>
 implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
 
@@ -32,22 +32,22 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
     private static final long serialVersionUID = 6695226475494099826L;
 
     final SpscLinkedArrayQueue<T> queue;
-    
+
     final long batchSize;
-    
+
     final long limit;
-    
+
     final Lock lock;
-    
+
     final Condition condition;
-    
+
     long produced;
-    
+
     volatile boolean done;
     Throwable error;
 
     volatile boolean cancelled;
-    
+
     public BlockingFlowableIterator(int batchSize) {
         this.queue = new SpscLinkedArrayQueue<T>(batchSize);
         this.batchSize = batchSize;
@@ -95,13 +95,13 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
     public T next() {
         if (hasNext()) {
             T v = queue.poll();
-            
+
             if (v == null) {
                 run();
-                
+
                 throw new IllegalStateException("Queue empty?!");
             }
-            
+
             long p = produced + 1;
             if (p == limit) {
                 produced = 0;
@@ -109,7 +109,7 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
             } else {
                 produced = p;
             }
-            
+
             return v;
         }
         throw new NoSuchElementException();
@@ -126,7 +126,7 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
     public void onNext(T t) {
         if (!queue.offer(t)) {
             SubscriptionHelper.cancel(this);
-            
+
             onError(new IllegalStateException("Queue full?!"));
         } else {
             signalConsumer();
@@ -145,7 +145,7 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
         done = true;
         signalConsumer();
     }
-    
+
     void signalConsumer() {
         lock.lock();
         try {
@@ -160,17 +160,17 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
         SubscriptionHelper.cancel(this);
         signalConsumer();
     }
-    
+
     @Override // otherwise default method which isn't available in Java 7
     public void remove() {
         throw new UnsupportedOperationException("remove");
     }
-    
+
     @Override
     public void dispose() {
         SubscriptionHelper.cancel(this);
     }
-    
+
     @Override
     public boolean isDisposed() {
         return SubscriptionHelper.isCancelled(get());

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -23,17 +23,17 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Utility methods for working with Disposables atomically.
  */
 public enum DisposableHelper implements Disposable {
-    /** 
+    /**
      * The singleton instance representing a terminal, disposed state;
      * Don't leak it!
      */
     DISPOSED
     ;
-    
+
     public static boolean isDisposed(Disposable d) {
         return d == DISPOSED;
     }
-    
+
     public static boolean set(AtomicReference<Disposable> field, Disposable d) {
         for (;;) {
             Disposable current = field.get();
@@ -51,7 +51,7 @@ public enum DisposableHelper implements Disposable {
             }
         }
     }
-    
+
     public static boolean setOnce(AtomicReference<Disposable> field, Disposable d) {
         ObjectHelper.requireNonNull(d, "d is null");
         if (!field.compareAndSet(null, d)) {
@@ -63,7 +63,7 @@ public enum DisposableHelper implements Disposable {
         }
         return true;
     }
-    
+
     public static boolean replace(AtomicReference<Disposable> field, Disposable d) {
         for (;;) {
             Disposable current = field.get();
@@ -78,7 +78,7 @@ public enum DisposableHelper implements Disposable {
             }
         }
     }
-    
+
     public static boolean dispose(AtomicReference<Disposable> field) {
         Disposable current = field.get();
         Disposable d = DISPOSED;
@@ -93,7 +93,7 @@ public enum DisposableHelper implements Disposable {
         }
         return false;
     }
-    
+
     /**
      * Verifies that current is null, next is not null, otherwise signals errors
      * to the RxJavaPlugins and returns false
@@ -113,7 +113,7 @@ public enum DisposableHelper implements Disposable {
         }
         return true;
     }
-    
+
     /**
      * Reports that the disposable is already set to the RxJavaPlugins error handler.
      */
@@ -125,7 +125,7 @@ public enum DisposableHelper implements Disposable {
     public void dispose() {
         // deliberately no-op
     }
-    
+
     @Override
     public boolean isDisposed() {
         return true;

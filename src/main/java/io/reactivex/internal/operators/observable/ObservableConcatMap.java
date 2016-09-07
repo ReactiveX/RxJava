@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,10 +30,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
     final int bufferSize;
-    
+
     final ErrorMode delayErrors;
-    
-    public ObservableConcatMap(ObservableSource<T> source, Function<? super T, ? extends ObservableSource<? extends U>> mapper, 
+
+    public ObservableConcatMap(ObservableSource<T> source, Function<? super T, ? extends ObservableSource<? extends U>> mapper,
             int bufferSize, ErrorMode delayErrors) {
         super(source);
         this.mapper = mapper;
@@ -42,11 +42,11 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
     }
     @Override
     public void subscribeActual(Observer<? super U> s) {
-        
+
         if (ObservableScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
             return;
         }
-        
+
         if (delayErrors == ErrorMode.IMMEDIATE) {
             SerializedObserver<U> serial = new SerializedObserver<U>(s);
             source.subscribe(new SourceSubscriber<T, U>(serial, mapper, bufferSize));
@@ -54,7 +54,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             source.subscribe(new ConcatMapDelayErrorObserver<T, U>(s, mapper, bufferSize, delayErrors == ErrorMode.END));
         }
     }
-    
+
     static final class SourceSubscriber<T, U> extends AtomicInteger implements Observer<T>, Disposable {
         /** */
         private static final long serialVersionUID = 8828587559905699186L;
@@ -67,15 +67,15 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         SimpleQueue<T> queue;
 
         Disposable s;
-        
+
         volatile boolean active;
-        
+
         volatile boolean disposed;
-        
+
         volatile boolean done;
-        
+
         int fusionMode;
-        
+
         public SourceSubscriber(Observer<? super U> actual,
                                 Function<? super T, ? extends ObservableSource<? extends U>> mapper, int bufferSize) {
             this.actual = actual;
@@ -91,19 +91,19 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                 if (s instanceof QueueDisposable) {
                     @SuppressWarnings("unchecked")
                     QueueDisposable<T> qd = (QueueDisposable<T>) s;
-                    
+
                     int m = qd.requestFusion(QueueDisposable.ANY);
                     if (m == QueueDisposable.SYNC) {
                         fusionMode = m;
                         queue = qd;
                         done = true;
-                        
+
                         actual.onSubscribe(this);
-                        
+
                         drain();
                         return;
                     }
-                    
+
                     if (m == QueueDisposable.ASYNC) {
                         fusionMode = m;
                         queue = qd;
@@ -113,9 +113,9 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         return;
                     }
                 }
-                
+
                 queue = new SpscLinkedArrayQueue<T>(bufferSize);
-                
+
                 actual.onSubscribe(this);
             }
         }
@@ -149,48 +149,48 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             done = true;
             drain();
         }
-        
+
         void innerComplete() {
             active = false;
             drain();
         }
-        
+
         @Override
         public boolean isDisposed() {
             return disposed;
         }
-        
+
         @Override
         public void dispose() {
             disposed = true;
             sa.dispose();
             s.dispose();
-            
+
             if (getAndIncrement() == 0) {
                 queue.clear();
             }
         }
-        
+
         void innerSubscribe(Disposable s) {
             sa.update(s);
         }
-        
+
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
-            
+
             for (;;) {
                 if (disposed) {
                     queue.clear();
                     return;
                 }
                 if (!active) {
-                    
+
                     boolean d = done;
-                    
+
                     T t;
-                    
+
                     try {
                         t = queue.poll();
                     } catch (Throwable ex) {
@@ -200,17 +200,17 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         actual.onError(ex);
                         return;
                     }
-                    
+
                     boolean empty = t == null;
-                    
+
                     if (d && empty) {
                         actual.onComplete();
                         return;
                     }
-                    
+
                     if (!empty) {
                         ObservableSource<? extends U> o;
-                        
+
                         try {
                             o = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableConsumable");
                         } catch (Throwable ex) {
@@ -220,18 +220,18 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                             actual.onError(ex);
                             return;
                         }
-                        
+
                         active = true;
                         o.subscribe(inner);
                     }
                 }
-                
+
                 if (decrementAndGet() == 0) {
                     break;
                 }
             }
         }
-        
+
         static final class InnerSubscriber<U> implements Observer<U> {
             final Observer<? super U> actual;
             final SourceSubscriber<?, ?> parent;
@@ -240,12 +240,12 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                 this.actual = actual;
                 this.parent = parent;
             }
-            
+
             @Override
             public void onSubscribe(Disposable s) {
                 parent.innerSubscribe(s);
             }
-            
+
             @Override
             public void onNext(U t) {
                 actual.onNext(t);
@@ -261,40 +261,40 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             }
         }
     }
-    
-    static final class ConcatMapDelayErrorObserver<T, R> 
+
+    static final class ConcatMapDelayErrorObserver<T, R>
     extends AtomicInteger
     implements Observer<T>, Disposable {
-        
+
         /** */
         private static final long serialVersionUID = -6951100001833242599L;
 
         final Observer<? super R> actual;
-        
+
         final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
-        
+
         final int bufferSize;
-        
+
         final AtomicThrowable error;
-        
+
         final DelayErrorInnerObserver<R> observer;
-        
+
         final SequentialDisposable arbiter;
-        
+
         final boolean tillTheEnd;
-        
+
         SimpleQueue<T> queue;
-        
+
         Disposable d;
-        
+
         volatile boolean active;
-        
+
         volatile boolean done;
-        
+
         volatile boolean cancelled;
-        
+
         int sourceMode;
-        
+
         public ConcatMapDelayErrorObserver(Observer<? super R> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
                         boolean tillTheEnd) {
@@ -306,43 +306,43 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             this.observer = new DelayErrorInnerObserver<R>(actual, this);
             this.arbiter = new SequentialDisposable();
         }
-        
+
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
-                
+
                 if (d instanceof QueueDisposable) {
                     @SuppressWarnings("unchecked")
                     QueueDisposable<T> qd = (QueueDisposable<T>) d;
-                    
+
                     int m = qd.requestFusion(QueueDisposable.ANY);
                     if (m == QueueDisposable.SYNC) {
                         sourceMode = m;
                         queue = qd;
                         done = true;
-                        
+
                         actual.onSubscribe(this);
-                        
+
                         drain();
                         return;
                     }
                     if (m == QueueDisposable.ASYNC) {
                         sourceMode = m;
                         queue = qd;
-                        
+
                         actual.onSubscribe(this);
-                        
+
                         return;
                     }
                 }
-                
+
                 queue = QueueDrainHelper.createQueue(-bufferSize);
-                
+
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T value) {
             if (sourceMode == QueueDisposable.NONE) {
@@ -350,7 +350,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             }
             drain();
         }
-        
+
         @Override
         public void onError(Throwable e) {
             if (error.addThrowable(e)) {
@@ -360,58 +360,58 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                 RxJavaPlugins.onError(e);
             }
         }
-        
+
         @Override
         public void onComplete() {
             done = true;
             drain();
         }
-        
+
         @Override
         public boolean isDisposed() {
             return d.isDisposed();
         }
-        
+
         @Override
         public void dispose() {
             cancelled = true;
             d.dispose();
             arbiter.dispose();
         }
-        
+
         @SuppressWarnings("unchecked")
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
-            
+
             Observer<? super R> actual = this.actual;
             SimpleQueue<T> queue = this.queue;
             AtomicThrowable error = this.error;
-            
+
             for (;;) {
-                
+
                 if (!active) {
-                    
+
                     if (cancelled) {
                         queue.clear();
                         return;
                     }
-                    
+
                     if (!tillTheEnd) {
                         Throwable ex = error.get();
                         if (ex != null) {
                             queue.clear();
-                            
+
                             actual.onError(error.terminate());
                             return;
                         }
                     }
-                    
+
                     boolean d = done;
-                    
+
                     T v;
-                    
+
                     try {
                         v = queue.poll();
                     } catch (Throwable ex) {
@@ -421,9 +421,9 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         actual.onError(error.terminate());
                         return;
                     }
-                    
+
                     boolean empty = v == null;
-                    
+
                     if (d && empty) {
                         Throwable ex = error.terminate();
                         if (ex != null) {
@@ -433,11 +433,11 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         }
                         return;
                     }
-                    
+
                     if (!empty) {
-                        
+
                         ObservableSource<? extends R> o;
-                        
+
                         try {
                             o = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
                         } catch (Throwable ex) {
@@ -448,10 +448,10 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                             actual.onError(error.terminate());
                             return;
                         }
-                        
+
                         if (o instanceof Callable) {
                             R w;
-                            
+
                             try {
                                 w = ((Callable<R>)o).call();
                             } catch (Throwable ex) {
@@ -459,7 +459,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                                 error.addThrowable(ex);
                                 continue;
                             }
-                            
+
                             if (w != null && !cancelled) {
                                 actual.onNext(w);
                             }
@@ -470,34 +470,34 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         }
                     }
                 }
-                
+
                 if (decrementAndGet() == 0) {
                     break;
                 }
             }
         }
-        
+
         static final class DelayErrorInnerObserver<R> implements Observer<R> {
-            
+
             final Observer<? super R> actual;
-            
+
             final ConcatMapDelayErrorObserver<?, R> parent;
-            
+
             public DelayErrorInnerObserver(Observer<? super R> actual, ConcatMapDelayErrorObserver<?, R> parent) {
                 this.actual = actual;
                 this.parent = parent;
             }
-            
+
             @Override
             public void onSubscribe(Disposable d) {
                 parent.arbiter.replace(d);
             }
-            
+
             @Override
             public void onNext(R value) {
                 actual.onNext(value);
             }
-            
+
             @Override
             public void onError(Throwable e) {
                 ConcatMapDelayErrorObserver<?, R> p = parent;
@@ -511,7 +511,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                     RxJavaPlugins.onError(e);
                 }
             }
-            
+
             @Override
             public void onComplete() {
                 ConcatMapDelayErrorObserver<?, R> p = parent;

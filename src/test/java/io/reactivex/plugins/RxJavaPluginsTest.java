@@ -57,7 +57,7 @@ public class RxJavaPluginsTest {
 //            }
 //        });
 //    }
-//    
+//
 //    static Flowable<Integer> createFlowable() {
 //        return Flowable.range(1, 5).map(new Function<Integer, Integer>() {
 //            @Override
@@ -66,7 +66,7 @@ public class RxJavaPluginsTest {
 //            }
 //        });
 //    }
-    
+
     @Test
     public void constructorShouldBePrivate() {
         TestHelper.checkUtilityClass(RxJavaPlugins.class);
@@ -78,29 +78,29 @@ public class RxJavaPluginsTest {
 //        RxJavaPlugins.enableAssemblyTracking();
 //        try {
 //            TestSubscriber<Integer> ts = TestSubscriber.create();
-//            
+//
 //            createObservable().subscribe(ts);
-//            
+//
 //            ts.assertError(TestException.class);
-//            
+//
 //            Throwable ex = ts.getOnErrorEvents().get(0);
-//            
+//
 //            AssemblyStackTraceException aste = AssemblyStackTraceException.find(ex);
-//            
+//
 //            assertNotNull(aste);
-//            
+//
 //            assertTrue(aste.getMessage(), aste.getMessage().contains("createObservable"));
-//            
+//
 //            RxJavaPlugins.clearAssemblyTracking();
 //
 //            ts = TestSubscriber.create();
-//            
+//
 //            createObservable().subscribe(ts);
 //
 //            ts.assertError(TestException.class);
-//            
+//
 //            ex = ts.getOnErrorEvents().get(0);
-//            
+//
 //            aste = AssemblyStackTraceException.find(ex);
 //
 //            assertNull(aste);
@@ -108,7 +108,7 @@ public class RxJavaPluginsTest {
 //            RxJavaPlugins.resetAssemblyTracking();
 //        }
     }
-    
+
 //    static Single<Integer> createSingle() {
 //        return Single.just(1).map(new Function<Integer, Integer>() {
 //            @Override
@@ -117,36 +117,36 @@ public class RxJavaPluginsTest {
 //            }
 //        });
 //    }
-    
+
     @Test
     @Ignore("Not part of 2.0")
     public void assemblyTrackingSingle() {
 //        RxJavaPlugins.enableAssemblyTracking();
 //        try {
 //            TestSubscriber<Integer> ts = TestSubscriber.create();
-//            
+//
 //            createSingle().subscribe(ts);
-//            
+//
 //            ts.assertError(TestException.class);
-//            
+//
 //            Throwable ex = ts.getOnErrorEvents().get(0);
-//            
+//
 //            AssemblyStackTraceException aste = AssemblyStackTraceException.find(ex);
-//            
+//
 //            assertNotNull(aste);
-//            
+//
 //            assertTrue(aste.getMessage(), aste.getMessage().contains("createSingle"));
 //
 //            RxJavaPlugins.clearAssemblyTracking();
 //
 //            ts = TestSubscriber.create();
-//            
+//
 //            createSingle().subscribe(ts);
 //
 //            ts.assertError(TestException.class);
-//            
+//
 //            ex = ts.getOnErrorEvents().get(0);
-//            
+//
 //            aste = AssemblyStackTraceException.find(ex);
 //
 //            assertNull(aste);
@@ -154,7 +154,7 @@ public class RxJavaPluginsTest {
 //            RxJavaPlugins.resetAssemblyTracking();
 //        }
     }
-    
+
 //    static Completable createCompletable() {
 //        return Completable.error(new Callable<Throwable>() {
 //            @Override
@@ -163,45 +163,45 @@ public class RxJavaPluginsTest {
 //            }
 //        });
 //    }
-    
+
     @Test
     @Ignore("Not part of 2.0")
     public void assemblyTrackingCompletable() {
 //        RxJavaPlugins.enableAssemblyTracking();
 //        try {
 //            TestSubscriber<Integer> ts = TestSubscriber.create();
-//            
+//
 //            createCompletable().subscribe(ts);
-//            
+//
 //            ts.assertError(TestException.class);
-//            
+//
 //            Throwable ex = ts.getOnErrorEvents().get(0);
-//            
+//
 //            AssemblyStackTraceException aste = AssemblyStackTraceException.find(ex);
-//            
+//
 //            assertNotNull(aste);
-//            
+//
 //            assertTrue(aste.getMessage(), aste.getMessage().contains("createCompletable"));
 //
 //            RxJavaPlugins.clearAssemblyTracking();
 //
 //            ts = TestSubscriber.create();
-//            
+//
 //            createCompletable().subscribe(ts);
 //
 //            ts.assertError(TestException.class);
 //
 //            ex = ts.getOnErrorEvents().get(0);
-//            
+//
 //            aste = AssemblyStackTraceException.find(ex);
 //
 //            assertNull(aste);
-//            
+//
 //        } finally {
 //            RxJavaPlugins.resetAssemblyTracking();
 //        }
     }
-    
+
     @SuppressWarnings({ "rawtypes" })
     @Test
     public void lockdown() throws Exception {
@@ -223,14 +223,14 @@ public class RxJavaPluginsTest {
                     return t2;
                 }
             };
-            
+
             for (Method m : RxJavaPlugins.class.getMethods()) {
                 if (m.getName().startsWith("set")) {
-                    
+
                     Method getter = RxJavaPlugins.class.getMethod("get" + m.getName().substring(3));
-                    
+
                     Object before = getter.invoke(null);
-                    
+
                     try {
                         if (m.getParameterTypes()[0].isAssignableFrom(Callable.class)) {
                             m.invoke(null, f0);
@@ -251,33 +251,33 @@ public class RxJavaPluginsTest {
                             fail("Should have thrown InvocationTargetException(IllegalStateException)");
                         }
                     }
-                    
+
                     Object after = getter.invoke(null);
-                    
+
                     assertSame(m.toString(), before, after);
                 }
             }
-            
+
 //            Object o1 = RxJavaPlugins.getOnObservableCreate();
 //            Object o2 = RxJavaPlugins.getOnSingleCreate();
 //            Object o3 = RxJavaPlugins.getOnCompletableCreate();
-//            
+//
 //            RxJavaPlugins.enableAssemblyTracking();
 //            RxJavaPlugins.clearAssemblyTracking();
 //            RxJavaPlugins.resetAssemblyTracking();
 //
-//            
+//
 //            assertSame(o1, RxJavaPlugins.getOnObservableCreate());
 //            assertSame(o2, RxJavaPlugins.getOnSingleCreate());
 //            assertSame(o3, RxJavaPlugins.getOnCompletableCreate());
-            
+
         } finally {
             RxJavaPlugins.unlock();
             RxJavaPlugins.reset();
             assertFalse(RxJavaPlugins.isLockdown());
         }
     }
-    
+
     Function<Scheduler, Scheduler> replaceWithImmediate = new Function<Scheduler, Scheduler>() {
         @Override
         public Scheduler apply(Scheduler t) {
@@ -289,7 +289,7 @@ public class RxJavaPluginsTest {
     public void overrideSingleScheduler() {
         try {
             RxJavaPlugins.setSingleSchedulerHandler(replaceWithImmediate);
-            
+
             assertSame(ImmediateThinScheduler.INSTANCE, Schedulers.single());
         } finally {
             RxJavaPlugins.reset();
@@ -302,7 +302,7 @@ public class RxJavaPluginsTest {
     public void overrideComputationScheduler() {
         try {
             RxJavaPlugins.setComputationSchedulerHandler(replaceWithImmediate);
-            
+
             assertSame(ImmediateThinScheduler.INSTANCE, Schedulers.computation());
         } finally {
             RxJavaPlugins.reset();
@@ -315,7 +315,7 @@ public class RxJavaPluginsTest {
     public void overrideIoScheduler() {
         try {
             RxJavaPlugins.setIoSchedulerHandler(replaceWithImmediate);
-            
+
             assertSame(ImmediateThinScheduler.INSTANCE, Schedulers.io());
         } finally {
             RxJavaPlugins.reset();
@@ -328,7 +328,7 @@ public class RxJavaPluginsTest {
     public void overrideNewThreadScheduler() {
         try {
             RxJavaPlugins.setNewThreadSchedulerHandler(replaceWithImmediate);
-            
+
             assertSame(ImmediateThinScheduler.INSTANCE, Schedulers.newThread());
         } finally {
             RxJavaPlugins.reset();
@@ -342,7 +342,7 @@ public class RxJavaPluginsTest {
         Scheduler s = Schedulers.single(); // make sure the Schedulers is initialized
         try {
             RxJavaPlugins.setInitSingleSchedulerHandler(replaceWithImmediate);
-            
+
             assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initSingleScheduler(s));
         } finally {
             RxJavaPlugins.reset();
@@ -356,7 +356,7 @@ public class RxJavaPluginsTest {
         Scheduler s = Schedulers.computation(); // make sure the Schedulers is initialized
         try {
             RxJavaPlugins.setInitComputationSchedulerHandler(replaceWithImmediate);
-            
+
             assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initComputationScheduler(s));
         } finally {
             RxJavaPlugins.reset();
@@ -370,7 +370,7 @@ public class RxJavaPluginsTest {
         Scheduler s = Schedulers.io(); // make sure the Schedulers is initialized
         try {
             RxJavaPlugins.setInitIoSchedulerHandler(replaceWithImmediate);
-            
+
             assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initIoScheduler(s));
         } finally {
             RxJavaPlugins.reset();
@@ -384,7 +384,7 @@ public class RxJavaPluginsTest {
         Scheduler s = Schedulers.newThread(); // make sure the Schedulers is initialized
         try {
             RxJavaPlugins.setInitNewThreadSchedulerHandler(replaceWithImmediate);
-            
+
             assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initNewThreadScheduler(s));
         } finally {
             RxJavaPlugins.reset();
@@ -403,7 +403,7 @@ public class RxJavaPluginsTest {
                     return new ObservableRange(1, 2);
                 }
             });
-            
+
             Observable.range(10, 3)
             .test()
             .assertValues(1, 2)
@@ -430,7 +430,7 @@ public class RxJavaPluginsTest {
                     return new FlowableRange(1, 2);
                 }
             });
-            
+
             Flowable.range(10, 3)
             .test()
             .assertValues(1, 2)
@@ -476,11 +476,11 @@ public class RxJavaPluginsTest {
                         public void onComplete() {
                             t.onComplete();
                         }
-                        
+
                     };
                 }
             });
-            
+
             Observable.range(10, 3)
             .test()
             .assertValues(1, 2, 3)
@@ -526,11 +526,11 @@ public class RxJavaPluginsTest {
                         public void onComplete() {
                             t.onComplete();
                         }
-                        
+
                     };
                 }
             });
-            
+
             Flowable.range(10, 3)
             .test()
             .assertValues(1, 2, 3)
@@ -552,22 +552,22 @@ public class RxJavaPluginsTest {
     public void observableReturn() {
 //        try {
 //            final Subscription s = Subscriptions.empty();
-//            
+//
 //            RxJavaPlugins.setOnObservableReturn(new Function<Subscription, Subscription>() {
 //                @Override
 //                public Subscription call(Subscription t) {
 //                    return s;
 //                }
 //            });
-//            
+//
 //            TestSubscriber<Integer> ts = TestSubscriber.create();
-//            
+//
 //            Subscription u = Observable.range(10, 3).subscribe(ts);
-//            
+//
 //            ts.assertValues(10, 11, 12);
 //            ts.assertNoErrors();
 //            ts.assertComplete();
-//            
+//
 //            assertSame(s, u);
 //        } finally {
 //            RxJavaPlugins.reset();
@@ -584,7 +584,7 @@ public class RxJavaPluginsTest {
                     return new SingleJust<Integer>(10);
                 }
             });
-            
+
             Single.just(1)
             .test()
             .assertValue(10)
@@ -600,7 +600,7 @@ public class RxJavaPluginsTest {
         .assertNoErrors()
         .assertComplete();
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Test
     public void singleStart() {
@@ -625,11 +625,11 @@ public class RxJavaPluginsTest {
                         public void onError(Throwable e) {
                             t.onError(e);
                         }
-                        
+
                     };
                 }
             });
-            
+
             Single.just(1)
             .test()
             .assertValue(10)
@@ -645,28 +645,28 @@ public class RxJavaPluginsTest {
         .assertNoErrors()
         .assertComplete();
     }
-    
+
     @Test
     @Ignore("Different architecture, no longer supported")
     public void singleReturn() {
 //        try {
 //            final Subscription s = Subscriptions.empty();
-//            
+//
 //            RxJavaPlugins.setOnSingleReturn(new Function<Subscription, Subscription>() {
 //                @Override
 //                public Subscription call(Subscription t) {
 //                    return s;
 //                }
 //            });
-//            
+//
 //            TestSubscriber<Integer> ts = TestSubscriber.create();
-//            
+//
 //            Subscription u = Single.just(1).subscribe(ts);
-//            
+//
 //            ts.assertValue(1);
 //            ts.assertNoErrors();
 //            ts.assertComplete();
-//            
+//
 //            assertSame(s, u);
 //        } finally {
 //            RxJavaPlugins.reset();
@@ -682,7 +682,7 @@ public class RxJavaPluginsTest {
                     return new CompletableError(new TestException());
                 }
             });
-            
+
             Completable.complete()
             .test()
             .assertNoValues()
@@ -698,7 +698,7 @@ public class RxJavaPluginsTest {
         .assertNoErrors()
         .assertComplete();
     }
-    
+
     @Test
     public void completableStart() {
         try {
@@ -710,12 +710,12 @@ public class RxJavaPluginsTest {
                         public void onSubscribe(Disposable d) {
                             t.onSubscribe(d);
                         }
-                        
+
                         @Override
                         public void onError(Throwable e) {
                             t.onError(e);
                         }
-                        
+
                         @Override
                         public void onComplete() {
                             t.onError(new TestException());
@@ -723,7 +723,7 @@ public class RxJavaPluginsTest {
                     };
                 }
             });
-            
+
             Completable.complete()
             .test()
             .assertNoValues()
@@ -733,7 +733,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.reset();
         }
         // make sure the reset worked
-        
+
         Completable.complete()
         .test()
         .assertNoValues()
@@ -746,7 +746,7 @@ public class RxJavaPluginsTest {
             try {
                 final AtomicInteger value = new AtomicInteger();
                 final CountDownLatch cdl = new CountDownLatch(1);
-                
+
                 RxJavaPlugins.setScheduleHandler(new Function<Runnable, Runnable>() {
                     @Override
                     public Runnable apply(Runnable t) {
@@ -759,7 +759,7 @@ public class RxJavaPluginsTest {
                         };
                     }
                 });
-                
+
                 w.schedule(new Runnable() {
                     @Override
                     public void run() {
@@ -767,20 +767,20 @@ public class RxJavaPluginsTest {
                         cdl.countDown();
                     }
                 });
-                
+
                 cdl.await();
-                
+
                 assertEquals(10, value.get());
-                
+
             } finally {
-                
+
                 RxJavaPlugins.reset();
             }
-            
+
             // make sure the reset worked
             final AtomicInteger value = new AtomicInteger();
             final CountDownLatch cdl = new CountDownLatch(1);
-            
+
             w.schedule(new Runnable() {
                 @Override
                 public void run() {
@@ -788,15 +788,15 @@ public class RxJavaPluginsTest {
                     cdl.countDown();
                 }
             });
-            
+
             cdl.await();
-            
+
             assertEquals(1, value.get());
         } finally {
             w.dispose();
         }
     }
-    
+
     @Test
     public void onScheduleComputation() throws InterruptedException {
         onSchedule(Schedulers.computation().createWorker());
@@ -816,23 +816,23 @@ public class RxJavaPluginsTest {
     public void onError() {
         try {
             final List<Throwable> list = new ArrayList<Throwable>();
-            
+
             RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
                 @Override
                 public void accept(Throwable t) {
                     list.add(t);
                 }
             });
-            
+
             RxJavaPlugins.onError(new TestException("Forced failure"));
-            
+
             assertEquals(1, list.size());
             assertTestException(list, 0, "Forced failure");
         } finally {
             RxJavaPlugins.reset();
         }
     }
-    
+
     @Test
     @Ignore("No (need for) clear() method in 2.0")
     public void clear() throws Exception {
@@ -850,7 +850,7 @@ public class RxJavaPluginsTest {
 //        }
 //
 //        for (Method m : RxJavaPlugins.class.getMethods()) {
-//            if (m.getName().startsWith("getOn") 
+//            if (m.getName().startsWith("getOn")
 //                    && !m.getName().endsWith("Scheduler")
 //                    && !m.getName().contains("GenericScheduledExecutorService")) {
 //                assertNotNull(m.toString(), m.invoke(null));
@@ -862,18 +862,18 @@ public class RxJavaPluginsTest {
     public void onErrorNoHandler() {
         try {
             final List<Throwable> list = new ArrayList<Throwable>();
-            
+
             RxJavaPlugins.setErrorHandler(null);
-            
+
             Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-                
+
                 @Override
                 public void uncaughtException(Thread t, Throwable e) {
                     list.add(e);
-                    
+
                 }
             });
-            
+
             RxJavaPlugins.onError(new TestException("Forced failure"));
 
             Thread.currentThread().setUncaughtExceptionHandler(null);
@@ -893,7 +893,7 @@ public class RxJavaPluginsTest {
     public void onErrorCrashes() {
         try {
             final List<Throwable> list = new ArrayList<Throwable>();
-            
+
             RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
                 @Override
                 public void accept(Throwable t) {
@@ -902,22 +902,22 @@ public class RxJavaPluginsTest {
             });
 
             Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-                
+
                 @Override
                 public void uncaughtException(Thread t, Throwable e) {
                     list.add(e);
-                    
+
                 }
             });
 
             RxJavaPlugins.onError(new TestException("Forced failure"));
-            
+
             assertEquals(2, list.size());
             assertTestException(list, 0, "Forced failure 2");
             assertTestException(list, 1, "Forced failure");
 
             Thread.currentThread().setUncaughtExceptionHandler(null);
-            
+
         } finally {
             RxJavaPlugins.reset();
             Thread.currentThread().setUncaughtExceptionHandler(null);
@@ -928,7 +928,7 @@ public class RxJavaPluginsTest {
     public void onErrorWithNull() {
         try {
             final List<Throwable> list = new ArrayList<Throwable>();
-            
+
             RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
                 @Override
                 public void accept(Throwable t) {
@@ -937,29 +937,29 @@ public class RxJavaPluginsTest {
             });
 
             Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-                
+
                 @Override
                 public void uncaughtException(Thread t, Throwable e) {
                     list.add(e);
-                    
+
                 }
             });
 
             RxJavaPlugins.onError(null);
-            
+
             assertEquals(2, list.size());
             assertTestException(list, 0, "Forced failure 2");
             assertNPE(list, 1);
 
             RxJavaPlugins.reset();
-            
+
             RxJavaPlugins.onError(null);
-            
+
             assertNPE(list, 2);
 
         } finally {
             RxJavaPlugins.reset();
-            
+
             Thread.currentThread().setUncaughtExceptionHandler(null);
         }
     }
@@ -969,26 +969,26 @@ public class RxJavaPluginsTest {
     public void clearIsPassthrough() {
         try {
             RxJavaPlugins.reset();
-            
+
             assertNull(RxJavaPlugins.onAssembly((Observable)null));
 
             assertNull(RxJavaPlugins.onAssembly((ConnectableObservable)null));
 
             assertNull(RxJavaPlugins.onAssembly((Flowable)null));
-            
+
             assertNull(RxJavaPlugins.onAssembly((ConnectableFlowable)null));
 
             Observable oos = new Observable() {
                 @Override
                 public void subscribeActual(Observer t) {
-                    
+
                 }
             };
 
             Flowable fos = new Flowable() {
                 @Override
                 public void subscribeActual(Subscriber t) {
-                    
+
                 }
             };
 
@@ -1001,18 +1001,18 @@ public class RxJavaPluginsTest {
             Single sos = new Single() {
                 @Override
                 public void subscribeActual(SingleObserver t) {
-                    
+
                 }
             };
 
             assertSame(sos, RxJavaPlugins.onAssembly(sos));
-            
+
             assertNull(RxJavaPlugins.onAssembly((Completable)null));
 
             Completable cos = new Completable() {
                 @Override
                 public void subscribeActual(CompletableObserver t) {
-                    
+
                 }
             };
 
@@ -1025,98 +1025,98 @@ public class RxJavaPluginsTest {
             Maybe myb = new Maybe() {
                 @Override
                 public void subscribeActual(MaybeObserver t) {
-                    
+
                 }
             };
 
             assertSame(myb, RxJavaPlugins.onAssembly(myb));
-            
-            
+
+
             assertNull(RxJavaPlugins.onSchedule(null));
-            
+
             Runnable action = Functions.EMPTY_RUNNABLE;
-            
+
             assertSame(action, RxJavaPlugins.onSchedule(action));
-            
+
             class AllSubscriber implements Subscriber, Observer, SingleObserver, CompletableObserver, MaybeObserver {
 
                 @Override
                 public void onSuccess(Object value) {
-                    
+
                 }
 
                 @Override
                 public void onSubscribe(Disposable d) {
-                    
+
                 }
 
                 @Override
                 public void onSubscribe(Subscription s) {
-                    
+
                 }
 
                 @Override
                 public void onNext(Object t) {
-                    
+
                 }
 
                 @Override
                 public void onError(Throwable t) {
-                    
+
                 }
 
                 @Override
                 public void onComplete() {
-                    
+
                 }
-                
+
             }
-            
+
             AllSubscriber all = new AllSubscriber();
-            
+
             assertNull(RxJavaPlugins.onSubscribe(Observable.never(), null));
-            
+
             assertSame(all, RxJavaPlugins.onSubscribe(Observable.never(), all));
 
             assertNull(RxJavaPlugins.onSubscribe(Flowable.never(), null));
-            
+
             assertSame(all, RxJavaPlugins.onSubscribe(Flowable.never(), all));
 
             assertNull(RxJavaPlugins.onSubscribe(Single.just(1), null));
-            
+
             assertSame(all, RxJavaPlugins.onSubscribe(Single.just(1), all));
 
             assertNull(RxJavaPlugins.onSubscribe(Completable.never(), null));
-            
+
             assertSame(all, RxJavaPlugins.onSubscribe(Completable.never(), all));
 
             assertNull(RxJavaPlugins.onSubscribe(Maybe.never(), null));
-            
+
             assertSame(all, RxJavaPlugins.onSubscribe(Maybe.never(), all));
 
             // These hooks don't exist in 2.0
 //            Subscription subscription = Subscriptions.empty();
-//            
+//
 //            assertNull(RxJavaPlugins.onObservableReturn(null));
-//            
+//
 //            assertSame(subscription, RxJavaPlugins.onObservableReturn(subscription));
 //
 //            assertNull(RxJavaPlugins.onSingleReturn(null));
-//            
+//
 //            assertSame(subscription, RxJavaPlugins.onSingleReturn(subscription));
 //
 //            TestException ex = new TestException();
-//            
+//
 //            assertNull(RxJavaPlugins.onObservableError(null));
-//            
+//
 //            assertSame(ex, RxJavaPlugins.onObservableError(ex));
 //
 //            assertNull(RxJavaPlugins.onSingleError(null));
-//            
+//
 //            assertSame(ex, RxJavaPlugins.onSingleError(ex));
 //
 //            assertNull(RxJavaPlugins.onCompletableError(null));
-//            
+//
 //            assertSame(ex, RxJavaPlugins.onCompletableError(ex));
 //
 //            Observable.Operator oop = new Observable.Operator() {
@@ -1125,26 +1125,26 @@ public class RxJavaPluginsTest {
 //                    return t;
 //                }
 //            };
-//            
+//
 //            assertNull(RxJavaPlugins.onObservableLift(null));
-//            
+//
 //            assertSame(oop, RxJavaPlugins.onObservableLift(oop));
-//            
+//
 //            assertNull(RxJavaPlugins.onSingleLift(null));
-//            
+//
 //            assertSame(oop, RxJavaPlugins.onSingleLift(oop));
-//            
+//
 //            Completable.CompletableOperator cop = new Completable.CompletableOperator() {
 //                @Override
 //                public CompletableSubscriber call(CompletableSubscriber t) {
 //                    return t;
 //                }
 //            };
-//            
+//
 //            assertNull(RxJavaPlugins.onCompletableLift(null));
-//            
+//
 //            assertSame(cop, RxJavaPlugins.onCompletableLift(cop));
-              
+
             assertNull(RxJavaPlugins.onComputationScheduler(null));
 
             assertNull(RxJavaPlugins.onIoScheduler(null));
@@ -1163,7 +1163,7 @@ public class RxJavaPluginsTest {
 
             assertSame(s, RxJavaPlugins.onSingleScheduler(s));
 
-            
+
             assertNull(RxJavaPlugins.initComputationScheduler(null));
 
             assertNull(RxJavaPlugins.initIoScheduler(null));
@@ -1180,12 +1180,12 @@ public class RxJavaPluginsTest {
 
             assertSame(s, RxJavaPlugins.initSingleScheduler(s));
 
-            
+
         } finally {
             RxJavaPlugins.reset();
         }
     }
-    
+
     static void assertTestException(List<Throwable> list, int index, String message) {
         assertTrue(list.get(index).toString(), list.get(index) instanceof TestException);
         assertEquals(message, list.get(index).getMessage());
@@ -1200,9 +1200,9 @@ public class RxJavaPluginsTest {
     public void onXError() {
 //        try {
 //            final List<Throwable> list = new ArrayList<Throwable>();
-//            
+//
 //            final TestException ex = new TestException();
-//            
+//
 //            Function<Throwable, Throwable> errorHandler = new Function<Throwable, Throwable>() {
 //                @Override
 //                public Throwable a(Throwable t) {
@@ -1210,7 +1210,7 @@ public class RxJavaPluginsTest {
 //                    return ex;
 //                }
 //            };
-//            
+//
 //            RxJavaPlugins.setOnObservableSubscribeError(errorHandler);
 //
 //            RxJavaPlugins.setOnSingleSubscribeError(errorHandler);
@@ -1220,11 +1220,11 @@ public class RxJavaPluginsTest {
 //            assertSame(ex, RxJavaPlugins.onObservableError(new TestException("Forced failure 1")));
 //
 //            assertSame(ex, RxJavaPlugins.onSingleError(new TestException("Forced failure 2")));
-//            
+//
 //            assertSame(ex, RxJavaPlugins.onCompletableError(new TestException("Forced failure 3")));
-//            
+//
 //            assertTestException(list, 0, "Forced failure 1");
-//            
+//
 //            assertTestException(list, 1, "Forced failure 2");
 //
 //            assertTestException(list, 2, "Forced failure 3");
@@ -1239,11 +1239,11 @@ public class RxJavaPluginsTest {
     public void onPluginsXError() {
 //        try {
 //            RxJavaPlugins.reset();
-//            
+//
 //            final List<Throwable> list = new ArrayList<Throwable>();
-//            
+//
 //            final TestException ex = new TestException();
-//            
+//
 //            final Function<Throwable, Throwable> errorHandler = new Function<Throwable, Throwable>() {
 //                @Override
 //                public Throwable apply(Throwable t) {
@@ -1276,11 +1276,11 @@ public class RxJavaPluginsTest {
 //            assertSame(ex, RxJavaPlugins.onObservableError(new TestException("Forced failure 1")));
 //
 //            assertSame(ex, RxJavaPlugins.onSingleError(new TestException("Forced failure 2")));
-//            
+//
 //            assertSame(ex, RxJavaPlugins.onCompletableError(new TestException("Forced failure 3")));
-//            
+//
 //            assertTestException(list, 0, "Forced failure 1");
-//            
+//
 //            assertTestException(list, 1, "Forced failure 2");
 //
 //            assertTestException(list, 2, "Forced failure 3");
@@ -1301,7 +1301,7 @@ public class RxJavaPluginsTest {
 //                    return t;
 //                }
 //            };
-//            
+//
 //            Observable.Operator oop = new Observable.Operator() {
 //                @Override
 //                public Object call(Object t) {
@@ -1334,13 +1334,13 @@ public class RxJavaPluginsTest {
 //                    return t;
 //                }
 //            });
-//            
+//
 //            assertSame(oop, RxJavaPlugins.onObservableLift(oop));
 //
 //            assertSame(oop, RxJavaPlugins.onSingleLift(oop));
 //
 //            assertSame(cop, RxJavaPlugins.onCompletableLift(cop));
-//            
+//
 //            assertEquals(3, counter[0]);
 //
 //        } finally {
@@ -1353,7 +1353,7 @@ public class RxJavaPluginsTest {
     @Ignore("Not present in 2.0")
     public void onPluginsXLift() {
 //        try {
-//            
+//
 //            RxJavaPlugins.getInstance().reset();
 //            RxJavaPlugins.reset();
 //
@@ -1363,7 +1363,7 @@ public class RxJavaPluginsTest {
 //                    return t;
 //                }
 //            };
-//            
+//
 //            Observable.Operator oop = new Observable.Operator() {
 //                @Override
 //                public Object call(Object t) {
@@ -1388,41 +1388,41 @@ public class RxJavaPluginsTest {
 //                    return t;
 //                }
 //            };
-//            
+//
 //            RxJavaPlugins.getInstance().registerObservableExecutionHook(new RxJavaObservableExecutionHook() {
 //                @Override
 //                public <T, R> Operator<? extends R, ? super T> onLift(Operator<? extends R, ? super T> lift) {
 //                    return onObservableLift.call(lift);
 //                }
 //            });
-//            
+//
 //            RxJavaPlugins.getInstance().registerSingleExecutionHook(new RxJavaSingleExecutionHook() {
 //                @Override
 //                public <T, R> Operator<? extends R, ? super T> onLift(Operator<? extends R, ? super T> lift) {
 //                    return onObservableLift.call(lift);
 //                }
 //            });
-//            
+//
 //            RxJavaPlugins.getInstance().registerCompletableExecutionHook(new RxJavaCompletableExecutionHook() {
 //                @Override
 //                public CompletableOperator onLift(CompletableOperator lift) {
 //                    return onCompletableLift.call(lift);
 //                }
 //            });
-//            
+//
 //            assertSame(oop, RxJavaPlugins.onObservableLift(oop));
 //
 //            assertSame(oop, RxJavaPlugins.onSingleLift(oop));
 //
 //            assertSame(cop, RxJavaPlugins.onCompletableLift(cop));
-//            
+//
 //            assertEquals(3, counter[0]);
 //
 //        } finally {
 //            RxJavaPlugins.reset();
 //        }
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Test
     public void overrideConnectableObservable() {
@@ -1431,12 +1431,12 @@ public class RxJavaPluginsTest {
                 @Override
                 public ConnectableObservable apply(ConnectableObservable co) throws Exception {
                     return new ConnectableObservable() {
-                        
+
                         @Override
                         public void connect(Consumer connection) {
-                            
+
                         }
-                        
+
                         @SuppressWarnings("unchecked")
                         @Override
                         protected void subscribeActual(Observer observer) {
@@ -1447,18 +1447,18 @@ public class RxJavaPluginsTest {
                     };
                 }
             });
-            
+
             Observable
             .just(1)
             .publish()
             .autoConnect()
             .test()
             .assertResult(10);
-            
+
         } finally {
             RxJavaPlugins.reset();
         }
-        
+
         Observable
         .just(1)
         .publish()
@@ -1475,12 +1475,12 @@ public class RxJavaPluginsTest {
                 @Override
                 public ConnectableFlowable apply(ConnectableFlowable co) throws Exception {
                     return new ConnectableFlowable() {
-                        
+
                         @Override
                         public void connect(Consumer connection) {
-                            
+
                         }
-                        
+
                         @SuppressWarnings("unchecked")
                         @Override
                         protected void subscribeActual(Subscriber subscriber) {
@@ -1489,18 +1489,18 @@ public class RxJavaPluginsTest {
                     };
                 }
             });
-            
+
             Flowable
             .just(1)
             .publish()
             .autoConnect()
             .test()
             .assertResult(10);
-            
+
         } finally {
             RxJavaPlugins.reset();
         }
-        
+
         Flowable
         .just(1)
         .publish()
@@ -1508,7 +1508,7 @@ public class RxJavaPluginsTest {
         .test()
         .assertResult(1);
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Test
     public void assemblyHookCrashes() {
@@ -1519,35 +1519,35 @@ public class RxJavaPluginsTest {
                     throw new IllegalArgumentException();
                 }
             });
-            
+
             try {
                 Flowable.empty();
                 fail("Should have thrown!");
             } catch (IllegalArgumentException ex) {
                 // expected
             }
-            
+
             RxJavaPlugins.setOnFlowableAssembly(new Function<Flowable, Flowable>() {
                 @Override
                 public Flowable apply(Flowable f) throws Exception {
                     throw new InternalError();
                 }
             });
-            
+
             try {
                 Flowable.empty();
                 fail("Should have thrown!");
             } catch (InternalError ex) {
                 // expected
             }
-            
+
             RxJavaPlugins.setOnFlowableAssembly(new Function<Flowable, Flowable>() {
                 @Override
                 public Flowable apply(Flowable f) throws Exception {
                     throw new IOException();
                 }
             });
-            
+
             try {
                 Flowable.empty();
                 fail("Should have thrown!");
@@ -1560,7 +1560,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.reset();
         }
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Test
     public void subscribeHookCrashes() {
@@ -1571,7 +1571,7 @@ public class RxJavaPluginsTest {
                     throw new IllegalArgumentException();
                 }
             });
-            
+
             try {
                 Flowable.empty().test();
                 fail("Should have thrown!");
@@ -1580,28 +1580,28 @@ public class RxJavaPluginsTest {
                     fail(ex.getCause().toString() + ": Should have thrown NullPointerException(IllegalArgumentException)");
                 }
             }
-            
+
             RxJavaPlugins.setOnFlowableSubscribe(new BiFunction<Flowable, Subscriber, Subscriber>() {
                 @Override
                 public Subscriber apply(Flowable f, Subscriber s) throws Exception {
                     throw new InternalError();
                 }
             });
-            
+
             try {
                 Flowable.empty().test();
                 fail("Should have thrown!");
             } catch (InternalError ex) {
                 // expected
             }
-            
+
             RxJavaPlugins.setOnFlowableSubscribe(new BiFunction<Flowable, Subscriber, Subscriber>() {
                 @Override
                 public Subscriber apply(Flowable f, Subscriber s) throws Exception {
                     throw new IOException();
                 }
             });
-            
+
             try {
                 Flowable.empty().test();
                 fail("Should have thrown!");
@@ -1629,7 +1629,7 @@ public class RxJavaPluginsTest {
                     return new MaybeError(new TestException());
                 }
             });
-            
+
             Maybe.empty()
             .test()
             .assertNoValues()
@@ -1645,7 +1645,7 @@ public class RxJavaPluginsTest {
         .assertNoErrors()
         .assertComplete();
     }
-    
+
     @Test
     @SuppressWarnings("rawtypes")
     public void maybeStart() {
@@ -1658,18 +1658,18 @@ public class RxJavaPluginsTest {
                         public void onSubscribe(Disposable d) {
                             t.onSubscribe(d);
                         }
-                        
+
                         @SuppressWarnings("unchecked")
                         @Override
                         public void onSuccess(Object value) {
                             t.onSuccess(value);
                         }
-                        
+
                         @Override
                         public void onError(Throwable e) {
                             t.onError(e);
                         }
-                        
+
                         @Override
                         public void onComplete() {
                             t.onError(new TestException());
@@ -1677,7 +1677,7 @@ public class RxJavaPluginsTest {
                     };
                 }
             });
-            
+
             Maybe.empty()
             .test()
             .assertNoValues()
@@ -1687,7 +1687,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.reset();
         }
         // make sure the reset worked
-        
+
         Maybe.empty()
         .test()
         .assertNoValues()

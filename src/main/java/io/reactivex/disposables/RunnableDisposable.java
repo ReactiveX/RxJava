@@ -27,7 +27,7 @@ final class RunnableDisposable extends ReferenceDisposable<Runnable> {
     protected void onDisposed(Runnable value) {
         value.run();
     }
-    
+
     @Override
     public String toString() {
         return "RunnableDisposable(disposed=" + isDisposed() + ", " + get() + ")";

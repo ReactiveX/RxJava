@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -21,7 +21,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableTimeout extends Completable {
-    
+
     final CompletableSource source;
     final long timeout;
     final TimeUnit unit;
@@ -41,9 +41,9 @@ public final class CompletableTimeout extends Completable {
     public void subscribeActual(final CompletableObserver s) {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
-        
+
         final AtomicBoolean once = new AtomicBoolean();
-        
+
         Disposable timer = scheduler.scheduleDirect(new Runnable() {
             @Override
             public void run() {
@@ -53,32 +53,32 @@ public final class CompletableTimeout extends Completable {
                         s.onError(new TimeoutException());
                     } else {
                         other.subscribe(new CompletableObserver() {
-   
+
                             @Override
                             public void onSubscribe(Disposable d) {
                                 set.add(d);
                             }
-   
+
                             @Override
                             public void onError(Throwable e) {
                                 set.dispose();
                                 s.onError(e);
                             }
-   
+
                             @Override
                             public void onComplete() {
                                 set.dispose();
                                 s.onComplete();
                             }
-                            
+
                         });
                     }
                 }
             }
         }, timeout, unit);
-        
+
         set.add(timer);
-        
+
         source.subscribe(new CompletableObserver() {
 
             @Override
@@ -103,7 +103,7 @@ public final class CompletableTimeout extends Completable {
                     s.onComplete();
                 }
             }
-            
+
         });
     }
 }

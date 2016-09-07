@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -23,18 +23,18 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * A Subject that multicasts events to Subscribers that are currently subscribed to it.
- * 
+ *
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.PublishSubject.png" alt="">
- * 
+ *
  * <p>The subject does not coordinate backpressure for its subscribers and implements a weaker onSubscribe which
  * calls requests Long.MAX_VALUE from the incoming Subscriptions. This makes it possible to subscribe the PublishSubject
  * to multiple sources (note on serialization though) unlike the standard contract on Subscriber. Child subscribers, however, are not overflown but receive an
  * IllegalStateException in case their requested amount is zero.
- * 
+ *
  * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
  * to them may lead to undefined state in the currently subscribed Subscribers.
- * 
+ *
  * <p>Due to the nature Flowables are constructed, the PublishProcessor can't be instantiated through
  * {@code new} but must be created via the {@link #create()} method.
  *
@@ -62,7 +62,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     /** An empty subscribers array to avoid allocating it all the time. */
     @SuppressWarnings("rawtypes")
     static final PublishSubscription[] EMPTY = new PublishSubscription[0];
-    
+
     /** The array of currently subscribed subscribers. */
     final AtomicReference<PublishSubscription<T>[]> subscribers;
 
@@ -77,7 +77,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     public static <T> PublishProcessor<T> create() {
         return new PublishProcessor<T>();
     }
-    
+
     /**
      * Constructs a PublishProcessor.
      * @since 2.0
@@ -107,7 +107,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             }
         }
     }
-    
+
     /**
      * Tries to add the given subscriber to the subscribers array atomically
      * or returns false if the subject has terminated.
@@ -120,19 +120,19 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             if (a == TERMINATED) {
                 return false;
             }
-            
+
             int n = a.length;
             @SuppressWarnings("unchecked")
             PublishSubscription<T>[] b = new PublishSubscription[n + 1];
             System.arraycopy(a, 0, b, 0, n);
             b[n] = ps;
-            
+
             if (subscribers.compareAndSet(a, b)) {
                 return true;
             }
         }
     }
-    
+
     /**
      * Atomically removes the given subscriber if it is subscribed to the subject.
      * @param ps the subject to remove
@@ -144,7 +144,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             if (a == TERMINATED || a == EMPTY) {
                 return;
             }
-            
+
             int n = a.length;
             int j = -1;
             for (int i = 0; i < n; i++) {
@@ -153,13 +153,13 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
                     break;
                 }
             }
-            
+
             if (j < 0) {
                 return;
             }
-            
+
             PublishSubscription<T>[] b;
-            
+
             if (n == 1) {
                 b = EMPTY;
             } else {
@@ -172,7 +172,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             }
         }
     }
-    
+
     @Override
     public void onSubscribe(Subscription s) {
         if (subscribers.get() == TERMINATED) {
@@ -182,7 +182,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
         // PublishSubject doesn't bother with request coordination.
         s.request(Long.MAX_VALUE);
     }
-    
+
     @Override
     public void onNext(T t) {
         if (subscribers.get() == TERMINATED) {
@@ -196,7 +196,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             s.onNext(t);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable t) {
@@ -208,12 +208,12 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             t = new NullPointerException();
         }
         error = t;
-        
+
         for (PublishSubscription<T> s : subscribers.getAndSet(TERMINATED)) {
             s.onError(t);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public void onComplete() {
@@ -224,12 +224,12 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             s.onComplete();
         }
     }
-    
+
     @Override
     public boolean hasSubscribers() {
         return subscribers.get().length != 0;
     }
-    
+
     @Override
     public Throwable getThrowable() {
         if (subscribers.get() == TERMINATED) {
@@ -237,17 +237,17 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
         }
         return null;
     }
-    
+
     @Override
     public boolean hasThrowable() {
         return subscribers.get() == TERMINATED && error != null;
     }
-    
+
     @Override
     public boolean hasComplete() {
         return subscribers.get() == TERMINATED && error == null;
     }
-    
+
     /**
      * Wraps the actual subscriber, tracks its requests and makes cancellation
      * to remove itself from the current subscribers array.
@@ -261,7 +261,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
         final Subscriber<? super T> actual;
         /** The subject state. */
         final PublishProcessor<T> parent;
-        
+
         /**
          * Constructs a PublishSubscriber, wraps the actual subscriber and the state.
          * @param actual the actual subscriber
@@ -271,7 +271,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             this.actual = actual;
             this.parent = parent;
         }
-        
+
         public void onNext(T t) {
             long r = get();
             if (r == Long.MIN_VALUE) {
@@ -287,7 +287,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
                 actual.onError(new MissingBackpressureException("Could not emit value due to lack of requests"));
             }
         }
-        
+
         public void onError(Throwable t) {
             if (get() != Long.MIN_VALUE) {
                 actual.onError(t);
@@ -295,27 +295,27 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
                 RxJavaPlugins.onError(t);
             }
         }
-        
+
         public void onComplete() {
             if (get() != Long.MIN_VALUE) {
                 actual.onComplete();
             }
         }
-        
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.addCancel(this, n);
             }
         }
-        
+
         @Override
         public void cancel() {
             if (getAndSet(Long.MIN_VALUE) != Long.MIN_VALUE) {
                 parent.remove(this);
             }
         }
-        
+
         public boolean isCancelled() {
             return get() == Long.MIN_VALUE;
         }

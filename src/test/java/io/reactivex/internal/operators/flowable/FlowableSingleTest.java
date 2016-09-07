@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -68,7 +68,7 @@ public class FlowableSingleTest {
                 isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
-    
+
     @Test
     public void testSingleDoesNotRequestMoreThanItNeedsToEmitItem() {
         final AtomicLong request = new AtomicLong();
@@ -113,7 +113,7 @@ public class FlowableSingleTest {
             assertEquals(Long.MAX_VALUE, request.get());
         }
     }
-    
+
     @Test
     public void testSingleDoesNotRequestMoreThanItNeedsIf1Then2Requested() {
         final List<Long> requests = new ArrayList<Long>();
@@ -153,7 +153,7 @@ public class FlowableSingleTest {
         // FIXME single now triggers fast-path
         assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
     }
-    
+
     @Test
     public void testSingleDoesNotRequestMoreThanItNeedsIf3Requested() {
         final List<Long> requests = new ArrayList<Long>();
@@ -192,7 +192,7 @@ public class FlowableSingleTest {
         // FIXME single now triggers fast-path
         assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
     }
-    
+
     @Test
     public void testSingleRequestsExactlyWhatItNeedsIf1Requested() {
         final List<Long> requests = new ArrayList<Long>();

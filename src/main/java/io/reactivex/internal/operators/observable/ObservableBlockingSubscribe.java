@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public enum ObservableBlockingSubscribe {
     ;
-    
+
     /**
      * Subscribes to the source and calls the Subscriber methods on the current thread.
      * <p>
@@ -42,11 +42,11 @@ public enum ObservableBlockingSubscribe {
      */
     public static <T> void subscribe(ObservableSource<? extends T> o, Observer<? super T> subscriber) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
-        
+
         BlockingObserver<T> bs = new BlockingObserver<T>(queue);
-        
+
         o.subscribe(bs);
-        
+
         try {
             for (;;) {
                 if (bs.isDisposed()) {
@@ -76,7 +76,7 @@ public enum ObservableBlockingSubscribe {
             bs.dispose();
         }
     }
-    
+
     /**
      * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
      * @param o the source publisher
@@ -85,7 +85,7 @@ public enum ObservableBlockingSubscribe {
     public static <T> void subscribe(ObservableSource<? extends T> o) {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] error = { null };
-        LambdaObserver<T> ls = new LambdaObserver<T>(Functions.emptyConsumer(), 
+        LambdaObserver<T> ls = new LambdaObserver<T>(Functions.emptyConsumer(),
         new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) {
@@ -102,16 +102,16 @@ public enum ObservableBlockingSubscribe {
             public void accept(Disposable s) {
             }
         });
-        
+
         o.subscribe(ls);
-        
+
         BlockingHelper.awaitForComplete(cdl, ls);
         Throwable e = error[0];
         if (e != null) {
             throw ExceptionHelper.wrapOrThrow(e);
         }
     }
-    
+
     /**
      * Subscribes to the source and calls the given actions on the current thread.
      * @param o the source publisher
@@ -120,7 +120,7 @@ public enum ObservableBlockingSubscribe {
      * @param onComplete the callback action for the completion event.
      * @param <T> the value type
      */
-    public static <T> void subscribe(ObservableSource<? extends T> o, final Consumer<? super T> onNext, 
+    public static <T> void subscribe(ObservableSource<? extends T> o, final Consumer<? super T> onNext,
             final Consumer<? super Throwable> onError, final Action onComplete) {
         subscribe(o, new DefaultObserver<T>() {
             boolean done;
@@ -137,7 +137,7 @@ public enum ObservableBlockingSubscribe {
                     onError(ex);
                 }
             }
-            
+
             @Override
             public void onError(Throwable e) {
                 if (done) {
@@ -152,7 +152,7 @@ public enum ObservableBlockingSubscribe {
                     RxJavaPlugins.onError(ex);
                 }
             }
-            
+
             @Override
             public void onComplete() {
                 if (done) {

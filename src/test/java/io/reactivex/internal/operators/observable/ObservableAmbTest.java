@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -48,9 +48,9 @@ public class ObservableAmbTest {
             @Override
             public void subscribe(final Observer<? super String> NbpSubscriber) {
                 CompositeDisposable parentSubscription = new CompositeDisposable();
-                
+
                 NbpSubscriber.onSubscribe(parentSubscription);
-                
+
                 long delay = interval;
                 for (final String value : values) {
                     parentSubscription.add(innerScheduler.schedule(new Runnable() {
@@ -164,7 +164,7 @@ public class ObservableAmbTest {
                 count.incrementAndGet();
             }
         };
-        
+
         //this aync stream should emit first
         Observable<Integer> o1 = Observable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
@@ -177,7 +177,7 @@ public class ObservableAmbTest {
         ts.assertNoErrors();
         assertEquals(2, count.get());
     }
-    
+
     @Test
     public void testSynchronousSources() {
         // under async subscription the second NbpObservable would complete before
@@ -204,21 +204,21 @@ public class ObservableAmbTest {
         PublishSubject<Integer> source1 = PublishSubject.create();
         PublishSubject<Integer> source2 = PublishSubject.create();
         PublishSubject<Integer> source3 = PublishSubject.create();
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         Observable.ambArray(source1, source2, source3).subscribe(ts);
-        
+
         assertTrue("Source 1 doesn't have subscribers!", source1.hasObservers());
         assertTrue("Source 2 doesn't have subscribers!", source2.hasObservers());
         assertTrue("Source 3 doesn't have subscribers!", source3.hasObservers());
-        
+
         source1.onNext(1);
 
         assertTrue("Source 1 doesn't have subscribers!", source1.hasObservers());
         assertFalse("Source 2 still has subscribers!", source2.hasObservers());
         assertFalse("Source 2 still has subscribers!", source3.hasObservers());
-        
+
     }
 
     @SuppressWarnings("unchecked")

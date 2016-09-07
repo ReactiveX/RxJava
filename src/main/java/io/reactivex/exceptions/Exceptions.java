@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -20,7 +20,7 @@ import io.reactivex.internal.util.ExceptionHelper;
  * designated as fatal.
  */
 public final class Exceptions {
-    
+
     /** Utility class. */
     private Exceptions() {
         throw new IllegalStateException("No instances!");
@@ -35,15 +35,15 @@ public final class Exceptions {
     public static RuntimeException propagate(Throwable t) {
         /*
          * The return type of RuntimeException is a trick for code to be like this:
-         * 
+         *
          * throw Exceptions.propagate(e);
-         * 
+         *
          * Even though nothing will return and throw via that 'throw', it allows the code to look like it
          * so it's easy to read and understand that it will always result in a throw.
          */
         throw ExceptionHelper.wrapOrThrow(t);
     }
-    
+
     /**
      * Throws a particular {@code Throwable} only if it belongs to a set of "fatal" error varieties. These
      * varieties are as follows:

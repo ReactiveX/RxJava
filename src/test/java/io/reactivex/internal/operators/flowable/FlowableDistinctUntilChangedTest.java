@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -134,7 +134,7 @@ public class FlowableDistinctUntilChangedTest {
         inOrder.verify(w, never()).onNext(anyString());
         inOrder.verify(w, never()).onComplete();
     }
-    
+
     @Test
     public void directComparer() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
@@ -147,7 +147,7 @@ public class FlowableDistinctUntilChangedTest {
         .test()
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
-    
+
     @Test
     public void directComparerConditional() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
@@ -166,7 +166,7 @@ public class FlowableDistinctUntilChangedTest {
         .test()
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
-    
+
     @Test
     public void directComparerFused() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
@@ -181,7 +181,7 @@ public class FlowableDistinctUntilChangedTest {
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
-    
+
     @Test
     public void directComparerConditionalFused() {
         Flowable.fromArray(1, 2, 2, 3, 2, 4, 1, 1, 2)
@@ -202,14 +202,14 @@ public class FlowableDistinctUntilChangedTest {
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
-    
+
     private final static Function<String, String> THROWS_NON_FATAL = new Function<String, String>() {
         @Override
         public String apply(String s) {
             throw new RuntimeException();
         }
     };
-    
+
     @Test
     public void testDistinctUntilChangedWhenNonFatalExceptionThrownByKeySelectorIsNotReportedByUpstream() {
         Flowable<String> src = Flowable.just("a", "b", "null", "c");
@@ -225,13 +225,13 @@ public class FlowableDistinctUntilChangedTest {
           .subscribe(w);
         Assert.assertFalse(errorOccurred.get());
     }
-    
+
     @Test
     public void customComparator() {
         Flowable<String> source = Flowable.just("a", "b", "B", "A","a", "C");
-        
+
         TestSubscriber<String> ts = TestSubscriber.create();
-        
+
         source.distinctUntilChanged(new BiPredicate<String, String>() {
             @Override
             public boolean test(String a, String b) {
@@ -239,7 +239,7 @@ public class FlowableDistinctUntilChangedTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertValues("a", "b", "A", "C");
         ts.assertNoErrors();
         ts.assertComplete();
@@ -248,9 +248,9 @@ public class FlowableDistinctUntilChangedTest {
     @Test
     public void customComparatorThrows() {
         Flowable<String> source = Flowable.just("a", "b", "B", "A","a", "C");
-        
+
         TestSubscriber<String> ts = TestSubscriber.create();
-        
+
         source.distinctUntilChanged(new BiPredicate<String, String>() {
             @Override
             public boolean test(String a, String b) {
@@ -258,7 +258,7 @@ public class FlowableDistinctUntilChangedTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertValue("a");
         ts.assertNotComplete();
         ts.assertError(TestException.class);

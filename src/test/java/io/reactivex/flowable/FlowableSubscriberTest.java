@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -49,10 +49,10 @@ public class FlowableSubscriberTest {
             public void request(long n) {
                 r.set(n);
             }
-            
+
             @Override
             public void cancel() {
-                
+
             }
 
         });
@@ -72,10 +72,10 @@ public class FlowableSubscriberTest {
             public void request(long n) {
                 r.set(n);
             }
-            
+
             @Override
             public void cancel() {
-                
+
             }
 
         });
@@ -94,7 +94,7 @@ public class FlowableSubscriberTest {
                     public void onSubscribe(Subscription a) {
                         s1.onSubscribe(a);
                     }
-                    
+
                     @Override
                     public void onComplete() {
 
@@ -124,10 +124,10 @@ public class FlowableSubscriberTest {
             public void request(long n) {
                 r.set(n);
             }
-            
+
             @Override
             public void cancel() {
-                
+
             }
 
         });
@@ -146,7 +146,7 @@ public class FlowableSubscriberTest {
                     public void onSubscribe(Subscription a) {
                         s1.onSubscribe(a);
                     }
-                    
+
                     @Override
                     public void onComplete() {
 
@@ -177,10 +177,10 @@ public class FlowableSubscriberTest {
             public void request(long n) {
                 r.set(n);
             }
-            
+
             @Override
             public void cancel() {
-                
+
             }
 
         });
@@ -201,22 +201,22 @@ public class FlowableSubscriberTest {
                     public void request(long n) {
                         innerR.set(n);
                     }
-                    
+
                     @Override
                     public void cancel() {
-                        
+
                     }
 
                 });
 
                 ResourceSubscriber<String> as = new ResourceSubscriber<String>() {
-                    
+
                     @Override
                     protected void onStart() {
                         // we request 99 up to the parent
                         request(99);
                     }
-                    
+
                     @Override
                     public void onComplete() {
 
@@ -231,8 +231,8 @@ public class FlowableSubscriberTest {
                     public void onNext(String t) {
 
                     }
-                    
-                    
+
+
                 };
                 return as;
             }
@@ -248,10 +248,10 @@ public class FlowableSubscriberTest {
             public void request(long n) {
                 r.set(n);
             }
-            
+
             @Override
             public void cancel() {
-                
+
             }
 
         });
@@ -275,7 +275,7 @@ public class FlowableSubscriberTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
                 });
             }
@@ -300,7 +300,7 @@ public class FlowableSubscriberTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
                 });
             }
@@ -325,13 +325,13 @@ public class FlowableSubscriberTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
-                    
+
                 });
             }
         }).take(2).subscribe(ts);
-        
+
         // FIXME the take now requests Long.MAX_PATH if downstream requests at least the limit
         assertEquals(Long.MAX_VALUE, requested.get());
     }
@@ -350,10 +350,10 @@ public class FlowableSubscriberTest {
                     public void request(long n) {
                         requested.set(n);
                     }
-                    
+
                     @Override
                     public void cancel() {
-                        
+
                     }
 
                 });
@@ -462,7 +462,7 @@ public class FlowableSubscriberTest {
 
         assertEquals(1, c.get());
     }
-    
+
     @Ignore("Non-positive requests are relayed to the plugin and is a no-op otherwise")
     @Test
     public void testNegativeRequestThrowsIllegalArgumentException() throws InterruptedException {
@@ -474,10 +474,10 @@ public class FlowableSubscriberTest {
             public void onStart() {
                 request(1);
             }
-            
+
             @Override
             public void onComplete() {
-                
+
             }
 
             @Override
@@ -491,11 +491,11 @@ public class FlowableSubscriberTest {
                 request(-1);
                 request(1);
             }});
-        
+
         Assert.assertTrue(latch.await(10, TimeUnit.SECONDS));
         Assert.assertTrue(exception.get() instanceof IllegalArgumentException);
     }
-    
+
     @Test
     public void testOnStartRequestsAreAdditive() {
         final List<Integer> list = new ArrayList<Integer>();
@@ -505,15 +505,15 @@ public class FlowableSubscriberTest {
                 request(3);
                 request(2);
             }
-            
+
             @Override
             public void onComplete() {
-                
+
             }
 
             @Override
             public void onError(Throwable e) {
-                
+
             }
 
             @Override
@@ -522,7 +522,7 @@ public class FlowableSubscriberTest {
             }});
         assertEquals(Arrays.asList(1,2,3,4,5), list);
     }
-    
+
     @Test
     public void testOnStartRequestsAreAdditiveAndOverflowBecomesMaxValue() {
         final List<Integer> list = new ArrayList<Integer>();
@@ -532,15 +532,15 @@ public class FlowableSubscriberTest {
                 request(2);
                 request(Long.MAX_VALUE-1);
             }
-            
+
             @Override
             public void onComplete() {
-                
+
             }
 
             @Override
             public void onError(Throwable e) {
-                
+
             }
 
             @Override
@@ -549,13 +549,13 @@ public class FlowableSubscriberTest {
             }});
         assertEquals(Arrays.asList(1,2,3,4,5), list);
     }
-    
+
     @Test
     public void forEachWhile() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
-        
+
         final List<Integer> list = new ArrayList<Integer>();
-        
+
         Disposable d = pp.forEachWhile(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) throws Exception {
@@ -563,18 +563,18 @@ public class FlowableSubscriberTest {
                 return v < 3;
             }
         });
-        
+
         assertFalse(d.isDisposed());
-        
+
         pp.onNext(1);
         pp.onNext(2);
         pp.onNext(3);
-        
+
         assertFalse(pp.hasSubscribers());
-        
+
         assertEquals(Arrays.asList(1, 2, 3), list);
     }
-    
+
     @Test
     public void doubleSubscribe() {
         ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
@@ -583,17 +583,17 @@ public class FlowableSubscriberTest {
                 return true;
             }
         }, Functions.<Throwable>emptyConsumer(), Functions.EMPTY_ACTION);
-        
+
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             s.onSubscribe(new BooleanSubscription());
-            
+
             BooleanSubscription d = new BooleanSubscription();
             s.onSubscribe(d);
-            
+
             assertTrue(d.isCancelled());
-            
+
             TestHelper.assertError(list, 0, IllegalStateException.class, "Subscription already set!");
         } finally {
             RxJavaPlugins.reset();
@@ -627,7 +627,7 @@ public class FlowableSubscriberTest {
         s.onNext(1);
         s.onError(new TestException());
         s.onComplete();
-        
+
         ts.assertResult();
     }
 
@@ -654,10 +654,10 @@ public class FlowableSubscriberTest {
         });
 
         BooleanSubscription b = new BooleanSubscription();
-        
+
         s.onSubscribe(b);
         s.onNext(1);
-        
+
         assertTrue(b.isCancelled());
         ts.assertFailure(TestException.class);
     }
@@ -677,17 +677,17 @@ public class FlowableSubscriberTest {
         }, new Action() {
             @Override
             public void run() throws Exception {
-                
+
             }
         });
-        
+
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             s.onSubscribe(new BooleanSubscription());
-            
+
             s.onError(new TestException("Outer"));
-            
+
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> cel = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(cel, 0, TestException.class, "Outer");
@@ -714,14 +714,14 @@ public class FlowableSubscriberTest {
                 throw new TestException("Inner");
             }
         });
-        
+
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             s.onSubscribe(new BooleanSubscription());
-            
+
             s.onComplete();
-            
+
             TestHelper.assertError(list, 0, TestException.class, "Inner");
         } finally {
             RxJavaPlugins.reset();
@@ -731,7 +731,7 @@ public class FlowableSubscriberTest {
     @Test
     public void subscribeConsumerConsumerWithError() {
         final List<Integer> list = new ArrayList<Integer>();
-        
+
         Flowable.<Integer>error(new TestException()).subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -743,24 +743,24 @@ public class FlowableSubscriberTest {
                 list.add(100);
             }
         });
-        
+
         assertEquals(Arrays.asList(100), list);
     }
 
     @Test
     public void methodTestCancelled() {
         PublishProcessor<Integer> ps = PublishProcessor.create();
-        
+
         ps.test(Long.MAX_VALUE, true);
-        
+
         assertFalse(ps.hasSubscribers());
     }
-    
+
     @Test
     public void safeSubscriberAlreadySafe() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.just(1).safeSubscribe(new SafeSubscriber<Integer>(ts));
-        
+
         ts.assertResult(1);
     }
 
@@ -768,16 +768,16 @@ public class FlowableSubscriberTest {
     @Test
     public void methodTestNoCancel() {
         PublishProcessor<Integer> ps = PublishProcessor.create();
-        
+
         ps.test(Long.MAX_VALUE, false);
-        
+
         assertTrue(ps.hasSubscribers());
     }
-    
+
     @Test
     public void subscribeConsumerConsumer() {
         final List<Integer> list = new ArrayList<Integer>();
-        
+
         Flowable.just(1).subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -789,7 +789,7 @@ public class FlowableSubscriberTest {
                 list.add(100);
             }
         });
-        
+
         assertEquals(Arrays.asList(1), list);
     }
 
@@ -802,10 +802,10 @@ public class FlowableSubscriberTest {
                 return null;
             }
         });
-        
+
         try {
             try {
-                
+
                 Flowable.just(1).test();
                 fail("Should have thrown");
             } catch (NullPointerException ex) {
@@ -815,14 +815,14 @@ public class FlowableSubscriberTest {
             RxJavaPlugins.reset();
         }
     }
-    
+
     static final class BadFlowable extends Flowable<Integer> {
         @Override
         protected void subscribeActual(Subscriber<? super Integer> s) {
             throw new IllegalArgumentException();
         }
     }
-    
+
     @Test
     public void subscribeActualThrows() {
         List<Throwable> list = TestHelper.trackPluginErrors();
@@ -835,7 +835,7 @@ public class FlowableSubscriberTest {
                     fail(ex.toString() + ": Should be NPE(IAE)");
                 }
             }
-            
+
             TestHelper.assertError(list, 0, IllegalArgumentException.class);
         } finally {
             RxJavaPlugins.reset();

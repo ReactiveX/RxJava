@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -27,7 +27,7 @@ import io.reactivex.internal.util.QueueDrainHelper;
  *
  * @param <T> the value type
  */
-public final class InnerQueuedObserver<T> 
+public final class InnerQueuedObserver<T>
 extends AtomicReference<Disposable>
 implements Observer<T>, Disposable {
 
@@ -35,29 +35,29 @@ implements Observer<T>, Disposable {
     private static final long serialVersionUID = -5417183359794346637L;
 
     final InnerQueuedObserverSupport<T> parent;
-    
+
     final int prefetch;
 
     SimpleQueue<T> queue;
-    
+
     volatile boolean done;
-    
+
     long produced;
-    
+
     int fusionMode;
-    
+
     public InnerQueuedObserver(InnerQueuedObserverSupport<T> parent, int prefetch) {
         this.parent = parent;
         this.prefetch = prefetch;
     }
-    
+
     @Override
     public void onSubscribe(Disposable s) {
         if (DisposableHelper.setOnce(this, s)) {
             if (s instanceof QueueDisposable) {
                 @SuppressWarnings("unchecked")
                 QueueDisposable<T> qs = (QueueDisposable<T>) s;
-                
+
                 int m = qs.requestFusion(QueueDisposable.ANY);
                 if (m == QueueSubscription.SYNC) {
                     fusionMode = m;
@@ -72,11 +72,11 @@ implements Observer<T>, Disposable {
                     return;
                 }
             }
-            
+
             queue = QueueDrainHelper.createQueue(-prefetch);
         }
     }
-    
+
     @Override
     public void onNext(T t) {
         if (fusionMode == QueueDisposable.NONE) {
@@ -85,39 +85,39 @@ implements Observer<T>, Disposable {
             parent.drain();
         }
     }
-    
+
     @Override
     public void onError(Throwable t) {
         parent.innerError(this, t);
     }
-    
+
     @Override
     public void onComplete() {
         parent.innerComplete(this);
     }
-    
+
     @Override
     public void dispose() {
         DisposableHelper.dispose(this);
     }
-    
+
     @Override
     public boolean isDisposed() {
         return DisposableHelper.isDisposed(get());
     }
-    
+
     public boolean isDone() {
         return done;
     }
-    
+
     public void setDone() {
         this.done = true;
     }
-    
+
     public SimpleQueue<T> queue() {
         return queue;
     }
-    
+
     public int fusionMode() {
         return fusionMode;
     }

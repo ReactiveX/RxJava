@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -36,12 +36,12 @@ public enum SubscriptionHelper implements Subscription {
     public void request(long n) {
         // deliberately ignored
     }
-    
+
     @Override
     public void cancel() {
         // deliberately ignored
     }
-    
+
     /**
      * Verifies that current is null, next is not null, otherwise signals errors
      * to the RxJavaPlugins and returns false
@@ -61,9 +61,9 @@ public enum SubscriptionHelper implements Subscription {
         }
         return true;
     }
-    
+
     /**
-     * Reports that the subscription is already set to the RxJavaPlugins error handler, 
+     * Reports that the subscription is already set to the RxJavaPlugins error handler,
      * which is an indication of a onSubscribe management bug.
      */
     public static void reportSubscriptionSet() {
@@ -82,7 +82,7 @@ public enum SubscriptionHelper implements Subscription {
         }
         return true;
     }
-    
+
     /**
      * Reports to the plugin error handler that there were more values produced than requested, which
      * is a sign of internal backpressure handling bug.
@@ -99,7 +99,7 @@ public enum SubscriptionHelper implements Subscription {
     public static boolean isCancelled(Subscription s) {
         return s == CANCELLED;
     }
-    
+
     /**
      * Atomically sets the subscription on the field and cancels the
      * previous subscription if any.
@@ -126,7 +126,7 @@ public enum SubscriptionHelper implements Subscription {
             }
         }
     }
-    
+
     /**
      * Atomically sets the subscription on the field if it is still null.
      * <p>If the field is not null and doesn't contain the {@link #CANCELLED}
@@ -170,7 +170,7 @@ public enum SubscriptionHelper implements Subscription {
             }
         }
     }
-    
+
     /**
      * Atomically swaps in the common cancelled subscription instance
      * and cancels the previous subscription if any.
@@ -192,7 +192,7 @@ public enum SubscriptionHelper implements Subscription {
         }
         return false;
     }
-    
+
     /**
      * Atomically sets the new Subscription on the field and requests any accumulated amount
      * from the requested field.
@@ -200,7 +200,7 @@ public enum SubscriptionHelper implements Subscription {
      * @param requested the current requested amount
      * @param s the new Subscription, not null (verified)
      */
-    public static void deferredSetOnce(AtomicReference<Subscription> field, AtomicLong requested, 
+    public static void deferredSetOnce(AtomicReference<Subscription> field, AtomicLong requested,
             Subscription s) {
         if (SubscriptionHelper.setOnce(field, s)) {
             long r = requested.getAndSet(0L);
@@ -209,7 +209,7 @@ public enum SubscriptionHelper implements Subscription {
             }
         }
     }
-    
+
     /**
      * Atomically requests from the Subscription in the field if not null, otherwise accumulates
      * the request amount in the requested field to be requested once the field is set to non-null.
@@ -224,7 +224,7 @@ public enum SubscriptionHelper implements Subscription {
         } else {
             if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.add(requested, n);
-                
+
                 s = field.get();
                 if (s != null) {
                     long r = requested.getAndSet(0L);

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,7 +30,7 @@ public class ObservableDematerializeTest {
         Observable<Integer> dematerialize = notifications.dematerialize();
 
         Observer<Integer> observer = TestHelper.mockObserver();
-        
+
         dematerialize.subscribe(observer);
 
         verify(observer, times(1)).onNext(1);
@@ -46,7 +46,7 @@ public class ObservableDematerializeTest {
         Observable<Integer> dematerialize = o.materialize().dematerialize();
 
         Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        
+
         dematerialize.subscribe(NbpObserver);
 
         verify(NbpObserver, times(1)).onError(exception);
@@ -61,7 +61,7 @@ public class ObservableDematerializeTest {
         Observable<Integer> dematerialize = o.materialize().dematerialize();
 
         Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        
+
         dematerialize.subscribe(NbpObserver);
 
         verify(NbpObserver, times(1)).onError(exception);
@@ -90,7 +90,7 @@ public class ObservableDematerializeTest {
         Observable<Integer> dematerialize = o.dematerialize();
 
         Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>(NbpObserver);
         dematerialize.subscribe(ts);
 
@@ -104,28 +104,28 @@ public class ObservableDematerializeTest {
     @Test
     public void testHonorsContractWhenCompleted() {
         Observable<Integer> source = Observable.just(1);
-        
+
         Observable<Integer> result = source.materialize().dematerialize();
-        
+
         Observer<Integer> o = TestHelper.mockObserver();
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testHonorsContractWhenThrows() {
         Observable<Integer> source = Observable.error(new TestException());
-        
+
         Observable<Integer> result = source.materialize().dematerialize();
-        
+
         Observer<Integer> o = TestHelper.mockObserver();
-        
+
         result.subscribe(o);
-        
+
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onComplete();
         verify(o).onError(any(TestException.class));

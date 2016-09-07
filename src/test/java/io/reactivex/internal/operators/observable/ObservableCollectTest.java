@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -27,7 +27,7 @@ import io.reactivex.functions.BiConsumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableCollectTest {
-    
+
     @Test
     public void testCollectToList() {
         Observable<List<Integer>> o = Observable.just(1, 2, 3)
@@ -42,14 +42,14 @@ public final class ObservableCollectTest {
                 list.add(v);
             }
         });
-        
+
         List<Integer> list =  o.blockingLast();
 
         assertEquals(3, list.size());
         assertEquals(1, list.get(0).intValue());
         assertEquals(2, list.get(1).intValue());
         assertEquals(3, list.get(2).intValue());
-        
+
         // test multiple subscribe
         List<Integer> list2 =  o.blockingLast();
 
@@ -66,7 +66,7 @@ public final class ObservableCollectTest {
             public StringBuilder call() {
                 return new StringBuilder();
             }
-        }, 
+        },
             new BiConsumer<StringBuilder, Integer>() {
                 @Override
                 public void accept(StringBuilder sb, Integer v) {
@@ -79,7 +79,7 @@ public final class ObservableCollectTest {
 
         assertEquals("1-2-3", value);
     }
-    
+
     @Test
     public void testCollectorFailureDoesNotResultInTwoErrorEmissions() {
         try {

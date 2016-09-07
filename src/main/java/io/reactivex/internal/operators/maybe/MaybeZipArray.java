@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,9 +26,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class MaybeZipArray<T, R> extends Maybe<R> {
 
     final MaybeSource<? extends T>[] sources;
-    
+
     final Function<? super T[], ? extends R> zipper;
-    
+
     public MaybeZipArray(MaybeSource<? extends T>[] sources, Function<? super T[], ? extends R> zipper) {
         this.sources = sources;
         this.zipper = zipper;
@@ -38,8 +38,8 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
     protected void subscribeActual(MaybeObserver<? super R> observer) {
         MaybeSource<? extends T>[] sources = this.sources;
         int n = sources.length;
-        
-        
+
+
         if (n == 1) {
             sources[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new Function<T, R>() {
                 @SuppressWarnings("unchecked")
@@ -50,33 +50,33 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
             }));
             return;
         }
-        
+
         ZipCoordinator<T, R> parent = new ZipCoordinator<T, R>(observer, n, zipper);
-        
+
         observer.onSubscribe(parent);
-        
+
         for (int i = 0; i < n; i++) {
             if (parent.isDisposed()) {
                 return;
             }
-            
+
             sources[i].subscribe(parent.observers[i]);
         }
     }
-    
+
     static final class ZipCoordinator<T, R> extends AtomicInteger implements Disposable {
 
         /** */
         private static final long serialVersionUID = -5556924161382950569L;
-        
+
         final MaybeObserver<? super R> actual;
-        
+
         final Function<? super T[], ? extends R> zipper;
 
         final ZipMaybeObserver<T>[] observers;
-        
+
         final Object[] values;
-        
+
         @SuppressWarnings("unchecked")
         public ZipCoordinator(MaybeObserver<? super R> observer, int n, Function<? super T[], ? extends R> zipper) {
             super(n);
@@ -89,12 +89,12 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
             this.observers = o;
             this.values = new Object[n];
         }
-        
+
         @Override
         public boolean isDisposed() {
             return get() <= 0;
         }
-        
+
         @Override
         public void dispose() {
             if (getAndSet(0) > 0) {
@@ -109,7 +109,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
             values[index] = value;
             if (decrementAndGet() == 0) {
                 R v;
-                
+
                 try {
                     v = ObjectHelper.requireNonNull(zipper.apply((T[])values), "The zipper returned a null value");
                 } catch (Throwable ex) {
@@ -117,7 +117,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
                     actual.onError(ex);
                     return;
                 }
-                
+
                 actual.onSuccess(v);
             }
         }
@@ -132,7 +132,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
                 observers[i].dispose();
             }
         }
-        
+
         void innerError(Throwable ex, int index) {
             if (getAndSet(0) > 0) {
                 disposeExcept(index);
@@ -149,17 +149,17 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
             }
         }
     }
-    
-    static final class ZipMaybeObserver<T> 
+
+    static final class ZipMaybeObserver<T>
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
         /** */
         private static final long serialVersionUID = 3323743579927613702L;
 
         final ZipCoordinator<T, ?> parent;
-        
+
         final int index;
-        
+
         public ZipMaybeObserver(ZipCoordinator<T, ?> parent, int index) {
             this.parent = parent;
             this.index = index;
