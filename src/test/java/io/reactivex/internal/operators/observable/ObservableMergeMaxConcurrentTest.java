@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -121,7 +121,7 @@ public class ObservableMergeMaxConcurrentTest {
         }
 
     }
-    
+
     @Test
     public void testMergeALotOfSourcesOneByOneSynchronously() {
         int n = 10000;
@@ -152,7 +152,7 @@ public class ObservableMergeMaxConcurrentTest {
         }
         assertEquals(j, n / 2);
     }
-    
+
     @Test
     public void testSimple() {
         for (int i = 1; i < 100; i++) {
@@ -163,9 +163,9 @@ public class ObservableMergeMaxConcurrentTest {
                 sourceList.add(Observable.just(j));
                 result.add(j);
             }
-            
+
             Observable.merge(sourceList, i).subscribe(ts);
-        
+
             ts.assertNoErrors();
             ts.assertTerminated();
             ts.assertValueSequence(result);
@@ -181,9 +181,9 @@ public class ObservableMergeMaxConcurrentTest {
                 sourceList.add(Observable.just(j));
                 result.add(j);
             }
-            
+
             Observable.merge(sourceList, i - 1).subscribe(ts);
-        
+
             ts.assertNoErrors();
             ts.assertTerminated();
             ts.assertValueSequence(result);
@@ -211,13 +211,13 @@ public class ObservableMergeMaxConcurrentTest {
                 sourceList.add(Observable.just(j).subscribeOn(Schedulers.io()));
                 expected.add(j);
             }
-            
+
             Observable.merge(sourceList, i).subscribe(ts);
-        
+
             ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
             Set<Integer> actual = new HashSet<Integer>(ts.values());
-            
+
             assertEquals(expected, actual);
         }
     }
@@ -241,13 +241,13 @@ public class ObservableMergeMaxConcurrentTest {
                 sourceList.add(Observable.just(j).subscribeOn(Schedulers.io()));
                 expected.add(j);
             }
-            
+
             Observable.merge(sourceList, i - 1).subscribe(ts);
-        
+
             ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
             Set<Integer> actual = new HashSet<Integer>(ts.values());
-            
+
             assertEquals(expected, actual);
         }
     }
@@ -255,15 +255,15 @@ public class ObservableMergeMaxConcurrentTest {
     @Test(timeout = 5000)
     public void testTake() throws Exception {
         List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(3);
-        
+
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
         sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         Observable.merge(sourceList, 2).take(5).subscribe(ts);
-        
+
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         ts.assertValueCount(5);

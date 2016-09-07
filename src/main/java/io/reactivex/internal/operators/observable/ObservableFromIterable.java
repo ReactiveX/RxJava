@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
     public ObservableFromIterable(Iterable<? extends T> source) {
         this.source = source;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super T> s) {
         Iterator<? extends T> it;
@@ -49,29 +49,29 @@ public final class ObservableFromIterable<T> extends Observable<T> {
             EmptyDisposable.complete(s);
             return;
         }
-        
+
         FromIterableDisposable<T> d = new FromIterableDisposable<T>(s, it);
         s.onSubscribe(d);
-        
+
         if (!d.fusionMode) {
             d.run();
         }
     }
-    
+
     static final class FromIterableDisposable<T> extends BasicQueueDisposable<T> {
-        
+
         final Observer<? super T> actual;
-        
+
         final Iterator<? extends T> it;
-        
-        volatile boolean disposed; 
-        
+
+        volatile boolean disposed;
+
         boolean fusionMode;
-        
+
         boolean done;
-        
+
         boolean checkNext;
-        
+
         public FromIterableDisposable(Observer<? super T> actual, Iterator<? extends T> it) {
             this.actual = actual;
             this.it = it;
@@ -79,13 +79,13 @@ public final class ObservableFromIterable<T> extends Observable<T> {
 
         void run() {
             boolean hasNext;
-            
+
             do {
                 if (isDisposed()) {
                     return;
                 }
                 T v;
-                
+
                 try {
                     v = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
                 } catch (Throwable e) {
@@ -93,9 +93,9 @@ public final class ObservableFromIterable<T> extends Observable<T> {
                     actual.onError(e);
                     return;
                 }
-                
+
                 actual.onNext(v);
-                
+
                 if (isDisposed()) {
                     return;
                 }
@@ -107,7 +107,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
                     return;
                 }
             } while (hasNext);
-            
+
             if (!isDisposed()) {
                 actual.onComplete();
             }
@@ -135,7 +135,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
             } else {
                 checkNext = true;
             }
-            
+
             return ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
         }
 

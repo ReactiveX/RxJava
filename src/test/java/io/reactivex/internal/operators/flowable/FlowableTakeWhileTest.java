@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -213,7 +213,7 @@ public class FlowableTakeWhileTest {
             System.out.println("done starting TestObservable thread");
         }
     }
-    
+
     @Test
     public void testBackpressure() {
         Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new Predicate<Integer>() {
@@ -223,18 +223,18 @@ public class FlowableTakeWhileTest {
             }
         });
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5L);
-        
+
         source.subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertValues(1, 2, 3, 4, 5);
-        
+
         ts.request(5);
 
         ts.assertNoErrors();
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
-    
+
     @Test
     public void testNoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.range(1, 1000).takeWhile(new Predicate<Integer>() {
@@ -244,15 +244,15 @@ public class FlowableTakeWhileTest {
             }
         });
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertValue(1);
-        
+
         Assert.assertFalse("Unsubscribed!", ts.isCancelled());
     }
-    
+
     @Test
     public void testErrorCauseIncludesLastValue() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -262,12 +262,12 @@ public class FlowableTakeWhileTest {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertTerminated();
         ts.assertNoValues();
         ts.assertError(TestException.class);
         // FIXME last cause value not recorded
 //        assertTrue(ts.getOnErrorEvents().get(0).getCause().getMessage().contains("abc"));
     }
-    
+
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -163,14 +163,14 @@ public class SafeObserverTest {
             // TODO Auto-generated method stub
             return false;
         }
-        
+
         @Override
         public void dispose() {
             // break contract by throwing exception
             throw new SafeObserverTestException("failure from unsubscribe");
         }
     };
-    
+
     @Test
     @Ignore("Observers can't throw")
     public void onCompleteSuccessWithUnsubscribeFailure() {
@@ -442,7 +442,7 @@ public class SafeObserverTest {
             super(message);
         }
     }
-    
+
     @Test
     @Ignore("Observers can't throw")
     public void testOnCompletedThrows() {
@@ -450,7 +450,7 @@ public class SafeObserverTest {
         SafeObserver<Integer> s = new SafeObserver<Integer>(new DefaultObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
-                
+
             }
             @Override
             public void onError(Throwable e) {
@@ -461,7 +461,7 @@ public class SafeObserverTest {
                 throw new TestException();
             }
         });
-        
+
         try {
             s.onComplete();
             Assert.fail();
@@ -469,7 +469,7 @@ public class SafeObserverTest {
            assertNull(error.get());
         }
     }
-    
+
     @Test
     public void testActual() {
         Observer<Integer> actual = new DefaultObserver<Integer>() {
@@ -487,81 +487,81 @@ public class SafeObserverTest {
 
         assertSame(actual, s.actual);
     }
-    
+
     @Test
     public void dispose() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
-        
+
         Disposable d = Disposables.empty();
-        
+
         so.onSubscribe(d);
-        
+
         ts.dispose();
-        
+
         assertTrue(d.isDisposed());
-        
+
         assertTrue(so.isDisposed());
     }
 
     @Test
     public void onNextAfterComplete() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
-        
+
         Disposable d = Disposables.empty();
-        
+
         so.onSubscribe(d);
 
         so.onComplete();
-        
+
         so.onNext(1);
-        
+
         so.onError(new TestException());
-        
+
         so.onComplete();
-        
+
         ts.assertResult();
     }
 
     @Test
     public void onNextNull() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
-        
+
         Disposable d = Disposables.empty();
-        
+
         so.onSubscribe(d);
 
         so.onNext(null);
-        
+
         ts.assertFailure(NullPointerException.class);
     }
 
     @Test
     public void onNextWithoutOnSubscribe() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
-        
+
         so.onNext(1);
-        
+
         ts.assertFailureAndMessage(NullPointerException.class, "Subscription not set!");
     }
 
     @Test
     public void onErrorWithoutOnSubscribe() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
-        
+
         so.onError(new TestException());
-        
+
         ts.assertFailure(CompositeException.class);
-        
+
         TestHelper.assertError(ts, 0, TestException.class);
         TestHelper.assertError(ts, 1, NullPointerException.class, "Subscription not set!");
     }
@@ -569,41 +569,41 @@ public class SafeObserverTest {
     @Test
     public void onCompleteWithoutOnSubscribe() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
-        
+
         so.onComplete();
-        
+
         ts.assertFailureAndMessage(NullPointerException.class, "Subscription not set!");
     }
 
     @Test
     public void onNextNormal() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
-        
+
         Disposable d = Disposables.empty();
-        
+
         so.onSubscribe(d);
 
         so.onNext(1);
         so.onComplete();
-        
+
         ts.assertResult(1);
     }
-    
+
     static final class CrashDummy implements Observer<Object>, Disposable {
         boolean crashOnSubscribe;
         int crashOnNext;
         boolean crashOnError;
         boolean crashOnComplete;
-        
+
         boolean crashDispose;
-        
+
         Throwable error;
-        
-        public CrashDummy(boolean crashOnSubscribe, int crashOnNext, 
+
+        public CrashDummy(boolean crashOnSubscribe, int crashOnNext,
                 boolean crashOnError, boolean crashOnComplete, boolean crashDispose) {
             this.crashOnSubscribe = crashOnSubscribe;
             this.crashOnNext = crashOnNext;
@@ -652,18 +652,18 @@ public class SafeObserverTest {
                 throw new TestException("onComplete()");
             }
         }
-        
+
         public SafeObserver<Object> toSafe() {
             return new SafeObserver<Object>(this);
         }
-        
+
         public CrashDummy assertError(Class<? extends Throwable> clazz) {
             if (!clazz.isInstance(error)) {
                 throw new AssertionError("Different error: " + error);
             }
             return this;
         }
-        
+
         public CrashDummy assertInnerError(int index, Class<? extends Throwable> clazz) {
             List<Throwable> cel = TestHelper.compositeList(error);
             TestHelper.assertError(cel, index, clazz);
@@ -681,14 +681,14 @@ public class SafeObserverTest {
     @Test
     public void onNextOnErrorCrash() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(false, 1, true, false, false);
             SafeObserver<Object> so = cd.toSafe();
             so.onSubscribe(cd);
-            
+
             so.onNext(1);
-            
+
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, TestException.class, "onNext(1)");
@@ -703,7 +703,7 @@ public class SafeObserverTest {
         CrashDummy cd = new CrashDummy(false, 1, false, false, true);
         SafeObserver<Object> so = cd.toSafe();
         so.onSubscribe(cd);
-        
+
         so.onNext(1);
 
         cd.assertError(CompositeException.class);
@@ -714,13 +714,13 @@ public class SafeObserverTest {
     @Test
     public void onSubscribeTwice() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(false, 1, false, false, false);
             SafeObserver<Object> so = cd.toSafe();
             so.onSubscribe(cd);
             so.onSubscribe(cd);
-            
+
             TestHelper.assertError(list, 0, IllegalStateException.class);
         } finally {
             RxJavaPlugins.reset();
@@ -730,12 +730,12 @@ public class SafeObserverTest {
     @Test
     public void onSubscribeCrashes() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(true, 1, false, false, false);
             SafeObserver<Object> so = cd.toSafe();
             so.onSubscribe(cd);
-            
+
             TestHelper.assertError(list, 0, TestException.class, "onSubscribe()");
         } finally {
             RxJavaPlugins.reset();
@@ -745,12 +745,12 @@ public class SafeObserverTest {
     @Test
     public void onSubscribeAndDisposeCrashes() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(true, 1, false, false, true);
             SafeObserver<Object> so = cd.toSafe();
             so.onSubscribe(cd);
-            
+
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, TestException.class, "onSubscribe()");
@@ -763,13 +763,13 @@ public class SafeObserverTest {
     @Test
     public void onNextOnSubscribeCrash() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(true, 1, false, false, false);
             SafeObserver<Object> so = cd.toSafe();
 
             so.onNext(1);
-            
+
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
@@ -778,15 +778,15 @@ public class SafeObserverTest {
             RxJavaPlugins.reset();
         }
     }
-    
+
     @Test
     public void onNextNullDisposeCrashes() {
         CrashDummy cd = new CrashDummy(false, 1, false, false, true);
         SafeObserver<Object> so = cd.toSafe();
         so.onSubscribe(cd);
-        
+
         so.onNext(null);
-        
+
         cd.assertInnerError(0, NullPointerException.class);
         cd.assertInnerError(1, TestException.class, "dispose()");
     }
@@ -794,13 +794,13 @@ public class SafeObserverTest {
     @Test
     public void noSubscribeOnErrorCrashes() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(false, 1, true, false, false);
             SafeObserver<Object> so = cd.toSafe();
 
             so.onNext(1);
-            
+
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
@@ -815,22 +815,22 @@ public class SafeObserverTest {
         CrashDummy cd = new CrashDummy(false, 1, false, false, false);
         SafeObserver<Object> so = cd.toSafe();
         so.onSubscribe(cd);
-        
+
         so.onError(null);
-        
+
         cd.assertError(NullPointerException.class);
     }
 
     @Test
     public void onErrorNoSubscribeCrash() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(true, 1, false, false, false);
             SafeObserver<Object> so = cd.toSafe();
-            
+
             so.onError(new TestException());
-            
+
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, TestException.class);
@@ -843,13 +843,13 @@ public class SafeObserverTest {
     @Test
     public void onErrorNoSubscribeOnErrorCrash() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(false, 1, true, false, false);
             SafeObserver<Object> so = cd.toSafe();
-            
+
             so.onError(new TestException());
-            
+
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, TestException.class);
@@ -863,15 +863,15 @@ public class SafeObserverTest {
     @Test
     public void onCompleteteCrash() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(false, 1, false, true, false);
             SafeObserver<Object> so = cd.toSafe();
-            
+
             so.onSubscribe(cd);
-            
+
             so.onComplete();
-            
+
             TestHelper.assertError(list, 0, TestException.class, "onComplete()");
         } finally {
             RxJavaPlugins.reset();
@@ -881,13 +881,13 @@ public class SafeObserverTest {
     @Test
     public void onCompleteteNoSubscribeCrash() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(true, 1, false, true, false);
             SafeObserver<Object> so = cd.toSafe();
-            
+
             so.onComplete();
-            
+
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
@@ -900,13 +900,13 @@ public class SafeObserverTest {
     @Test
     public void onCompleteteNoSubscribeOnErrorCrash() {
         List<Throwable> list = TestHelper.trackPluginErrors();
-        
+
         try {
             CrashDummy cd = new CrashDummy(false, 1, true, true, false);
             SafeObserver<Object> so = cd.toSafe();
-            
+
             so.onComplete();
-            
+
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");

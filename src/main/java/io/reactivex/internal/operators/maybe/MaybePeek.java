@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -28,17 +28,17 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
 
     final Consumer<? super Disposable> onSubscribeCall;
-    
+
     final Consumer<? super T> onSuccessCall;
-    
+
     final Consumer<? super Throwable> onErrorCall;
-    
+
     final Action onCompleteCall;
-    
+
     final Action onAfterTerminate;
-    
+
     final Action onDisposeCall;
-    
+
     public MaybePeek(MaybeSource<T> source, Consumer<? super Disposable> onSubscribeCall,
             Consumer<? super T> onSuccessCall, Consumer<? super Throwable> onErrorCall, Action onCompleteCall,
             Action onAfterTerminate, Action onDispose) {
@@ -58,9 +58,9 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
 
     static final class MaybePeekObserver<T> implements MaybeObserver<T>, Disposable {
         final MaybeObserver<? super T> actual;
-        
+
         final MaybePeek<T> parent;
-        
+
         Disposable d;
 
         public MaybePeekObserver(MaybeObserver<? super T> actual, MaybePeek<T> parent) {
@@ -76,7 +76,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
                 Exceptions.throwIfFatal(ex);
                 RxJavaPlugins.onError(ex);
             }
-            
+
             d.dispose();
             d = DisposableHelper.DISPOSED;
         }
@@ -98,9 +98,9 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
                     EmptyDisposable.error(ex, actual);
                     return;
                 }
-                
+
                 this.d = d;
-                
+
                 actual.onSubscribe(this);
             }
         }
@@ -118,7 +118,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
                 return;
             }
             this.d = DisposableHelper.DISPOSED;
-            
+
             actual.onSuccess(value);
 
             onAfterTerminate();
@@ -133,7 +133,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
 
             onErrorInner(e);
         }
-        
+
         void onErrorInner(Throwable e) {
             try {
                 parent.onErrorCall.accept(e);
@@ -143,9 +143,9 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
             }
 
             this.d = DisposableHelper.DISPOSED;
-            
+
             actual.onError(e);
-            
+
             onAfterTerminate();
         }
 
@@ -163,12 +163,12 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
                 return;
             }
             this.d = DisposableHelper.DISPOSED;
-            
+
             actual.onComplete();
-            
+
             onAfterTerminate();
         }
-        
+
         void onAfterTerminate() {
             try {
                 parent.onAfterTerminate.run();

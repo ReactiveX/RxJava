@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -25,12 +25,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FlowableAmb<T> extends Flowable<T> {
     final Publisher<? extends T>[] sources;
     final Iterable<? extends Publisher<? extends T>> sourcesIterable;
-    
+
     public FlowableAmb(Publisher<? extends T>[] sources, Iterable<? extends Publisher<? extends T>> sourcesIterable) {
         this.sources = sources;
         this.sourcesIterable = sourcesIterable;
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public void subscribeActual(Subscriber<? super T> s) {
@@ -49,7 +49,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
         } else {
             count = sources.length;
         }
-        
+
         if (count == 0) {
             EmptySubscription.complete(s);
             return;
@@ -62,19 +62,19 @@ public final class FlowableAmb<T> extends Flowable<T> {
         AmbCoordinator<T> ac = new AmbCoordinator<T>(s, count);
         ac.subscribe(sources);
     }
-    
+
     static final class AmbCoordinator<T> implements Subscription {
         final Subscriber<? super T> actual;
         final AmbInnerSubscriber<T>[] subscribers;
-        
+
         final AtomicInteger winner = new AtomicInteger();
-        
+
         @SuppressWarnings("unchecked")
         public AmbCoordinator(Subscriber<? super T> actual, int count) {
             this.actual = actual;
             this.subscribers = new AmbInnerSubscriber[count];
         }
-        
+
         public void subscribe(Publisher<? extends T>[] sources) {
             AmbInnerSubscriber<T>[] as = subscribers;
             int len = as.length;
@@ -83,22 +83,22 @@ public final class FlowableAmb<T> extends Flowable<T> {
             }
             winner.lazySet(0); // release the contents of 'as'
             actual.onSubscribe(this);
-            
+
             for (int i = 0; i < len; i++) {
                 if (winner.get() != 0) {
                     return;
                 }
-                
+
                 sources[i].subscribe(as[i]);
             }
         }
-        
+
         @Override
         public void request(long n) {
             if (!SubscriptionHelper.validate(n)) {
                 return;
             }
-            
+
             int w = winner.get();
             if (w > 0) {
                 subscribers[w - 1].request(n);
@@ -109,7 +109,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
                 }
             }
         }
-        
+
         public boolean win(int index) {
             int w = winner.get();
             if (w == 0) {
@@ -127,28 +127,28 @@ public final class FlowableAmb<T> extends Flowable<T> {
             }
             return w == index;
         }
-        
+
         @Override
         public void cancel() {
             if (winner.get() != -1) {
                 winner.lazySet(-1);
-                
+
                 for (AmbInnerSubscriber<T> a : subscribers) {
                     a.cancel();
                 }
             }
         }
     }
-    
+
     static final class AmbInnerSubscriber<T> extends AtomicReference<Subscription> implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -1185974347409665484L;
         final AmbCoordinator<T> parent;
         final int index;
         final Subscriber<? super T> actual;
-        
+
         boolean won;
-        
+
         final AtomicLong missedRequested = new AtomicLong();
 
         public AmbInnerSubscriber(AmbCoordinator<T> parent, int index, Subscriber<? super T> actual) {
@@ -156,7 +156,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
             this.index = index;
             this.actual = actual;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(this, s)) {
@@ -166,7 +166,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
                 }
             }
         }
-        
+
         @Override
         public void request(long n) {
             Subscription s = get();
@@ -183,7 +183,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
                 }
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (won) {
@@ -197,7 +197,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
                 }
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (won) {
@@ -212,7 +212,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
                 }
             }
         }
-        
+
         @Override
         public void onComplete() {
             if (won) {
@@ -226,11 +226,11 @@ public final class FlowableAmb<T> extends Flowable<T> {
                 }
             }
         }
-        
+
         @Override
         public void cancel() {
             SubscriptionHelper.cancel(this);
         }
-        
+
     }
 }

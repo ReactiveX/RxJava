@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -122,7 +122,7 @@ public class SerializedObserverTest {
     public void testMultiThreadedWithNPEinMiddle() {
         int n = 10;
         for (int i = 0; i < n; i++) {
-            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, 
+            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null,
                     "four", "five", "six", "seven", "eight", "nine");
             Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
@@ -251,7 +251,7 @@ public class SerializedObserverTest {
 
     /**
      * Test that a notification does not get delayed in the queue waiting for the next event to push it through.
-     * 
+     *
      * @throws InterruptedException
      */
     @Ignore("this is non-deterministic ... haven't figured out what's wrong with the test yet (benjchristensen: July 2014)")
@@ -296,7 +296,7 @@ public class SerializedObserverTest {
                 Future<?> f2 = tp2.submit(new OnNextThread(o, 1, onNextCount, running));
 
                 running.await(); // let one of the OnNextThread actually run before proceeding
-                
+
                 firstOnNext.await();
 
                 Thread t1 = to.lastThread();
@@ -326,22 +326,22 @@ public class SerializedObserverTest {
 
     /**
      * Demonstrates thread starvation problem.
-     * 
+     *
      * No solution on this for now. Trade-off in this direction as per https://github.com/ReactiveX/RxJava/issues/998#issuecomment-38959474
      * Probably need backpressure for this to work
-     * 
+     *
      * When using SynchronizedSubscriber we get this output:
-     * 
+     *
      * p1: 18 p2: 68 => should be close to each other unless we have thread starvation
-     * 
+     *
      * When using SerializedSubscriber we get:
-     * 
+     *
      * p1: 1 p2: 2445261 => should be close to each other unless we have thread starvation
-     * 
+     *
      * This demonstrates how SynchronizedSubscriber balances back and forth better, and blocks emission.
      * The real issue in this example is the async buffer-bloat, so we need backpressure.
-     * 
-     * 
+     *
+     *
      * @throws InterruptedException
      */
     @Ignore("Demonstrates thread starvation problem. Read JavaDoc")
@@ -381,35 +381,35 @@ public class SerializedObserverTest {
             public void onNext(String t) {
                 o.onNext(t);
             }
-            
+
             @Override
             public void onError(Throwable t) {
                 RxJavaPlugins.onError(t);
             }
-            
+
             @Override
             public void onComplete() {
-                
+
             }
         };
-        
+
         ResourceSubscriber<String> as2 = new ResourceSubscriber<String>() {
             @Override
             public void onNext(String t) {
                 o.onNext(t);
             }
-            
+
             @Override
             public void onError(Throwable t) {
                 RxJavaPlugins.onError(t);
             }
-            
+
             @Override
             public void onComplete() {
-                
+
             }
         };
-        
+
         infinite(p1).subscribe(as1);
         infinite(p2).subscribe(as2);
 
@@ -586,7 +586,7 @@ public class SerializedObserverTest {
 
         /**
          * Assert the order of events is correct and return the number of onNext executions.
-         * 
+         *
          * @param expectedEndingEvent
          * @return int count of onNext calls
          * @throws IllegalStateException
@@ -835,7 +835,7 @@ public class SerializedObserverTest {
         }
 
     }
-    
+
     @Test
     @Ignore("Null values not permitted")
     public void testSerializeNull() {
@@ -849,15 +849,15 @@ public class SerializedObserverTest {
                 super.onNext(t);
             }
         };
-        
+
         SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
-        
+
         sobs.onNext(0);
-        
+
         to.assertValues(0, null);
     }
-    
+
     @Test
     @Ignore("Subscribers can't throw")
     public void testSerializeAllowsOnError() {
@@ -867,18 +867,18 @@ public class SerializedObserverTest {
                 throw new TestException();
             }
         };
-        
+
         SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
-        
+
         try {
             sobs.onNext(0);
         } catch (TestException ex) {
             sobs.onError(ex);
         }
-        
+
         to.assertError(TestException.class);
     }
-    
+
     @Test
     @Ignore("Null values no longer permitted")
     public void testSerializeReentrantNullAndComplete() {
@@ -890,20 +890,20 @@ public class SerializedObserverTest {
                 throw new TestException();
             }
         };
-        
+
         SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
-        
+
         try {
             sobs.onNext(0);
         } catch (TestException ex) {
             sobs.onError(ex);
         }
-        
+
         to.assertError(TestException.class);
         to.assertNotComplete();
     }
-    
+
     @Test
     @Ignore("Subscribers can't throw")
     public void testSerializeReentrantNullAndError() {
@@ -915,20 +915,20 @@ public class SerializedObserverTest {
                 throw new TestException();
             }
         };
-        
+
         SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
-        
+
         try {
             sobs.onNext(0);
         } catch (TestException ex) {
             sobs.onError(ex);
         }
-        
+
         to.assertError(TestException.class);
         to.assertNotComplete();
     }
-    
+
     @Test
     @Ignore("Null values no longer permitted")
     public void testSerializeDrainPhaseThrows() {
@@ -945,20 +945,20 @@ public class SerializedObserverTest {
                 super.onNext(t);
             }
         };
-        
+
         SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
-        
+
         sobs.onNext(0);
-        
+
         to.assertError(TestException.class);
         to.assertNotComplete();
     }
-    
+
     @Test
     public void testErrorReentry() {
         final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
-       
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer v) {
@@ -970,16 +970,16 @@ public class SerializedObserverTest {
         SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
         sobs.onSubscribe(EmptySubscription.INSTANCE);
         serial.set(sobs);
-        
+
         sobs.onNext(1);
-        
+
         ts.assertValue(1);
         ts.assertError(TestException.class);
     }
     @Test
     public void testCompleteReentry() {
         final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
-       
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer v) {
@@ -991,9 +991,9 @@ public class SerializedObserverTest {
         SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
         sobs.onSubscribe(EmptySubscription.INSTANCE);
         serial.set(sobs);
-        
+
         sobs.onNext(1);
-        
+
         ts.assertValue(1);
         ts.assertComplete();
         ts.assertNoErrors();

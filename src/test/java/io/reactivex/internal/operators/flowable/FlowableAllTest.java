@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -33,7 +33,7 @@ public class FlowableAllTest {
         Flowable<String> obs = Flowable.just("one", "two", "six");
 
         Subscriber <Boolean> observer = TestHelper.mockSubscriber();
-        
+
         obs.all(new Predicate<String>() {
             @Override
             public boolean test(String s) {
@@ -117,7 +117,7 @@ public class FlowableAllTest {
                 return i % 2 == 1;
             }
         });
-        
+
         assertFalse(allOdd.blockingFirst());
     }
     @Test(timeout = 5000)
@@ -135,10 +135,10 @@ public class FlowableAllTest {
                     return Flowable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
-        
+
         assertEquals((Object)2, source.blockingFirst());
     }
-    
+
     @Test
     public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0L);
@@ -148,36 +148,36 @@ public class FlowableAllTest {
                 return false;
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotComplete();
     }
-    
+
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(1L);
-        
+
         Flowable.empty().all(new Predicate<Object>() {
             @Override
             public boolean test(Object t) {
                 return false;
             }
         }).subscribe(ts);
-        
+
         ts.assertTerminated();
         ts.assertNoErrors();
         ts.assertComplete();
-        
+
         ts.assertValue(true);
     }
-    
+
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>();
-        
+
         final IllegalArgumentException ex = new IllegalArgumentException();
-        
+
         Flowable.just("Boo!").all(new Predicate<String>() {
             @Override
             public boolean test(String v) {
@@ -185,7 +185,7 @@ public class FlowableAllTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertTerminated();
         ts.assertNoValues();
         ts.assertNotComplete();

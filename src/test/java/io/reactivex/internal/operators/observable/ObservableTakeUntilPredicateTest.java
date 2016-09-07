@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -28,14 +28,14 @@ public class ObservableTakeUntilPredicateTest {
     @Test
     public void takeEmpty() {
         Observer<Object> o = TestHelper.mockObserver();
-        
+
         Observable.empty().takeUntil(new Predicate<Object>() {
             @Override
             public boolean test(Object v) {
                 return true;
             }
         }).subscribe(o);
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
         verify(o).onComplete();
@@ -43,14 +43,14 @@ public class ObservableTakeUntilPredicateTest {
     @Test
     public void takeAll() {
         Observer<Object> o = TestHelper.mockObserver();
-        
+
         Observable.just(1, 2).takeUntil(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return false;
             }
         }).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onNext(2);
         verify(o, never()).onError(any(Throwable.class));
@@ -59,14 +59,14 @@ public class ObservableTakeUntilPredicateTest {
     @Test
     public void takeFirst() {
         Observer<Object> o = TestHelper.mockObserver();
-        
+
         Observable.just(1, 2).takeUntil(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
             }
         }).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
         verify(o, never()).onError(any(Throwable.class));
@@ -75,7 +75,7 @@ public class ObservableTakeUntilPredicateTest {
     @Test
     public void takeSome() {
         Observer<Object> o = TestHelper.mockObserver();
-        
+
         Observable.just(1, 2, 3).takeUntil(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
@@ -83,7 +83,7 @@ public class ObservableTakeUntilPredicateTest {
             }
         })
         .subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onNext(2);
         verify(o, never()).onNext(3);
@@ -93,7 +93,7 @@ public class ObservableTakeUntilPredicateTest {
     @Test
     public void functionThrows() {
         Observer<Object> o = TestHelper.mockObserver();
-        
+
         Predicate<Integer> predicate = (new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
@@ -101,7 +101,7 @@ public class ObservableTakeUntilPredicateTest {
             }
         });
         Observable.just(1, 2, 3).takeUntil(predicate).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
         verify(o, never()).onNext(3);
@@ -111,7 +111,7 @@ public class ObservableTakeUntilPredicateTest {
     @Test
     public void sourceThrows() {
         Observer<Object> o = TestHelper.mockObserver();
-        
+
         Observable.just(1)
         .concatWith(Observable.<Integer>error(new TestException()))
         .concatWith(Observable.just(2))
@@ -121,13 +121,13 @@ public class ObservableTakeUntilPredicateTest {
                 return false;
             }
         }).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
         verify(o).onError(any(TestException.class));
         verify(o, never()).onComplete();
     }
-    
+
     @Test
     public void testErrorIncludesLastValueAsCause() {
         TestObserver<String> ts = new TestObserver<String>();
@@ -139,7 +139,7 @@ public class ObservableTakeUntilPredicateTest {
             }
         });
         Observable.just("abc").takeUntil(predicate).subscribe(ts);
-        
+
         ts.assertTerminated();
         ts.assertNotComplete();
         ts.assertError(TestException.class);

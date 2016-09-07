@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -37,18 +37,18 @@ public class ObservableMergeTest {
     Observer<String> stringObserver;
 
     int count;
-    
+
     @Before
     public void before() {
         stringObserver = TestHelper.mockObserver();
-        
+
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("RxNewThread")) {
                 count++;
             }
         }
     }
-    
+
     @After
     public void after() {
         try {
@@ -206,7 +206,7 @@ public class ObservableMergeTest {
             testSynchronizationOfMultipleSequences();
         }
     }
-    
+
     @Test
     public void testSynchronizationOfMultipleSequences() throws Throwable {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
@@ -263,7 +263,7 @@ public class ObservableMergeTest {
         // onNext is invoked.
 
         int timeout = 10;
-        
+
         while (timeout-- > 0 && concurrentCounter.get() != 1) {
             Thread.sleep(100);
         }
@@ -510,24 +510,24 @@ public class ObservableMergeTest {
                             }
                         }));
                     }
-                    
+
                     @Override
                     public void onNext(Long t) {
                         child.onNext(t);
                     }
-                    
+
                     @Override
                     public void onError(Throwable t) {
                         unsubscribed.set(true);
                         child.onError(t);
                     }
-                    
+
                     @Override
                     public void onComplete() {
                         unsubscribed.set(true);
                         child.onComplete();
                     }
-                    
+
                 });
             }
         });
@@ -563,9 +563,9 @@ public class ObservableMergeTest {
                 final CompositeDisposable as = new CompositeDisposable();
                 as.add(Disposables.empty());
                 as.add(inner);
-                
+
                 s.onSubscribe(as);
-                
+
                 inner.schedule(new Runnable() {
 
                     @Override
@@ -613,9 +613,9 @@ public class ObservableMergeTest {
                 final CompositeDisposable as = new CompositeDisposable();
                 as.add(Disposables.empty());
                 as.add(inner);
-                
+
                 s.onSubscribe(as);
-                
+
                 inner.schedule(new Runnable() {
 
                     @Override
@@ -677,7 +677,7 @@ public class ObservableMergeTest {
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated 1: " + generated1.get());
         System.out.println("Generated 2: " + generated2.get());
-        assertTrue(generated1.get() >= Flowable.bufferSize() * 2 
+        assertTrue(generated1.get() >= Flowable.bufferSize() * 2
                 && generated1.get() <= Flowable.bufferSize() * 4);
     }
 
@@ -690,7 +690,7 @@ public class ObservableMergeTest {
             testBackpressureUpstream2();
         }
     }
-    
+
     @Test
     public void testBackpressureUpstream2() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
@@ -705,9 +705,9 @@ public class ObservableMergeTest {
 
         Observable.merge(o1.take(Flowable.bufferSize() * 2), Observable.just(-99)).subscribe(NbpTestSubscriber);
         NbpTestSubscriber.awaitTerminalEvent();
-        
+
         List<Integer> onNextEvents = NbpTestSubscriber.values();
-        
+
         System.out.println("Generated 1: " + generated1.get() + " / received: " + onNextEvents.size());
         System.out.println(onNextEvents);
 
@@ -722,7 +722,7 @@ public class ObservableMergeTest {
 
     /**
      * This is the same as the upstreams ones, but now adds the downstream as well by using observeOn.
-     * 
+     *
      * This requires merge to also obey the Product.request values coming from it's child NbpSubscriber.
      * @throws InterruptedException if the test is interrupted
      */
@@ -765,13 +765,13 @@ public class ObservableMergeTest {
     /**
      * Currently there is no solution to this ... we can't exert backpressure on the outer NbpObservable if we
      * can't know if the ones we've received so far are going to emit or not, otherwise we could starve the system.
-     * 
+     *
      * For example, 10,000 Observables are being merged (bad use case to begin with, but ...) and it's only one of them
      * that will ever emit. If backpressure only allowed the first 1,000 to be sent, we would hang and never receive an event.
-     * 
+     *
      * Thus, we must allow all Observables to be sent. The ScalarSynchronousObservable use case is an exception to this since
      * we can grab the value synchronously.
-     * 
+     *
      * @throws InterruptedException
      */
     @Test(timeout = 5000)
@@ -1049,7 +1049,7 @@ public class ObservableMergeTest {
             return Observable.just(v);
         }
     };
-    
+
     Function<Integer, Observable<Integer>> toHiddenScalar = new Function<Integer, Observable<Integer>>() {
         @Override
         public Observable<Integer> apply(Integer t) {
@@ -1057,7 +1057,7 @@ public class ObservableMergeTest {
         }
     };
     ;
-    
+
     void runMerge(Function<Integer, Observable<Integer>> func, TestObserver<Integer> ts) {
         List<Integer> list = new ArrayList<Integer>();
         for (int i = 0; i < 1000; i++) {
@@ -1065,16 +1065,16 @@ public class ObservableMergeTest {
         }
         Observable<Integer> source = Observable.fromIterable(list);
         source.flatMap(func).subscribe(ts);
-        
+
         if (ts.values().size() != 1000) {
             System.out.println(ts.values());
         }
-        
+
         ts.assertTerminated();
         ts.assertNoErrors();
         ts.assertValueSequence(list);
     }
-    
+
     @Test
     public void testFastMergeFullScalar() {
         runMerge(toScalar, new TestObserver<Integer>());
@@ -1116,7 +1116,7 @@ public class ObservableMergeTest {
             runMerge(toHiddenScalar, ts);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void mergeArray() {

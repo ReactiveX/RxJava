@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -25,7 +25,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
  * to them may lead to undefined state in the currently subscribed Subscribers.
- * 
+ *
  * @param <T> the value type
  */
 public final class AsyncProcessor<T> extends FlowableProcessor<T> {
@@ -37,13 +37,13 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     static final AsyncSubscription[] TERMINATED = new AsyncSubscription[0];
 
     final AtomicReference<AsyncSubscription<T>[]> subscribers;
-    
+
     /** Write before updating subscribers, read after reading subscribers as TERMINATED. */
     Throwable error;
-    
+
     /** Write before updating subscribers, read after reading subscribers as TERMINATED. */
     T value;
-    
+
     /**
      * Creates a new AsyncProcessor.
      * @param <T> the value type to be received and emitted
@@ -52,7 +52,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     public static <T> AsyncProcessor<T> create() {
         return new AsyncProcessor<T>();
     }
-    
+
     /**
      * Constructs an AsyncProcessor.
      * @since 2.0
@@ -83,7 +83,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
         }
         value = t;
     }
-    
+
     @SuppressWarnings("unchecked")
     void nullOnNext() {
         value = null;
@@ -185,19 +185,19 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
             if (a == TERMINATED) {
                 return false;
             }
-            
+
             int n = a.length;
             @SuppressWarnings("unchecked")
             AsyncSubscription<T>[] b = new AsyncSubscription[n + 1];
             System.arraycopy(a, 0, b, 0, n);
             b[n] = ps;
-            
+
             if (subscribers.compareAndSet(a, b)) {
                 return true;
             }
         }
     }
-    
+
     /**
      * Atomically removes the given subscriber if it is subscribed to the subject.
      * @param ps the subject to remove
@@ -210,7 +210,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
             if (n == 0) {
                 return;
             }
-            
+
             int j = -1;
             for (int i = 0; i < n; i++) {
                 if (a[i] == ps) {
@@ -218,13 +218,13 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
                     break;
                 }
             }
-            
+
             if (j < 0) {
                 return;
             }
-            
+
             AsyncSubscription<T>[] b;
-            
+
             if (n == 1) {
                 b = EMPTY;
             } else {
@@ -246,7 +246,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     public boolean hasValue() {
         return subscribers.get() == TERMINATED && value != null;
     }
-    
+
     /**
      * Returns a single value the Subject currently has or null if no such value exists.
      * <p>The method is thread-safe.
@@ -255,7 +255,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     public T getValue() {
         return subscribers.get() == TERMINATED ? value : null;
     }
-    
+
     /**
      * Returns an Object array containing snapshot all values of the Subject.
      * <p>The method is thread-safe.
@@ -265,7 +265,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
         T v = getValue();
         return v != null ? new Object[] { v } : new Object[0];
     }
-    
+
     /**
      * Returns a typed array containing a snapshot of all values of the Subject.
      * <p>The method follows the conventions of Collection.toArray by setting the array element
@@ -291,18 +291,18 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
         }
         return array;
     }
-    
+
     static final class AsyncSubscription<T> extends DeferredScalarSubscription<T> {
         /** */
         private static final long serialVersionUID = 5629876084736248016L;
-        
+
         final AsyncProcessor<T> parent;
-        
+
         public AsyncSubscription(Subscriber<? super T> actual, AsyncProcessor<T> parent) {
             super(actual);
             this.parent = parent;
         }
-        
+
         @Override
         public void cancel() {
             if (super.tryCancel()) {
@@ -315,7 +315,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
                 actual.onComplete();
             }
         }
-        
+
         void onError(Throwable t) {
             if (isCancelled()) {
                 RxJavaPlugins.onError(t);

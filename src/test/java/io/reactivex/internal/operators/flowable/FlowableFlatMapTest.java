@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -201,7 +201,7 @@ public class FlowableFlatMapTest {
                 Flowable.fromIterable(Arrays.asList(10, 20, 30)),
                 Flowable.<Integer> error(new RuntimeException("Forced failure!"))
                 );
-        
+
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
@@ -334,11 +334,11 @@ public class FlowableFlatMapTest {
                         .subscribeOn(Schedulers.computation());
             }
         }, m);
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.subscribe(ts);
-        
+
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
@@ -364,22 +364,22 @@ public class FlowableFlatMapTest {
                 return t1 * 1000 + t2;
             }
         }, m);
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.subscribe(ts);
-        
+
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
-                1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051, 
+                1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051,
                 6060, 6061, 7070, 7071, 8080, 8081, 9090, 9091, 10100, 10101
         ));
         Assert.assertEquals(expected.size(), ts.valueCount());
         System.out.println("--> testFlatMapSelectorMaxConcurrent: " + ts.values());
         Assert.assertTrue(expected.containsAll(ts.values()));
     }
-    
+
     @Test
     public void testFlatMapTransformsMaxConcurrentNormalLoop() {
         for (int i = 0; i < 1000; i++) {
@@ -389,23 +389,23 @@ public class FlowableFlatMapTest {
             testFlatMapTransformsMaxConcurrentNormal();
         }
     }
-    
+
     @Test
     public void testFlatMapTransformsMaxConcurrentNormal() {
         final int m = 2;
         final AtomicInteger subscriptionCount = new AtomicInteger();
-        Flowable<Integer> onNext = 
+        Flowable<Integer> onNext =
                 composer(
                         Flowable.fromIterable(Arrays.asList(1, 2, 3))
                         .observeOn(Schedulers.computation())
-                        , 
+                        ,
                 subscriptionCount, m)
                 .subscribeOn(Schedulers.computation())
                 ;
-        
+
         Flowable<Integer> onCompleted = composer(Flowable.fromIterable(Arrays.asList(4)), subscriptionCount, m)
                 .subscribeOn(Schedulers.computation());
-        
+
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
 
         Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
@@ -417,7 +417,7 @@ public class FlowableFlatMapTest {
         Function<Throwable, Flowable<Integer>> just2 = just(onError);
         Callable<Flowable<Integer>> just0 = just0(onCompleted);
         source.flatMap(just, just2, just0, m).subscribe(ts);
-        
+
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertTerminated();
@@ -431,7 +431,7 @@ public class FlowableFlatMapTest {
         verify(o, never()).onNext(5);
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Ignore("Don't care for any reordering")
     @Test(timeout = 10000)
     public void flatMapRangeAsyncLoop() {
@@ -510,19 +510,19 @@ public class FlowableFlatMapTest {
             assertEquals(1000, list.size());
         }
     }
-    
+
     @Test
     public void flatMapIntPassthruAsync() {
         for (int i = 0;i < 1000; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-            
+
             Flowable.range(1, 1000).flatMap(new Function<Integer, Flowable<Integer>>() {
                 @Override
                 public Flowable<Integer> apply(Integer t) {
                     return Flowable.just(1).subscribeOn(Schedulers.computation());
                 }
             }).subscribe(ts);
-            
+
             ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
             ts.assertNoErrors();
             ts.assertComplete();
@@ -533,25 +533,25 @@ public class FlowableFlatMapTest {
     public void flatMapTwoNestedSync() {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-    
+
             Flowable.just(1, 2).flatMap(new Function<Integer, Flowable<Integer>>() {
                 @Override
                 public Flowable<Integer> apply(Integer t) {
                     return Flowable.range(1, n);
                 }
             }).subscribe(ts);
-            
+
             System.out.println("flatMapTwoNestedSync >> @ " + n);
             ts.assertNoErrors();
             ts.assertComplete();
             ts.assertValueCount(n * 2);
         }
     }
-    
+
     @Test
     public void justEmptyMixture() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.range(0, 4 * Flowable.bufferSize())
         .flatMap(new Function<Integer, Flowable<Integer>>() {
             @Override
@@ -560,15 +560,15 @@ public class FlowableFlatMapTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertValueCount(2 * Flowable.bufferSize());
         ts.assertNoErrors();
         ts.assertComplete();
-        
+
         int j = 1;
         for (Integer v : ts.values()) {
             Assert.assertEquals(j, v.intValue());
-            
+
             j += 2;
         }
     }
@@ -576,7 +576,7 @@ public class FlowableFlatMapTest {
     @Test
     public void rangeEmptyMixture() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.range(0, 4 * Flowable.bufferSize())
         .flatMap(new Function<Integer, Flowable<Integer>>() {
             @Override
@@ -585,17 +585,17 @@ public class FlowableFlatMapTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertValueCount(4 * Flowable.bufferSize());
         ts.assertNoErrors();
         ts.assertComplete();
-        
+
         int j = 1;
         List<Integer> list = ts.values();
         for (int i = 0; i < list.size(); i += 2) {
             Assert.assertEquals(j, list.get(i).intValue());
             Assert.assertEquals(j + 1, list.get(i + 1).intValue());
-            
+
             j += 2;
         }
     }
@@ -603,7 +603,7 @@ public class FlowableFlatMapTest {
     @Test
     public void justEmptyMixtureMaxConcurrent() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.range(0, 4 * Flowable.bufferSize())
         .flatMap(new Function<Integer, Flowable<Integer>>() {
             @Override
@@ -612,15 +612,15 @@ public class FlowableFlatMapTest {
             }
         }, 16)
         .subscribe(ts);
-        
+
         ts.assertValueCount(2 * Flowable.bufferSize());
         ts.assertNoErrors();
         ts.assertComplete();
-        
+
         int j = 1;
         for (Integer v : ts.values()) {
             Assert.assertEquals(j, v.intValue());
-            
+
             j += 2;
         }
     }
@@ -628,7 +628,7 @@ public class FlowableFlatMapTest {
     @Test
     public void rangeEmptyMixtureMaxConcurrent() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.range(0, 4 * Flowable.bufferSize())
         .flatMap(new Function<Integer, Flowable<Integer>>() {
             @Override
@@ -637,28 +637,28 @@ public class FlowableFlatMapTest {
             }
         }, 16)
         .subscribe(ts);
-        
+
         ts.assertValueCount(4 * Flowable.bufferSize());
         ts.assertNoErrors();
         ts.assertComplete();
-        
+
         int j = 1;
         List<Integer> list = ts.values();
         for (int i = 0; i < list.size(); i += 2) {
             Assert.assertEquals(j, list.get(i).intValue());
             Assert.assertEquals(j + 1, list.get(i + 1).intValue());
-            
+
             j += 2;
         }
     }
-    
+
     @Test
     public void castCrashUnsubscribes() {
-        
+
         PublishProcessor<Integer> ps = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         ps.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer t) {
@@ -670,16 +670,16 @@ public class FlowableFlatMapTest {
                 return t1;
             }
         }).subscribe(ts);
-        
+
         Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
-        
+
         ps.onNext(1);
-        
+
         Assert.assertFalse("Subscribed?", ps.hasSubscribers());
-        
+
         ts.assertError(TestException.class);
     }
-    
+
     @Test
     public void flatMapBiMapper() {
         Flowable.just(1)

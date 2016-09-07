@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -57,7 +57,7 @@ import io.reactivex.plugins.RxJavaPlugins;
   processor.onNext("one");
   processor.onCompleted();
   processor.subscribe(observer);
-  
+
   // observer will receive only onError
   BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
   processor.onNext("zero");
@@ -65,27 +65,27 @@ import io.reactivex.plugins.RxJavaPlugins;
   processor.onError(new RuntimeException("error"));
   processor.subscribe(observer);
   } </pre>
- * 
+ *
  * @param <T>
  *          the type of item expected to be observed and emitted by the Processor
  */
 public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     final AtomicReference<BehaviorSubscription<T>[]> subscribers;
-    
+
     static final Object[] EMPTY_ARRAY = new Object[0];
-    
+
     @SuppressWarnings("rawtypes")
     static final BehaviorSubscription[] EMPTY = new BehaviorSubscription[0];
 
     @SuppressWarnings("rawtypes")
     static final BehaviorSubscription[] TERMINATED = new BehaviorSubscription[0];
-    
+
     final ReadWriteLock lock;
     final Lock readLock;
     final Lock writeLock;
 
     final AtomicReference<Object> value;
-    
+
     boolean done;
 
     long index;
@@ -100,11 +100,11 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     public static <T> BehaviorProcessor<T> create() {
         return new BehaviorProcessor<T>();
     }
-    
+
     /**
      * Creates a {@link BehaviorProcessor} that emits the last item it observed and all subsequent items to each
      * {@link Subscriber} that subscribes to it.
-     * 
+     *
      * @param <T>
      *            the type of item the Subject will emit
      * @param defaultValue
@@ -116,7 +116,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
         return new BehaviorProcessor<T>(defaultValue);
     }
-    
+
     /**
      * Constructs an empty BehaviorProcessor.
      * @since 2.0
@@ -129,7 +129,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         this.writeLock = lock.writeLock();
         this.subscribers = new AtomicReference<BehaviorSubscription<T>[]>(EMPTY);
     }
-    
+
     /**
      * Constructs a BehaviorProcessor with the given initial value.
      * @param defaultValue the initial value, not null (verified)
@@ -140,7 +140,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         this();
         this.value.lazySet(ObjectHelper.requireNonNull(defaultValue, "defaultValue is null"));
     }
-    
+
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         BehaviorSubscription<T> bs = new BehaviorSubscription<T>(s, this);
@@ -162,7 +162,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             }
         }
     }
-    
+
     @Override
     public void onSubscribe(Subscription s) {
         if (done) {
@@ -220,8 +220,8 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     public boolean hasSubscribers() {
         return subscribers.get().length != 0;
     }
-    
-    
+
+
     /* test support*/ int subscriberCount() {
         return subscribers.get().length;
     }
@@ -234,7 +234,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         }
         return null;
     }
-    
+
     /**
      * Returns a single value the Subject currently has or null if no such value exists.
      * <p>The method is thread-safe.
@@ -247,7 +247,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         }
         return NotificationLite.getValue(o);
     }
-    
+
     /**
      * Returns an Object array containing snapshot all values of the Subject.
      * <p>The method is thread-safe.
@@ -261,9 +261,9 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             return new Object[0];
         }
         return b;
-            
+
     }
-    
+
     /**
      * Returns a typed array containing a snapshot of all values of the Subject.
      * <p>The method follows the conventions of Collection.toArray by setting the array element
@@ -293,19 +293,19 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         }
         return array;
     }
-    
+
     @Override
     public boolean hasComplete() {
         Object o = value.get();
         return NotificationLite.isComplete(o);
     }
-    
+
     @Override
     public boolean hasThrowable() {
         Object o = value.get();
         return NotificationLite.isError(o);
     }
-    
+
     /**
      * Returns true if the subject has any value.
      * <p>The method is thread-safe.
@@ -315,8 +315,8 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         Object o = value.get();
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
     }
-    
-    
+
+
     boolean add(BehaviorSubscription<T> rs) {
         for (;;) {
             BehaviorSubscription<T>[] a = subscribers.get();
@@ -333,7 +333,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     void remove(BehaviorSubscription<T> rs) {
         for (;;) {
@@ -349,7 +349,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                     break;
                 }
             }
-            
+
             if (j < 0) {
                 return;
             }
@@ -366,10 +366,10 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     BehaviorSubscription<T>[] terminate(Object terminalValue) {
-        
+
         BehaviorSubscription<T>[] a = subscribers.get();
         if (a != TERMINATED) {
             a = subscribers.getAndSet(TERMINATED);
@@ -378,10 +378,10 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                 setCurrent(terminalValue);
             }
         }
-        
+
         return a;
     }
-    
+
     void setCurrent(Object o) {
         writeLock.lock();
         try {
@@ -391,41 +391,41 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             writeLock.unlock();
         }
     }
-    
+
     static final class BehaviorSubscription<T> extends AtomicLong implements Subscription, Predicate<Object> {
         /** */
         private static final long serialVersionUID = 3293175281126227086L;
-        
+
         final Subscriber<? super T> actual;
         final BehaviorProcessor<T> state;
-        
+
         boolean next;
         boolean emitting;
         AppendOnlyLinkedArrayList<Object> queue;
-        
+
         boolean fastPath;
-        
+
         volatile boolean cancelled;
-        
+
         long index;
 
         public BehaviorSubscription(Subscriber<? super T> actual, BehaviorProcessor<T> state) {
             this.actual = actual;
             this.state = state;
         }
-        
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
                 BackpressureHelper.add(this, n);
             }
         }
-        
+
         @Override
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
-                
+
                 state.remove(this);
             }
         }
@@ -442,9 +442,9 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                 if (next) {
                     return;
                 }
-                
+
                 BehaviorProcessor<T> s = state;
-                
+
                 Lock readLock = s.readLock;
                 readLock.lock();
                 try {
@@ -453,20 +453,20 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                 } finally {
                     readLock.unlock();
                 }
-                
+
                 emitting = o != null;
                 next = true;
             }
-            
+
             if (o != null) {
                 if (test(o)) {
                     return;
                 }
-            
+
                 emitLoop();
             }
         }
-        
+
         void emitNext(Object value, long stateIndex) {
             if (cancelled) {
                 return;
@@ -501,7 +501,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             if (cancelled) {
                 return true;
             }
-            
+
             if (NotificationLite.isComplete(o)) {
                 cancel();
                 actual.onComplete();
@@ -512,7 +512,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                 actual.onError(NotificationLite.getError(o));
                 return true;
             }
-            
+
             long r = get();
             if (r != 0L) {
                 actual.onNext(NotificationLite.<T>getValue(o));
@@ -525,7 +525,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
             return true;
         }
-        
+
         void emitLoop() {
             for (;;) {
                 if (cancelled) {
@@ -540,7 +540,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                     }
                     queue = null;
                 }
-                
+
                 try {
                     q.forEachWhile(this);
                 } catch (Throwable ex) {

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -54,7 +54,7 @@ public class FlowableBackpressureTests {
                 int i = 0;
                 final Subscriber<? super Integer> a = s;
                 final AtomicInteger c = counter;
-                
+
                 while (!cancelled) {
                     a.onNext(i++);
                     c.incrementAndGet();
@@ -77,7 +77,7 @@ public class FlowableBackpressureTests {
         // FIXME LATER
 //        TestObstructionDetection.checkObstruction();
     }
-    
+
     @Test
     public void testObserveOn() {
         int NUM = (int) (Flowable.bufferSize() * 2.1);
@@ -170,7 +170,7 @@ public class FlowableBackpressureTests {
             int NUM = (int) (Flowable.bufferSize() * 4.1);
             AtomicInteger c1 = new AtomicInteger();
             AtomicInteger c2 = new AtomicInteger();
-            
+
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             Flowable<Integer> merged = Flowable.merge(
                     incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
@@ -180,8 +180,8 @@ public class FlowableBackpressureTests {
             .observeOn(Schedulers.io())
             .take(NUM)
             .subscribe(ts);
-            
-            
+
+
             ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
             ts.assertComplete();
             ts.assertNoErrors();
@@ -189,7 +189,7 @@ public class FlowableBackpressureTests {
             assertEquals(NUM, ts.valueCount());
         }
     }
-    
+
     @Test
     public void testMergeAsyncThenObserveOn() {
         int NUM = (int) (Flowable.bufferSize() * 4.1);
@@ -218,7 +218,7 @@ public class FlowableBackpressureTests {
         int NUM = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         incrementingIntegers(c)
         .flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
@@ -227,7 +227,7 @@ public class FlowableBackpressureTests {
             }
         })
         .take(NUM).subscribe(ts);
-        
+
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testFlatMapSync => Received: " + ts.valueCount() + "  Emitted: " + c.get());
@@ -242,7 +242,7 @@ public class FlowableBackpressureTests {
         int NUM = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         incrementingIntegers(c)
         .subscribeOn(Schedulers.computation())
         .flatMap(new Function<Integer, Publisher<Integer>>() {
@@ -255,7 +255,7 @@ public class FlowableBackpressureTests {
         }
         )
         .take(NUM).subscribe(ts);
-        
+
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testFlatMapAsync => Received: " + ts.valueCount() + "  Emitted: " + c.get() + " Size: " + Flowable.bufferSize());
@@ -272,7 +272,7 @@ public class FlowableBackpressureTests {
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         Flowable<Integer> zipped = Flowable.zip(
                 incrementingIntegers(c1),
                 incrementingIntegers(c2),
@@ -285,7 +285,7 @@ public class FlowableBackpressureTests {
 
         zipped.take(NUM)
         .subscribe(ts);
-        
+
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testZipSync => Received: " + ts.valueCount() + "  Emitted: " + c1.get() + " / " + c2.get());
@@ -484,7 +484,7 @@ public class FlowableBackpressureTests {
     public void testFirehoseFailsAsExpected() {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         firehose(c).observeOn(Schedulers.computation())
         .map(new Function<Integer, Integer>() {
             @Override
@@ -498,17 +498,17 @@ public class FlowableBackpressureTests {
             }
         })
         .subscribe(ts);
-        
+
         ts.awaitTerminalEvent();
         System.out.println("testFirehoseFailsAsExpected => Received: " + ts.valueCount() + "  Emitted: " + c.get());
-        
+
         // FIXME it is possible slow is not slow enough or the main gets delayed and thus more than one source value is emitted.
         int vc = ts.valueCount();
         assertTrue("10 < " + vc, vc <= 10);
-        
+
         ts.assertError(MissingBackpressureException.class);
     }
-    
+
     @Test
     public void testFirehoseFailsAsExpectedLoop() {
         for (int i = 0; i < 100; i++) {
@@ -520,7 +520,7 @@ public class FlowableBackpressureTests {
     public void testOnBackpressureDrop() {
         long t = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
-            // stop the test if we are getting close to the timeout because slow machines 
+            // stop the test if we are getting close to the timeout because slow machines
             // may not get through 100 iterations
             if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
                 break;
@@ -553,7 +553,7 @@ public class FlowableBackpressureTests {
             final AtomicInteger passCount = new AtomicInteger();
             final int NUM = Flowable.bufferSize() * 3; // > 1 so that take doesn't prevent buffer overflow
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-            
+
             firehose(emitCount)
             .onBackpressureDrop(new Consumer<Integer>() {
                 @Override
@@ -570,10 +570,10 @@ public class FlowableBackpressureTests {
             .observeOn(Schedulers.computation())
             .map(SLOW_PASS_THRU)
             .take(NUM).subscribe(ts);
-            
+
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
-            
+
             List<Integer> onNextEvents = ts.values();
             Integer lastEvent = onNextEvents.get(NUM - 1);
             System.out.println(testName.getMethodName() + " => Received: " + onNextEvents.size() + " Passed: " + passCount.get() + " Dropped: " + dropCount.get() + "  Emitted: " + emitCount.get() + " Last value: " + lastEvent);
@@ -645,7 +645,7 @@ public class FlowableBackpressureTests {
         int NUM = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         firehose(c).takeWhile(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
@@ -655,7 +655,7 @@ public class FlowableBackpressureTests {
         .onBackpressureBuffer()
         .observeOn(Schedulers.computation())
         .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
-        
+
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testOnBackpressureBuffer => Received: " + ts.valueCount() + "  Emitted: " + c.get());
@@ -666,7 +666,7 @@ public class FlowableBackpressureTests {
 
     /**
      * A synchronous Observable that will emit incrementing integers as requested.
-     * 
+     *
      * @param counter
      * @return
      */
@@ -681,7 +681,7 @@ public class FlowableBackpressureTests {
             public void subscribe(final Subscriber<? super Integer> s) {
                 s.onSubscribe(new Subscription() {
                     int i = 0;
-                    
+
                     volatile boolean cancelled;
 
                     final AtomicLong requested = new AtomicLong();
@@ -719,7 +719,7 @@ public class FlowableBackpressureTests {
 
     /**
      * Incrementing int without backpressure.
-     * 
+     *
      * @param counter
      * @return
      */

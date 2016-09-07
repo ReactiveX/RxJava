@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -35,15 +35,15 @@ public class ObservableFromIterableTest {
     public void testNull() {
         Observable.fromIterable(null);
     }
-    
+
     @Test
     public void testListIterable() {
         Observable<String> o = Observable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        
+
         o.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, times(1)).onNext("two");
         verify(NbpObserver, times(1)).onNext("three");
@@ -87,7 +87,7 @@ public class ObservableFromIterableTest {
         Observer<String> NbpObserver = TestHelper.mockObserver();
 
         o.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, times(1)).onNext("1");
         verify(NbpObserver, times(1)).onNext("2");
         verify(NbpObserver, times(1)).onNext("3");
@@ -102,7 +102,7 @@ public class ObservableFromIterableTest {
         Observer<String> NbpObserver = TestHelper.mockObserver();
 
         o.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, times(1)).onNext("one");
         verify(NbpObserver, times(1)).onNext("two");
         verify(NbpObserver, times(1)).onNext("three");
@@ -113,11 +113,11 @@ public class ObservableFromIterableTest {
     @Test
     public void testNoBackpressure() {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         o.subscribe(ts);
-        
+
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertTerminated();
     }
@@ -125,18 +125,18 @@ public class ObservableFromIterableTest {
     @Test
     public void testSubscribeMultipleTimes() {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3));
-        
+
         for (int i = 0; i < 10; i++) {
             TestObserver<Integer> ts = new TestObserver<Integer>();
-            
+
             o.subscribe(ts);
-            
+
             ts.assertValues(1, 2, 3);
             ts.assertNoErrors();
             ts.assertComplete();
-        }    
+        }
     }
-    
+
     @Test
     public void testDoesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
         final AtomicBoolean called = new AtomicBoolean(false);
@@ -147,7 +147,7 @@ public class ObservableFromIterableTest {
                 return new Iterator<Integer>() {
 
                     int count = 1;
-                    
+
                     @Override
                     public void remove() {
                         // ignore
@@ -231,7 +231,7 @@ public class ObservableFromIterableTest {
     @Test
     public void fusionWithConcatMap() {
         TestObserver<Integer> to = new TestObserver<Integer>();
-        
+
         Observable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
         new Function<Integer, ObservableSource<Integer>>() {
             @Override
@@ -239,7 +239,7 @@ public class ObservableFromIterableTest {
                 return Observable.range(v, 2);
             }
         }).subscribe(to);
-        
+
         to.assertValues(1, 2, 2, 3, 3, 4, 4, 5);
         to.assertNoErrors();
         to.assertComplete();

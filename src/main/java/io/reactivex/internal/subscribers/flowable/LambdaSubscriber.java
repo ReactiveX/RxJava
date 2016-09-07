@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,8 +30,8 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
     final Consumer<? super Throwable> onError;
     final Action onComplete;
     final Consumer<? super Subscription> onSubscribe;
-    
-    public LambdaSubscriber(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
+
+    public LambdaSubscriber(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
             Action onComplete,
             Consumer<? super Subscription> onSubscribe) {
         super();
@@ -40,7 +40,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
         this.onComplete = onComplete;
         this.onSubscribe = onSubscribe;
     }
-    
+
     @Override
     public void onSubscribe(Subscription s) {
         if (SubscriptionHelper.setOnce(this, s)) {
@@ -52,7 +52,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
             }
         }
     }
-    
+
     @Override
     public void onNext(T t) {
         try {
@@ -62,7 +62,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
             onError(e);
         }
     }
-    
+
     @Override
     public void onError(Throwable t) {
         cancel();
@@ -74,7 +74,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
             RxJavaPlugins.onError(t);
         }
     }
-    
+
     @Override
     public void onComplete() {
         cancel();
@@ -85,7 +85,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
             RxJavaPlugins.onError(e);
         }
     }
-    
+
     @Override
     public void dispose() {
         cancel();
@@ -100,7 +100,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
     public void request(long n) {
         get().request(n);
     }
-    
+
     @Override
     public void cancel() {
         SubscriptionHelper.cancel(this);

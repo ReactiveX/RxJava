@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -24,14 +24,14 @@ import io.reactivex.internal.disposables.*;
  */
 public final class SerialDisposable implements Disposable {
     final AtomicReference<Disposable> resource;
-    
+
     /**
      * Constructs an empty SerialDisposable.
      */
     public SerialDisposable() {
         this.resource = new AtomicReference<Disposable>();
     }
-    
+
     /**
      * Constructs a SerialDisposable with the given initial Disposable instance.
      * @param initialDisposable the initial Disposable instance to use, null allowed
@@ -61,7 +61,7 @@ public final class SerialDisposable implements Disposable {
     public boolean replace(Disposable next) {
         return DisposableHelper.replace(resource, next);
     }
-    
+
     /**
      * Returns the currently contained Disposable or null if this container is empty.
      * @return the current Disposable, may be null
@@ -73,12 +73,12 @@ public final class SerialDisposable implements Disposable {
         }
         return d;
     }
-    
+
     @Override
     public void dispose() {
         DisposableHelper.dispose(resource);
     }
-    
+
     @Override
     public boolean isDisposed() {
         return DisposableHelper.isDisposed(resource.get());

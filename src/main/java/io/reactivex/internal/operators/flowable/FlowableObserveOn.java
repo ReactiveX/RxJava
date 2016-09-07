@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -28,14 +28,14 @@ import io.reactivex.internal.util.BackpressureHelper;
 
 public final class FlowableObserveOn<T> extends AbstractFlowableWithUpstream<T, T> {
 final Scheduler scheduler;
-    
+
     final boolean delayError;
-    
+
     final int prefetch;
-    
+
     public FlowableObserveOn(
-            Publisher<T> source, 
-            Scheduler scheduler, 
+            Publisher<T> source,
+            Scheduler scheduler,
             boolean delayError,
             int prefetch) {
         super(source);
@@ -56,7 +56,7 @@ final Scheduler scheduler;
 //        }
 
         Worker worker;
-        
+
         try {
             worker = scheduler.createWorker();
         } catch (Throwable e) {
@@ -64,12 +64,12 @@ final Scheduler scheduler;
             EmptySubscription.error(e, s);
             return;
         }
-        
+
         if (worker == null) {
             EmptySubscription.error(new NullPointerException("The scheduler returned a null Function"), s);
             return;
         }
-        
+
         if (s instanceof ConditionalSubscriber) {
             ConditionalSubscriber<? super T> cs = (ConditionalSubscriber<? super T>) s;
             source.subscribe(new PublisherObserveOnConditionalSubscriber<T>(cs, worker, delayError, prefetch));
@@ -85,31 +85,31 @@ final Scheduler scheduler;
         private static final long serialVersionUID = -8241002408341274697L;
 
         final Worker worker;
-        
+
         final boolean delayError;
-        
+
         final int prefetch;
-        
+
         final int limit;
-        
+
         final AtomicLong requested;
-        
+
         Subscription s;
-        
+
         SimpleQueue<T> queue;
-        
+
         volatile boolean cancelled;
-        
+
         volatile boolean done;
-        
+
         Throwable error;
 
         int sourceMode;
-        
+
         long produced;
-        
+
         boolean outputFused;
-        
+
         public BaseObserveOnSubscriber(
                 Worker worker,
                 boolean delayError,
@@ -118,14 +118,14 @@ final Scheduler scheduler;
             this.delayError = delayError;
             this.prefetch = prefetch;
             this.requested = new AtomicLong();
-            
+
             if (prefetch != Integer.MAX_VALUE) {
                 this.limit = prefetch - (prefetch >> 2);
             } else {
                 this.limit = Integer.MAX_VALUE;
             }
         }
-        
+
         final void initialRequest() {
             if (prefetch == Integer.MAX_VALUE) {
                 s.request(Long.MAX_VALUE);
@@ -133,7 +133,7 @@ final Scheduler scheduler;
                 s.request(prefetch);
             }
         }
-        
+
         @Override
         public final void onNext(T t) {
             if (sourceMode == ASYNC) {
@@ -142,26 +142,26 @@ final Scheduler scheduler;
             }
             if (!queue.offer(t)) {
                 s.cancel();
-                
+
                 error = new MissingBackpressureException("Queue is full?!");
                 done = true;
             }
             trySchedule();
         }
-        
+
         @Override
         public final void onError(Throwable t) {
             error = t;
             done = true;
             trySchedule();
         }
-        
+
         @Override
         public final void onComplete() {
             done = true;
             trySchedule();
         }
-        
+
         @Override
         public final void request(long n) {
             if (SubscriptionHelper.validate(n)) {
@@ -169,17 +169,17 @@ final Scheduler scheduler;
                 trySchedule();
             }
         }
-        
+
         @Override
         public final void cancel() {
             if (cancelled) {
                 return;
             }
-            
+
             cancelled = true;
             s.cancel();
             worker.dispose();
-            
+
             if (getAndIncrement() == 0) {
                 queue.clear();
             }
@@ -191,7 +191,7 @@ final Scheduler scheduler;
             }
             worker.schedule(this);
         }
-        
+
         @Override
         public final void run() {
             if (outputFused) {
@@ -202,13 +202,13 @@ final Scheduler scheduler;
                 runAsync();
             }
         }
-        
+
         abstract void runBackfused();
-        
+
         abstract void runSync();
-        
+
         abstract void runAsync();
-        
+
         final boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a) {
             if (cancelled) {
                 queue.clear();
@@ -249,7 +249,7 @@ final Scheduler scheduler;
                 worker.dispose();
             }
         }
-        
+
         final void doError(Subscriber<?> a, Throwable e) {
             try {
                 a.onError(e);
@@ -271,20 +271,20 @@ final Scheduler scheduler;
         public final void clear() {
             queue.clear();
         }
-        
+
         @Override
         public final boolean isEmpty() {
             return queue.isEmpty();
         }
     }
-    
+
     static final class PublisherObserveOnSubscriber<T> extends BaseObserveOnSubscriber<T>
     implements Subscriber<T> {
         /** */
         private static final long serialVersionUID = -4547113800637756442L;
 
         final Subscriber<? super T> actual;
-        
+
         public PublisherObserveOnSubscriber(
                 Subscriber<? super T> actual,
                 Worker worker,
@@ -293,38 +293,38 @@ final Scheduler scheduler;
             super(worker, delayError, prefetch);
             this.actual = actual;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")
                     QueueSubscription<T> f = (QueueSubscription<T>) s;
-                    
+
                     int m = f.requestFusion(ANY | BOUNDARY);
-                    
+
                     if (m == SYNC) {
                         sourceMode = SYNC;
                         queue = f;
                         done = true;
-                        
+
                         actual.onSubscribe(this);
                         return;
                     } else
                     if (m == ASYNC) {
                         sourceMode = ASYNC;
                         queue = f;
-                        
+
                         actual.onSubscribe(this);
-                        
+
                         initialRequest();
-                        
+
                         return;
                     }
                 }
-                
+
                 queue = new SpscArrayQueue<T>(prefetch);
 
                 actual.onSubscribe(this);
@@ -332,7 +332,7 @@ final Scheduler scheduler;
                 initialRequest();
             }
         }
-        
+
         @Override
         void runSync() {
             int missed = 1;
@@ -491,17 +491,17 @@ final Scheduler scheduler;
         @Override
         void runBackfused() {
             int missed = 1;
-            
+
             for (;;) {
-                
+
                 if (cancelled) {
                     return;
                 }
-                
+
                 boolean d = done;
-                
+
                 actual.onNext(null);
-                
+
                 if (d) {
                     Throwable e = error;
                     if (e != null) {
@@ -511,7 +511,7 @@ final Scheduler scheduler;
                     }
                     return;
                 }
-                
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
@@ -533,7 +533,7 @@ final Scheduler scheduler;
             }
             return v;
         }
-        
+
     }
 
     static final class PublisherObserveOnConditionalSubscriber<T>
@@ -542,7 +542,7 @@ final Scheduler scheduler;
         private static final long serialVersionUID = 644624475404284533L;
 
         final ConditionalSubscriber<? super T> actual;
-        
+
         long consumed;
 
         public PublisherObserveOnConditionalSubscriber(
@@ -553,40 +553,40 @@ final Scheduler scheduler;
             super(worker, delayError, prefetch);
             this.actual = actual;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")
                     QueueSubscription<T> f = (QueueSubscription<T>) s;
-                    
+
                     int m = f.requestFusion(ANY | BOUNDARY);
-                    
+
                     if (m == SYNC) {
                         sourceMode = SYNC;
                         queue = f;
                         done = true;
-                        
+
                         actual.onSubscribe(this);
                         return;
                     } else
                     if (m == ASYNC) {
                         sourceMode = ASYNC;
                         queue = f;
-                        
+
                         actual.onSubscribe(this);
-                        
+
                         initialRequest();
-                        
+
                         return;
                     }
                 }
 
                 queue = new SpscArrayQueue<T>(prefetch);
-                
+
                 actual.onSubscribe(this);
 
                 initialRequest();
@@ -596,16 +596,16 @@ final Scheduler scheduler;
         @Override
         void runSync() {
             int missed = 1;
-            
+
             final ConditionalSubscriber<? super T> a = actual;
             final SimpleQueue<T> q = queue;
 
             long e = produced;
 
             for (;;) {
-                
+
                 long r = requested.get();
-                
+
                 while (e != r) {
                     T v;
                     try {
@@ -623,19 +623,19 @@ final Scheduler scheduler;
                         doComplete(a);
                         return;
                     }
-                    
+
                     if (a.tryOnNext(v)) {
                         e++;
                     }
                 }
-                
+
                 if (e == r) {
                     if (cancelled) {
                         return;
                     }
-                    
+
                     boolean empty;
-                    
+
                     try {
                         empty = q.isEmpty();
                     } catch (Throwable ex) {
@@ -643,7 +643,7 @@ final Scheduler scheduler;
                         doError(a, ex);
                         return;
                     }
-                    
+
                     if (empty) {
                         doComplete(a);
                         return;
@@ -662,21 +662,21 @@ final Scheduler scheduler;
                 }
             }
         }
-        
+
         @Override
         void runAsync() {
             int missed = 1;
-            
+
             final ConditionalSubscriber<? super T> a = actual;
             final SimpleQueue<T> q = queue;
-            
+
             long emitted = produced;
             long polled = consumed;
-            
+
             for (;;) {
-                
+
                 long r = requested.get();
-                
+
                 while (emitted != r) {
                     boolean d = done;
                     T v;
@@ -687,16 +687,16 @@ final Scheduler scheduler;
 
                         s.cancel();
                         q.clear();
-                        
+
                         doError(a, ex);
                         return;
                     }
                     boolean empty = v == null;
-                    
+
                     if (checkTerminated(d, empty, a)) {
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
@@ -704,15 +704,15 @@ final Scheduler scheduler;
                     if (a.tryOnNext(v)) {
                         emitted++;
                     }
-                    
+
                     polled++;
-                    
+
                     if (polled == limit) {
                         s.request(polled);
                         polled = 0L;
                     }
                 }
-                
+
                 if (emitted == r) {
                     boolean d = done;
                     boolean empty;
@@ -723,7 +723,7 @@ final Scheduler scheduler;
 
                         s.cancel();
                         q.clear();
-                        
+
                         doError(a, ex);
                         return;
                     }
@@ -732,7 +732,7 @@ final Scheduler scheduler;
                         return;
                     }
                 }
-                
+
                 int w = get();
                 if (missed == w) {
                     produced = emitted;
@@ -747,21 +747,21 @@ final Scheduler scheduler;
             }
 
         }
-        
+
         @Override
         void runBackfused() {
             int missed = 1;
-            
+
             for (;;) {
-                
+
                 if (cancelled) {
                     return;
                 }
-                
+
                 boolean d = done;
-                
+
                 actual.onNext(null);
-                
+
                 if (d) {
                     Throwable e = error;
                     if (e != null) {
@@ -771,14 +771,14 @@ final Scheduler scheduler;
                     }
                     return;
                 }
-                
+
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
-        
+
         @Override
         public T poll() throws Exception {
             T v = queue.poll();

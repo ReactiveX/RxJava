@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -44,7 +44,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     public static <T> Flowable<T> from(Flowable<T> source) {
         return from(source, 16);
     }
-    
+
     /**
      * Creates a cached Flowable with the given capacity hint.
      * @param <T> the value type
@@ -59,7 +59,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         CacheState<T> state = new CacheState<T>(source, capacityHint);
         return RxJavaPlugins.onAssembly(new FlowableCache<T>(source, state));
     }
-    
+
     /**
      * Private constructor because state needs to be shared between the Observable body and
      * the onSubscribe function.
@@ -77,17 +77,17 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         // we can connect first because we replay everything anyway
         ReplaySubscription<T> rp = new ReplaySubscription<T>(t, state);
         state.addProducer(rp);
-        
+
         t.onSubscribe(rp);
 
         // we ensure a single connection here to save an instance field of AtomicBoolean in state.
         if (!once.get() && once.compareAndSet(false, true)) {
             state.connect();
         }
-        
+
         // no need to call rp.replay() here because the very first request will trigger it anyway
     }
-    
+
     /**
      * Check if this cached observable is connected to its source.
      * @return true if already connected
@@ -95,7 +95,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     /* public */boolean isConnected() {
         return state.isConnected;
     }
-    
+
     /**
      * Returns true if there are observers subscribed to this observable.
      * @return true if the cache has Subscribers
@@ -103,7 +103,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     /* public */ boolean hasSubscribers() {
         return state.producers.length != 0;
     }
-    
+
     /**
      * Returns the number of events currently cached.
      * @return the number of currently cached event count
@@ -111,7 +111,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     /* public */ int cachedEventCount() {
         return state.size();
     }
-    
+
     /**
      * Contains the active child producers and the values to replay.
      *
@@ -126,15 +126,15 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         volatile ReplaySubscription<?>[] producers;
         /** The default empty array of producers. */
         static final ReplaySubscription<?>[] EMPTY = new ReplaySubscription<?>[0];
-        
+
         /** Set to true after connection. */
         volatile boolean isConnected;
-        /** 
+        /**
          * Indicates that the source has completed emitting values or the
          * Observable was forcefully terminated.
          */
         boolean sourceDone;
-        
+
         public CacheState(Flowable<? extends T> source, int capacityHint) {
             super(capacityHint);
             this.source = source;
@@ -184,14 +184,14 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 producers = b;
             }
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(connection, s)) {
                 s.request(Long.MAX_VALUE);
             }
         }
-        
+
         /**
          * Connects the cache to the source.
          * Make sure this is called only once.
@@ -238,7 +238,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
             }
         }
     }
-    
+
     /**
      * Keeps track of the current request amount and the replay position for a child Subscriber.
      *
@@ -252,14 +252,14 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         final Subscriber<? super T> child;
         /** The cache state object. */
         final CacheState<T> state;
-        
-        /** 
+
+        /**
          * Contains the reference to the buffer segment in replay.
          * Accessed after reading state.size() and when emitting == true.
          */
         Object[] currentBuffer;
-        /** 
-         * Contains the index into the currentBuffer where the next value is expected. 
+        /**
+         * Contains the index into the currentBuffer where the next value is expected.
          * Accessed after reading state.size() and when emitting == true.
          */
         int currentIndexInBuffer;
@@ -272,7 +272,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         boolean emitting;
         /** Indicates there were some state changes/replay attempts; guarded by this. */
         boolean missed;
-        
+
         public ReplaySubscription(Subscriber<? super T> child, CacheState<T> state) {
             this.child = child;
             this.state = state;
@@ -302,7 +302,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         public long produced(long n) {
             return addAndGet(-n);
         }
-        
+
         @Override
         public boolean isDisposed() {
             return get() == CANCELLED;
@@ -317,12 +317,12 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 }
             }
         }
-        
+
         @Override
         public void cancel() {
             dispose();
         }
-        
+
         /**
          * Continue replaying available values if there are requests for them.
          */
@@ -338,22 +338,22 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
             boolean skipFinal = false;
             try {
                 final Subscriber<? super T> child = this.child;
-                
+
                 for (;;) {
-                    
+
                     long r = get();
-                    
+
                     if (r < 0L) {
                         skipFinal = true;
                         return;
                     }
-                        
+
                     // read the size, if it is non-zero, we can safely read the head and
                     // read values up to the given absolute index
                     int s = state.size();
                     if (s != 0) {
                         Object[] b = currentBuffer;
-                        
+
                         // latch onto the very first buffer now that it is available.
                         if (b == null) {
                             b = state.head();
@@ -380,7 +380,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                         } else
                         if (r > 0) {
                             int valuesProduced = 0;
-                            
+
                             while (j < s && r > 0) {
                                 if (get() == CANCELLED) {
                                     skipFinal = true;
@@ -391,7 +391,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                                     k = 0;
                                 }
                                 Object o = b[k];
-                                
+
                                 try {
                                     if (NotificationLite.accept(o, child)) {
                                         skipFinal = true;
@@ -407,25 +407,25 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                                     }
                                     return;
                                 }
-                                
+
                                 k++;
                                 j++;
                                 r--;
                                 valuesProduced++;
                             }
-                            
+
                             if (get() == CANCELLED) {
                                 skipFinal = true;
                                 return;
                             }
-                            
+
                             index = j;
                             currentIndexInBuffer = k;
                             currentBuffer = b;
                             produced(valuesProduced);
                         }
                     }
-                    
+
                     synchronized (this) {
                         if (!missed) {
                             emitting = false;

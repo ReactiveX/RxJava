@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -262,8 +262,8 @@ public class ObservableObserveOnTest {
      * Attempts to confirm that when pauses exist between events, the ScheduledObserver
      * does not lose or reorder any events since the scheduler will not block, but will
      * be re-scheduled when it receives new events after each pause.
-     * 
-     * 
+     *
+     *
      * This is non-deterministic in proving success, but if it ever fails (non-deterministically)
      * it is a sign of potential issues as thread-races and scheduling should not affect output.
      */
@@ -381,11 +381,11 @@ public class ObservableObserveOnTest {
 
         final Observer<Integer> NbpObserver = TestHelper.mockObserver();
         TestObserver<Integer> ts = new TestObserver<Integer>(NbpObserver);
-        
+
         Observable.just(1, 2, 3)
                 .observeOn(testScheduler)
                 .subscribe(ts);
-        
+
         ts.dispose();
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -439,7 +439,7 @@ public class ObservableObserveOnTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
     }
-    
+
     @Test
     public void delayError() {
         Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))

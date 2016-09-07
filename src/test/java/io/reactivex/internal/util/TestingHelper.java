@@ -23,11 +23,11 @@ import io.reactivex.functions.BiConsumer;
 import io.reactivex.functions.Consumer;
 
 public final class TestingHelper {
-    
+
     private TestingHelper() {
         // prevent instantiation
     }
-    
+
     public static <T> Consumer<T> addToList(final List<T> list) {
         return new Consumer<T>() {
 

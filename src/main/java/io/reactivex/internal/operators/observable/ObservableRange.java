@@ -32,27 +32,27 @@ public final class ObservableRange extends Observable<Integer> {
         o.onSubscribe(parent);
         parent.run();
     }
-    
-    static final class RangeDisposable 
+
+    static final class RangeDisposable
     extends AtomicInteger
     implements QueueDisposable<Integer> {
         /** */
         private static final long serialVersionUID = 396518478098735504L;
 
         final Observer<? super Integer> actual;
-        
+
         final long end;
-        
+
         long index;
-        
+
         boolean fused;
-        
+
         public RangeDisposable(Observer<? super Integer> actual, long start, long end) {
             this.actual = actual;
             this.index = start;
             this.end = end;
         }
-        
+
         void run() {
             if (fused) {
                 return;

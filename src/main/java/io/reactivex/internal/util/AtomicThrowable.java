@@ -16,7 +16,7 @@ package io.reactivex.internal.util;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Atomic container for Throwables including combining and having a 
+ * Atomic container for Throwables including combining and having a
  * terminal state via ExceptionHelper.
  * <p>
  * Watch out for the leaked AtomicReference methods!
@@ -34,7 +34,7 @@ public final class AtomicThrowable extends AtomicReference<Throwable> {
     public boolean addThrowable(Throwable t) {
         return ExceptionHelper.addThrowable(this, t);
     }
-    
+
     /**
      * Atomically terminate the container and return the contents of the last
      * non-terminal Throwable of it.
@@ -43,7 +43,7 @@ public final class AtomicThrowable extends AtomicReference<Throwable> {
     public Throwable terminate() {
         return ExceptionHelper.terminate(this);
     }
-    
+
     public boolean isTerminated() {
         return get() == ExceptionHelper.TERMINATED;
     }

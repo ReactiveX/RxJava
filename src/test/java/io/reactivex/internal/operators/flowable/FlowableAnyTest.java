@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -38,9 +38,9 @@ public class FlowableAnyTest {
         });
 
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
-        
+
         observable.subscribe(observer);
-        
+
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -55,7 +55,7 @@ public class FlowableAnyTest {
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, never()).onNext(true);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -75,7 +75,7 @@ public class FlowableAnyTest {
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -90,7 +90,7 @@ public class FlowableAnyTest {
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, never()).onNext(true);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -110,7 +110,7 @@ public class FlowableAnyTest {
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -125,7 +125,7 @@ public class FlowableAnyTest {
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -145,7 +145,7 @@ public class FlowableAnyTest {
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -165,7 +165,7 @@ public class FlowableAnyTest {
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -185,7 +185,7 @@ public class FlowableAnyTest {
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -206,7 +206,7 @@ public class FlowableAnyTest {
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -222,7 +222,7 @@ public class FlowableAnyTest {
                 return i % 2 == 0;
             }
         });
-        
+
         assertTrue(anyEven.blockingFirst());
     }
     @Test(timeout = 5000)
@@ -234,14 +234,14 @@ public class FlowableAnyTest {
                     return Flowable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
-        
+
         assertEquals((Object)2, source.blockingFirst());
     }
-    
+
     @Test
     public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0L);
-        
+
         Flowable.just(1).any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t) {
@@ -249,12 +249,12 @@ public class FlowableAnyTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotComplete();
     }
-    
+
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(1L);
@@ -264,25 +264,25 @@ public class FlowableAnyTest {
                 return true;
             }
         }).subscribe(ts);
-        
+
         ts.assertTerminated();
         ts.assertNoErrors();
         ts.assertComplete();
         ts.assertValue(true);
     }
-    
+
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
-        
+
         Flowable.just("Boo!").any(new Predicate<String>() {
             @Override
             public boolean test(String v) {
                 throw ex;
             }
         }).subscribe(ts);
-        
+
         ts.assertTerminated();
         ts.assertNoValues();
         ts.assertNotComplete();

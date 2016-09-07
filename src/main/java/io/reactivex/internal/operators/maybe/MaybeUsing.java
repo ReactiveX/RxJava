@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -34,11 +34,11 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class MaybeUsing<T, D> extends Maybe<T> {
 
     final Callable<? extends D> resourceSupplier;
-    
+
     final Function<? super D, ? extends MaybeSource<? extends T>> sourceSupplier;
-    
+
     final Consumer<? super D> resourceDisposer;
-    
+
     final boolean eager;
 
     public MaybeUsing(Callable<? extends D> resourceSupplier,
@@ -54,7 +54,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
         D resource;
-        
+
         try {
             resource = resourceSupplier.call();
         } catch (Throwable ex) {
@@ -62,9 +62,9 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
             EmptyDisposable.error(ex, observer);
             return;
         }
-        
+
         MaybeSource<? extends T> source;
-        
+
         try {
             source = ObjectHelper.requireNonNull(sourceSupplier.apply(resource), "The sourceSupplier returned a null MaybeSource");
         } catch (Throwable ex) {
@@ -78,9 +78,9 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
                     return;
                 }
             }
-            
+
             EmptyDisposable.error(ex, observer);
-            
+
             if (!eager) {
                 try {
                     resourceDisposer.accept(resource);
@@ -91,25 +91,25 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
             }
             return;
         }
-        
+
         source.subscribe(new UsingObserver<T, D>(observer, resource, resourceDisposer, eager));
     }
-    
-    static final class UsingObserver<T, D> 
+
+    static final class UsingObserver<T, D>
     extends AtomicReference<Object>
     implements MaybeObserver<T>, Disposable {
-        
+
         /** */
         private static final long serialVersionUID = -674404550052917487L;
 
         final MaybeObserver<? super T> actual;
-        
+
         final Consumer<? super D> disposer;
-        
+
         final boolean eager;
-        
+
         Disposable d;
-        
+
         public UsingObserver(MaybeObserver<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
             super(resource);
             this.actual = actual;
@@ -123,7 +123,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
             d = DisposableHelper.DISPOSED;
             disposeResourceAfter();
         }
-        
+
         @SuppressWarnings("unchecked")
         void disposeResourceAfter() {
             Object resource = getAndSet(this);
@@ -146,7 +146,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
-                
+
                 actual.onSubscribe(this);
             }
         }
@@ -169,9 +169,9 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
                     return;
                 }
             }
-            
+
             actual.onSuccess(value);
-            
+
             if (!eager) {
                 disposeResourceAfter();
             }
@@ -194,9 +194,9 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
                     return;
                 }
             }
-            
+
             actual.onError(e);
-            
+
             if (!eager) {
                 disposeResourceAfter();
             }
@@ -220,9 +220,9 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
                     return;
                 }
             }
-            
+
             actual.onComplete();
-            
+
             if (!eager) {
                 disposeResourceAfter();
             }

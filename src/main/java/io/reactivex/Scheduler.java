@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -23,7 +23,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * A {@code Scheduler} is an object that specifies an API for scheduling
- * units of work with or without delays or periodically. 
+ * units of work with or without delays or periodically.
  * You can get common instances of this class in {@link io.reactivex.schedulers.Schedulers}.
  */
 public abstract class Scheduler {
@@ -47,8 +47,8 @@ public abstract class Scheduler {
     public static long clockDriftTolerance() {
         return CLOCK_DRIFT_TOLERANCE_NANOSECONDS;
     }
-    
-    
+
+
     /**
      * Retrieves or creates a new {@link Scheduler.Worker} that represents serial execution of actions.
      * <p>
@@ -70,35 +70,35 @@ public abstract class Scheduler {
         return unit.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
-    /** 
-     * Allows the Scheduler instance to start threads 
+    /**
+     * Allows the Scheduler instance to start threads
      * and accept tasks on them.
      * <p>Implementations should make sure the call is idempotent and thread-safe.
      * @since 2.0
      */
     public void start() {
-        
+
     }
-    
-    /** 
-     * Instructs the Scheduler instance to stop threads 
-     * and stop accepting tasks on any outstanding Workers. 
+
+    /**
+     * Instructs the Scheduler instance to stop threads
+     * and stop accepting tasks on any outstanding Workers.
      * <p>Implementations should make sure the call is idempotent and thread-safe.
      * @since 2.0
      */
     public void shutdown() {
-        
+
     }
-    
+
     /**
      * Schedules the given task on this scheduler non-delayed execution.
-     * 
+     *
      * <p>
      * This method is safe to be called from multiple threads but there are no
      * ordering guarantees between tasks.
-     * 
+     *
      * @param run the task to execute
-     * 
+     *
      * @return the Disposable instance that let's one cancel this particular task.
      * @since 2.0
      */
@@ -108,11 +108,11 @@ public abstract class Scheduler {
 
     /**
      * Schedules the execution of the given task with the given delay amount.
-     * 
+     *
      * <p>
      * This method is safe to be called from multiple threads but there are no
      * ordering guarantees between tasks.
-     * 
+     *
      * @param run the task to schedule
      * @param delay the delay amount, non-positive values indicate non-delayed scheduling
      * @param unit the unit of measure of the delay amount
@@ -121,9 +121,9 @@ public abstract class Scheduler {
      */
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         final Worker w = createWorker();
-        
+
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
-        
+
         w.schedule(new Runnable() {
             @Override
             public void run() {
@@ -134,21 +134,21 @@ public abstract class Scheduler {
                 }
             }
         }, delay, unit);
-        
+
         return w;
     }
-    
+
     /**
      * Schedules a periodic execution of the given task with the given initial delay and period.
-     * 
+     *
      * <p>
      * This method is safe to be called from multiple threads but there are no
      * ordering guarantees between tasks.
-     * 
+     *
      * <p>
      * The periodic execution is at a fixed rate, that is, the first execution will be after the initial
      * delay, the second after initialDelay + period, the third after initialDelay + 2 * period, and so on.
-     * 
+     *
      * @param run the task to schedule
      * @param initialDelay the initial delay amount, non-positive values indicate non-delayed scheduling
      * @param period the period at which the task should be re-executed
@@ -158,13 +158,13 @@ public abstract class Scheduler {
      */
     public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
         final Worker w = createWorker();
-        
+
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
         PeriodicDirectTask periodicTask = new PeriodicDirectTask(decoratedRun, w);
-        
+
         w.schedulePeriodically(periodicTask, initialDelay, period, unit);
-        
+
         return periodicTask;
     }
 
@@ -176,9 +176,9 @@ public abstract class Scheduler {
     public static abstract class Worker implements Disposable {
         /**
          * Schedules a Runnable for execution without delay.
-         * 
+         *
          * <p>The default implementation delegates to {@link #schedule(Runnable, long, TimeUnit)}.
-         * 
+         *
          * @param run
          *            Runnable to schedule
          * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
@@ -186,7 +186,7 @@ public abstract class Scheduler {
         public Disposable schedule(Runnable run) {
             return schedule(run, 0L, TimeUnit.NANOSECONDS);
         }
-        
+
         /**
          * Schedules an Runnable for execution at some point in the future.
          * <p>
@@ -228,7 +228,7 @@ public abstract class Scheduler {
             final SequentialDisposable first = new SequentialDisposable();
 
             final SequentialDisposable sd = new SequentialDisposable(first);
-            
+
             final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
             final long periodInNanoseconds = unit.toNanos(period);
@@ -237,10 +237,10 @@ public abstract class Scheduler {
 
             first.replace(schedule(new PeriodicTask(firstStartInNanoseconds, decoratedRun, firstNowNanoseconds, sd,
                     periodInNanoseconds), initialDelay, unit));
-            
+
             return sd;
         }
-        
+
         /**
          * Returns the 'current time' of the Worker in the specified time unit.
          * @param unit the time unit
@@ -289,7 +289,7 @@ public abstract class Scheduler {
                     if (nowNanoseconds + CLOCK_DRIFT_TOLERANCE_NANOSECONDS < lastNowNanoseconds
                             || nowNanoseconds >= lastNowNanoseconds + periodInNanoseconds + CLOCK_DRIFT_TOLERANCE_NANOSECONDS) {
                         nextTick = nowNanoseconds + periodInNanoseconds;
-                        /* 
+                        /*
                          * Shift the start point back by the drift as if the whole thing
                          * started count periods ago.
                          */
@@ -305,20 +305,20 @@ public abstract class Scheduler {
             }
         }
     }
-    
-    static class PeriodicDirectTask 
+
+    static class PeriodicDirectTask
     implements Runnable, Disposable {
         final Runnable run;
 
         final Worker worker;
-        
+
         volatile boolean disposed;
 
         public PeriodicDirectTask(Runnable run, Worker worker) {
             this.run = run;
             this.worker = worker;
         }
-        
+
         @Override
         public void run() {
             if (!disposed) {
@@ -331,7 +331,7 @@ public abstract class Scheduler {
                 }
             }
         }
-        
+
         @Override
         public void dispose() {
             disposed = true;

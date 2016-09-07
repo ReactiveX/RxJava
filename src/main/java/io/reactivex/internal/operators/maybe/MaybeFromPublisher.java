@@ -31,22 +31,22 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class MaybeFromPublisher<T> extends Maybe<T> implements HasUpstreamPublisher<T> {
 
     final Publisher<T> source;
-    
+
     public MaybeFromPublisher(Publisher<T> source) {
         this.source = source;
     }
-    
+
     @Override
     public Publisher<T> source() {
         return source;
     }
-    
+
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
         source.subscribe(new FromPublisherToMaybeObserver<T>(observer));
     }
-    
-    static final class FromPublisherToMaybeObserver<T> 
+
+    static final class FromPublisherToMaybeObserver<T>
     extends AtomicReference<Subscription>
     implements Subscriber<T>, Disposable {
         /** */
@@ -55,7 +55,7 @@ public final class MaybeFromPublisher<T> extends Maybe<T> implements HasUpstream
         final MaybeObserver<? super T> actual;
 
         T value;
-        
+
         public FromPublisherToMaybeObserver(MaybeObserver<? super T> observer) {
             this.actual = observer;
         }
@@ -74,7 +74,7 @@ public final class MaybeFromPublisher<T> extends Maybe<T> implements HasUpstream
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(this, s)) {
                 actual.onSubscribe(this);
-                
+
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -114,7 +114,7 @@ public final class MaybeFromPublisher<T> extends Maybe<T> implements HasUpstream
                 }
             }
         }
-        
-        
+
+
     }
 }

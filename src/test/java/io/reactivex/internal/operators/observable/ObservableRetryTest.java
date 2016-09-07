@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -41,7 +41,7 @@ public class ObservableRetryTest {
     @Test
     public void iterativeBackoff() {
         Observer<String> consumer = TestHelper.mockObserver();
-        
+
         Observable<String> producer = Observable.unsafeCreate(new ObservableSource<String>() {
 
             private AtomicInteger count = new AtomicInteger(4);
@@ -56,10 +56,10 @@ public class ObservableRetryTest {
                     t1.onNext("hello");
                     t1.onComplete();
                 }
-                else 
+                else
                     t1.onError(new RuntimeException());
             }
-            
+
         });
         TestObserver<String> ts = new TestObserver<String>(consumer);
         producer.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
@@ -82,7 +82,7 @@ public class ObservableRetryTest {
                         @Override
                         public Observable<Long> apply(Tuple t) {
                             System.out.println("Retry # "+t.count);
-                            return t.count > 20 ? 
+                            return t.count > 20 ?
                                 Observable.<Long>error(t.n) :
                                 Observable.timer(t.count *1L, TimeUnit.MILLISECONDS);
                     }}).cast(Object.class);
@@ -435,7 +435,7 @@ public class ObservableRetryTest {
                             subsCount.decrementAndGet();
                     }
                 }));
-                
+
             }
         };
         Observable<String> stream = Observable.unsafeCreate(onSubscribe);
@@ -571,9 +571,9 @@ public class ObservableRetryTest {
 
         protected Observer<T> target;
 
-        /** 
+        /**
          * Wrap existing NbpObserver
-         * @param target the target nbp subscriber 
+         * @param target the target nbp subscriber
          */
         public AsyncObserver(Observer<T> target) {
             this.target = target;
@@ -655,7 +655,7 @@ public class ObservableRetryTest {
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
-    
+
     @Test//(timeout = 15000)
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
@@ -667,7 +667,7 @@ public class ObservableRetryTest {
                 TestObserver<String> ts = new TestObserver<String>(NbpObserver);
                 origin.retry().observeOn(Schedulers.computation()).subscribe(ts);
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
-                
+
                 InOrder inOrder = inOrder(NbpObserver);
                 // should have no errors
                 verify(NbpObserver, never()).onError(any(Throwable.class));
@@ -681,7 +681,7 @@ public class ObservableRetryTest {
             }
         }
     }
-    
+
     @Test//(timeout = 15000)
     public void testRetryWithBackpressureParallel() throws InterruptedException {
         final int NUM_LOOPS = 1;
@@ -794,7 +794,7 @@ public class ObservableRetryTest {
                         return "msg: " + count.incrementAndGet();
                     }
                 });
-        
+
         origin.retry()
         .groupBy(new Function<String, String>() {
             @Override
@@ -809,7 +809,7 @@ public class ObservableRetryTest {
             }
         })
         .subscribe(new TestObserver<String>(NbpObserver));
-        
+
         InOrder inOrder = inOrder(NbpObserver);
         // should show 3 attempts
         inOrder.verify(NbpObserver, times(NUM_MSG)).onNext(any(java.lang.String.class));
@@ -834,11 +834,11 @@ public class ObservableRetryTest {
                 o.onSubscribe(Disposables.empty());
                 for(int i=0; i<NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());
-                }   
+                }
                 o.onComplete();
             }
         });
-        
+
         origin.retry()
         .groupBy(new Function<String, String>() {
             @Override
@@ -853,7 +853,7 @@ public class ObservableRetryTest {
             }
         })
         .subscribe(new TestObserver<String>(NbpObserver));
-        
+
         InOrder inOrder = inOrder(NbpObserver);
         // should show 3 attempts
         inOrder.verify(NbpObserver, times(NUM_MSG)).onNext(any(java.lang.String.class));

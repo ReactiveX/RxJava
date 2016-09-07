@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -29,38 +29,38 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
         super(source);
         this.predicate = predicate;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super T> s) {
         SequentialDisposable sa = new SequentialDisposable();
         s.onSubscribe(sa);
-        
+
         RetryBiSubscriber<T> rs = new RetryBiSubscriber<T>(s, predicate, sa, source);
         rs.subscribeNext();
     }
-    
+
     static final class RetryBiSubscriber<T> extends AtomicInteger implements Observer<T> {
         /** */
         private static final long serialVersionUID = -7098360935104053232L;
-        
+
         final Observer<? super T> actual;
         final SequentialDisposable sa;
         final ObservableSource<? extends T> source;
         final BiPredicate<? super Integer, ? super Throwable> predicate;
         int retries;
-        public RetryBiSubscriber(Observer<? super T> actual, 
+        public RetryBiSubscriber(Observer<? super T> actual,
                 BiPredicate<? super Integer, ? super Throwable> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;
             this.predicate = predicate;
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             sa.update(s);
         }
-        
+
         @Override
         public void onNext(T t) {
             actual.onNext(t);
@@ -81,12 +81,12 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
             }
             subscribeNext();
         }
-        
+
         @Override
         public void onComplete() {
             actual.onComplete();
         }
-        
+
         /**
          * Subscribes to the source again via trampolining.
          */
@@ -98,7 +98,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
                         return;
                     }
                     source.subscribe(this);
-                    
+
                     missed = addAndGet(-missed);
                     if (missed == 0) {
                         break;

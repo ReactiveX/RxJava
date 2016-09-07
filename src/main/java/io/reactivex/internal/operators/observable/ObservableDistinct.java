@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -32,13 +32,13 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
         this.predicateSupplier = predicateSupplier;
         this.keySelector = keySelector;
     }
-    
+
     public static <T, K> ObservableDistinct<T, K> withCollection(ObservableSource<T> source, final Function<? super T, K> keySelector, final Callable<? extends Collection<? super K>> collectionSupplier) {
         Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
             @Override
             public Predicate<K> call() throws Exception {
                 final Collection<? super K> coll = collectionSupplier.call();
-                
+
                 return new Predicate<K>() {
                     @Override
                     public boolean test(K t) {
@@ -51,16 +51,16 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
                 };
             }
         };
-        
+
         return new ObservableDistinct<T, K>(source, keySelector, p);
     }
-    
+
     public static <T> ObservableDistinct<T, T> untilChanged(ObservableSource<T> source) {
         Callable<? extends Predicate<? super T>> p = new Callable<Predicate<T>>() {
             @Override
             public Predicate<T> call() {
                 final Object[] last = { null };
-                
+
                 return new Predicate<T>() {
                     @Override
                     public boolean test(T t) {
@@ -83,7 +83,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             @Override
             public Predicate<K> call() {
                 final Object[] last = { null };
-                
+
                 return new Predicate<K>() {
                     @Override
                     public boolean test(K t) {
@@ -101,7 +101,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
         return new ObservableDistinct<T, K>(source, keySelector, p);
     }
 
-    
+
     @Override
     public void subscribeActual(Observer<? super T> t) {
         Predicate<? super K> coll;
@@ -112,20 +112,20 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             EmptyDisposable.error(e, t);
             return;
         }
-        
+
         if (coll == null) {
             EmptyDisposable.error(new NullPointerException("predicateSupplier returned null"), t);
             return;
         }
-        
+
         source.subscribe(new DistinctSubscriber<T, K>(t, keySelector, coll));
     }
-    
+
     static final class DistinctSubscriber<T, K> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Predicate<? super K> predicate;
         final Function<? super T, K> keySelector;
-        
+
         Disposable s;
 
         public DistinctSubscriber(Observer<? super T> actual, Function<? super T, K> keySelector, Predicate<? super K> predicate) {
@@ -141,13 +141,13 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
                 actual.onSubscribe(this);
             }
         }
-        
+
 
         @Override
         public void dispose() {
             s.dispose();
         }
-        
+
         @Override
         public boolean isDisposed() {
             return s.isDisposed();
@@ -156,7 +156,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
         @Override
         public void onNext(T t) {
             K key;
-            
+
             try {
                 key = keySelector.apply(t);
             } catch (Throwable e) {
@@ -165,14 +165,14 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
                 actual.onError(e);
                 return;
             }
-            
+
             if (key == null) {
                 s.dispose();
                 actual.onError(new NullPointerException("Null key supplied"));
                 return;
             }
-            
-            
+
+
             boolean b;
             try {
                 b = predicate.test(key);
@@ -182,12 +182,12 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
                 actual.onError(e);
                 return;
             }
-            
+
             if (b) {
                 actual.onNext(t);
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             try {
@@ -199,7 +199,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             }
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             try {

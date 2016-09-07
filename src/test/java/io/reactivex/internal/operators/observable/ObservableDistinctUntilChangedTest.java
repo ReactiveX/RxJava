@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -130,13 +130,13 @@ public class ObservableDistinctUntilChangedTest {
         inOrder.verify(w, never()).onNext(anyString());
         inOrder.verify(w, never()).onComplete();
     }
-    
+
     @Test
     public void customComparator() {
         Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
-        
+
         TestObserver<String> ts = TestObserver.create();
-        
+
         source.distinctUntilChanged(new BiPredicate<String, String>() {
             @Override
             public boolean test(String a, String b) {
@@ -144,7 +144,7 @@ public class ObservableDistinctUntilChangedTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertValues("a", "b", "A", "C");
         ts.assertNoErrors();
         ts.assertComplete();
@@ -153,9 +153,9 @@ public class ObservableDistinctUntilChangedTest {
     @Test
     public void customComparatorThrows() {
         Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
-        
+
         TestObserver<String> ts = TestObserver.create();
-        
+
         source.distinctUntilChanged(new BiPredicate<String, String>() {
             @Override
             public boolean test(String a, String b) {
@@ -163,7 +163,7 @@ public class ObservableDistinctUntilChangedTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertValue("a");
         ts.assertNotComplete();
         ts.assertError(TestException.class);

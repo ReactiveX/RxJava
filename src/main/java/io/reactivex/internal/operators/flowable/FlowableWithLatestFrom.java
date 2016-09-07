@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -36,7 +36,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
     protected void subscribeActual(Subscriber<? super R> s) {
         final SerializedSubscriber<R> serial = new SerializedSubscriber<R>(s);
         final WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<T, U, R>(serial, combiner);
-        
+
         other.subscribe(new Subscriber<U>() {
             @Override
             public void onSubscribe(Subscription s) {
@@ -44,35 +44,35 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
                     s.request(Long.MAX_VALUE);
                 }
             }
-            
+
             @Override
             public void onNext(U t) {
                 wlf.lazySet(t);
             }
-            
+
             @Override
             public void onError(Throwable t) {
                 wlf.otherError(t);
             }
-            
+
             @Override
             public void onComplete() {
                 // nothing to do, the wlf will complete on its own pace
             }
         });
-        
+
         source.subscribe(wlf);
     }
-    
+
     static final class WithLatestFromSubscriber<T, U, R> extends AtomicReference<U> implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = -312246233408980075L;
-        
+
         final Subscriber<? super R> actual;
         final BiFunction<? super T, ? super U, ? extends R> combiner;
-        
+
         final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
-        
+
         final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
 
         public WithLatestFromSubscriber(Subscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
@@ -85,7 +85,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             U u = get();
@@ -102,24 +102,24 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
                 actual.onNext(r);
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             SubscriptionHelper.cancel(other);
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             SubscriptionHelper.cancel(other);
             actual.onComplete();
         }
-        
+
         @Override
         public void request(long n) {
             s.get().request(n);
         }
-        
+
         @Override
         public void cancel() {
             s.get().cancel();
@@ -143,7 +143,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
                 }
             }
         }
-        
+
         public void otherError(Throwable e) {
             if (s.compareAndSet(null, SubscriptionHelper.CANCELLED)) {
                 EmptySubscription.error(e, actual);

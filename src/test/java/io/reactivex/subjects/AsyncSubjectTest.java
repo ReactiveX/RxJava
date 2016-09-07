@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -189,7 +189,7 @@ public class AsyncSubjectTest {
         /*
          * With non-threadsafe code this fails most of the time on my dev laptop and is non-deterministic enough
          * to act as a unit test to the race conditions.
-         * 
+         *
          * With the synchronization code in place I can not get this to fail on my laptop.
          */
         for (int i = 0; i < 50; i++) {
@@ -261,7 +261,7 @@ public class AsyncSubjectTest {
         @Override
         public void run() {
             try {
-                // a timeout exception will happen if we don't get a terminal state 
+                // a timeout exception will happen if we don't get a terminal state
                 String v = subject.timeout(2000, TimeUnit.MILLISECONDS).blockingSingle();
                 value.set(v);
             } catch (Exception e) {
@@ -269,7 +269,7 @@ public class AsyncSubjectTest {
             }
         }
     }
-    
+
     // FIXME subscriber methods are not allowed to throw
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery() {
@@ -285,11 +285,11 @@ public class AsyncSubjectTest {
 //        } catch (OnErrorNotImplementedException e) {
 //            // ignore
 //        }
-//        // even though the onError above throws we should still receive it on the other subscriber 
+//        // even though the onError above throws we should still receive it on the other subscriber
 //        assertEquals(1, ts.getOnErrorEvents().size());
 //    }
-    
-    
+
+
     // FIXME subscriber methods are not allowed to throw
 //    /**
 //     * This one has multiple failures so should get a CompositeException
@@ -313,28 +313,28 @@ public class AsyncSubjectTest {
 //            // we should have 5 of them
 //            assertEquals(5, e.getExceptions().size());
 //        }
-//        // even though the onError above throws we should still receive it on the other subscriber 
+//        // even though the onError above throws we should still receive it on the other subscriber
 //        assertEquals(1, ts.getOnErrorEvents().size());
 //    }
 
     @Test
     public void testCurrentStateMethodsNormal() {
         AsyncSubject<Object> as = AsyncSubject.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onNext(1);
-        
+
         assertFalse(as.hasValue()); // AS no longer reports a value until it has completed
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getValue()); // AS no longer reports a value until it has completed
         assertNull(as.getThrowable());
-        
+
         as.onComplete();
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());
@@ -342,19 +342,19 @@ public class AsyncSubjectTest {
         assertEquals(1, as.getValue());
         assertNull(as.getThrowable());
     }
-    
+
     @Test
     public void testCurrentStateMethodsEmpty() {
         AsyncSubject<Object> as = AsyncSubject.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onComplete();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertTrue(as.hasComplete());
@@ -364,15 +364,15 @@ public class AsyncSubjectTest {
     @Test
     public void testCurrentStateMethodsError() {
         AsyncSubject<Object> as = AsyncSubject.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onError(new TestException());
-        
+
         assertFalse(as.hasValue());
         assertTrue(as.hasThrowable());
         assertFalse(as.hasComplete());
@@ -380,40 +380,40 @@ public class AsyncSubjectTest {
         assertTrue(as.getThrowable() instanceof TestException);
     }
 
-    
+
     @Test
     public void fusionLive() {
         AsyncSubject<Integer> ap = new AsyncSubject<Integer>();
-        
+
         TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
-        
+
         ap.subscribe(ts);
-        
+
         ts
         .assertOf(ObserverFusion.<Integer>assertFuseable())
         .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC));
-        
+
         ts.assertNoValues().assertNoErrors().assertNotComplete();
-        
+
         ap.onNext(1);
-        
+
         ts.assertNoValues().assertNoErrors().assertNotComplete();
-        
+
         ap.onComplete();
-        
+
         ts.assertResult(1);
     }
-    
+
     @Test
     public void fusionOfflie() {
         AsyncSubject<Integer> ap = new AsyncSubject<Integer>();
         ap.onNext(1);
         ap.onComplete();
-        
+
         TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
-        
+
         ap.subscribe(ts);
-        
+
         ts
         .assertOf(ObserverFusion.<Integer>assertFuseable())
         .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))

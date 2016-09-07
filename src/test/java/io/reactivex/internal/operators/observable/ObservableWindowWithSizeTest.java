@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -201,7 +201,7 @@ public class ObservableWindowWithSizeTest {
         }
         return list;
     }
-    
+
 
     public static Observable<Integer> hotStream() {
         return Observable.unsafeCreate(new ObservableSource<Integer>() {
@@ -226,13 +226,13 @@ public class ObservableWindowWithSizeTest {
             }
         }).subscribeOn(Schedulers.newThread()); // use newThread since we are using sleep to block
     }
-    
+
     @Test
     public void testTakeFlatMapCompletes() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         final int indicator = 999999999;
-        
+
         hotStream()
         .window(10)
         .take(2)
@@ -242,7 +242,7 @@ public class ObservableWindowWithSizeTest {
                 return w.startWith(indicator);
             }
         }).subscribe(ts);
-        
+
         ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
         ts.assertComplete();
         ts.assertValueCount(22);

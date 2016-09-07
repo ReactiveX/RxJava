@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,7 +30,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * @return true if the subject has any Observers
      */
     public abstract boolean hasObservers();
-    
+
     /**
      * Returns true if the subject has reached a terminal state through an error event.
      * <p>The method is thread-safe.
@@ -39,7 +39,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * &see {@link #hasComplete()}
      */
     public abstract boolean hasThrowable();
-    
+
     /**
      * Returns true if the subject has reached a terminal state through a complete event.
      * <p>The method is thread-safe.
@@ -47,7 +47,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * @see #hasThrowable()
      */
     public abstract boolean hasComplete();
-    
+
     /**
      * Returns the error that caused the Subject to terminate or null if the Subject
      * hasn't terminated yet.
@@ -56,7 +56,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * hasn't terminated yet
      */
     public abstract Throwable getThrowable();
-    
+
     /**
      * Wraps this Subject and serializes the calls to the onSubscribe, onNext, onError and
      * onComplete methods, making them thread-safe.

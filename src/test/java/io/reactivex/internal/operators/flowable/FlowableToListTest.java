@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -41,7 +41,7 @@ public class FlowableToListTest {
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
-    
+
     @Test
     public void testListViaObservable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
@@ -99,15 +99,15 @@ public class FlowableToListTest {
     public void testBackpressureHonored() {
         Flowable<List<Integer>> w = Flowable.just(1, 2, 3, 4, 5).toList();
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
-        
+
         w.subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotComplete();
-        
+
         ts.request(1);
-        
+
         ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
         ts.assertNoErrors();
         ts.assertComplete();
@@ -133,7 +133,7 @@ public class FlowableToListTest {
                 final CyclicBarrier cb = new CyclicBarrier(2);
                 final TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
                 sorted.subscribe(ts);
-                
+
                 w.schedule(new Runnable() {
                     @Override
                     public void run() {
@@ -162,7 +162,7 @@ public class FlowableToListTest {
             ex.printStackTrace();
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void capacityHint() {

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
  * to them may lead to undefined state in the currently subscribed Observers.
- * 
+ *
  * @param <T> the value type
  */
 
@@ -39,13 +39,13 @@ public final class AsyncSubject<T> extends Subject<T> {
     static final AsyncDisposable[] TERMINATED = new AsyncDisposable[0];
 
     final AtomicReference<AsyncDisposable<T>[]> subscribers;
-    
+
     /** Write before updating subscribers, read after reading subscribers as TERMINATED. */
     Throwable error;
-    
+
     /** Write before updating subscribers, read after reading subscribers as TERMINATED. */
     T value;
-    
+
     /**
      * Creates a new AsyncProcessor.
      * @param <T> the value type to be received and emitted
@@ -54,7 +54,7 @@ public final class AsyncSubject<T> extends Subject<T> {
     public static <T> AsyncSubject<T> create() {
         return new AsyncSubject<T>();
     }
-    
+
     /**
      * Constructs an AsyncSubject.
      * @since 2.0
@@ -82,7 +82,7 @@ public final class AsyncSubject<T> extends Subject<T> {
         }
         value = t;
     }
-    
+
     @SuppressWarnings("unchecked")
     void nullOnNext() {
         value = null;
@@ -184,19 +184,19 @@ public final class AsyncSubject<T> extends Subject<T> {
             if (a == TERMINATED) {
                 return false;
             }
-            
+
             int n = a.length;
             @SuppressWarnings("unchecked")
             AsyncDisposable<T>[] b = new AsyncDisposable[n + 1];
             System.arraycopy(a, 0, b, 0, n);
             b[n] = ps;
-            
+
             if (subscribers.compareAndSet(a, b)) {
                 return true;
             }
         }
     }
-    
+
     /**
      * Atomically removes the given subscriber if it is subscribed to the subject.
      * @param ps the subject to remove
@@ -209,7 +209,7 @@ public final class AsyncSubject<T> extends Subject<T> {
             if (n == 0) {
                 return;
             }
-            
+
             int j = -1;
             for (int i = 0; i < n; i++) {
                 if (a[i] == ps) {
@@ -217,13 +217,13 @@ public final class AsyncSubject<T> extends Subject<T> {
                     break;
                 }
             }
-            
+
             if (j < 0) {
                 return;
             }
-            
+
             AsyncDisposable<T>[] b;
-            
+
             if (n == 1) {
                 b = EMPTY;
             } else {
@@ -245,7 +245,7 @@ public final class AsyncSubject<T> extends Subject<T> {
     public boolean hasValue() {
         return subscribers.get() == TERMINATED && value != null;
     }
-    
+
     /**
      * Returns a single value the Subject currently has or null if no such value exists.
      * <p>The method is thread-safe.
@@ -254,7 +254,7 @@ public final class AsyncSubject<T> extends Subject<T> {
     public T getValue() {
         return subscribers.get() == TERMINATED ? value : null;
     }
-    
+
     /**
      * Returns an Object array containing snapshot all values of the Subject.
      * <p>The method is thread-safe.
@@ -264,7 +264,7 @@ public final class AsyncSubject<T> extends Subject<T> {
         T v = getValue();
         return v != null ? new Object[] { v } : new Object[0];
     }
-    
+
     /**
      * Returns a typed array containing a snapshot of all values of the Subject.
      * <p>The method follows the conventions of Collection.toArray by setting the array element
@@ -290,18 +290,18 @@ public final class AsyncSubject<T> extends Subject<T> {
         }
         return array;
     }
-    
+
     static final class AsyncDisposable<T> extends DeferredScalarDisposable<T> {
         /** */
         private static final long serialVersionUID = 5629876084736248016L;
-        
+
         final AsyncSubject<T> parent;
-        
+
         public AsyncDisposable(Observer<? super T> actual, AsyncSubject<T> parent) {
             super(actual);
             this.parent = parent;
         }
-        
+
         @Override
         public void dispose() {
             if (super.tryDispose()) {
@@ -314,7 +314,7 @@ public final class AsyncSubject<T> extends Subject<T> {
                 actual.onComplete();
             }
         }
-        
+
         void onError(Throwable t) {
             if (isDisposed()) {
                 RxJavaPlugins.onError(t);

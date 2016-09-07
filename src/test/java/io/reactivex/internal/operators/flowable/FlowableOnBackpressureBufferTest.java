@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -51,7 +51,7 @@ public class FlowableOnBackpressureBufferTest {
             @Override
             protected void onStart() {
             }
-            
+
             @Override
             public void onComplete() {
             }
@@ -74,7 +74,7 @@ public class FlowableOnBackpressureBufferTest {
         .onBackpressureBuffer()
         .take(500)
         .subscribe(ts);
-        
+
         // it completely ignores the `request(100)` and we get 500
         l1.await();
         assertEquals(100, ts.values().size());
@@ -108,7 +108,7 @@ public class FlowableOnBackpressureBufferTest {
             @Override
             protected void onStart() {
             }
-            
+
             @Override
             public void onComplete() { }
 
@@ -167,7 +167,7 @@ public class FlowableOnBackpressureBufferTest {
         public void run() {
             throw new RuntimeException();
         }
-    }; 
+    };
 
     @Test
     public void nonFatalExceptionThrownByOnOverflowIsNotReportedByUpstream() {
@@ -186,13 +186,13 @@ public class FlowableOnBackpressureBufferTest {
          ts.awaitTerminalEvent();
          assertFalse(errorOccurred.get());
     }
-    
+
     @Test
     public void maxSize() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        
+
         Flowable.range(1, 10).onBackpressureBuffer(1).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(MissingBackpressureException.class);
         ts.assertNotComplete();
@@ -218,25 +218,25 @@ public class FlowableOnBackpressureBufferTest {
 
     @Test
     public void noDelayError() {
-        
+
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .onBackpressureBuffer(false)
         .test(0L)
         .assertFailure(TestException.class);
     }
-    
+
     @Test
     public void delayError() {
         TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
         .onBackpressureBuffer(true)
         .test(0L)
         .assertEmpty();
-        
+
         ts.request(1);
         ts.assertFailure(TestException.class, 1);
-        
+
     }
-    
+
     @Test
     public void delayErrorBuffer() {
         TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))

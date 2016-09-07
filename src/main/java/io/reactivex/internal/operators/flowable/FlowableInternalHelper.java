@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,40 +30,40 @@ public enum FlowableInternalHelper {
 
     static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
         final Consumer<Emitter<T>> consumer;
-        
+
         public SimpleGenerator(Consumer<Emitter<T>> consumer) {
             this.consumer = consumer;
         }
-        
+
         @Override
         public S apply(S t1, Emitter<T> t2) throws Exception {
             consumer.accept(t2);
             return t1;
         }
     }
-    
+
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Consumer<Emitter<T>> consumer) {
         return new SimpleGenerator<T, S>(consumer);
     }
-    
+
     static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
         final BiConsumer<S, Emitter<T>> consumer;
-        
+
         public SimpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
             this.consumer = consumer;
         }
-        
+
         @Override
         public S apply(S t1, Emitter<T> t2) throws Exception {
             consumer.accept(t1, t2);
             return t1;
         }
     }
-    
+
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
         return new SimpleBiGenerator<T, S>(consumer);
     }
-    
+
     static final class ItemDelayFunction<T, U> implements Function<T, Publisher<T>> {
         final Function<? super T, ? extends Publisher<U>> itemDelay;
 
@@ -80,50 +80,50 @@ public enum FlowableInternalHelper {
     public static <T, U> Function<T, Publisher<T>> itemDelay(final Function<? super T, ? extends Publisher<U>> itemDelay) {
         return new ItemDelayFunction<T, U>(itemDelay);
     }
-    
+
     static final class SubscriberOnNext<T> implements Consumer<T> {
         final Subscriber<T> subscriber;
-        
+
         public SubscriberOnNext(Subscriber<T> subscriber) {
             this.subscriber = subscriber;
         }
-        
+
         @Override
         public void accept(T v) throws Exception {
             subscriber.onNext(v);
         }
     }
-    
+
     static final class SubscriberOnError<T> implements Consumer<Throwable> {
         final Subscriber<T> subscriber;
-        
+
         public SubscriberOnError(Subscriber<T> subscriber) {
             this.subscriber = subscriber;
         }
-        
+
         @Override
         public void accept(Throwable v) throws Exception {
             subscriber.onError(v);
         }
     }
-    
+
     static final class SubscriberOnComplete<T> implements Action {
         final Subscriber<T> subscriber;
-        
+
         public SubscriberOnComplete(Subscriber<T> subscriber) {
             this.subscriber = subscriber;
         }
-        
+
         @Override
         public void run() throws Exception {
             subscriber.onComplete();
         }
     }
-    
+
     public static <T> Consumer<T> subscriberOnNext(Subscriber<T> subscriber) {
         return new SubscriberOnNext<T>(subscriber);
     }
-    
+
     public static <T> Consumer<Throwable> subscriberOnError(Subscriber<T> subscriber) {
         return new SubscriberOnError<T>(subscriber);
     }
@@ -187,7 +187,7 @@ public enum FlowableInternalHelper {
     public static <T, U> Function<T, Publisher<U>> flatMapIntoIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return new FlatMapIntoIterable<T, U>(mapper);
     }
-    
+
     enum MapToInt implements Function<Object, Object>{
         INSTANCE;
         @Override
@@ -195,7 +195,7 @@ public enum FlowableInternalHelper {
             return 0;
         }
     }
-    
+
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent) {
         return new Callable<ConnectableFlowable<T>>() {
             @Override
@@ -213,7 +213,7 @@ public enum FlowableInternalHelper {
             }
         };
     }
-    
+
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
         return new Callable<ConnectableFlowable<T>>() {
             @Override
@@ -240,7 +240,7 @@ public enum FlowableInternalHelper {
             }
         };
     }
-    
+
     enum RequestMax implements Consumer<Subscription> {
         INSTANCE;
         @Override
@@ -248,11 +248,11 @@ public enum FlowableInternalHelper {
             t.request(Long.MAX_VALUE);
         }
     }
-    
+
     public static Consumer<Subscription> requestMax() {
         return RequestMax.INSTANCE;
     }
-    
+
     static final class ZipIterableFunction<T, R>
     implements Function<List<Publisher<? extends T>>, Publisher<? extends R>> {
         private final Function<? super Object[], ? extends R> zipper;
@@ -270,5 +270,5 @@ public enum FlowableInternalHelper {
     public static <T, R> Function<List<Publisher<? extends T>>, Publisher<? extends R>> zipIterable(final Function<? super Object[], ? extends R> zipper) {
         return new ZipIterableFunction<T, R>(zipper);
     }
-    
+
 }

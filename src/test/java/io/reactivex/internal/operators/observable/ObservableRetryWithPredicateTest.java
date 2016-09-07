@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -56,12 +56,12 @@ public class ObservableRetryWithPredicateTest {
     @Test
     public void testWithNothingToRetry() {
         Observable<Integer> source = Observable.range(0, 3);
-        
+
         Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
-        
+
         inOrder.verify(o).onNext(0);
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onNext(2);
@@ -87,11 +87,11 @@ public class ObservableRetryWithPredicateTest {
                 t1.onComplete();
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         DefaultObserver<Integer> o = mock(DefaultObserver.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -102,7 +102,7 @@ public class ObservableRetryWithPredicateTest {
         inOrder.verify(o).onNext(3);
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
-        
+
     }
     @Test
     public void testRetryTwiceAndGiveUp() {
@@ -115,11 +115,11 @@ public class ObservableRetryWithPredicateTest {
                 t1.onError(new TestException());
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         DefaultObserver<Integer> o = mock(DefaultObserver.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -130,7 +130,7 @@ public class ObservableRetryWithPredicateTest {
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onError(any(TestException.class));
         verify(o, never()).onComplete();
-        
+
     }
     @Test
     public void testRetryOnSpecificException() {
@@ -151,11 +151,11 @@ public class ObservableRetryWithPredicateTest {
                 t1.onComplete();
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         DefaultObserver<Integer> o = mock(DefaultObserver.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryOnTestException).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -188,11 +188,11 @@ public class ObservableRetryWithPredicateTest {
                 t1.onError(te);
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         DefaultObserver<Integer> o = mock(DefaultObserver.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryOnTestException).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -205,7 +205,7 @@ public class ObservableRetryWithPredicateTest {
         verify(o, never()).onError(ioe);
         verify(o, never()).onComplete();
     }
-    
+
     @Test
     public void testUnsubscribeFromRetry() {
         PublishSubject<Integer> subject = PublishSubject.create();
@@ -221,7 +221,7 @@ public class ObservableRetryWithPredicateTest {
         subject.onNext(2);
         assertEquals(1, count.get());
     }
-    
+
     @Test(timeout = 10000)
     public void testUnsubscribeAfterError() {
 
@@ -273,7 +273,7 @@ public class ObservableRetryWithPredicateTest {
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
-    
+
     @Test
     public void testIssue2826() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
@@ -306,7 +306,7 @@ public class ObservableRetryWithPredicateTest {
 
         assertEquals(1, value);
     }
-    
+
     @Test
     public void testIssue3008RetryWithPredicate() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
@@ -334,7 +334,7 @@ public class ObservableRetryWithPredicateTest {
             }});
         assertEquals(Arrays.asList(1L,1L,2L,3L), list);
     }
-    
+
     @Test
     public void testIssue3008RetryInfinite() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();

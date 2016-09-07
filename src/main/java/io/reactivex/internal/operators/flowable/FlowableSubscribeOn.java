@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -23,18 +23,18 @@ import io.reactivex.internal.util.BackpressureHelper;
 
 public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T , T> {
     final Scheduler scheduler;
-    
+
     public FlowableSubscribeOn(Publisher<T> source, Scheduler scheduler) {
         super(source);
         this.scheduler = scheduler;
     }
-    
+
     @Override
     public void subscribeActual(final Subscriber<? super T> s) {
         Scheduler.Worker w = scheduler.createWorker();
         final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<T>(s, w);
         s.onSubscribe(sos);
-        
+
         w.schedule(new Runnable() {
             @Override
             public void run() {
@@ -43,25 +43,25 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
             }
         });
     }
-    
+
     static final class SubscribeOnSubscriber<T> extends AtomicReference<Thread>
     implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = 8094547886072529208L;
         final Subscriber<? super T> actual;
         final Scheduler.Worker worker;
-        
+
         final AtomicReference<Subscription> s;
-        
+
         final AtomicLong requested;
-        
+
         public SubscribeOnSubscriber(Subscriber<? super T> actual, Scheduler.Worker worker) {
             this.actual = actual;
             this.worker = worker;
             this.s = new AtomicReference<Subscription>();
             this.requested = new AtomicLong();
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(this.s, s)) {
@@ -71,12 +71,12 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
                 }
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             actual.onNext(t);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             try {
@@ -85,7 +85,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
                 worker.dispose();
             }
         }
-        
+
         @Override
         public void onComplete() {
             try {
@@ -94,7 +94,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
                 worker.dispose();
             }
         }
-        
+
         @Override
         public void request(final long n) {
             if (!SubscriptionHelper.validate(n)) {
@@ -112,10 +112,10 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
                         requestUpstream(r, s);
                     }
                 }
-                
+
             }
         }
-        
+
         void requestUpstream(final long n, final Subscription s) {
             if (Thread.currentThread() == get()) {
                 s.request(n);
@@ -128,7 +128,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
                 });
             }
         }
-        
+
         @Override
         public void cancel() {
             SubscriptionHelper.cancel(s);

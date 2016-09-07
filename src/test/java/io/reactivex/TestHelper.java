@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -50,7 +50,7 @@ public enum TestHelper {
     @SuppressWarnings("unchecked")
     public static <T> Subscriber<T> mockSubscriber() {
         Subscriber<T> w = mock(Subscriber.class);
-        
+
         Mockito.doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock a) throws Throwable {
@@ -59,10 +59,10 @@ public enum TestHelper {
                 return null;
             }
         }).when(w).onSubscribe((Subscription)any());
-        
+
         return w;
     }
-    
+
     /**
      * Mocks an Observer with the proper receiver type.
      * @param <T> the value type
@@ -72,7 +72,7 @@ public enum TestHelper {
     public static <T> Observer<T> mockObserver() {
         return mock(Observer.class);
     }
-    
+
     /**
      * Validates that the given class, when forcefully instantiated throws
      * an IllegalArgumentException("No instances!") exception.
@@ -81,9 +81,9 @@ public enum TestHelper {
     public static void checkUtilityClass(Class<?> clazz) {
         try {
             Constructor<?> c = clazz.getDeclaredConstructor();
-            
+
             c.setAccessible(true);
-            
+
             try {
                 c.newInstance();
                 fail("Should have thrown InvocationTargetException(IllegalStateException)");
@@ -96,17 +96,17 @@ public enum TestHelper {
             throw ae;
         }
     }
-    
+
     public static List<Throwable> trackPluginErrors() {
         final List<Throwable> list = Collections.synchronizedList(new ArrayList<Throwable>());
-        
+
         RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
             @Override
             public void accept(Throwable t) {
                 list.add(t);
             }
         });
-        
+
         return list;
     }
 
@@ -118,7 +118,7 @@ public enum TestHelper {
         assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
         assertEquals(message, list.get(index).getMessage());
     }
-    
+
     public static void assertError(TestObserver<?> ts, int index, Class<? extends Throwable> clazz) {
         Throwable ex = ts.errors().get(0);
         if (ex instanceof CompositeException) {
@@ -172,16 +172,16 @@ public enum TestHelper {
      */
     public static <E extends Enum<E>> void assertEmptyEnum(Class<E> e) {
         assertEquals(0, e.getEnumConstants().length);
-        
+
         try {
             try {
                 Method m0 = e.getDeclaredMethod("values");
 
                 Object[] a = (Object[])m0.invoke(null);
                 assertEquals(0, a.length);
-                
+
                 Method m = e.getDeclaredMethod("valueOf", String.class);
-            
+
                 m.invoke("INSTANCE");
                 fail("Should have thrown!");
             } catch (InvocationTargetException ex) {
@@ -195,7 +195,7 @@ public enum TestHelper {
             fail(ex.toString());
         }
     }
-    
+
     /**
      * Assert that by consuming the Publisher with a bad request amount, it is
      * reported to the plugin error handler promptly.
@@ -205,7 +205,7 @@ public enum TestHelper {
         List<Throwable> list = trackPluginErrors();
         try {
             final CountDownLatch cdl = new CountDownLatch(1);
-            
+
             source.subscribe(new Subscriber<Object>() {
 
                 @Override
@@ -221,34 +221,34 @@ public enum TestHelper {
 
                 @Override
                 public void onNext(Object t) {
-                    
+
                 }
 
                 @Override
                 public void onError(Throwable t) {
-                    
+
                 }
 
                 @Override
                 public void onComplete() {
-                    
+
                 }
-                
+
             });
-            
+
             try {
                 assertTrue(cdl.await(5, TimeUnit.SECONDS));
             } catch (InterruptedException ex) {
                 throw new AssertionError(ex.getMessage());
             }
-            
+
             assertTrue(list.toString(), list.get(0) instanceof IllegalArgumentException);
             assertEquals("n > 0 required but it was -99", list.get(0).getMessage());
         } finally {
             RxJavaPlugins.setErrorHandler(null);
         }
     }
-    
+
     /**
      * Synchronizes the execution of two runnables (as much as possible)
      * to test race conditions.
@@ -260,16 +260,16 @@ public enum TestHelper {
     public static void race(final Runnable r1, final Runnable r2, Scheduler s) {
         final AtomicInteger count = new AtomicInteger(2);
         final CountDownLatch cdl = new CountDownLatch(2);
-        
+
         final Throwable[] errors = { null, null };
-        
+
         s.scheduleDirect(new Runnable() {
             @Override
             public void run() {
                 if (count.decrementAndGet() != 0) {
                     while (count.get() != 0);
                 }
-                
+
                 try {
                     try {
                         r1.run();
@@ -281,11 +281,11 @@ public enum TestHelper {
                 }
             }
         });
-        
+
         if (count.decrementAndGet() != 0) {
             while (count.get() != 0);
         }
-        
+
         try {
             try {
                 r2.run();
@@ -295,7 +295,7 @@ public enum TestHelper {
         } finally {
             cdl.countDown();
         }
-        
+
         try {
             if (!cdl.await(5, TimeUnit.SECONDS)) {
                 throw new AssertionError("The wait timed out!");
@@ -306,16 +306,16 @@ public enum TestHelper {
         if (errors[0] != null && errors[1] == null) {
             throw ExceptionHelper.wrapOrThrow(errors[0]);
         }
-        
+
         if (errors[0] == null && errors[1] != null) {
             throw ExceptionHelper.wrapOrThrow(errors[1]);
         }
-        
+
         if (errors[0] != null && errors[1] != null) {
             throw new CompositeException(errors);
         }
     }
-    
+
     /**
      * Cast the given Throwable to CompositeException and returns its inner
      * Throwable list.
@@ -325,7 +325,7 @@ public enum TestHelper {
     public static List<Throwable> compositeList(Throwable ex) {
         return ((CompositeException)ex).getExceptions();
     }
-    
+
     /**
      * Assert that the offer methods throw UnsupportedOperationExcetpion.
      * @param q the queue implementation
@@ -344,7 +344,7 @@ public enum TestHelper {
             // expected
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <E extends Enum<E>> void checkEnum(Class<E> enumClass) {
         try {
@@ -352,16 +352,16 @@ public enum TestHelper {
             m.setAccessible(true);
             Method e = enumClass.getMethod("valueOf", String.class);
             m.setAccessible(true);
-            
+
             for (Enum<E> o : (Enum<E>[])m.invoke(null)) {
                 assertSame(o, e.invoke(null, o.name()));
             }
-            
+
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
     }
-    
+
     /**
      * Returns an Consumer that asserts the TestSubscriber has exaclty one value + completed
      * normally and that single value is not the value specified
@@ -378,13 +378,13 @@ public enum TestHelper {
                 .assertValueCount(1)
                 .assertNoErrors()
                 .assertComplete();
-                
+
                 T v = ts.values().get(0);
                 assertNotEquals(value, v);
             }
         };
     }
-    
+
     /**
      * Returns an Consumer that asserts the TestObserver has exaclty one value + completed
      * normally and that single value is not the value specified
@@ -401,13 +401,13 @@ public enum TestHelper {
                 .assertValueCount(1)
                 .assertNoErrors()
                 .assertComplete();
-                
+
                 T v = ts.values().get(0);
                 assertNotEquals(value, v);
             }
         };
     }
-    
+
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Subscription while
      * reporting it to plugin error handler.
@@ -417,17 +417,17 @@ public enum TestHelper {
         List<Throwable> errors = trackPluginErrors();
         try {
             BooleanSubscription s1 = new BooleanSubscription();
-            
+
             subscriber.onSubscribe(s1);
-            
+
             BooleanSubscription s2 = new BooleanSubscription();
-            
+
             subscriber.onSubscribe(s2);
-            
+
             assertFalse(s1.isCancelled());
-            
+
             assertTrue(s2.isCancelled());
-            
+
             assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
         } finally {
             RxJavaPlugins.reset();
@@ -443,17 +443,17 @@ public enum TestHelper {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
-            
+
             subscriber.onSubscribe(d1);
-            
+
             Disposable d2 = Disposables.empty();
-            
+
             subscriber.onSubscribe(d2);
-            
+
             assertFalse(d1.isDisposed());
-            
+
             assertTrue(d2.isDisposed());
-            
+
             assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
         } finally {
             RxJavaPlugins.reset();
@@ -469,17 +469,17 @@ public enum TestHelper {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
-            
+
             subscriber.onSubscribe(d1);
-            
+
             Disposable d2 = Disposables.empty();
-            
+
             subscriber.onSubscribe(d2);
-            
+
             assertFalse(d1.isDisposed());
-            
+
             assertTrue(d2.isDisposed());
-            
+
             assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
         } finally {
             RxJavaPlugins.reset();
@@ -495,17 +495,17 @@ public enum TestHelper {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
-            
+
             subscriber.onSubscribe(d1);
-            
+
             Disposable d2 = Disposables.empty();
-            
+
             subscriber.onSubscribe(d2);
-            
+
             assertFalse(d1.isDisposed());
-            
+
             assertTrue(d2.isDisposed());
-            
+
             assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
         } finally {
             RxJavaPlugins.reset();
@@ -521,17 +521,17 @@ public enum TestHelper {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
-            
+
             subscriber.onSubscribe(d1);
-            
+
             Disposable d2 = Disposables.empty();
-            
+
             subscriber.onSubscribe(d2);
-            
+
             assertFalse(d1.isDisposed());
-            
+
             assertTrue(d2.isDisposed());
-            
+
             assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
         } finally {
             RxJavaPlugins.reset();

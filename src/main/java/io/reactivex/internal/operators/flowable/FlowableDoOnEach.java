@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,9 +26,9 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
     final Consumer<? super Throwable> onError;
     final Action onComplete;
     final Action onAfterTerminate;
-    
-    public FlowableDoOnEach(Publisher<T> source, Consumer<? super T> onNext, 
-            Consumer<? super Throwable> onError, 
+
+    public FlowableDoOnEach(Publisher<T> source, Consumer<? super T> onNext,
+            Consumer<? super Throwable> onError,
             Action onComplete,
             Action onAfterTerminate) {
         super(source);
@@ -37,7 +37,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
         this.onComplete = onComplete;
         this.onAfterTerminate = onAfterTerminate;
     }
-    
+
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
@@ -48,17 +48,17 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                     s, onNext, onError, onComplete, onAfterTerminate));
         }
     }
-    
+
     static final class DoOnEachSubscriber<T> extends BasicFuseableSubscriber<T, T> {
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
         final Action onComplete;
         final Action onAfterTerminate;
-        
+
         public DoOnEachSubscriber(
                 Subscriber<? super T> actual,
-                Consumer<? super T> onNext, 
-                Consumer<? super Throwable> onError, 
+                Consumer<? super T> onNext,
+                Consumer<? super Throwable> onError,
                 Action onComplete,
                 Action onAfterTerminate) {
             super(actual);
@@ -67,28 +67,28 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             this.onComplete = onComplete;
             this.onAfterTerminate = onAfterTerminate;
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
                 return;
             }
-            
+
             if (sourceMode != NONE) {
                 actual.onNext(null);
                 return;
             }
-            
+
             try {
                 onNext.accept(t);
             } catch (Throwable e) {
                 fail(e);
                 return;
             }
-            
+
             actual.onNext(t);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -107,7 +107,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             if (relay) {
                 actual.onError(t);
             }
-            
+
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
@@ -115,7 +115,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 RxJavaPlugins.onError(e);
             }
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
@@ -128,9 +128,9 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 fail(e);
                 return;
             }
-            
+
             actual.onComplete();
-            
+
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
@@ -147,7 +147,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
         @Override
         public T poll() throws Exception {
             T v = qs.poll();
-            
+
             if (v != null) {
                 try {
                     onNext.accept(v);
@@ -157,24 +157,24 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             } else {
                 if (sourceMode == SYNC) {
                     onComplete.run();
-                    
+
                     onAfterTerminate.run();
                 }
             }
             return v;
         }
     }
-    
+
     static final class DoOnEachConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
         final Action onComplete;
         final Action onAfterTerminate;
-        
+
         public DoOnEachConditionalSubscriber(
                 ConditionalSubscriber<? super T> actual,
-                Consumer<? super T> onNext, 
-                Consumer<? super Throwable> onError, 
+                Consumer<? super T> onNext,
+                Consumer<? super Throwable> onError,
                 Action onComplete,
                 Action onAfterTerminate) {
             super(actual);
@@ -183,48 +183,48 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             this.onComplete = onComplete;
             this.onAfterTerminate = onAfterTerminate;
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
                 return;
             }
-            
+
             if (sourceMode != NONE) {
                 actual.onNext(null);
                 return;
             }
-            
+
             try {
                 onNext.accept(t);
             } catch (Throwable e) {
                 fail(e);
                 return;
             }
-            
+
             actual.onNext(t);
         }
-        
+
         @Override
         public boolean tryOnNext(T t) {
             if (done) {
                 return false;
             }
-            
+
             if (sourceMode != NONE) {
                 return actual.tryOnNext(null);
             }
-            
+
             try {
                 onNext.accept(t);
             } catch (Throwable e) {
                 fail(e);
                 return false;
             }
-            
+
             return actual.tryOnNext(t);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -243,7 +243,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             if (relay) {
                 actual.onError(t);
             }
-            
+
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
@@ -251,7 +251,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 RxJavaPlugins.onError(e);
             }
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
@@ -264,9 +264,9 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 fail(e);
                 return;
             }
-            
+
             actual.onComplete();
-            
+
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
@@ -283,7 +283,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
         @Override
         public T poll() throws Exception {
             T v = qs.poll();
-            
+
             if (v != null) {
                 try {
                     onNext.accept(v);
@@ -293,7 +293,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             } else {
                 if (sourceMode == SYNC) {
                     onComplete.run();
-                    
+
                     onAfterTerminate.run();
                 }
             }

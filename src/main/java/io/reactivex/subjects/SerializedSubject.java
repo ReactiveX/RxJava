@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -35,7 +35,7 @@ import io.reactivex.plugins.RxJavaPlugins;
     AppendOnlyLinkedArrayList<Object> queue;
     /** Indicates a terminal event has been received and all further events will be dropped. */
     volatile boolean done;
-    
+
     /**
      * Constructor that wraps an actual subject.
      * @param actual the subject wrapped
@@ -54,7 +54,7 @@ import io.reactivex.plugins.RxJavaPlugins;
     public void onSubscribe(Disposable s) {
         // NO-OP
     }
-    
+
     @Override
     public void onNext(T t) {
         if (done) {
@@ -78,7 +78,7 @@ import io.reactivex.plugins.RxJavaPlugins;
         actual.onNext(t);
         emitLoop();
     }
-    
+
     @Override
     public void onError(Throwable t) {
         if (done) {
@@ -110,7 +110,7 @@ import io.reactivex.plugins.RxJavaPlugins;
         }
         actual.onError(t);
     }
-    
+
     @Override
     public void onComplete() {
         if (done) {
@@ -134,7 +134,7 @@ import io.reactivex.plugins.RxJavaPlugins;
         }
         actual.onComplete();
     }
-    
+
     /** Loops until all notifications in the queue has been processed. */
     void emitLoop() {
         for (;;) {
@@ -163,27 +163,27 @@ import io.reactivex.plugins.RxJavaPlugins;
             return accept(v);
         }
     };
-    
+
     /** Delivers the notification to the actual subscriber. */
     boolean accept(Object o) {
         return NotificationLite.accept(o, actual);
     }
-    
+
     @Override
     public boolean hasObservers() {
         return actual.hasObservers();
     }
-    
+
     @Override
     public boolean hasThrowable() {
         return actual.hasThrowable();
     }
-    
+
     @Override
     public Throwable getThrowable() {
         return actual.getThrowable();
     }
-    
+
     @Override
     public boolean hasComplete() {
         return actual.hasComplete();

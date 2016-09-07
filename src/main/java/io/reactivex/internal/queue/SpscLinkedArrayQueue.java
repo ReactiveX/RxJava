@@ -1,18 +1,18 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
 
 /*
- * The code was inspired by the similarly named JCTools class: 
+ * The code was inspired by the similarly named JCTools class:
  * https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic
  */
 
@@ -31,7 +31,7 @@ import io.reactivex.internal.util.Pow2;
 public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     final AtomicLong producerIndex = new AtomicLong();
-    
+
     int producerLookAheadStep;
     long producerLookAhead;
 
@@ -166,7 +166,7 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
 
         return (T) e;
     }
-    
+
     @SuppressWarnings("unchecked")
     private T newBufferPeek(AtomicReferenceArray<Object> nextBuffer, final long index, final int mask) {
         consumerBuffer = nextBuffer;
@@ -195,7 +195,7 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
             }
         }
     }
-    
+
     @Override
     public boolean isEmpty() {
         return lvProducerIndex() == lvConsumerIndex();
@@ -255,9 +255,9 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
         final AtomicReferenceArray<Object> buffer = producerBuffer;
         final long p = lvProducerIndex();
         final int m = producerMask;
-        
+
         int pi = calcWrappedOffset(p + 2, m);
-        
+
         if (null == lvElement(buffer, pi)) {
             pi = calcWrappedOffset(p, m);
             soElement(buffer, pi + 1, second);
@@ -267,12 +267,12 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
             final int capacity = buffer.length();
             final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<Object>(capacity);
             producerBuffer = newBuffer;
-            
+
             pi = calcWrappedOffset(p, m);
             soElement(newBuffer, pi + 1, second);// StoreStore
             soElement(newBuffer, pi, first);
             soNext(buffer, newBuffer);
-            
+
             soElement(buffer, pi, HAS_NEXT); // new buffer is visible after element is
 
             soProducerIndex(p + 2);// this ensures correctness on 32bit platforms

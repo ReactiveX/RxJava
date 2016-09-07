@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -40,7 +40,7 @@ import io.reactivex.plugins.RxJavaPlugins;
   subject.onCompleted();
 
   } </pre>
- * 
+ *
  * @param <T>
  *          the type of items observed and emitted by the Subject
  */
@@ -51,7 +51,7 @@ public final class PublishSubject<T> extends Subject<T> {
     /** An empty subscribers array to avoid allocating it all the time. */
     @SuppressWarnings("rawtypes")
     static final PublishDisposable[] EMPTY = new PublishDisposable[0];
-    
+
     /** The array of currently subscribed subscribers. */
     final AtomicReference<PublishDisposable<T>[]> subscribers;
 
@@ -66,7 +66,7 @@ public final class PublishSubject<T> extends Subject<T> {
     public static <T> PublishSubject<T> create() {
         return new PublishSubject<T>();
     }
-    
+
     /**
      * Constructs a PublishSubject.
      * @since 2.0
@@ -96,7 +96,7 @@ public final class PublishSubject<T> extends Subject<T> {
             }
         }
     }
-    
+
     /**
      * Tries to add the given subscriber to the subscribers array atomically
      * or returns false if the subject has terminated.
@@ -109,19 +109,19 @@ public final class PublishSubject<T> extends Subject<T> {
             if (a == TERMINATED) {
                 return false;
             }
-            
+
             int n = a.length;
             @SuppressWarnings("unchecked")
             PublishDisposable<T>[] b = new PublishDisposable[n + 1];
             System.arraycopy(a, 0, b, 0, n);
             b[n] = ps;
-            
+
             if (subscribers.compareAndSet(a, b)) {
                 return true;
             }
         }
     }
-    
+
     /**
      * Atomically removes the given subscriber if it is subscribed to the subject.
      * @param ps the subject to remove
@@ -133,7 +133,7 @@ public final class PublishSubject<T> extends Subject<T> {
             if (a == TERMINATED || a == EMPTY) {
                 return;
             }
-            
+
             int n = a.length;
             int j = -1;
             for (int i = 0; i < n; i++) {
@@ -142,13 +142,13 @@ public final class PublishSubject<T> extends Subject<T> {
                     break;
                 }
             }
-            
+
             if (j < 0) {
                 return;
             }
-            
+
             PublishDisposable<T>[] b;
-            
+
             if (n == 1) {
                 b = EMPTY;
             } else {
@@ -161,7 +161,7 @@ public final class PublishSubject<T> extends Subject<T> {
             }
         }
     }
-    
+
     @Override
     public void onSubscribe(Disposable s) {
         if (subscribers.get() == TERMINATED) {
@@ -169,7 +169,7 @@ public final class PublishSubject<T> extends Subject<T> {
             return;
         }
     }
-    
+
     @Override
     public void onNext(T t) {
         if (subscribers.get() == TERMINATED) {
@@ -183,7 +183,7 @@ public final class PublishSubject<T> extends Subject<T> {
             s.onNext(t);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable t) {
@@ -195,12 +195,12 @@ public final class PublishSubject<T> extends Subject<T> {
             t = new NullPointerException();
         }
         error = t;
-        
+
         for (PublishDisposable<T> s : subscribers.getAndSet(TERMINATED)) {
             s.onError(t);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public void onComplete() {
@@ -211,12 +211,12 @@ public final class PublishSubject<T> extends Subject<T> {
             s.onComplete();
         }
     }
-    
+
     @Override
     public boolean hasObservers() {
         return subscribers.get().length != 0;
     }
-    
+
     @Override
     public Throwable getThrowable() {
         if (subscribers.get() == TERMINATED) {
@@ -224,17 +224,17 @@ public final class PublishSubject<T> extends Subject<T> {
         }
         return null;
     }
-    
+
     @Override
     public boolean hasThrowable() {
         return subscribers.get() == TERMINATED && error != null;
     }
-    
+
     @Override
     public boolean hasComplete() {
         return subscribers.get() == TERMINATED && error == null;
     }
-    
+
     /**
      * Wraps the actual subscriber, tracks its requests and makes cancellation
      * to remove itself from the current subscribers array.
@@ -248,7 +248,7 @@ public final class PublishSubject<T> extends Subject<T> {
         final Observer<? super T> actual;
         /** The subject state. */
         final PublishSubject<T> parent;
-        
+
         /**
          * Constructs a PublishSubscriber, wraps the actual subscriber and the state.
          * @param actual the actual subscriber
@@ -258,13 +258,13 @@ public final class PublishSubject<T> extends Subject<T> {
             this.actual = actual;
             this.parent = parent;
         }
-        
+
         public void onNext(T t) {
             if (!get()) {
                 actual.onNext(t);
             }
         }
-        
+
         public void onError(Throwable t) {
             if (get()) {
                 RxJavaPlugins.onError(t);
@@ -272,20 +272,20 @@ public final class PublishSubject<T> extends Subject<T> {
                 actual.onError(t);
             }
         }
-        
+
         public void onComplete() {
             if (!get()) {
                 actual.onComplete();
             }
         }
-        
+
         @Override
         public void dispose() {
             if (compareAndSet(false, true)) {
                 parent.remove(this);
             }
         }
-        
+
         @Override
         public boolean isDisposed() {
             return get();

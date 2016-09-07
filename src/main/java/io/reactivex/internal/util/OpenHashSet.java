@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,17 +26,17 @@ package io.reactivex.internal.util;
  */
 public final class OpenHashSet<T> {
     private static final int INT_PHI = 0x9E3779B9;
-    
+
     final float loadFactor;
     int mask;
     int size;
     int maxSize;
     T[] keys;
-    
+
     public OpenHashSet() {
         this(16, 0.75f);
     }
-    
+
     /**
      * Creates an OpenHashSet with the initial capacity and load factor of 0.75f.
      * @param capacity the initial capacity
@@ -44,7 +44,7 @@ public final class OpenHashSet<T> {
     public OpenHashSet(int capacity) {
         this(capacity, 0.75f);
     }
-    
+
     @SuppressWarnings("unchecked")
     public OpenHashSet(int capacity, float loadFactor) {
         this.loadFactor = loadFactor;
@@ -53,11 +53,11 @@ public final class OpenHashSet<T> {
         this.maxSize = (int)(loadFactor * c);
         this.keys = (T[])new Object[c];
     }
-    
+
     public boolean add(T value) {
         final T[] a = keys;
         final int m = mask;
-        
+
         int pos = mix(value.hashCode()) & m;
         T curr = a[pos];
         if (curr != null) {
@@ -103,10 +103,10 @@ public final class OpenHashSet<T> {
             }
         }
     }
-    
+
     boolean removeEntry(int pos, T[] a, int m) {
         size--;
-        
+
         int last;
         int slot;
         T curr;
@@ -120,27 +120,27 @@ public final class OpenHashSet<T> {
                     return true;
                 }
                 slot = mix(curr.hashCode()) & m;
-                
+
                 if (last <= pos ? last >= slot || slot > pos : last >= slot && slot > pos) {
                     break;
                 }
-                
+
                 pos = (pos + 1) & m;
             }
             a[last] = curr;
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     void rehash() {
         T[] a = keys;
         int i = a.length;
         int newCap = i << 1;
         int m = newCap - 1;
-        
+
         T[] b = (T[])new Object[newCap];
-        
-        
+
+
         for (int j = size; j-- != 0; ) {
             while (a[--i] == null); // NOPMD
             int pos = mix(a[i].hashCode()) & m;
@@ -154,21 +154,21 @@ public final class OpenHashSet<T> {
             }
             b[pos] = a[i];
         }
-        
+
         this.mask = m;
         this.maxSize = (int)(newCap * loadFactor);
         this.keys = b;
     }
-    
+
     static int mix(int x) {
         final int h = x * INT_PHI;
         return h ^ (h >>> 16);
     }
-    
+
     public Object[] keys() {
         return keys; // NOPMD
     }
-    
+
     public int size() {
         return size;
     }

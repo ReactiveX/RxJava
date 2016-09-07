@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ import io.reactivex.disposables.Disposable;
  * with the appropriate mode before calling {@code request()}.
  * <p>
  * In <b>synchronous fusion</b>, all upstream values are either already available or is generated
- * when {@link #poll()} is called synchronously. When the {@link #poll()} returns null, 
+ * when {@link #poll()} is called synchronously. When the {@link #poll()} returns null,
  * that is the indication if a terminated stream. In this mode, the upstream won't call the onXXX methods.
  * <p>
  * In <b>asynchronous fusion</b>, upstream values may become available to {@link #poll()} eventually.
@@ -57,20 +57,20 @@ public interface QueueDisposable<T> extends SimpleQueue<T>, Disposable {
      * the requested mode.
      */
     int NONE = 0;
-    
+
     /**
      * Request a synchronous fusion mode and can be returned by {@link #requestFusion(int)}
      * for an accepted mode.
      * <p>
      * In synchronous fusion, all upstream values are either already available or is generated
-     * when {@link #poll()} is called synchronously. When the {@link #poll()} returns null, 
-     * that is the indication if a terminated stream. 
-     * In this mode, the upstream won't call the onXXX methods and callers of 
-     * {@link #poll()} should be prepared to catch exceptions. Note that {@link #poll()} has 
+     * when {@link #poll()} is called synchronously. When the {@link #poll()} returns null,
+     * that is the indication if a terminated stream.
+     * In this mode, the upstream won't call the onXXX methods and callers of
+     * {@link #poll()} should be prepared to catch exceptions. Note that {@link #poll()} has
      * to be called sequentially (from within a serializing drain-loop).
      */
     int SYNC = 1;
-    
+
     /**
      * Request an asynchronous fusion mode and can be returned by {@link #requestFusion(int)}
      * for an accepted mode.
@@ -79,16 +79,16 @@ public interface QueueDisposable<T> extends SimpleQueue<T>, Disposable {
      * Upstream signals onError() and onComplete() as usual but onNext may not actually contain
      * the upstream value but have {@code null} instead. Downstream should treat such onNext as indication
      * that {@link #poll()} can be called. Note that {@link #poll()} has to be called sequentially
-     * (from within a serializing drain-loop). In addition, callers of {@link #poll()} should be 
+     * (from within a serializing drain-loop). In addition, callers of {@link #poll()} should be
      * prepared to catch exceptions.
      */
     int ASYNC = 2;
-    
+
     /**
-     * Request any of the {@link #SYNC} or {@link #ASYNC} modes. 
+     * Request any of the {@link #SYNC} or {@link #ASYNC} modes.
      */
     int ANY = SYNC | ASYNC;
-    
+
     /**
      * Used in binary or combination with the other constants as an input to {@link #requestFusion(int)}
      * indicating that the {@link #poll()} will be called behind an asynchronous boundary and thus

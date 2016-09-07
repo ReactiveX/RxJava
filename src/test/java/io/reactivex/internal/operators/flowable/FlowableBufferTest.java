@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -493,28 +493,28 @@ public class FlowableBufferTest {
     @Test(timeout = 2000)
     public void bufferWithSizeTake1() {
         Flowable<Integer> source = Flowable.just(1).repeat();
-        
+
         Flowable<List<Integer>> result = source.buffer(2).take(1);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 1));
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test(timeout = 2000)
     public void bufferWithSizeSkipTake1() {
         Flowable<Integer> source = Flowable.just(1).repeat();
-        
+
         Flowable<List<Integer>> result = source.buffer(2, 3).take(1);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 1));
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
@@ -522,15 +522,15 @@ public class FlowableBufferTest {
     @Test(timeout = 2000)
     public void bufferWithTimeTake1() {
         Flowable<Long> source = Flowable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Flowable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler).take(1);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         result.subscribe(o);
-        
+
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
-        
+
         verify(o).onNext(Arrays.asList(0L, 1L));
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
@@ -538,16 +538,16 @@ public class FlowableBufferTest {
     @Test(timeout = 2000)
     public void bufferWithTimeSkipTake2() {
         Flowable<Long> source = Flowable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Flowable<List<Long>> result = source.buffer(100, 60, TimeUnit.MILLISECONDS, scheduler).take(2);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
-        
+
         inOrder.verify(o).onNext(Arrays.asList(0L, 1L));
         inOrder.verify(o).onNext(Arrays.asList(1L, 2L));
         inOrder.verify(o).onComplete();
@@ -557,23 +557,23 @@ public class FlowableBufferTest {
     public void bufferWithBoundaryTake2() {
         Flowable<Long> boundary = Flowable.interval(60, 60, TimeUnit.MILLISECONDS, scheduler);
         Flowable<Long> source = Flowable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Flowable<List<Long>> result = source.buffer(boundary).take(2);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
-        
+
         inOrder.verify(o).onNext(Arrays.asList(0L));
         inOrder.verify(o).onNext(Arrays.asList(1L));
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
-        
+
     }
-    
+
     @Test(timeout = 2000)
     public void bufferWithStartEndBoundaryTake2() {
         Flowable<Long> start = Flowable.interval(61, 61, TimeUnit.MILLISECONDS, scheduler);
@@ -583,14 +583,14 @@ public class FlowableBufferTest {
                 return Flowable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
             }
         };
-        
+
         Flowable<Long> source = Flowable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Flowable<List<Long>> result = source.buffer(start, end).take(2);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
-        
+
         result
         .doOnNext(new Consumer<List<Long>>() {
             @Override
@@ -599,9 +599,9 @@ public class FlowableBufferTest {
             }
         })
         .subscribe(o);
-        
+
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
-        
+
         inOrder.verify(o).onNext(Arrays.asList(1L, 2L, 3L));
         inOrder.verify(o).onNext(Arrays.asList(3L, 4L));
         inOrder.verify(o).onComplete();
@@ -610,67 +610,67 @@ public class FlowableBufferTest {
     @Test
     public void bufferWithSizeThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        
+
         Flowable<List<Integer>> result = source.buffer(2);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         source.onNext(1);
         source.onNext(2);
         source.onNext(3);
         source.onError(new TestException());
-        
+
         inOrder.verify(o).onNext(Arrays.asList(1, 2));
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(Arrays.asList(3));
         verify(o, never()).onComplete();
-                
+
     }
-    
+
     @Test
     public void bufferWithTimeThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
-        
+
         Flowable<List<Integer>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         source.onNext(1);
         source.onNext(2);
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
         source.onNext(3);
         source.onError(new TestException());
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
-        
+
         inOrder.verify(o).onNext(Arrays.asList(1, 2));
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(Arrays.asList(3));
         verify(o, never()).onComplete();
-                
+
     }
-    
+
     @Test
     public void bufferWithTimeAndSize() {
         Flowable<Long> source = Flowable.interval(30, 30, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Flowable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler).take(3);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
-        
+
         inOrder.verify(o).onNext(Arrays.asList(0L, 1L));
         inOrder.verify(o).onNext(Arrays.asList(2L));
         inOrder.verify(o).onComplete();
@@ -679,7 +679,7 @@ public class FlowableBufferTest {
     @Test
     public void bufferWithStartEndStartThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
-        
+
         Function<Integer, Flowable<Integer>> end = new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t1) {
@@ -690,16 +690,16 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         Flowable<List<Integer>> result = source.buffer(start, end);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         result.subscribe(o);
-        
+
         start.onNext(1);
         source.onNext(1);
         source.onNext(2);
         start.onError(new TestException());
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onComplete();
         verify(o).onError(any(TestException.class));
@@ -707,7 +707,7 @@ public class FlowableBufferTest {
     @Test
     public void bufferWithStartEndEndFunctionThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
-        
+
         Function<Integer, Flowable<Integer>> end = new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t1) {
@@ -718,15 +718,15 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         Flowable<List<Integer>> result = source.buffer(start, end);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         result.subscribe(o);
-        
+
         start.onNext(1);
         source.onNext(1);
         source.onNext(2);
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onComplete();
         verify(o).onError(any(TestException.class));
@@ -734,7 +734,7 @@ public class FlowableBufferTest {
     @Test
     public void bufferWithStartEndEndThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
-        
+
         Function<Integer, Flowable<Integer>> end = new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t1) {
@@ -745,15 +745,15 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         Flowable<List<Integer>> result = source.buffer(start, end);
-        
+
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         result.subscribe(o);
-        
+
         start.onNext(1);
         source.onNext(1);
         source.onNext(2);
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onComplete();
         verify(o).onError(any(TestException.class));
@@ -762,7 +762,7 @@ public class FlowableBufferTest {
     @Test
     public void testProducerRequestThroughBufferWithSize1() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(3L);
-        
+
         final AtomicLong requested = new AtomicLong();
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
@@ -777,9 +777,9 @@ public class FlowableBufferTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
-                    
+
                 });
             }
 
@@ -794,7 +794,7 @@ public class FlowableBufferTest {
     public void testProducerRequestThroughBufferWithSize2() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         final AtomicLong requested = new AtomicLong();
-        
+
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
@@ -805,10 +805,10 @@ public class FlowableBufferTest {
                     public void request(long n) {
                         requested.set(n);
                     }
-                    
+
                     @Override
                     public void cancel() {
-                        
+
                     }
 
                 });
@@ -835,9 +835,9 @@ public class FlowableBufferTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
-                    
+
                 });
             }
 
@@ -864,9 +864,9 @@ public class FlowableBufferTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
-                    
+
                 });
             }
 
@@ -880,7 +880,7 @@ public class FlowableBufferTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(Long.MAX_VALUE >> 1);
 
         final AtomicLong requested = new AtomicLong();
-        
+
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
@@ -894,9 +894,9 @@ public class FlowableBufferTest {
 
                     @Override
                     public void cancel() {
-                        
+
                     }
-                    
+
                 });
             }
 
@@ -909,7 +909,7 @@ public class FlowableBufferTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(Long.MAX_VALUE >> 1);
 
         final AtomicLong requested = new AtomicLong();
-        
+
         Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
@@ -920,10 +920,10 @@ public class FlowableBufferTest {
                     public void request(long n) {
                         requested.set(n);
                     }
-                    
+
                     @Override
                     public void cancel() {
-                        
+
                     }
 
                 });
@@ -951,10 +951,10 @@ public class FlowableBufferTest {
                             s.onNext(3);
                         }
                     }
-                    
+
                     @Override
                     public void cancel() {
-                        
+
                     }
 
                 });
@@ -987,7 +987,7 @@ public class FlowableBufferTest {
     @Test(timeout = 3000)
     public void testBufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
         final Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         final CountDownLatch cdl = new CountDownLatch(1);
         ResourceSubscriber<Object> s = new ResourceSubscriber<Object>() {
             @Override
@@ -1005,33 +1005,33 @@ public class FlowableBufferTest {
                 cdl.countDown();
             }
         };
-        
+
         Flowable.range(1, 1).delay(1, TimeUnit.SECONDS).buffer(2, TimeUnit.SECONDS).subscribe(s);
-        
+
         cdl.await();
-        
+
         verify(o).onNext(Arrays.asList(1));
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
-        
+
         assertFalse(s.isDisposed());
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testPostCompleteBackpressure() {
         Flowable<List<Integer>> source = Flowable.range(1, 10).buffer(3, 1);
-        
+
         TestSubscriber<List<Integer>> ts = TestSubscriber.create(0L);
-        
+
         source.subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNotComplete();
         ts.assertNoErrors();
-        
+
         ts.request(7);
-        
+
         ts.assertValues(
                 Arrays.asList(1, 2, 3),
                 Arrays.asList(2, 3, 4),
@@ -1058,7 +1058,7 @@ public class FlowableBufferTest {
         );
         ts.assertNotComplete();
         ts.assertNoErrors();
-        
+
         ts.request(1);
 
         ts.assertValues(
@@ -1074,7 +1074,7 @@ public class FlowableBufferTest {
         );
         ts.assertNotComplete();
         ts.assertNoErrors();
-        
+
         ts.request(1);
 
         ts.assertValues(
@@ -1092,35 +1092,35 @@ public class FlowableBufferTest {
         ts.assertComplete();
         ts.assertNoErrors();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void timeAndSkipOverlap() {
-        
+
         PublishProcessor<Integer> ps = PublishProcessor.create();
-        
+
         TestSubscriber<List<Integer>> ts = TestSubscriber.create();
-        
+
         ps.buffer(2, 1, TimeUnit.SECONDS, scheduler).subscribe(ts);
-        
+
         ps.onNext(1);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         ps.onNext(2);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
         ps.onNext(3);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
         ps.onNext(4);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         ps.onComplete();
-        
+
         ts.assertValues(
                 Arrays.asList(1, 2),
                 Arrays.asList(2, 3),
@@ -1128,84 +1128,84 @@ public class FlowableBufferTest {
                 Arrays.asList(4),
                 Collections.<Integer>emptyList()
         );
-        
+
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void timeAndSkipSkip() {
-        
+
         PublishProcessor<Integer> ps = PublishProcessor.create();
-        
+
         TestSubscriber<List<Integer>> ts = TestSubscriber.create();
-        
+
         ps.buffer(2, 3, TimeUnit.SECONDS, scheduler).subscribe(ts);
-        
+
         ps.onNext(1);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         ps.onNext(2);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
         ps.onNext(3);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
         ps.onNext(4);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         ps.onComplete();
-        
+
         ts.assertValues(
                 Arrays.asList(1, 2),
                 Arrays.asList(4)
         );
-        
+
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void timeAndSkipOverlapScheduler() {
-        
+
         RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
             @Override
             public Scheduler apply(Scheduler t) {
                 return scheduler;
             }
         });
-        
+
         try {
             PublishProcessor<Integer> ps = PublishProcessor.create();
-            
+
             TestSubscriber<List<Integer>> ts = TestSubscriber.create();
-            
+
             ps.buffer(2, 1, TimeUnit.SECONDS).subscribe(ts);
-            
+
             ps.onNext(1);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-            
+
             ps.onNext(2);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-    
+
             ps.onNext(3);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-    
+
             ps.onNext(4);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-            
+
             ps.onComplete();
-            
+
             ts.assertValues(
                     Arrays.asList(1, 2),
                     Arrays.asList(2, 3),
@@ -1213,14 +1213,14 @@ public class FlowableBufferTest {
                     Arrays.asList(4),
                     Collections.<Integer>emptyList()
             );
-            
+
             ts.assertNoErrors();
             ts.assertComplete();
         } finally {
             RxJavaPlugins.reset();
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void timeAndSkipSkipDefaultScheduler() {
@@ -1230,45 +1230,45 @@ public class FlowableBufferTest {
                 return scheduler;
             }
         });
-        
+
         try {
-        
+
             PublishProcessor<Integer> ps = PublishProcessor.create();
-            
+
             TestSubscriber<List<Integer>> ts = TestSubscriber.create();
-            
+
             ps.buffer(2, 3, TimeUnit.SECONDS).subscribe(ts);
-            
+
             ps.onNext(1);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-            
+
             ps.onNext(2);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-    
+
             ps.onNext(3);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-    
+
             ps.onNext(4);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-            
+
             ps.onComplete();
-            
+
             ts.assertValues(
                     Arrays.asList(1, 2),
                     Arrays.asList(4)
             );
-            
+
             ts.assertNoErrors();
             ts.assertComplete();
         } finally {
             RxJavaPlugins.reset();
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void bufferBoundaryHint() {
@@ -1280,7 +1280,7 @@ public class FlowableBufferTest {
     static HashSet<Integer> set(Integer... values) {
         return new HashSet<Integer>(Arrays.asList(values));
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void bufferIntoCustomCollection() {
@@ -1308,7 +1308,7 @@ public class FlowableBufferTest {
         .test()
         .assertResult(set(1, 2), set(2, 3), set(4));
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void bufferTimeSkipDefault() {

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,25 +30,25 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
         super(source);
         this.debounceSelector = debounceSelector;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super T> t) {
         source.subscribe(new DebounceSubscriber<T, U>(new SerializedObserver<T>(t), debounceSelector));
     }
-    
-    static final class DebounceSubscriber<T, U> 
+
+    static final class DebounceSubscriber<T, U>
     implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Function<? super T, ? extends ObservableSource<U>> debounceSelector;
-        
+
         volatile boolean gate;
 
         Disposable s;
-        
+
         final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();
 
         volatile long index;
-        
+
         boolean done;
 
         public DebounceSubscriber(Observer<? super T> actual,
@@ -56,7 +56,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
             this.actual = actual;
             this.debounceSelector = debounceSelector;
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
@@ -64,23 +64,23 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
                 return;
             }
-            
+
             long idx = index + 1;
             index = idx;
-            
+
             Disposable d = debouncer.get();
             if (d != null) {
                 d.dispose();
             }
-            
+
             ObservableSource<U> p;
-            
+
             try {
                 p = debounceSelector.apply(t);
             } catch (Throwable e) {
@@ -89,26 +89,26 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
                 actual.onError(e);
                 return;
             }
-            
+
             if (p == null) {
                 dispose();
                 actual.onError(new NullPointerException("The publisher supplied is null"));
                 return;
             }
-            
+
             DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<T, U>(this, idx, t);
-            
+
             if (debouncer.compareAndSet(d, dis)) {
                 p.subscribe(dis);
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             DisposableHelper.dispose(debouncer);
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
@@ -124,7 +124,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
                 actual.onComplete();
             }
         }
-        
+
         @Override
         public void dispose() {
             s.dispose();
@@ -141,22 +141,22 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
                 actual.onNext(value);
             }
         }
-        
+
         static final class DebounceInnerSubscriber<T, U> extends DisposableObserver<U> {
             final DebounceSubscriber<T, U> parent;
             final long index;
             final T value;
-            
+
             boolean done;
-            
+
             final AtomicBoolean once = new AtomicBoolean();
-            
+
             public DebounceInnerSubscriber(DebounceSubscriber<T, U> parent, long index, T value) {
                 this.parent = parent;
                 this.index = index;
                 this.value = value;
             }
-            
+
             @Override
             public void onNext(U t) {
                 if (done) {
@@ -166,13 +166,13 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
                 dispose();
                 emit();
             }
-            
+
             void emit() {
                 if (once.compareAndSet(false, true)) {
                     parent.emit(index, value);
                 }
             }
-            
+
             @Override
             public void onError(Throwable t) {
                 if (done) {
@@ -182,7 +182,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
                 done = true;
                 parent.onError(t);
             }
-            
+
             @Override
             public void onComplete() {
                 if (done) {

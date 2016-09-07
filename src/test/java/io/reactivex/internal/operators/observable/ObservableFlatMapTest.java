@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -201,7 +201,7 @@ public class ObservableFlatMapTest {
                 Observable.fromIterable(Arrays.asList(10, 20, 30)),
                 Observable.<Integer> error(new RuntimeException("Forced failure!"))
                 );
-        
+
 
         Observer<Object> o = TestHelper.mockObserver();
 
@@ -334,11 +334,11 @@ public class ObservableFlatMapTest {
                         .subscribeOn(Schedulers.computation());
             }
         }, m);
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         source.subscribe(ts);
-        
+
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
@@ -364,22 +364,22 @@ public class ObservableFlatMapTest {
                 return t1 * 1000 + t2;
             }
         }, m);
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         source.subscribe(ts);
-        
+
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
-                1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051, 
+                1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051,
                 6060, 6061, 7070, 7071, 8080, 8081, 9090, 9091, 10100, 10101
         ));
         Assert.assertEquals(expected.size(), ts.valueCount());
         System.out.println("--> testFlatMapSelectorMaxConcurrent: " + ts.values());
         Assert.assertTrue(expected.containsAll(ts.values()));
     }
-    
+
     @Test
     public void testFlatMapTransformsMaxConcurrentNormalLoop() {
         for (int i = 0; i < 1000; i++) {
@@ -389,23 +389,23 @@ public class ObservableFlatMapTest {
             testFlatMapTransformsMaxConcurrentNormal();
         }
     }
-    
+
     @Test
     public void testFlatMapTransformsMaxConcurrentNormal() {
         final int m = 2;
         final AtomicInteger subscriptionCount = new AtomicInteger();
-        Observable<Integer> onNext = 
+        Observable<Integer> onNext =
                 composer(
                         Observable.fromIterable(Arrays.asList(1, 2, 3))
                         .observeOn(Schedulers.computation())
-                        , 
+                        ,
                 subscriptionCount, m)
                 .subscribeOn(Schedulers.computation())
                 ;
-        
+
         Observable<Integer> onCompleted = composer(Observable.fromIterable(Arrays.asList(4)), subscriptionCount, m)
                 .subscribeOn(Schedulers.computation());
-        
+
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
@@ -415,7 +415,7 @@ public class ObservableFlatMapTest {
 
         Function<Throwable, Observable<Integer>> just = just(onError);
         source.flatMap(just(onNext), just, just0(onCompleted), m).subscribe(ts);
-        
+
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertTerminated();
@@ -429,7 +429,7 @@ public class ObservableFlatMapTest {
         verify(o, never()).onNext(5);
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Ignore("Don't care for any reordering")
     @Test(timeout = 10000)
     public void flatMapRangeAsyncLoop() {
@@ -508,19 +508,19 @@ public class ObservableFlatMapTest {
             assertEquals(1000, list.size());
         }
     }
-    
+
     @Test
     public void flatMapIntPassthruAsync() {
         for (int i = 0;i < 1000; i++) {
             TestObserver<Integer> ts = new TestObserver<Integer>();
-            
+
             Observable.range(1, 1000).flatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
                 public Observable<Integer> apply(Integer t) {
                     return Observable.just(1).subscribeOn(Schedulers.computation());
                 }
             }).subscribe(ts);
-            
+
             ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
             ts.assertNoErrors();
             ts.assertComplete();
@@ -531,21 +531,21 @@ public class ObservableFlatMapTest {
     public void flatMapTwoNestedSync() {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
             TestObserver<Integer> ts = new TestObserver<Integer>();
-    
+
             Observable.just(1, 2).flatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
                 public Observable<Integer> apply(Integer t) {
                     return Observable.range(1, n);
                 }
             }).subscribe(ts);
-            
+
             System.out.println("flatMapTwoNestedSync >> @ " + n);
             ts.assertNoErrors();
             ts.assertComplete();
             ts.assertValueCount(n * 2);
         }
     }
-    
+
     @Test
     public void flatMapBiMapper() {
         Observable.just(1)

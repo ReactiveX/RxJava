@@ -114,7 +114,7 @@ public class FlowableFromCallableTest {
         Flowable<String> fromCallableFlowable = Flowable.fromCallable(func);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        
+
         TestSubscriber<String> outer = new TestSubscriber<String>(observer);
 
         fromCallableFlowable

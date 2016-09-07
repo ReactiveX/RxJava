@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -124,11 +124,11 @@ public class ObservableSubscriberTest {
 
         assertEquals(1, c.get());
     }
-    
+
     @Test
     public void subscribeConsumerConsumer() {
         final List<Integer> list = new ArrayList<Integer>();
-        
+
         Observable.just(1).subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -140,14 +140,14 @@ public class ObservableSubscriberTest {
                 list.add(100);
             }
         });
-        
+
         assertEquals(Arrays.asList(1), list);
     }
 
     @Test
     public void subscribeConsumerConsumerWithError() {
         final List<Integer> list = new ArrayList<Integer>();
-        
+
         Observable.<Integer>error(new TestException()).subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -159,24 +159,24 @@ public class ObservableSubscriberTest {
                 list.add(100);
             }
         });
-        
+
         assertEquals(Arrays.asList(100), list);
     }
 
     @Test
     public void methodTestCancelled() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         ps.test(true);
-        
+
         assertFalse(ps.hasObservers());
     }
-    
+
     @Test
     public void safeSubscriberAlreadySafe() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
         Observable.just(1).safeSubscribe(new SafeObserver<Integer>(ts));
-        
+
         ts.assertResult(1);
     }
 
@@ -184,9 +184,9 @@ public class ObservableSubscriberTest {
     @Test
     public void methodTestNoCancel() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         ps.test(false);
-        
+
         assertTrue(ps.hasObservers());
     }
 
@@ -199,10 +199,10 @@ public class ObservableSubscriberTest {
                 return null;
             }
         });
-        
+
         try {
             try {
-                
+
                 Observable.just(1).test();
                 fail("Should have thrown");
             } catch (NullPointerException ex) {
@@ -212,14 +212,14 @@ public class ObservableSubscriberTest {
             RxJavaPlugins.reset();
         }
     }
-    
+
     static final class BadObservable extends Observable<Integer> {
         @Override
         protected void subscribeActual(Observer<? super Integer> s) {
             throw new IllegalArgumentException();
         }
     }
-    
+
     @Test
     public void subscribeActualThrows() {
         List<Throwable> list = TestHelper.trackPluginErrors();
@@ -232,7 +232,7 @@ public class ObservableSubscriberTest {
                     fail(ex.toString() + ": Should be NPE(IAE)");
                 }
             }
-            
+
             TestHelper.assertError(list, 0, IllegalArgumentException.class);
         } finally {
             RxJavaPlugins.reset();

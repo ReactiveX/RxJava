@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -28,40 +28,40 @@ public enum ObservableInternalHelper {
 
     static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
         final Consumer<Emitter<T>> consumer;
-        
+
         public SimpleGenerator(Consumer<Emitter<T>> consumer) {
             this.consumer = consumer;
         }
-        
+
         @Override
         public S apply(S t1, Emitter<T> t2) throws Exception {
             consumer.accept(t2);
             return t1;
         }
     }
-    
+
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleGenerator(Consumer<Emitter<T>> consumer) {
         return new SimpleGenerator<T, S>(consumer);
     }
-    
+
     static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
         final BiConsumer<S, Emitter<T>> consumer;
-        
+
         public SimpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
             this.consumer = consumer;
         }
-        
+
         @Override
         public S apply(S t1, Emitter<T> t2) throws Exception {
             consumer.accept(t1, t2);
             return t1;
         }
     }
-    
+
     public static <T, S> BiFunction<S, Emitter<T>, S> simpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
         return new SimpleBiGenerator<T, S>(consumer);
     }
-    
+
     static final class ItemDelayFunction<T, U> implements Function<T, ObservableSource<T>> {
         final Function<? super T, ? extends ObservableSource<U>> itemDelay;
 
@@ -78,51 +78,51 @@ public enum ObservableInternalHelper {
     public static <T, U> Function<T, ObservableSource<T>> itemDelay(final Function<? super T, ? extends ObservableSource<U>> itemDelay) {
         return new ItemDelayFunction<T, U>(itemDelay);
     }
-    
-    
+
+
     static final class ObserverOnNext<T> implements Consumer<T> {
         final Observer<T> observer;
-        
+
         public ObserverOnNext(Observer<T> observer) {
             this.observer = observer;
         }
-        
+
         @Override
         public void accept(T v) throws Exception {
             observer.onNext(v);
         }
     }
-    
+
     static final class ObserverOnError<T> implements Consumer<Throwable> {
         final Observer<T> observer;
-        
+
         public ObserverOnError(Observer<T> observer) {
             this.observer = observer;
         }
-        
+
         @Override
         public void accept(Throwable v) throws Exception {
             observer.onError(v);
         }
     }
-    
+
     static final class ObserverOnComplete<T> implements Action {
         final Observer<T> observer;
-        
+
         public ObserverOnComplete(Observer<T> observer) {
             this.observer = observer;
         }
-        
+
         @Override
         public void run() throws Exception {
             observer.onComplete();
         }
     }
-    
+
     public static <T> Consumer<T> observerOnNext(Observer<T> observer) {
         return new ObserverOnNext<T>(observer);
     }
-    
+
     public static <T> Consumer<Throwable> observerOnError(Observer<T> observer) {
         return new ObserverOnError<T>(observer);
     }
@@ -186,7 +186,7 @@ public enum ObservableInternalHelper {
     public static <T, U> Function<T, ObservableSource<U>> flatMapIntoIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return new FlatMapIntoIterable<T, U>(mapper);
     }
-    
+
     enum MapToInt implements Function<Object, Object>{
         INSTANCE;
         @Override
@@ -194,7 +194,7 @@ public enum ObservableInternalHelper {
             return 0;
         }
     }
-    
+
     static final class RepeatWhenOuterHandler
     implements Function<Observable<Notification<Object>>, ObservableSource<?>> {
         private final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler;
@@ -212,7 +212,7 @@ public enum ObservableInternalHelper {
     public static Function<Observable<Notification<Object>>, ObservableSource<?>> repeatWhenHandler(final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
         return new RepeatWhenOuterHandler(handler);
     }
-    
+
     public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent) {
         return new Callable<ConnectableObservable<T>>() {
             @Override
@@ -230,7 +230,7 @@ public enum ObservableInternalHelper {
             }
         };
     }
-    
+
     public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
         return new Callable<ConnectableObservable<T>>() {
             @Override
@@ -257,15 +257,15 @@ public enum ObservableInternalHelper {
             }
         };
     }
-    
+
     enum ErrorMapperFilter implements Function<Notification<Object>, Throwable>, Predicate<Notification<Object>> {
         INSTANCE;
-        
+
         @Override
         public Throwable apply(Notification<Object> t) throws Exception {
             return t.getError();
         }
-        
+
         @Override
         public boolean test(Notification<Object> t) throws Exception {
             return t.isOnError();
@@ -311,5 +311,5 @@ public enum ObservableInternalHelper {
     public static <T, R> Function<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> zipIterable(final Function<? super T[], ? extends R> zipper) {
         return new ZipIterableFunction<T, R>(zipper);
     }
-    
+
 }

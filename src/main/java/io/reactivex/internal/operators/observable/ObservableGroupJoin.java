@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,13 +35,13 @@ import io.reactivex.subjects.UnicastSubject;
 public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends AbstractObservableWithUpstream<TLeft, R> {
 
     final ObservableSource<? extends TRight> other;
-    
+
     final Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd;
-    
+
     final Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd;
-    
+
     final BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector;
-    
+
     public ObservableGroupJoin(
             ObservableSource<TLeft> source,
             ObservableSource<? extends TRight> other,
@@ -58,75 +58,75 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     @Override
     protected void subscribeActual(Observer<? super R> s) {
 
-        GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent = 
+        GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
                 new GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>(s, leftEnd, rightEnd, resultSelector);
-        
+
         s.onSubscribe(parent);
-        
+
         LeftRightSubscriber left = new LeftRightSubscriber(parent, true);
         parent.disposables.add(left);
         LeftRightSubscriber right = new LeftRightSubscriber(parent, false);
         parent.disposables.add(right);
-        
+
         source.subscribe(left);
         other.subscribe(right);
     }
 
     interface JoinSupport {
-        
+
         void innerError(Throwable ex);
-        
+
         void innerComplete(LeftRightSubscriber sender);
-        
+
         void innerValue(boolean isLeft, Object o);
-        
+
         void innerClose(boolean isLeft, LeftRightEndSubscriber index);
-        
+
         void innerCloseError(Throwable ex);
     }
 
-    static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> 
+    static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Disposable, JoinSupport {
 
         /** */
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Observer<? super R> actual;
-        
+
         final SpscLinkedArrayQueue<Object> queue;
-        
+
         final CompositeDisposable disposables;
-        
+
         final Map<Integer, UnicastSubject<TRight>> lefts;
-        
+
         final Map<Integer, TRight> rights;
 
         final AtomicReference<Throwable> error;
-        
+
         final Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd;
-        
+
         final Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd;
-        
+
         final BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector;
-        
+
         final AtomicInteger active;
-        
+
         int leftIndex;
-        
+
         int rightIndex;
 
         volatile boolean cancelled;
-        
+
         static final Integer LEFT_VALUE = 1;
-        
+
         static final Integer RIGHT_VALUE = 2;
-        
+
         static final Integer LEFT_CLOSE = 3;
-        
+
         static final Integer RIGHT_CLOSE = 4;
-        
+
         public GroupJoinSubscription(
-                Observer<? super R> actual, 
+                Observer<? super R> actual,
                 Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
                 BiFunction<? super TLeft, ? super Observable<TRight>, ? extends R> resultSelector) {
@@ -141,7 +141,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
             this.resultSelector = resultSelector;
             this.active = new AtomicInteger(2);
         }
-        
+
         @Override
         public void dispose() {
             if (cancelled) {
@@ -153,29 +153,29 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                 queue.clear();
             }
         }
-        
+
         @Override
         public boolean isDisposed() {
             return cancelled;
         }
-        
+
         void cancelAll() {
             disposables.dispose();
         }
-        
+
         void errorAll(Observer<?> a) {
             Throwable ex = ExceptionHelper.terminate(error);
-            
+
             for (UnicastSubject<TRight> up : lefts.values()) {
                 up.onError(ex);
             }
-            
+
             lefts.clear();
             rights.clear();
-            
+
             a.onError(ex);
         }
-        
+
         void fail(Throwable exc, Observer<?> a, SpscLinkedArrayQueue<?> q) {
             Exceptions.throwIfFatal(exc);
             ExceptionHelper.addThrowable(error, exc);
@@ -183,23 +183,23 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
             cancelAll();
             errorAll(a);
         }
-        
+
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
-            
+
             int missed = 1;
             SpscLinkedArrayQueue<Object> q = queue;
             Observer<? super R> a = actual;
-            
+
             for (;;) {
                 for (;;) {
                     if (cancelled) {
                         q.clear();
                         return;
                     }
-                    
+
                     Throwable ex = error.get();
                     if (ex != null) {
                         q.clear();
@@ -207,13 +207,13 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                         errorAll(a);
                         return;
                     }
-                    
+
                     boolean d = active.get() == 0;
-                    
+
                     Integer mode = (Integer)q.poll();
-                    
+
                     boolean empty = mode == null;
-                    
+
                     if (d && empty) {
                         for (UnicastSubject<?> up : lefts.values()) {
                             up.onComplete();
@@ -222,39 +222,39 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                         lefts.clear();
                         rights.clear();
                         disposables.dispose();
-                        
+
                         a.onComplete();
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     Object val = q.poll();
-                    
+
                     if (mode == LEFT_VALUE) {
                         @SuppressWarnings("unchecked")
                         TLeft left = (TLeft)val;
-                        
+
                         UnicastSubject<TRight> up = UnicastSubject.create();
                         int idx = leftIndex++;
                         lefts.put(idx, up);
-                        
+
                         ObservableSource<TLeftEnd> p;
-                        
+
                         try {
                             p = ObjectHelper.requireNonNull(leftEnd.apply(left), "The leftEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
                         }
-                        
+
                         LeftRightEndSubscriber end = new LeftRightEndSubscriber(this, true, idx);
                         disposables.add(end);
-                        
+
                         p.subscribe(end);
-                        
+
                         ex = error.get();
                         if (ex != null) {
                             q.clear();
@@ -262,44 +262,44 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                             errorAll(a);
                             return;
                         }
-                        
+
                         R w;
-                        
+
                         try {
                             w = ObjectHelper.requireNonNull(resultSelector.apply(left, up), "The resultSelector returned a null value");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
                         }
-                        
+
                         a.onNext(w);
-                        
+
                         for (TRight right : rights.values()) {
                             up.onNext(right);
                         }
-                    } 
+                    }
                     else if (mode == RIGHT_VALUE) {
                         @SuppressWarnings("unchecked")
                         TRight right = (TRight)val;
-                        
+
                         int idx = rightIndex++;
-                        
+
                         rights.put(idx, right);
-                        
+
                         ObservableSource<TRightEnd> p;
-                        
+
                         try {
                             p = ObjectHelper.requireNonNull(rightEnd.apply(right), "The rightEnd returned a null Publisher");
                         } catch (Throwable exc) {
                             fail(exc, a, q);
                             return;
                         }
-                        
+
                         LeftRightEndSubscriber end = new LeftRightEndSubscriber(this, false, idx);
                         disposables.add(end);
-                        
+
                         p.subscribe(end);
-                        
+
                         ex = error.get();
                         if (ex != null) {
                             q.clear();
@@ -307,14 +307,14 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                             errorAll(a);
                             return;
                         }
-                        
+
                         for (UnicastSubject<TRight> up : lefts.values()) {
                             up.onNext(right);
                         }
                     }
                     else if (mode == LEFT_CLOSE) {
                         LeftRightEndSubscriber end = (LeftRightEndSubscriber)val;
-                        
+
                         UnicastSubject<TRight> up = lefts.remove(end.index);
                         disposables.remove(end);
                         if (up != null) {
@@ -323,7 +323,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                     }
                     else if (mode == RIGHT_CLOSE) {
                         LeftRightEndSubscriber end = (LeftRightEndSubscriber)val;
-                        
+
                         rights.remove(end.index);
                         disposables.remove(end);
                     }
@@ -335,7 +335,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                 }
             }
         }
-        
+
         @Override
         public void innerError(Throwable ex) {
             if (ExceptionHelper.addThrowable(error, ex)) {
@@ -345,14 +345,14 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
                 RxJavaPlugins.onError(ex);
             }
         }
-        
+
         @Override
         public void innerComplete(LeftRightSubscriber sender) {
             disposables.delete(sender);
             active.decrementAndGet();
             drain();
         }
-        
+
         @Override
         public void innerValue(boolean isLeft, Object o) {
             synchronized (this) {
@@ -360,7 +360,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
             }
             drain();
         }
-        
+
         @Override
         public void innerClose(boolean isLeft, LeftRightEndSubscriber index) {
             synchronized (this) {
@@ -368,7 +368,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
             }
             drain();
         }
-        
+
         @Override
         public void innerCloseError(Throwable ex) {
             if (ExceptionHelper.addThrowable(error, ex)) {
@@ -378,8 +378,8 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
             }
         }
     }
-    
-    static final class LeftRightSubscriber 
+
+    static final class LeftRightSubscriber
     extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
         /** */
@@ -388,12 +388,12 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
         final JoinSupport parent;
 
         final boolean isLeft;
-        
+
         public LeftRightSubscriber(JoinSupport parent, boolean isLeft) {
             this.parent = parent;
             this.isLeft = isLeft;
         }
-        
+
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);
@@ -423,10 +423,10 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
         public void onComplete() {
             parent.innerComplete(this);
         }
-        
+
     }
-    
-    static final class LeftRightEndSubscriber 
+
+    static final class LeftRightEndSubscriber
     extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
         /** */
@@ -435,16 +435,16 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
         final JoinSupport parent;
 
         final boolean isLeft;
-        
+
         final int index;
-        
-        public LeftRightEndSubscriber(JoinSupport parent, 
+
+        public LeftRightEndSubscriber(JoinSupport parent,
                 boolean isLeft, int index) {
             this.parent = parent;
             this.isLeft = isLeft;
             this.index = index;
         }
-        
+
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);
@@ -476,7 +476,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
         public void onComplete() {
             parent.innerClose(isLeft, this);
         }
-        
+
     }
 
 }

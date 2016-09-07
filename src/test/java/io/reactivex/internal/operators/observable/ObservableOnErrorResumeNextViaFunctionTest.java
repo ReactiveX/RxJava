@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -58,7 +58,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         Observable<String> NbpObservable = w.onErrorResumeNext(resume);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
-        
+
         NbpObservable.subscribe(NbpObserver);
 
         verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
@@ -193,7 +193,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
                     public void onSubscribe(Disposable s) {
                         t1.onSubscribe(s);
                     }
-                    
+
                     @Override
                     public void onComplete() {
                         throw new RuntimeException("failed");
@@ -229,7 +229,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         System.out.println(ts.values());
         ts.assertValue("success");
     }
-    
+
     @Test
     public void testMapResumeAsyncNext() {
         // Trigger multiple failures
@@ -253,12 +253,12 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
             public Observable<String> apply(Throwable t1) {
                 return Observable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation());
             }
-            
+
         });
 
         @SuppressWarnings("unchecked")
         DefaultObserver<String> NbpObserver = mock(DefaultObserver.class);
-        
+
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
         o.subscribe(ts);
         ts.awaitTerminalEvent();
@@ -308,7 +308,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         }
 
     }
-    
+
     @Test
     public void testBackpressure() {
         TestObserver<Integer> ts = new TestObserver<Integer>();

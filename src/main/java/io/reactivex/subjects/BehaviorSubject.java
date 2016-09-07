@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -56,7 +56,7 @@ import io.reactivex.plugins.RxJavaPlugins;
   subject.onNext("one");
   subject.onCompleted();
   subject.subscribe(observer);
-  
+
   // observer will receive only onError
   BehaviorSubject<Object> subject = BehaviorSubject.create("default");
   subject.onNext("zero");
@@ -64,19 +64,19 @@ import io.reactivex.plugins.RxJavaPlugins;
   subject.onError(new RuntimeException("error"));
   subject.subscribe(observer);
   } </pre>
- * 
+ *
  * @param <T>
  *          the type of item expected to be observed by the Subject
  */
 public final class BehaviorSubject<T> extends Subject<T> {
-    
+
     /** An empty array to avoid allocation in getValues(). */
     private static final Object[] EMPTY_ARRAY = new Object[0];
 
     final AtomicReference<Object> value;
-    
+
     final AtomicReference<BehaviorDisposable<T>[]> subscribers;
-    
+
     @SuppressWarnings("rawtypes")
     static final BehaviorDisposable[] EMPTY = new BehaviorDisposable[0];
 
@@ -100,11 +100,11 @@ public final class BehaviorSubject<T> extends Subject<T> {
     public static <T> BehaviorSubject<T> create() {
         return new BehaviorSubject<T>();
     }
-    
+
     /**
      * Creates a {@link BehaviorSubject} that emits the last item it observed and all subsequent items to each
      * {@link Observer} that subscribes to it.
-     * 
+     *
      * @param <T>
      *            the type of item the Subject will emit
      * @param defaultValue
@@ -115,7 +115,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
     public static <T> BehaviorSubject<T> createDefault(T defaultValue) {
         return new BehaviorSubject<T>(defaultValue);
     }
-    
+
     /**
      * Constructs an empty BehaviorSubject.
      * @since 2.0
@@ -161,7 +161,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
             }
         }
     }
-    
+
     @Override
     public void onSubscribe(Disposable s) {
         if (done) {
@@ -217,8 +217,8 @@ public final class BehaviorSubject<T> extends Subject<T> {
     public boolean hasObservers() {
         return subscribers.get().length != 0;
     }
-    
-    
+
+
     /* test support*/ int subscriberCount() {
         return subscribers.get().length;
     }
@@ -231,7 +231,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         }
         return null;
     }
-    
+
     /**
      * Returns a single value the Subject currently has or null if no such value exists.
      * <p>The method is thread-safe.
@@ -258,9 +258,9 @@ public final class BehaviorSubject<T> extends Subject<T> {
             return new Object[0];
         }
         return b;
-            
+
     }
-    
+
     /**
      * Returns a typed array containing a snapshot of all values of the Subject.
      * <p>The method follows the conventions of Collection.toArray by setting the array element
@@ -290,19 +290,19 @@ public final class BehaviorSubject<T> extends Subject<T> {
         }
         return array;
     }
-    
+
     @Override
     public boolean hasComplete() {
         Object o = value.get();
         return NotificationLite.isComplete(o);
     }
-    
+
     @Override
     public boolean hasThrowable() {
         Object o = value.get();
         return NotificationLite.isError(o);
     }
-    
+
     /**
      * Returns true if the subject has any value.
      * <p>The method is thread-safe.
@@ -312,7 +312,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         Object o = value.get();
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
     }
-    
+
     boolean add(BehaviorDisposable<T> rs) {
         for (;;) {
             BehaviorDisposable<T>[] a = subscribers.get();
@@ -329,7 +329,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     void remove(BehaviorDisposable<T> rs) {
         for (;;) {
@@ -345,7 +345,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
                     break;
                 }
             }
-            
+
             if (j < 0) {
                 return;
             }
@@ -362,10 +362,10 @@ public final class BehaviorSubject<T> extends Subject<T> {
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     BehaviorDisposable<T>[] terminate(Object terminalValue) {
-        
+
         BehaviorDisposable<T>[] a = subscribers.get();
         if (a != TERMINATED) {
             a = subscribers.getAndSet(TERMINATED);
@@ -374,10 +374,10 @@ public final class BehaviorSubject<T> extends Subject<T> {
                 setCurrent(terminalValue);
             }
         }
-        
+
         return a;
     }
-    
+
     void setCurrent(Object o) {
         writeLock.lock();
         try {
@@ -387,32 +387,32 @@ public final class BehaviorSubject<T> extends Subject<T> {
             writeLock.unlock();
         }
     }
-    
+
     static final class BehaviorDisposable<T> implements Disposable, Predicate<Object> {
-        
+
         final Observer<? super T> actual;
         final BehaviorSubject<T> state;
-        
+
         boolean next;
         boolean emitting;
         AppendOnlyLinkedArrayList<Object> queue;
-        
+
         boolean fastPath;
-        
+
         volatile boolean cancelled;
-        
+
         long index;
 
         public BehaviorDisposable(Observer<? super T> actual, BehaviorSubject<T> state) {
             this.actual = actual;
             this.state = state;
         }
-        
+
         @Override
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
-                
+
                 state.remove(this);
             }
         }
@@ -434,10 +434,10 @@ public final class BehaviorSubject<T> extends Subject<T> {
                 if (next) {
                     return;
                 }
-                
+
                 BehaviorSubject<T> s = state;
                 Lock lock = s.readLock;
-                
+
                 lock.lock();
                 try {
                     index = s.index;
@@ -445,20 +445,20 @@ public final class BehaviorSubject<T> extends Subject<T> {
                 } finally {
                     lock.unlock();
                 }
-                
+
                 emitting = o != null;
                 next = true;
             }
-            
+
             if (o != null) {
                 if (test(o)) {
                     return;
                 }
-            
+
                 emitLoop();
             }
         }
-        
+
         void emitNext(Object value, long stateIndex) {
             if (cancelled) {
                 return;
@@ -492,7 +492,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         public boolean test(Object o) {
             return cancelled || NotificationLite.accept(o, actual);
         }
-        
+
         void emitLoop() {
             for (;;) {
                 if (cancelled) {
@@ -507,7 +507,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
                     }
                     queue = null;
                 }
-                
+
                 try {
                     q.forEachWhile(this);
                 } catch (Throwable ex) {

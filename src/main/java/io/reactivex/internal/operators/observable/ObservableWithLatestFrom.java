@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -32,46 +32,46 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         this.combiner = combiner;
         this.other = other;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super R> t) {
         final SerializedObserver<R> serial = new SerializedObserver<R>(t);
         final WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<T, U, R>(serial, combiner);
-        
+
         other.subscribe(new Observer<U>() {
             @Override
             public void onSubscribe(Disposable s) {
                 wlf.setOther(s);
             }
-            
+
             @Override
             public void onNext(U t) {
                 wlf.lazySet(t);
             }
-            
+
             @Override
             public void onError(Throwable t) {
                 wlf.otherError(t);
             }
-            
+
             @Override
             public void onComplete() {
                 // nothing to do, the wlf will complete on its own pace
             }
         });
-        
+
         source.subscribe(wlf);
     }
-    
+
     static final class WithLatestFromSubscriber<T, U, R> extends AtomicReference<U> implements Observer<T>, Disposable {
         /** */
         private static final long serialVersionUID = -312246233408980075L;
-        
+
         final Observer<? super R> actual;
         final BiFunction<? super T, ? super U, ? extends R> combiner;
-        
+
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
-        
+
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
 
         public WithLatestFromSubscriber(Observer<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
@@ -84,7 +84,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             U u = get();
@@ -101,19 +101,19 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
                 actual.onNext(r);
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             DisposableHelper.dispose(other);
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             DisposableHelper.dispose(other);
             actual.onComplete();
         }
-        
+
         @Override
         public void dispose() {
             s.get().dispose();
@@ -141,7 +141,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
                 }
             }
         }
-        
+
         public void otherError(Throwable e) {
             if (this.s.compareAndSet(null, DisposableHelper.DISPOSED)) {
                 EmptyDisposable.error(e, actual);

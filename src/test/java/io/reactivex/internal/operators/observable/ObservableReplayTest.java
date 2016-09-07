@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -455,7 +455,7 @@ public class ObservableReplayTest {
             verify(observer1, never()).onComplete();
         }
     }
-    
+
     @Test
     public void testSynchronousDisconnect() {
         final AtomicInteger effectCounter = new AtomicInteger();
@@ -467,7 +467,7 @@ public class ObservableReplayTest {
                 System.out.println("Sideeffect #" + v);
             }
         });
-        
+
         Observable<Integer> result = source.replay(
         new Function<Observable<Integer>, Observable<Integer>>() {
             @Override
@@ -475,7 +475,7 @@ public class ObservableReplayTest {
                 return o.take(2);
             }
         });
-        
+
         for (int i = 1; i < 3; i++) {
             effectCounter.set(0);
             System.out.printf("- %d -%n", i);
@@ -485,14 +485,14 @@ public class ObservableReplayTest {
                 public void accept(Integer t1) {
                     System.out.println(t1);
                 }
-                
+
             }, new Consumer<Throwable>() {
 
                 @Override
                 public void accept(Throwable t1) {
                     t1.printStackTrace();
                 }
-            }, 
+            },
             new Action() {
                 @Override
                 public void run() {
@@ -565,7 +565,7 @@ public class ObservableReplayTest {
         Action sourceCompleted = mock(Action.class);
         Action sourceUnsubscribed = mock(Action.class);
         final TestScheduler mockScheduler = new TestScheduler();
-        
+
         Observer<Integer> mockObserverBeforeConnect = TestHelper.mockObserver();
         Observer<Integer> mockObserverAfterConnect = TestHelper.mockObserver();
 
@@ -584,7 +584,7 @@ public class ObservableReplayTest {
         verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
 
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
         verify(sourceNext, times(1)).accept(2);
@@ -640,8 +640,8 @@ public class ObservableReplayTest {
 
         verify(mockObserverBeforeConnect).onSubscribe((Disposable)any());
         verify(mockObserverAfterConnect).onSubscribe((Disposable)any());
-        
-        
+
+
         mockScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         // verify interactions
         verify(sourceNext, times(1)).accept(1);
@@ -718,16 +718,16 @@ public class ObservableReplayTest {
         buf.addLast(new Node(3));
         buf.addLast(new Node(4));
         buf.addLast(new Node(5));
-        
+
         List<Integer> values = new ArrayList<Integer>();
         buf.collect(values);
-        
+
         Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5), values);
-        
+
         buf.removeSome(2);
         buf.removeFirst();
         buf.removeSome(2);
-        
+
         values.clear();
         buf.collect(values);
         Assert.assertTrue(values.isEmpty());
@@ -735,17 +735,17 @@ public class ObservableReplayTest {
         buf.addLast(new Node(5));
         buf.addLast(new Node(6));
         buf.collect(values);
-        
+
         Assert.assertEquals(Arrays.asList(5, 6), values);
-        
+
     }
-    
+
     @Test
     public void testTimedAndSizedTruncation() {
         TestScheduler test = new TestScheduler();
         SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, TimeUnit.MILLISECONDS, test);
         List<Integer> values = new ArrayList<Integer>();
-        
+
         buf.next(1);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         buf.next(2);
@@ -758,31 +758,31 @@ public class ObservableReplayTest {
         values.clear();
         buf.collect(values);
         Assert.assertEquals(Arrays.asList(3, 4), values);
-        
+
         test.advanceTimeBy(2, TimeUnit.SECONDS);
         buf.next(5);
-        
+
         values.clear();
         buf.collect(values);
         Assert.assertEquals(Arrays.asList(5), values);
-        
+
         test.advanceTimeBy(2, TimeUnit.SECONDS);
         buf.complete();
-        
+
         values.clear();
         buf.collect(values);
         Assert.assertTrue(values.isEmpty());
-        
+
         Assert.assertEquals(1, buf.size);
         Assert.assertTrue(buf.hasCompleted());
     }
-    
+
     @Test
     public void testColdReplayNoBackpressure() {
         Observable<Integer> source = Observable.range(0, 1000).replay().autoConnect();
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
-        
+
         source.subscribe(ts);
 
         ts.assertNoErrors();
@@ -856,39 +856,39 @@ public class ObservableReplayTest {
         o.subscribe();
         verify(unsubscribe, times(1)).run();
     }
-    
+
     @Test
     public void testTake() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
 
         Observable<Integer> cached = Observable.range(1, 100).replay().autoConnect();
         cached.take(10).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertTerminated();
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         // FIXME no longer assertable
 //        ts.assertUnsubscribed();
     }
-    
+
     @Test
     public void testAsync() {
         Observable<Integer> source = Observable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
             TestObserver<Integer> ts1 = new TestObserver<Integer>();
-            
+
             Observable<Integer> cached = source.replay().autoConnect();
-            
+
             cached.observeOn(Schedulers.computation()).subscribe(ts1);
-            
+
             ts1.awaitTerminalEvent(2, TimeUnit.SECONDS);
             ts1.assertNoErrors();
             ts1.assertTerminated();
             assertEquals(10000, ts1.values().size());
-            
+
             TestObserver<Integer> ts2 = new TestObserver<Integer>();
             cached.observeOn(Schedulers.computation()).subscribe(ts2);
-            
+
             ts2.awaitTerminalEvent(2, TimeUnit.SECONDS);
             ts2.assertNoErrors();
             ts2.assertTerminated();
@@ -901,9 +901,9 @@ public class ObservableReplayTest {
                 .take(1000)
                 .subscribeOn(Schedulers.io());
         Observable<Long> cached = source.replay().autoConnect();
-        
+
         Observable<Long> output = cached.observeOn(Schedulers.computation());
-        
+
         List<TestObserver<Long>> list = new ArrayList<TestObserver<Long>>(100);
         for (int i = 0; i < 100; i++) {
             TestObserver<Long> ts = new TestObserver<Long>();
@@ -920,17 +920,17 @@ public class ObservableReplayTest {
             ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
             ts.assertNoErrors();
             ts.assertTerminated();
-            
+
             for (int i = j * 10; i < j * 10 + 10; i++) {
                 expected.set(i - j * 10, (long)i);
             }
-            
+
             ts.assertValueSequence(expected);
-            
+
             j++;
         }
     }
-    
+
     @Test
     public void testNoMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
@@ -944,43 +944,43 @@ public class ObservableReplayTest {
                 t.onComplete();
             }
         });
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
         firehose.replay().autoConnect().observeOn(Schedulers.computation()).takeLast(100).subscribe(ts);
-        
+
         ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertTerminated();
-        
+
         assertEquals(100, ts.values().size());
     }
-    
+
     @Test
     public void testValuesAndThenError() {
         Observable<Integer> source = Observable.range(1, 10)
                 .concatWith(Observable.<Integer>error(new TestException()))
                 .replay().autoConnect();
-        
-        
+
+
         TestObserver<Integer> ts = new TestObserver<Integer>();
         source.subscribe(ts);
-        
+
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts.assertNotComplete();
         Assert.assertEquals(1, ts.errors().size());
-        
+
         TestObserver<Integer> ts2 = new TestObserver<Integer>();
         source.subscribe(ts2);
-        
+
         ts2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts2.assertNotComplete();
         Assert.assertEquals(1, ts2.errors().size());
     }
-    
+
     @Test
     public void unsafeChildThrows() {
         final AtomicInteger count = new AtomicInteger();
-        
+
         Observable<Integer> source = Observable.range(1, 100)
         .doOnNext(new Consumer<Integer>() {
             @Override
@@ -989,33 +989,33 @@ public class ObservableReplayTest {
             }
         })
         .replay().autoConnect();
-        
+
         TestObserver<Integer> ts = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
             }
         };
-        
+
         source.subscribe(ts);
-        
+
         Assert.assertEquals(100, count.get());
 
         ts.assertNoValues();
         ts.assertNotComplete();
         ts.assertError(TestException.class);
     }
-    
+
     @Test
     public void replayScheduler() {
-        
+
         Observable.just(1).replay(Schedulers.computation())
         .autoConnect()
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
     }
-    
+
     @Test
     public void replayTime() {
         Observable.just(1).replay(1, TimeUnit.MINUTES)
@@ -1027,7 +1027,7 @@ public class ObservableReplayTest {
 
     @Test
     public void replaySizeScheduler() {
-        
+
         Observable.just(1).replay(1, Schedulers.computation())
         .autoConnect()
         .test()
@@ -1043,7 +1043,7 @@ public class ObservableReplayTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
     }
-    
+
     @Test
     public void replaySelectorSizeScheduler() {
         Observable.just(1).replay(Functions.<Observable<Integer>>identity(), 1, Schedulers.io())

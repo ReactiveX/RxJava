@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -34,16 +34,16 @@ public class FlowableCacheTest {
     @Test
     public void testColdReplayNoBackpressure() {
         FlowableCache<Integer> source = (FlowableCache<Integer>)FlowableCache.from(Flowable.range(0, 1000));
-        
+
         assertFalse("Source is connected!", source.isConnected());
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.subscribe(ts);
 
         assertTrue("Source is not connected!", source.isConnected());
         assertFalse("Subscribers retained!", source.hasSubscribers());
-        
+
         ts.assertNoErrors();
         ts.assertTerminated();
         List<Integer> onNextEvents = ts.values();
@@ -56,17 +56,17 @@ public class FlowableCacheTest {
     @Test
     public void testColdReplayBackpressure() {
         FlowableCache<Integer> source = (FlowableCache<Integer>)FlowableCache.from(Flowable.range(0, 1000));
-        
+
         assertFalse("Source is connected!", source.isConnected());
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
         ts.request(10);
-        
+
         source.subscribe(ts);
 
         assertTrue("Source is not connected!", source.isConnected());
         assertTrue("Subscribers not retained!", source.hasSubscribers());
-        
+
         ts.assertNoErrors();
         ts.assertNotComplete();
         List<Integer> onNextEvents = ts.values();
@@ -75,11 +75,11 @@ public class FlowableCacheTest {
         for (int i = 0; i < 10; i++) {
             assertEquals((Integer)i, onNextEvents.get(i));
         }
-        
+
         ts.dispose();
         assertFalse("Subscribers retained!", source.hasSubscribers());
     }
-    
+
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
@@ -139,39 +139,39 @@ public class FlowableCacheTest {
         o.subscribe();
         verify(unsubscribe, times(1)).run();
     }
-    
+
     @Test
     public void testTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         FlowableCache<Integer> cached = (FlowableCache<Integer>)FlowableCache.from(Flowable.range(1, 100));
         cached.take(10).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertComplete();
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-//        ts.assertUnsubscribed(); // FIXME no longer valid 
+//        ts.assertUnsubscribed(); // FIXME no longer valid
         assertFalse(cached.hasSubscribers());
     }
-    
+
     @Test
     public void testAsync() {
         Flowable<Integer> source = Flowable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
             TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
-            
+
             FlowableCache<Integer> cached = (FlowableCache<Integer>)FlowableCache.from(source);
-            
+
             cached.observeOn(Schedulers.computation()).subscribe(ts1);
-            
+
             ts1.awaitTerminalEvent(2, TimeUnit.SECONDS);
             ts1.assertNoErrors();
             ts1.assertComplete();
             assertEquals(10000, ts1.values().size());
-            
+
             TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
             cached.observeOn(Schedulers.computation()).subscribe(ts2);
-            
+
             ts2.awaitTerminalEvent(2, TimeUnit.SECONDS);
             ts2.assertNoErrors();
             ts2.assertComplete();
@@ -184,9 +184,9 @@ public class FlowableCacheTest {
                 .take(1000)
                 .subscribeOn(Schedulers.io());
         FlowableCache<Long> cached = (FlowableCache<Long>)FlowableCache.from(source);
-        
+
         Flowable<Long> output = cached.observeOn(Schedulers.computation());
-        
+
         List<TestSubscriber<Long>> list = new ArrayList<TestSubscriber<Long>>(100);
         for (int i = 0; i < 100; i++) {
             TestSubscriber<Long> ts = new TestSubscriber<Long>();
@@ -203,17 +203,17 @@ public class FlowableCacheTest {
             ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
             ts.assertNoErrors();
             ts.assertComplete();
-            
+
             for (int i = j * 10; i < j * 10 + 10; i++) {
                 expected.set(i - j * 10, (long)i);
             }
-            
+
             ts.assertValueSequence(expected);
-            
+
             j++;
         }
     }
-    
+
     @Test
     public void testNoMissingBackpressureException() {
         final int m = 4 * 1000 * 1000;
@@ -227,43 +227,43 @@ public class FlowableCacheTest {
                 t.onComplete();
             }
         });
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         firehose.cache().observeOn(Schedulers.computation()).takeLast(100).subscribe(ts);
-        
+
         ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
         ts.assertNoErrors();
         ts.assertComplete();
-        
+
         assertEquals(100, ts.values().size());
     }
-    
+
     @Test
     public void testValuesAndThenError() {
         Flowable<Integer> source = Flowable.range(1, 10)
                 .concatWith(Flowable.<Integer>error(new TestException()))
                 .cache();
-        
-        
+
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         source.subscribe(ts);
-        
+
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts.assertNotComplete();
         ts.assertError(TestException.class);
-        
+
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
         source.subscribe(ts2);
-        
+
         ts2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts2.assertNotComplete();
         ts2.assertError(TestException.class);
     }
-    
+
     @Test
     public void unsafeChildThrows() {
         final AtomicInteger count = new AtomicInteger();
-        
+
         Flowable<Integer> source = Flowable.range(1, 100)
         .doOnNext(new Consumer<Integer>() {
             @Override
@@ -272,16 +272,16 @@ public class FlowableCacheTest {
             }
         })
         .cache();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
             }
         };
-        
+
         source.subscribe(ts);
-        
+
         Assert.assertEquals(100, count.get());
 
         ts.assertNoValues();

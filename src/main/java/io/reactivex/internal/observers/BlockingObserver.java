@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -29,7 +29,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
 
     T value;
     Throwable error;
-    
+
     Disposable d;
 
     volatile boolean cancelled;
@@ -37,7 +37,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
     public BlockingObserver() {
         super(1);
     }
-    
+
     void dispose() {
         cancelled = true;
         Disposable d = this.d;
@@ -53,24 +53,24 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
             d.dispose();
         }
     }
-    
+
     @Override
     public void onSuccess(T value) {
         this.value = value;
         countDown();
     }
-    
+
     @Override
     public void onError(Throwable e) {
         error = e;
         countDown();
     }
-    
+
     @Override
     public void onComplete() {
         countDown();
     }
-    
+
     /**
      * Block until the latch is counted down then rethrow any exception received (wrapped if checked)
      * or return the received value (null if none).
@@ -91,7 +91,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
         }
         return value;
     }
-    
+
     /**
      * Block until a the latch is counted down and return the value received, otherwise
      * rethrow the received exception or rethrow the InterruptedException or TimeoutException
@@ -118,7 +118,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
         }
         return value;
     }
-    
+
     /**
      * Block until the latch is counted down then rethrow any exception received (wrapped if checked)
      * or return the received value (the defaultValue if none).
@@ -141,7 +141,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
         T v = value;
         return v != null ? v : defaultValue;
     }
-    
+
     /**
      * Block until the latch is counted down and return the error received or null if no
      * error happened.
@@ -158,7 +158,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
         }
         return error;
     }
-    
+
     /**
      * Block until the latch is counted down and return the error received or
      * when the wait is interrupted or times out, null otherwise.
@@ -180,9 +180,9 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
         }
         return error;
     }
-    
+
     /**
-     * Block until the observer terminates and return true; return false if 
+     * Block until the observer terminates and return true; return false if
      * the wait times out.
      * @param timeout the timeout value
      * @param unit the time unit

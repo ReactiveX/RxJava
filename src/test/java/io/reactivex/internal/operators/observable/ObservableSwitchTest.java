@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -443,7 +443,7 @@ public class ObservableSwitchTest {
     @Test
     public void testIssue2654() {
         Observable<String> oneItem = Observable.just("Hello").mergeWith(Observable.<String>never());
-        
+
         Observable<String> src = oneItem.switchMap(new Function<String, Observable<String>>() {
             @Override
             public Observable<String> apply(final String s) {
@@ -459,7 +459,7 @@ public class ObservableSwitchTest {
         })
         .share()
         ;
-        
+
         TestObserver<String> ts = new TestObserver<String>() {
             @Override
             public void onNext(String t) {
@@ -471,89 +471,89 @@ public class ObservableSwitchTest {
             }
         };
         src.subscribe(ts);
-        
+
         ts.awaitTerminalEvent(10, TimeUnit.SECONDS);
-        
+
         System.out.println("> testIssue2654: " + ts.valueCount());
-        
+
         ts.assertTerminated();
         ts.assertNoErrors();
-        
+
         Assert.assertEquals(250, ts.valueCount());
     }
-    
+
 
     @Test
     public void delayErrors() {
         PublishSubject<ObservableSource<Integer>> source = PublishSubject.create();
-        
+
         TestObserver<Integer> ts = source.switchMapDelayError(Functions.<ObservableSource<Integer>>identity())
         .test();
-        
+
         ts.assertNoValues()
         .assertNoErrors()
         .assertNotComplete();
-        
+
         source.onNext(Observable.just(1));
-        
+
         source.onNext(Observable.<Integer>error(new TestException("Forced failure 1")));
-        
+
         source.onNext(Observable.just(2, 3, 4));
-        
+
         source.onNext(Observable.<Integer>error(new TestException("Forced failure 2")));
-        
+
         source.onNext(Observable.just(5));
-        
+
         source.onError(new TestException("Forced failure 3"));
-        
+
         ts.assertValues(1, 2, 3, 4, 5)
         .assertNotComplete()
         .assertError(CompositeException.class);
-        
+
         List<Throwable> errors = ExceptionHelper.flatten(ts.errors().get(0));
-        
+
         TestHelper.assertError(errors, 0, TestException.class, "Forced failure 1");
         TestHelper.assertError(errors, 1, TestException.class, "Forced failure 2");
         TestHelper.assertError(errors, 2, TestException.class, "Forced failure 3");
     }
-    
+
     @Test
     public void switchOnNextDelayError() {
         PublishSubject<Observable<Integer>> ps = PublishSubject.create();
-        
+
         TestObserver<Integer> ts = Observable.switchOnNextDelayError(ps).test();
-        
+
         ps.onNext(Observable.just(1));
         ps.onNext(Observable.range(2, 4));
         ps.onComplete();
-        
+
         ts.assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void switchOnNextDelayErrorWithError() {
         PublishSubject<Observable<Integer>> ps = PublishSubject.create();
-        
+
         TestObserver<Integer> ts = Observable.switchOnNextDelayError(ps).test();
-        
+
         ps.onNext(Observable.just(1));
         ps.onNext(Observable.<Integer>error(new TestException()));
         ps.onNext(Observable.range(2, 4));
         ps.onComplete();
-        
+
         ts.assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
     @Test
     public void switchOnNextDelayErrorBufferSize() {
         PublishSubject<Observable<Integer>> ps = PublishSubject.create();
-        
+
         TestObserver<Integer> ts = Observable.switchOnNextDelayError(ps, 2).test();
-        
+
         ps.onNext(Observable.just(1));
         ps.onNext(Observable.range(2, 4));
         ps.onComplete();
-        
+
         ts.assertResult(1, 2, 3, 4, 5);
     }
 
@@ -579,7 +579,7 @@ public class ObservableSwitchTest {
         }, 16)
         .test()
         .assertResult(1);
-    
+
     }
 
     @Test
@@ -604,7 +604,7 @@ public class ObservableSwitchTest {
         }, 16)
         .test()
         .assertResult(1);
-    
+
     }
 
 }

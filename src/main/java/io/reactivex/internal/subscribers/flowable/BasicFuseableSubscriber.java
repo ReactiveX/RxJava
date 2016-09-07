@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -29,19 +29,19 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
 
     /** The downstream subscriber. */
     protected final Subscriber<? super R> actual;
-    
+
     /** The upstream subscription. */
     protected Subscription s;
-    
+
     /** The upstream's QueueSubscription if not null. */
     protected QueueSubscription<T> qs;
-    
+
     /** Flag indicating no further onXXX event should be accepted. */
     protected boolean done;
-    
+
     /** Holds the established fusion mode of the upstream. */
     protected int sourceMode;
-    
+
     /**
      * Construct a BasicFuseableSubscriber by wrapping the given subscriber.
      * @param actual the subscriber, not null (not verified)
@@ -49,28 +49,28 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
     public BasicFuseableSubscriber(Subscriber<? super R> actual) {
         this.actual = actual;
     }
-    
+
     // final: fixed protocol steps to support fuseable and non-fuseable upstream
     @SuppressWarnings("unchecked")
     @Override
     public final void onSubscribe(Subscription s) {
         if (SubscriptionHelper.validate(this.s, s)) {
-            
+
             this.s = s;
             if (s instanceof QueueSubscription) {
                 this.qs = (QueueSubscription<T>)s;
             }
-            
+
             if (beforeDownstream()) {
-                
+
                 actual.onSubscribe(this);
-                
+
                 afterDownstream();
             }
-            
+
         }
     }
-    
+
     /**
      * Override this to perform actions before the call {@code actual.onSubscribe(this)} happens.
      * @return true if onSubscribe should continue with the call
@@ -78,7 +78,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
     protected boolean beforeDownstream() {
         return true;
     }
-    
+
     /**
      * Override this to perform actions after the call to {@code actual.onSubscribe(this)} happened.
      */
@@ -91,7 +91,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
     // -----------------------------------
 
     /**
-     * Emits the value to the actual subscriber if {@link #done} is false. 
+     * Emits the value to the actual subscriber if {@link #done} is false.
      * @param value the value to signal
      */
     protected final void next(R value) {
@@ -100,7 +100,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
         }
         actual.onNext(value);
     }
-    
+
     @Override
     public void onError(Throwable t) {
         if (done) {
@@ -110,7 +110,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
         done = true;
         actual.onError(t);
     }
-    
+
     /**
      * Rethrows the throwable if it is a fatal exception or calls {@link #onError(Throwable)}.
      * @param t the throwable to rethrow or signal to the actual subscriber
@@ -120,7 +120,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
         s.cancel();
         onError(t);
     }
-    
+
     @Override
     public void onComplete() {
         if (done) {
@@ -129,7 +129,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
         done = true;
         actual.onComplete();
     }
-    
+
     /**
      * Calls the upstream's QueueSubscription.requestFusion with the mode and
      * saves the established mode in {@link #sourceMode}.
@@ -178,36 +178,36 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
     // --------------------------------------------------------------
     // Default implementation of the RS and QS protocol (can be overridden)
     // --------------------------------------------------------------
-    
+
     @Override
     public void request(long n) {
         s.request(n);
     }
-    
+
     @Override
     public void cancel() {
         s.cancel();
     }
-    
+
     @Override
     public boolean isEmpty() {
         return qs.isEmpty();
     }
-    
+
     @Override
     public void clear() {
         qs.clear();
     }
-    
+
     // -----------------------------------------------------------
     // The rest of the Queue interface methods shouldn't be called
     // -----------------------------------------------------------
-    
+
     @Override
     public final boolean offer(R e) {
         throw new UnsupportedOperationException("Should not be called!");
     }
-    
+
     @Override
     public final boolean offer(R v1, R v2) {
         throw new UnsupportedOperationException("Should not be called!");

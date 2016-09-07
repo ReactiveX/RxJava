@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -40,12 +40,12 @@ public enum ObservableScalarXMap {
      * @return true if successful, false if the caller should continue with the regular path.
      */
     @SuppressWarnings("unchecked")
-    public static <T, R> boolean tryScalarXMapSubscribe(ObservableSource<T> source, 
-            Observer<? super R> observer, 
+    public static <T, R> boolean tryScalarXMapSubscribe(ObservableSource<T> source,
+            Observer<? super R> observer,
             Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
         if (source instanceof Callable) {
             T t;
-            
+
             try {
                 t = ((Callable<T>)source).call();
             } catch (Throwable ex) {
@@ -53,14 +53,14 @@ public enum ObservableScalarXMap {
                 EmptyDisposable.error(ex, observer);
                 return true;
             }
-            
+
             if (t == null) {
                 EmptyDisposable.complete(observer);
                 return true;
             }
-            
+
             ObservableSource<? extends R> r;
-            
+
             try {
                 r = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
@@ -68,10 +68,10 @@ public enum ObservableScalarXMap {
                 EmptyDisposable.error(ex, observer);
                 return true;
             }
-            
+
             if (r instanceof Callable) {
                 R u;
-                
+
                 try {
                     u = ((Callable<R>)r).call();
                 } catch (Throwable ex) {
@@ -79,7 +79,7 @@ public enum ObservableScalarXMap {
                     EmptyDisposable.error(ex, observer);
                     return true;
                 }
-                
+
                 if (u == null) {
                     EmptyDisposable.complete(observer);
                     return true;
@@ -88,15 +88,15 @@ public enum ObservableScalarXMap {
             } else {
                 r.subscribe(observer);
             }
-            
+
             return true;
         }
         return false;
     }
-    
+
     /**
      * Maps a scalar value into a Publisher and emits its values.
-     * 
+     *
      * @param <T> the scalar value type
      * @param <U> the output value type
      * @param value the scalar value to map
@@ -104,11 +104,11 @@ public enum ObservableScalarXMap {
      * a Publisher that gets streamed
      * @return the new Flowable instance
      */
-    public static <T, U> Observable<U> scalarXMap(T value, 
+    public static <T, U> Observable<U> scalarXMap(T value,
             Function<? super T, ? extends ObservableSource<? extends U>> mapper) {
         return RxJavaPlugins.onAssembly(new ScalarXMapObservable<T, U>(value, mapper));
     }
-    
+
     /**
      * Maps a scalar value to a ObservableSource and subscribes to it.
      *
@@ -116,11 +116,11 @@ public enum ObservableScalarXMap {
      * @param <R> the mapped Publisher's element type.
      */
     static final class ScalarXMapObservable<T, R> extends Observable<R> {
-        
+
         final T value;
-        
+
         final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
-        
+
         public ScalarXMapObservable(T value,
                 Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
             this.value = value;
@@ -139,7 +139,7 @@ public enum ObservableScalarXMap {
             }
             if (other instanceof Callable) {
                 R u;
-                
+
                 try {
                     u = ((Callable<R>)other).call();
                 } catch (Throwable ex) {
@@ -147,7 +147,7 @@ public enum ObservableScalarXMap {
                     EmptyDisposable.error(ex, s);
                     return;
                 }
-                
+
                 if (u == null) {
                     EmptyDisposable.complete(s);
                     return;
@@ -160,26 +160,26 @@ public enum ObservableScalarXMap {
             }
         }
     }
-    
+
     /**
      * Represents a Disposable that signals one onNext followed by an onComplete.
      *
      * @param <T> the value type
      */
-    public static final class ScalarDisposable<T> 
+    public static final class ScalarDisposable<T>
     extends AtomicInteger
     implements QueueDisposable<T>, Runnable {
         /** */
         private static final long serialVersionUID = 3880992722410194083L;
 
         final Observer<? super T> observer;
-        
+
         final T value;
-        
+
         static final int START = 0;
         static final int ON_NEXT = 1;
         static final int ON_COMPLETE = 2;
-        
+
         public ScalarDisposable(Observer<? super T> observer, T value) {
             this.observer = observer;
             this.value = value;

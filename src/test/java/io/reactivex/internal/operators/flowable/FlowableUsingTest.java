@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -85,7 +85,7 @@ public class FlowableUsingTest {
         };
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        
+
         Flowable<String> observable = Flowable.using(resourceFactory, observableFactory,
                 new DisposeAction(), disposeEagerly);
         observable.subscribe(observer);
@@ -265,7 +265,7 @@ public class FlowableUsingTest {
             Flowable
             .using(resourceFactory, observableFactory, disposeSubscription, disposeEagerly)
             .blockingLast();
-            
+
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {
             // Make sure that unsubscribe is called so that users can close
@@ -289,12 +289,12 @@ public class FlowableUsingTest {
         };
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        
+
         Flowable<String> observable = Flowable.using(resourceFactory, observableFactory,
                 new DisposeAction(), true)
         .doOnCancel(unsub)
         .doOnComplete(completion);
-        
+
         observable.safeSubscribe(observer);
 
         assertEquals(Arrays.asList("disposed", "completed"), events);
@@ -316,27 +316,27 @@ public class FlowableUsingTest {
         };
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        
+
         Flowable<String> observable = Flowable.using(resourceFactory, observableFactory,
                 new DisposeAction(), false)
         .doOnCancel(unsub)
         .doOnComplete(completion);
-        
+
         observable.safeSubscribe(observer);
 
         assertEquals(Arrays.asList("completed", "disposed"), events);
 
     }
 
-    
-    
+
+
     @Test
     public void testUsingDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
         Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
-        
+
         Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
             @Override
             public Flowable<String> apply(Resource resource) {
@@ -346,25 +346,25 @@ public class FlowableUsingTest {
         };
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        
+
         Flowable<String> observable = Flowable.using(resourceFactory, observableFactory,
                 new DisposeAction(), true)
         .doOnCancel(unsub)
         .doOnError(onError);
-        
+
         observable.safeSubscribe(observer);
 
         assertEquals(Arrays.asList("disposed", "error"), events);
 
     }
-    
+
     @Test
     public void testUsingDoesNotDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
         final Callable<Resource> resourceFactory = createResourceFactory(events);
         final Consumer<Throwable> onError = createOnErrorAction(events);
         final Action unsub = createUnsubAction(events);
-        
+
         Function<Resource, Flowable<String>> observableFactory = new Function<Resource, Flowable<String>>() {
             @Override
             public Flowable<String> apply(Resource resource) {
@@ -374,12 +374,12 @@ public class FlowableUsingTest {
         };
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        
+
         Flowable<String> observable = Flowable.using(resourceFactory, observableFactory,
                 new DisposeAction(), false)
         .doOnCancel(unsub)
         .doOnError(onError);
-        
+
         observable.safeSubscribe(observer);
 
         assertEquals(Arrays.asList("error", "disposed"), events);
@@ -422,7 +422,7 @@ public class FlowableUsingTest {
             }
         };
     }
-    
+
     private static Action createOnCompletedAction(final List<String> events) {
         return new Action() {
             @Override
@@ -431,27 +431,27 @@ public class FlowableUsingTest {
             }
         };
     }
-    
+
     @Test
     public void factoryThrows() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         final AtomicInteger count = new AtomicInteger();
-        
+
         Flowable.<Integer, Integer>using(
                 new Callable<Integer>() {
                     @Override
                     public Integer call() {
                         return 1;
                     }
-                }, 
+                },
                 new Function<Integer, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Integer v) { 
-                        throw new TestException("forced failure"); 
+                    public Flowable<Integer> apply(Integer v) {
+                        throw new TestException("forced failure");
                     }
-                }, 
+                },
                 new Consumer<Integer>() {
                     @Override
                     public void accept(Integer c) {
@@ -460,32 +460,32 @@ public class FlowableUsingTest {
                 }
         )
         .subscribe(ts);
-        
+
         ts.assertError(TestException.class);
-        
+
         Assert.assertEquals(1, count.get());
     }
-    
+
     @Test
     public void nonEagerTermination() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         final AtomicInteger count = new AtomicInteger();
-        
+
         Flowable.<Integer, Integer>using(
                 new Callable<Integer>() {
                     @Override
                     public Integer call() {
                         return 1;
                     }
-                }, 
+                },
                 new Function<Integer, Flowable<Integer>>() {
                     @Override
-                    public Flowable<Integer> apply(Integer v) { 
+                    public Flowable<Integer> apply(Integer v) {
                         return Flowable.just(v);
                     }
-                }, 
+                },
                 new Consumer<Integer>() {
                     @Override
                     public void accept(Integer c) {
@@ -494,11 +494,11 @@ public class FlowableUsingTest {
                 }, false
         )
         .subscribe(ts);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
-        
+
         Assert.assertEquals(1, count.get());
     }
 }

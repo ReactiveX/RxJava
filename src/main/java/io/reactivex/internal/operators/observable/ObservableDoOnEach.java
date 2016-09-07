@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -25,7 +25,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
     final Consumer<? super Throwable> onError;
     final Action onComplete;
     final Action onAfterTerminate;
-    
+
     public ObservableDoOnEach(ObservableSource<T> source, Consumer<? super T> onNext,
                               Consumer<? super Throwable> onError,
                               Action onComplete,
@@ -36,27 +36,27 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
         this.onComplete = onComplete;
         this.onAfterTerminate = onAfterTerminate;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super T> t) {
         source.subscribe(new DoOnEachSubscriber<T>(t, onNext, onError, onComplete, onAfterTerminate));
     }
-    
+
     static final class DoOnEachSubscriber<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
         final Action onComplete;
         final Action onAfterTerminate;
-        
+
         Disposable s;
-        
+
         boolean done;
-        
+
         public DoOnEachSubscriber(
                 Observer<? super T> actual,
-                Consumer<? super T> onNext, 
-                Consumer<? super Throwable> onError, 
+                Consumer<? super T> onNext,
+                Consumer<? super Throwable> onError,
                 Action onComplete,
                 Action onAfterTerminate) {
             this.actual = actual;
@@ -65,7 +65,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
             this.onComplete = onComplete;
             this.onAfterTerminate = onAfterTerminate;
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
@@ -73,19 +73,19 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 actual.onSubscribe(this);
             }
         }
-        
+
 
         @Override
         public void dispose() {
             s.dispose();
         }
-        
+
         @Override
         public boolean isDisposed() {
             return s.isDisposed();
         }
 
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
@@ -99,10 +99,10 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 onError(e);
                 return;
             }
-            
+
             actual.onNext(t);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -117,7 +117,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 t = new CompositeException(e, t);
             }
             actual.onError(t);
-            
+
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {
@@ -125,7 +125,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 RxJavaPlugins.onError(e);
             }
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
@@ -139,9 +139,9 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 onError(e);
                 return;
             }
-            
+
             actual.onComplete();
-            
+
             try {
                 onAfterTerminate.run();
             } catch (Throwable e) {

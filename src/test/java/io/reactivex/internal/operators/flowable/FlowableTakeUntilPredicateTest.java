@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -29,14 +29,14 @@ public class FlowableTakeUntilPredicateTest {
     @Test
     public void takeEmpty() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         Flowable.empty().takeUntil(new Predicate<Object>() {
             @Override
             public boolean test(Object v) {
                 return true;
             }
         }).subscribe(o);
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
         verify(o).onComplete();
@@ -44,14 +44,14 @@ public class FlowableTakeUntilPredicateTest {
     @Test
     public void takeAll() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         Flowable.just(1, 2).takeUntil(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return false;
             }
         }).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onNext(2);
         verify(o, never()).onError(any(Throwable.class));
@@ -60,14 +60,14 @@ public class FlowableTakeUntilPredicateTest {
     @Test
     public void takeFirst() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         Flowable.just(1, 2).takeUntil(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
             }
         }).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
         verify(o, never()).onError(any(Throwable.class));
@@ -76,7 +76,7 @@ public class FlowableTakeUntilPredicateTest {
     @Test
     public void takeSome() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         Flowable.just(1, 2, 3).takeUntil(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
@@ -84,7 +84,7 @@ public class FlowableTakeUntilPredicateTest {
             }
         })
         .subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onNext(2);
         verify(o, never()).onNext(3);
@@ -94,7 +94,7 @@ public class FlowableTakeUntilPredicateTest {
     @Test
     public void functionThrows() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         Predicate<Integer> predicate = new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
@@ -102,7 +102,7 @@ public class FlowableTakeUntilPredicateTest {
             }
         };
         Flowable.just(1, 2, 3).takeUntil(predicate).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
         verify(o, never()).onNext(3);
@@ -112,7 +112,7 @@ public class FlowableTakeUntilPredicateTest {
     @Test
     public void sourceThrows() {
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        
+
         Flowable.just(1)
         .concatWith(Flowable.<Integer>error(new TestException()))
         .concatWith(Flowable.just(2))
@@ -122,7 +122,7 @@ public class FlowableTakeUntilPredicateTest {
                 return false;
             }
         }).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
         verify(o).onError(any(TestException.class));
@@ -131,19 +131,19 @@ public class FlowableTakeUntilPredicateTest {
     @Test
     public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5L);
-        
+
         Flowable.range(1, 1000).takeUntil(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return false;
             }
         }).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertNotComplete();
     }
-    
+
     @Test
     public void testErrorIncludesLastValueAsCause() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -155,7 +155,7 @@ public class FlowableTakeUntilPredicateTest {
             }
         };
         Flowable.just("abc").takeUntil(predicate).subscribe(ts);
-        
+
         ts.assertTerminated();
         ts.assertNotComplete();
         ts.assertError(TestException.class);

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -52,10 +52,10 @@ public class FlowableMaterializeTest {
 
         assertTrue(observer.notifications.get(0).isOnNext());
         assertEquals("one", observer.notifications.get(0).getValue());
-        
+
         assertTrue(observer.notifications.get(1).isOnNext());
         assertEquals("two", observer.notifications.get(1).getValue());
-        
+
         assertTrue(observer.notifications.get(2).isOnError());
         assertEquals(NullPointerException.class, observer.notifications.get(2).getError().getClass());
     }
@@ -82,7 +82,7 @@ public class FlowableMaterializeTest {
 
         assertTrue(subscriber.notifications.get(1).isOnNext());
         assertEquals("two", subscriber.notifications.get(1).getValue());
-        
+
         assertTrue(subscriber.notifications.get(2).isOnNext());
         assertEquals("three", subscriber.notifications.get(2).getValue());
 
@@ -123,7 +123,7 @@ public class FlowableMaterializeTest {
         ts.assertValueCount(4);
         ts.assertComplete();
     }
-    
+
     @Test
     public void testBackpressureNoErrorAsync() throws InterruptedException {
         TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);
@@ -186,7 +186,7 @@ public class FlowableMaterializeTest {
         ts.assertNoValues();
         ts.assertTerminated();
     }
-    
+
     @Test
     public void testUnsubscribeJustBeforeCompletionNotificationShouldPreventThatNotificationArriving() {
         TestSubscriber<Notification<Integer>> ts = new TestSubscriber<Notification<Integer>>(0L);

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,19 +30,19 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type
  */
 public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> {
-    
+
     final BiFunction<T, T, T> reducer;
 
     public FlowableReduce(Publisher<T> source, BiFunction<T, T, T> reducer) {
         super(source);
         this.reducer = reducer;
     }
-    
+
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         source.subscribe(new ReduceSubscriber<T>(s, reducer));
     }
-    
+
     static final class ReduceSubscriber<T> extends DeferredScalarSubscription<T> implements Subscriber<T> {
         /** */
         private static final long serialVersionUID = -4663883003264602070L;
@@ -50,7 +50,7 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
         final BiFunction<T, T, T> reducer;
 
         Subscription s;
-        
+
         public ReduceSubscriber(Subscriber<? super T> actual, BiFunction<T, T, T> reducer) {
             super(actual);
             this.reducer = reducer;
@@ -60,9 +60,9 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 actual.onSubscribe(this);
-                
+
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -72,7 +72,7 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
             if (s == SubscriptionHelper.CANCELLED) {
                 return;
             }
-            
+
             T v = value;
             if (v == null) {
                 value = t;
@@ -103,7 +103,7 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
                 return;
             }
             s = SubscriptionHelper.CANCELLED;
-            
+
             T v = value;
             if (v != null) {
                 complete(v);
@@ -111,13 +111,13 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
                 actual.onError(new NoSuchElementException());
             }
         }
-        
+
         @Override
         public void cancel() {
             super.cancel();
             s.cancel();
             s = SubscriptionHelper.CANCELLED;
         }
-        
+
     }
 }

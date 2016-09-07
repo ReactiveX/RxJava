@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -23,33 +23,33 @@ public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpst
         super(source);
         this.other = other;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super T> t) {
         SwitchIfEmptySubscriber<T> parent = new SwitchIfEmptySubscriber<T>(t, other);
         t.onSubscribe(parent.arbiter);
         source.subscribe(parent);
     }
-    
+
     static final class SwitchIfEmptySubscriber<T> implements Observer<T> {
         final Observer<? super T> actual;
         final ObservableSource<? extends T> other;
         final SequentialDisposable arbiter;
-        
+
         boolean empty;
-        
+
         public SwitchIfEmptySubscriber(Observer<? super T> actual, ObservableSource<? extends T> other) {
             this.actual = actual;
             this.other = other;
             this.empty = true;
             this.arbiter = new SequentialDisposable();
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             arbiter.update(s);
         }
-        
+
         @Override
         public void onNext(T t) {
             if (empty) {
@@ -57,12 +57,12 @@ public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpst
             }
             actual.onNext(t);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (empty) {

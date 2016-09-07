@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -200,7 +200,7 @@ public class ObservableDebounceTest {
         };
 
         Observer<Object> o = TestHelper.mockObserver();
-        
+
         source.debounce(debounceSel).subscribe(o);
 
         source.onNext(1);
@@ -222,7 +222,7 @@ public class ObservableDebounceTest {
         };
 
         Observer<Object> o = TestHelper.mockObserver();
-        
+
         source.debounce(debounceSel).subscribe(o);
 
         source.onNext(1);
@@ -234,16 +234,16 @@ public class ObservableDebounceTest {
     @Test
     public void debounceTimedLastIsNotLost() {
         PublishSubject<Integer> source = PublishSubject.create();
-        
+
         Observer<Object> o = TestHelper.mockObserver();
-        
+
         source.debounce(100, TimeUnit.MILLISECONDS, scheduler).subscribe(o);
-        
+
         source.onNext(1);
         source.onComplete();
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         verify(o).onNext(1);
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
@@ -262,9 +262,9 @@ public class ObservableDebounceTest {
         };
 
         Observer<Object> o = TestHelper.mockObserver();
-        
+
         source.debounce(debounceSel).subscribe(o);
-        
+
         source.onNext(1);
         source.onComplete();
 
@@ -290,10 +290,10 @@ public class ObservableDebounceTest {
         NbpSubscriber.assertTerminated();
         NbpSubscriber.assertNoErrors();
     }
-    
+
     @Test
     public void debounceDefault() throws Exception {
-        
+
         Observable.just(1).debounce(1, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)

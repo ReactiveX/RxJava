@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -160,12 +160,12 @@ public class FlowableWindowWithTimeTest {
     public void testExactWindowSize() {
         Flowable<Flowable<Integer>> source = Flowable.range(1, 10)
                 .window(1, TimeUnit.MINUTES, scheduler, 3);
-        
+
         final List<Integer> list = new ArrayList<Integer>();
         final List<List<Integer>> lists = new ArrayList<List<Integer>>();
-        
+
         source.subscribe(observeWindow(list, lists));
-        
+
         assertEquals(4, lists.size());
         assertEquals(3, lists.get(0).size());
         assertEquals(Arrays.asList(1, 2, 3), lists.get(0));
@@ -176,15 +176,15 @@ public class FlowableWindowWithTimeTest {
         assertEquals(1, lists.get(3).size());
         assertEquals(Arrays.asList(10), lists.get(3));
     }
-    
+
     @Test
     public void testTakeFlatMapCompletes() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         final AtomicInteger wip = new AtomicInteger();
-        
+
         final int indicator = 999999999;
-        
+
         FlowableWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
@@ -214,7 +214,7 @@ public class FlowableWindowWithTimeTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
         ts.assertComplete();
         Assert.assertTrue(ts.valueCount() != 0);

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -134,7 +134,7 @@ public class TestSubscriberTest {
         Flowable.error(e).subscribe(subscriber);
         subscriber.assertError(e);
     }
-    
+
     @Test
     public void testAwaitTerminalEventWithDuration() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
@@ -142,7 +142,7 @@ public class TestSubscriberTest {
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertTerminated();
     }
-    
+
     @Test
     public void testAwaitTerminalEventWithDurationAndUnsubscribeOnTimeout() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
@@ -167,19 +167,19 @@ public class TestSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(null);
         ts.onComplete();
     }
-    
+
     @Test(expected = NullPointerException.class)
     public void testNullDelegate2() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(null);
         ts.onComplete();
     }
-    
+
     @Test(expected = NullPointerException.class)
     public void testNullDelegate3() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(null, 0L);
         ts.onComplete();
     }
-    
+
     @Test
     public void testDelegate1() {
         TestSubscriber<Integer> to = new TestSubscriber<Integer>();
@@ -187,19 +187,19 @@ public class TestSubscriberTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(to);
         ts.onComplete();
-        
+
         to.assertTerminated();
     }
-    
+
     @Test
     public void testDelegate2() {
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(ts1);
         ts2.onComplete();
-        
+
         ts1.assertComplete();
     }
-    
+
     @Test
     public void testDelegate3() {
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
@@ -207,13 +207,13 @@ public class TestSubscriberTest {
         ts2.onComplete();
         ts1.assertComplete();
     }
-    
+
     @Test
     public void testUnsubscribed() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         assertFalse(ts.isCancelled());
     }
-    
+
     @Test
     public void testNoErrors() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -226,7 +226,7 @@ public class TestSubscriberTest {
         }
         fail("Error present but no assertion error!");
     }
-    
+
     @Test
     public void testNotCompleted() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -238,7 +238,7 @@ public class TestSubscriberTest {
         }
         fail("Not completed and no assertion error!");
     }
-    
+
     @Test
     public void testMultipleCompletions() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -252,7 +252,7 @@ public class TestSubscriberTest {
         }
         fail("Multiple completions and no assertion error!");
     }
-    
+
     @Test
     public void testCompleted() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -265,7 +265,7 @@ public class TestSubscriberTest {
         }
         fail("Completed and no assertion error!");
     }
-    
+
     @Test
     public void testMultipleCompletions2() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -279,7 +279,7 @@ public class TestSubscriberTest {
         }
         fail("Multiple completions and no assertion error!");
     }
-    
+
     @Test
     public void testMultipleErrors() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -303,7 +303,7 @@ public class TestSubscriberTest {
         }
         fail("Multiple Error present but no assertion error!");
     }
-    
+
     @Test
     public void testMultipleErrors2() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -324,7 +324,7 @@ public class TestSubscriberTest {
         }
         fail("Multiple Error present but no assertion error!");
     }
-    
+
     @Test
     public void testMultipleErrors3() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -345,7 +345,7 @@ public class TestSubscriberTest {
         }
         fail("Multiple Error present but no assertion error!");
     }
-    
+
     @Test
     public void testDifferentError() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -358,7 +358,7 @@ public class TestSubscriberTest {
         }
         fail("Different Error present but no assertion error!");
     }
-    
+
     @Test
     public void testDifferentError2() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -371,7 +371,7 @@ public class TestSubscriberTest {
         }
         fail("Different Error present but no assertion error!");
     }
-    
+
     @Test
     public void testDifferentError3() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -384,7 +384,7 @@ public class TestSubscriberTest {
         }
         fail("Different Error present but no assertion error!");
     }
-    
+
     @Test
     public void testNoError() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -408,7 +408,7 @@ public class TestSubscriberTest {
         }
         fail("No present but no assertion error!");
     }
-    
+
     @Test
     public void testInterruptTerminalEventAwait() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -422,7 +422,7 @@ public class TestSubscriberTest {
                     t0.interrupt();
                 }
             }, 200, TimeUnit.MILLISECONDS);
-            
+
             try {
                 if (ts.awaitTerminalEvent()) {
                     fail("Did not interrupt wait!");
@@ -436,7 +436,7 @@ public class TestSubscriberTest {
             w.dispose();
         }
     }
-    
+
     @Test
     public void testInterruptTerminalEventAwaitTimed() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -450,7 +450,7 @@ public class TestSubscriberTest {
                     t0.interrupt();
                 }
             }, 200, TimeUnit.MILLISECONDS);
-            
+
             try {
                 if (ts.awaitTerminalEvent(5, TimeUnit.SECONDS)) {
                     fail("Did not interrupt wait!");
@@ -465,7 +465,7 @@ public class TestSubscriberTest {
             w.dispose();
         }
     }
-    
+
     @Test
     public void testInterruptTerminalEventAwaitAndUnsubscribe() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -479,7 +479,7 @@ public class TestSubscriberTest {
                     t0.interrupt();
                 }
             }, 200, TimeUnit.MILLISECONDS);
-            
+
             ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
             ts.dispose();
             if (!ts.isCancelled()) {
@@ -489,13 +489,13 @@ public class TestSubscriberTest {
             w.dispose();
         }
     }
-    
+
     @Test
     public void testNoTerminalEventBut1Completed() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         ts.onComplete();
-        
+
         try {
             ts.assertNotTerminated();
             fail("Failed to report there were terminal event(s)!");
@@ -503,13 +503,13 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void testNoTerminalEventBut1Error() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         ts.onError(new TestException());
-        
+
         try {
             ts.assertNotTerminated();
             fail("Failed to report there were terminal event(s)!");
@@ -517,14 +517,14 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void testNoTerminalEventBut1Error1Completed() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         ts.onComplete();
         ts.onError(new TestException());
-        
+
         try {
             ts.assertNotTerminated();
             fail("Failed to report there were terminal event(s)!");
@@ -532,15 +532,15 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void testNoTerminalEventBut2Errors() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onSubscribe(EmptySubscription.INSTANCE);
-        
+
         ts.onError(new TestException());
         ts.onError(new TestException());
-        
+
         try {
             ts.assertNotTerminated();
             fail("Failed to report there were terminal event(s)!");
@@ -554,12 +554,12 @@ public class TestSubscriberTest {
             assertEquals(2, ce.size());
         }
     }
-    
+
     @Test
     public void testNoValues() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onNext(1);
-        
+
         try {
             ts.assertNoValues();
             fail("Failed to report there were values!");
@@ -567,13 +567,13 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void testValueCount() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onNext(1);
         ts.onNext(2);
-        
+
         try {
             ts.assertValueCount(3);
             fail("Failed to report there were values!");
@@ -581,7 +581,7 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test(timeout = 1000)
     public void testOnCompletedCrashCountsDownLatch() {
         TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
@@ -591,16 +591,16 @@ public class TestSubscriberTest {
             }
         };
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(to);
-        
+
         try {
             ts.onComplete();
         } catch (TestException ex) {
             // expected
         }
-        
+
         ts.awaitTerminalEvent();
     }
-    
+
     @Test(timeout = 1000)
     public void testOnErrorCrashCountsDownLatch() {
         TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
@@ -610,29 +610,29 @@ public class TestSubscriberTest {
             }
         };
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(to);
-        
+
         try {
             ts.onError(new RuntimeException());
         } catch (TestException ex) {
             // expected
         }
-        
+
         ts.awaitTerminalEvent();
     }
 
-    
+
     @Test
     public void createDelegate() {
         TestSubscriber<Integer> ts1 = TestSubscriber.create();
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create(ts1);
-        
+
         ts.assertNotSubscribed();
 
         assertFalse(ts.hasSubscription());
 
         ts.onSubscribe(new BooleanSubscription());
-        
+
         try {
             ts.assertNotSubscribed();
             throw new RuntimeException("Should have thrown");
@@ -641,21 +641,21 @@ public class TestSubscriberTest {
         }
 
         assertTrue(ts.hasSubscription());
-        
+
         assertFalse(ts.isDisposed());
-        
+
         ts.onNext(1);
         ts.onError(new TestException());
         ts.onComplete();
-        
+
         ts1.assertValue(1).assertError(TestException.class).assertComplete();
-        
+
         ts.dispose();
-        
+
         assertTrue(ts.isDisposed());
-        
+
         assertTrue(ts.isTerminated());
-        
+
         assertSame(Thread.currentThread(), ts.lastThread());
 
         try {
@@ -671,9 +671,9 @@ public class TestSubscriberTest {
         } catch (AssertionError exc) {
             // expected
         }
-        
+
         ts.assertValueSequence(Arrays.asList(1));
-        
+
         try {
             ts.assertValueSequence(Arrays.asList(2));
             throw new RuntimeException("Should have thrown");
@@ -691,11 +691,11 @@ public class TestSubscriberTest {
         }
 
     }
-    
+
     @Test
     public void assertError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         try {
             ts.assertError(TestException.class);
             throw new RuntimeException("Should have thrown");
@@ -714,46 +714,46 @@ public class TestSubscriberTest {
             ts.assertErrorMessage("");
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
-            
+
         }
 
         try {
             ts.assertSubscribed();
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
-            
+
         }
 
         try {
             ts.assertTerminated();
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
-            
+
         }
 
         ts.onSubscribe(new BooleanSubscription());
 
         ts.assertSubscribed();
-        
+
         ts.assertNoErrors();
 
         TestException ex = new TestException("Forced failure");
-        
+
         ts.onError(ex);
 
         ts.assertError(ex);
-        
+
         ts.assertError(TestException.class);
 
         ts.assertErrorMessage("Forced failure");
-        
+
         try {
             ts.assertErrorMessage("");
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
-            
+
         }
-        
+
         try {
             ts.assertError(new RuntimeException());
             throw new RuntimeException("Should have thrown");
@@ -774,101 +774,101 @@ public class TestSubscriberTest {
         } catch (AssertionError exc) {
             // expected
         }
-        
+
         ts.assertTerminated();
-        
+
         ts.assertValueCount(0);
-        
+
         ts.assertNoValues();
-        
-        
+
+
     }
-    
+
     @Test
     public void emptyObserverEnum() {
         assertEquals(1, TestSubscriber.EmptySubscriber.values().length);
         assertNotNull(TestSubscriber.EmptySubscriber.valueOf("INSTANCE"));
     }
-    
+
     @Test
     public void valueAndClass() {
         assertEquals("null", TestSubscriber.valueAndClass(null));
         assertEquals("1 (class: Integer)", TestSubscriber.valueAndClass(1));
     }
-    
+
     @Test
     public void assertFailure() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         ts.onSubscribe(new BooleanSubscription());
-        
+
         ts.onError(new TestException("Forced failure"));
 
         ts.assertFailure(TestException.class);
-        
+
         ts.assertFailureAndMessage(TestException.class, "Forced failure");
-        
+
         ts.onNext(1);
 
         ts.assertFailure(TestException.class, 1);
-        
+
         ts.assertFailureAndMessage(TestException.class, "Forced failure", 1);
     }
-    
+
     @Test
     public void assertFuseable() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         ts.onSubscribe(new BooleanSubscription());
-        
+
         ts.assertNotFuseable();
-        
+
         try {
             ts.assertFuseable();
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
         }
-        
+
         try {
             ts.assertFusionMode(QueueSubscription.SYNC);
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
-        }        
+        }
         ts = TestSubscriber.create();
         ts.setInitialFusionMode(QueueSubscription.ANY);
-        
+
         ts.onSubscribe(new ScalarSubscription<Integer>(ts, 1));
-        
+
         ts.assertFuseable();
-        
+
         ts.assertFusionMode(QueueSubscription.SYNC);
-        
+
         try {
             ts.assertFusionMode(QueueSubscription.NONE);
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
         }
-        
+
         try {
             ts.assertNotFuseable();
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
         }
-        
+
     }
-    
+
     @Test
     public void assertTerminated() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         ts.assertNotTerminated();
-        
+
         ts.onError(null);
-        
+
         try {
             ts.assertNotTerminated();
             throw new RuntimeException("Should have thrown!");
@@ -876,18 +876,18 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void assertOf() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-       
+
         ts.assertOf(new Consumer<TestSubscriber<Integer>>() {
             @Override
             public void accept(TestSubscriber<Integer> f) throws Exception {
                 f.assertNotSubscribed();
             }
         });
-        
+
         try {
             ts.assertOf(new Consumer<TestSubscriber<Integer>>() {
                 @Override
@@ -899,7 +899,7 @@ public class TestSubscriberTest {
         } catch (AssertionError ex) {
             // expected
         }
-        
+
         try {
             ts.assertOf(new Consumer<TestSubscriber<Integer>>() {
                 @Override
@@ -912,35 +912,35 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void assertResult() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         ts.onSubscribe(new BooleanSubscription());
-        
+
         ts.onComplete();
-        
+
         ts.assertResult();
-        
+
         try {
             ts.assertResult(1);
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
         }
-        
+
         ts.onNext(1);
-        
+
         ts.assertResult(1);
-        
+
         try {
             ts.assertResult(2);
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
         }
-        
+
         try {
             ts.assertResult();
             throw new RuntimeException("Should have thrown");
@@ -949,7 +949,7 @@ public class TestSubscriberTest {
         }
 
     }
-    
+
     @Test(timeout = 5000)
     public void await() throws Exception {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -957,29 +957,29 @@ public class TestSubscriberTest {
         ts.onSubscribe(new BooleanSubscription());
 
         assertFalse(ts.await(100, TimeUnit.MILLISECONDS));
-        
+
         ts.awaitDone(100, TimeUnit.MILLISECONDS);
-        
+
         assertTrue(ts.isDisposed());
 
         assertFalse(ts.awaitTerminalEvent(100, TimeUnit.MILLISECONDS));
-        
+
         assertEquals(0, ts.completions());
         assertEquals(0, ts.errorCount());
 
         ts.onComplete();
-        
+
         assertTrue(ts.await(100, TimeUnit.MILLISECONDS));
-        
+
         ts.await();
-        
+
         ts.awaitDone(5, TimeUnit.SECONDS);
-        
+
         assertEquals(1, ts.completions());
         assertEquals(0, ts.errorCount());
-        
+
         assertTrue(ts.awaitTerminalEvent());
-        
+
         final TestSubscriber<Integer> ts1 = TestSubscriber.create();
 
         ts1.onSubscribe(new BooleanSubscription());
@@ -990,12 +990,12 @@ public class TestSubscriberTest {
                 ts1.onComplete();
             }
         }, 200, TimeUnit.MILLISECONDS);
-        
+
         ts1.await();
-        
+
         ts1.assertValueSet(Collections.<Integer>emptySet());
     }
-    
+
     @Test
     public void errors() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -1003,14 +1003,14 @@ public class TestSubscriberTest {
         ts.onSubscribe(new BooleanSubscription());
 
         assertEquals(0, ts.errors().size());
-        
+
         ts.onError(new TestException());
 
         assertEquals(1, ts.errors().size());
-        
+
         TestHelper.assertError(ts.errors(), 0, TestException.class);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void onNext() {
@@ -1019,27 +1019,27 @@ public class TestSubscriberTest {
         ts.onSubscribe(new BooleanSubscription());
 
         assertEquals(0, ts.valueCount());
-        
+
         assertEquals(Arrays.asList(), ts.values());
-        
+
         ts.onNext(1);
-        
+
         assertEquals(Arrays.asList(1), ts.values());
-        
+
         ts.cancel();
-        
+
         assertTrue(ts.isCancelled());
         assertTrue(ts.isDisposed());
-        
+
         ts.assertValue(1);
-        
+
         assertEquals(Arrays.asList(Arrays.asList(1), Collections.emptyList(), Collections.emptyList()), ts.getEvents());
-        
+
         ts.onComplete();
-        
+
         assertEquals(Arrays.asList(Arrays.asList(1), Collections.emptyList(), Collections.singletonList(Notification.createOnComplete())), ts.getEvents());
     }
-    
+
     @Test
     public void fusionModeToString() {
         assertEquals("NONE", TestSubscriber.fusionModeToString(QueueSubscription.NONE));
@@ -1047,7 +1047,7 @@ public class TestSubscriberTest {
         assertEquals("ASYNC", TestSubscriber.fusionModeToString(QueueSubscription.ASYNC));
         assertEquals("Unknown(100)", TestSubscriber.fusionModeToString(100));
     }
-    
+
     @Test
     public void multipleTerminals() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -1066,9 +1066,9 @@ public class TestSubscriberTest {
         }
 
         ts.assertTerminated();
-        
+
         ts.onComplete();
-        
+
         try {
             ts.assertComplete();
             throw new RuntimeException("Should have thrown");
@@ -1090,7 +1090,7 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void assertValue() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -1103,11 +1103,11 @@ public class TestSubscriberTest {
         } catch (Throwable ex) {
             // expected
         }
-        
+
         ts.onNext(1);
-        
+
         ts.assertValue(1);
-        
+
         try {
             ts.assertValue(2);
             throw new RuntimeException("Should have thrown");
@@ -1116,7 +1116,7 @@ public class TestSubscriberTest {
         }
 
         ts.onNext(2);
-        
+
         try {
             ts.assertValue(1);
             throw new RuntimeException("Should have thrown");
@@ -1130,67 +1130,67 @@ public class TestSubscriberTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         ts.onNext(1);
-        
+
         ts.assertError(IllegalStateException.class);
-        
+
         ts = TestSubscriber.create();
-        
+
         ts.onSubscribe(new BooleanSubscription());
-        
+
         ts.onNext(null);
-        
+
         ts.assertFailure(NullPointerException.class, (Integer)null);
     }
-    
+
     @Test
     public void awaitTerminalEventInterrupt() {
         final TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         ts.onSubscribe(new BooleanSubscription());
 
         Thread.currentThread().interrupt();
-        
+
         ts.awaitTerminalEvent();
 
         assertTrue(Thread.interrupted());
-        
+
         Thread.currentThread().interrupt();
 
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
 
         assertTrue(Thread.interrupted());
     }
-    
+
     @Test
     public void assertTerminated2() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         ts.onSubscribe(new BooleanSubscription());
 
         assertFalse(ts.isTerminated());
-        
+
         ts.onError(new TestException());
         ts.onError(new IOException());
-        
+
         assertTrue(ts.isTerminated());
-        
+
         try {
             ts.assertTerminated();
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
         }
-        
+
         try {
             ts.assertError(TestException.class);
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
         }
-        
+
 
         ts = TestSubscriber.create();
-        
+
         ts.onSubscribe(new BooleanSubscription());
 
         ts.onError(new TestException());
@@ -1203,36 +1203,36 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void onSubscribe() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         ts.onSubscribe(null);
-        
+
         ts.assertError(NullPointerException.class);
 
         ts = TestSubscriber.create();
-        
+
         ts.onSubscribe(new BooleanSubscription());
-        
+
         BooleanSubscription d1 = new BooleanSubscription();
-        
+
         ts.onSubscribe(d1);
-        
+
         assertTrue(d1.isCancelled());
-        
+
         ts.assertError(IllegalStateException.class);
 
         ts = TestSubscriber.create();
         ts.dispose();
-        
+
         d1 = new BooleanSubscription();
-        
+
         ts.onSubscribe(d1);
-        
+
         assertTrue(d1.isCancelled());
-        
+
     }
 
     @Test
@@ -1240,10 +1240,10 @@ public class TestSubscriberTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         ts.onSubscribe(new BooleanSubscription());
-        
+
         ts.onNext(1);
         ts.onNext(2);
-        
+
         try {
             ts.assertValueSequence(Arrays.<Integer>asList());
             throw new RuntimeException("Should have thrown");
@@ -1267,24 +1267,24 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void assertEmpty() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         try {
             ts.assertEmpty();
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
             // expected
         }
-        
+
         ts.onSubscribe(new BooleanSubscription());
-        
+
         ts.assertEmpty();
-        
+
         ts.onNext(1);
-        
+
         try {
             ts.assertEmpty();
             throw new RuntimeException("Should have thrown!");
@@ -1292,28 +1292,28 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void awaitDoneTimed() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         Thread.currentThread().interrupt();
-        
+
         try {
             ts.awaitDone(5, TimeUnit.SECONDS);
         } catch (RuntimeException ex) {
             assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
         }
     }
-    
+
     @Test
     public void assertNotSubscribed() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         ts.assertNotSubscribed();
-        
+
         ts.errors().add(new TestException());
- 
+
         try {
             ts.assertNotSubscribed();
             throw new RuntimeException("Should have thrown!");
@@ -1321,15 +1321,15 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void assertErrorMultiple() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         TestException e = new TestException();
         ts.errors().add(e);
         ts.errors().add(new TestException());
- 
+
         try {
             ts.assertError(TestException.class);
             throw new RuntimeException("Should have thrown!");
@@ -1349,26 +1349,26 @@ public class TestSubscriberTest {
             // expected
         }
     }
-    
+
     @Test
     public void assertComplete() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         ts.onSubscribe(new BooleanSubscription());
-        
+
         try {
             ts.assertComplete();
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
             // expected
         }
-        
+
         ts.onComplete();
-        
+
         ts.assertComplete();
-        
+
         ts.onComplete();
-        
+
         try {
             ts.assertComplete();
             throw new RuntimeException("Should have thrown!");
@@ -1380,9 +1380,9 @@ public class TestSubscriberTest {
     @Test
     public void completeWithoutOnSubscribe() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         ts.onComplete();
-        
+
         ts.assertError(IllegalStateException.class);
     }
 
@@ -1392,12 +1392,12 @@ public class TestSubscriberTest {
 
             @Override
             public void onSubscribe(Subscription d) {
-                
+
             }
 
             @Override
             public void onNext(Integer value) {
-                
+
             }
 
             @Override
@@ -1409,7 +1409,7 @@ public class TestSubscriberTest {
             public void onComplete() {
                 throw new TestException();
             }
-            
+
         });
 
         ts.onSubscribe(new BooleanSubscription());
@@ -1421,19 +1421,19 @@ public class TestSubscriberTest {
             assertTrue(ts.isTerminated());
         }
     }
-    
+
     @Test
     public void errorDelegateThrows() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new Subscriber<Integer>() {
 
             @Override
             public void onSubscribe(Subscription d) {
-                
+
             }
 
             @Override
             public void onNext(Integer value) {
-                
+
             }
 
             @Override
@@ -1445,7 +1445,7 @@ public class TestSubscriberTest {
             public void onComplete() {
                 throw new TestException();
             }
-            
+
         });
 
         ts.onSubscribe(new BooleanSubscription());
@@ -1458,41 +1458,41 @@ public class TestSubscriberTest {
         }
     }
 
-    
+
     @Test
     public void syncQueueThrows() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         ts.setInitialFusionMode(QueueSubscription.SYNC);
-        
+
         Flowable.range(1, 5)
         .map(new Function<Integer, Object>() {
             @Override
             public Object apply(Integer v) throws Exception { throw new TestException(); }
         })
         .subscribe(ts);
-        
+
         ts.assertSubscribed()
         .assertFuseable()
         .assertFusionMode(QueueSubscription.SYNC)
         .assertFailure(TestException.class);
     }
-    
+
     @Test
     public void asyncQueueThrows() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         ts.setInitialFusionMode(QueueSubscription.ANY);
-        
+
         UnicastProcessor<Integer> up = UnicastProcessor.create();
-        
+
         up
         .map(new Function<Integer, Object>() {
             @Override
             public Object apply(Integer v) throws Exception { throw new TestException(); }
         })
         .subscribe(ts);
-        
+
         up.onNext(1);
-        
+
         ts.assertSubscribed()
         .assertFuseable()
         .assertFusionMode(QueueSubscription.ASYNC)

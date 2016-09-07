@@ -26,21 +26,21 @@ public class BackpressureEnumTest {
     @Test
     public void backpressureOverflowStrategy() {
         assertEquals(3, BackpressureOverflowStrategy.values().length);
-        
+
         assertNotNull(BackpressureOverflowStrategy.valueOf("ERROR"));
     }
 
     @Test
     public void backpressureStrategy() {
         assertEquals(3, BackpressureStrategy.values().length);
-        
+
         assertNotNull(BackpressureStrategy.valueOf("BUFFER"));
     }
 
     @Test
     public void backpressureKind() {
         assertEquals(6, BackpressureKind.values().length);
-        
+
         assertNotNull(BackpressureKind.valueOf("FULL"));
     }
 

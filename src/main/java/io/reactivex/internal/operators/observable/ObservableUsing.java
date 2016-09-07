@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -28,7 +28,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
     final Function<? super D, ? extends ObservableSource<? extends T>> sourceSupplier;
     final Consumer<? super D> disposer;
     final boolean eager;
-    
+
     public ObservableUsing(Callable<? extends D> resourceSupplier,
             Function<? super D, ? extends ObservableSource<? extends T>> sourceSupplier,
             Consumer<? super D> disposer,
@@ -38,11 +38,11 @@ public final class ObservableUsing<T, D> extends Observable<T> {
         this.disposer = disposer;
         this.eager = eager;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super T> s) {
         D resource;
-        
+
         try {
             resource = resourceSupplier.call();
         } catch (Throwable e) {
@@ -50,7 +50,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             EmptyDisposable.error(e, s);
             return;
         }
-        
+
         ObservableSource<? extends T> source;
         try {
             source = sourceSupplier.apply(resource);
@@ -66,21 +66,21 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             EmptyDisposable.error(e, s);
             return;
         }
-        
+
         UsingSubscriber<T, D> us = new UsingSubscriber<T, D>(s, resource, disposer, eager);
-        
+
         source.subscribe(us);
     }
-    
+
     static final class UsingSubscriber<T, D> extends AtomicBoolean implements Observer<T>, Disposable {
         /** */
         private static final long serialVersionUID = 5904473792286235046L;
-        
+
         final Observer<? super T> actual;
         final D resource;
         final Consumer<? super D> disposer;
         final boolean eager;
-        
+
         Disposable s;
 
         public UsingSubscriber(Observer<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
@@ -89,7 +89,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             this.disposer = disposer;
             this.eager = eager;
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
@@ -97,12 +97,12 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             actual.onNext(t);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (eager) {
@@ -114,7 +114,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                         t = new CompositeException(e, t);
                     }
                 }
-                
+
                 s.dispose();
                 actual.onError(t);
             } else {
@@ -123,7 +123,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                 disposeAfter();
             }
         }
-        
+
         @Override
         public void onComplete() {
             if (eager) {
@@ -136,7 +136,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                         return;
                     }
                 }
-                
+
                 s.dispose();
                 actual.onComplete();
             } else {
@@ -145,7 +145,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                 disposeAfter();
             }
         }
-        
+
         @Override
         public void dispose() {
             disposeAfter();

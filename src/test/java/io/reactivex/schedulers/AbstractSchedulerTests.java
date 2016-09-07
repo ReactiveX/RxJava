@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -47,16 +47,16 @@ public abstract class AbstractSchedulerTests {
         final Scheduler.Worker inner = scheduler.createWorker();
         try {
             final CountDownLatch latch = new CountDownLatch(1);
-    
+
             final Runnable firstStepStart = mock(Runnable.class);
             final Runnable firstStepEnd = mock(Runnable.class);
-    
+
             final Runnable secondStepStart = mock(Runnable.class);
             final Runnable secondStepEnd = mock(Runnable.class);
-    
+
             final Runnable thirdStepStart = mock(Runnable.class);
             final Runnable thirdStepEnd = mock(Runnable.class);
-    
+
             final Runnable firstAction = new Runnable() {
                 @Override
                 public void run() {
@@ -71,7 +71,7 @@ public abstract class AbstractSchedulerTests {
                     secondStepStart.run();
                     inner.schedule(firstAction);
                     secondStepEnd.run();
-    
+
                 }
             };
             final Runnable thirdAction = new Runnable() {
@@ -82,13 +82,13 @@ public abstract class AbstractSchedulerTests {
                     thirdStepEnd.run();
                 }
             };
-    
+
             InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
-    
+
             inner.schedule(thirdAction);
-    
+
             latch.await();
-    
+
             inOrder.verify(thirdStepStart, times(1)).run();
             inOrder.verify(thirdStepEnd, times(1)).run();
             inOrder.verify(secondStepStart, times(1)).run();
@@ -133,7 +133,7 @@ public abstract class AbstractSchedulerTests {
 
     /**
      * The order of execution is nondeterministic.
-     * 
+     *
      * @throws InterruptedException
      */
     @SuppressWarnings("rawtypes")
@@ -145,10 +145,10 @@ public abstract class AbstractSchedulerTests {
             final CountDownLatch latch = new CountDownLatch(2);
             final Runnable first = mock(Runnable.class);
             final Runnable second = mock(Runnable.class);
-    
+
             // make it wait until both the first and second are called
             doAnswer(new Answer() {
-    
+
                 @Override
                 public Object answer(InvocationOnMock invocation) throws Throwable {
                     try {
@@ -159,7 +159,7 @@ public abstract class AbstractSchedulerTests {
                 }
             }).when(first).run();
             doAnswer(new Answer() {
-    
+
                 @Override
                 public Object answer(InvocationOnMock invocation) throws Throwable {
                     try {
@@ -169,12 +169,12 @@ public abstract class AbstractSchedulerTests {
                     }
                 }
             }).when(second).run();
-    
+
             inner.schedule(first);
             inner.schedule(second);
-    
+
             latch.await();
-    
+
             verify(first, times(1)).run();
             verify(second, times(1)).run();
         } finally {
@@ -186,19 +186,19 @@ public abstract class AbstractSchedulerTests {
     public void testSequenceOfDelayedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         try {
             final CountDownLatch latch = new CountDownLatch(1);
             final Runnable first = mock(Runnable.class);
             final Runnable second = mock(Runnable.class);
-    
+
             inner.schedule(new Runnable() {
                 @Override
                 public void run() {
                     inner.schedule(first, 30, TimeUnit.MILLISECONDS);
                     inner.schedule(second, 10, TimeUnit.MILLISECONDS);
                     inner.schedule(new Runnable() {
-    
+
                         @Override
                         public void run() {
                             latch.countDown();
@@ -206,10 +206,10 @@ public abstract class AbstractSchedulerTests {
                     }, 40, TimeUnit.MILLISECONDS);
                 }
             });
-    
+
             latch.await();
             InOrder inOrder = inOrder(first, second);
-    
+
             inOrder.verify(second, times(1)).run();
             inOrder.verify(first, times(1)).run();
         } finally {
@@ -221,14 +221,14 @@ public abstract class AbstractSchedulerTests {
     public void testMixOfDelayedAndNonDelayedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         try {
             final CountDownLatch latch = new CountDownLatch(1);
             final Runnable first = mock(Runnable.class);
             final Runnable second = mock(Runnable.class);
             final Runnable third = mock(Runnable.class);
             final Runnable fourth = mock(Runnable.class);
-    
+
             inner.schedule(new Runnable() {
                 @Override
                 public void run() {
@@ -237,7 +237,7 @@ public abstract class AbstractSchedulerTests {
                     inner.schedule(third, 100, TimeUnit.MILLISECONDS);
                     inner.schedule(fourth);
                     inner.schedule(new Runnable() {
-    
+
                         @Override
                         public void run() {
                             latch.countDown();
@@ -245,10 +245,10 @@ public abstract class AbstractSchedulerTests {
                     }, 400, TimeUnit.MILLISECONDS);
                 }
             });
-    
+
             latch.await();
             InOrder inOrder = inOrder(first, second, third, fourth);
-    
+
             inOrder.verify(first, times(1)).run();
             inOrder.verify(fourth, times(1)).run();
             inOrder.verify(third, times(1)).run();
@@ -262,13 +262,13 @@ public abstract class AbstractSchedulerTests {
     public final void testRecursiveExecution() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         try {
-            
+
             final AtomicInteger i = new AtomicInteger();
             final CountDownLatch latch = new CountDownLatch(1);
             inner.schedule(new Runnable() {
-    
+
                 @Override
                 public void run() {
                     if (i.incrementAndGet() < 100) {
@@ -278,7 +278,7 @@ public abstract class AbstractSchedulerTests {
                     }
                 }
             });
-    
+
             latch.await();
             assertEquals(100, i.get());
         } finally {
@@ -290,15 +290,15 @@ public abstract class AbstractSchedulerTests {
     public final void testRecursiveExecutionWithDelayTime() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         try {
             final AtomicInteger i = new AtomicInteger();
             final CountDownLatch latch = new CountDownLatch(1);
-    
+
             inner.schedule(new Runnable() {
-    
+
                 int state = 0;
-    
+
                 @Override
                 public void run() {
                     i.set(state);
@@ -308,9 +308,9 @@ public abstract class AbstractSchedulerTests {
                         latch.countDown();
                     }
                 }
-    
+
             });
-    
+
             latch.await();
             assertEquals(100, i.get());
         } finally {
@@ -328,7 +328,7 @@ public abstract class AbstractSchedulerTests {
                 AsyncSubscription as = new AsyncSubscription();
                 observer.onSubscribe(as);
                 as.setResource(inner);
-                
+
                 inner.schedule(new Runnable() {
                     int i = 0;
 
@@ -458,7 +458,7 @@ public abstract class AbstractSchedulerTests {
 
     /**
      * Used to determine if onNext is being invoked concurrently.
-     * 
+     *
      * @param <T>
      */
     private static class ConcurrentObserverValidator<T> extends DefaultSubscriber<T> {

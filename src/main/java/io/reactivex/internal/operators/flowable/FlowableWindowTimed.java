@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -42,7 +42,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
     final int bufferSize;
     final boolean restartTimerOnMaxSize;
 
-    public FlowableWindowTimed(Publisher<T> source, 
+    public FlowableWindowTimed(Publisher<T> source,
             long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, long maxSize,
             int bufferSize, boolean restartTimerOnMaxSize) {
         super(source);
@@ -54,48 +54,48 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
         this.bufferSize = bufferSize;
         this.restartTimerOnMaxSize = restartTimerOnMaxSize;
     }
-    
+
     @Override
     protected void subscribeActual(Subscriber<? super Flowable<T>> s) {
         SerializedSubscriber<Flowable<T>> actual = new SerializedSubscriber<Flowable<T>>(s);
-        
+
         if (timespan == timeskip) {
             if (maxSize == Long.MAX_VALUE) {
                 source.subscribe(new WindowExactUnboundedSubscriber<T>(
-                        actual, 
+                        actual,
                         timespan, unit, scheduler, bufferSize));
                 return;
             }
             source.subscribe(new WindowExactBoundedSubscriber<T>(
                         actual,
-                        timespan, unit, scheduler, 
+                        timespan, unit, scheduler,
                         bufferSize, maxSize, restartTimerOnMaxSize));
             return;
         }
         source.subscribe(new WindowSkipSubscriber<T>(actual,
                 timespan, timeskip, unit, scheduler.createWorker(), bufferSize));
     }
-    
-    static final class WindowExactUnboundedSubscriber<T> 
-            extends QueueDrainSubscriber<T, Object, Flowable<T>> 
+
+    static final class WindowExactUnboundedSubscriber<T>
+            extends QueueDrainSubscriber<T, Object, Flowable<T>>
             implements Subscriber<T>, Subscription, Disposable, Runnable {
         final long timespan;
         final TimeUnit unit;
         final Scheduler scheduler;
         final int bufferSize;
-        
+
         Subscription s;
-        
+
         boolean selfCancel;
-        
+
         UnicastProcessor<T> window;
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
         static final Object NEXT = new Object();
-        
+
         volatile boolean terminated;
-        
+
         public WindowExactUnboundedSubscriber(Subscriber<? super Flowable<T>> actual, long timespan, TimeUnit unit,
                 Scheduler scheduler, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
@@ -104,19 +104,19 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             this.scheduler = scheduler;
             this.bufferSize = bufferSize;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (!SubscriptionHelper.validate(this.s, s)) {
                 return;
             }
             this.s = s;
-            
+
             window = UnicastProcessor.<T>create(bufferSize);
-            
+
             Subscriber<? super Flowable<T>> a = actual;
             a.onSubscribe(this);
-            
+
             long r = requested();
             if (r != 0L) {
                 a.onNext(window);
@@ -129,18 +129,18 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 a.onError(new IllegalStateException("Could not deliver first window due to lack of requests."));
                 return;
             }
-            
+
             if (!cancelled) {
                 Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
                 if (!timer.compareAndSet(null, d)) {
                     d.dispose();
                     return;
                 }
-                
+
                 s.request(Long.MAX_VALUE);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (terminated) {
@@ -159,7 +159,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             }
             drainLoop();
         }
-        
+
         @Override
         public void onError(Throwable t) {
             error = t;
@@ -167,32 +167,32 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             if (enter()) {
                 drainLoop();
             }
-            
+
             dispose();
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             done = true;
             if (enter()) {
                 drainLoop();
             }
-            
+
             dispose();
             actual.onComplete();
         }
-        
+
         @Override
         public void request(long n) {
             requested(n);
         }
-        
+
         @Override
         public void cancel() {
             cancelled = true;
         }
-        
+
         @Override
         public void dispose() {
             selfCancel = true;
@@ -220,23 +220,23 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             }
 
         }
-        
+
         void drainLoop() {
-            
+
             final SimpleQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             UnicastProcessor<T> w = window;
-            
+
             int missed = 1;
             for (;;) {
-                
+
                 for (;;) {
                     boolean term = terminated; // NOPMD
-                    
+
                     boolean d = done;
-                    
+
                     Object o;
-                    
+
                     try {
                         o = q.poll();
                     } catch (Throwable ex) {
@@ -246,7 +246,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         a.onError(ex);
                         return;
                     }
-                    
+
                     if (d && (o == null || o == NEXT)) {
                         window = null;
                         q.clear();
@@ -259,17 +259,17 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         }
                         return;
                     }
-                    
+
                     if (o == null) {
                         break;
                     }
-                    
+
                     if (o == NEXT) {
                         w.onComplete();
                         if (!term) {
                             w = UnicastProcessor.<T>create(bufferSize);
                             window = w;
-                            
+
                             long r = requested();
                             if (r != 0L) {
                                 a.onNext(w);
@@ -289,24 +289,24 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         }
                         continue;
                     }
-                    
+
                     w.onNext(NotificationLite.<T>getValue(o));
                 }
-                
+
                 missed = leave(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
-        
+
         @Override
         public boolean accept(Subscriber<? super Flowable<T>> a, Object v) {
             // not used in this operator
             return true;
         }
     }
-    
+
     static final class WindowExactBoundedSubscriber<T>
     extends QueueDrainSubscriber<T, Object, Flowable<T>>
     implements Subscription, Disposable {
@@ -316,26 +316,26 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
         final int bufferSize;
         final boolean restartTimerOnMaxSize;
         final long maxSize;
-        
+
         boolean selfCancel;
-        
+
         long count;
-        
+
         long producerIndex;
-        
+
         Subscription s;
-        
+
         UnicastProcessor<T> window;
-        
+
         Scheduler.Worker worker;
-        
+
         volatile boolean terminated;
-        
+
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-        
+
         public WindowExactBoundedSubscriber(
-                Subscriber<? super Flowable<T>> actual, 
-                long timespan, TimeUnit unit, Scheduler scheduler, 
+                Subscriber<? super Flowable<T>> actual,
+                long timespan, TimeUnit unit, Scheduler scheduler,
                 int bufferSize, long maxSize, boolean restartTimerOnMaxSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.timespan = timespan;
@@ -345,26 +345,26 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             this.maxSize = maxSize;
             this.restartTimerOnMaxSize = restartTimerOnMaxSize;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (!SubscriptionHelper.validate(this.s, s)) {
                 return;
             }
-            
+
             this.s = s;
-            
+
             Subscriber<? super Flowable<T>> a = actual;
-            
+
             a.onSubscribe(this);
-            
+
             if (cancelled) {
                 return;
             }
-            
+
             UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
             window = w;
-            
+
             long r = requested();
             if (r != 0L) {
                 a.onNext(w);
@@ -377,7 +377,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 a.onError(new IllegalStateException("Could not deliver initial window due to lack of requests."));
                 return;
             }
-            
+
             Disposable d;
             ConsumerIndexHolder consumerIndexHolder = new ConsumerIndexHolder(producerIndex, this);
             if (restartTimerOnMaxSize) {
@@ -387,14 +387,14 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             } else {
                 d = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
             }
-            
+
             if (!timer.compareAndSet(null, d)) {
                 d.dispose();
                 return;
             }
             s.request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             if (terminated) {
@@ -404,17 +404,17 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             if (fastEnter()) {
                 UnicastProcessor<T> w = window;
                 w.onNext(t);
-                
+
                 long c = count + 1;
-                
+
                 if (c >= maxSize) {
                     producerIndex++;
                     count = 0;
-                    
+
                     w.onComplete();
-                    
+
                     long r = requested();
-                    
+
                     if (r != 0L) {
                         w = UnicastProcessor.<T>create(bufferSize);
                         window = w;
@@ -424,7 +424,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         }
                         if (restartTimerOnMaxSize) {
                             Disposable tm = timer.get();
-                            
+
                             tm.dispose();
                             Disposable task = worker.schedulePeriodically(
                                     new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
@@ -442,7 +442,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 } else {
                     count = c;
                 }
-                
+
                 if (leave(-1) == 0) {
                     return;
                 }
@@ -454,7 +454,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             }
             drainLoop();
         }
-        
+
         @Override
         public void onError(Throwable t) {
             error = t;
@@ -462,32 +462,32 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             if (enter()) {
                 drainLoop();
             }
-            
+
             dispose();
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             done = true;
             if (enter()) {
                 drainLoop();
             }
-            
+
             dispose();
             actual.onComplete();
         }
-        
+
         @Override
         public void request(long n) {
             requested(n);
         }
-        
+
         @Override
         public void cancel() {
             cancelled = true;
         }
-        
+
         @Override
         public void dispose() {
             selfCancel = true;
@@ -504,15 +504,15 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             // not needed in this operator
             return false;
         }
-        
+
         void drainLoop() {
             final SimpleQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             UnicastProcessor<T> w = window;
-            
+
             int missed = 1;
             for (;;) {
-                
+
                 for (;;) {
                     if (terminated) {
                         s.cancel();
@@ -520,11 +520,11 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         dispose();
                         return;
                     }
-                    
+
                     boolean d = done;
-                    
+
                     Object o;
-                    
+
                     try {
                         o = q.poll();
                     } catch (Throwable ex) {
@@ -534,10 +534,10 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         a.onError(ex);
                         return;
                     }
-                    
+
                     boolean empty = o == null;
                     boolean isHolder = o instanceof ConsumerIndexHolder;
-                    
+
                     if (d && (empty || isHolder)) {
                         window = null;
                         q.clear();
@@ -550,17 +550,17 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         }
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     if (isHolder) {
                         ConsumerIndexHolder consumerIndexHolder = (ConsumerIndexHolder) o;
                         if (producerIndex == consumerIndexHolder.index) {
                             w = UnicastProcessor.<T>create(bufferSize);
                             window = w;
-                            
+
                             long r = requested();
                             if (r != 0L) {
                                 a.onNext(w);
@@ -578,18 +578,18 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         }
                         continue;
                     }
-                    
+
                     w.onNext(NotificationLite.<T>getValue(o));
                     long c = count + 1;
-                    
+
                     if (c >= maxSize) {
                         producerIndex++;
                         count = 0;
-                        
+
                         w.onComplete();
-                        
+
                         long r = requested();
-                        
+
                         if (r != 0L) {
                             w = UnicastProcessor.<T>create(bufferSize);
                             window = w;
@@ -597,18 +597,18 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                             if (r != Long.MAX_VALUE) {
                                 produced(1);
                             }
-                            
+
                             if (restartTimerOnMaxSize) {
                                 Disposable tm = timer.get();
                                 tm.dispose();
-                                
+
                                 Disposable task = worker.schedulePeriodically(
                                         new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
                                 if (!timer.compareAndSet(tm, task)) {
                                     task.dispose();
                                 }
                             }
-                            
+
                         } else {
                             window = null;
                             s.cancel();
@@ -620,14 +620,14 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         count = c;
                     }
                 }
-                
+
                 missed = leave(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
-        
+
         static final class ConsumerIndexHolder implements Runnable {
             final long index;
             final WindowExactBoundedSubscriber<?> parent;
@@ -635,7 +635,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 this.index = index;
                 this.parent = parent;
             }
-            
+
             @Override
             public void run() {
                 WindowExactBoundedSubscriber<?> p = parent;
@@ -655,7 +655,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             }
         }
     }
-    
+
     static final class WindowSkipSubscriber<T>
     extends QueueDrainSubscriber<T, Object, Flowable<T>>
     implements Subscription, Disposable, Runnable {
@@ -664,15 +664,15 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
         final TimeUnit unit;
         final Scheduler.Worker worker;
         final int bufferSize;
-        
+
         final List<UnicastProcessor<T>> windows;
-        
+
         Subscription s;
-        
+
         volatile boolean terminated;
-        
+
         public WindowSkipSubscriber(Subscriber<? super Flowable<T>> actual,
-                long timespan, long timeskip, TimeUnit unit, 
+                long timespan, long timeskip, TimeUnit unit,
                 Worker worker, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.timespan = timespan;
@@ -682,26 +682,26 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             this.bufferSize = bufferSize;
             this.windows = new LinkedList<UnicastProcessor<T>>();
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (!SubscriptionHelper.validate(this.s, s)) {
                 return;
             }
-            
+
             this.s = s;
-            
+
             actual.onSubscribe(this);
-            
+
             if (cancelled) {
                 return;
             }
-            
+
             long r = requested();
             if (r != 0L) {
                 final UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
                 windows.add(w);
-                
+
                 actual.onNext(w);
                 if (r != Long.MAX_VALUE) {
                     produced(1);
@@ -712,17 +712,17 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         complete(w);
                     }
                 }, timespan, unit);
-                
+
                 worker.schedulePeriodically(this, timeskip, timeskip, unit);
-                
+
                 s.request(Long.MAX_VALUE);
-                
+
             } else {
                 s.cancel();
                 actual.onError(new IllegalStateException("Could not emit the first window due to lack of requests"));
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (fastEnter()) {
@@ -740,7 +740,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             }
             drainLoop();
         }
-        
+
         @Override
         public void onError(Throwable t) {
             error = t;
@@ -748,32 +748,32 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             if (enter()) {
                 drainLoop();
             }
-            
+
             dispose();
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             done = true;
             if (enter()) {
                 drainLoop();
             }
-            
+
             dispose();
             actual.onComplete();
         }
-        
+
         @Override
         public void request(long n) {
             requested(n);
         }
-        
+
         @Override
         public void cancel() {
             cancelled = true;
         }
-        
+
         @Override
         public void dispose() {
             worker.dispose();
@@ -789,23 +789,23 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             // not used by this operator
             return false;
         }
-        
+
         void complete(UnicastProcessor<T> w) {
             queue.offer(new SubjectWork<T>(w, false));
             if (enter()) {
                 drainLoop();
             }
         }
-        
+
         void drainLoop() {
             final SimpleQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             final List<UnicastProcessor<T>> ws = windows;
-            
+
             int missed = 1;
-            
+
             for (;;) {
-                
+
                 for (;;) {
                     if (terminated) {
                         s.cancel();
@@ -814,11 +814,11 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         ws.clear();
                         return;
                     }
-                    
+
                     boolean d = done;
-                    
+
                     Object v;
-                    
+
                     try {
                         v = q.poll();
                     } catch (Throwable ex) {
@@ -828,10 +828,10 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         a.onError(ex);
                         return;
                     }
-                    
+
                     boolean empty = v == null;
                     boolean sw = v instanceof SubjectWork;
-                    
+
                     if (d && (empty || sw)) {
                         q.clear();
                         dispose();
@@ -848,20 +848,20 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         ws.clear();
                         return;
                     }
-                    
+
                     if (empty) {
                         break;
                     }
-                    
+
                     if (sw) {
                         @SuppressWarnings("unchecked")
                         SubjectWork<T> work = (SubjectWork<T>)v;
-                        
+
                         if (work.open) {
                             if (cancelled) {
                                 continue;
                             }
-                            
+
                             long r = requested();
                             if (r != 0L) {
                                 final UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
@@ -870,7 +870,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                                 if (r != Long.MAX_VALUE) {
                                     produced(1);
                                 }
-                                
+
                                 worker.schedule(new Runnable() {
                                     @Override
                                     public void run() {
@@ -890,24 +890,24 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                             continue;
                         }
                     }
-                    
+
                     for (UnicastProcessor<T> w : ws) {
                         w.onNext(NotificationLite.<T>getValue(v));
                     }
                 }
-                
+
                 missed = leave(-missed);
                 if (missed == 0) {
                     break;
                 }
             }
         }
-        
+
         @Override
         public void run() {
 
             UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
-            
+
             SubjectWork<T> sw = new SubjectWork<T>(w, true);
             if (!cancelled) {
                 queue.offer(sw);
@@ -916,7 +916,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 drainLoop();
             }
         }
-        
+
         static final class SubjectWork<T> {
             final UnicastProcessor<T> w;
             final boolean open;
@@ -926,5 +926,5 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             }
         }
     }
-    
+
 }

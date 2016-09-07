@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -94,9 +94,9 @@ public class FlowableTests {
         Flowable<String> observable = Flowable.just("one", "two", "three");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        
+
         observable.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onNext("three");
@@ -107,9 +107,9 @@ public class FlowableTests {
     @Test
     public void testCountAFewItems() {
         Flowable<String> observable = Flowable.just("a", "b", "c", "d");
-        
+
         observable.count().subscribe(w);
-        
+
         // we should be called only once
         verify(w, times(1)).onNext(anyLong());
         verify(w).onNext(4L);
@@ -136,7 +136,7 @@ public class FlowableTests {
                 return new RuntimeException();
             }
         });
-        
+
         o.count().subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onComplete();
@@ -239,7 +239,7 @@ public class FlowableTests {
 
     /**
      * A reduce on an empty Observable and a seed should just pass the seed through.
-     * 
+     *
      * This is confirmed at https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642456
      */
     @Test
@@ -281,7 +281,7 @@ public class FlowableTests {
             @Override
             public void subscribe(Subscriber<? super String> s) { throw re; }
         });
-        
+
         o.subscribe(observer);
         verify(observer, times(0)).onNext(anyString());
         verify(observer, times(0)).onComplete();
@@ -304,9 +304,9 @@ public class FlowableTests {
 
     /**
      * The error from the user provided Observer is not handled by the subscribe method try/catch.
-     * 
+     *
      * It is handled by the AtomicObserver that wraps the provided Observer.
-     * 
+     *
      * Result: Passes (if AtomicObserver functionality exists)
      * @throws InterruptedException if the test is interrupted
      */
@@ -315,7 +315,7 @@ public class FlowableTests {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        
+
         // FIXME custom built???
         Flowable.just("1", "2", "three", "4")
         .subscribeOn(Schedulers.newThread())
@@ -356,14 +356,14 @@ public class FlowableTests {
 
     /**
      * The error from the user provided Observer is handled by the subscribe try/catch because this is synchronous
-     * 
+     *
      * Result: Passes
      */
     @Test
     public void testCustomObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        
+
         // FIXME custom built???
         Flowable.just("1", "2", "three", "4")
         .safeSubscribe(new DefaultSubscriber<String>() {
@@ -398,8 +398,8 @@ public class FlowableTests {
 
     /**
      * The error from the user provided Observable is handled by the subscribe try/catch because this is synchronous
-     * 
-     * 
+     *
+     *
      * Result: Passes
      */
     @Test
@@ -624,9 +624,9 @@ public class FlowableTests {
 
     /**
      * https://github.com/ReactiveX/RxJava/issues/198
-     * 
+     *
      * Rx Design Guidelines 5.2
-     * 
+     *
      * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
      * to rethrow the exception on the thread that the message comes out from the Observable.
      * The OnCompleted behavior in this case is to do nothing."
@@ -645,13 +645,13 @@ public class FlowableTests {
 
     /**
      * https://github.com/ReactiveX/RxJava/issues/198
-     * 
+     *
      * Rx Design Guidelines 5.2
-     * 
+     *
      * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
      * to rethrow the exception on the thread that the message comes out from the Observable.
      * The OnCompleted behavior in this case is to do nothing."
-     * 
+     *
      * @throws InterruptedException
      */
     @Test
@@ -723,9 +723,9 @@ public class FlowableTests {
         Flowable<String> observable = Flowable.just(1, "abc", false, 2L).ofType(String.class);
 
         Subscriber<Object> observer = TestHelper.mockSubscriber();
-        
+
         observable.subscribe(observer);
-        
+
         verify(observer, never()).onNext(1);
         verify(observer, times(1)).onNext("abc");
         verify(observer, never()).onNext(false);
@@ -746,9 +746,9 @@ public class FlowableTests {
         Flowable<List> observable = Flowable.<Object> just(l1, l2, "123").ofType(List.class);
 
         Subscriber<Object> observer = TestHelper.mockSubscriber();
-        
+
         observable.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(l1);
         verify(observer, times(1)).onNext(l2);
         verify(observer, never()).onNext("123");
@@ -764,7 +764,7 @@ public class FlowableTests {
         Subscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(
@@ -777,9 +777,9 @@ public class FlowableTests {
         Flowable<Boolean> observable = Flowable.just("a", "b").contains("c"); // FIXME null values are not allowed, removed
 
         Subscriber<Object> observer = TestHelper.mockSubscriber();
-        
+
         observable.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(
@@ -795,7 +795,7 @@ public class FlowableTests {
         Subscriber<Object> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(
@@ -808,9 +808,9 @@ public class FlowableTests {
         Flowable<Boolean> observable = Flowable.<String> empty().contains("a");
 
         Subscriber<Object> observer = TestHelper.mockSubscriber();
-        
+
         observable.subscribe(observer);
-        
+
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(
@@ -825,7 +825,7 @@ public class FlowableTests {
         Subscriber<Object> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
-        
+
         verify(observer, never()).onNext(any(Integer.class));
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
@@ -837,7 +837,7 @@ public class FlowableTests {
         Flowable<Integer> observable = Flowable.fromArray(1, 2).subscribeOn(scheduler);
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        
+
         observable.subscribe(observer);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
@@ -855,7 +855,7 @@ public class FlowableTests {
         Flowable<Integer> observable = Flowable.just(3, 4).startWith(Arrays.asList(1, 2)).subscribeOn(scheduler);
 
         Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        
+
         observable.subscribe(observer);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
@@ -888,21 +888,21 @@ public class FlowableTests {
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
-    
+
     @Test
     public void testMergeWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.just(1).mergeWith(Flowable.just(2)).subscribe(ts);
         ts.assertValues(1, 2);
     }
-    
+
     @Test
     public void testConcatWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable.just(1).concatWith(Flowable.just(2)).subscribe(ts);
         ts.assertValues(1, 2);
     }
-    
+
     @Test
     public void testAmbWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -945,7 +945,7 @@ public class FlowableTests {
         }
         assertEquals(expectedCount, count.get());
     }
-    
+
     @Test
     public void testCompose() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -965,7 +965,7 @@ public class FlowableTests {
         ts.assertNoErrors();
         ts.assertValues("1", "2", "3");
     }
-    
+
     @Test
     public void testErrorThrownIssue1685() {
         FlowableProcessor<Object> subject = ReplayProcessor.create();
@@ -986,17 +986,17 @@ public class FlowableTests {
     public void testEmptyIdentity() {
         assertEquals(Flowable.empty(), Flowable.empty());
     }
-    
+
     @Test
     public void testEmptyIsEmpty() {
         Flowable.<Integer>empty().subscribe(w);
-        
+
         verify(w).onComplete();
         verify(w, never()).onNext(any(Integer.class));
         verify(w, never()).onError(any(Throwable.class));
     }
 
-// FIXME this test doesn't make sense 
+// FIXME this test doesn't make sense
 //    @Test // cf. https://github.com/ReactiveX/RxJava/issues/2599
 //    public void testSubscribingSubscriberAsObserverMaintainsSubscriptionChain() {
 //        TestSubscriber<Object> subscriber = new TestSubscriber<T>();
@@ -1017,14 +1017,14 @@ public class FlowableTests {
 //                //do nothing
 //            }});
 //    }
-    
+
     @Test(expected = NullPointerException.class)
     public void testForEachWithNull() {
         Flowable.error(new Exception("boo"))
         //
         .forEach(null);
     }
-    
+
     @Test
     public void testExtend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
@@ -1040,7 +1040,7 @@ public class FlowableTests {
                 }
         });
     }
-    
+
     @Test
     public void toObservableEmpty() {
         Flowable.empty().toObservable().test().assertResult();
@@ -1050,7 +1050,7 @@ public class FlowableTests {
     public void toObservableJust() {
         Flowable.just(1).toObservable().test().assertResult(1);
     }
-    
+
     @Test
     public void toObservableRange() {
         Flowable.range(1, 5).toObservable().test().assertResult(1, 2, 3, 4, 5);

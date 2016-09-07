@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -194,9 +194,9 @@ public class ObservableMergeDelayErrorTest {
         m.subscribe(w);
 
         assertNotNull(w.e);
-        
+
         assertEquals(2, ((CompositeException)w.e).size());
-        
+
 //        if (w.e instanceof CompositeException) {
 //            assertEquals(2, ((CompositeException) w.e).getExceptions().size());
 //            w.e.printStackTrace();
@@ -440,18 +440,18 @@ public class ObservableMergeDelayErrorTest {
                 try {
                     t1.onNext(0);
                 } catch (Throwable swallow) {
-                    
+
                 }
                 t1.onNext(1);
                 t1.onComplete();
             }
         });
-        
+
         Observable<Integer> result = Observable.mergeDelayError(source, Observable.just(2));
-        
+
         final Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(new DefaultObserver<Integer>() {
             int calls;
             @Override
@@ -471,9 +471,9 @@ public class ObservableMergeDelayErrorTest {
             public void onComplete() {
                 o.onComplete();
             }
-            
+
         });
-        
+
         /*
          * If the child onNext throws, why would we keep accepting values from
          * other sources?
@@ -514,16 +514,16 @@ public class ObservableMergeDelayErrorTest {
                     op.onError(new NullPointerException("throwing exception in parent"));
                 }
             });
-    
+
             Observer<String> stringObserver = TestHelper.mockObserver();
-            
+
             TestObserver<String> ts = new TestObserver<String>(stringObserver);
             Observable<String> m = Observable.mergeDelayError(parentObservable);
             m.subscribe(ts);
             System.out.println("testErrorInParentObservableDelayed | " + i);
             ts.awaitTerminalEvent(2000, TimeUnit.MILLISECONDS);
             ts.assertTerminated();
-    
+
             verify(stringObserver, times(2)).onNext("hello");
             verify(stringObserver, times(1)).onError(any(NullPointerException.class));
             verify(stringObserver, never()).onComplete();
@@ -574,7 +574,7 @@ public class ObservableMergeDelayErrorTest {
     @Test
     public void mergeIterableDelayErrorWithError() {
         Observable.mergeDelayError(
-                Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), 
+                Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(2)))
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -583,7 +583,7 @@ public class ObservableMergeDelayErrorTest {
     @Test
     public void mergeDelayError() {
         Observable.mergeDelayError(
-                Observable.just(Observable.just(1), 
+                Observable.just(Observable.just(1),
                 Observable.just(2)))
         .test()
         .assertResult(1, 2);
@@ -592,7 +592,7 @@ public class ObservableMergeDelayErrorTest {
     @Test
     public void mergeDelayErrorWithError() {
         Observable.mergeDelayError(
-                Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(2)))
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -601,7 +601,7 @@ public class ObservableMergeDelayErrorTest {
     @Test
     public void mergeDelayErrorMaxConcurrency() {
         Observable.mergeDelayError(
-                Observable.just(Observable.just(1), 
+                Observable.just(Observable.just(1),
                 Observable.just(2)), 1)
         .test()
         .assertResult(1, 2);
@@ -610,7 +610,7 @@ public class ObservableMergeDelayErrorTest {
     @Test
     public void mergeDelayErrorWithErrorMaxConcurrency() {
         Observable.mergeDelayError(
-                Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), 
+                Observable.just(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(2)), 1)
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -620,7 +620,7 @@ public class ObservableMergeDelayErrorTest {
     @Test
     public void mergeIterableDelayErrorMaxConcurrency() {
         Observable.mergeDelayError(
-                Arrays.asList(Observable.just(1), 
+                Arrays.asList(Observable.just(1),
                 Observable.just(2)), 1)
         .test()
         .assertResult(1, 2);
@@ -630,7 +630,7 @@ public class ObservableMergeDelayErrorTest {
     @Test
     public void mergeIterableDelayErrorWithErrorMaxConcurrency() {
         Observable.mergeDelayError(
-                Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), 
+                Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(2)), 1)
         .test()
         .assertFailure(TestException.class, 1, 2);
@@ -639,7 +639,7 @@ public class ObservableMergeDelayErrorTest {
     @Test
     public void mergeDelayError3() {
         Observable.mergeDelayError(
-                Observable.just(1), 
+                Observable.just(1),
                 Observable.just(2),
                 Observable.just(3)
         )
@@ -650,7 +650,7 @@ public class ObservableMergeDelayErrorTest {
     @Test
     public void mergeDelayError3WithError() {
         Observable.mergeDelayError(
-                Observable.just(1), 
+                Observable.just(1),
                 Observable.just(2).concatWith(Observable.<Integer>error(new TestException())),
                 Observable.just(3)
         )

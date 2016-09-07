@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -190,7 +190,7 @@ public class AsyncProcessorTest {
         /*
          * With non-threadsafe code this fails most of the time on my dev laptop and is non-deterministic enough
          * to act as a unit test to the race conditions.
-         * 
+         *
          * With the synchronization code in place I can not get this to fail on my laptop.
          */
         for (int i = 0; i < 50; i++) {
@@ -262,7 +262,7 @@ public class AsyncProcessorTest {
         @Override
         public void run() {
             try {
-                // a timeout exception will happen if we don't get a terminal state 
+                // a timeout exception will happen if we don't get a terminal state
                 String v = subject.timeout(2000, TimeUnit.MILLISECONDS).blockingSingle();
                 value.set(v);
             } catch (Exception e) {
@@ -270,7 +270,7 @@ public class AsyncProcessorTest {
             }
         }
     }
-    
+
     // FIXME subscriber methods are not allowed to throw
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery() {
@@ -286,11 +286,11 @@ public class AsyncProcessorTest {
 //        } catch (OnErrorNotImplementedException e) {
 //            // ignore
 //        }
-//        // even though the onError above throws we should still receive it on the other subscriber 
+//        // even though the onError above throws we should still receive it on the other subscriber
 //        assertEquals(1, ts.getOnErrorEvents().size());
 //    }
-    
-    
+
+
     // FIXME subscriber methods are not allowed to throw
 //    /**
 //     * This one has multiple failures so should get a CompositeException
@@ -314,28 +314,28 @@ public class AsyncProcessorTest {
 //            // we should have 5 of them
 //            assertEquals(5, e.getExceptions().size());
 //        }
-//        // even though the onError above throws we should still receive it on the other subscriber 
+//        // even though the onError above throws we should still receive it on the other subscriber
 //        assertEquals(1, ts.getOnErrorEvents().size());
 //    }
 
     @Test
     public void testCurrentStateMethodsNormal() {
         AsyncProcessor<Object> as = AsyncProcessor.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onNext(1);
-        
+
         assertFalse(as.hasValue()); // AP no longer reports it has a value until it is terminated
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getValue()); // AP no longer reports it has a value until it is terminated
         assertNull(as.getThrowable());
-        
+
         as.onComplete();
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());
@@ -343,19 +343,19 @@ public class AsyncProcessorTest {
         assertEquals(1, as.getValue());
         assertNull(as.getThrowable());
     }
-    
+
     @Test
     public void testCurrentStateMethodsEmpty() {
         AsyncProcessor<Object> as = AsyncProcessor.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onComplete();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertTrue(as.hasComplete());
@@ -365,55 +365,55 @@ public class AsyncProcessorTest {
     @Test
     public void testCurrentStateMethodsError() {
         AsyncProcessor<Object> as = AsyncProcessor.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onError(new TestException());
-        
+
         assertFalse(as.hasValue());
         assertTrue(as.hasThrowable());
         assertFalse(as.hasComplete());
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
     }
-    
+
     @Test
     public void fusionLive() {
         AsyncProcessor<Integer> ap = new AsyncProcessor<Integer>();
-        
+
         TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
-        
+
         ap.subscribe(ts);
-        
+
         ts
         .assertOf(SubscriberFusion.<Integer>assertFuseable())
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC));
-        
+
         ts.assertNoValues().assertNoErrors().assertNotComplete();
-        
+
         ap.onNext(1);
-        
+
         ts.assertNoValues().assertNoErrors().assertNotComplete();
-        
+
         ap.onComplete();
-        
+
         ts.assertResult(1);
     }
-    
+
     @Test
     public void fusionOfflie() {
         AsyncProcessor<Integer> ap = new AsyncProcessor<Integer>();
         ap.onNext(1);
         ap.onComplete();
-        
+
         TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
-        
+
         ap.subscribe(ts);
-        
+
         ts
         .assertOf(SubscriberFusion.<Integer>assertFuseable())
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))

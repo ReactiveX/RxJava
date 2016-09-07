@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -34,29 +34,29 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
         this.unit = unit;
         this.scheduler = scheduler;
     }
-    
+
     @Override
     public void subscribeActual(Observer<? super T> t) {
         source.subscribe(new DebounceTimedSubscriber<T>(
-                new SerializedObserver<T>(t), 
+                new SerializedObserver<T>(t),
                 timeout, unit, scheduler.createWorker()));
     }
-    
+
     static final class DebounceTimedSubscriber<T>
     implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
-        
+
         Disposable s;
-        
+
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
         volatile long index;
-        
+
         boolean done;
-        
+
         public DebounceTimedSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
             this.timeout = timeout;
@@ -71,7 +71,7 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
@@ -79,22 +79,22 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             }
             long idx = index + 1;
             index = idx;
-            
+
             Disposable d = timer.get();
             if (d != null) {
                 d.dispose();
             }
-            
+
             DebounceEmitter<T> de = new DebounceEmitter<T>(t, idx, this);
             if (!timer.compareAndSet(d, de)) {
                 return;
             }
-                
+
             d = worker.schedule(de, timeout, unit);
-            
+
             de.setResource(d);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -105,14 +105,14 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             DisposableHelper.dispose(timer);
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
                 return;
             }
             done = true;
-            
+
             Disposable d = timer.get();
             if (d != DisposableHelper.DISPOSED) {
                 @SuppressWarnings("unchecked")
@@ -123,7 +123,7 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
                 actual.onComplete();
             }
         }
-        
+
         @Override
         public void dispose() {
             DisposableHelper.dispose(timer);
@@ -143,7 +143,7 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             }
         }
     }
-    
+
     static final class DebounceEmitter<T> extends AtomicReference<Disposable> implements Runnable, Disposable {
         /** */
         private static final long serialVersionUID = 6812032969491025141L;
@@ -151,10 +151,10 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
         final T value;
         final long idx;
         final DebounceTimedSubscriber<T> parent;
-        
+
         final AtomicBoolean once = new AtomicBoolean();
 
-        
+
         public DebounceEmitter(T value, long idx, DebounceTimedSubscriber<T> parent) {
             this.value = value;
             this.idx = idx;
@@ -165,13 +165,13 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
         public void run() {
             emit();
         }
-        
+
         void emit() {
             if (once.compareAndSet(false, true)) {
                 parent.emit(idx, value, this);
             }
         }
-        
+
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);

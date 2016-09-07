@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -23,12 +23,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class ObservableAmb<T> extends Observable<T> {
     final ObservableSource<? extends T>[] sources;
     final Iterable<? extends ObservableSource<? extends T>> sourcesIterable;
-    
+
     public ObservableAmb(ObservableSource<? extends T>[] sources, Iterable<? extends ObservableSource<? extends T>> sourcesIterable) {
         this.sources = sources;
         this.sourcesIterable = sourcesIterable;
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public void subscribeActual(Observer<? super T> s) {
@@ -47,7 +47,7 @@ public final class ObservableAmb<T> extends Observable<T> {
         } else {
             count = sources.length;
         }
-        
+
         if (count == 0) {
             EmptyDisposable.complete(s);
             return;
@@ -60,19 +60,19 @@ public final class ObservableAmb<T> extends Observable<T> {
         AmbCoordinator<T> ac = new AmbCoordinator<T>(s, count);
         ac.subscribe(sources);
     }
-    
+
     static final class AmbCoordinator<T> implements Disposable {
         final Observer<? super T> actual;
         final AmbInnerSubscriber<T>[] subscribers;
-        
+
         final AtomicInteger winner = new AtomicInteger();
-        
+
         @SuppressWarnings("unchecked")
         public AmbCoordinator(Observer<? super T> actual, int count) {
             this.actual = actual;
             this.subscribers = new AmbInnerSubscriber[count];
         }
-        
+
         public void subscribe(ObservableSource<? extends T>[] sources) {
             AmbInnerSubscriber<T>[] as = subscribers;
             int len = as.length;
@@ -81,16 +81,16 @@ public final class ObservableAmb<T> extends Observable<T> {
             }
             winner.lazySet(0); // release the contents of 'as'
             actual.onSubscribe(this);
-            
+
             for (int i = 0; i < len; i++) {
                 if (winner.get() != 0) {
                     return;
                 }
-                
+
                 sources[i].subscribe(as[i]);
             }
         }
-        
+
         public boolean win(int index) {
             int w = winner.get();
             if (w == 0) {
@@ -108,12 +108,12 @@ public final class ObservableAmb<T> extends Observable<T> {
             }
             return w == index;
         }
-        
+
         @Override
         public void dispose() {
             if (winner.get() != -1) {
                 winner.lazySet(-1);
-                
+
                 for (AmbInnerSubscriber<T> a : subscribers) {
                     a.dispose();
                 }
@@ -125,27 +125,27 @@ public final class ObservableAmb<T> extends Observable<T> {
             return winner.get() == -1;
         }
     }
-    
+
     static final class AmbInnerSubscriber<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
         /** */
         private static final long serialVersionUID = -1185974347409665484L;
         final AmbCoordinator<T> parent;
         final int index;
         final Observer<? super T> actual;
-        
+
         boolean won;
-        
+
         public AmbInnerSubscriber(AmbCoordinator<T> parent, int index, Observer<? super T> actual) {
             this.parent = parent;
             this.index = index;
             this.actual = actual;
         }
-        
+
         @Override
         public void onSubscribe(Disposable s) {
             DisposableHelper.setOnce(this, s);
         }
-        
+
         @Override
         public void onNext(T t) {
             if (won) {
@@ -159,7 +159,7 @@ public final class ObservableAmb<T> extends Observable<T> {
                 }
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (won) {
@@ -174,7 +174,7 @@ public final class ObservableAmb<T> extends Observable<T> {
                 }
             }
         }
-        
+
         @Override
         public void onComplete() {
             if (won) {
@@ -188,7 +188,7 @@ public final class ObservableAmb<T> extends Observable<T> {
                 }
             }
         }
-        
+
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);

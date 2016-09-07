@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,27 +26,27 @@ import io.reactivex.observables.ConnectableObservable;
  * Utility class to inject handlers to certain standard RxJava operations.
  */
 public final class RxJavaPlugins {
-    
+
     static volatile Consumer<Throwable> errorHandler;
-    
+
     static volatile Function<Runnable, Runnable> onScheduleHandler;
 
     static volatile Function<Scheduler, Scheduler> onInitComputationHandler;
-    
+
     static volatile Function<Scheduler, Scheduler> onInitSingleHandler;
-    
+
     static volatile Function<Scheduler, Scheduler> onInitIoHandler;
 
     static volatile Function<Scheduler, Scheduler> onInitNewThreadHandler;
-    
+
     static volatile Function<Scheduler, Scheduler> onComputationHandler;
-    
+
     static volatile Function<Scheduler, Scheduler> onSingleHandler;
-    
+
     static volatile Function<Scheduler, Scheduler> onIoHandler;
 
     static volatile Function<Scheduler, Scheduler> onNewThreadHandler;
-    
+
     @SuppressWarnings("rawtypes")
     static volatile Function<Flowable, Flowable> onFlowableAssembly;
 
@@ -64,9 +64,9 @@ public final class RxJavaPlugins {
 
     @SuppressWarnings("rawtypes")
     static volatile Function<Single, Single> onSingleAssembly;
-    
+
     static volatile Function<Completable, Completable> onCompletableAssembly;
-    
+
     @SuppressWarnings("rawtypes")
     static volatile BiFunction<Flowable, Subscriber, Subscriber> onFlowableSubscribe;
 
@@ -83,16 +83,16 @@ public final class RxJavaPlugins {
 
     /** Prevents changing the plugins. */
     static volatile boolean lockdown;
-    
+
     /**
      * Prevents changing the plugins from then on.
      * <p>This allows container-like environments to prevent clients
-     * messing with plugins. 
+     * messing with plugins.
      */
     public static void lockdown() {
         lockdown = true;
     }
-    
+
     /**
      * Returns true if the plugins were locked down.
      * @return true if the plugins were locked down
@@ -100,7 +100,7 @@ public final class RxJavaPlugins {
     public static boolean isLockdown() {
         return lockdown;
     }
-    
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -108,7 +108,7 @@ public final class RxJavaPlugins {
     public static Function<Scheduler, Scheduler> getComputationSchedulerHandler() {
         return onComputationHandler;
     }
-    
+
     /**
      * Returns the a hook consumer.
      * @return the hook consumer, may be null
@@ -116,7 +116,7 @@ public final class RxJavaPlugins {
     public static Consumer<Throwable> getErrorHandler() {
         return errorHandler;
     }
-    
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -272,13 +272,13 @@ public final class RxJavaPlugins {
         error.printStackTrace(); // NOPMD
         uncaught(error);
     }
-    
+
     static void uncaught(Throwable error) {
         Thread currentThread = Thread.currentThread();
         UncaughtExceptionHandler handler = currentThread.getUncaughtExceptionHandler();
         handler.uncaughtException(currentThread, error);
     }
-    
+
     /**
      * Calls the associated hook function.
      * @param defaultScheduler the hook's input value
@@ -337,10 +337,10 @@ public final class RxJavaPlugins {
     public static void reset() {
         setErrorHandler(null);
         setScheduleHandler(null);
-        
+
         setComputationSchedulerHandler(null);
         setInitComputationSchedulerHandler(null);
-        
+
         setIoSchedulerHandler(null);
         setInitIoSchedulerHandler(null);
 
@@ -349,22 +349,22 @@ public final class RxJavaPlugins {
 
         setNewThreadSchedulerHandler(null);
         setInitNewThreadSchedulerHandler(null);
-        
+
         setOnFlowableAssembly(null);
         setOnFlowableSubscribe(null);
-        
+
         setOnObservableAssembly(null);
         setOnObservableSubscribe(null);
-        
+
         setOnSingleAssembly(null);
         setOnSingleSubscribe(null);
-        
+
         setOnCompletableAssembly(null);
         setOnCompletableSubscribe(null);
 
         setOnConnectableFlowableAssembly(null);
         setOnConnectableObservableAssembly(null);
-        
+
         setOnMaybeAssembly(null);
         setOnMaybeSubscribe(null);
     }
@@ -493,7 +493,7 @@ public final class RxJavaPlugins {
     public static Function<Completable, Completable> getOnCompletableAssembly() {
         return onCompletableAssembly;
     }
-    
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -501,7 +501,7 @@ public final class RxJavaPlugins {
     public static BiFunction<Completable, CompletableObserver, CompletableObserver> getOnCompletableSubscribe() {
         return onCompletableSubscribe;
     }
-    
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -528,7 +528,7 @@ public final class RxJavaPlugins {
     public static BiFunction<Flowable, Subscriber, Subscriber> getOnFlowableSubscribe() {
         return onFlowableSubscribe;
     }
-    
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -537,7 +537,7 @@ public final class RxJavaPlugins {
     public static BiFunction<Maybe, MaybeObserver, MaybeObserver> getOnMaybeSubscribe() {
         return onMaybeSubscribe;
     }
-    
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -555,7 +555,7 @@ public final class RxJavaPlugins {
     public static Function<Single, Single> getOnSingleAssembly() {
         return onSingleAssembly;
     }
-    
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -564,7 +564,7 @@ public final class RxJavaPlugins {
     public static BiFunction<Single, SingleObserver, SingleObserver> getOnSingleSubscribe() {
         return onSingleSubscribe;
     }
-    
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -573,7 +573,7 @@ public final class RxJavaPlugins {
     public static Function<Observable, Observable> getOnObservableAssembly() {
         return onObservableAssembly;
     }
-    
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -582,7 +582,7 @@ public final class RxJavaPlugins {
     public static Function<ConnectableObservable, ConnectableObservable> getOnConnectableObservableAssembly() {
         return onConnectableObservableAssembly;
     }
-    
+
     /**
      * Returns the current hook function.
      * @return the hook function, may be null
@@ -591,7 +591,7 @@ public final class RxJavaPlugins {
     public static BiFunction<Observable, Observer, Observer> getOnObservableSubscribe() {
         return onObservableSubscribe;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onCompletableAssembly the hook function to set, null allowed
@@ -602,7 +602,7 @@ public final class RxJavaPlugins {
         }
         RxJavaPlugins.onCompletableAssembly = onCompletableAssembly;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onCompletableSubscribe the hook function to set, null allowed
@@ -614,7 +614,7 @@ public final class RxJavaPlugins {
         }
         RxJavaPlugins.onCompletableSubscribe = onCompletableSubscribe;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onFlowableAssembly the hook function to set, null allowed
@@ -626,7 +626,7 @@ public final class RxJavaPlugins {
         }
         RxJavaPlugins.onFlowableAssembly = onFlowableAssembly;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onMaybeAssembly the hook function to set, null allowed
@@ -638,7 +638,7 @@ public final class RxJavaPlugins {
         }
         RxJavaPlugins.onMaybeAssembly = onMaybeAssembly;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onConnectableFlowableAssembly the hook function to set, null allowed
@@ -650,7 +650,7 @@ public final class RxJavaPlugins {
         }
         RxJavaPlugins.onConnectableFlowableAssembly = onConnectableFlowableAssembly;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onFlowableSubscribe the hook function to set, null allowed
@@ -662,7 +662,7 @@ public final class RxJavaPlugins {
         }
         RxJavaPlugins.onFlowableSubscribe = onFlowableSubscribe;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onMaybeSubscribe the hook function to set, null allowed
@@ -686,7 +686,7 @@ public final class RxJavaPlugins {
         }
         RxJavaPlugins.onObservableAssembly = onObservableAssembly;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onConnectableObservableAssembly the hook function to set, null allowed
@@ -698,7 +698,7 @@ public final class RxJavaPlugins {
         }
         RxJavaPlugins.onConnectableObservableAssembly = onConnectableObservableAssembly;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onObservableSubscribe the hook function to set, null allowed
@@ -711,7 +711,7 @@ public final class RxJavaPlugins {
         }
         RxJavaPlugins.onObservableSubscribe = onObservableSubscribe;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onSingleAssembly the hook function to set, null allowed
@@ -723,7 +723,7 @@ public final class RxJavaPlugins {
         }
         RxJavaPlugins.onSingleAssembly = onSingleAssembly;
     }
-    
+
     /**
      * Sets the specific hook function.
      * @param onSingleSubscribe the hook function to set, null allowed

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -79,7 +79,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         coordinator.subscribe(sources, count);
     }
 
-    static final class ZipCoordinator<T, R> 
+    static final class ZipCoordinator<T, R>
     extends AtomicInteger
     implements Subscription {
 
@@ -95,7 +95,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         final AtomicLong requested;
 
         final AtomicThrowable errors;
-        
+
         final boolean delayErrors;
 
         volatile boolean done;
@@ -104,7 +104,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         final Object[] current;
 
-        public ZipCoordinator(Subscriber<? super R> actual, 
+        public ZipCoordinator(Subscriber<? super R> actual,
                 Function<? super Object[], ? extends R> zipper, int n, int prefetch, boolean delayErrors) {
             this.actual = actual;
             this.zipper = zipper;
@@ -112,7 +112,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
             @SuppressWarnings("unchecked")
             ZipSubscriber<T, R>[] a = new ZipSubscriber[n];
             for (int i = 0; i < n; i++) {
-                a[i] = new ZipSubscriber<T, R>(this, prefetch, i); 
+                a[i] = new ZipSubscriber<T, R>(this, prefetch, i);
             }
             this.current = new Object[n];
             this.subscribers = a;
@@ -373,7 +373,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                         return;
                     }
                 }
-                
+
                 queue = new SpscArrayQueue<T>(prefetch);
 
                 s.request(prefetch);

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,7 +30,7 @@ import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close> 
+public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close>
 extends AbstractObservableWithUpstream<T, U> {
     final Callable<U> bufferSupplier;
     final ObservableSource<? extends Open> bufferOpen;
@@ -43,7 +43,7 @@ extends AbstractObservableWithUpstream<T, U> {
         this.bufferClose = bufferClose;
         this.bufferSupplier = bufferSupplier;
     }
-    
+
     @Override
     protected void subscribeActual(Observer<? super U> t) {
         source.subscribe(new BufferBoundarySubscriber<T, U, Open, Close>(
@@ -51,21 +51,21 @@ extends AbstractObservableWithUpstream<T, U> {
                 bufferOpen, bufferClose, bufferSupplier
                 ));
     }
-    
+
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, Open, Close>
     extends QueueDrainObserver<T, U, U> implements Disposable {
         final ObservableSource<? extends Open> bufferOpen;
         final Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
         final Callable<U> bufferSupplier;
         final CompositeDisposable resources;
-        
+
         Disposable s;
-        
+
         final List<U> buffers;
-        
+
         final AtomicInteger windows = new AtomicInteger();
 
-        public BufferBoundarySubscriber(Observer<? super U> actual, 
+        public BufferBoundarySubscriber(Observer<? super U> actual,
                 ObservableSource<? extends Open> bufferOpen,
                 Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose,
                         Callable<U> bufferSupplier) {
@@ -80,17 +80,17 @@ extends AbstractObservableWithUpstream<T, U> {
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 BufferOpenSubscriber<T, U, Open, Close> bos = new BufferOpenSubscriber<T, U, Open, Close>(this);
                 resources.add(bos);
 
                 actual.onSubscribe(this);
-                
+
                 windows.lazySet(1);
                 bufferOpen.subscribe(bos);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             synchronized (this) {
@@ -99,7 +99,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 }
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             dispose();
@@ -109,21 +109,21 @@ extends AbstractObservableWithUpstream<T, U> {
             }
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (windows.decrementAndGet() == 0) {
                 complete();
             }
         }
-        
+
         void complete() {
             List<U> list;
             synchronized (this) {
                 list = new ArrayList<U>(buffers);
                 buffers.clear();
             }
-            
+
             SimpleQueue<U> q = queue;
             for (U u : list) {
                 q.offer(u);
@@ -133,7 +133,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 QueueDrainHelper.drainLoop(q, actual, false, this, this);
             }
         }
-        
+
         @Override
         public void dispose() {
             if (!cancelled) {
@@ -150,14 +150,14 @@ extends AbstractObservableWithUpstream<T, U> {
         public void accept(Observer<? super U> a, U v) {
             a.onNext(v);
         }
-        
+
         void open(Open window) {
             if (cancelled) {
                 return;
             }
-            
+
             U b;
-            
+
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
@@ -165,14 +165,14 @@ extends AbstractObservableWithUpstream<T, U> {
                 onError(e);
                 return;
             }
-            
+
             if (b == null) {
                 onError(new NullPointerException("The buffer supplied is null"));
                 return;
             }
 
             ObservableSource<? extends Close> p;
-            
+
             try {
                 p = bufferClose.apply(window);
             } catch (Throwable e) {
@@ -180,12 +180,12 @@ extends AbstractObservableWithUpstream<T, U> {
                 onError(e);
                 return;
             }
-            
+
             if (p == null) {
                 onError(new NullPointerException("The buffer closing Observable is null"));
                 return;
             }
-            
+
             if (cancelled) {
                 return;
             }
@@ -196,15 +196,15 @@ extends AbstractObservableWithUpstream<T, U> {
                 }
                 buffers.add(b);
             }
-            
+
             BufferCloseSubscriber<T, U, Open, Close> bcs = new BufferCloseSubscriber<T, U, Open, Close>(b, this);
             resources.add(bcs);
-            
+
             windows.getAndIncrement();
-            
+
             p.subscribe(bcs);
         }
-        
+
         void openFinished(Disposable d) {
             if (resources.remove(d)) {
                 if (windows.decrementAndGet() == 0) {
@@ -212,18 +212,18 @@ extends AbstractObservableWithUpstream<T, U> {
                 }
             }
         }
-        
+
         void close(U b, Disposable d) {
-            
+
             boolean e;
             synchronized (this) {
                 e = buffers.remove(b);
             }
-            
+
             if (e) {
                 fastPathOrderedEmit(b, false, this);
             }
-            
+
             if (resources.remove(d)) {
                 if (windows.decrementAndGet() == 0) {
                     complete();
@@ -231,13 +231,13 @@ extends AbstractObservableWithUpstream<T, U> {
             }
         }
     }
-    
+
     static final class BufferOpenSubscriber<T, U extends Collection<? super T>, Open, Close>
     extends DisposableObserver<Open> {
         final BufferBoundarySubscriber<T, U, Open, Close> parent;
-        
+
         boolean done;
-        
+
         public BufferOpenSubscriber(BufferBoundarySubscriber<T, U, Open, Close> parent) {
             this.parent = parent;
         }
@@ -248,7 +248,7 @@ extends AbstractObservableWithUpstream<T, U> {
             }
             parent.open(t);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -258,7 +258,7 @@ extends AbstractObservableWithUpstream<T, U> {
             done = true;
             parent.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
@@ -268,7 +268,7 @@ extends AbstractObservableWithUpstream<T, U> {
             parent.openFinished(this);
         }
     }
-    
+
     static final class BufferCloseSubscriber<T, U extends Collection<? super T>, Open, Close>
     extends DisposableObserver<Close> {
         final BufferBoundarySubscriber<T, U, Open, Close> parent;
@@ -278,12 +278,12 @@ extends AbstractObservableWithUpstream<T, U> {
             this.parent = parent;
             this.value = value;
         }
-        
+
         @Override
         public void onNext(Close t) {
             onComplete();
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -292,7 +292,7 @@ extends AbstractObservableWithUpstream<T, U> {
             }
             parent.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {

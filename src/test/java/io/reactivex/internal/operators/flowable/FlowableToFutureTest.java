@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -38,9 +38,9 @@ public class FlowableToFutureTest {
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
-        
+
         Flowable.fromFuture(future).subscribe(ts);
-        
+
         ts.dispose();
 
         verify(o, times(1)).onNext(value);
@@ -80,9 +80,9 @@ public class FlowableToFutureTest {
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
-        
+
         Flowable.fromFuture(future).subscribe(ts);
-        
+
         ts.dispose();
 
         verify(o, never()).onNext(null);
@@ -102,9 +102,9 @@ public class FlowableToFutureTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
         ts.dispose();
-        
+
         Flowable.fromFuture(future).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertNotComplete();
     }
@@ -148,91 +148,91 @@ public class FlowableToFutureTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
         Flowable<Object> futureObservable = Flowable.fromFuture(future);
-        
+
         futureObservable.subscribeOn(Schedulers.computation()).subscribe(ts);
-        
+
         Thread.sleep(100);
-        
+
         ts.dispose();
-        
+
         ts.assertNoErrors();
         ts.assertNoValues();
         ts.assertNotComplete();
     }
-    
+
     @Test
     public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        
+
         FutureTask<Integer> f = new FutureTask<Integer>(new Runnable() {
             @Override
             public void run() {
-                
+
             }
         }, 1);
-        
+
         f.run();
-        
+
         Flowable.fromFuture(f).subscribe(ts);
-        
+
         ts.assertNoValues();
-        
+
         ts.request(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void withTimeoutNoTimeout() {
         FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
             @Override
             public void run() {
-                
+
             }
         }, 1);
-        
+
         task.run();
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.fromFuture(task, 1, TimeUnit.SECONDS).subscribe(ts);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
+
     @Test
     public void withTimeoutTimeout() {
         FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
             @Override
             public void run() {
-                
+
             }
         }, 1);
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.fromFuture(task, 10, TimeUnit.MILLISECONDS).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TimeoutException.class);
         ts.assertNotComplete();
     }
-    
+
     @Test
     public void withTimeoutNoTimeoutScheduler() {
         FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
             @Override
             public void run() {
-                
+
             }
         }, 1);
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Flowable.fromFuture(task, Schedulers.computation()).subscribe(ts);
 
         task.run();

@@ -28,7 +28,7 @@ import io.reactivex.internal.subscribers.observable.DeferredScalarDisposable;
 public final class MaybeToObservable<T> extends Observable<T> implements HasUpstreamMaybeSource<T> {
 
     final MaybeSource<T> source;
-    
+
     public MaybeToObservable(MaybeSource<T> source) {
         this.source = source;
     }
@@ -47,9 +47,9 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
     implements MaybeObserver<T> {
         /** */
         private static final long serialVersionUID = 7603343402964826922L;
-        
-        Disposable d; 
-        
+
+        Disposable d;
+
         public MaybeToFlowableSubscriber(Observer<? super T> actual) {
             super(actual);
         }
@@ -58,7 +58,7 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
-                
+
                 actual.onSubscribe(this);
             }
         }
@@ -77,7 +77,7 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
         public void onComplete() {
             complete();
         }
-        
+
         @Override
         public void dispose() {
             super.dispose();

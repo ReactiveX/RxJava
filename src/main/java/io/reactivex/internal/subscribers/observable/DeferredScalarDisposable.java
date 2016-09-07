@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -27,23 +27,23 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
 
     /** The target of the events. */
     protected final Observer<? super T> actual;
-    
+
     /** The value stored temporarily when in fusion mode. */
     protected T value;
-    
+
     /** Indicates there was a call to complete(T). */
     static final int TERMINATED = 2;
-    
+
     /** Indicates the Disposable has been disposed. */
     static final int DISPOSED = 4;
-    
+
     /** Indicates this Disposable is in fusion mode and is currently empty. */
     static final int FUSED_EMPTY = 8;
     /** Indicates this Disposable is in fusion mode and has a value. */
     static final int FUSED_READY = 16;
     /** Indicates this Disposable is in fusion mode and its value has been consumed. */
     static final int FUSED_CONSUMED = 32;
-    
+
     /**
      * Constructs a DeferredScalarDisposable by wrapping the Observer.
      * @param actual the Observer to wrap, not null (not verified)
@@ -51,7 +51,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
     public DeferredScalarDisposable(Observer<? super T> actual) {
         this.actual = actual;
     }
-    
+
     @Override
     public final int requestFusion(int mode) {
         if ((mode & ASYNC) != 0) {
@@ -109,7 +109,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
         lazySet(TERMINATED);
         actual.onComplete();
     }
-    
+
     @Override
     public final T poll() throws Exception {
         if (get() == FUSED_READY) {
@@ -137,7 +137,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
         set(DISPOSED);
         value = null;
     }
-    
+
     /**
      * Try disposing this Disposable and return true if the current thread succeeded.
      * @return true if the current thread succeeded

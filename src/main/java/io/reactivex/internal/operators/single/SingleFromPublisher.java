@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -25,7 +25,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class SingleFromPublisher<T> extends Single<T> {
 
     final Publisher<? extends T> publisher;
-    
+
     public SingleFromPublisher(Publisher<? extends T> publisher) {
         this.publisher = publisher;
     }
@@ -34,33 +34,33 @@ public final class SingleFromPublisher<T> extends Single<T> {
     protected void subscribeActual(final SingleObserver<? super T> s) {
         publisher.subscribe(new ToSingleObserver<T>(s));
     }
-    
+
     static final class ToSingleObserver<T> implements Subscriber<T>, Disposable {
         final SingleObserver<? super T> actual;
-        
+
         Subscription s;
-        
+
         T value;
-        
+
         boolean done;
-        
+
         volatile boolean disposed;
 
         public ToSingleObserver(SingleObserver<? super T> actual) {
             this.actual = actual;
         }
-        
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
-                
+
                 actual.onSubscribe(this);
-                
+
                 s.request(Long.MAX_VALUE);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
@@ -75,7 +75,7 @@ public final class SingleFromPublisher<T> extends Single<T> {
                 value = t;
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -86,7 +86,7 @@ public final class SingleFromPublisher<T> extends Single<T> {
             this.value = null;
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
@@ -101,12 +101,12 @@ public final class SingleFromPublisher<T> extends Single<T> {
                 actual.onSuccess(v);
             }
         }
-        
+
         @Override
         public boolean isDisposed() {
             return disposed;
         }
-        
+
         @Override
         public void dispose() {
             disposed = true;

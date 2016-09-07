@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -33,14 +33,14 @@ implements Subscriber<T>, Future<T>, Subscription {
 
     T value;
     Throwable error;
-    
+
     final AtomicReference<Subscription> s;
-    
+
     public FutureSubscriber() {
         super(1);
         this.s = new AtomicReference<Subscription>();
     }
-    
+
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         for (;;) {
@@ -48,7 +48,7 @@ implements Subscriber<T>, Future<T>, Subscription {
             if (a == this || a == SubscriptionHelper.CANCELLED) {
                 return false;
             }
-            
+
             if (s.compareAndSet(a, SubscriptionHelper.CANCELLED)) {
                 if (a != null) {
                     a.cancel();
@@ -74,7 +74,7 @@ implements Subscriber<T>, Future<T>, Subscription {
         if (getCount() != 0) {
             await();
         }
-        
+
         if (isCancelled()) {
             throw new CancellationException();
         }
@@ -92,11 +92,11 @@ implements Subscriber<T>, Future<T>, Subscription {
                 throw new TimeoutException();
             }
         }
-        
+
         if (isCancelled()) {
             throw new CancellationException();
         }
-        
+
         Throwable ex = error;
         if (ex != null) {
             throw new ExecutionException(ex);
@@ -154,12 +154,12 @@ implements Subscriber<T>, Future<T>, Subscription {
             }
         }
     }
-    
+
     @Override
     public void cancel() {
         // ignoring as `this` means a finished Subscription only
     }
-    
+
     @Override
     public void request(long n) {
         // ignoring as `this` means a finished Subscription only

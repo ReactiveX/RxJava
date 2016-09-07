@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -103,7 +103,7 @@ public class FlowableOnErrorReturnTest {
         verify(observer, times(0)).onComplete();
         assertNotNull(capturedException.get());
     }
-    
+
     @Test
     public void testMapResumeAsyncNext() {
         // Trigger multiple failures
@@ -127,7 +127,7 @@ public class FlowableOnErrorReturnTest {
             public String apply(Throwable t1) {
                 return "resume";
             }
-            
+
         });
 
         @SuppressWarnings("unchecked")
@@ -143,7 +143,7 @@ public class FlowableOnErrorReturnTest {
         verify(observer, Mockito.never()).onNext("three");
         verify(observer, times(1)).onNext("resume");
     }
-    
+
     @Test
     public void testBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -154,7 +154,7 @@ public class FlowableOnErrorReturnTest {
                     public Integer apply(Throwable t1) {
                         return 1;
                     }
-                    
+
                 })
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
@@ -214,22 +214,22 @@ public class FlowableOnErrorReturnTest {
             System.out.println("done starting TestObservable thread");
         }
     }
-    
+
     @Test
     public void normalBackpressure() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        
+
         PublishProcessor<Integer> ps = PublishProcessor.create();
-        
+
         ps.onErrorReturn(new Function<Throwable, Integer>() {
             @Override
             public Integer apply(Throwable e) {
                 return 3;
             }
         }).subscribe(ts);
-        
+
         ts.request(2);
-        
+
         ps.onNext(1);
         ps.onNext(2);
         ps.onError(new TestException("Forced failure"));
@@ -239,13 +239,13 @@ public class FlowableOnErrorReturnTest {
         ts.assertNotComplete();
 
         ts.request(2);
-        
+
         ts.assertValues(1, 2, 3);
         ts.assertNoErrors();
         ts.assertComplete();
     }
-    
-    
+
+
     @Test
     public void returnItem() {
         Flowable.error(new TestException())

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -195,15 +195,15 @@ public class FlowableWindowWithSizeTest {
         }
         return list;
     }
-    
+
     @Test
     public void testBackpressureOuter() {
         Flowable<Flowable<Integer>> source = Flowable.range(1, 10).window(3);
-        
+
         final List<Integer> list = new ArrayList<Integer>();
-        
+
         final Subscriber<Integer> o = TestHelper.mockSubscriber();
-        
+
         source.subscribe(new DefaultSubscriber<Flowable<Integer>>() {
             @Override
             public void onStart() {
@@ -235,9 +235,9 @@ public class FlowableWindowWithSizeTest {
                 o.onComplete();
             }
         });
-        
+
         assertEquals(Arrays.asList(1, 2, 3), list);
-        
+
         verify(o, never()).onError(any(Throwable.class));
         verify(o, times(1)).onComplete(); // 1 inner
     }
@@ -265,13 +265,13 @@ public class FlowableWindowWithSizeTest {
             }
         }).subscribeOn(Schedulers.newThread()); // use newThread since we are using sleep to block
     }
-    
+
     @Test
     public void testTakeFlatMapCompletes() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         final int indicator = 999999999;
-        
+
         hotStream()
         .window(10)
         .take(2)
@@ -281,17 +281,17 @@ public class FlowableWindowWithSizeTest {
                 return w.startWith(indicator);
             }
         }).subscribe(ts);
-        
+
         ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
         ts.assertComplete();
         ts.assertValueCount(22);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testBackpressureOuterInexact() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
-        
+
         Flowable.range(1, 5)
         .window(2, 1)
         .map(new Function<Flowable<Integer>, Flowable<List<Integer>>>() {
@@ -307,11 +307,11 @@ public class FlowableWindowWithSizeTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertNoValues();
         ts.assertNotComplete();
-        
+
         ts.request(2);
 
         ts.assertValues(Arrays.asList(1, 2), Arrays.asList(2, 3));
@@ -321,7 +321,7 @@ public class FlowableWindowWithSizeTest {
         ts.request(5);
 
         System.out.println(ts.values());
-        
+
         ts.assertValues(Arrays.asList(1, 2), Arrays.asList(2, 3),
                 Arrays.asList(3, 4), Arrays.asList(4, 5), Arrays.asList(5));
         ts.assertNoErrors();

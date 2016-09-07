@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Test super/extends of generics.
- * 
+ *
  * See https://github.com/Netflix/RxJava/pull/331
  */
 public class FlowableCovarianceTest {
@@ -68,7 +68,7 @@ public class FlowableCovarianceTest {
     public void testGroupByCompose() {
         Flowable<Movie> movies = Flowable.just(new HorrorMovie(), new ActionMovie(), new Movie());
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        
+
         movies
         .groupBy(new Function<Movie, Object>() {
             @Override
@@ -125,7 +125,7 @@ public class FlowableCovarianceTest {
             }
         });
     }
-    
+
     @SuppressWarnings("unused")
     @Test
     public void testCovarianceOfCompose2() {
@@ -137,7 +137,7 @@ public class FlowableCovarianceTest {
             }
         });
     }
-    
+
     @SuppressWarnings("unused")
     @Test
     public void testCovarianceOfCompose3() {
@@ -172,7 +172,7 @@ public class FlowableCovarianceTest {
             }
         });
     }
-    
+
     @Test
     public void testComposeWithDeltaLogic() {
         List<Movie> list1 = Arrays.asList(new Movie(), new HorrorMovie(), new ActionMovie());
@@ -208,7 +208,7 @@ public class FlowableCovarianceTest {
             }
         }
     };
-    
+
     static FlowableTransformer<List<Movie>, Movie> deltaTransformer = new FlowableTransformer<List<Movie>, Movie>() {
         @Override
         public Publisher<? extends Movie> apply(Flowable<List<Movie>> movieList) {

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -31,9 +31,9 @@ import io.reactivex.functions.Function;
 public class RxVsStreamPerf {
     @Param({ "1", "1000", "1000000" })
     public int times;
-    
+
     Flowable<Integer> range;
-    
+
     Observable<Integer> rangeObservable;
 
     Flowable<Integer> rangeFlatMap;
@@ -63,7 +63,7 @@ public class RxVsStreamPerf {
                 return Flowable.range(v, 2);
             }
         });
-        
+
         rangeObservable = Observable.range(1, times);
 
         rangeObservableFlatMapJust = rangeObservable.flatMap(new Function<Integer, Observable<Integer>>() {
@@ -72,17 +72,17 @@ public class RxVsStreamPerf {
                 return Observable.just(v);
             }
         });
-        
+
         rangeObservableFlatMap = rangeObservable.flatMap(new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer v) {
                 return Observable.range(v, 2);
             }
         });
-        
+
         values = range.toList().blockingFirst();
     }
-    
+
     @Benchmark
     public void range(Blackhole bh) {
         range.subscribe(new PerfSubscriber(bh));
@@ -102,7 +102,7 @@ public class RxVsStreamPerf {
     public void rangeObservableFlatMap(Blackhole bh) {
         rangeObservableFlatMap.subscribe(new PerfObserver(bh));
     }
-    
+
     @Benchmark
     public void rangeFlatMapJust(Blackhole bh) {
         rangeFlatMapJust.subscribe(new PerfSubscriber(bh));

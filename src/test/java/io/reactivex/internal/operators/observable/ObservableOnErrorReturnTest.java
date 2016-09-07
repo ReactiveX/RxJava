@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -101,7 +101,7 @@ public class ObservableOnErrorReturnTest {
         verify(NbpObserver, times(0)).onComplete();
         assertNotNull(capturedException.get());
     }
-    
+
     @Test
     public void testMapResumeAsyncNext() {
         // Trigger multiple failures
@@ -125,7 +125,7 @@ public class ObservableOnErrorReturnTest {
             public String apply(Throwable t1) {
                 return "resume";
             }
-            
+
         });
 
         @SuppressWarnings("unchecked")
@@ -141,7 +141,7 @@ public class ObservableOnErrorReturnTest {
         verify(NbpObserver, Mockito.never()).onNext("three");
         verify(NbpObserver, times(1)).onNext("resume");
     }
-    
+
     @Test
     public void testBackpressure() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
@@ -152,7 +152,7 @@ public class ObservableOnErrorReturnTest {
                     public Integer apply(Throwable t1) {
                         return 1;
                     }
-                    
+
                 })
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
@@ -212,7 +212,7 @@ public class ObservableOnErrorReturnTest {
             System.out.println("done starting TestObservable thread");
         }
     }
-    
+
     @Test
     public void returnItem() {
         Observable.error(new TestException())
@@ -220,5 +220,5 @@ public class ObservableOnErrorReturnTest {
         .test()
         .assertResult(1);
     }
-    
+
 }

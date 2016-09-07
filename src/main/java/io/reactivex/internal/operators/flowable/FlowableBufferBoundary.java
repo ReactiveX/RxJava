@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,7 +30,7 @@ import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
 
-public final class FlowableBufferBoundary<T, U extends Collection<? super T>, Open, Close> 
+public final class FlowableBufferBoundary<T, U extends Collection<? super T>, Open, Close>
 extends AbstractFlowableWithUpstream<T, U> {
     final Callable<U> bufferSupplier;
     final Publisher<? extends Open> bufferOpen;
@@ -43,7 +43,7 @@ extends AbstractFlowableWithUpstream<T, U> {
         this.bufferClose = bufferClose;
         this.bufferSupplier = bufferSupplier;
     }
-    
+
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
         source.subscribe(new BufferBoundarySubscriber<T, U, Open, Close>(
@@ -51,21 +51,21 @@ extends AbstractFlowableWithUpstream<T, U> {
                 bufferOpen, bufferClose, bufferSupplier
             ));
     }
-    
+
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, Open, Close>
     extends QueueDrainSubscriber<T, U, U> implements Subscription, Disposable {
         final Publisher<? extends Open> bufferOpen;
         final Function<? super Open, ? extends Publisher<? extends Close>> bufferClose;
         final Callable<U> bufferSupplier;
         final CompositeDisposable resources;
-        
+
         Subscription s;
-        
+
         final List<U> buffers;
-        
+
         final AtomicInteger windows = new AtomicInteger();
 
-        public BufferBoundarySubscriber(Subscriber<? super U> actual, 
+        public BufferBoundarySubscriber(Subscriber<? super U> actual,
                 Publisher<? extends Open> bufferOpen,
                 Function<? super Open, ? extends Publisher<? extends Close>> bufferClose,
                         Callable<U> bufferSupplier) {
@@ -92,7 +92,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                 s.request(Long.MAX_VALUE);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             synchronized (this) {
@@ -101,7 +101,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                 }
             }
         }
-        
+
         @Override
         public void onError(Throwable t) {
             cancel();
@@ -111,21 +111,21 @@ extends AbstractFlowableWithUpstream<T, U> {
             }
             actual.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (windows.decrementAndGet() == 0) {
                 complete();
             }
         }
-        
+
         void complete() {
             List<U> list;
             synchronized (this) {
                 list = new ArrayList<U>(buffers);
                 buffers.clear();
             }
-            
+
             SimpleQueue<U> q = queue;
             for (U u : list) {
                 q.offer(u);
@@ -135,12 +135,12 @@ extends AbstractFlowableWithUpstream<T, U> {
                 QueueDrainHelper.drainMaxLoop(q, actual, false, this, this);
             }
         }
-        
+
         @Override
         public void request(long n) {
             requested(n);
         }
-        
+
         @Override
         public void dispose() {
             resources.dispose();
@@ -158,20 +158,20 @@ extends AbstractFlowableWithUpstream<T, U> {
                 dispose();
             }
         }
-        
+
         @Override
         public boolean accept(Subscriber<? super U> a, U v) {
             a.onNext(v);
             return true;
         }
-        
+
         void open(Open window) {
             if (cancelled) {
                 return;
             }
-            
+
             U b;
-            
+
             try {
                 b = bufferSupplier.call();
             } catch (Throwable e) {
@@ -179,14 +179,14 @@ extends AbstractFlowableWithUpstream<T, U> {
                 onError(e);
                 return;
             }
-            
+
             if (b == null) {
                 onError(new NullPointerException("The buffer supplied is null"));
                 return;
             }
 
             Publisher<? extends Close> p;
-            
+
             try {
                 p = bufferClose.apply(window);
             } catch (Throwable e) {
@@ -194,12 +194,12 @@ extends AbstractFlowableWithUpstream<T, U> {
                 onError(e);
                 return;
             }
-            
+
             if (p == null) {
                 onError(new NullPointerException("The buffer closing publisher is null"));
                 return;
             }
-            
+
             if (cancelled) {
                 return;
             }
@@ -210,15 +210,15 @@ extends AbstractFlowableWithUpstream<T, U> {
                 }
                 buffers.add(b);
             }
-            
+
             BufferCloseSubscriber<T, U, Open, Close> bcs = new BufferCloseSubscriber<T, U, Open, Close>(b, this);
             resources.add(bcs);
-            
+
             windows.getAndIncrement();
-            
+
             p.subscribe(bcs);
         }
-        
+
         void openFinished(Disposable d) {
             if (resources.remove(d)) {
                 if (windows.decrementAndGet() == 0) {
@@ -226,18 +226,18 @@ extends AbstractFlowableWithUpstream<T, U> {
                 }
             }
         }
-        
+
         void close(U b, Disposable d) {
-            
+
             boolean e;
             synchronized (this) {
                 e = buffers.remove(b);
             }
-            
+
             if (e) {
                 fastPathOrderedEmitMax(b, false, this);
             }
-            
+
             if (resources.remove(d)) {
                 if (windows.decrementAndGet() == 0) {
                     complete();
@@ -245,13 +245,13 @@ extends AbstractFlowableWithUpstream<T, U> {
             }
         }
     }
-    
+
     static final class BufferOpenSubscriber<T, U extends Collection<? super T>, Open, Close>
     extends DisposableSubscriber<Open> {
         final BufferBoundarySubscriber<T, U, Open, Close> parent;
-        
+
         boolean done;
-        
+
         public BufferOpenSubscriber(BufferBoundarySubscriber<T, U, Open, Close> parent) {
             this.parent = parent;
         }
@@ -262,7 +262,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             }
             parent.open(t);
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -272,7 +272,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             done = true;
             parent.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {
@@ -282,7 +282,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             parent.openFinished(this);
         }
     }
-    
+
     static final class BufferCloseSubscriber<T, U extends Collection<? super T>, Open, Close>
     extends DisposableSubscriber<Close> {
         final BufferBoundarySubscriber<T, U, Open, Close> parent;
@@ -292,12 +292,12 @@ extends AbstractFlowableWithUpstream<T, U> {
             this.parent = parent;
             this.value = value;
         }
-        
+
         @Override
         public void onNext(Close t) {
             onComplete();
         }
-        
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -306,7 +306,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             }
             parent.onError(t);
         }
-        
+
         @Override
         public void onComplete() {
             if (done) {

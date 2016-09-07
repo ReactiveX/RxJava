@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -25,7 +25,7 @@ public class SingleCacheTest {
     @Test
     public void normal() {
         Single<Integer> cache = Single.just(1).cache();
-        
+
         cache
         .test()
         .assertResult(1);
@@ -57,10 +57,10 @@ public class SingleCacheTest {
         TestSubscriber<Integer> ts1 = cache.test();
 
         TestSubscriber<Integer> ts2 = cache.test();
-        
+
         ps.onNext(1);
         ps.onComplete();
-        
+
         ts1.assertResult(1);
         ts2.assertResult(1);
     }
@@ -75,10 +75,10 @@ public class SingleCacheTest {
         TestSubscriber<Integer> ts2 = cache.test();
 
         ts1.cancel();
-        
+
         ps.onNext(1);
         ps.onComplete();
-        
+
         ts1.assertNoValues().assertNoErrors().assertNotComplete();
         ts2.assertResult(1);
     }
@@ -100,10 +100,10 @@ public class SingleCacheTest {
 
         cache.toFlowable().subscribe(ts2);
         cache.toFlowable().subscribe(ts1);
-        
+
         ps.onNext(1);
         ps.onComplete();
-        
+
         ts1.assertNoValues().assertNoErrors().assertNotComplete();
         ts2.assertResult(1);
     }
@@ -125,9 +125,9 @@ public class SingleCacheTest {
 
         cache.toFlowable().subscribe(ts2);
         cache.toFlowable().subscribe(ts1);
-        
+
         ps.onError(new TestException());
-        
+
         ts1.assertNoValues().assertNoErrors().assertNotComplete();
         ts2.assertFailure(TestException.class);
     }

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -72,15 +72,15 @@ public class FlowableToSortedListTest {
     public void testBackpressureHonored() {
         Flowable<List<Integer>> w = Flowable.just(1, 3, 2, 5, 4).toSortedList();
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
-        
+
         w.subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotComplete();
-        
+
         ts.request(1);
-        
+
         ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
         ts.assertNoErrors();
         ts.assertComplete();
@@ -134,14 +134,14 @@ public class FlowableToSortedListTest {
             ex.printStackTrace();
         }
     }
-    
+
     @Test
     public void sorted() {
         Flowable.just(5, 1, 2, 4, 3).sorted()
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
-    
+
     @Test
     public void sortedComparator() {
         Flowable.just(5, 1, 2, 4, 3).sorted(new Comparator<Integer>() {
@@ -161,7 +161,7 @@ public class FlowableToSortedListTest {
         .test()
         .assertResult(Arrays.asList(1, 2, 3, 4, 5));
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void toSortedListComparatorCapacity() {

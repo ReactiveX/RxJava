@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -27,7 +27,7 @@ import io.reactivex.internal.util.QueueDrainHelper;
  *
  * @param <T> the value type
  */
-public final class InnerQueuedSubscriber<T> 
+public final class InnerQueuedSubscriber<T>
 extends AtomicReference<Subscription>
 implements Subscriber<T>, Subscription {
 
@@ -35,32 +35,32 @@ implements Subscriber<T>, Subscription {
     private static final long serialVersionUID = 22876611072430776L;
 
     final InnerQueuedSubscriberSupport<T> parent;
-    
+
     final int prefetch;
-    
+
     final int limit;
 
     volatile SimpleQueue<T> queue;
-    
+
     volatile boolean done;
-    
+
     long produced;
-    
+
     int fusionMode;
-    
+
     public InnerQueuedSubscriber(InnerQueuedSubscriberSupport<T> parent, int prefetch) {
         this.parent = parent;
         this.prefetch = prefetch;
         this.limit = prefetch - (prefetch >> 2);
     }
-    
+
     @Override
     public void onSubscribe(Subscription s) {
         if (SubscriptionHelper.setOnce(this, s)) {
             if (s instanceof QueueSubscription) {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<T> qs = (QueueSubscription<T>) s;
-                
+
                 int m = qs.requestFusion(QueueSubscription.ANY);
                 if (m == QueueSubscription.SYNC) {
                     fusionMode = m;
@@ -76,13 +76,13 @@ implements Subscriber<T>, Subscription {
                     return;
                 }
             }
-            
+
             queue = QueueDrainHelper.createQueue(prefetch);
-            
+
             QueueDrainHelper.request(get(), prefetch);
         }
     }
-    
+
     @Override
     public void onNext(T t) {
         if (fusionMode == QueueSubscription.NONE) {
@@ -91,17 +91,17 @@ implements Subscriber<T>, Subscription {
             parent.drain();
         }
     }
-    
+
     @Override
     public void onError(Throwable t) {
         parent.innerError(this, t);
     }
-    
+
     @Override
     public void onComplete() {
         parent.innerComplete(this);
     }
-    
+
     @Override
     public void request(long n) {
         long p = produced + n;
@@ -112,7 +112,7 @@ implements Subscriber<T>, Subscription {
             produced = p;
         }
     }
-    
+
     public void requestOne() {
         long p = produced + 1;
         if (p == limit) {
@@ -122,24 +122,24 @@ implements Subscriber<T>, Subscription {
             produced = p;
         }
     }
-    
+
     @Override
     public void cancel() {
         SubscriptionHelper.cancel(this);
     }
-    
+
     public boolean isDone() {
         return done;
     }
-    
+
     public void setDone() {
         this.done = true;
     }
-    
+
     public SimpleQueue<T> queue() {
         return queue;
     }
-    
+
     public int fusionMode() {
         return fusionMode;
     }

@@ -18,7 +18,7 @@ import io.reactivex.MaybeSource;
 /**
  * Interface indicating the implementor has an upstream MaybeSource-like source available
  * via {@link #source()} method.
- * 
+ *
  * @param <T> the value type
  */
 public interface HasUpstreamMaybeSource<T> {

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -58,7 +58,7 @@ public class FlowableMapTest {
                 return map.get("firstName");
             }
         });
-        
+
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -329,7 +329,7 @@ public class FlowableMapTest {
 //            }
 //        });
     }
-    
+
     @Test//(expected = OnErrorNotImplementedException.class)
     @Ignore("RS subscribers can't throw")
     public void verifyExceptionIsThrownIfThereIsNoExceptionHandler() {
@@ -384,24 +384,24 @@ public class FlowableMapTest {
 
     @Test
     public void functionCrashUnsubscribes() {
-        
+
         PublishProcessor<Integer> ps = PublishProcessor.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         ps.map(new Function<Integer, Integer>() {
             @Override
-            public Integer apply(Integer v) { 
-                throw new TestException(); 
+            public Integer apply(Integer v) {
+                throw new TestException();
             }
         }).subscribe(ts);
-        
+
         Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
-        
+
         ps.onNext(1);
-        
+
         Assert.assertFalse("Subscribed?", ps.hasSubscribers());
-        
+
         ts.assertError(TestException.class);
     }
 }

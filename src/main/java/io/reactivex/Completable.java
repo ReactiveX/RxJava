@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -34,7 +34,7 @@ import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Represents a deferred computation without any value but only indication for completion or exception.
- * 
+ *
  * The class follows a similar event pattern as Reactive-Streams: onSubscribe (onError|onComplete)?
  */
 public abstract class Completable implements CompletableSource {
@@ -58,10 +58,10 @@ public abstract class Completable implements CompletableSource {
         if (sources.length == 1) {
             return wrap(sources[0]);
         }
-        
+
         return RxJavaPlugins.onAssembly(new CompletableAmbArray(sources));
     }
-    
+
     /**
      * Returns a Completable which terminates as soon as one of the source Completables
      * terminates (normally or with an error) and cancels all other Completables.
@@ -76,23 +76,23 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable amb(final Iterable<? extends CompletableSource> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        
+
         return RxJavaPlugins.onAssembly(new CompletableAmbIterable(sources));
     }
-    
+
     /**
      * Returns a Completable instance that completes immediately when subscribed to.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code complete} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return a Completable instance that completes immediately 
+     * @return a Completable instance that completes immediately
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable complete() {
         return RxJavaPlugins.onAssembly(CompletableEmpty.INSTANCE);
     }
-    
+
     /**
      * Returns a Completable which completes only when all sources complete, one after another.
      * <dl>
@@ -114,7 +114,7 @@ public abstract class Completable implements CompletableSource {
         }
         return RxJavaPlugins.onAssembly(new CompletableConcatArray(sources));
     }
-    
+
     /**
      * Returns a Completable which completes only when all sources complete, one after another.
      * <dl>
@@ -128,10 +128,10 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concat(Iterable<? extends CompletableSource> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        
+
         return RxJavaPlugins.onAssembly(new CompletableConcatIterable(sources));
     }
-    
+
     /**
      * Returns a Completable which completes only when all sources complete, one after another.
      * <dl>
@@ -146,7 +146,7 @@ public abstract class Completable implements CompletableSource {
     public static Completable concat(Publisher<? extends CompletableSource> sources) {
         return concat(sources, 2);
     }
-    
+
     /**
      * Returns a Completable which completes only when all sources complete, one after another.
      * <dl>
@@ -178,17 +178,17 @@ public abstract class Completable implements CompletableSource {
      *         public void onEvent(Event e) {
      *             emitter.onComplete();
      *         }
-     *         
+     *
      *         &#64;Override
      *         public void onFailure(Exception e) {
      *             emitter.onError(e);
      *         }
      *     };
-     *     
+     *
      *     AutoCloseable c = api.someMethod(listener);
-     *     
+     *
      *     emitter.setCancellable(c::close);
-     *     
+     *
      * });
      * </code></pre>
      * <p>
@@ -206,7 +206,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(source, "source is null");
         return RxJavaPlugins.onAssembly(new CompletableCreate(source));
     }
-    
+
     /**
      * Constructs a Completable instance by wrapping the given source callback
      * <strong>without any safeguards; you should manage the lifecycle and response
@@ -228,7 +228,7 @@ public abstract class Completable implements CompletableSource {
         }
         return RxJavaPlugins.onAssembly(new CompletableFromUnsafeSource(source));
     }
-    
+
     /**
      * Defers the subscription to a Completable instance returned by a supplier.
      * <dl>
@@ -263,7 +263,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(errorSupplier, "errorSupplier is null");
         return RxJavaPlugins.onAssembly(new CompletableErrorSupplier(errorSupplier));
     }
-    
+
     /**
      * Creates a Completable instance that emits the given Throwable exception to subscribers.
      * <dl>
@@ -279,8 +279,8 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(error, "error is null");
         return RxJavaPlugins.onAssembly(new CompletableError(error));
     }
-    
-    
+
+
     /**
      * Returns a Completable instance that runs the given Action for each subscriber and
      * emits either an unchecked exception or simply completes.
@@ -313,7 +313,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(callable, "callable is null");
         return RxJavaPlugins.onAssembly(new CompletableFromCallable(callable));
     }
-    
+
     /**
      * Returns a Completable instance that reacts to the termination of the given Future in a blocking fashion.
      * <p>
@@ -330,7 +330,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(future, "future is null");
         return fromAction(Functions.futureAction(future));
     }
-    
+
     /**
      * Returns a Completable instance that subscribes to the given Observable, ignores all values and
      * emits only the terminal event.
@@ -348,7 +348,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(observable, "observable is null");
         return RxJavaPlugins.onAssembly(new CompletableFromObservable<T>(observable));
     }
-    
+
     /**
      * Returns a Completable instance that subscribes to the given publisher, ignores all values and
      * emits only the terminal event.
@@ -384,7 +384,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(single, "single is null");
         return RxJavaPlugins.onAssembly(new CompletableFromSingle<T>(single));
     }
-    
+
     /**
      * Returns a Completable instance that subscribes to all sources at once and
      * completes only when all source Completables complete or one of them emits an error.
@@ -424,7 +424,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new CompletableMergeIterable(sources));
     }
-    
+
     /**
      * Returns a Completable instance that subscribes to all sources at once and
      * completes only when all source Completables complete or one of them emits an error.
@@ -440,7 +440,7 @@ public abstract class Completable implements CompletableSource {
     public static Completable merge(Publisher<? extends CompletableSource> sources) {
         return merge0(sources, Integer.MAX_VALUE, false);
     }
-    
+
     /**
      * Returns a Completable instance that keeps subscriptions to a limited number of sources at once and
      * completes only when all source Completables complete or one of them emits an error.
@@ -458,7 +458,7 @@ public abstract class Completable implements CompletableSource {
     public static Completable merge(Publisher<? extends CompletableSource> sources, int maxConcurrency) {
         return merge0(sources, maxConcurrency, false);
     }
-    
+
     /**
      * Returns a Completable instance that keeps subscriptions to a limited number of sources at once and
      * completes only when all source Completables terminate in one way or another, combining any exceptions
@@ -519,7 +519,7 @@ public abstract class Completable implements CompletableSource {
         return RxJavaPlugins.onAssembly(new CompletableMergeDelayErrorIterable(sources));
     }
 
-    
+
     /**
      * Returns a Completable that subscribes to all Completables in the source sequence and delays
      * any error emitted by either the sources observable or any of the inner Completables until all of
@@ -536,10 +536,10 @@ public abstract class Completable implements CompletableSource {
     public static Completable mergeDelayError(Publisher<? extends CompletableSource> sources) {
         return merge0(sources, Integer.MAX_VALUE, true);
     }
-    
+
     /**
-     * Returns a Completable that subscribes to a limited number of inner Completables at once in 
-     * the source sequence and delays any error emitted by either the sources 
+     * Returns a Completable that subscribes to a limited number of inner Completables at once in
+     * the source sequence and delays any error emitted by either the sources
      * observable or any of the inner Completables until all of
      * them terminate in a way or another.
      * <dl>
@@ -555,7 +555,7 @@ public abstract class Completable implements CompletableSource {
     public static Completable mergeDelayError(Publisher<? extends CompletableSource> sources, int maxConcurrency) {
         return merge0(sources, maxConcurrency, true);
     }
-    
+
     /**
      * Returns a Completable that never calls onError or onComplete.
      * <dl>
@@ -568,7 +568,7 @@ public abstract class Completable implements CompletableSource {
     public static Completable never() {
         return RxJavaPlugins.onAssembly(CompletableNever.INSTANCE);
     }
-    
+
     /**
      * Returns a Completable instance that fires its onComplete event after the given delay elapsed.
      * <dl>
@@ -583,7 +583,7 @@ public abstract class Completable implements CompletableSource {
     public static Completable timer(long delay, TimeUnit unit) {
         return timer(delay, unit, Schedulers.computation());
     }
-    
+
     /**
      * Returns a Completable instance that fires its onComplete event after the given delay elapsed
      * by using the supplied scheduler.
@@ -602,7 +602,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new CompletableTimer(delay, unit, scheduler));
     }
-    
+
     /**
      * Creates a NullPointerException instance and sets the given Throwable as its initial cause.
      * @param ex the Throwable instance to use as cause, not null (not verified)
@@ -613,9 +613,9 @@ public abstract class Completable implements CompletableSource {
         npe.initCause(ex);
         return npe;
     }
-    
+
     /**
-     * Returns a Completable instance which manages a resource along 
+     * Returns a Completable instance which manages a resource along
      * with a custom Completable instance while the subscription is active.
      * <p>
      * This overload performs an eager unsubscription before the terminal event is emitted.
@@ -624,20 +624,20 @@ public abstract class Completable implements CompletableSource {
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <R> the resource type
-     * @param resourceSupplier the supplier that returns a resource to be managed. 
+     * @param resourceSupplier the supplier that returns a resource to be managed.
      * @param completableFunction the function that given a resource returns a Completable instance that will be subscribed to
      * @param disposer the consumer that disposes the resource created by the resource supplier
      * @return the new Completable instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <R> Completable using(Callable<R> resourceSupplier, 
+    public static <R> Completable using(Callable<R> resourceSupplier,
             Function<? super R, ? extends CompletableSource> completableFunction,
             Consumer<? super R> disposer) {
         return using(resourceSupplier, completableFunction, disposer, true);
     }
-    
+
     /**
-     * Returns a Completable instance which manages a resource along 
+     * Returns a Completable instance which manages a resource along
      * with a custom Completable instance while the subscription is active and performs eager or lazy
      * resource disposition.
      * <p>
@@ -658,14 +658,14 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <R> Completable using(
-            final Callable<R> resourceSupplier, 
+            final Callable<R> resourceSupplier,
             final Function<? super R, ? extends CompletableSource> completableFunction,
-            final Consumer<? super R> disposer, 
+            final Consumer<? super R> disposer,
             final boolean eager) {
         ObjectHelper.requireNonNull(resourceSupplier, "resourceSupplier is null");
         ObjectHelper.requireNonNull(completableFunction, "completableFunction is null");
         ObjectHelper.requireNonNull(disposer, "disposer is null");
-        
+
         return RxJavaPlugins.onAssembly(new CompletableUsing<R>(resourceSupplier, completableFunction, disposer, eager));
     }
 
@@ -688,7 +688,7 @@ public abstract class Completable implements CompletableSource {
         }
         return RxJavaPlugins.onAssembly(new CompletableFromUnsafeSource(source));
     }
-    
+
     /**
      * Returns a Completable that emits the a terminated event of either this Completable
      * or the other Completable whichever fires first.
@@ -707,10 +707,10 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns an Observable which will subscribe to this Completable and once that is completed then 
-     * will subscribe to the {@code next} ObservableSource. An error event from this Completable will be 
-     * propagated to the downstream subscriber and will result in skipping the subscription of the 
-     * Observable.  
+     * Returns an Observable which will subscribe to this Completable and once that is completed then
+     * will subscribe to the {@code next} ObservableSource. An error event from this Completable will be
+     * propagated to the downstream subscriber and will result in skipping the subscription of the
+     * Observable.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -727,10 +727,10 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns an Flowable which will subscribe to this Completable and once that is completed then 
-     * will subscribe to the {@code next} Flowable. An error event from this Completable will be 
-     * propagated to the downstream subscriber and will result in skipping the subscription of the 
-     * Observable.  
+     * Returns an Flowable which will subscribe to this Completable and once that is completed then
+     * will subscribe to the {@code next} Flowable. An error event from this Completable will be
+     * propagated to the downstream subscriber and will result in skipping the subscription of the
+     * Observable.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -783,7 +783,7 @@ public abstract class Completable implements CompletableSource {
     public final Completable andThen(CompletableSource next) {
         return concatWith(next);
     }
-    
+
     /**
      * Subscribes to and awaits the termination of this Completable instance in a blocking manner and
      * rethrows any exception emitted.
@@ -799,7 +799,7 @@ public abstract class Completable implements CompletableSource {
         subscribe(observer);
         observer.blockingGet();
     }
-    
+
     /**
      * Subscribes to and awaits the termination of this Completable instance in a blocking manner
      * with a specific timeout and rethrows any exception emitted within the timeout window.
@@ -836,9 +836,9 @@ public abstract class Completable implements CompletableSource {
         subscribe(observer);
         return observer.blockingGetError();
     }
-    
+
     /**
-     * Subscribes to this Completable instance and blocks until it terminates or the specified timeout 
+     * Subscribes to this Completable instance and blocks until it terminates or the specified timeout
      * elapses, then returns null for normal termination or the emitted exception if any.
      * @param timeout the timeout value
      * @param unit the time unit
@@ -869,7 +869,7 @@ public abstract class Completable implements CompletableSource {
     public final Completable compose(CompletableTransformer transformer) {
         return wrap(to(transformer));
     }
-    
+
     /**
      * Concatenates this Completable with another Completable.
      * <dl>
@@ -901,7 +901,7 @@ public abstract class Completable implements CompletableSource {
     public final Completable delay(long delay, TimeUnit unit) {
         return delay(delay, unit, Schedulers.computation(), false);
     }
-    
+
     /**
      * Returns a Completable which delays the emission of the completion event by the given time while
      * running on the specified scheduler.
@@ -919,7 +919,7 @@ public abstract class Completable implements CompletableSource {
     public final Completable delay(long delay, TimeUnit unit, Scheduler scheduler) {
         return delay(delay, unit, scheduler, false);
     }
-    
+
     /**
      * Returns a Completable which delays the emission of the completion event, and optionally the error as well, by the given time while
      * running on the specified scheduler.
@@ -1040,7 +1040,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(onDispose, "onDispose is null");
         return RxJavaPlugins.onAssembly(new CompletablePeek(this, onSubscribe, onError, onComplete, onTerminate, onAfterTerminate, onDispose));
     }
-    
+
     /**
      * Returns a Completable instance that calls the given onSubscribe callback with the disposable
      * that child subscribers receive on subscription.
@@ -1058,7 +1058,7 @@ public abstract class Completable implements CompletableSource {
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION,
                 Functions.EMPTY_ACTION, Functions.EMPTY_ACTION);
     }
-    
+
     /**
      * Returns a Completable instance that calls the given onTerminate callback just before this Completable
      * completes normally or with an exception
@@ -1098,7 +1098,7 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * <strong>Advanced use without safeguards:</strong> lifts a CompletableSubscriber 
+     * <strong>Advanced use without safeguards:</strong> lifts a CompletableSubscriber
      * transformation into the chain of Completables.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1130,7 +1130,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(other, "other is null");
         return mergeArray(this, other);
     }
-    
+
     /**
      * Returns a Completable which emits the terminal events from the thread of the specified scheduler.
      * <dl>
@@ -1146,7 +1146,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new CompletableObserveOn(this, scheduler));
     }
-    
+
     /**
      * Returns a Completable instance that if this Completable emits an error, it will emit an onComplete
      * and swallow the throwable.
@@ -1175,10 +1175,10 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable onErrorComplete(final Predicate<? super Throwable> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        
+
         return RxJavaPlugins.onAssembly(new CompletableOnErrorComplete(this, predicate));
     }
-    
+
     /**
      * Returns a Completable instance that when encounters an error from this Completable, calls the
      * specified mapper function that returns another Completable instance for it and resumes the
@@ -1196,7 +1196,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(errorMapper, "errorMapper is null");
         return RxJavaPlugins.onAssembly(new CompletableResumeNext(this, errorMapper));
     }
-    
+
     /**
      * Returns a Completable that repeatedly subscribes to this Completable until cancelled.
      * <dl>
@@ -1209,7 +1209,7 @@ public abstract class Completable implements CompletableSource {
     public final Completable repeat() {
         return fromPublisher(toFlowable().repeat());
     }
-    
+
     /**
      * Returns a Completable that subscribes repeatedly at most the given times to this Completable.
      * <dl>
@@ -1224,7 +1224,7 @@ public abstract class Completable implements CompletableSource {
     public final Completable repeat(long times) {
         return fromPublisher(toFlowable().repeat(times));
     }
-    
+
     /**
      * Returns a Completable that repeatedly subscribes to this Completable so long as the given
      * stop supplier returns false.
@@ -1240,7 +1240,7 @@ public abstract class Completable implements CompletableSource {
     public final Completable repeatUntil(BooleanSupplier stop) {
         return fromPublisher(toFlowable().repeatUntil(stop));
     }
-    
+
     /**
      * Returns a Completable instance that repeats when the Publisher returned by the handler
      * emits an item or completes when this Publisher emits a completed event.
@@ -1258,7 +1258,7 @@ public abstract class Completable implements CompletableSource {
     public final Completable repeatWhen(Function<? super Flowable<Object>, ? extends Publisher<Object>> handler) {
         return fromPublisher(toFlowable().repeatWhen(handler));
     }
-    
+
     /**
      * Returns a Completable that retries this Completable as long as it emits an onError event.
      * <dl>
@@ -1271,7 +1271,7 @@ public abstract class Completable implements CompletableSource {
     public final Completable retry() {
         return fromPublisher(toFlowable().retry());
     }
-    
+
     /**
      * Returns a Completable that retries this Completable in case of an error as long as the predicate
      * returns true.
@@ -1320,7 +1320,7 @@ public abstract class Completable implements CompletableSource {
     public final Completable retry(Predicate<? super Throwable> predicate) {
         return fromPublisher(toFlowable().retry(predicate));
     }
-    
+
     /**
      * Returns a Completable which given a Publisher and when this Completable emits an error, delivers
      * that error through an Observable and the Publisher should return a value indicating a retry in response
@@ -1390,7 +1390,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(other, "other is null");
         return this.<T>toFlowable().startWith(other);
     }
-    
+
     /**
      * Subscribes to this CompletableConsumable and returns a Disposable which can be used to cancel
      * the subscription.
@@ -1406,15 +1406,15 @@ public abstract class Completable implements CompletableSource {
         subscribe(s);
         return s;
     }
-    
+
     @SchedulerSupport(SchedulerSupport.NONE)
     @Override
     public final void subscribe(CompletableObserver s) {
         ObjectHelper.requireNonNull(s, "s is null");
         try {
-            
+
             s = RxJavaPlugins.onSubscribe(this, s);
-            
+
             subscribeActual(s);
         } catch (NullPointerException ex) { // NOPMD
             throw ex;
@@ -1424,7 +1424,7 @@ public abstract class Completable implements CompletableSource {
             throw toNpe(ex);
         }
     }
-    
+
     /**
      * Implement this to handle the incoming CompletableObserver and
      * perform the business logic in your operator.
@@ -1439,11 +1439,11 @@ public abstract class Completable implements CompletableSource {
      * <pre><code>
      * Completable<Integer> source = Completable.complete().delay(1, TimeUnit.SECONDS);
      * CompositeDisposable composite = new CompositeDisposable();
-     * 
+     *
      * class ResourceCompletableObserver implements CompletableObserver, Disposable {
      *     // ...
      * }
-     * 
+     *
      * composite.add(source.subscribeWith(new ResourceCompletableObserver()));
      * </code></pre>
      * @param <E> the type of the CompletableObserver to use and return
@@ -1456,7 +1456,7 @@ public abstract class Completable implements CompletableSource {
         subscribe(observer);
         return observer;
     }
-    
+
     /**
      * Subscribes to this Completable and calls back either the onError or onComplete functions.
      * <dl>
@@ -1472,12 +1472,12 @@ public abstract class Completable implements CompletableSource {
     public final Disposable subscribe(final Action onComplete, final Consumer<? super Throwable> onError) {
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
-        
+
         CallbackCompletableObserver s = new CallbackCompletableObserver(onError, onComplete);
         subscribe(s);
         return s;
     }
-    
+
     /**
      * Subscribes to this Completable and calls the given Action when this Completable
      * completes normally.
@@ -1493,7 +1493,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Action onComplete) {
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
-        
+
         CallbackCompletableObserver s = new CallbackCompletableObserver(onComplete);
         subscribe(s);
         return s;
@@ -1513,7 +1513,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable subscribeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        
+
         return RxJavaPlugins.onAssembly(new CompletableSubscribeOn(this, scheduler));
     }
 
@@ -1533,13 +1533,13 @@ public abstract class Completable implements CompletableSource {
     public final Completable timeout(long timeout, TimeUnit unit) {
         return timeout0(timeout, unit, Schedulers.computation(), null);
     }
-    
+
     /**
      * Returns a Completable that runs this Completable and switches to the other Completable
      * in case this Completable doesn't complete within the given time.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code timeout} subscribes to the other CompletableSource on 
+     *  <dd>{@code timeout} subscribes to the other CompletableSource on
      *  the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      * @param timeout the timeout value
@@ -1553,7 +1553,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(other, "other is null");
         return timeout0(timeout, unit, Schedulers.computation(), other);
     }
-    
+
     /**
      * Returns a Completable that runs this Completable and emits a TimeoutException in case
      * this Completable doesn't complete within the given time while "waiting" on the specified
@@ -1572,14 +1572,14 @@ public abstract class Completable implements CompletableSource {
     public final Completable timeout(long timeout, TimeUnit unit, Scheduler scheduler) {
         return timeout0(timeout, unit, scheduler, null);
     }
-    
+
     /**
      * Returns a Completable that runs this Completable and switches to the other Completable
      * in case this Completable doesn't complete within the given time while "waiting" on
      * the specified scheduler.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code timeout} subscribes to the other CompletableSource on 
+     *  <dd>{@code timeout} subscribes to the other CompletableSource on
      *  the {@link Scheduler} you specify.</dd>
      * </dl>
      * @param timeout the timeout value
@@ -1594,7 +1594,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(other, "other is null");
         return timeout0(timeout, unit, scheduler, other);
     }
-    
+
     /**
      * Returns a Completable that runs this Completable and optionally switches to the other Completable
      * in case this Completable doesn't complete within the given time while "waiting" on
@@ -1602,7 +1602,7 @@ public abstract class Completable implements CompletableSource {
      * @param timeout the timeout value
      * @param unit the timeout unit
      * @param scheduler the scheduler to use to wait for completion
-     * @param other the other Completable instance to switch to in case of a timeout, 
+     * @param other the other Completable instance to switch to in case of a timeout,
      * if null a TimeoutException is emitted instead
      * @return the new Completable instance
      * @throws NullPointerException if unit or scheduler
@@ -1613,7 +1613,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new CompletableTimeout(this, timeout, unit, scheduler, other));
     }
-    
+
     /**
      * Allows fluent conversion to another type via a function callback.
      * <dl>
@@ -1658,7 +1658,7 @@ public abstract class Completable implements CompletableSource {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the value type
      * @return an {@link Maybe} that emits a single item T or an error.
      */
@@ -1680,7 +1680,7 @@ public abstract class Completable implements CompletableSource {
     public final <T> Observable<T> toObservable() {
         return RxJavaPlugins.onAssembly(new CompletableToObservable<T>(this));
     }
-    
+
     /**
      * Converts this Completable into a Single which when this Completable completes normally,
      * calls the given supplier and emits its returned value through onSuccess.
@@ -1698,7 +1698,7 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(completionValueSupplier, "completionValueSupplier is null");
         return RxJavaPlugins.onAssembly(new CompletableToSingle<T>(this, completionValueSupplier, null));
     }
-    
+
     /**
      * Converts this Completable into a Single which when this Completable completes normally,
      * emits the given value through onSuccess.
@@ -1716,9 +1716,9 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(completionValue, "completionValue is null");
         return RxJavaPlugins.onAssembly(new CompletableToSingle<T>(this, null, completionValue));
     }
-    
+
     /**
-     * Returns a Completable which makes sure when a subscriber cancels the subscription, the 
+     * Returns a Completable which makes sure when a subscriber cancels the subscription, the
      * dispose is called on the specified scheduler
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1736,7 +1736,7 @@ public abstract class Completable implements CompletableSource {
     // -------------------------------------------------------------------------
     // Fluent test support, super handy and reduces test preparation boilerplate
     // -------------------------------------------------------------------------
-    
+
     /**
      * Creates a TestSubscriber and subscribes
      * it to this Completable.

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -37,9 +37,9 @@ public class ObservableAnyTest {
         });
 
         Observer<Boolean> NbpObserver = TestHelper.mockObserver();
-        
+
         NbpObservable.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, never()).onNext(false);
         verify(NbpObserver, times(1)).onNext(true);
         verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -54,7 +54,7 @@ public class ObservableAnyTest {
         Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, never()).onNext(true);
         verify(NbpObserver, times(1)).onNext(false);
         verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -74,7 +74,7 @@ public class ObservableAnyTest {
         Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, never()).onNext(false);
         verify(NbpObserver, times(1)).onNext(true);
         verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -89,7 +89,7 @@ public class ObservableAnyTest {
         Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, never()).onNext(true);
         verify(NbpObserver, times(1)).onNext(false);
         verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -109,7 +109,7 @@ public class ObservableAnyTest {
         Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, times(1)).onNext(false);
         verify(NbpObserver, never()).onNext(true);
         verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -124,7 +124,7 @@ public class ObservableAnyTest {
         Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, times(1)).onNext(true);
         verify(NbpObserver, never()).onNext(false);
         verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -144,7 +144,7 @@ public class ObservableAnyTest {
         Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, never()).onNext(false);
         verify(NbpObserver, times(1)).onNext(true);
         verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -164,7 +164,7 @@ public class ObservableAnyTest {
         Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, never()).onNext(false);
         verify(NbpObserver, times(1)).onNext(true);
         verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -184,7 +184,7 @@ public class ObservableAnyTest {
         Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, times(1)).onNext(false);
         verify(NbpObserver, never()).onNext(true);
         verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -205,7 +205,7 @@ public class ObservableAnyTest {
         Observer<Boolean> NbpObserver = TestHelper.mockObserver();
 
         NbpObservable.subscribe(NbpObserver);
-        
+
         verify(NbpObserver, times(1)).onNext(false);
         verify(NbpObserver, never()).onNext(true);
         verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
@@ -221,7 +221,7 @@ public class ObservableAnyTest {
                 return i % 2 == 0;
             }
         });
-        
+
         assertTrue(anyEven.blockingFirst());
     }
     @Test(timeout = 5000)
@@ -233,22 +233,22 @@ public class ObservableAnyTest {
                     return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
                 }
             });
-        
+
         assertEquals((Object)2, source.blockingFirst());
     }
-    
+
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
         TestObserver<Boolean> ts = new TestObserver<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
-        
+
         Observable.just("Boo!").any(new Predicate<String>() {
             @Override
             public boolean test(String v) {
                 throw ex;
             }
         }).subscribe(ts);
-        
+
         ts.assertTerminated();
         ts.assertNoValues();
         ts.assertNotComplete();

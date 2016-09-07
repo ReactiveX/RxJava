@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -22,27 +22,27 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Serializes access to the onNext, onError and onComplete methods of another Subscriber.
- * 
+ *
  * <p>Note that onSubscribe is not serialized in respect of the other methods so
  * make sure the Subscription is set before any of the other methods are called.
- * 
+ *
  * <p>The implementation assumes that the actual Subscriber's methods don't throw.
- * 
+ *
  * @param <T> the value type
  */
 public final class SerializedSubscriber<T> implements Subscriber<T>, Subscription {
     final Subscriber<? super T> actual;
     final boolean delayError;
-    
+
     static final int QUEUE_LINK_SIZE = 4;
-    
+
     Subscription subscription;
-    
+
     boolean emitting;
     AppendOnlyLinkedArrayList<Object> queue;
-    
+
     volatile boolean done;
-    
+
     /**
      * Construct a SerializedSubscriber by wrapping the given actual Subscriber.
      * @param actual the actual Subscriber, not null (not verified)
@@ -50,7 +50,7 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
     public SerializedSubscriber(Subscriber<? super T> actual) {
         this(actual, false);
     }
-    
+
     /**
      * Construct a SerializedSubscriber by wrapping the given actual Observer and
      * optionally delaying the errors till all regular values have been emitted
@@ -62,7 +62,7 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
         this.actual = actual;
         this.delayError = delayError;
     }
-    
+
     @Override
     public void onSubscribe(Subscription s) {
         if (SubscriptionHelper.validate(this.subscription, s)) {
@@ -70,7 +70,7 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
             actual.onSubscribe(this);
         }
     }
-    
+
     @Override
     public void onNext(T t) {
         if (done) {
@@ -96,12 +96,12 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
             }
             emitting = true;
         }
-        
+
         actual.onNext(t);
-        
+
         emitLoop();
     }
-    
+
     @Override
     public void onError(Throwable t) {
         if (done) {
@@ -133,16 +133,16 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
                 reportError = false;
             }
         }
-        
+
         if (reportError) {
             RxJavaPlugins.onError(t);
             return;
         }
-        
+
         actual.onError(t);
         // no need to loop because this onError is the last event
     }
-    
+
     @Override
     public void onComplete() {
         if (done) {
@@ -164,11 +164,11 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
             done = true;
             emitting = true;
         }
-        
+
         actual.onComplete();
         // no need to loop because this onComplete is the last event
     }
-    
+
     void emitLoop() {
         for (;;) {
             AppendOnlyLinkedArrayList<Object> q;
@@ -180,7 +180,7 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
                 }
                 queue = null;
             }
-            
+
             try {
                 q.forEachWhile(consumer);
             } catch (Throwable ex) {
@@ -191,23 +191,23 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
             }
         }
     }
-    
+
     final Predicate<Object> consumer = new Predicate<Object>() {
         @Override
         public boolean test(Object v) {
             return accept(v);
         }
     };
-    
+
     boolean accept(Object value) {
         return NotificationLite.accept(value, actual);
     }
-    
+
     @Override
     public void request(long n) {
         subscription.request(n);
     }
-    
+
     @Override
     public void cancel() {
         subscription.cancel();

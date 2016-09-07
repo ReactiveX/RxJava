@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -71,7 +71,7 @@ public class FlowableConcatTests {
         assertEquals("three", values.get(2));
         assertEquals("four", values.get(3));
         assertEquals("five", values.get(4));
-        assertEquals("six", values.get(5));        
+        assertEquals("six", values.get(5));
     }
 
     @Test
@@ -80,14 +80,14 @@ public class FlowableConcatTests {
         Movie movie = new Movie();
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
-        
+
         Flowable<Media> o1 = Flowable.<Media> just(horrorMovie1, movie);
         Flowable<Media> o2 = Flowable.just(media, horrorMovie2);
 
         Flowable<Flowable<Media>> os = Flowable.just(o1, o2);
 
         List<Media> values = Flowable.concat(os).toList().blockingSingle();
-        
+
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));
         assertEquals(media, values.get(2));
@@ -102,7 +102,7 @@ public class FlowableConcatTests {
         Media media1 = new Media();
         Media media2 = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
-        
+
         Flowable<Media> o1 = Flowable.just(horrorMovie1, movie, media1);
         Flowable<Media> o2 = Flowable.just(media2, horrorMovie2);
 
@@ -124,7 +124,7 @@ public class FlowableConcatTests {
         Movie movie = new Movie();
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
-        
+
         Flowable<Movie> o1 = Flowable.just(horrorMovie1, movie);
         Flowable<Media> o2 = Flowable.just(media, horrorMovie2);
 
@@ -143,7 +143,7 @@ public class FlowableConcatTests {
         final Movie movie = new Movie();
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
-        
+
         Flowable<Movie> o1 = Flowable.unsafeCreate(new Publisher<Movie>() {
             @Override
             public void subscribe(Subscriber<? super Movie> o) {

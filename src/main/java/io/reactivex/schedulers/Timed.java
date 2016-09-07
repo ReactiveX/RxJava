@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -26,7 +26,7 @@ public final class Timed<T> {
     final T value;
     final long time;
     final TimeUnit unit;
-    
+
     /**
      * Constructs a Timed instance with the given value and time information.
      * @param value the value to hold
@@ -39,7 +39,7 @@ public final class Timed<T> {
         this.time = time;
         this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
     }
-    
+
     /**
      * Returns the contained value.
      * @return the contained value
@@ -47,7 +47,7 @@ public final class Timed<T> {
     public T value() {
         return value;
     }
-    
+
     /**
      * Returns the time unit of the contained time.
      * @return the time unit of the contained time
@@ -55,7 +55,7 @@ public final class Timed<T> {
     public TimeUnit unit() {
         return unit;
     }
-    
+
     /**
      * Returns the time value.
      * @return the time value
@@ -63,7 +63,7 @@ public final class Timed<T> {
     public long time() {
         return time;
     }
-    
+
     /**
      * Returns the contained time value in the time unit specified
      * @param unit the time unt
@@ -72,7 +72,7 @@ public final class Timed<T> {
     public long time(TimeUnit unit) {
         return unit.convert(time, this.unit);
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof Timed) {
@@ -83,7 +83,7 @@ public final class Timed<T> {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
          int h = value != null ? value.hashCode() : 0;
@@ -91,7 +91,7 @@ public final class Timed<T> {
          h = h * 31 + unit.hashCode();
          return h;
     }
-    
+
     @Override
     public String toString() {
         return "Timed[time=" + time + ", unit=" + unit + ", value=" + value + "]";

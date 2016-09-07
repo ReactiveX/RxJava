@@ -90,11 +90,11 @@ public class FlowableToCompletableTest {
             public void run() {
                 unsubscribed.set(true);
             }}).toCompletable();
-        
+
         cmp.<String>toFlowable().subscribe(subscriber);
-        
+
         subscriber.assertComplete();
-        
+
         assertFalse(unsubscribed.get());
     }
 }

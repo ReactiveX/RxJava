@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -27,7 +27,7 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
         super(source);
         this.comparer = comparer;
     }
-    
+
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
@@ -42,12 +42,12 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
     implements ConditionalSubscriber<T> {
 
         final BiPredicate<? super T, ? super T> comparer;
-        
+
         T last;
-        
+
         boolean hasValue;
-        
-        public DistinctUntilChangedSubscriber(Subscriber<? super T> actual, 
+
+        public DistinctUntilChangedSubscriber(Subscriber<? super T> actual,
                 BiPredicate<? super T, ? super T> comparer) {
             super(actual);
             this.comparer = comparer;
@@ -69,7 +69,7 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
                 actual.onNext(t);
                 return true;
             }
-            
+
             if (hasValue) {
                 boolean equal;
                 try {
@@ -90,7 +90,7 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
             actual.onNext(t);
             return true;
         }
-        
+
         @Override
         public int requestFusion(int mode) {
             return transitiveBoundaryFusion(mode);
@@ -108,7 +108,7 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
                     last = v;
                     return v;
                 }
-                
+
                 if (!comparer.test(last, v)) {
                     last = v;
                     return v;
@@ -119,18 +119,18 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
                 }
             }
         }
-        
+
     }
-    
+
     static final class DistinctUntilChangedConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {
 
         final BiPredicate<? super T, ? super T> comparer;
-        
+
         T last;
-        
+
         boolean hasValue;
-        
-        public DistinctUntilChangedConditionalSubscriber(ConditionalSubscriber<? super T> actual, 
+
+        public DistinctUntilChangedConditionalSubscriber(ConditionalSubscriber<? super T> actual,
                 BiPredicate<? super T, ? super T> comparer) {
             super(actual);
             this.comparer = comparer;
@@ -151,7 +151,7 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
             if (sourceMode != NONE) {
                 return actual.tryOnNext(t);
             }
-            
+
             if (hasValue) {
                 boolean equal;
                 try {
@@ -167,7 +167,7 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
             last = t;
             return actual.tryOnNext(t);
         }
-        
+
         @Override
         public int requestFusion(int mode) {
             return transitiveBoundaryFusion(mode);
@@ -195,6 +195,6 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
                 }
             }
         }
-        
+
     }
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -30,19 +30,19 @@ public final class ScalarSubscription<T> extends AtomicInteger implements QueueS
     final T value;
     /** The actual subscriber. */
     final Subscriber<? super T> subscriber;
-    
+
     /** No request has been issued yet. */
     static final int NO_REQUEST = 0;
     /** Request has been called.*/
     static final int REQUESTED = 1;
     /** Cancel has been called. */
     static final int CANCELLED = 2;
-    
+
     public ScalarSubscription(Subscriber<? super T> subscriber, T value) {
         this.subscriber = subscriber;
         this.value = value;
     }
-    
+
     @Override
     public void request(long n) {
         if (!SubscriptionHelper.validate(n)) {
@@ -56,9 +56,9 @@ public final class ScalarSubscription<T> extends AtomicInteger implements QueueS
                 s.onComplete();
             }
         }
-        
+
     }
-    
+
     @Override
     public void cancel() {
         lazySet(CANCELLED);
@@ -68,7 +68,7 @@ public final class ScalarSubscription<T> extends AtomicInteger implements QueueS
     public boolean offer(T e) {
         throw new UnsupportedOperationException("Should not be called!");
     }
-    
+
     @Override
     public boolean offer(T v1, T v2) {
         throw new UnsupportedOperationException("Should not be called!");

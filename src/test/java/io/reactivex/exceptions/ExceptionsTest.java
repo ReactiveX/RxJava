@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 
 public class ExceptionsTest {
-    
+
     @Ignore("Exceptions is not an enum")
     @Test
     public void constructorShouldBePrivate() {
@@ -43,7 +43,7 @@ public class ExceptionsTest {
     @Test
     public void testOnErrorNotImplementedIsThrown() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
-        
+
         Observable.just(1, 2, 3).subscribe(new Consumer<Integer>() {
 
             @Override
@@ -52,7 +52,7 @@ public class ExceptionsTest {
             }
 
         });
-        
+
         TestHelper.assertError(errors, 0, RuntimeException.class, "hello");
         RxJavaPlugins.reset();
     }
@@ -77,10 +77,10 @@ public class ExceptionsTest {
                 @Override
                 public void onNext(Object o) {
                 }
-                
+
                 @Override
                 public void onSubscribe(Disposable d) {
-                    
+
                 }
             });
     }
@@ -91,14 +91,14 @@ public class ExceptionsTest {
         final PublishSubject<Integer> b = PublishSubject.create();
         final int MAX_STACK_DEPTH = 800;
         final AtomicInteger depth = new AtomicInteger();
-        
+
         a.subscribe(new Observer<Integer>() {
 
             @Override
             public void onSubscribe(Disposable d) {
-                
+
             }
-            
+
             @Override
             public void onComplete() {
 
@@ -119,9 +119,9 @@ public class ExceptionsTest {
             @Override
             public void onSubscribe(Disposable d) {
                 // TODO Auto-generated method stub
-                
+
             }
-            
+
             @Override
             public void onComplete() {
 
@@ -134,7 +134,7 @@ public class ExceptionsTest {
 
             @Override
             public void onNext(Integer n) {
-                if (depth.get() < MAX_STACK_DEPTH) { 
+                if (depth.get() < MAX_STACK_DEPTH) {
                     depth.set(Thread.currentThread().getStackTrace().length);
                     a.onNext(n + 1);
                 }
@@ -143,16 +143,16 @@ public class ExceptionsTest {
         a.onNext(1);
         assertTrue(depth.get() > MAX_STACK_DEPTH);
     }
-    
+
     @Test(expected = StackOverflowError.class)
     public void testStackOverflowErrorIsThrown() {
         Observable.just(1).subscribe(new Observer<Integer>() {
 
             @Override
             public void onSubscribe(Disposable d) {
-                
+
             }
-            
+
             @Override
             public void onComplete() {
 
@@ -177,9 +177,9 @@ public class ExceptionsTest {
 
             @Override
             public void onSubscribe(Disposable d) {
-                
+
             }
-            
+
             @Override
             public void onComplete() {
 
@@ -209,9 +209,9 @@ public class ExceptionsTest {
 
                 @Override
                 public void onSubscribe(Disposable d) {
-                    
+
                 }
-                
+
                 @Override
                 public void onComplete() {
 
@@ -251,12 +251,12 @@ public class ExceptionsTest {
                 }
             })
             .subscribe(new Observer<GroupedObservable<Integer, Integer>>() {
-                
+
                 @Override
                 public void onSubscribe(Disposable d) {
-                    
+
                 }
-                
+
                 @Override
                 public void onComplete() {
 
@@ -290,12 +290,12 @@ public class ExceptionsTest {
                 }
             })
             .subscribe(new Observer<Integer>() {
-                
+
                 @Override
                 public void onSubscribe(Disposable d) {
-                    
+
                 }
-                
+
                 @Override
                 public void onComplete() {
 
@@ -394,7 +394,7 @@ public class ExceptionsTest {
                                   public void onSubscribe(Subscription s) {
                                       s.request(Long.MAX_VALUE);
                                   }
-                                  
+
                                   @Override
                                   public void onComplete() {
                                   }
@@ -419,9 +419,9 @@ public class ExceptionsTest {
 
         @Override
         public void onSubscribe(Disposable d) {
-            
+
         }
-        
+
         @Override
         public void onComplete() {
         }
@@ -440,17 +440,17 @@ public class ExceptionsTest {
     public void utilityClass() {
         TestHelper.checkUtilityClass(Exceptions.class);
     }
-    
+
     @Test
     public void manualThrowIfFatal() {
-        
+
         try {
             Exceptions.throwIfFatal(new ThreadDeath());
             fail("Didn't throw fatal exception");
         } catch (ThreadDeath ex) {
             // expected
         }
-        
+
         try {
             Exceptions.throwIfFatal(new LinkageError());
             fail("Didn't throw fatal error");
@@ -468,14 +468,14 @@ public class ExceptionsTest {
 
     @Test
     public void manualPropagate() {
-        
+
         try {
             Exceptions.propagate(new InternalError());
             fail("Didn't throw exception");
         } catch (InternalError ex) {
             // expected
         }
-        
+
         try {
             throw Exceptions.propagate(new IllegalArgumentException());
         } catch (IllegalArgumentException ex) {
