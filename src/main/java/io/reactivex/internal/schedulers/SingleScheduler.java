@@ -20,14 +20,30 @@ import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
+/**
+ * A scheduler with a shared, single threaded underlying ScheduledExecutorService.
+ * @since 2.0
+ */
 public final class SingleScheduler extends Scheduler {
 
     final AtomicReference<ScheduledExecutorService> executor = new AtomicReference<ScheduledExecutorService>();
+
+    /** The name of the system property for setting the thread priority for this Scheduler. */
+    private static final String KEY_SINGLE_PRIORITY = "rx2.single-priority";
+
+    private static final String THREAD_NAME_PREFIX = "RxSingleScheduler";
+
+    static final RxThreadFactory SINGLE_THREAD_FACTORY;
 
     static final ScheduledExecutorService SHUTDOWN;
     static {
         SHUTDOWN = Executors.newScheduledThreadPool(0);
         SHUTDOWN.shutdown();
+
+        int priority = Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY,
+                Integer.getInteger(KEY_SINGLE_PRIORITY, Thread.NORM_PRIORITY)));
+
+        SINGLE_THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority);
     }
 
     public SingleScheduler() {
@@ -35,7 +51,7 @@ public final class SingleScheduler extends Scheduler {
     }
 
     static ScheduledExecutorService createExecutor() {
-        return SchedulerPoolFactory.create(new RxThreadFactory("RxSingleScheduler"));
+        return SchedulerPoolFactory.create(SINGLE_THREAD_FACTORY);
     }
 
     @Override

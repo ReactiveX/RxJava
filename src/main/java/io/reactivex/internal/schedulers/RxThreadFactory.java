@@ -16,16 +16,27 @@ package io.reactivex.internal.schedulers;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * A ThreadFactory that counts how many threads have been created and given a prefix,
+ * sets the created Thread's name to {@code prefix-count}.
+ */
 public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
     /** */
     private static final long serialVersionUID = -7789753024099756196L;
 
     final String prefix;
 
+    final int priority;
+
     static volatile boolean CREATE_TRACE;
 
     public RxThreadFactory(String prefix) {
+        this(prefix, Thread.NORM_PRIORITY);
+    }
+
+    public RxThreadFactory(String prefix, int priority) {
         this.prefix = prefix;
+        this.priority = priority;
     }
 
     @Override
@@ -52,6 +63,7 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
             }
         }
         Thread t = new Thread(r, nameBuilder.toString());
+        t.setPriority(priority);
         t.setDaemon(true);
         return t;
     }

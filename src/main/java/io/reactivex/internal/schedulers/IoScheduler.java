@@ -29,18 +29,19 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class IoScheduler extends Scheduler {
     private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler";
-    static final RxThreadFactory WORKER_THREAD_FACTORY =
-            new RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
+    static final RxThreadFactory WORKER_THREAD_FACTORY;
 
     private static final String EVICTOR_THREAD_NAME_PREFIX = "RxCachedWorkerPoolEvictor";
-    static final RxThreadFactory EVICTOR_THREAD_FACTORY =
-            new RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX);
+    static final RxThreadFactory EVICTOR_THREAD_FACTORY;
 
     private static final long KEEP_ALIVE_TIME = 60;
     private static final TimeUnit KEEP_ALIVE_UNIT = TimeUnit.SECONDS;
 
     static final ThreadWorker SHUTDOWN_THREAD_WORKER;
     final AtomicReference<CachedWorkerPool> pool;
+
+    /** The name of the system property for setting the thread priority for this Scheduler. */
+    private static final String KEY_IO_PRIORITY = "rx2.io-priority";
 
     static final CachedWorkerPool NONE;
     static {
@@ -49,6 +50,13 @@ public final class IoScheduler extends Scheduler {
 
         SHUTDOWN_THREAD_WORKER = new ThreadWorker(new RxThreadFactory("RxCachedThreadSchedulerShutdown"));
         SHUTDOWN_THREAD_WORKER.dispose();
+
+        int priority = Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY,
+                Integer.getInteger(KEY_IO_PRIORITY, Thread.NORM_PRIORITY)));
+
+        WORKER_THREAD_FACTORY = new RxThreadFactory(WORKER_THREAD_NAME_PREFIX, priority);
+
+        EVICTOR_THREAD_FACTORY = new RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX, priority);
     }
 
     static final class CachedWorkerPool {

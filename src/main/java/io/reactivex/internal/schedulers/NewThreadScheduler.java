@@ -24,8 +24,19 @@ import io.reactivex.Scheduler;
 public final class NewThreadScheduler extends Scheduler {
 
     private static final String THREAD_NAME_PREFIX = "RxNewThreadScheduler";
-    private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
+    private static final RxThreadFactory THREAD_FACTORY;
+
     private static final NewThreadScheduler INSTANCE = new NewThreadScheduler();
+
+    /** The name of the system property for setting the thread priority for this Scheduler. */
+    private static final String KEY_NEWTHREAD_PRIORITY = "rx2.newthread-priority";
+
+    static {
+        int priority = Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY,
+                Integer.getInteger(KEY_NEWTHREAD_PRIORITY, Thread.NORM_PRIORITY)));
+
+        THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority);
+    }
 
     public static NewThreadScheduler instance() {
         return INSTANCE;
