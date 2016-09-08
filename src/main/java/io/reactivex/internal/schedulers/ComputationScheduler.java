@@ -31,7 +31,7 @@ public final class ComputationScheduler extends Scheduler {
     static final FixedSchedulerPool NONE = new FixedSchedulerPool(0);
     /** Manages a fixed number of workers. */
     private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool";
-    static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
+    static final RxThreadFactory THREAD_FACTORY;
     /**
      * Key to setting the maximum number of computation scheduler threads.
      * Zero or less is interpreted as use available. Capped by available.
@@ -43,6 +43,8 @@ public final class ComputationScheduler extends Scheduler {
     static final PoolWorker SHUTDOWN_WORKER;
 
     final AtomicReference<FixedSchedulerPool> pool;
+    /** The name of the system property for setting the thread priority for this Scheduler. */
+    private static final String KEY_COMPUTATION_PRIORITY = "rx2.computation-priority";
 
     static {
         int maxThreads = Integer.getInteger(KEY_MAX_THREADS, 0);
@@ -57,6 +59,11 @@ public final class ComputationScheduler extends Scheduler {
 
         SHUTDOWN_WORKER = new PoolWorker(new RxThreadFactory("RxComputationShutdown"));
         SHUTDOWN_WORKER.dispose();
+
+        int priority = Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY,
+                Integer.getInteger(KEY_COMPUTATION_PRIORITY, Thread.NORM_PRIORITY)));
+
+        THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority);
     }
 
     static final class FixedSchedulerPool {

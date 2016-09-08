@@ -24,6 +24,9 @@ import io.reactivex.internal.schedulers.ExecutorScheduler.ExecutorWorker.Boolean
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * Wraps an Executor and provides the Scheduler API over it.
+ */
 public final class ExecutorScheduler extends Scheduler {
 
     final Executor executor;
