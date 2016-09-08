@@ -15,16 +15,16 @@ package io.reactivex.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * An abstract {@link Observer} that allows asynchronous cancellation by implementing Disposable.
+ * An abstract {@link SingleObserver} that allows asynchronous cancellation by implementing Disposable.
  *
  * @param <T> the received value type
  */
-public abstract class DisposableObserver<T> implements Observer<T>, Disposable {
+public abstract class DisposableSingleObserver<T> implements SingleObserver<T>, Disposable {
     final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     @Override
