@@ -14,7 +14,7 @@ package io.reactivex;
 
 /**
  * A functional interface that has a {@code subscribe()} method that receives
- * an instance of a {@link ObservableEmitter} instance that allows pushing
+ * an instance of an {@link ObservableEmitter} instance that allows pushing
  * events in a cancellation-safe manner.
  *
  * @param <T> the value type pushed
