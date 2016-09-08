@@ -224,7 +224,7 @@ public class ObservableWindowWithStartEndObservableTest {
         ts.assertNoErrors();
         ts.assertValueCount(1);
 
-        assertFalse(ts.isCancelled());
+        assertTrue("Not cancelled!", ts.isCancelled());
         assertFalse(open.hasObservers());
         assertFalse(close.hasObservers());
     }

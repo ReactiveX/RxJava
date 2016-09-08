@@ -722,34 +722,42 @@ public class SafeSubscriberTest {
     }
 
     static final class CrashDummy implements Subscriber<Object>, Subscription {
-        boolean crashOnSubscribe;
-        int crashOnNext;
-        boolean crashOnError;
-        boolean crashOnComplete;
+        final boolean crashOnSubscribe;
 
-        boolean crashDispose;
+        int crashOnNext;
+
+        final boolean crashOnError;
+
+        final boolean crashOnComplete;
+
+        final boolean crashDispose;
+
+        final boolean crashRequest;
 
         Throwable error;
 
         public CrashDummy(boolean crashOnSubscribe, int crashOnNext,
-                boolean crashOnError, boolean crashOnComplete, boolean crashDispose) {
+                boolean crashOnError, boolean crashOnComplete, boolean crashDispose, boolean crashRequest) {
             this.crashOnSubscribe = crashOnSubscribe;
             this.crashOnNext = crashOnNext;
             this.crashOnError = crashOnError;
             this.crashOnComplete = crashOnComplete;
             this.crashDispose = crashDispose;
+            this.crashRequest = crashRequest;
         }
 
         @Override
         public void cancel() {
             if (crashDispose) {
-                throw new TestException("dispose()");
+                throw new TestException("cancel()");
             }
         }
 
         @Override
         public void request(long n) {
-            // TODO
+            if (crashRequest) {
+                throw new TestException("request()");
+            }
         }
 
         @Override
@@ -811,7 +819,7 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(false, 1, true, false, false);
+            CrashDummy cd = new CrashDummy(false, 1, true, false, false, false);
             SafeSubscriber<Object> so = cd.toSafe();
             so.onSubscribe(cd);
 
@@ -828,7 +836,7 @@ public class SafeSubscriberTest {
 
     @Test
     public void onNextDisposeCrash() {
-        CrashDummy cd = new CrashDummy(false, 1, false, false, true);
+        CrashDummy cd = new CrashDummy(false, 1, false, false, true, false);
         SafeSubscriber<Object> so = cd.toSafe();
         so.onSubscribe(cd);
 
@@ -836,7 +844,7 @@ public class SafeSubscriberTest {
 
         cd.assertError(CompositeException.class);
         cd.assertInnerError(0, TestException.class, "onNext(1)");
-        cd.assertInnerError(1, TestException.class, "dispose()");
+        cd.assertInnerError(1, TestException.class, "cancel()");
     }
 
     @Test
@@ -844,7 +852,7 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(false, 1, false, false, false);
+            CrashDummy cd = new CrashDummy(false, 1, false, false, false, false);
             SafeSubscriber<Object> so = cd.toSafe();
             so.onSubscribe(cd);
             so.onSubscribe(cd);
@@ -860,7 +868,7 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(true, 1, false, false, false);
+            CrashDummy cd = new CrashDummy(true, 1, false, false, false, false);
             SafeSubscriber<Object> so = cd.toSafe();
             so.onSubscribe(cd);
 
@@ -875,14 +883,14 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(true, 1, false, false, true);
+            CrashDummy cd = new CrashDummy(true, 1, false, false, true, false);
             SafeSubscriber<Object> so = cd.toSafe();
             so.onSubscribe(cd);
 
             TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, TestException.class, "onSubscribe()");
-            TestHelper.assertError(ce, 1, TestException.class, "dispose()");
+            TestHelper.assertError(ce, 1, TestException.class, "cancel()");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -893,7 +901,7 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(true, 1, false, false, false);
+            CrashDummy cd = new CrashDummy(true, 1, false, false, false, false);
             SafeSubscriber<Object> so = cd.toSafe();
 
             so.onNext(1);
@@ -909,14 +917,14 @@ public class SafeSubscriberTest {
 
     @Test
     public void onNextNullDisposeCrashes() {
-        CrashDummy cd = new CrashDummy(false, 1, false, false, true);
+        CrashDummy cd = new CrashDummy(false, 1, false, false, true, false);
         SafeSubscriber<Object> so = cd.toSafe();
         so.onSubscribe(cd);
 
         so.onNext(null);
 
         cd.assertInnerError(0, NullPointerException.class);
-        cd.assertInnerError(1, TestException.class, "dispose()");
+        cd.assertInnerError(1, TestException.class, "cancel()");
     }
 
     @Test
@@ -924,7 +932,7 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(false, 1, true, false, false);
+            CrashDummy cd = new CrashDummy(false, 1, true, false, false, false);
             SafeSubscriber<Object> so = cd.toSafe();
 
             so.onNext(1);
@@ -940,7 +948,7 @@ public class SafeSubscriberTest {
 
     @Test
     public void onErrorNull() {
-        CrashDummy cd = new CrashDummy(false, 1, false, false, false);
+        CrashDummy cd = new CrashDummy(false, 1, false, false, false, false);
         SafeSubscriber<Object> so = cd.toSafe();
         so.onSubscribe(cd);
 
@@ -954,7 +962,7 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(true, 1, false, false, false);
+            CrashDummy cd = new CrashDummy(true, 1, false, false, false, false);
             SafeSubscriber<Object> so = cd.toSafe();
 
             so.onError(new TestException());
@@ -973,7 +981,7 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(false, 1, true, false, false);
+            CrashDummy cd = new CrashDummy(false, 1, true, false, false, false);
             SafeSubscriber<Object> so = cd.toSafe();
 
             so.onError(new TestException());
@@ -993,7 +1001,7 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(false, 1, false, true, false);
+            CrashDummy cd = new CrashDummy(false, 1, false, true, false, false);
             SafeSubscriber<Object> so = cd.toSafe();
 
             so.onSubscribe(cd);
@@ -1011,7 +1019,7 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(true, 1, false, true, false);
+            CrashDummy cd = new CrashDummy(true, 1, false, true, false, false);
             SafeSubscriber<Object> so = cd.toSafe();
 
             so.onComplete();
@@ -1030,7 +1038,7 @@ public class SafeSubscriberTest {
         List<Throwable> list = TestHelper.trackPluginErrors();
 
         try {
-            CrashDummy cd = new CrashDummy(false, 1, true, true, false);
+            CrashDummy cd = new CrashDummy(false, 1, true, true, false, false);
             SafeSubscriber<Object> so = cd.toSafe();
 
             so.onComplete();
@@ -1043,4 +1051,60 @@ public class SafeSubscriberTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void requestCrash() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+
+        try {
+            CrashDummy cd = new CrashDummy(false, 1, false, false, false, true);
+            SafeSubscriber<Object> so = cd.toSafe();
+            so.onSubscribe(cd);
+
+            so.request(1);
+
+            TestHelper.assertError(list, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void cancelCrash() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+
+        try {
+            CrashDummy cd = new CrashDummy(false, 1, false, false, true, false);
+            SafeSubscriber<Object> so = cd.toSafe();
+            so.onSubscribe(cd);
+
+            so.cancel();
+
+            TestHelper.assertError(list, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+
+    @Test
+    public void requestCancelCrash() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+
+        try {
+            CrashDummy cd = new CrashDummy(false, 1, false, false, true, true);
+            SafeSubscriber<Object> so = cd.toSafe();
+            so.onSubscribe(cd);
+
+            so.request(1);
+
+            TestHelper.assertError(list, 0, CompositeException.class);
+            List<Throwable> ce = TestHelper.compositeList(list.get(0));
+           TestHelper.assertError(ce, 0, TestException.class, "request()");
+            TestHelper.assertError(ce, 1, TestException.class, "cancel()");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
 }

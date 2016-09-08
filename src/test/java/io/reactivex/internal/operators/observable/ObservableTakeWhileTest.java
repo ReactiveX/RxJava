@@ -228,7 +228,7 @@ public class ObservableTakeWhileTest {
         ts.assertNoErrors();
         ts.assertValue(1);
 
-        Assert.assertFalse("Unsubscribed!", ts.isCancelled());
+        Assert.assertTrue("Not cancelled!", ts.isCancelled());
     }
 
     @Test

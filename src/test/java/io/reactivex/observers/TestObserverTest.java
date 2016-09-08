@@ -1120,4 +1120,37 @@ public class TestObserverTest {
         .assertFusionMode(QueueDisposable.ASYNC)
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void completedMeansDisposed() {
+        assertTrue(Observable.just(1)
+                .test()
+                .assertResult(1).isDisposed());
+    }
+
+    @Test
+    public void errorMeansDisposed() {
+        assertTrue(Observable.error(new TestException())
+                .test()
+                .assertFailure(TestException.class).isDisposed());
+    }
+
+    @Test
+    public void asyncFusion() {
+        TestObserver<Object> ts = new TestObserver<Object>();
+        ts.setInitialFusionMode(QueueDisposable.ANY);
+
+        UnicastSubject<Integer> up = UnicastSubject.create();
+
+        up
+        .subscribe(ts);
+
+        up.onNext(1);
+        up.onComplete();
+
+        ts.assertSubscribed()
+        .assertFuseable()
+        .assertFusionMode(QueueDisposable.ASYNC)
+        .assertResult(1);
+    }
 }

@@ -20,7 +20,6 @@ import org.reactivestreams.*;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.BackpressureHelper;
 
 /**
  * An abstract Subscriber that allows asynchronous cancellation of its
@@ -57,11 +56,7 @@ public abstract class ResourceSubscriber<T> implements Subscriber<T>, Disposable
 
     @Override
     public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.setOnce(this.s, s)) {
-            long mr = missedRequested.getAndSet(0L);
-            if (mr != 0L) {
-                s.request(mr);
-            }
+        if (SubscriptionHelper.deferredSetOnce(this.s, missedRequested, s)) {
             onStart();
         }
     }
@@ -85,22 +80,7 @@ public abstract class ResourceSubscriber<T> implements Subscriber<T>, Disposable
      * @param n the request amount, must be positive
      */
     protected final void request(long n) {
-        if (!SubscriptionHelper.validate(n)) {
-            return;
-        }
-        Subscription a = s.get();
-        if (a == null) {
-            BackpressureHelper.add(missedRequested, n);
-            a = s.get();
-            if (a != null) {
-                long mr = missedRequested.getAndSet(0L);
-                if (mr != 0L) {
-                    a.request(mr);
-                }
-            }
-        } else {
-            a.request(n);
-        }
+        SubscriptionHelper.deferredRequest(s, missedRequested, n);
     }
 
     /**

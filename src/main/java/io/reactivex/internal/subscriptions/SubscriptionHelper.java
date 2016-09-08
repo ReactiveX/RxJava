@@ -199,15 +199,18 @@ public enum SubscriptionHelper implements Subscription {
      * @param field the target field for the new Subscription
      * @param requested the current requested amount
      * @param s the new Subscription, not null (verified)
+     * @return true if the Subscription was set the first time
      */
-    public static void deferredSetOnce(AtomicReference<Subscription> field, AtomicLong requested,
+    public static boolean deferredSetOnce(AtomicReference<Subscription> field, AtomicLong requested,
             Subscription s) {
         if (SubscriptionHelper.setOnce(field, s)) {
             long r = requested.getAndSet(0L);
             if (r != 0L) {
                 s.request(r);
             }
+            return true;
         }
+        return false;
     }
 
     /**

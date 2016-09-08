@@ -93,33 +93,6 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
     }
 
     /**
-     * Block until a the latch is counted down and return the value received, otherwise
-     * rethrow the received exception or rethrow the InterruptedException or TimeoutException
-     * (wrapped).
-     * @param timeout the timeout value
-     * @param unit the time unit
-     * @return the value received or null if no value received
-     */
-    public T blockingGet(long timeout, TimeUnit unit) {
-        if (getCount() != 0) {
-            try {
-                if (!await(timeout, unit)) {
-                    dispose();
-                    throw ExceptionHelper.wrapOrThrow(new TimeoutException());
-                }
-            } catch (InterruptedException ex) {
-                dispose();
-                throw ExceptionHelper.wrapOrThrow(ex);
-            }
-        }
-        Throwable ex = error;
-        if (ex != null) {
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
-        return value;
-    }
-
-    /**
      * Block until the latch is counted down then rethrow any exception received (wrapped if checked)
      * or return the received value (the defaultValue if none).
      * @param defaultValue the default value to return if no value was received

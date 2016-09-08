@@ -27,8 +27,8 @@ import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableUnsubscribeOnTest {
 
-    @Test
-    public void testUnsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnSameThread() throws InterruptedException {
+    @Test(timeout = 5000)
+    public void unsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnSameThread() throws InterruptedException {
         UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
@@ -45,11 +45,13 @@ public class FlowableUnsubscribeOnTest {
                 }
             });
 
-            TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
-            w.subscribeOn(UI_EVENT_LOOP).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(observer);
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            w.subscribeOn(UI_EVENT_LOOP).observeOn(Schedulers.computation())
+            .unsubscribeOn(UI_EVENT_LOOP)
+            .take(2)
+            .subscribe(ts);
 
-            observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
-            observer.dispose();
+            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -64,15 +66,15 @@ public class FlowableUnsubscribeOnTest {
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
             assertTrue(unsubscribeThread == UI_EVENT_LOOP.getThread());
 
-            observer.assertValues(1, 2);
-            observer.assertTerminated();
+            ts.assertValues(1, 2);
+            ts.assertTerminated();
         } finally {
             UI_EVENT_LOOP.shutdown();
         }
     }
 
-    @Test
-    public void testUnsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnDifferentThreads() throws InterruptedException {
+    @Test(timeout = 5000)
+    public void unsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnDifferentThreads() throws InterruptedException {
         UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
@@ -90,10 +92,12 @@ public class FlowableUnsubscribeOnTest {
             });
 
             TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
-            w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(observer);
+            w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation())
+            .unsubscribeOn(UI_EVENT_LOOP)
+            .take(2)
+            .subscribe(observer);
 
             observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
-            observer.dispose();
 
             Thread unsubscribeThread = subscription.getThread();
 

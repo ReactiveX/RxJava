@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.observers;
+package io.reactivex.subscribers;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -22,32 +22,33 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
-public class SerializedObserverTest {
+public class SerializedSubscriberTest {
 
-    Observer<String> observer;
+    Subscriber<String> observer;
 
     @Before
     public void before() {
-        observer = TestHelper.mockObserver();
+        observer = TestHelper.mockSubscriber();
     }
 
-    private Observer<String> serializedObserver(Observer<String> o) {
-        return new SerializedObserver<String>(o);
+    private Subscriber<String> serializedSubscriber(Subscriber<String> o) {
+        return new SerializedSubscriber<String>(o);
     }
 
     @Test
     public void testSingleThreadedBasic() {
-        TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
-        Observable<String> w = Observable.unsafeCreate(onSubscribe);
+        TestSingleThreadedPublisher onSubscribe = new TestSingleThreadedPublisher("one", "two", "three");
+        Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
-        Observer<String> aw = serializedObserver(observer);
+        Subscriber<String> aw = serializedSubscriber(observer);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
@@ -65,10 +66,10 @@ public class SerializedObserverTest {
     @Test
     public void testMultiThreadedBasic() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three");
-        Observable<String> w = Observable.unsafeCreate(onSubscribe);
+        Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
-        BusyObserver busySubscriber = new BusyObserver();
-        Observer<String> aw = serializedObserver(busySubscriber);
+        BusySubscriber busySubscriber = new BusySubscriber();
+        Subscriber<String> aw = serializedSubscriber(busySubscriber);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
@@ -89,16 +90,16 @@ public class SerializedObserverTest {
     @Test(timeout = 1000)
     public void testMultiThreadedWithNPE() throws InterruptedException {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
-        Observable<String> w = Observable.unsafeCreate(onSubscribe);
+        Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
-        BusyObserver busySubscriber = new BusyObserver();
-        Observer<String> aw = serializedObserver(busySubscriber);
+        BusySubscriber busySubscriber = new BusySubscriber();
+        Subscriber<String> aw = serializedSubscriber(busySubscriber);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
         busySubscriber.terminalEvent.await();
 
-        System.out.println("OnSubscribe maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get() + "  Observer maxConcurrentThreads: " + busySubscriber.maxConcurrentThreads.get());
+        System.out.println("OnSubscribe maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get() + "  Subscriber maxConcurrentThreads: " + busySubscriber.maxConcurrentThreads.get());
 
         // we can't know how many onNext calls will occur since they each run on a separate thread
         // that depends on thread scheduling so 0, 1, 2 and 3 are all valid options
@@ -123,15 +124,15 @@ public class SerializedObserverTest {
         for (int i = 0; i < n; i++) {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null,
                     "four", "five", "six", "seven", "eight", "nine");
-            Observable<String> w = Observable.unsafeCreate(onSubscribe);
+            Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
-            BusyObserver busySubscriber = new BusyObserver();
-            Observer<String> aw = serializedObserver(busySubscriber);
+            BusySubscriber busySubscriber = new BusySubscriber();
+            Subscriber<String> aw = serializedSubscriber(busySubscriber);
 
             w.subscribe(aw);
             onSubscribe.waitToFinish();
 
-            System.out.println("OnSubscribe maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get() + "  Observer maxConcurrentThreads: " + busySubscriber.maxConcurrentThreads.get());
+            System.out.println("OnSubscribe maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get() + "  Subscriber maxConcurrentThreads: " + busySubscriber.maxConcurrentThreads.get());
 
             // we can have concurrency ...
             assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
@@ -159,8 +160,8 @@ public class SerializedObserverTest {
         ExecutorService tp = Executors.newFixedThreadPool(20);
         try {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
-            // we need Synchronized + SafeObserver to handle synchronization plus life-cycle
-            Observer<String> w = serializedObserver(new SafeObserver<String>(tw));
+            // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
+            Subscriber<String> w = serializedSubscriber(new SafeSubscriber<String>(tw));
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
             Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
@@ -209,9 +210,9 @@ public class SerializedObserverTest {
         ExecutorService tp = Executors.newFixedThreadPool(20);
         try {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
-            // we need Synchronized + SafeObserver to handle synchronization plus life-cycle
-            Observer<String> w = serializedObserver(new SafeObserver<String>(tw));
-            w.onSubscribe(Disposables.empty());
+            // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
+            Subscriber<String> w = serializedSubscriber(new SafeSubscriber<String>(tw));
+            w.onSubscribe(new BooleanSubscription());
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
             Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
@@ -266,7 +267,7 @@ public class SerializedObserverTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestObserver<String> to = new TestObserver<String>(new DefaultObserver<String>() {
+                TestSubscriber<String> to = new TestSubscriber<String>(new DefaultSubscriber<String>() {
 
                     @Override
                     public void onComplete() {
@@ -289,7 +290,7 @@ public class SerializedObserverTest {
                     }
 
                 });
-                Observer<String> o = serializedObserver(to);
+                Subscriber<String> o = serializedSubscriber(to);
 
                 Future<?> f1 = tp1.submit(new OnNextThread(o, 1, onNextCount, running));
                 Future<?> f2 = tp2.submit(new OnNextThread(o, 1, onNextCount, running));
@@ -333,7 +334,7 @@ public class SerializedObserverTest {
      *
      * p1: 18 p2: 68 => should be close to each other unless we have thread starvation
      *
-     * When using SerializedObserver we get:
+     * When using SerializedSubscriber we get:
      *
      * p1: 1 p2: 2445261 => should be close to each other unless we have thread starvation
      *
@@ -347,7 +348,7 @@ public class SerializedObserverTest {
     @Test
     public void testThreadStarvation() throws InterruptedException {
 
-        TestObserver<String> to = new TestObserver<String>(new DefaultObserver<String>() {
+        TestSubscriber<String> to = new TestSubscriber<String>(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -369,13 +370,13 @@ public class SerializedObserverTest {
             }
 
         });
-        final Observer<String> o = serializedObserver(to);
+        final Subscriber<String> o = serializedSubscriber(to);
 
         AtomicInteger p1 = new AtomicInteger();
         AtomicInteger p2 = new AtomicInteger();
 
-        o.onSubscribe(Disposables.empty());
-        ResourceObserver<String> as1 = new ResourceObserver<String>() {
+        o.onSubscribe(new BooleanSubscription());
+        ResourceSubscriber<String> as1 = new ResourceSubscriber<String>() {
             @Override
             public void onNext(String t) {
                 o.onNext(t);
@@ -392,7 +393,7 @@ public class SerializedObserverTest {
             }
         };
 
-        ResourceObserver<String> as2 = new ResourceObserver<String>() {
+        ResourceSubscriber<String> as2 = new ResourceSubscriber<String>() {
             @Override
             public void onNext(String t) {
                 o.onNext(t);
@@ -432,14 +433,14 @@ public class SerializedObserverTest {
         }
     }
 
-    private static Observable<String> infinite(final AtomicInteger produced) {
-        return Observable.unsafeCreate(new ObservableSource<String>() {
+    private static Flowable<String> infinite(final AtomicInteger produced) {
+        return Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
-            public void subscribe(Observer<? super String> s) {
-                Disposable bs = Disposables.empty();
+            public void subscribe(Subscriber<? super String> s) {
+                BooleanSubscription bs = new BooleanSubscription();
                 s.onSubscribe(bs);
-                while (!bs.isDisposed()) {
+                while (!bs.isCancelled()) {
                     s.onNext("onNext");
                     produced.incrementAndGet();
                 }
@@ -454,20 +455,20 @@ public class SerializedObserverTest {
     public static class OnNextThread implements Runnable {
 
         private final CountDownLatch latch;
-        private final Observer<String> observer;
+        private final Subscriber<String> observer;
         private final int numStringsToSend;
         final AtomicInteger produced;
         private final CountDownLatch running;
 
-        OnNextThread(Observer<String> observer, int numStringsToSend, CountDownLatch latch, CountDownLatch running) {
+        OnNextThread(Subscriber<String> observer, int numStringsToSend, CountDownLatch latch, CountDownLatch running) {
             this(observer, numStringsToSend, new AtomicInteger(), latch, running);
         }
 
-        OnNextThread(Observer<String> observer, int numStringsToSend, AtomicInteger produced) {
+        OnNextThread(Subscriber<String> observer, int numStringsToSend, AtomicInteger produced) {
             this(observer, numStringsToSend, produced, null, null);
         }
 
-        OnNextThread(Observer<String> observer, int numStringsToSend, AtomicInteger produced, CountDownLatch latch, CountDownLatch running) {
+        OnNextThread(Subscriber<String> observer, int numStringsToSend, AtomicInteger produced, CountDownLatch latch, CountDownLatch running) {
             this.observer = observer;
             this.numStringsToSend = numStringsToSend;
             this.produced = produced;
@@ -475,7 +476,7 @@ public class SerializedObserverTest {
             this.running = running;
         }
 
-        OnNextThread(Observer<String> observer, int numStringsToSend) {
+        OnNextThread(Subscriber<String> observer, int numStringsToSend) {
             this(observer, numStringsToSend, new AtomicInteger());
         }
 
@@ -499,12 +500,12 @@ public class SerializedObserverTest {
      */
     public static class CompletionThread implements Runnable {
 
-        private final Observer<String> observer;
+        private final Subscriber<String> observer;
         private final TestConcurrencySubscriberEvent event;
         private final Future<?>[] waitOnThese;
 
-        CompletionThread(Observer<String> Observer, TestConcurrencySubscriberEvent event, Future<?>... waitOnThese) {
-            this.observer = Observer;
+        CompletionThread(Subscriber<String> Subscriber, TestConcurrencySubscriberEvent event, Future<?>... waitOnThese) {
+            this.observer = Subscriber;
             this.event = event;
             this.waitOnThese = waitOnThese;
         }
@@ -538,7 +539,7 @@ public class SerializedObserverTest {
         onCompleted, onError, onNext
     }
 
-    private static class TestConcurrencySubscriber extends DefaultObserver<String> {
+    private static class TestConcurrencySubscriber extends DefaultSubscriber<String> {
 
         /**
          * used to store the order and number of events received
@@ -630,19 +631,19 @@ public class SerializedObserverTest {
     /**
      * This spawns a single thread for the subscribe execution
      */
-    private static class TestSingleThreadedObservable implements ObservableSource<String> {
+    private static class TestSingleThreadedPublisher implements Publisher<String> {
 
         final String[] values;
         private Thread t = null;
 
-        public TestSingleThreadedObservable(final String... values) {
+        public TestSingleThreadedPublisher(final String... values) {
             this.values = values;
 
         }
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+        public void subscribe(final Subscriber<? super String> observer) {
+            observer.onSubscribe(new BooleanSubscription());
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -679,7 +680,7 @@ public class SerializedObserverTest {
     /**
      * This spawns a thread for the subscription, then a separate thread for each onNext call.
      */
-    private static class TestMultiThreadedObservable implements ObservableSource<String> {
+    private static class TestMultiThreadedObservable implements Publisher<String> {
 
         final String[] values;
         Thread t = null;
@@ -693,8 +694,8 @@ public class SerializedObserverTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> observer) {
-            observer.onSubscribe(Disposables.empty());
+        public void subscribe(final Subscriber<? super String> observer) {
+            observer.onSubscribe(new BooleanSubscription());
             final NullPointerException npe = new NullPointerException();
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
@@ -771,7 +772,7 @@ public class SerializedObserverTest {
         }
     }
 
-    static class BusyObserver extends DefaultObserver<String> {
+    private static class BusySubscriber extends DefaultSubscriber<String> {
         volatile boolean onCompleted = false;
         volatile boolean onError = false;
         AtomicInteger onNextCount = new AtomicInteger();
@@ -838,8 +839,8 @@ public class SerializedObserverTest {
     @Test
     @Ignore("Null values not permitted")
     public void testSerializeNull() {
-        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t != null && t == 0) {
@@ -849,7 +850,7 @@ public class SerializedObserverTest {
             }
         };
 
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
 
         sobs.onNext(0);
@@ -860,14 +861,14 @@ public class SerializedObserverTest {
     @Test
     @Ignore("Subscribers can't throw")
     public void testSerializeAllowsOnError() {
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
             }
         };
 
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
 
         try {
             sobs.onNext(0);
@@ -881,8 +882,8 @@ public class SerializedObserverTest {
     @Test
     @Ignore("Null values no longer permitted")
     public void testSerializeReentrantNullAndComplete() {
-        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 serial.get().onComplete();
@@ -890,7 +891,7 @@ public class SerializedObserverTest {
             }
         };
 
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
 
         try {
@@ -906,8 +907,8 @@ public class SerializedObserverTest {
     @Test
     @Ignore("Subscribers can't throw")
     public void testSerializeReentrantNullAndError() {
-        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 serial.get().onError(new RuntimeException());
@@ -915,7 +916,7 @@ public class SerializedObserverTest {
             }
         };
 
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
 
         try {
@@ -931,8 +932,8 @@ public class SerializedObserverTest {
     @Test
     @Ignore("Null values no longer permitted")
     public void testSerializeDrainPhaseThrows() {
-        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
-        TestObserver<Integer> to = new TestObserver<Integer>() {
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t != null && t == 0) {
@@ -945,7 +946,7 @@ public class SerializedObserverTest {
             }
         };
 
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
         serial.set(sobs);
 
         sobs.onNext(0);
@@ -956,9 +957,9 @@ public class SerializedObserverTest {
 
     @Test
     public void testErrorReentry() {
-        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer v) {
                 serial.get().onError(new TestException());
@@ -966,8 +967,8 @@ public class SerializedObserverTest {
                 super.onNext(v);
             }
         };
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(ts);
-        sobs.onSubscribe(Disposables.empty());
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
+        sobs.onSubscribe(new BooleanSubscription());
         serial.set(sobs);
 
         sobs.onNext(1);
@@ -977,9 +978,9 @@ public class SerializedObserverTest {
     }
     @Test
     public void testCompleteReentry() {
-        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer v) {
                 serial.get().onComplete();
@@ -987,8 +988,8 @@ public class SerializedObserverTest {
                 super.onNext(v);
             }
         };
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(ts);
-        sobs.onSubscribe(Disposables.empty());
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
+        sobs.onSubscribe(new BooleanSubscription());
         serial.set(sobs);
 
         sobs.onNext(1);
@@ -1000,31 +1001,27 @@ public class SerializedObserverTest {
 
     @Test
     public void dispose() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+        SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-        Disposable d = Disposables.empty();
+        BooleanSubscription d = new BooleanSubscription();
 
         so.onSubscribe(d);
 
-        assertFalse(so.isDisposed());
-
         ts.cancel();
 
-        assertTrue(so.isDisposed());
-
-        assertTrue(d.isDisposed());
+        assertTrue(d.isCancelled());
     }
 
     @Test
     public void onCompleteRace() {
         for (int i = 0; i < 500; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-            Disposable d = Disposables.empty();
+            BooleanSubscription d = new BooleanSubscription();
 
             so.onSubscribe(d);
 
@@ -1046,11 +1043,11 @@ public class SerializedObserverTest {
     @Test
     public void onNextOnCompleteRace() {
         for (int i = 0; i < 500; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-            Disposable d = Disposables.empty();
+            BooleanSubscription d = new BooleanSubscription();
 
             so.onSubscribe(d);
 
@@ -1082,11 +1079,11 @@ public class SerializedObserverTest {
     @Test
     public void onNextOnErrorRace() {
         for (int i = 0; i < 500; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-            Disposable d = Disposables.empty();
+            BooleanSubscription d = new BooleanSubscription();
 
             so.onSubscribe(d);
 
@@ -1120,11 +1117,11 @@ public class SerializedObserverTest {
     @Test
     public void onNextOnErrorRaceDelayError() {
         for (int i = 0; i < 500; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts, true);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts, true);
 
-            Disposable d = Disposables.empty();
+            BooleanSubscription d = new BooleanSubscription();
 
             so.onSubscribe(d);
 
@@ -1161,19 +1158,19 @@ public class SerializedObserverTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-            so.onSubscribe(Disposables.empty());
+            so.onSubscribe(new BooleanSubscription());
 
-            Disposable d = Disposables.empty();
+            BooleanSubscription d = new BooleanSubscription();
 
             so.onSubscribe(d);
 
-            assertTrue(d.isDisposed());
+            assertTrue(d.isCancelled());
 
-            TestHelper.assertError(error, 0, IllegalStateException.class, "Disposable already set!");
+            TestHelper.assertError(error, 0, IllegalStateException.class, "Subscription already set!");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1182,11 +1179,11 @@ public class SerializedObserverTest {
     @Test
     public void onCompleteOnErrorRace() {
         for (int i = 0; i < 500; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-            Disposable d = Disposables.empty();
+            BooleanSubscription d = new BooleanSubscription();
 
             so.onSubscribe(d);
 

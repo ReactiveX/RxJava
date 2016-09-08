@@ -294,7 +294,7 @@ public class ObservableWindowWithObservableTest {
         TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
         source.window(boundary).subscribe(ts);
 
-        assertFalse(ts.isCancelled());
+        assertTrue("Not cancelled!", ts.isCancelled());
     }
 
     @Test

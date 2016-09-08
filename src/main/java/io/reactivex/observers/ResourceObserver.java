@@ -48,7 +48,7 @@ public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
 
     @Override
     public final void onSubscribe(Disposable s) {
-        if (!DisposableHelper.setOnce(this.s, s)) {
+        if (DisposableHelper.setOnce(this.s, s)) {
             onStart();
         }
     }

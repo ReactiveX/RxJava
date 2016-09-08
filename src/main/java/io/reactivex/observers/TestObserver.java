@@ -131,6 +131,8 @@ public class TestObserver<T> implements Observer<T>, Disposable {
                             values.add(t);
                         }
                         completions++;
+
+                        subscription.lazySet(DisposableHelper.DISPOSED);
                     } catch (Throwable ex) {
                         // Exceptions.throwIfFatal(e); TODO add fatal exceptions?
                         errors.add(ex);
@@ -193,6 +195,8 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             }
 
             actual.onError(t);
+
+            subscription.lazySet(DisposableHelper.DISPOSED);
         } finally {
             done.countDown();
         }
@@ -212,6 +216,8 @@ public class TestObserver<T> implements Observer<T>, Disposable {
             completions++;
 
             actual.onComplete();
+
+            subscription.lazySet(DisposableHelper.DISPOSED);
         } finally {
             done.countDown();
         }

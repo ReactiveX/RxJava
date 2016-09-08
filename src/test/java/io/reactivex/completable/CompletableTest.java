@@ -2470,11 +2470,15 @@ public class CompletableTest {
                     }
                 });
 
-        c.subscribe();
+        Disposable d = c.subscribe();
+
+        assertFalse(d.isDisposed());
 
         Thread.sleep(150);
 
         Assert.assertTrue("Not completed", complete.get());
+
+        assertTrue(d.isDisposed());
     }
 
     @Test(timeout = 1000)
@@ -4530,4 +4534,20 @@ public class CompletableTest {
 
         assertEquals(1, atomicInteger.get());
     }
+
+
+    @Test(timeout = 1000)
+    public void subscribeTwoCallbacksDispose() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        Disposable d = pp.toCompletable().subscribe(Functions.EMPTY_ACTION, Functions.emptyConsumer());
+
+        assertFalse(d.isDisposed());
+        assertTrue(pp.hasSubscribers());
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+        assertFalse(pp.hasSubscribers());
+    }
+
 }

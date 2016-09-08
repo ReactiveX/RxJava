@@ -27,8 +27,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ObservableUnsubscribeOnTest {
 
-    @Test
-    public void testUnsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnSameThread() throws InterruptedException {
+    @Test(timeout = 5000)
+    public void unsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnSameThread() throws InterruptedException {
         UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
@@ -45,11 +45,13 @@ public class ObservableUnsubscribeOnTest {
                 }
             });
 
-            TestObserver<Integer> NbpObserver = new TestObserver<Integer>();
-            w.subscribeOn(UI_EVENT_LOOP).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(NbpObserver);
+            TestObserver<Integer> observer = new TestObserver<Integer>();
+            w.subscribeOn(UI_EVENT_LOOP).observeOn(Schedulers.computation())
+            .unsubscribeOn(UI_EVENT_LOOP)
+            .take(2)
+            .subscribe(observer);
 
-            NbpObserver.awaitTerminalEvent(1, TimeUnit.SECONDS);
-            NbpObserver.dispose();
+            observer.awaitTerminalEvent(5, TimeUnit.SECONDS);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -64,15 +66,15 @@ public class ObservableUnsubscribeOnTest {
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
             assertTrue(unsubscribeThread == UI_EVENT_LOOP.getThread());
 
-            NbpObserver.assertValues(1, 2);
-            NbpObserver.assertTerminated();
+            observer.assertValues(1, 2);
+            observer.assertTerminated();
         } finally {
             UI_EVENT_LOOP.shutdown();
         }
     }
 
-    @Test
-    public void testUnsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnDifferentThreads() throws InterruptedException {
+    @Test(timeout = 5000)
+    public void unsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnDifferentThreads() throws InterruptedException {
         UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
@@ -89,11 +91,13 @@ public class ObservableUnsubscribeOnTest {
                 }
             });
 
-            TestObserver<Integer> NbpObserver = new TestObserver<Integer>();
-            w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(NbpObserver);
+            TestObserver<Integer> observer = new TestObserver<Integer>();
+            w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation())
+            .unsubscribeOn(UI_EVENT_LOOP)
+            .take(2)
+            .subscribe(observer);
 
-            NbpObserver.awaitTerminalEvent(1, TimeUnit.SECONDS);
-            NbpObserver.dispose();
+            observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -109,8 +113,8 @@ public class ObservableUnsubscribeOnTest {
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
             assertSame(unsubscribeThread, UI_EVENT_LOOP.getThread());
 
-            NbpObserver.assertValues(1, 2);
-            NbpObserver.assertTerminated();
+            observer.assertValues(1, 2);
+            observer.assertTerminated();
         } finally {
             UI_EVENT_LOOP.shutdown();
         }

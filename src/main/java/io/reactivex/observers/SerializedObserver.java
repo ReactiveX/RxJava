@@ -14,8 +14,6 @@ package io.reactivex.observers;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -194,34 +192,9 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
                 queue = null;
             }
 
-            try {
-                q.forEachWhile(consumer);
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
+            if (q.accept(actual)) {
                 return;
             }
         }
-    }
-
-    final Predicate<Object> consumer = new Predicate<Object>() {
-        @Override
-        public boolean test(Object v) {
-            return accept(v);
-        }
-    };
-
-
-    boolean accept(Object value) {
-        if (NotificationLite.isComplete(value)) {
-            actual.onComplete();
-            return true;
-        } else
-        if (NotificationLite.isError(value)) {
-            actual.onError(NotificationLite.getError(value));
-            return true;
-        }
-        actual.onNext(NotificationLite.<T>getValue(value));
-        return false;
     }
 }

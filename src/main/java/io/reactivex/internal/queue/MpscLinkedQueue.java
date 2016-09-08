@@ -46,8 +46,11 @@ public final class MpscLinkedQueue<T> extends BaseLinkedQueue<T> {
      * @see java.util.Queue#offer(java.lang.Object)
      */
     @Override
-    public boolean offer(final T nextValue) {
-        final LinkedQueueNode<T> nextNode = new LinkedQueueNode<T>(nextValue);
+    public boolean offer(final T e) {
+        if (null == e) {
+            throw new NullPointerException("Null is not a valid element");
+        }
+        final LinkedQueueNode<T> nextNode = new LinkedQueueNode<T>(e);
         final LinkedQueueNode<T> prevProducerNode = xchgProducerNode(nextNode);
         // Should a producer thread get interrupted here the chain WILL be broken until that thread is resumed
         // and completes the store in prev.next.

@@ -36,14 +36,6 @@ public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposab
     }
 
     /**
-     * Returns the current Subscription sent to this Subscriber via onSubscribe().
-     * @return the current Subscription, may be null
-     */
-    protected final Subscription subscription() {
-        return s.get();
-    }
-
-    /**
      * Called once the single upstream Subscription is set via onSubscribe.
      */
     protected void onStart() {

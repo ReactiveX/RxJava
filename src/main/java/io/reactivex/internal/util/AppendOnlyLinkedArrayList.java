@@ -13,6 +13,9 @@
 
 package io.reactivex.internal.util;
 
+import org.reactivestreams.Subscriber;
+
+import io.reactivex.Observer;
 import io.reactivex.functions.*;
 
 /**
@@ -76,14 +79,81 @@ public class AppendOnlyLinkedArrayList<T> {
             for (int i = 0; i < c; i++) {
                 Object o = a[i];
                 if (o == null) {
-                    return;
+                    break;
                 }
                 if (consumer.test((T)o)) {
-                    return;
+                    break;
                 }
             }
             a = (Object[])a[c];
         }
+    }
+
+    /**
+     * Interprets the contents as NotificationLite objects and calls
+     * the appropriate Subscriber method.
+     * 
+     * @param <U> the target type
+     * @param subscriber the subscriber to emit the events to
+     * @return true if a terminal event has been reached
+     */
+    public <U> boolean accept(Subscriber<? super U> subscriber) {
+        Object[] a = head;
+        final int c = capacity;
+        while (a != null) {
+            for (int i = 0; i < c; i++) {
+                Object o = a[i];
+                if (o == null) {
+                    break;
+                }
+
+                if (NotificationLite.isComplete(o)) {
+                    subscriber.onComplete();
+                    return true;
+                } else
+                if (NotificationLite.isError(o)) {
+                    subscriber.onError(NotificationLite.getError(o));
+                    return true;
+                }
+                subscriber.onNext(NotificationLite.<U>getValue(o));
+            }
+            a = (Object[])a[c];
+        }
+        return false;
+    }
+
+
+    /**
+     * Interprets the contents as NotificationLite objects and calls
+     * the appropriate Observer method.
+     * 
+     * @param <U> the target type
+     * @param observer the observer to emit the events to
+     * @return true if a terminal event has been reached
+     */
+    public <U> boolean accept(Observer<? super U> observer) {
+        Object[] a = head;
+        final int c = capacity;
+        while (a != null) {
+            for (int i = 0; i < c; i++) {
+                Object o = a[i];
+                if (o == null) {
+                    break;
+                }
+
+                if (NotificationLite.isComplete(o)) {
+                    observer.onComplete();
+                    return true;
+                } else
+                if (NotificationLite.isError(o)) {
+                    observer.onError(NotificationLite.getError(o));
+                    return true;
+                }
+                observer.onNext(NotificationLite.<U>getValue(o));
+            }
+            a = (Object[])a[c];
+        }
+        return false;
     }
 
     /**

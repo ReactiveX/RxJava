@@ -32,12 +32,6 @@ abstract class BaseLinkedQueue<E> implements SimpleQueue<E> {
     protected final LinkedQueueNode<E> lvProducerNode() {
         return producerNode.get();
     }
-    protected final LinkedQueueNode<E> lpProducerNode() {
-        return producerNode.get();
-    }
-    protected final void spProducerNode(LinkedQueueNode<E> node) {
-        producerNode.lazySet(node);
-    }
     protected final LinkedQueueNode<E> xchgProducerNode(LinkedQueueNode<E> node) {
         return producerNode.getAndSet(node);
     }

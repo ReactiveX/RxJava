@@ -20,7 +20,7 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.TestHelper;
-import io.reactivex.functions.BiPredicate;
+import io.reactivex.functions.*;
 
 public class MiscUtilTest {
     @Test
@@ -85,8 +85,135 @@ public class MiscUtilTest {
         assertEquals(Arrays.asList(1, 2), out);
     }
 
+
+    @Test
+    public void appendOnlyLinkedArrayListForEachWhilePreGrow() throws Exception {
+        AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(12);
+
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        final List<Integer> out = new ArrayList<Integer>();
+
+        list.forEachWhile(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t2) throws Exception {
+                out.add(t2);
+                return t2 == 2;
+            }
+        });
+
+        assertEquals(Arrays.asList(1, 2), out);
+    }
+
+    @Test
+    public void appendOnlyLinkedArrayListForEachWhileExact() throws Exception {
+        AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(3);
+
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        final List<Integer> out = new ArrayList<Integer>();
+
+        list.forEachWhile(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t2) throws Exception {
+                out.add(t2);
+                return t2 == 2;
+            }
+        });
+
+        assertEquals(Arrays.asList(1, 2), out);
+    }
+
     @Test
     public void appendOnlyLinkedArrayListForEachWhileAll() throws Exception {
+        AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(2);
+
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        final List<Integer> out = new ArrayList<Integer>();
+
+        list.forEachWhile(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t2) throws Exception {
+                out.add(t2);
+                return t2 == 3;
+            }
+        });
+
+        assertEquals(Arrays.asList(1, 2, 3), out);
+    }
+
+    @Test
+    public void appendOnlyLinkedArrayListForEachWhileBigger() throws Exception {
+        AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(4);
+
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        final List<Integer> out = new ArrayList<Integer>();
+
+        list.forEachWhile(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t2) throws Exception {
+                out.add(t2);
+                return false;
+            }
+        });
+
+        assertEquals(Arrays.asList(1, 2, 3), out);
+    }
+
+    @Test
+    public void appendOnlyLinkedArrayListForEachWhileBiPreGrow() throws Exception {
+        AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(12);
+
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        final List<Integer> out = new ArrayList<Integer>();
+
+        list.forEachWhile(2, new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer t1, Integer t2) throws Exception {
+                out.add(t2);
+                return t1.equals(t2);
+            }
+        });
+
+        assertEquals(Arrays.asList(1, 2), out);
+    }
+
+    @Test
+    public void appendOnlyLinkedArrayListForEachWhileBiExact() throws Exception {
+        AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(3);
+
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        final List<Integer> out = new ArrayList<Integer>();
+
+        list.forEachWhile(2, new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer t1, Integer t2) throws Exception {
+                out.add(t2);
+                return t1.equals(t2);
+            }
+        });
+
+        assertEquals(Arrays.asList(1, 2), out);
+    }
+
+    @Test
+    public void appendOnlyLinkedArrayListForEachWhileBiAll() throws Exception {
         AppendOnlyLinkedArrayList<Integer> list = new AppendOnlyLinkedArrayList<Integer>(2);
 
         list.add(1);

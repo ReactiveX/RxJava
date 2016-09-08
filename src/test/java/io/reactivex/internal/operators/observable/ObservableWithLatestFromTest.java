@@ -253,7 +253,7 @@ public class ObservableWithLatestFromTest {
 
         source.onComplete();
 
-        assertFalse(ts.isCancelled());
+        assertTrue("Not cancelled!", ts.isCancelled());
     }
 
 

@@ -14,8 +14,6 @@ package io.reactivex.subscribers;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -181,26 +179,10 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
                 queue = null;
             }
 
-            try {
-                q.forEachWhile(consumer);
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                subscription.cancel();
-                actual.onError(ex);
+            if (q.accept(actual)) {
                 return;
             }
         }
-    }
-
-    final Predicate<Object> consumer = new Predicate<Object>() {
-        @Override
-        public boolean test(Object v) {
-            return accept(v);
-        }
-    };
-
-    boolean accept(Object value) {
-        return NotificationLite.accept(value, actual);
     }
 
     @Override

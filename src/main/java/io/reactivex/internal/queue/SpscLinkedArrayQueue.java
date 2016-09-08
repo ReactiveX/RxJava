@@ -64,6 +64,9 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
      */
     @Override
     public boolean offer(final T e) {
+        if (null == e) {
+            throw new NullPointerException("Null is not a valid element");
+        }
         // local load of field to avoid repeated loads after volatile reads
         final AtomicReferenceArray<Object> buffer = producerBuffer;
         final long index = lpProducerIndex();
