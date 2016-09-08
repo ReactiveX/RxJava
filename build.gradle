@@ -1,7 +1,7 @@
 buildscript {
   repositories { jcenter() }
-  dependencies { 
-    classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0' 
+  dependencies {
+    classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0'
     classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.1.0'
   }
 }
@@ -13,6 +13,7 @@ description = 'RxJava: Reactive Extensions for the JVM – a library for composi
 apply plugin: 'java'
 // apply plugin: 'pmd'
 apply plugin: 'findbugs'
+apply plugin: 'checkstyle'
 apply plugin: 'jacoco'
 apply plugin: 'ru.vyarus.animalsniffer'
 apply plugin: 'nebula.rxjava-project'
@@ -119,6 +120,10 @@ build.dependsOn jacocoTestReport
 // }
 
 // build.dependsOn pmdPrint
+
+checkstyle {
+    configFile file('checkstyle.xml')
+}
 
 findbugs {
     ignoreFailures true

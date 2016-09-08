@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+<module name="Checker">
+    <module name="TreeWalker">
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="^(?!\s+\* $).*?\s+$"/>
+            <property name="message" value="Line has trailing spaces."/>
+        </module>
+    </module>
+</module>
