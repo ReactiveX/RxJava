@@ -36,7 +36,7 @@ public final class SingleFromCallable<T> extends Single<T> {
             if (v != null) {
                 s.onSuccess(v);
             } else {
-                s.onError(new NullPointerException());
+                s.onError(new NullPointerException("The callable returned a null value"));
             }
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
