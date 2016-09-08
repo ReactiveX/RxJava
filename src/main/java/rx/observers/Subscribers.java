@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,8 +28,8 @@ public final class Subscribers {
     }
 
     /**
-     * Returns an inert {@link Subscriber} that does nothing in response to the emissions or notifications 
-     * from any {@code Observable} it subscribes to.  Will throw an {@link OnErrorNotImplementedException} if {@link Subscriber#onError onError} 
+     * Returns an inert {@link Subscriber} that does nothing in response to the emissions or notifications
+     * from any {@code Observable} it subscribes to.  Will throw an {@link OnErrorNotImplementedException} if {@link Subscriber#onError onError}
      * method is called
      *
      * @param <T> the observed value type
@@ -110,7 +110,7 @@ public final class Subscribers {
      * Creates an {@link Subscriber} that receives the emissions of any {@code Observable} it subscribes to via
      * {@link Subscriber#onNext onNext} and handles any {@link Subscriber#onError onError} notification but
      * ignores an {@link Subscriber#onCompleted onCompleted} notification.
-     * 
+     *
      * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
@@ -154,7 +154,7 @@ public final class Subscribers {
      * Creates an {@link Subscriber} that receives the emissions of any {@code Observable} it subscribes to via
      * {@link Subscriber#onNext onNext} and handles any {@link Subscriber#onError onError} or
      * {@link Subscriber#onCompleted onCompleted} notifications.
-     * 
+     *
      * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
@@ -206,11 +206,11 @@ public final class Subscribers {
      * <code>subscriber</code> and uses the subscription list of
      * <code>subscriber</code> when {@link Subscriber#add(rx.Subscription)} is
      * called.
-     * 
+     *
      * @param <T> the observed value type
      * @param subscriber
      *            the Subscriber to wrap.
-     * 
+     *
      * @return a new Subscriber that passes all events to
      *         <code>subscriber</code>, has backpressure controlled by
      *         <code>subscriber</code> and uses <code>subscriber</code> to
@@ -234,7 +234,7 @@ public final class Subscribers {
             public void onNext(T t) {
                 subscriber.onNext(t);
             }
-            
+
         };
     }
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -444,14 +444,14 @@ public class SafeObserverTest {
             super(message);
         }
     }
-    
+
     @Test
     public void testOnCompletedThrows() {
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
         SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(new Subscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                
+
             }
             @Override
             public void onError(Throwable e) {
@@ -462,7 +462,7 @@ public class SafeObserverTest {
                 throw new TestException();
             }
         });
-        
+
         try {
             s.onCompleted();
             Assert.fail();
@@ -470,7 +470,7 @@ public class SafeObserverTest {
            assertNull(error.get());
         }
     }
-    
+
     @Test
     public void testActual() {
         Subscriber<Integer> actual = new Subscriber<Integer>() {
@@ -485,7 +485,7 @@ public class SafeObserverTest {
             }
         };
         SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(actual);
-        
+
         assertSame(actual, s.getActual());
     }
 }

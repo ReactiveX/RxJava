@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -276,7 +276,7 @@ public class OnSubscribeRefCountTest {
             testConnectUnsubscribeRaceCondition();
         }
     }
-    
+
     @Test
     public void testConnectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
@@ -302,7 +302,7 @@ public class OnSubscribeRefCountTest {
                 });
 
         TestSubscriber<Long> s = new TestSubscriber<Long>();
-        
+
         o.publish().refCount().subscribeOn(Schedulers.computation()).subscribe(s);
         System.out.println("send unsubscribe");
         // now immediately unsubscribe while subscribeOn is racing to subscribe
@@ -528,10 +528,10 @@ public class OnSubscribeRefCountTest {
 
     @Test(timeout = 10000)
     public void testUpstreamErrorAllowsRetry() throws InterruptedException {
-        
+
         final AtomicReference<Throwable> err1 = new AtomicReference<Throwable>();
         final AtomicReference<Throwable> err2 = new AtomicReference<Throwable>();
-        
+
         final AtomicInteger intervalSubscribed = new AtomicInteger();
         Observable<String> interval =
                 Observable.interval(200,TimeUnit.MILLISECONDS)
@@ -602,12 +602,12 @@ public class OnSubscribeRefCountTest {
                         err2.set(t);
                     }
                 });
-        
+
         Thread.sleep(1300);
-        
+
         System.out.println(intervalSubscribed.get());
         assertEquals(6, intervalSubscribed.get());
-        
+
         assertNotNull("First subscriber didn't get the error", err1);
         assertNotNull("Second subscriber didn't get the error", err2);
     }

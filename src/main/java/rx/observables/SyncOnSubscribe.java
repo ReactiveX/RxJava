@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,14 +41,14 @@ import rx.plugins.RxJavaHooks;
  */
 @Beta
 public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
-    
+
     /* (non-Javadoc)
      * @see rx.functions.Action1#call(java.lang.Object)
      */
     @Override
     public final void call(final Subscriber<? super T> subscriber) {
         S state;
-        
+
         try {
             state = generateState();
         } catch (Throwable e) {
@@ -56,7 +56,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
             subscriber.onError(e);
             return;
         }
-        
+
         SubscriptionProducer<S, T> p = new SubscriptionProducer<S, T>(subscriber, this, state);
         subscriber.add(p);
         subscriber.setProducer(p);
@@ -67,7 +67,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * to produce a state value. This value is passed into {@link #next(Object, Observer) next(S
      * state, Observer <T> observer)} on the first iteration. Subsequent iterations of {@code next}
      * will receive the state returned by the previous invocation of {@code next}.
-     * 
+     *
      * @return the initial state value
      */
     protected abstract S generateState();
@@ -76,17 +76,17 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * Called to produce data to the downstream subscribers. To emit data to a downstream subscriber
      * call {@code observer.onNext(t)}. To signal an error condition call
      * {@code observer.onError(throwable)} or throw an Exception. To signal the end of a data stream
-     * call {@code 
+     * call {@code
      * observer.onCompleted()}. Implementations of this method must follow the following rules.
-     * 
+     *
      * <ul>
      * <li>Must not call {@code observer.onNext(t)} more than 1 time per invocation.</li>
      * <li>Must not call {@code observer.onNext(t)} concurrently.</li>
      * </ul>
-     * 
+     *
      * The value returned from an invocation of this method will be passed in as the {@code state}
      * argument of the next invocation of this method.
-     * 
+     *
      * @param state
      *            the state value (from {@link #generateState()} on the first invocation or the
      *            previous invocation of this method.
@@ -99,7 +99,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
     /**
      * Clean up behavior that is executed after the downstream subscriber's subscription is
      * unsubscribed. This method will be invoked exactly once.
-     * 
+     *
      * @param state
      *            the last state value prior from {@link #generateState()} or
      *            {@link #next(Object, Observer) next(S, Observer&lt;T&gt;)} before unsubscribe.
@@ -111,7 +111,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
     /**
      * Generates a synchronous {@link SyncOnSubscribe} that calls the provided {@code next} function
      * to generate data to downstream subscribers.
-     * 
+     *
      * @param <T> the type of the generated values
      * @param <S> the type of the associated state with each Subscriber
      * @param generator
@@ -122,7 +122,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @return a SyncOnSubscribe that emits data in a protocol compatible with back-pressure.
      */
     @Beta
-    public static <S, T> SyncOnSubscribe<S, T> createSingleState(Func0<? extends S> generator, 
+    public static <S, T> SyncOnSubscribe<S, T> createSingleState(Func0<? extends S> generator,
             final Action2<? super S, ? super Observer<? super T>> next) {
         Func2<S, ? super Observer<? super T>, S> nextFunc = new Func2<S, Observer<? super T>, S>() {
             @Override
@@ -137,9 +137,9 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
     /**
      * Generates a synchronous {@link SyncOnSubscribe} that calls the provided {@code next} function
      * to generate data to downstream subscribers.
-     * 
+     *
      * This overload creates a SyncOnSubscribe without an explicit clean up step.
-     * 
+     *
      * @param <T> the type of the generated values
      * @param <S> the type of the associated state with each Subscriber
      * @param generator
@@ -153,8 +153,8 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      *         back-pressure.
      */
     @Beta
-    public static <S, T> SyncOnSubscribe<S, T> createSingleState(Func0<? extends S> generator, 
-            final Action2<? super S, ? super Observer<? super T>> next, 
+    public static <S, T> SyncOnSubscribe<S, T> createSingleState(Func0<? extends S> generator,
+            final Action2<? super S, ? super Observer<? super T>> next,
             final Action1<? super S> onUnsubscribe) {
         Func2<S, Observer<? super T>, S> nextFunc = new Func2<S, Observer<? super T>, S>() {
             @Override
@@ -169,7 +169,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
     /**
      * Generates a synchronous {@link SyncOnSubscribe} that calls the provided {@code next} function
      * to generate data to downstream subscribers.
-     * 
+     *
      * @param <T> the type of the generated values
      * @param <S> the type of the associated state with each Subscriber
      * @param generator
@@ -183,16 +183,16 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      *         back-pressure.
      */
     @Beta
-    public static <S, T> SyncOnSubscribe<S, T> createStateful(Func0<? extends S> generator, 
-            Func2<? super S, ? super Observer<? super T>, ? extends S> next, 
+    public static <S, T> SyncOnSubscribe<S, T> createStateful(Func0<? extends S> generator,
+            Func2<? super S, ? super Observer<? super T>, ? extends S> next,
             Action1<? super S> onUnsubscribe) {
         return new SyncOnSubscribeImpl<S, T>(generator, next, onUnsubscribe);
     }
-    
+
     /**
      * Generates a synchronous {@link SyncOnSubscribe} that calls the provided {@code next} function
      * to generate data to downstream subscribers.
-     * 
+     *
      * @param <T> the type of the generated values
      * @param <S> the type of the associated state with each Subscriber
      * @param generator
@@ -204,7 +204,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      *         back-pressure.
      */
     @Beta
-    public static <S, T> SyncOnSubscribe<S, T> createStateful(Func0<? extends S> generator, 
+    public static <S, T> SyncOnSubscribe<S, T> createStateful(Func0<? extends S> generator,
             Func2<? super S, ? super Observer<? super T>, ? extends S> next) {
         return new SyncOnSubscribeImpl<S, T>(generator, next);
     }
@@ -212,10 +212,10 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
     /**
      * Generates a synchronous {@link SyncOnSubscribe} that calls the provided {@code next} function
      * to generate data to downstream subscribers.
-     * 
+     *
      * This overload creates a "state-less" SyncOnSubscribe which does not have an explicit state
      * value. This should be used when the {@code next} function closes over it's state.
-     * 
+     *
      * @param <T> the type of the generated values
      * @param next
      *            produces data to the downstream subscriber (see {@link #next(Object, Observer)
@@ -238,10 +238,10 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
     /**
      * Generates a synchronous {@link SyncOnSubscribe} that calls the provided {@code next} function
      * to generate data to downstream subscribers.
-     * 
+     *
      * This overload creates a "state-less" SyncOnSubscribe which does not have an explicit state
      * value. This should be used when the {@code next} function closes over it's state.
-     * 
+     *
      * @param <T> the type of the generated values
      * @param next
      *            produces data to the downstream subscriber (see {@link #next(Object, Observer)
@@ -252,7 +252,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      *         back-pressure.
      */
     @Beta
-    public static <T> SyncOnSubscribe<Void, T> createStateless(final Action1<? super Observer<? super T>> next, 
+    public static <T> SyncOnSubscribe<Void, T> createStateless(final Action1<? super Observer<? super T>> next,
             final Action0 onUnsubscribe) {
         Func2<Void, Observer<? super T>, Void> nextFunc = new Func2<Void, Observer<? super T>, Void>() {
             @Override
@@ -326,7 +326,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
      * @param <T>
      *            the type of compatible Subscribers
      */
-    static final class SubscriptionProducer<S, T> 
+    static final class SubscriptionProducer<S, T>
     extends AtomicLong implements Producer, Subscription, Observer<T> {
         /** */
         private static final long serialVersionUID = -3736864024352728072L;
@@ -334,7 +334,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
         private final SyncOnSubscribe<S, T> parent;
         private boolean onNextCalled;
         private boolean hasTerminated;
-        
+
         private S state;
 
         SubscriptionProducer(final Subscriber<? super T> subscriber, SyncOnSubscribe<S, T> parent, S state) {
@@ -347,7 +347,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
         public boolean isUnsubscribed() {
             return get() < 0L;
         }
-        
+
         @Override
         public void unsubscribe() {
             while(true) {
@@ -364,7 +364,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
                 }
             }
         }
-        
+
         private boolean tryUnsubscribe() {
             // only one thread at a time can iterate over request count
             // therefore the requestCount atomic cannot be decrement concurrently here
@@ -400,7 +400,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
         private void fastpath() {
             final SyncOnSubscribe<S, T> p = parent;
             Subscriber<? super T> a = actualSubscriber;
-            
+
             for (;;) {
                 try {
                     onNextCalled = false;
@@ -458,7 +458,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
         private void nextIteration(final SyncOnSubscribe<S, T> parent) {
             state = parent.next(state, this);
         }
-        
+
         @Override
         public void onCompleted() {
             if (hasTerminated) {
@@ -491,5 +491,5 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
         }
     }
 
-    
+
 }

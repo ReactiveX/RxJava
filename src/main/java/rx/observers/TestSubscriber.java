@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,19 +31,19 @@ import rx.exceptions.CompositeException;
 public class TestSubscriber<T> extends Subscriber<T> {
 
     private final Observer<T> delegate;
-    
+
     private final List<T> values;
-    
+
     private final List<Throwable> errors;
-    
+
     /** The number of onCompleted() calls. */
     private int completions;
-    
+
     private final CountDownLatch latch = new CountDownLatch(1);
-    
+
     /** Written after an onNext value has been added to the {@link #values} list. */
     private volatile int valueCount;
-    
+
     private volatile Thread lastSeenThread;
     /** The shared no-op observer. */
     private static final Observer<Object> INERT = new Observer<Object>() {
@@ -75,7 +75,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public TestSubscriber(long initialRequest) {
         this((Observer<T>)INERT, initialRequest);
     }
-    
+
     /**
      * Constructs a TestSubscriber with the initial request to be requested from upstream
      * and a delegate Observer to wrap.
@@ -93,7 +93,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         if (initialRequest >= 0L) {
             this.request(initialRequest);
         }
-        
+
         this.values = new ArrayList<T>();
         this.errors = new ArrayList<Throwable>();
     }
@@ -136,7 +136,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public static <T> TestSubscriber<T> create() {
         return new TestSubscriber<T>();
     }
-    
+
     /**
      * Factory method to construct a TestSubscriber with the given initial request amount and no delegation.
      * @param <T> the value type
@@ -147,7 +147,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public static <T> TestSubscriber<T> create(long initialRequest) {
         return new TestSubscriber<T>(initialRequest);
     }
-    
+
     /**
      * Factory method to construct a TestSubscriber which delegates events to the given Observer and
      * issues the given initial request amount.
@@ -174,7 +174,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public static <T> TestSubscriber<T> create(Subscriber<T> delegate) {
         return new TestSubscriber<T>(delegate);
     }
-    
+
     /**
      * Factory method to construct a TestSubscriber which delegates events to the given Observer and
      * an issues an initial request of Long.MAX_VALUE.
@@ -187,7 +187,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public static <T> TestSubscriber<T> create(Observer<T> delegate) {
         return new TestSubscriber<T>(delegate);
     }
-    
+
     /**
      * Notifies the Subscriber that the {@code Observable} has finished sending push-based notifications.
      * <p>
@@ -209,7 +209,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * completion via {@link #onCompleted}, as a {@link List}.
      *
      * @return a list of Notifications representing calls to this Subscriber's {@link #onCompleted} method
-     * 
+     *
      * @deprecated use {@link #getCompletions()} instead.
      */
     @Deprecated
@@ -221,7 +221,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
         return result;
     }
-    
+
     /**
      * Returns the number of times onCompleted was called on this TestSubscriber.
      * @return the number of times onCompleted was called on this TestSubscriber.
@@ -237,7 +237,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * <p>
      * If the {@code Observable} calls this method, it will not thereafter call {@link #onNext} or
      * {@link #onCompleted}.
-     * 
+     *
      * @param e
      *          the exception encountered by the Observable
      */
@@ -269,7 +269,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * <p>
      * The {@code Observable} will not call this method again after it calls either {@link #onCompleted} or
      * {@link #onError}.
-     * 
+     *
      * @param t
      *          the item emitted by the Observable
      */
@@ -280,7 +280,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         valueCount = values.size();
         delegate.onNext(t);
     }
-    
+
     /**
      * Returns the committed number of onNext elements that are safe to be
      * read from {@link #getOnNextEvents()} other threads.
@@ -289,7 +289,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public final int getValueCount() {
         return valueCount;
     }
-    
+
     /**
      * Allows calling the protected {@link #request(long)} from unit tests.
      *
@@ -331,7 +331,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
             assertItem(items.get(i), i);
         }
     }
-    
+
     private void assertItem(T expected, int i) {
         T actual = values.get(i);
         if (expected == null) {
@@ -340,8 +340,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
                 assertionError("Value at index: " + i + " expected to be [null] but was: [" + actual + "]\n");
             }
         } else if (!expected.equals(actual)) {
-            assertionError("Value at index: " + i 
-                    + " expected to be [" + expected + "] (" + expected.getClass().getSimpleName() 
+            assertionError("Value at index: " + i
+                    + " expected to be [" + expected + "] (" + expected.getClass().getSimpleName()
                     + ") but was: [" + actual + "] (" + (actual != null ? actual.getClass().getSimpleName() : "null") + ")\n");
 
         }
@@ -370,7 +370,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
         return valueCount >= expected;
     }
-    
+
     /**
      * Asserts that a single terminal event occurred, either {@link #onCompleted} or {@link #onError}.
      *
@@ -409,7 +409,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
 
     /**
      * Asserts that this {@code Subscriber} has received no {@code onError} notifications.
-     * 
+     *
      * @throws AssertionError
      *          if this {@code Subscriber} has received one or more {@code onError} notifications
      */
@@ -420,7 +420,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
     }
 
-    
+
     /**
      * Blocks until this {@link Subscriber} receives a notification that the {@code Observable} is complete
      * (either an {@code onCompleted} or {@code onError} notification).
@@ -488,7 +488,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public Thread getLastSeenThread() {
         return lastSeenThread;
     }
-    
+
     /**
      * Asserts that there is exactly one completion event.
      *
@@ -614,7 +614,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
             assertionError("Number of onNext events differ; expected: " + count + ", actual: " + s);
         }
     }
-    
+
     /**
      * Asserts that the received onNext events, in order, are the specified items.
      *
@@ -636,7 +636,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public void assertValue(T value) {
         assertReceivedOnNext(Collections.singletonList(value));
     }
-    
+
     /**
      * Combines an assertion error message with the current completion and error state of this
      * TestSubscriber, giving more information when some assertXXX check fails.
@@ -644,10 +644,10 @@ public class TestSubscriber<T> extends Subscriber<T> {
      */
     final void assertionError(String message) {
         StringBuilder b = new StringBuilder(message.length() + 32);
-        
+
         b.append(message)
         .append(" (");
-        
+
         int c = completions;
         b.append(c)
         .append(" completion");
@@ -655,7 +655,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
             b.append('s');
         }
         b.append(')');
-        
+
         if (!errors.isEmpty()) {
             int size = errors.size();
             b.append(" (+")
@@ -666,7 +666,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
             }
             b.append(')');
         }
-        
+
         AssertionError ae = new AssertionError(b.toString());
         if (!errors.isEmpty()) {
             if (errors.size() == 1) {
@@ -677,21 +677,21 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
         throw ae;
     }
-    
+
     /**
      * Assert that the TestSubscriber contains the given first and optional rest values exactly
      * and if so, clears the internal list of values.
      * <p>
      * <code><pre>
      * TestSubscriber ts = new TestSubscriber();
-     * 
+     *
      * ts.onNext(1);
-     * 
+     *
      * ts.assertValuesAndClear(1);
-     * 
+     *
      * ts.onNext(2);
      * ts.onNext(3);
-     * 
+     *
      * ts.assertValuesAndClear(2, 3); // no mention of 1
      * </pre></code>
      * @param expectedFirstValue the expected first value

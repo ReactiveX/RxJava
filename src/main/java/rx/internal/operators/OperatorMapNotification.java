@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -54,17 +54,17 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
         });
         return parent;
     }
-    
+
     static final class MapNotificationSubscriber<T, R> extends Subscriber<T> {
-        
+
         final Subscriber<? super R> actual;
-        
+
         final Func1<? super T, ? extends R> onNext;
-        
+
         final Func1<? super Throwable, ? extends R> onError;
-        
+
         final Func0<? extends R> onCompleted;
-        
+
         final AtomicLong requested;
 
         final AtomicLong missedRequested;
@@ -72,12 +72,12 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
         final AtomicReference<Producer> producer;
 
         long produced;
-        
+
         R value;
-        
+
         static final long COMPLETED_FLAG = Long.MIN_VALUE;
         static final long REQUESTED_MASK = Long.MAX_VALUE;
-        
+
         public MapNotificationSubscriber(Subscriber<? super R> actual, Func1<? super T, ? extends R> onNext,
                 Func1<? super Throwable, ? extends R> onError, Func0<? extends R> onCompleted) {
             this.actual = actual;
@@ -98,7 +98,7 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
                 Exceptions.throwOrReport(ex, actual, t);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             accountProduced();
@@ -109,7 +109,7 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
             }
             tryEmit();
         }
-        
+
         @Override
         public void onCompleted() {
             accountProduced();
@@ -120,14 +120,14 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
             }
             tryEmit();
         }
-        
+
         void accountProduced() {
             long p = produced;
             if (p != 0L && producer.get() != null) {
                 BackpressureUtils.produced(requested, p);
             }
         }
-        
+
         @Override
         public void setProducer(Producer p) {
             if (producer.compareAndSet(null, p)) {
@@ -139,7 +139,7 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
                 throw new IllegalStateException("Producer already set!");
             }
         }
-        
+
         void tryEmit() {
             for (;;) {
                 long r = requested.get();
@@ -159,7 +159,7 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
                 }
             }
         }
-        
+
         void requestInner(long n) {
             if (n < 0L) {
                 throw new IllegalArgumentException("n >= 0 required but it was " + n);
@@ -169,7 +169,7 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
             }
             for (;;) {
                 long r = requested.get();
-                
+
                 if ((r & COMPLETED_FLAG) != 0L) {
                     long v = r & REQUESTED_MASK;
                     long u = BackpressureUtils.addCap(v, n) | COMPLETED_FLAG;
@@ -191,7 +191,7 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
                     }
                 }
             }
-            
+
             AtomicReference<Producer> localProducer = producer;
             Producer actualProducer = localProducer.get();
             if (actualProducer != null) {

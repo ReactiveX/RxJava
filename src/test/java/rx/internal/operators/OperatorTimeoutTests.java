@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -350,58 +350,58 @@ public class OperatorTimeoutTests {
 
         verify(s, times(1)).unsubscribe();
     }
-    
+
     @Test
     public void withDefaultScheduler() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.just(1).timeout(5, TimeUnit.SECONDS).subscribe(ts);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void withSelector() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.just(1).timeout(new Func1<Integer, Observable<Object>>() {
             @Override
             public Observable<Object> call(Integer t) {
                 return Observable.never();
             }
         }).subscribe(ts);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void withSelectorAndDefault() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.just(1).timeout(new Func1<Integer, Observable<Object>>() {
             @Override
             public Observable<Object> call(Integer t) {
                 return Observable.never();
             }
         }, Observable.just(2)).subscribe(ts);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void withSelectorAndDefault2() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.just(1).concatWith(
         Observable.<Integer>never())
         .timeout(new Func1<Integer, Observable<Object>>() {
@@ -410,19 +410,19 @@ public class OperatorTimeoutTests {
                 return Observable.just((Object)1);
             }
         }, Observable.just(2)).subscribe(ts);
-        
+
         ts.assertValues(1, 2);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void withDefaultSchedulerAndOther() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.just(1).timeout(5, TimeUnit.SECONDS, Observable.just(2)).subscribe(ts);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();

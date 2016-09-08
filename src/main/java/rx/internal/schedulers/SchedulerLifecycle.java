@@ -21,16 +21,16 @@ package rx.internal.schedulers;
  * threads.
  */
 public interface SchedulerLifecycle {
-    /** 
-     * Allows the Scheduler instance to start threads 
+    /**
+     * Allows the Scheduler instance to start threads
      * and accept tasks on them.
-     * <p>Implementations should make sure the call is idempotent and threadsafe. 
+     * <p>Implementations should make sure the call is idempotent and threadsafe.
      */
     void start();
-    /** 
-     * Instructs the Scheduler instance to stop threads 
-     * and stop accepting tasks on any outstanding Workers. 
-     * <p>Implementations should make sure the call is idempotent and threadsafe. 
+    /**
+     * Instructs the Scheduler instance to stop threads
+     * and stop accepting tasks on any outstanding Workers.
+     * <p>Implementations should make sure the call is idempotent and threadsafe.
      */
     void shutdown();
 }

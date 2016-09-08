@@ -23,14 +23,14 @@ import rx.internal.util.unsafe.Pow2;
 
 
 /*
- * The code was inspired by the similarly named JCTools class: 
+ * The code was inspired by the similarly named JCTools class:
  * https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic
  */
 
 /**
  * A single-producer single-consumer array-backed queue which can allocate new arrays in case the consumer is slower
  * than the producer.
- * 
+ *
  * @param <T> the element type, not null
  */
 public final class SpscLinkedArrayQueue<T> implements Queue<T> {
@@ -43,7 +43,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     int consumerMask;
     AtomicReferenceArray<Object> consumerBuffer;
     final AtomicLong consumerIndex;
-    
+
     private static final Object HAS_NEXT = new Object();
 
     public SpscLinkedArrayQueue(final int bufferSize) {
@@ -175,10 +175,10 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
 
         return (T) e;
     }
-    
+
     @Override
     public void clear() {
-        while (poll() != null || !isEmpty()); // NOPMD 
+        while (poll() != null || !isEmpty()); // NOPMD
     }
 
     @SuppressWarnings("unchecked")
@@ -206,7 +206,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
             }
         }
     }
-    
+
     @Override
     public boolean isEmpty() {
         return lvProducerIndex() == lvConsumerIndex();
@@ -313,7 +313,7 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     public T element() {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Offer two elements at the same time.
      * <p>Don't use the regular offer() with this at all!
@@ -325,9 +325,9 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
         final AtomicReferenceArray<Object> buffer = producerBuffer;
         final long p = lvProducerIndex();
         final int m = producerMask;
-        
+
         int pi = calcWrappedOffset(p + 2, m);
-        
+
         if (null == lvElement(buffer, pi)) {
             pi = calcWrappedOffset(p, m);
             soElement(buffer, pi + 1, second);
@@ -337,14 +337,14 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
             final int capacity = buffer.length();
             final AtomicReferenceArray<Object> newBuffer = new AtomicReferenceArray<Object>(capacity);
             producerBuffer = newBuffer;
-            
+
             pi = calcWrappedOffset(p, m);
             soElement(newBuffer, pi + 1, second);// StoreStore
             soElement(newBuffer, pi, first);
             soNext(buffer, newBuffer);
-            
+
             soElement(buffer, pi, HAS_NEXT); // new buffer is visible after element is
-            
+
             soProducerIndex(p + 2);// this ensures correctness on 32bit platforms
         }
 

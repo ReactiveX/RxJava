@@ -44,7 +44,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
      * @param count
      *            the number of elements a buffer should have before being emitted
      * @param skip
-     *            the interval with which chunks have to be created. Note that when {@code skip == count} 
+     *            the interval with which chunks have to be created. Note that when {@code skip == count}
      *            the operator will produce non-overlapping chunks. If
      *            {@code skip < count}, this buffer operation will produce overlapping chunks and if
      *            {@code skip > count} non-overlapping chunks will be created and some values will not be pushed
@@ -65,40 +65,40 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
     public Subscriber<? super T> call(final Subscriber<? super List<T>> child) {
         if (skip == count) {
             BufferExact<T> parent = new BufferExact<T>(child, count);
-            
+
             child.add(parent);
             child.setProducer(parent.createProducer());
-            
+
             return parent;
         }
         if (skip > count) {
             BufferSkip<T> parent = new BufferSkip<T>(child, count, skip);
-            
+
             child.add(parent);
             child.setProducer(parent.createProducer());
-            
+
             return parent;
         }
         BufferOverlap<T> parent = new BufferOverlap<T>(child, count, skip);
-        
+
         child.add(parent);
         child.setProducer(parent.createProducer());
-        
+
         return parent;
     }
-    
+
     static final class BufferExact<T> extends Subscriber<T> {
         final Subscriber<? super List<T>> actual;
         final int count;
 
         List<T> buffer;
-        
+
         public BufferExact(Subscriber<? super List<T>> actual, int count) {
             this.actual = actual;
             this.count = count;
             this.request(0L);
         }
-        
+
         @Override
         public void onNext(T t) {
             List<T> b = buffer;
@@ -106,21 +106,21 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                 b = new ArrayList<T>(count);
                 buffer = b;
             }
-            
+
             b.add(t);
-            
+
             if (b.size() == count) {
                 buffer = null;
                 actual.onNext(b);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             buffer = null;
             actual.onError(e);
         }
-        
+
         @Override
         public void onCompleted() {
             List<T> b = buffer;
@@ -129,7 +129,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
             }
             actual.onCompleted();
         }
-        
+
         Producer createProducer() {
             return new Producer() {
                 @Override
@@ -145,14 +145,14 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
             };
         }
     }
-    
+
     static final class BufferSkip<T> extends Subscriber<T> {
         final Subscriber<? super List<T>> actual;
         final int count;
         final int skip;
-        
+
         long index;
-        
+
         List<T> buffer;
 
         public BufferSkip(Subscriber<? super List<T>> actual, int count, int skip) {
@@ -161,7 +161,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
             this.skip = skip;
             this.request(0L);
         }
-        
+
         @Override
         public void onNext(T t) {
             long i = index;
@@ -176,23 +176,23 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
             } else {
                 index = i;
             }
-            
+
             if (b != null) {
                 b.add(t);
-                
+
                 if (b.size() == count) {
                     buffer = null;
                     actual.onNext(b);
                 }
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             buffer = null;
             actual.onError(e);
         }
-        
+
         @Override
         public void onCompleted() {
             List<T> b = buffer;
@@ -202,11 +202,11 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
             }
             actual.onCompleted();
         }
-        
+
         Producer createProducer() {
             return new BufferSkipProducer();
         }
-        
+
         final class BufferSkipProducer
         extends AtomicBoolean
         implements Producer {
@@ -233,18 +233,18 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
             }
         }
     }
-    
+
     static final class BufferOverlap<T> extends Subscriber<T> {
         final Subscriber<? super List<T>> actual;
         final int count;
         final int skip;
-        
+
         long index;
-        
+
         final ArrayDeque<List<T>> queue;
-        
+
         final AtomicLong requested;
-        
+
         long produced;
 
         public BufferOverlap(Subscriber<? super List<T>> actual, int count, int skip) {
@@ -269,11 +269,11 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
             } else {
                 index = i;
             }
-            
+
             for (List<T> list : queue) {
                 list.add(t);
             }
-            
+
             List<T> b = queue.peek();
             if (b != null && b.size() == count) {
                 queue.poll();
@@ -281,18 +281,18 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                 actual.onNext(b);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             queue.clear();
-            
+
             actual.onError(e);
         }
-        
+
         @Override
         public void onCompleted() {
             long p = produced;
-            
+
             if (p != 0L) {
                 if (p > requested.get()) {
                     actual.onError(new MissingBackpressureException("More produced than requested? " + p));
@@ -300,14 +300,14 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                 }
                 requested.addAndGet(-p);
             }
-            
+
             BackpressureUtils.postCompleteDone(requested, queue, actual);
         }
-        
+
         Producer createProducer() {
             return new BufferOverlapProducer();
         }
-        
+
         final class BufferOverlapProducer extends AtomicBoolean implements Producer {
 
             /** */
@@ -321,7 +321,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                         if (!get() && compareAndSet(false, true)) {
                             long u = BackpressureUtils.multiplyCap(parent.skip, n - 1);
                             long v = BackpressureUtils.addCap(u, parent.count);
-                            
+
                             parent.request(v);
                         } else {
                             long u = BackpressureUtils.multiplyCap(parent.skip, n);
@@ -330,7 +330,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                     }
                 }
             }
-            
+
         }
     }
 }

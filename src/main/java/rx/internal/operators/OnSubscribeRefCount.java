@@ -27,7 +27,7 @@ import rx.subscriptions.*;
 /**
  * Returns an observable sequence that stays connected to the source as long as
  * there is at least one subscription to the observable sequence.
- * 
+ *
  * @param <T>
  *            the value type
  */
@@ -44,7 +44,7 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param source
      *            observable to apply ref count to
      */
@@ -104,11 +104,11 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
             }
         };
     }
-    
+
     void doSubscribe(final Subscriber<? super T> subscriber, final CompositeSubscription currentBase) {
         // handle unsubscribing from the base subscription
         subscriber.add(disconnect(currentBase));
-        
+
         source.unsafeSubscribe(new Subscriber<T>(subscriber) {
             @Override
             public void onError(Throwable e) {
@@ -126,7 +126,7 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
             }
             void cleanup() {
                 // on error or completion we need to unsubscribe the base subscription
-                // and set the subscriptionCount to 0 
+                // and set the subscriptionCount to 0
                 lock.lock();
                 try {
                     if (baseSubscription == currentBase) {

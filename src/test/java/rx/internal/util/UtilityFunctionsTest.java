@@ -25,7 +25,7 @@ public class UtilityFunctionsTest {
     public void constructorShouldBePrivate() {
         TestUtil.checkUtilityClass(UtilityFunctions.class);
     }
-    
+
     @Test
     public void alwaysFalse() {
         assertEquals(1, UtilityFunctions.AlwaysFalse.values().length);

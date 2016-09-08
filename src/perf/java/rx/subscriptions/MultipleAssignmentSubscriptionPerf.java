@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,9 +39,9 @@ public class MultipleAssignmentSubscriptionPerf {
         public int loop;
         @Param({ "1", "5", "10", "100" })
         public int count;
-        
+
         public final MultipleAssignmentSubscription csub = new MultipleAssignmentSubscription();
-        
+
         public Subscription[] values;
         @Setup
         public void setup() {
@@ -54,7 +54,7 @@ public class MultipleAssignmentSubscriptionPerf {
                     }
                     @Override
                     public void unsubscribe() {
-                        
+
                     }
                 };
             }
@@ -64,7 +64,7 @@ public class MultipleAssignmentSubscriptionPerf {
     public void add(TheState state) {
         MultipleAssignmentSubscription csub = state.csub;
         Subscription[] values = state.values;
-        
+
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
                 csub.set(values[j]);
@@ -75,7 +75,7 @@ public class MultipleAssignmentSubscriptionPerf {
     public void addLocal(TheState state, Blackhole bh) {
         MultipleAssignmentSubscription csub = new MultipleAssignmentSubscription();
         Subscription[] values = state.values;
-        
+
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
                 csub.set(values[j]);

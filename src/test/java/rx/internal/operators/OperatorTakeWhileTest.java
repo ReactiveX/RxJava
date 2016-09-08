@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -219,7 +219,7 @@ public class OperatorTakeWhileTest {
             System.out.println("done starting TestObservable thread");
         }
     }
-    
+
     @Test
     public void testBackpressure() {
         Observable<Integer> source = Observable.range(1, 1000).takeWhile(new Func1<Integer, Boolean>() {
@@ -234,18 +234,18 @@ public class OperatorTakeWhileTest {
                 request(5);
             }
         };
-        
+
         source.subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
-        
+
         ts.requestMore(5);
 
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
-    
+
     @Test
     public void testNoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.range(1, 1000).takeWhile(new Func1<Integer, Boolean>() {
@@ -255,15 +255,15 @@ public class OperatorTakeWhileTest {
             }
         });
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.unsafeSubscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1));
-        
+
         Assert.assertFalse("Unsubscribed!", ts.isUnsubscribed());
     }
-    
+
     @Test
     public void testErrorCauseIncludesLastValue() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -273,10 +273,10 @@ public class OperatorTakeWhileTest {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertTerminalEvent();
         ts.assertNoValues();
         assertTrue(ts.getOnErrorEvents().get(0).getCause().getMessage().contains("abc"));
     }
-    
+
 }

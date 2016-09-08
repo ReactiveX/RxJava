@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -773,7 +773,7 @@ public class OnSubscribeCombineLatestTest {
             testBackpressure();
         }
     }
-    
+
     @Test
     public void testBackpressure() {
         Func2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
@@ -830,7 +830,7 @@ public class OnSubscribeCombineLatestTest {
 
         assertEquals(SIZE, count.get());
     }
-    
+
     @Test(timeout=10000)
     public void testCombineLatestRequestOverflow() throws InterruptedException {
         @SuppressWarnings("unchecked")
@@ -843,7 +843,7 @@ public class OnSubscribeCombineLatestTest {
         //should get at least 4
         final CountDownLatch latch = new CountDownLatch(4);
         o.subscribeOn(Schedulers.computation()).subscribe(new Subscriber<Integer>() {
-            
+
             @Override
             public void onStart() {
                 request(2);
@@ -870,18 +870,18 @@ public class OnSubscribeCombineLatestTest {
     @Test
     public void testCombineMany() {
         int n = RxRingBuffer.SIZE * 3;
-        
+
         List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
-        
+
         StringBuilder expected = new StringBuilder(n * 2);
-        
+
         for (int i = 0; i < n; i++) {
             sources.add(Observable.just(i));
             expected.append(i);
         }
-        
+
         TestSubscriber<String> ts = TestSubscriber.create();
-        
+
         Observable.combineLatest(sources, new FuncN<String>() {
             @Override
             public String call(Object... args) {
@@ -892,26 +892,26 @@ public class OnSubscribeCombineLatestTest {
                 return b.toString();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertValue(expected.toString());
         ts.assertCompleted();
     }
-    
+
     @Test
     public void testCombineManyNulls() {
         int n = RxRingBuffer.SIZE * 3;
-        
+
         Observable<Integer> source = Observable.just((Integer)null);
-        
+
         List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
-        
+
         for (int i = 0; i < n; i++) {
             sources.add(source);
         }
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.combineLatest(sources, new FuncN<Integer>() {
             @Override
             public Integer call(Object... args) {
@@ -924,7 +924,7 @@ public class OnSubscribeCombineLatestTest {
                 return sum;
             }
         }).subscribe(ts);
-        
+
         ts.assertValue(n);
         ts.assertNoErrors();
         ts.assertCompleted();
@@ -948,7 +948,7 @@ public class OnSubscribeCombineLatestTest {
           .subscribe(ts);
         assertFalse(errorOccurred.get());
     }
-    
+
     private static final FuncN<Integer> THROW_NON_FATAL = new FuncN<Integer>() {
         @Override
         public Integer call(Object... args) {
@@ -956,12 +956,12 @@ public class OnSubscribeCombineLatestTest {
         }
 
     };
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void firstJustError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.combineLatestDelayError(
                 Arrays.asList(Observable.just(1), Observable.<Integer>error(new TestException())),
                 new FuncN<Integer>() {
@@ -971,7 +971,7 @@ public class OnSubscribeCombineLatestTest {
                     }
                 }
         ).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
@@ -981,7 +981,7 @@ public class OnSubscribeCombineLatestTest {
     @Test
     public void secondJustError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.combineLatestDelayError(
                 Arrays.asList(Observable.<Integer>error(new TestException()), Observable.just(1)),
                 new FuncN<Integer>() {
@@ -991,7 +991,7 @@ public class OnSubscribeCombineLatestTest {
                     }
                 }
         ).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
@@ -1001,7 +1001,7 @@ public class OnSubscribeCombineLatestTest {
     @Test
     public void oneErrors() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.combineLatestDelayError(
                 Arrays.asList(Observable.just(10).concatWith(Observable.<Integer>error(new TestException())), Observable.just(1)),
                 new FuncN<Integer>() {
@@ -1011,7 +1011,7 @@ public class OnSubscribeCombineLatestTest {
                     }
                 }
         ).subscribe(ts);
-        
+
         ts.assertValues(11);
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
@@ -1021,7 +1021,7 @@ public class OnSubscribeCombineLatestTest {
     @Test
     public void twoErrors() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.combineLatestDelayError(
                 Arrays.asList(Observable.just(1), Observable.just(10).concatWith(Observable.<Integer>error(new TestException()))),
                 new FuncN<Integer>() {
@@ -1031,7 +1031,7 @@ public class OnSubscribeCombineLatestTest {
                     }
                 }
         ).subscribe(ts);
-        
+
         ts.assertValues(11);
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
@@ -1041,9 +1041,9 @@ public class OnSubscribeCombineLatestTest {
     @Test
     public void bothError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.combineLatestDelayError(
-                Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())), 
+                Arrays.asList(Observable.just(1).concatWith(Observable.<Integer>error(new TestException())),
                         Observable.just(10).concatWith(Observable.<Integer>error(new TestException()))),
                 new FuncN<Integer>() {
                     @Override
@@ -1052,7 +1052,7 @@ public class OnSubscribeCombineLatestTest {
                     }
                 }
         ).subscribe(ts);
-        
+
         ts.assertValues(11);
         ts.assertError(CompositeException.class);
         ts.assertNotCompleted();
@@ -1062,9 +1062,9 @@ public class OnSubscribeCombineLatestTest {
     @Test
     public void combineLatestIterable() {
         Observable<Integer> source = Observable.just(1);
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.combineLatest((Iterable<Observable<Integer>>)Arrays.asList(source, source), new FuncN<Integer>() {
             @Override
             public Integer call(Object... args) {
@@ -1072,7 +1072,7 @@ public class OnSubscribeCombineLatestTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertValue(2);
         ts.assertNoErrors();
         ts.assertCompleted();

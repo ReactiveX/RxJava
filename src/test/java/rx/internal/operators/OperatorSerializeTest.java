@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -124,14 +124,14 @@ public class OperatorSerializeTest {
         for (int i = 0; i < 3; i++) {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
             Observable<String> w = Observable.create(onSubscribe);
-    
+
             BusyObserver busyobserver = new BusyObserver();
-    
+
             w.serialize().subscribe(busyobserver);
             onSubscribe.waitToFinish();
-    
+
             System.out.println("maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get());
-            // this should not always be the full number of items since the error should (very often) 
+            // this should not always be the full number of items since the error should (very often)
             // stop it before it completes all 9
             System.out.println("onNext count: " + busyobserver.onNextCount.get());
             if (busyobserver.onNextCount.get() < 9) {
@@ -143,7 +143,7 @@ public class OperatorSerializeTest {
             // non-deterministic because unsubscribe happens after 'waitToFinish' releases
             // so commenting out for now as this is not a critical thing to test here
             // verify(s, times(1)).unsubscribe();
-    
+
             // we can have concurrency ...
             assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
             // ... but the onNext execution should be single threaded
@@ -151,7 +151,7 @@ public class OperatorSerializeTest {
         }
         assertTrue(lessThan9);
     }
-    
+
     /**
      * A thread that will pass data to onNext
      */
@@ -302,7 +302,7 @@ public class OperatorSerializeTest {
                                             System.out.println("TestMultiThreadedObservable onNext: null");
                                             // force an error
                                             throw npe;
-                                        } else 
+                                        } else
                                             System.out.println("TestMultiThreadedObservable onNext: " + s);
                                         observer.onNext(s);
                                         // capture 'maxThreads'

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ import rx.plugins.RxJavaHooks;
  * <p>
  * Override the {@link #onStart()} method to execute custom logic on the very first successful onSubscribe call.
  * <p>
- * If one wants to remain consistent regarding {@link #isUnsubscribed()} and being terminated, 
+ * If one wants to remain consistent regarding {@link #isUnsubscribed()} and being terminated,
  * the {@link #clear()} method should be called from the implementing onError and onCompleted methods.
  * <p>
  * <pre><code>
@@ -40,13 +40,13 @@ import rx.plugins.RxJavaHooks;
  *     public void onStart() {
  *         System.out.println("Started!");
  *     }
- *     
+ *
  *     &#64;Override
  *     public void onCompleted() {
  *         System.out.println("Completed!");
  *         clear();
  *     }
- *     
+ *
  *     &#64;Override
  *     public void onError(Throwable e) {
  *         e.printStackTrace();
@@ -63,12 +63,12 @@ public abstract class AsyncCompletableSubscriber implements CompletableSubscribe
      */
     static final Unsubscribed UNSUBSCRIBED = new Unsubscribed();
 
-    /** 
+    /**
      * Holds onto a deferred subscription and allows asynchronous cancellation before the call
-     * to onSubscribe() by the upstream. 
+     * to onSubscribe() by the upstream.
      */
     private final AtomicReference<Subscription> upstream = new AtomicReference<Subscription>();
-    
+
     @Override
     public final void onSubscribe(Subscription d) {
         if (!upstream.compareAndSet(null, d)) {
@@ -80,26 +80,26 @@ public abstract class AsyncCompletableSubscriber implements CompletableSubscribe
             onStart();
         }
     }
-    
+
     /**
      * Called before the first onSubscribe() call succeeds.
      */
     protected void onStart() {
         // default behavior is no op
     }
-    
+
     @Override
     public final boolean isUnsubscribed() {
         return upstream.get() == UNSUBSCRIBED;
     }
-    
+
     /**
      * Call to clear the upstream's subscription without unsubscribing it.
      */
     protected final void clear() {
         upstream.set(UNSUBSCRIBED);
     }
-    
+
     @Override
     public final void unsubscribe() {
         Subscription current = upstream.get();
@@ -109,9 +109,9 @@ public abstract class AsyncCompletableSubscriber implements CompletableSubscribe
                 current.unsubscribe();
             }
         }
-        
+
     }
-    
+
     static final class Unsubscribed implements Subscription {
 
         @Override
@@ -123,6 +123,6 @@ public abstract class AsyncCompletableSubscriber implements CompletableSubscribe
         public boolean isUnsubscribed() {
             return true;
         }
-        
+
     }
 }

@@ -38,7 +38,7 @@ public final class PlatformDependent {
     private PlatformDependent() {
         throw new IllegalStateException("No instances!");
     }
-    
+
     /**
      * Returns {@code true} if and only if the current platform is Android.
      * @return {@code true} if and only if the current platform is Android
@@ -70,7 +70,7 @@ public final class PlatformDependent {
                     .forName("android.os.Build$VERSION", true, getSystemClassLoader())
                     .getField("SDK_INT")
                     .get(null);
-        } catch (Exception e) { // NOPMD 
+        } catch (Exception e) { // NOPMD
             // Can not resolve version of Android API, maybe current platform is not Android
             // or API of resolving current Version of Android API has changed in some release of Android
             return ANDROID_API_VERSION_IS_NOT_ANDROID;

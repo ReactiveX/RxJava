@@ -44,7 +44,7 @@ public final class SchedulerTests {
      * <p>
      * Schedulers which execute on a separate thread from their calling thread should exhibit this behavior. Schedulers
      * which execute on their calling thread may not.
-     * 
+     *
      * @param scheduler the scheduler to test
      * @throws InterruptedException if some wait is interrupted
      */

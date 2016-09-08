@@ -61,7 +61,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
             unsubscribe();
         }
     }
-    
+
     void signalError(Throwable ie) {
         RxJavaHooks.onError(ie);
         Thread thread = Thread.currentThread();
@@ -98,7 +98,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
     public void add(final Future<?> f) {
         cancel.add(new FutureCompleter(f));
     }
-    
+
     /**
      * Adds a parent {@link CompositeSubscription} to this {@code ScheduledAction} so when the action is
      * cancelled or terminates, it can remove itself from this parent.

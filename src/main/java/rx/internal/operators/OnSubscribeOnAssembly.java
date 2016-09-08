@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import rx.exceptions.AssemblyStackTraceException;
 public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
 
     final OnSubscribe<T> source;
-    
+
     final String stacktrace;
 
     /**
@@ -37,17 +37,17 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
      * stacktrace instead of the sanitized version.
      */
     public static volatile boolean fullStackTrace;
-    
+
     public OnSubscribeOnAssembly(OnSubscribe<T> source) {
         this.source = source;
         this.stacktrace = createStacktrace();
     }
-    
+
     static String createStacktrace() {
         StackTraceElement[] stes = Thread.currentThread().getStackTrace();
 
         StringBuilder sb = new StringBuilder("Assembly trace:");
-        
+
         for (StackTraceElement e : stes) {
             String row = e.toString();
             if (!fullStackTrace) {
@@ -87,7 +87,7 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
             }
             sb.append("\n at ").append(row);
         }
-        
+
         return sb.append("\nOriginal exception:").toString();
     }
 
@@ -95,13 +95,13 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
     public void call(Subscriber<? super T> t) {
         source.call(new OnAssemblySubscriber<T>(t, stacktrace));
     }
-    
+
     static final class OnAssemblySubscriber<T> extends Subscriber<T> {
 
         final Subscriber<? super T> actual;
-        
+
         final String stacktrace;
-        
+
         public OnAssemblySubscriber(Subscriber<? super T> actual, String stacktrace) {
             super(actual);
             this.actual = actual;
@@ -123,6 +123,6 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
         public void onNext(T t) {
             actual.onNext(t);
         }
-        
+
     }
 }

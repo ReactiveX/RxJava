@@ -29,26 +29,26 @@ import rx.SingleSubscriber;
  */
 public final class PerfAsyncSingleSubscriber extends SingleSubscriber<Object> {
     final Blackhole bh;
-    
+
     final CountDownLatch cdl;
-    
+
     public PerfAsyncSingleSubscriber(Blackhole bh) {
         this.bh = bh;
         this.cdl = new CountDownLatch(1);
     }
-    
+
     @Override
     public void onSuccess(Object value) {
         bh.consume(value);
         cdl.countDown();
     }
-    
+
     @Override
     public void onError(Throwable error) {
         bh.consume(error);
         cdl.countDown();
     }
-    
+
     /**
      * Sleeps until the subscriber receives an event.
      */
@@ -59,7 +59,7 @@ public final class PerfAsyncSingleSubscriber extends SingleSubscriber<Object> {
             throw new RuntimeException(ex);
         }
     }
-    
+
     /**
      * Spins until the subscriber receives an events.
      */

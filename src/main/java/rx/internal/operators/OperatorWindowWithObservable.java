@@ -27,7 +27,7 @@ import rx.subjects.UnicastSubject;
 /**
  * Creates non-overlapping windows of items where each window is terminated by
  * an event from a secondary observable and a new window is started immediately.
- * 
+ *
  * @param <T> the value type
  * @param <U> the boundary value type
  */
@@ -41,20 +41,20 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
     public OperatorWindowWithObservable(final Observable<U> other) {
         this.other = other;
     }
-    
+
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
-        
+
         SourceSubscriber<T> sub = new SourceSubscriber<T>(child);
         BoundarySubscriber<T, U> bs = new BoundarySubscriber<T, U>(sub);
-        
+
         child.add(sub);
         child.add(bs);
-        
+
         sub.replaceWindow();
-        
+
         other.unsafeSubscribe(bs);
-        
+
         return sub;
     }
     /** Observes the source. */
@@ -69,17 +69,17 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
         boolean emitting;
         /** Guarded by guard. */
         List<Object> queue;
-        
+
         public SourceSubscriber(Subscriber<? super Observable<T>> child) {
             this.child = new SerializedSubscriber<Observable<T>>(child);
             this.guard = new Object();
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             List<Object> localQueue;
@@ -104,7 +104,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
                         once = false;
                         emitValue(t);
                     }
-                    
+
                     synchronized (guard) {
                         localQueue = queue;
                         queue = null;
@@ -165,7 +165,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
                 s.onNext(t);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             synchronized (guard) {
@@ -247,7 +247,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             Observer<T> s = consumer;
             consumer = null;
             producer = null;
-            
+
             if (s != null) {
                 s.onCompleted();
             }
@@ -258,7 +258,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             Observer<T> s = consumer;
             consumer = null;
             producer = null;
-            
+
             if (s != null) {
                 s.onError(e);
             }
@@ -272,12 +272,12 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
         public BoundarySubscriber(SourceSubscriber<T> sub) {
             this.sub = sub;
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(U t) {
             sub.replaceWindow();

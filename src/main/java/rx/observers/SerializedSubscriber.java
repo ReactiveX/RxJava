@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ import rx.*;
  * <li>Adding notifications to a queue if another thread is already emitting</li>
  * <li>Not holding any locks or blocking any threads while emitting</li>
  * </ul>
- * 
+ *
  * @param <T>
  *          the type of items expected to be emitted to the {@code Subscriber}
  */
@@ -69,7 +69,7 @@ public class SerializedSubscriber<T> extends Subscriber<T> {
      * <p>
      * If the {@code Observable} calls this method, it will not thereafter call {@link #onNext} or
      * {@link #onCompleted}.
-     * 
+     *
      * @param e
      *          the exception encountered by the Observable
      */
@@ -85,7 +85,7 @@ public class SerializedSubscriber<T> extends Subscriber<T> {
      * <p>
      * The {@code Observable} will not call this method again after it calls either {@link #onCompleted} or
      * {@link #onError}.
-     * 
+     *
      * @param t
      *          the item emitted by the Observable
      */

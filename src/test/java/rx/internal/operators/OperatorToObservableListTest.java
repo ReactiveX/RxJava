@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,7 +50,7 @@ public class OperatorToObservableListTest {
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
-    
+
     @Test
     public void testListViaObservable() {
         Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
@@ -116,15 +116,15 @@ public class OperatorToObservableListTest {
                 requestMore(0);
             }
         };
-        
+
         w.subscribe(ts);
-        
+
         assertTrue(ts.getOnNextEvents().isEmpty());
         assertTrue(ts.getOnErrorEvents().isEmpty());
         assertEquals(0, ts.getCompletions());
-        
+
         ts.requestMore(1);
-        
+
         ts.assertReceivedOnNext(Collections.singletonList(Arrays.asList(1, 2, 3, 4, 5)));
         assertTrue(ts.getOnErrorEvents().isEmpty());
         assertEquals(1, ts.getCompletions());

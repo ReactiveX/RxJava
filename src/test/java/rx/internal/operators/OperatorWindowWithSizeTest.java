@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -200,16 +200,16 @@ public class OperatorWindowWithSizeTest {
         }
         return list;
     }
-    
+
     @Test
     public void testBackpressureOuter() {
         Observable<Observable<Integer>> source = Observable.range(1, 10).window(3);
-        
+
         final List<Integer> list = new ArrayList<Integer>();
-        
+
         @SuppressWarnings("unchecked")
         final Observer<Integer> o = mock(Observer.class);
-        
+
         source.subscribe(new Subscriber<Observable<Integer>>() {
             @Override
             public void onStart() {
@@ -241,9 +241,9 @@ public class OperatorWindowWithSizeTest {
                 o.onCompleted();
             }
         });
-        
+
         assertEquals(Arrays.asList(1, 2, 3), list);
-        
+
         verify(o, never()).onError(any(Throwable.class));
         verify(o, times(1)).onCompleted(); // 1 inner
     }
@@ -269,13 +269,13 @@ public class OperatorWindowWithSizeTest {
             }
         }).subscribeOn(Schedulers.newThread()); // use newThread since we are using sleep to block
     }
-    
+
     @Test
     public void testTakeFlatMapCompletes() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         final int indicator = 999999999;
-        
+
         hotStream()
         .window(10)
         .take(2)
@@ -285,18 +285,18 @@ public class OperatorWindowWithSizeTest {
                 return w.startWith(indicator);
             }
         }).subscribe(ts);
-        
+
         ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
         ts.assertCompleted();
         Assert.assertFalse(ts.getOnNextEvents().isEmpty());
     }
-    
+
     @Ignore("Requires #3678")
     @Test
     @SuppressWarnings("unchecked")
     public void testBackpressureOuterInexact() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0);
-        
+
         Observable.range(1, 5).window(2, 1)
         .map(new Func1<Observable<Integer>, Observable<List<Integer>>>() {
             @Override
@@ -305,11 +305,11 @@ public class OperatorWindowWithSizeTest {
             }
         }).concatMap(UtilityFunctions.<Observable<List<Integer>>>identity())
         .subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertNoValues();
         ts.assertNotCompleted();
-        
+
         ts.requestMore(2);
 
         ts.assertValues(Arrays.asList(1, 2), Arrays.asList(2, 3));
@@ -319,44 +319,44 @@ public class OperatorWindowWithSizeTest {
         ts.requestMore(5);
 
         System.out.println(ts.getOnNextEvents());
-        
+
         ts.assertValues(Arrays.asList(1, 2), Arrays.asList(2, 3),
                 Arrays.asList(3, 4), Arrays.asList(4, 5), Arrays.asList(5));
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void testBackpressureOuterOverlap() {
         Observable<Observable<Integer>> source = Observable.range(1, 10).window(3, 1);
-        
+
         TestSubscriber<Observable<Integer>> ts = TestSubscriber.create(0L);
-        
+
         source.subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();
-        
+
         ts.requestMore(1);
-        
+
         ts.assertValueCount(1);
         ts.assertNoErrors();
         ts.assertNotCompleted();
 
         ts.requestMore(7);
-        
+
         ts.assertValueCount(8);
         ts.assertNoErrors();
         ts.assertNotCompleted();
-        
+
         ts.requestMore(3);
 
         ts.assertValueCount(10);
         ts.assertCompleted();
         ts.assertNoErrors();
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testCountInvalid() {
         Observable.range(1, 10).window(0, 1);
@@ -369,25 +369,25 @@ public class OperatorWindowWithSizeTest {
     @Test
     public void testTake1Overlapping() {
         Observable<Observable<Integer>> source = Observable.range(1, 10).window(3, 1).take(1);
-        
+
         TestSubscriber<Observable<Integer>> ts = TestSubscriber.create(0L);
 
         source.subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();
-        
+
         ts.requestMore(2);
-        
+
         ts.assertValueCount(1);
         ts.assertCompleted();
         ts.assertNoErrors();
 
         TestSubscriber<Integer> ts1 = TestSubscriber.create();
-        
+
         ts.getOnNextEvents().get(0).subscribe(ts1);
-        
+
         ts1.assertValues(1, 2, 3);
         ts1.assertCompleted();
         ts1.assertNoErrors();

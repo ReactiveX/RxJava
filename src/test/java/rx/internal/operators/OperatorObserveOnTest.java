@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -265,8 +265,8 @@ public class OperatorObserveOnTest {
      * Attempts to confirm that when pauses exist between events, the ScheduledObserver
      * does not lose or reorder any events since the scheduler will not block, but will
      * be re-scheduled when it receives new events after each pause.
-     * 
-     * 
+     *
+     *
      * This is non-deterministic in proving success, but if it ever fails (non-deterministically)
      * it is a sign of potential issues as thread-races and scheduling should not affect output.
      */
@@ -585,22 +585,22 @@ public class OperatorObserveOnTest {
         for (int i = 1; i <= 1024; i = i * 2) {
             final int capacity = i;
             System.out.println(">> testQueueFullEmitsErrorWithVaryingBufferSize @ " + i);
-            
+
             PublishSubject<Integer> ps = PublishSubject.create();
-            
+
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-            
+
             TestScheduler test = Schedulers.test();
-            
+
             ps.observeOn(test, capacity).subscribe(ts);
-            
+
             for (int j = 0; j < capacity + 10; j++) {
                 ps.onNext(j);
             }
             ps.onCompleted();
-            
+
             test.advanceTimeBy(1, TimeUnit.SECONDS);
-            
+
             ts.assertNoValues();
             ts.assertError(MissingBackpressureException.class);
             ts.assertNotCompleted();
@@ -619,20 +619,20 @@ public class OperatorObserveOnTest {
     public void testOnErrorCutsAheadOfOnNext() {
         for (int i = 0; i < 50; i++) {
             final PublishSubject<Long> subject = PublishSubject.create();
-    
+
             final AtomicLong counter = new AtomicLong();
             TestSubscriber<Long> ts = new TestSubscriber<Long>(new Observer<Long>() {
-    
+
                 @Override
                 public void onCompleted() {
-    
+
                 }
-    
+
                 @Override
                 public void onError(Throwable e) {
-    
+
                 }
-    
+
                 @Override
                 public void onNext(Long t) {
                     // simulate slow consumer to force backpressure failure
@@ -641,16 +641,16 @@ public class OperatorObserveOnTest {
                     } catch (InterruptedException e) {
                     }
                 }
-    
+
             });
             subject.observeOn(Schedulers.computation()).subscribe(ts);
-    
+
             // this will blow up with backpressure
             while (counter.get() < 102400) {
                 subject.onNext(counter.get());
                 counter.incrementAndGet();
             }
-    
+
             ts.awaitTerminalEvent();
             assertEquals(1, ts.getOnErrorEvents().size());
             assertTrue(ts.getOnErrorEvents().get(0) instanceof MissingBackpressureException);
@@ -741,7 +741,7 @@ public class OperatorObserveOnTest {
                 .subscribe(new Subscriber<Integer>() {
 
                     boolean first = true;
-                    
+
                     @Override
                     public void onStart() {
                         request(2);
@@ -772,7 +772,7 @@ public class OperatorObserveOnTest {
         assertEquals(100, count.get());
 
     }
-    
+
     @Test
     public void testNoMoreRequestsAfterUnsubscribe() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
@@ -814,18 +814,18 @@ public class OperatorObserveOnTest {
     @Test
     public void testErrorDelayed() {
         TestScheduler s = Schedulers.test();
-        
+
         Observable<Integer> source = Observable.just(1, 2 ,3)
                 .concatWith(Observable.<Integer>error(new TestException()));
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
         source.observeOn(s, true).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();
-        
+
         s.advanceTimeBy(1, TimeUnit.SECONDS);
 
         ts.assertNoValues();
@@ -834,38 +834,38 @@ public class OperatorObserveOnTest {
 
         ts.requestMore(1);
         s.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         ts.assertValues(1);
         ts.assertNoErrors();
         ts.assertNotCompleted();
-        
+
         ts.requestMore(3); // requesting 2 doesn't switch to the error() source for some reason in concat.
         s.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         ts.assertValues(1, 2, 3);
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testErrorDelayedAsync() {
         Observable<Integer> source = Observable.just(1, 2 ,3)
                 .concatWith(Observable.<Integer>error(new TestException()));
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         source.observeOn(Schedulers.computation(), true).subscribe(ts);
-        
+
         ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
         ts.assertValues(1, 2, 3);
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void requestExactCompletesImmediately() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        
+
         TestScheduler test = Schedulers.test();
 
         Observable.range(1, 10).observeOn(test).subscribe(ts);
@@ -875,24 +875,24 @@ public class OperatorObserveOnTest {
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();
-        
+
         ts.requestMore(10);
 
         test.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         ts.assertValueCount(10);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void fixedReplenishPattern() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
         TestScheduler test = Schedulers.test();
-        
+
         final List<Long> requests = new ArrayList<Long>();
-        
+
         Observable.range(1, 100)
         .doOnRequest(new Action1<Long>() {
             @Override
@@ -901,7 +901,7 @@ public class OperatorObserveOnTest {
             }
         })
         .observeOn(test, 16).subscribe(ts);
-        
+
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         ts.requestMore(20);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -911,35 +911,35 @@ public class OperatorObserveOnTest {
         test.advanceTimeBy(1, TimeUnit.SECONDS);
         ts.requestMore(35);
         test.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         ts.assertValueCount(100);
         ts.assertCompleted();
         ts.assertNoErrors();
-        
+
         assertEquals(Arrays.asList(16L, 12L, 12L, 12L, 12L, 12L, 12L, 12L, 12L), requests);
     }
-    
+
     @Test
     public void bufferSizesWork() {
         for (int i = 1; i <= 1024; i = i * 2) {
             TestSubscriber<Integer> ts = TestSubscriber.create();
-            
+
             Observable.range(1, 1000 * 1000).observeOn(Schedulers.computation(), i)
             .subscribe(ts);
-            
+
             ts.awaitTerminalEvent();
             ts.assertValueCount(1000 * 1000);
             ts.assertCompleted();
             ts.assertNoErrors();
         }
     }
-    
+
     @Test
     public void synchronousRebatching() {
         final List<Long> requests = new ArrayList<Long>();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-            
+
         Observable.range(1, 50)
         .doOnRequest(new Action1<Long>() {
             @Override
@@ -949,14 +949,14 @@ public class OperatorObserveOnTest {
         })
        .rebatchRequests(20)
        .subscribe(ts);
-       
+
        ts.assertValueCount(50);
        ts.assertNoErrors();
        ts.assertCompleted();
-       
+
        assertEquals(Arrays.asList(20L, 15L, 15L, 15L), requests);
     }
-    
+
     @Test
     public void rebatchRequestsArgumentCheck() {
         try {

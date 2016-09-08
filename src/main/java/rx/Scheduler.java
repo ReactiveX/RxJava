@@ -145,7 +145,7 @@ public abstract class Scheduler {
                         if (nowNanos + CLOCK_DRIFT_TOLERANCE_NANOS < lastNowNanos
                                 || nowNanos >= lastNowNanos + periodInNanos + CLOCK_DRIFT_TOLERANCE_NANOS) {
                             nextTick = nowNanos + periodInNanos;
-                            /* 
+                            /*
                              * Shift the start point back by the drift as if the whole thing
                              * started count periods ago.
                              */

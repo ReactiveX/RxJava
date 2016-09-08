@@ -72,7 +72,7 @@ import rx.subscriptions.Subscriptions;
                 remove(bo);
             }
         }));
-    }    
+    }
     /** Set the latest NotificationLite value. */
     void setLatest(Object value) {
         latest = value;
@@ -153,7 +153,7 @@ import rx.subscriptions.Subscriptions;
         static final SubjectObserver[] NO_OBSERVERS = new SubjectObserver[0];
         static final State TERMINATED = new State(true, NO_OBSERVERS);
         static final State EMPTY = new State(false, NO_OBSERVERS);
-        
+
         public State(boolean terminated, SubjectObserver[] observers) {
             this.terminated = terminated;
             this.observers = observers;
@@ -197,7 +197,7 @@ import rx.subscriptions.Subscriptions;
             return new State<T>(terminated, b);
         }
     }
-    
+
     /**
      * Observer wrapping the actual Subscriber and providing various
      * emission facilities.
@@ -320,7 +320,7 @@ import rx.subscriptions.Subscriptions;
                 nl.accept(actual, n);
             }
         }
-        
+
         /** @return the actual Observer. */
         Observer<? super T> getActual() {
             return actual;

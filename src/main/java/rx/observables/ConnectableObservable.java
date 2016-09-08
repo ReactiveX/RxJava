@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ import rx.internal.operators.*;
  * before the {@code Observable} begins emitting items.
  * <p>
  * <img width="640" height="510" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.png" alt="">
- * 
+ *
  * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki:
  *      Connectable Observable Operators</a>
  * @param <T>
@@ -72,18 +72,18 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     /**
      * Returns an {@code Observable} that stays connected to this {@code ConnectableObservable} as long as there
      * is at least one subscription to this {@code ConnectableObservable}.
-     * 
+     *
      * @return a {@link Observable}
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
     public Observable<T> refCount() {
         return create(new OnSubscribeRefCount<T>(this));
     }
-    
+
     /**
      * Returns an Observable that automatically connects to this ConnectableObservable
      * when the first Subscriber subscribes.
-     * 
+     *
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the first Subscriber subscribes
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
@@ -95,7 +95,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     /**
      * Returns an Observable that automatically connects to this ConnectableObservable
      * when the specified number of Subscribers subscribe to it.
-     * 
+     *
      * @param numberOfSubscribers the number of subscribers to await before calling connect
      *                            on the ConnectableObservable. A non-positive value indicates
      *                            an immediate connection.
@@ -107,19 +107,19 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     public Observable<T> autoConnect(int numberOfSubscribers) {
         return autoConnect(numberOfSubscribers, Actions.empty());
     }
-    
+
     /**
      * Returns an Observable that automatically connects to this ConnectableObservable
-     * when the specified number of Subscribers subscribe to it and calls the 
+     * when the specified number of Subscribers subscribe to it and calls the
      * specified callback with the Subscription associated with the established connection.
-     * 
+     *
      * @param numberOfSubscribers the number of subscribers to await before calling connect
      *                            on the ConnectableObservable. A non-positive value indicates
      *                            an immediate connection.
      * @param connection the callback Action1 that will receive the Subscription representing the
      *                   established connection
      * @return an Observable that automatically connects to this ConnectableObservable
-     *         when the specified number of Subscribers subscribe to it and calls the 
+     *         when the specified number of Subscribers subscribe to it and calls the
      *         specified callback with the Subscription associated with the established connection
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */

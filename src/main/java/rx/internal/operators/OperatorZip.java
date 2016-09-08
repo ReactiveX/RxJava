@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,7 @@ import rx.subscriptions.CompositeSubscription;
  * <p>
  * The resulting Observable returned from zip will invoke <code>onNext</code> as many times as the
  * number of <code>onNext</code> invocations of the source Observable that emits the fewest items.
- * 
+ *
  * @param <R>
  *            the result type
  */
@@ -102,7 +102,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
         child.add(subscriber);
         child.setProducer(producer);
-        
+
         return subscriber;
     }
 
@@ -149,7 +149,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     static final class ZipProducer<R> extends AtomicLong implements Producer {
         /** */
         private static final long serialVersionUID = -1216676403723546796L;
-        
+
         final Zip<R> zipper;
 
         public ZipProducer(Zip<R> zipper) {
@@ -168,7 +168,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     static final class Zip<R> extends AtomicLong {
         /** */
         private static final long serialVersionUID = 5995274816189928317L;
-        
+
         final Observer<? super R> child;
         private final FuncN<? extends R> zipFunction;
         private final CompositeSubscription childSubscription = new CompositeSubscription();
@@ -194,10 +194,10 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                 subscribers[i] = io;
                 childSubscription.add(io);
             }
-            
+
             this.requested = requested;
             this.subscribers = subscribers; // full memory barrier: release all above
-            
+
             for (int i = 0; i < os.length; i++) {
                 os[i].unsafeSubscribe((InnerSubscriber) subscribers[i]);
             }
@@ -205,10 +205,10 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
         /**
          * check if we have values for each and emit if we do
-         * 
+         *
          * This will only allow one thread at a time to do the work, but ensures via `counter` increment/decrement
          * that there is always once who acts on each `tick`. Same concept as used in OperationObserveOn.
-         * 
+         *
          */
         @SuppressWarnings("unchecked")
         void tick() {
@@ -296,7 +296,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             public void onStart() {
                 request(RxRingBuffer.SIZE);
             }
-            
+
             public void requestMore(long n) {
                 request(n);
             }

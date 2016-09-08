@@ -29,7 +29,7 @@ import rx.*;
  * <p.
  * Use {@link #subscribeTo(Observable)} to properly setup the link between this and the downstream
  * subscriber.
- * 
+ *
  * @param <T> the source value type
  * @param <R> the result value type
  */
@@ -37,16 +37,16 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
 
     /** The downstream subscriber. */
     protected final Subscriber<? super R> actual;
-    
+
     /** Indicates there is a value available in value. */
     protected boolean hasValue;
-    
+
     /** The holder of the single value. */
     protected R value;
-    
+
     /** The state, see the constants below. */
     final AtomicInteger state;
-    
+
     /** Initial state. */
     static final int NO_REQUEST_NO_VALUE = 0;
     /** Request came first. */
@@ -55,18 +55,18 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
     static final int NO_REQUEST_HAS_VALUE = 2;
     /** Value will be emitted. */
     static final int HAS_REQUEST_HAS_VALUE = 3;
-    
+
     public DeferredScalarSubscriber(Subscriber<? super R> actual) {
         this.actual = actual;
         this.state = new AtomicInteger();
     }
-    
+
     @Override
     public void onError(Throwable ex) {
         value = null;
         actual.onError(ex);
     }
-    
+
     @Override
     public void onCompleted() {
         if (hasValue) {
@@ -75,14 +75,14 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
             complete();
         }
     }
-    
+
     /**
      * Signals onCompleted() to the downstream subscriber.
      */
     protected final void complete() {
         actual.onCompleted();
     }
-    
+
     /**
      * Atomically switches to the terminal state and emits the value if
      * there is a request for it or stores it for retrieval by {@code downstreamRequest(long)}.
@@ -92,7 +92,7 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
         Subscriber<? super R> a = actual;
         for (;;) {
             int s = state.get();
-            
+
             if (s == NO_REQUEST_HAS_VALUE || s == HAS_REQUEST_HAS_VALUE || a.isUnsubscribed()) {
                 return;
             }
@@ -110,7 +110,7 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
             }
         }
     }
-    
+
     final void downstreamRequest(long n) {
         if (n < 0L) {
             throw new IllegalArgumentException("n >= 0 required but it was " + n);
@@ -137,12 +137,12 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
             }
         }
     }
-    
+
     @Override
     public final void setProducer(Producer p) {
         p.request(Long.MAX_VALUE);
     }
-    
+
     /**
      * Links up with the downstream Subscriber (cancellation, backpressure) and
      * subscribes to the source Observable.
@@ -152,13 +152,13 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
         setupDownstream();
         source.unsafeSubscribe(this);
     }
-    
+
     /* test */ final void setupDownstream() {
         Subscriber<? super R> a = actual;
         a.add(this);
         a.setProducer(new InnerProducer(this));
     }
-    
+
     /**
      * Redirects the downstream request amount bach to the DeferredScalarSubscriber.
      */
@@ -168,7 +168,7 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
         public InnerProducer(DeferredScalarSubscriber<?, ?> parent) {
             this.parent = parent;
         }
-        
+
         @Override
         public void request(long n) {
             parent.downstreamRequest(n);

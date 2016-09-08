@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,10 +34,10 @@ import rx.functions.Func1;
 @OutputTimeUnit(TimeUnit.SECONDS)
 @State(Scope.Thread)
 public class SubscribingPerf {
-    
+
     Observable<Integer> just = Observable.just(1);
     Observable<Integer> range = Observable.range(1, 2);
-    
+
     @Benchmark
     public void justDirect(Blackhole bh) {
         DirectSubscriber<Integer> subscriber = new DirectSubscriber<Integer>(Long.MAX_VALUE, bh);
@@ -126,16 +126,16 @@ public class SubscribingPerf {
     public static class Chain {
         @Param({"10", "1000", "1000000"})
         public int times;
-        
+
         @Param({"1", "2", "3", "4", "5"})
         public int maps;
-        
+
         Observable<Integer> source;
-        
+
         @Setup
         public void setup() {
             Observable<Integer> o = Observable.range(1, times);
-            
+
             for (int i = 0; i < maps; i++) {
                 o = o.map(new Func1<Integer, Integer>() {
                     @Override
@@ -144,10 +144,10 @@ public class SubscribingPerf {
                     }
                 });
             }
-            
+
             source = o;
         }
-        
+
         @Benchmark
         public void mapped(Chain c, Blackhole bh) {
             DirectSubscriber<Integer> subscriber = new DirectSubscriber<Integer>(Long.MAX_VALUE, bh);
@@ -155,7 +155,7 @@ public class SubscribingPerf {
             c.source.subscribe(subscriber);
         }
     }
-    
+
     static final class DirectSubscriber<T> extends Subscriber<T> {
         final long r;
         final Blackhole bh;
@@ -167,16 +167,16 @@ public class SubscribingPerf {
         public void onNext(T t) {
             bh.consume(t);
         }
-        
+
         @Override
         public void onError(Throwable e) {
             e.printStackTrace();
         }
-        
+
         @Override
         public void onCompleted() {
         }
-        
+
         @Override
         public void setProducer(Producer p) {
             p.request(r);
@@ -190,25 +190,25 @@ public class SubscribingPerf {
             this.r = r;
             this.bh = bh;
         }
-        
+
         @Override
         public void onStart() {
             request(r);
         }
-        
+
         @Override
         public void onNext(T t) {
             bh.consume(t);
         }
-        
+
         @Override
         public void onError(Throwable e) {
             e.printStackTrace();
         }
-        
+
         @Override
         public void onCompleted() {
-            
+
         }
     }
 
@@ -222,20 +222,20 @@ public class SubscribingPerf {
             this.bh = bh;
             request(r);
         }
-        
+
         @Override
         public void onNext(T t) {
             bh.consume(t);
         }
-        
+
         @Override
         public void onError(Throwable e) {
             e.printStackTrace();
         }
-        
+
         @Override
         public void onCompleted() {
-            
+
         }
     }
 }

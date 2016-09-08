@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,11 +47,11 @@ import rx.internal.util.SubscriptionList;
 public class SubscriptionListConcurrentPerf {
     @Param({ "1", "1000", "100000" })
     public int loop;
-    
+
     public final SubscriptionList csub = new SubscriptionList();
     @Param({ "1", "5", "10", "20" })
     public int count;
-    
+
     public Subscription[] values;
     @Setup
     public void setup() {
@@ -64,7 +64,7 @@ public class SubscriptionListConcurrentPerf {
                 }
                 @Override
                 public void unsubscribe() {
-                    
+
                 }
             };
         }
@@ -76,7 +76,7 @@ public class SubscriptionListConcurrentPerf {
     public void addClearT1() {
         SubscriptionList csub = this.csub;
         Subscription[] values = this.values;
-        
+
         for (int i = loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
                 csub.add(values[j]);
@@ -90,7 +90,7 @@ public class SubscriptionListConcurrentPerf {
     public void addClearT2() {
         SubscriptionList csub = this.csub;
         Subscription[] values = this.values;
-        
+
         for (int i = loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
                 csub.add(values[j]);
@@ -105,7 +105,7 @@ public class SubscriptionListConcurrentPerf {
         SubscriptionList csub = this.csub;
         Subscription[] values = this.values;
         int n = values.length;
-        
+
         for (int i = loop; i > 0; i--) {
             for (int j = n / 2 - 1; j >= 0; j--) {
                 csub.add(values[j]);
@@ -120,7 +120,7 @@ public class SubscriptionListConcurrentPerf {
         SubscriptionList csub = this.csub;
         Subscription[] values = this.values;
         int n = values.length;
-        
+
         for (int i = loop; i > 0; i--) {
             for (int j = n - 1; j >= n / 2; j--) {
                 csub.add(values[j]);

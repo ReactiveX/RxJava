@@ -25,7 +25,7 @@ import rx.observers.Subscribers;
 
 /**
  * Delays the subscription to the source by the given amount, running on the given scheduler.
- * 
+ *
  * @param <T> the value type
  */
 public final class OnSubscribeDelaySubscription<T> implements OnSubscribe<T> {
@@ -55,5 +55,5 @@ public final class OnSubscribeDelaySubscription<T> implements OnSubscribe<T> {
             }
         }, time, unit);
     }
-    
+
 }

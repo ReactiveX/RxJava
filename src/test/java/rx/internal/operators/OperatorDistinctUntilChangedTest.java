@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,7 @@ public class OperatorDistinctUntilChangedTest {
             return s.toUpperCase();
         }
     };
-    
+
     private final static Func1<String, String> THROWS_NON_FATAL = new Func1<String, String>() {
         @Override
         public String call(String s) {
@@ -142,7 +142,7 @@ public class OperatorDistinctUntilChangedTest {
         inOrder.verify(w, never()).onNext(anyString());
         inOrder.verify(w, never()).onCompleted();
     }
-    
+
     @Test
     public void testDistinctUntilChangedWhenNonFatalExceptionThrownByKeySelectorIsNotReportedByUpstream() {
         Observable<String> src = Observable.just("a", "b", null, "c");
@@ -158,13 +158,13 @@ public class OperatorDistinctUntilChangedTest {
           .subscribe(w);
         assertFalse(errorOccurred.get());
     }
-    
+
     @Test
     public void customComparator() {
         Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
-        
+
         TestSubscriber<String> ts = TestSubscriber.create();
-        
+
         source.distinctUntilChanged(new Func2<String, String, Boolean>() {
             @Override
             public Boolean call(String a, String b) {
@@ -172,7 +172,7 @@ public class OperatorDistinctUntilChangedTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertValues("a", "b", "A", "C");
         ts.assertNoErrors();
         ts.assertCompleted();
@@ -181,9 +181,9 @@ public class OperatorDistinctUntilChangedTest {
     @Test
     public void customComparatorThrows() {
         Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
-        
+
         TestSubscriber<String> ts = TestSubscriber.create();
-        
+
         source.distinctUntilChanged(new Func2<String, String, Boolean>() {
             @Override
             public Boolean call(String a, String b) {
@@ -191,7 +191,7 @@ public class OperatorDistinctUntilChangedTest {
             }
         })
         .subscribe(ts);
-        
+
         ts.assertValue("a");
         ts.assertNotCompleted();
         ts.assertError(TestException.class);

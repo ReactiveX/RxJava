@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -275,7 +275,7 @@ public class OperatorMergeDelayErrorTest {
     }
 
     // This is pretty much a clone of testMergeList but with the overloaded MergeDelayError for Iterables
-    @Test     
+    @Test
     public void mergeIterable() {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
@@ -288,7 +288,7 @@ public class OperatorMergeDelayErrorTest {
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(1)).onCompleted();
-        verify(stringObserver, times(2)).onNext("hello");	
+        verify(stringObserver, times(2)).onNext("hello");
     }
 
     @Test
@@ -461,19 +461,19 @@ public class OperatorMergeDelayErrorTest {
                 try {
                     t1.onNext(0);
                 } catch (Throwable swallow) {
-                    
+
                 }
                 t1.onNext(1);
                 t1.onCompleted();
             }
         });
-        
+
         Observable<Integer> result = Observable.mergeDelayError(source, Observable.just(2));
-        
+
         @SuppressWarnings("unchecked")
         final Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.unsafeSubscribe(new Subscriber<Integer>() {
             int calls;
             @Override
@@ -493,9 +493,9 @@ public class OperatorMergeDelayErrorTest {
             public void onCompleted() {
                 o.onCompleted();
             }
-            
+
         });
-        
+
         /*
          * If the child onNext throws, why would we keep accepting values from
          * other sources?
@@ -535,17 +535,17 @@ public class OperatorMergeDelayErrorTest {
                     op.onError(new NullPointerException("throwing exception in parent"));
                 }
             });
-    
+
             @SuppressWarnings("unchecked")
             Observer<String> stringObserver = mock(Observer.class);
-            
+
             TestSubscriber<String> ts = new TestSubscriber<String>(stringObserver);
             Observable<String> m = Observable.mergeDelayError(parentObservable);
             m.subscribe(ts);
             System.out.println("testErrorInParentObservableDelayed | " + i);
             ts.awaitTerminalEvent(2000, TimeUnit.MILLISECONDS);
             ts.assertTerminalEvent();
-    
+
             verify(stringObserver, times(2)).onNext("hello");
             verify(stringObserver, times(1)).onError(any(NullPointerException.class));
             verify(stringObserver, never()).onCompleted();
@@ -578,25 +578,25 @@ public class OperatorMergeDelayErrorTest {
     public void testDelayErrorMaxConcurrent() {
         final List<Long> requests = new ArrayList<Long>();
         Observable<Integer> source = Observable.mergeDelayError(Observable.just(
-                Observable.just(1).asObservable(), 
+                Observable.just(1).asObservable(),
                 Observable.<Integer>error(new TestException())).doOnRequest(new Action1<Long>() {
                     @Override
                     public void call(Long t1) {
                         requests.add(t1);
                     }
                 }), 1);
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source.subscribe(ts);
-        
+
         ts.assertReceivedOnNext(Arrays.asList(1));
         ts.assertTerminalEvent();
         assertEquals(1, ts.getOnErrorEvents().size());
         assertTrue(ts.getOnErrorEvents().get(0) instanceof TestException);
         assertEquals(Arrays.asList(1L, 1L, 1L), requests);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void iterableMaxConcurrent() {
@@ -604,15 +604,15 @@ public class OperatorMergeDelayErrorTest {
 
         PublishSubject<Integer> ps1 = PublishSubject.create();
         PublishSubject<Integer> ps2 = PublishSubject.create();
-        
+
         Observable.mergeDelayError(Arrays.asList(ps1, ps2), 1).subscribe(ts);
-        
+
         assertTrue("ps1 has no subscribers?!", ps1.hasObservers());
         assertFalse("ps2 has subscribers?!", ps2.hasObservers());
-        
+
         ps1.onNext(1);
         ps1.onCompleted();
-        
+
         assertFalse("ps1 has subscribers?!", ps1.hasObservers());
         assertTrue("ps2 has no subscribers?!", ps2.hasObservers());
 
@@ -623,7 +623,7 @@ public class OperatorMergeDelayErrorTest {
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void iterableMaxConcurrentError() {
@@ -631,15 +631,15 @@ public class OperatorMergeDelayErrorTest {
 
         PublishSubject<Integer> ps1 = PublishSubject.create();
         PublishSubject<Integer> ps2 = PublishSubject.create();
-        
+
         Observable.mergeDelayError(Arrays.asList(ps1, ps2), 1).subscribe(ts);
-        
+
         assertTrue("ps1 has no subscribers?!", ps1.hasObservers());
         assertFalse("ps2 has subscribers?!", ps2.hasObservers());
-        
+
         ps1.onNext(1);
         ps1.onError(new TestException());
-        
+
         assertFalse("ps1 has subscribers?!", ps1.hasObservers());
         assertTrue("ps2 has no subscribers?!", ps2.hasObservers());
 
@@ -649,31 +649,31 @@ public class OperatorMergeDelayErrorTest {
         ts.assertValues(1, 2);
         ts.assertError(CompositeException.class);
         ts.assertNotCompleted();
-        
+
         CompositeException ce = (CompositeException)ts.getOnErrorEvents().get(0);
-        
+
         assertEquals(2, ce.getExceptions().size());
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void mergeMany() throws Exception {
         for (int i = 2; i < 10; i++) {
             Class<?>[] clazz = new Class[i];
             Arrays.fill(clazz, Observable.class);
-            
+
             Observable<Integer>[] obs = new Observable[i];
             Arrays.fill(obs, Observable.just(1));
-            
+
             Integer[] expected = new Integer[i];
             Arrays.fill(expected, 1);
-            
+
             Method m = Observable.class.getMethod("mergeDelayError", clazz);
-            
+
             TestSubscriber<Integer> ts = TestSubscriber.create();
-            
+
             ((Observable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
-            
+
             ts.assertValues(expected);
             ts.assertNoErrors();
             ts.assertCompleted();
@@ -690,27 +690,27 @@ public class OperatorMergeDelayErrorTest {
         for (int i = 2; i < 10; i++) {
             Class<?>[] clazz = new Class[i];
             Arrays.fill(clazz, Observable.class);
-            
+
             Observable<Integer>[] obs = new Observable[i];
             for (int j = 0; j < i; j++) {
                 obs[j] = withError(Observable.just(1));
             }
-            
+
             Integer[] expected = new Integer[i];
             Arrays.fill(expected, 1);
-            
+
             Method m = Observable.class.getMethod("mergeDelayError", clazz);
-            
+
             TestSubscriber<Integer> ts = TestSubscriber.create();
-            
+
             ((Observable<Integer>)m.invoke(null, (Object[])obs)).subscribe(ts);
-            
+
             ts.assertValues(expected);
             ts.assertError(CompositeException.class);
             ts.assertNotCompleted();
-            
+
             CompositeException ce = (CompositeException)ts.getOnErrorEvents().get(0);
-            
+
             assertEquals(i, ce.getExceptions().size());
         }
     }

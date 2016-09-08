@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,10 +27,10 @@ import rx.annotations.Experimental;
  *
  * Its invariant is to contain an immutable, ordered (by insertion order), unique list of non-composite
  * exceptions. You can retrieve individual exceptions in this list with {@link #getExceptions()}.
- * 
+ *
  * The {@link #printStackTrace()} implementation handles the StackTrace in a customized way instead of using
  * {@code getCause()} so that it can avoid circular references.
- * 
+ *
  * If you invoke {@link #getCause()}, it will lazily create the causal chain but will stop if it finds any
  * Throwable in the chain that it has already seen.
  */
@@ -43,20 +43,20 @@ public final class CompositeException extends RuntimeException {
 
     private Throwable cause;
 
-    /** 
+    /**
      * Constructs a CompositeException with the given prefix and error collection.
      * @param messagePrefix the prefix to use (actually unused)
      * @param errors the collection of errors
      * @deprecated please use {@link #CompositeException(Collection)} */
     @Deprecated
-    public CompositeException(String messagePrefix, Collection<? extends Throwable> errors) { // NOPMD 
+    public CompositeException(String messagePrefix, Collection<? extends Throwable> errors) { // NOPMD
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
         List<Throwable> localExceptions = new ArrayList<Throwable>();
         if (errors != null) {
             for (Throwable ex : errors) {
                 if (ex instanceof CompositeException) {
                     deDupedExceptions.addAll(((CompositeException) ex).getExceptions());
-                } else 
+                } else
                 if (ex != null) {
                     deDupedExceptions.add(ex);
                 } else {
@@ -88,7 +88,7 @@ public final class CompositeException extends RuntimeException {
             for (Throwable ex : errors) {
                 if (ex instanceof CompositeException) {
                     deDupedExceptions.addAll(((CompositeException) ex).getExceptions());
-                } else 
+                } else
                 if (ex != null) {
                     deDupedExceptions.add(ex);
                 } else {
@@ -119,7 +119,7 @@ public final class CompositeException extends RuntimeException {
     }
 
     @Override
-    public synchronized Throwable getCause() { // NOPMD 
+    public synchronized Throwable getCause() { // NOPMD
         if (cause == null) {
             // we lazily generate this causal chain if this is called
             CompositeExceptionCausalChain localCause = new CompositeExceptionCausalChain();
@@ -132,7 +132,7 @@ public final class CompositeException extends RuntimeException {
                     continue;
                 }
                 seenCauses.add(e);
-                
+
                 List<Throwable> listOfCauses = getListOfCauses(e);
                 // check if any of them have been seen before
                 for(Throwable child : listOfCauses) {
@@ -147,7 +147,7 @@ public final class CompositeException extends RuntimeException {
                 // we now have 'e' as the last in the chain
                 try {
                     chain.initCause(e);
-                } catch (Throwable t) { // NOPMD 
+                } catch (Throwable t) { // NOPMD
                     // ignore
                     // the javadocs say that some Throwables (depending on how they're made) will never
                     // let me call initCause without blowing up even if it returns null
@@ -187,7 +187,7 @@ public final class CompositeException extends RuntimeException {
     /**
      * Special handling for printing out a {@code CompositeException}.
      * Loops through all inner exceptions and prints them out.
-     * 
+     *
      * @param s
      *            stream to print to
      */

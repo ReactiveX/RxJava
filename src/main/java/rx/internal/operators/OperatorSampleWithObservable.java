@@ -23,9 +23,9 @@ import rx.observers.SerializedSubscriber;
 
 /**
  * Sample with the help of another observable.
- * 
+ *
  * @see <a href="http://msdn.microsoft.com/en-us/library/hh229742.aspx">MSDN: Observable.Sample</a>
- * 
+ *
  * @param <T> the source and result value type
  * @param <U> the element type of the sampler Observable
  */
@@ -41,11 +41,11 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> child) {
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
-    
+
         final AtomicReference<Object> value = new AtomicReference<Object>(EMPTY_TOKEN);
-        
+
         final AtomicReference<Subscription> main = new AtomicReference<Subscription>();
-        
+
         final Subscriber<U> samplerSub = new Subscriber<U>() {
             @Override
             public void onNext(U t) {
@@ -72,7 +72,7 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
                 main.get().unsubscribe();
             }
         };
-        
+
         Subscriber<T> result = new Subscriber<T>() {
             @Override
             public void onNext(T t) {
@@ -82,7 +82,7 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
             @Override
             public void onError(Throwable e) {
                 s.onError(e);
-                
+
                 samplerSub.unsubscribe();
             }
 
@@ -94,14 +94,14 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
                 samplerSub.unsubscribe();
             }
         };
-        
+
         main.lazySet(result);
-        
+
         child.add(result);
         child.add(samplerSub);
-        
+
         sampler.unsafeSubscribe(samplerSub);
-        
+
         return result;
     }
 }

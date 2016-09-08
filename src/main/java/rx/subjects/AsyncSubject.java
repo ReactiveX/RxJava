@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,7 +53,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
   subject.onCompleted();
 
   } </pre>
- * 
+ *
  * @param <T>
  *          the type of item expected to be observed by the Subject
  */
@@ -174,7 +174,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * the subject hasn't terminated with an exception.
      * <p>The method can return {@code null} for various reasons. Use {@link #hasValue()}, {@link #hasThrowable()}
      * and {@link #hasCompleted()} to determine if such {@code null} is a valid value, there was an
-     * exception or the Subject terminated without receiving any value. 
+     * exception or the Subject terminated without receiving any value.
      * @return the current value or {@code null} if the Subject doesn't have a value,
      * has terminated with an exception or has an actual {@code null} as a value.
      */

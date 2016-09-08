@@ -24,11 +24,11 @@ import rx.observers.SerializedSubscriber;
 /**
  * Skip elements from the source Observable until the secondary
  * observable fires an element.
- * 
+ *
  * If the secondary Observable fires no elements, the primary won't fire any elements.
- * 
+ *
  * @see <a href="http://msdn.microsoft.com/en-us/library/hh229358.aspx">MSDN: Observable.SkipUntil</a>
- * 
+ *
  * @param <T> the source and result value type
  * @param <U> element type of the signalling observable
  */
@@ -65,7 +65,7 @@ public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
         };
         child.add(u);
         other.unsafeSubscribe(u);
-        
+
         return new Subscriber<T>(child) {
             @Override
             public void onNext(T t) {

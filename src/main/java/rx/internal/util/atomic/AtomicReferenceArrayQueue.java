@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic/AtomicReferenceArrayQueue.java
  */
@@ -36,7 +36,7 @@ abstract class AtomicReferenceArrayQueue<E> extends AbstractQueue<E> {
     @Override
     public void clear() {
         // we have to test isEmpty because of the weaker poll() guarantee
-        while (poll() != null || !isEmpty()) ; // NOPMD 
+        while (poll() != null || !isEmpty()) ; // NOPMD
     }
     protected final int calcElementOffset(long index, int mask) {
         return (int)index & mask;

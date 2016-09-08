@@ -25,16 +25,16 @@ import rx.SingleSubscriber;
  */
 public final class PerfSingleSubscriber extends SingleSubscriber<Object> {
     final Blackhole bh;
-    
+
     public PerfSingleSubscriber(Blackhole bh) {
         this.bh = bh;
     }
-    
+
     @Override
     public void onSuccess(Object value) {
         bh.consume(value);
     }
-    
+
     @Override
     public void onError(Throwable error) {
         bh.consume(error);

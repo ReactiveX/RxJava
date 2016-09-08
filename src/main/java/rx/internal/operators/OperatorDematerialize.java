@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@ import rx.Observable.Operator;
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/dematerialize.png" alt="">
  * <p>
  * See <a href="http://msdn.microsoft.com/en-us/library/hh229047.aspx">here</a> for the Microsoft Rx equivalent.
- * 
+ *
  * @param <T> the wrapped value type
  */
 public final class OperatorDematerialize<T> implements Operator<T, Notification<T>> {
@@ -41,10 +41,10 @@ public final class OperatorDematerialize<T> implements Operator<T, Notification<
     public static OperatorDematerialize instance() {
         return Holder.INSTANCE; // using raw types because the type inference is not good enough
     }
-    OperatorDematerialize() { 
+    OperatorDematerialize() {
         // singleton
     }
-    
+
     @Override
     public Subscriber<? super Notification<T>> call(final Subscriber<? super T> child) {
         return new Subscriber<Notification<T>>(child) {
@@ -85,8 +85,8 @@ public final class OperatorDematerialize<T> implements Operator<T, Notification<
                     child.onCompleted();
                 }
             }
-            
+
         };
     }
-    
+
 }

@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic/SpscAtomicArrayQueue.java
  */
@@ -35,7 +35,7 @@ public final class SpscExactAtomicArrayQueue<T> extends AtomicReferenceArray<T> 
     final int capacitySkip;
     final AtomicLong producerIndex;
     final AtomicLong consumerIndex;
-    
+
     public SpscExactAtomicArrayQueue(int capacity) {
         super(Pow2.roundToPowerOfTwo(capacity));
         int len = length();
@@ -44,17 +44,17 @@ public final class SpscExactAtomicArrayQueue<T> extends AtomicReferenceArray<T> 
         this.producerIndex = new AtomicLong();
         this.consumerIndex = new AtomicLong();
     }
-    
-    
+
+
     @Override
     public boolean offer(T value) {
         if (value == null) {
             throw new NullPointerException();
         }
-        
+
         long pi = producerIndex.get();
         int m = mask;
-        
+
         int fullCheck = (int)(pi + capacitySkip) & m;
         if (get(fullCheck) != null) {
             return false;
@@ -82,13 +82,13 @@ public final class SpscExactAtomicArrayQueue<T> extends AtomicReferenceArray<T> 
     }
     @Override
     public void clear() {
-        while (poll() != null || !isEmpty()); // NOPMD 
+        while (poll() != null || !isEmpty()); // NOPMD
     }
     @Override
     public boolean isEmpty() {
         return producerIndex == consumerIndex;
     }
-    
+
     @Override
     public int size() {
         long ci = consumerIndex.get();
@@ -161,5 +161,5 @@ public final class SpscExactAtomicArrayQueue<T> extends AtomicReferenceArray<T> 
     public T element() {
         throw new UnsupportedOperationException();
     }
-    
+
 }

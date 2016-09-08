@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,25 +44,25 @@ import rx.jmh.LatchedObserver;
 public class ConcatPerf {
 
     Observable<Integer> source;
-    
+
     Observable<Integer> baseline;
-    
+
     @Param({"1", "1000", "1000000"})
     int count;
-    
+
     @Setup
     public void setup() {
         Integer[] array = new Integer[count];
-        
+
         for (int i = 0; i < count; i++) {
             array[i] = 777;
         }
-        
+
         baseline = Observable.from(array);
-        
+
         source = Observable.concat(baseline, Observable.<Integer>empty());
     }
-    
+
     @Benchmark
     public void normal(Blackhole bh) {
         source.subscribe(new LatchedObserver<Integer>(bh));

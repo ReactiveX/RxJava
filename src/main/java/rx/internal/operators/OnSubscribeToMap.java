@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import rx.functions.Func1;
 /**
  * Maps the elements of the source observable into a java.util.Map instance and
  * emits that once the source observable completes.
- * 
+ *
  * @see <a href="https://github.com/ReactiveX/RxJava/issues/96">Issue #96</a>
  * @param <T> the value type of the input
  * @param <K> the map-key type
@@ -83,7 +83,7 @@ public final class OnSubscribeToMap<T, K, V> implements OnSubscribe<Map<K, V>>, 
     public Map<K, V> call() {
         return new HashMap<K, V>();
     }
-    
+
     @Override
     public void call(final Subscriber<? super Map<K, V>> subscriber) {
         Map<K, V> map;
@@ -94,9 +94,9 @@ public final class OnSubscribeToMap<T, K, V> implements OnSubscribe<Map<K, V>>, 
             return;
         }
         new ToMapSubscriber<T, K, V>(subscriber, map, keySelector, valueSelector)
-            .subscribeTo(source);;    
+            .subscribeTo(source);;
     }
-    
+
     static final class ToMapSubscriber<T, K, V> extends DeferredScalarSubscriberSafe<T, Map<K,V>> {
 
         final Func1<? super T, ? extends K> keySelector;
@@ -115,7 +115,7 @@ public final class OnSubscribeToMap<T, K, V> implements OnSubscribe<Map<K, V>>, 
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             if (done) {
@@ -132,5 +132,5 @@ public final class OnSubscribeToMap<T, K, V> implements OnSubscribe<Map<K, V>>, 
             }
         }
     }
-    
+
 }

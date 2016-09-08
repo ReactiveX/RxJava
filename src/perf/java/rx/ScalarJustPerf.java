@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,26 +42,26 @@ public class ScalarJustPerf {
         public PlainSubscriber(Blackhole bh) {
             this.bh = bh;
         }
-        
+
         @Override
         public void onNext(Integer t) {
             bh.consume(t);
         }
-        
+
         @Override
         public void onError(Throwable e) {
             bh.consume(e);
         }
-        
+
         @Override
         public void onCompleted() {
             bh.consume(false);
         }
     }
-    
+
     /** This is a simple just. */
     Observable<Integer> simple;
-    /** 
+    /**
      * This is a simple just observed on the computation scheduler.
      * The current computation scheduler supports direct scheduling and should have
      * lower overhead than a regular createWorker-use-unsubscribe.
@@ -69,8 +69,8 @@ public class ScalarJustPerf {
     Observable<Integer> observeOn;
     /** This is a simple just observed on the IO thread. */
     Observable<Integer> observeOnIO;
-    
-    /** 
+
+    /**
      * This is a simple just subscribed to on the computation scheduler.
      * In theory, for non-backpressured just(), this should be the
      * same as observeOn.
@@ -81,29 +81,29 @@ public class ScalarJustPerf {
 
     /** This is a just mapped to itself which should skip the operator flatMap completely. */
     Observable<Integer> justFlatMapJust;
-    /** 
+    /**
      * This is a just mapped to a range of 2 elements; it tests the case where the inner
      * Observable isn't a just().
      */
     Observable<Integer> justFlatMapRange;
-    
+
     @Setup
     public void setup() {
         simple = Observable.just(1);
-        
+
         observeOn = simple.observeOn(Schedulers.computation());
         observeOnIO = simple.observeOn(Schedulers.io());
-        
+
         subscribeOn = simple.subscribeOn(Schedulers.computation());
         subscribeOnIO = simple.subscribeOn(Schedulers.io());
-        
+
         justFlatMapJust = simple.flatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
                 return Observable.just(v);
             }
         });
-        
+
         justFlatMapRange = simple.flatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
@@ -123,12 +123,12 @@ public class ScalarJustPerf {
      */
     void runAsync(Blackhole bh, Observable<Integer> source) {
         LatchedObserver<Integer> lo = new LatchedObserver<Integer>(bh);
-        
+
         source.subscribe(lo);
-        
+
         while (lo.latch.getCount() != 0L);
     }
-    
+
     @Benchmark
     public void simple(Blackhole bh) {
         PlainSubscriber s = new PlainSubscriber(bh);
@@ -148,12 +148,12 @@ public class ScalarJustPerf {
         bh.consume(s);
         return simple.subscribe(s);
     }
-    
+
     @Benchmark
     public void observeOn(Blackhole bh) {
         runAsync(bh, observeOn);
     }
-    
+
     @Benchmark
     public void observeOnIO(Blackhole bh) {
         runAsync(bh, observeOnIO);
@@ -163,18 +163,18 @@ public class ScalarJustPerf {
     public void subscribeOn(Blackhole bh) {
         runAsync(bh, subscribeOn);
     }
-    
+
     @Benchmark
     public void subscribeOnIO(Blackhole bh) {
         runAsync(bh, subscribeOnIO);
     }
-    
+
     @Benchmark
     public void justFlatMapJust(Blackhole bh) {
         PlainSubscriber s = new PlainSubscriber(bh);
         justFlatMapJust.subscribe(s);
     }
-    
+
     @Benchmark
     public void justFlatMapJustEscape(Blackhole bh) {
         PlainSubscriber s = new PlainSubscriber(bh);
@@ -187,7 +187,7 @@ public class ScalarJustPerf {
         PlainSubscriber s = new PlainSubscriber(bh);
         justFlatMapRange.subscribe(s);
     }
-    
+
     @Benchmark
     public void justFlatMapRangeEscape(Blackhole bh) {
         PlainSubscriber s = new PlainSubscriber(bh);

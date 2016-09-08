@@ -28,14 +28,14 @@ import rx.plugins.RxJavaHooks;
  */
 enum GenericScheduledExecutorServiceFactory {
     ;
-    
+
     static final String THREAD_NAME_PREFIX = "RxScheduledExecutorPool-";
     static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
 
     static ThreadFactory threadFactory() {
         return THREAD_FACTORY;
     }
-    
+
     /**
      * Creates a ScheduledExecutorService (either the default or given by a hook).
      * @return the SchuduledExecutorService created.
@@ -47,8 +47,8 @@ enum GenericScheduledExecutorServiceFactory {
         }
         return f.call();
     }
-    
-    
+
+
     static ScheduledExecutorService createDefault() {
         return Executors.newScheduledThreadPool(1, threadFactory());
     }

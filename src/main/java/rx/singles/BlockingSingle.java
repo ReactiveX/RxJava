@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p/>
  * You construct a {@code BlockingSingle} from a {@code Single} with {@link #from(Single)}
  * or {@link Single#toBlocking()}.
- * 
+ *
  * @param <T> the value type of the sequence
  * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
  */

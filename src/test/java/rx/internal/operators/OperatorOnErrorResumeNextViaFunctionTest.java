@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -231,7 +231,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         System.out.println(ts.getOnNextEvents());
         ts.assertReceivedOnNext(Arrays.asList("success"));
     }
-    
+
     @Test
     public void testMapResumeAsyncNext() {
         // Trigger multiple failures
@@ -255,7 +255,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
             public Observable<String> call(Throwable t1) {
                 return Observable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation());
             }
-            
+
         });
 
         @SuppressWarnings("unchecked")
@@ -311,7 +311,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         }
 
     }
-    
+
     @Test
     public void testBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -350,18 +350,18 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
     @Test
     public void normalBackpressure() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        
+
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         ps.onErrorResumeNext(new Func1<Throwable, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Throwable v) {
                 return Observable.range(3, 2);
             }
         }).subscribe(ts);
-        
+
         ts.requestMore(2);
-        
+
         ps.onNext(1);
         ps.onNext(2);
         ps.onError(new TestException("Forced failure"));
@@ -371,7 +371,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         ts.assertNotCompleted();
 
         ts.requestMore(2);
-        
+
         ts.assertValues(1, 2, 3, 4);
         ts.assertNoErrors();
         ts.assertCompleted();

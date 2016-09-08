@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -67,19 +67,19 @@ public class OnSubscribeDeferTest {
         verify(secondObserver, times(1)).onCompleted();
 
     }
-    
+
     @Test
     public void testDeferFunctionThrows() {
         Func0<Observable<String>> factory = mock(Func0.class);
-        
+
         when(factory.call()).thenThrow(new TestException());
-        
+
         Observable<String> result = Observable.defer(factory);
-        
+
         Observer<String> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any(String.class));
         verify(o, never()).onCompleted();

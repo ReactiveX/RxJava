@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,7 @@ import rx.jmh.*;
 @OutputTimeUnit(TimeUnit.SECONDS)
 @State(Scope.Thread)
 public class OneItemPerf {
-    
+
     Observable<Integer> scalar;
     Observable<Integer> scalarHidden;
     Observable<Integer> one;
@@ -57,7 +57,7 @@ public class OneItemPerf {
     Observable<Integer> scalarSwitch;
     Observable<Integer> scalarHiddenSwitch;
     Observable<Integer> oneSwitch;
-    
+
     <T> Single<T> hide(final Single<T> single) {
         return Single.create(new Single.OnSubscribe<T>() {
             @Override
@@ -66,7 +66,7 @@ public class OneItemPerf {
             }
         });
     }
-    
+
     @Setup
     public void setup() {
         scalar = Observable.just(1);
@@ -79,9 +79,9 @@ public class OneItemPerf {
         single = Single.just(1);
         singleHidden = hide(single);
         scalarHidden = scalar.asObservable();
-        
+
         // ----------------------------------------------------------------------------
-        
+
         scalarConcat = scalar.concatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
@@ -94,7 +94,7 @@ public class OneItemPerf {
                 return scalar;
             }
         });
-        
+
         oneConcat  = one.concatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
@@ -116,7 +116,7 @@ public class OneItemPerf {
                 return scalar;
             }
         });
-        
+
         oneMerge  = one.flatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
@@ -135,9 +135,9 @@ public class OneItemPerf {
                 return single;
             }
         });
-        
+
         // ----------------------------------------------------------------------------
-        
+
         scalarSwitch = scalar.switchMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
@@ -150,7 +150,7 @@ public class OneItemPerf {
                 return scalar;
             }
         });
-        
+
         oneSwitch  = one.switchMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
@@ -158,7 +158,7 @@ public class OneItemPerf {
             }
         });
     }
-    
+
     @Benchmark
     public void scalar(Blackhole bh) {
         scalar.subscribe(new LatchedObserver<Integer>(bh));

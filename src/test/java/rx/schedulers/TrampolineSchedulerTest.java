@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -71,27 +71,27 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
         try {
             workers.add(worker);
             worker.schedule(new Action0() {
-    
+
                 @Override
                 public void call() {
                     workers.add(doWorkOnNewTrampoline("A", workDone));
                 }
-    
+
             });
-    
+
             final Worker worker2 = Schedulers.trampoline().createWorker();
             workers.add(worker2);
             worker2.schedule(new Action0() {
-    
+
                 @Override
                 public void call() {
                     workers.add(doWorkOnNewTrampoline("B", workDone));
                     // we unsubscribe worker2 ... it should not affect work scheduled on a separate Trampoline.Worker
                     worker2.unsubscribe();
                 }
-    
+
             });
-        
+
             assertEquals(6, workDone.size());
             assertEquals(Arrays.asList("A.1", "A.B.1", "A.B.2", "B.1", "B.B.1", "B.B.2"), workDone);
         } finally {

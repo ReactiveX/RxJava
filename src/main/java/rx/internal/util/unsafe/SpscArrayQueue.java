@@ -2,15 +2,15 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/SpscArrayQueue.java
  */
@@ -86,9 +86,9 @@ abstract class SpscArrayQueueL3Pad<E> extends SpscArrayQueueConsumerField<E> {
  * <i>2010 - Pisa - SPSC Queues on Shared Cache Multi-Core Systems.pdf<br>
  * 2012 - Junchang- BQueue- Efficient and Practical Queuing.pdf <br>
  * </i> This implementation is wait free.
- * 
+ *
  * @author nitsanw
- * 
+ *
  * @param <E>
  */
 @SuppressAnimalSniffer
@@ -119,7 +119,7 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
         soProducerIndex(index + 1); // ordered store -> atomic and ordered for size()
         return true;
     }
-    
+
     /**
      * {@inheritDoc}
      * <p>
@@ -167,7 +167,7 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
             }
         }
     }
-    
+
     @Override
     public boolean isEmpty() {
         return lvProducerIndex() == lvConsumerIndex();
@@ -180,11 +180,11 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
     private void soConsumerIndex(long v) {
         UNSAFE.putOrderedLong(this, C_INDEX_OFFSET, v);
     }
-    
+
     private long lvProducerIndex() {
         return UNSAFE.getLongVolatile(this, P_INDEX_OFFSET);
     }
-    
+
     private long lvConsumerIndex() {
         return UNSAFE.getLongVolatile(this, C_INDEX_OFFSET);
     }

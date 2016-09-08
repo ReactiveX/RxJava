@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -200,11 +200,11 @@ public class OnSubscribeDoOnEachTest {
             System.out.println("Received exception: " + e);
         }
     }
-    
+
     @Test
     public void testOnErrorThrows() {
         TestSubscriber<Object> ts = TestSubscriber.create();
-        
+
         Observable.error(new TestException())
         .doOnError(new Action1<Throwable>() {
             @Override
@@ -212,19 +212,19 @@ public class OnSubscribeDoOnEachTest {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNotCompleted();
         ts.assertError(CompositeException.class);
-        
+
         CompositeException ex = (CompositeException)ts.getOnErrorEvents().get(0);
-        
+
         List<Throwable> exceptions = ex.getExceptions();
         assertEquals(2, exceptions.size());
         assertTrue(exceptions.get(0) instanceof TestException);
         assertTrue(exceptions.get(1) instanceof TestException);
     }
-    
+
     @Test
     public void testIfOnNextActionFailsEmitsErrorAndDoesNotFollowWithCompleted() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -254,7 +254,7 @@ public class OnSubscribeDoOnEachTest {
         ts.assertError(e1);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testIfOnNextActionFailsEmitsErrorAndDoesNotFollowWithOnNext() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -274,7 +274,7 @@ public class OnSubscribeDoOnEachTest {
                     }});
             }})
             .doOnNext(new Action1<Integer>() {
-                
+
                 @Override
                 public void call(Integer t) {
                     throw e1;
@@ -284,7 +284,7 @@ public class OnSubscribeDoOnEachTest {
         assertEquals(1, ts.getOnErrorEvents().size());
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testIfOnNextActionFailsEmitsErrorAndReportsMoreErrorsToRxJavaHooksNotDownstream() {
         try {
@@ -293,7 +293,7 @@ public class OnSubscribeDoOnEachTest {
 
                 @Override
                 public void call(Throwable e) {
-                     list.add(e);  
+                     list.add(e);
                 }});
             TestSubscriber<Integer> ts = TestSubscriber.create();
             final RuntimeException e1 = new RuntimeException();
@@ -328,7 +328,7 @@ public class OnSubscribeDoOnEachTest {
             RxJavaHooks.reset();
         }
     }
-    
+
     @Test
     public void testIfCompleteActionFailsEmitsError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
@@ -345,7 +345,7 @@ public class OnSubscribeDoOnEachTest {
         ts.assertError(e1);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testUnsubscribe() {
         TestSubscriber<Object> ts = TestSubscriber.create(0);

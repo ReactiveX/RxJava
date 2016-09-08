@@ -39,7 +39,7 @@ public class SingleTest {
 
     @SuppressWarnings("rawtypes")
     private Func1<Single.OnSubscribe, Single.OnSubscribe> onCreate;
-    
+
     @SuppressWarnings("rawtypes")
     private Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> onStart;
 
@@ -54,28 +54,28 @@ public class SingleTest {
                 return t;
             }
         });
-        
+
         RxJavaHooks.setOnSingleCreate(onCreate);
-        
+
         onStart = spy(new Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe>() {
             @Override
             public Observable.OnSubscribe call(Single t1, Observable.OnSubscribe t2) {
                 return t2;
             }
         });
-        
+
         RxJavaHooks.setOnSingleStart(onStart);
-        
+
         onReturn = spy(new Func1<Subscription, Subscription>() {
             @Override
             public Subscription call(Subscription t) {
                 return t;
             }
         });
-        
+
         RxJavaHooks.setOnSingleReturn(onReturn);
     }
-    
+
     @After
     public void after() {
         RxJavaHooks.reset();
@@ -1979,7 +1979,7 @@ public class SingleTest {
     @Test
     public void unsubscribeComposesThrough() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         Subscription s = ps.toSingle()
         .flatMap(new Func1<Integer, Single<Integer>>() {
             @Override
@@ -1988,16 +1988,16 @@ public class SingleTest {
             }
         })
         .subscribe();
-        
+
         s.unsubscribe();
-        
+
         assertFalse("Observers present?!", ps.hasObservers());
     }
 
     @Test(timeout = 1000)
     public void unsubscribeComposesThroughAsync() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         Subscription s = ps.toSingle()
         .subscribeOn(Schedulers.io())
         .flatMap(new Func1<Integer, Single<Integer>>() {
@@ -2007,11 +2007,11 @@ public class SingleTest {
             }
         })
         .subscribe();
-        
+
         while (!ps.hasObservers() && !Thread.currentThread().isInterrupted()) ;
-        
+
         s.unsubscribe();
-        
+
         assertFalse("Observers present?!", ps.hasObservers());
     }
 

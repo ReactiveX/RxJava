@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,9 +44,9 @@ public final class Exceptions {
     public static RuntimeException propagate(Throwable t) {
         /*
          * The return type of RuntimeException is a trick for code to be like this:
-         * 
+         *
          * throw Exceptions.propagate(e);
-         * 
+         *
          * Even though nothing will return and throw via that 'throw', it allows the code to look like it
          * so it's easy to read and understand that it will always result in a throw.
          */
@@ -55,7 +55,7 @@ public final class Exceptions {
         } else if (t instanceof Error) {
             throw (Error) t;
         } else {
-            throw new RuntimeException(t); // NOPMD 
+            throw new RuntimeException(t); // NOPMD
         }
     }
     /**
@@ -124,7 +124,7 @@ public final class Exceptions {
         // we now have 'e' as the last in the chain
         try {
             e.initCause(cause);
-        } catch (Throwable t) { // NOPMD 
+        } catch (Throwable t) { // NOPMD
             // ignore
             // the javadocs say that some Throwables (depending on how they're made) will never
             // let me call initCause without blowing up even if it returns null
@@ -162,20 +162,20 @@ public final class Exceptions {
         if (exceptions != null && !exceptions.isEmpty()) {
             if (exceptions.size() == 1) {
                 Throwable t = exceptions.get(0);
-                // had to manually inline propagate because some tests attempt StackOverflowError 
+                // had to manually inline propagate because some tests attempt StackOverflowError
                 // and can't handle it with the stack space remaining
                 if (t instanceof RuntimeException) {
                     throw (RuntimeException) t;
                 } else if (t instanceof Error) {
                     throw (Error) t;
                 } else {
-                    throw new RuntimeException(t); // NOPMD 
+                    throw new RuntimeException(t); // NOPMD
                 }
             }
             throw new CompositeException(exceptions);
         }
     }
-    
+
     /**
      * Forwards a fatal exception or reports it along with the value
      * caused it to the given Observer.

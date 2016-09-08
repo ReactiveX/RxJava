@@ -50,16 +50,16 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
         this.unit = unit;
         this.scheduler = scheduler;
     }
-    
+
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         final Worker worker = scheduler.createWorker();
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
         final SerialSubscription ssub = new SerialSubscription();
-        
+
         s.add(worker);
         s.add(ssub);
-        
+
         return new Subscriber<T>(child) {
             final DebounceState<T> state = new DebounceState<T>();
             final Subscriber<?> self = this;
@@ -71,7 +71,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
 
             @Override
             public void onNext(final T t) {
-                
+
                 final int index = state.next(t);
                 ssub.set(worker.schedule(new Action0() {
                     @Override
@@ -80,14 +80,14 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
                     }
                 }, timeout, unit));
             }
-            
+
             @Override
             public void onError(Throwable e) {
                 s.onError(e);
                 unsubscribe();
                 state.clear();
             }
-            
+
             @Override
             public void onCompleted() {
                 state.emitAndComplete(s, this);
@@ -109,8 +109,8 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
         boolean terminate;
         /** Guarded by this. */
         boolean emitting;
-        
-        public synchronized int next(T value) { // NOPMD 
+
+        public synchronized int next(T value) { // NOPMD
             this.value = value;
             this.hasValue = true;
             return ++index;
@@ -122,7 +122,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
                     return;
                 }
                 localValue = value;
-                
+
                 value = null;
                 hasValue = false;
                 emitting = true;
@@ -142,13 +142,13 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
                     return;
                 }
             }
-            
+
             onNextAndComplete.onCompleted();
         }
         public void emitAndComplete(Subscriber<T> onNextAndComplete, Subscriber<?> onError) {
             T localValue;
             boolean localHasValue;
-            
+
             synchronized (this) {
                 if (emitting) {
                     terminate = true;
@@ -156,7 +156,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
                 }
                 localValue = value;
                 localHasValue = hasValue;
-                
+
                 value = null;
                 hasValue = false;
 
@@ -173,7 +173,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
             }
             onNextAndComplete.onCompleted();
         }
-        public synchronized void clear() { // NOPMD 
+        public synchronized void clear() { // NOPMD
             ++index;
             value = null;
             hasValue = false;

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,10 +58,10 @@ public class OperatorRetryTest {
                     t1.onNext("hello");
                     t1.onCompleted();
                 }
-                else 
+                else
                     t1.onError(new RuntimeException());
             }
-            
+
         });
         TestSubscriber<String> ts = new TestSubscriber<String>(consumer);
         producer.retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
@@ -84,7 +84,7 @@ public class OperatorRetryTest {
                         @Override
                         public Observable<Long> call(Tuple t) {
                             System.out.println("Retry # "+t.count);
-                            return t.count > 20 ? 
+                            return t.count > 20 ?
                                 Observable.<Long>error(t.n) :
                                 Observable.timer(t.count *1L, TimeUnit.MILLISECONDS);
                     }});
@@ -399,7 +399,7 @@ public class OperatorRetryTest {
                 // 0 = not set, 1 = fast path, 2 = backpressure
                 final AtomicInteger path = new AtomicInteger(0);
                 volatile boolean done = false;
-                
+
                 @Override
                 public void request(long n) {
                     if (n == Long.MAX_VALUE && path.compareAndSet(0, 1)) {
@@ -691,7 +691,7 @@ public class OperatorRetryTest {
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
-    
+
     @Test//(timeout = 15000)
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
@@ -704,7 +704,7 @@ public class OperatorRetryTest {
                 TestSubscriber<String> ts = new TestSubscriber<String>(observer);
                 origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
-                
+
                 InOrder inOrder = inOrder(observer);
                 // should have no errors
                 verify(observer, never()).onError(any(Throwable.class));
@@ -718,7 +718,7 @@ public class OperatorRetryTest {
             }
         }
     }
-    
+
     @Test//(timeout = 15000)
     public void testRetryWithBackpressureParallel() throws InterruptedException {
         final int NUM_LOOPS = 1;
@@ -832,7 +832,7 @@ public class OperatorRetryTest {
                         return "msg: " + count.incrementAndGet();
                     }
                 });
-        
+
         origin.retry()
         .groupBy(new Func1<String, String>() {
             @Override
@@ -847,7 +847,7 @@ public class OperatorRetryTest {
             }
         })
         .unsafeSubscribe(new TestSubscriber<String>(observer));
-        
+
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
         inOrder.verify(observer, times(NUM_MSG)).onNext(any(java.lang.String.class));
@@ -872,11 +872,11 @@ public class OperatorRetryTest {
             public void call(Subscriber<? super String> o) {
                 for(int i=0; i<NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());
-                }   
+                }
                 o.onCompleted();
             }
         });
-        
+
         origin.retry()
         .onBackpressureBuffer() // FIXME the new GroupBy won't request enough for this particular test and retry overflows
         .groupBy(new Func1<String, String>() {
@@ -892,7 +892,7 @@ public class OperatorRetryTest {
             }
         })
         .unsafeSubscribe(new TestSubscriber<String>(observer));
-        
+
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
         inOrder.verify(observer, times(NUM_MSG)).onNext(any(java.lang.String.class));
@@ -909,7 +909,7 @@ public class OperatorRetryTest {
     @Test
     public void retryWhenDefaultScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.just(1)
         .concatWith(Observable.<Integer>error(new TestException()))
         .retryWhen((Func1)new Func1<Observable, Observable>() {
@@ -918,18 +918,18 @@ public class OperatorRetryTest {
                 return o.take(2);
             }
         }).subscribe(ts);
-        
+
         ts.assertValues(1, 1);
         ts.assertNoErrors();
         ts.assertCompleted();
-        
+
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void retryWhenTrampolineScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.just(1)
         .concatWith(Observable.<Integer>error(new TestException()))
         .retryWhen((Func1)new Func1<Observable, Observable>() {
@@ -938,7 +938,7 @@ public class OperatorRetryTest {
                 return o.take(2);
             }
         }, Schedulers.trampoline()).subscribe(ts);
-        
+
         ts.assertValues(1, 1);
         ts.assertNoErrors();
         ts.assertCompleted();

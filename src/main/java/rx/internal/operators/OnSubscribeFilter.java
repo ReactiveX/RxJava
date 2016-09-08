@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ import rx.plugins.RxJavaHooks;
 public final class OnSubscribeFilter<T> implements OnSubscribe<T> {
 
     final Observable<T> source;
-    
+
     final Func1<? super T, Boolean> predicate;
 
     public OnSubscribeFilter(Observable<T> source, Func1<? super T, Boolean> predicate) {
@@ -46,23 +46,23 @@ public final class OnSubscribeFilter<T> implements OnSubscribe<T> {
     }
 
     static final class FilterSubscriber<T> extends Subscriber<T> {
-        
+
         final Subscriber<? super T> actual;
-        
+
         final Func1<? super T, Boolean> predicate;
 
         boolean done;
-        
+
         public FilterSubscriber(Subscriber<? super T> actual, Func1<? super T, Boolean> predicate) {
             this.actual = actual;
             this.predicate = predicate;
             request(0);
         }
-        
+
         @Override
         public void onNext(T t) {
             boolean result;
-            
+
             try {
                 result = predicate.call(t);
             } catch (Throwable ex) {
@@ -71,14 +71,14 @@ public final class OnSubscribeFilter<T> implements OnSubscribe<T> {
                 onError(OnErrorThrowable.addValueAsLastCause(ex, t));
                 return;
             }
-            
+
             if (result) {
                 actual.onNext(t);
             } else {
                 request(1);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             if (done) {
@@ -86,11 +86,11 @@ public final class OnSubscribeFilter<T> implements OnSubscribe<T> {
                 return;
             }
             done = true;
-            
+
             actual.onError(e);
         }
-        
-        
+
+
         @Override
         public void onCompleted() {
             if (done) {

@@ -36,28 +36,28 @@ import rx.subscriptions.SerialSubscription;
  * to one at a time.
  * @param <T> the source value type
  * @param <R> the output value type
- * 
+ *
  * @since 1.1.2
  */
 public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
     final Observable<? extends T> source;
-    
+
     final Func1<? super T, ? extends Observable<? extends R>> mapper;
-    
+
     final int prefetch;
-    
-    /** 
+
+    /**
      * How to handle errors from the main and inner Observables.
      * See the constants below.
      */
     final int delayErrorMode;
-    
+
     /** Whenever any Observable fires an error, terminate with that error immediately. */
     public static final int IMMEDIATE = 0;
-    
+
     /** Whenever the main fires an error, wait until the inner terminates. */
     public static final int BOUNDARY = 1;
-    
+
     /** Delay all errors to the very end. */
     public static final int END = 2;
 
@@ -68,19 +68,19 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
         this.prefetch = prefetch;
         this.delayErrorMode = delayErrorMode;
     }
-    
+
     @Override
     public void call(Subscriber<? super R> child) {
         Subscriber<? super R> s;
-        
+
         if (delayErrorMode == IMMEDIATE) {
             s = new SerializedSubscriber<R>(child);
         } else {
             s = child;
         }
-        
+
         final ConcatMapSubscriber<T, R> parent = new ConcatMapSubscriber<T, R>(s, mapper, prefetch, delayErrorMode);
-        
+
         child.add(parent);
         child.add(parent.inner);
         child.setProducer(new Producer() {
@@ -89,31 +89,31 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                 parent.requestMore(n);
             }
         });
-        
+
         if (!child.isUnsubscribed()) {
             source.unsafeSubscribe(parent);
         }
     }
-    
+
     static final class ConcatMapSubscriber<T, R> extends Subscriber<T> {
         final Subscriber<? super R> actual;
-        
+
         final Func1<? super T, ? extends Observable<? extends R>> mapper;
-        
+
         final int delayErrorMode;
-        
+
         final ProducerArbiter arbiter;
-        
+
         final Queue<Object> queue;
-        
+
         final AtomicInteger wip;
-        
+
         final AtomicReference<Throwable> error;
-        
+
         final SerialSubscription inner;
-        
+
         volatile boolean done;
-        
+
         volatile boolean active;
 
         public ConcatMapSubscriber(Subscriber<? super R> actual,
@@ -144,7 +144,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                 drain();
             }
         }
-        
+
         @Override
         public void onError(Throwable mainError) {
             if (ExceptionsUtils.addThrowable(error, mainError)) {
@@ -162,13 +162,13 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                 pluginError(mainError);
             }
         }
-        
+
         @Override
         public void onCompleted() {
             done = true;
             drain();
         }
-        
+
         void requestMore(long n) {
             if (n > 0) {
                 arbiter.request(n);
@@ -177,11 +177,11 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                 throw new IllegalArgumentException("n >= 0 required but it was " + n);
             }
         }
-        
+
         void innerNext(R value) {
             actual.onNext(value);
         }
-        
+
         void innerError(Throwable innerError, long produced) {
             if (!ExceptionsUtils.addThrowable(error, innerError)) {
                 pluginError(innerError);
@@ -200,7 +200,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                 drain();
             }
         }
-        
+
         void innerCompleted(long produced) {
             if (produced != 0L) {
                 arbiter.produced(produced);
@@ -208,23 +208,23 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
             active = false;
             drain();
         }
-        
+
         void pluginError(Throwable e) {
             RxJavaHooks.onError(e);
         }
-        
+
         void drain() {
             if (wip.getAndIncrement() != 0) {
                 return;
             }
 
             final int delayErrorMode = this.delayErrorMode;
-            
+
             for (;;) {
                 if (actual.isUnsubscribed()) {
                     return;
                 }
-                
+
                 if (!active) {
                     if (delayErrorMode == BOUNDARY) {
                         if (error.get() != null) {
@@ -235,11 +235,11 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                             return;
                         }
                     }
-                    
+
                     boolean mainDone = done;
                     Object v = queue.poll();
                     boolean empty = v == null;
-                    
+
                     if (mainDone && empty) {
                         Throwable ex = ExceptionsUtils.terminate(error);
                         if (ex == null) {
@@ -250,11 +250,11 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                         }
                         return;
                     }
-                    
+
                     if (!empty) {
-                        
+
                         Observable<? extends R> source;
-                        
+
                         try {
                             source = mapper.call(NotificationLite.<T>instance().getValue(v));
                         } catch (Throwable mapperError) {
@@ -262,27 +262,27 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                             drainError(mapperError);
                             return;
                         }
-                        
+
                         if (source == null) {
                             drainError(new NullPointerException("The source returned by the mapper was null"));
                             return;
                         }
-                        
+
                         if (source != Observable.empty()) {
 
                             if (source instanceof ScalarSynchronousObservable) {
                                 ScalarSynchronousObservable<? extends R> scalarSource = (ScalarSynchronousObservable<? extends R>) source;
-                                
+
                                 active = true;
-                                
+
                                 arbiter.setProducer(new ConcatMapInnerScalarProducer<T, R>(scalarSource.get(), this));
                             } else {
                                 ConcatMapInnerSubscriber<T, R> innerSubscriber = new ConcatMapInnerSubscriber<T, R>(this);
                                 inner.set(innerSubscriber);
-        
+
                                 if (!innerSubscriber.isUnsubscribed()) {
                                     active = true;
-    
+
                                     source.unsafeSubscribe(innerSubscriber);
                                 } else {
                                     return;
@@ -300,10 +300,10 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                 }
             }
         }
-        
+
         void drainError(Throwable mapperError) {
             unsubscribe();
-            
+
             if (ExceptionsUtils.addThrowable(error, mapperError)) {
                 Throwable ex = ExceptionsUtils.terminate(error);
                 if (!ExceptionsUtils.isTerminated(ex)) {
@@ -314,43 +314,43 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
             }
         }
     }
-    
+
     static final class ConcatMapInnerSubscriber<T, R> extends Subscriber<R> {
         final ConcatMapSubscriber<T, R> parent;
 
         long produced;
-        
+
         public ConcatMapInnerSubscriber(ConcatMapSubscriber<T, R> parent) {
             this.parent = parent;
         }
-        
+
         @Override
         public void setProducer(Producer p) {
             parent.arbiter.setProducer(p);
         }
-        
+
         @Override
         public void onNext(R t) {
             produced++;
             parent.innerNext(t);
         }
-        
+
         @Override
         public void onError(Throwable e) {
             parent.innerError(e, produced);
         }
-        
+
         @Override
         public void onCompleted() {
             parent.innerCompleted(produced);
         }
     }
-    
+
     static final class ConcatMapInnerScalarProducer<T, R> implements Producer {
         final R value;
-        
+
         final ConcatMapSubscriber<T, R> parent;
-        
+
         boolean once;
 
         public ConcatMapInnerScalarProducer(R value, ConcatMapSubscriber<T, R> parent) {

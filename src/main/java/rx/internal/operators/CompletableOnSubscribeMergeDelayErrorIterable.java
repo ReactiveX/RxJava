@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,40 +26,40 @@ import rx.subscriptions.CompositeSubscription;
 
 public final class CompletableOnSubscribeMergeDelayErrorIterable implements OnSubscribe {
     final Iterable<? extends Completable> sources;
-    
+
     public CompletableOnSubscribeMergeDelayErrorIterable(Iterable<? extends Completable> sources) {
         this.sources = sources;
     }
-    
+
     @Override
     public void call(final CompletableSubscriber s) {
         final CompositeSubscription set = new CompositeSubscription();
-        
+
         s.onSubscribe(set);
-        
+
         Iterator<? extends Completable> iterator;
-        
+
         try {
             iterator = sources.iterator();
         } catch (Throwable e) {
             s.onError(e);
             return;
         }
-        
+
         if (iterator == null) {
             s.onError(new NullPointerException("The source iterator returned is null"));
             return;
         }
 
         final AtomicInteger wip = new AtomicInteger(1);
-        
+
         final Queue<Throwable> queue = new MpscLinkedQueue<Throwable>();
 
         for (;;) {
             if (set.isUnsubscribed()) {
                 return;
             }
-            
+
             boolean b;
             try {
                 b = iterator.hasNext();
@@ -74,17 +74,17 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements OnSu
                 }
                 return;
             }
-                    
+
             if (!b) {
                 break;
             }
-            
+
             if (set.isUnsubscribed()) {
                 return;
             }
-            
+
             Completable c;
-            
+
             try {
                 c = iterator.next();
             } catch (Throwable e) {
@@ -98,11 +98,11 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements OnSu
                 }
                 return;
             }
-            
+
             if (set.isUnsubscribed()) {
                 return;
             }
-            
+
             if (c == null) {
                 NullPointerException e = new NullPointerException("A completable source is null");
                 queue.offer(e);
@@ -115,9 +115,9 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements OnSu
                 }
                 return;
             }
-            
+
             wip.getAndIncrement();
-            
+
             c.unsafeSubscribe(new CompletableSubscriber() {
                 @Override
                 public void onSubscribe(Subscription d) {
@@ -134,7 +134,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements OnSu
                 public void onCompleted() {
                     tryTerminate();
                 }
-                
+
                 void tryTerminate() {
                     if (wip.decrementAndGet() == 0) {
                         if (queue.isEmpty()) {
@@ -146,7 +146,7 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements OnSu
                 }
             });
         }
-        
+
         if (wip.decrementAndGet() == 0) {
             if (queue.isEmpty()) {
                 s.onCompleted();

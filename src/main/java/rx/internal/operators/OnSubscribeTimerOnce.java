@@ -55,5 +55,5 @@ public final class OnSubscribeTimerOnce implements OnSubscribe<Long> {
             }
         }, time, unit);
     }
-    
+
 }

@@ -25,7 +25,7 @@ import rx.observers.SerializedSubscriber;
 
 /**
  * Takes values from the source until the specific time elapses.
- * 
+ *
  * @param <T>
  *            the result value type
  */
@@ -44,7 +44,7 @@ public final class OperatorTakeTimed<T> implements Operator<T, T> {
     public Subscriber<? super T> call(Subscriber<? super T> child) {
         Worker worker = scheduler.createWorker();
         child.add(worker);
-        
+
         TakeSubscriber<T> ts = new TakeSubscriber<T>(new SerializedSubscriber<T>(child));
         worker.schedule(ts, time, unit);
         return ts;
@@ -78,7 +78,7 @@ public final class OperatorTakeTimed<T> implements Operator<T, T> {
         public void call() {
             onCompleted();
         }
-        
-        
+
+
     }
 }

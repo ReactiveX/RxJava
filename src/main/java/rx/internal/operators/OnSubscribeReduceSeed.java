@@ -24,9 +24,9 @@ import rx.functions.Func2;
 public final class OnSubscribeReduceSeed<T, R> implements OnSubscribe<R> {
 
     final Observable<T> source;
-    
+
     final R initialValue;
-    
+
     final Func2<R, ? super T, R> reducer;
 
     public OnSubscribeReduceSeed(Observable<T> source, R initialValue, Func2<R, ? super T, R> reducer) {
@@ -34,12 +34,12 @@ public final class OnSubscribeReduceSeed<T, R> implements OnSubscribe<R> {
         this.initialValue = initialValue;
         this.reducer = reducer;
     }
-    
+
     @Override
     public void call(Subscriber<? super R> t) {
         new ReduceSeedSubscriber<T, R>(t, initialValue, reducer).subscribeTo(source);
     }
-    
+
     static final class ReduceSeedSubscriber<T, R> extends DeferredScalarSubscriber<T, R> {
 
         final Func2<R, ? super T, R> reducer;
@@ -61,6 +61,6 @@ public final class OnSubscribeReduceSeed<T, R> implements OnSubscribe<R> {
                 actual.onError(ex);
             }
         }
-        
+
     }
 }

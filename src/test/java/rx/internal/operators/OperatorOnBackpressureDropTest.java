@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -96,7 +96,7 @@ public class OperatorOnBackpressureDropTest {
         ts.assertNoErrors();
         assertEquals(0, ts.getOnNextEvents().get(0).intValue());
     }
-    
+
     @Test
     public void testRequestOverflow() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
@@ -107,7 +107,7 @@ public class OperatorOnBackpressureDropTest {
             public void onStart() {
                 request(10);
             }
-            
+
             @Override
             public void onCompleted() {
             }
@@ -125,11 +125,11 @@ public class OperatorOnBackpressureDropTest {
             }});
         assertEquals(n, count.get());
     }
-    
+
     @Test
     public void testNonFatalExceptionFromOverflowActionIsNotReportedFromUpstreamOperator() {
         final AtomicBoolean errorOccurred = new AtomicBoolean(false);
-        //request 0 
+        //request 0
         TestSubscriber<Long> ts = TestSubscriber.create(0);
         //range method emits regardless of requests so should trigger onBackpressureDrop action
         range(2)
@@ -145,7 +145,7 @@ public class OperatorOnBackpressureDropTest {
           .subscribe(ts);
         assertFalse(errorOccurred.get());
     }
-    
+
     @Test
     public void testOnDropMethodIsCalled() {
         final List<Integer> list = new ArrayList<Integer>();
@@ -175,7 +175,7 @@ public class OperatorOnBackpressureDropTest {
         }).subscribe(ts);
         assertEquals(Arrays.asList(1, 2), list);
     }
-    
+
     @Test
     public void testUpstreamEmitsOnCompletedAfterFailureWithoutCheckingSubscription() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
@@ -206,7 +206,7 @@ public class OperatorOnBackpressureDropTest {
         ts.assertError(e);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testUpstreamEmitsErrorAfterFailureWithoutCheckingSubscriptionResultsInHooksOnErrorCalled() {
         try {
@@ -250,7 +250,7 @@ public class OperatorOnBackpressureDropTest {
             RxJavaHooks.setOnError(null);
         }
     }
-    
+
     @Test
     public void testUpstreamEmitsOnNextAfterFailureWithoutCheckingSubscription() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
@@ -281,15 +281,15 @@ public class OperatorOnBackpressureDropTest {
         ts.assertError(e);
         ts.assertNotCompleted();
     }
-    
-    
-    
+
+
+
     private static final Action1<Long> THROW_NON_FATAL = new Action1<Long>() {
         @Override
         public void call(Long n) {
             throw new RuntimeException();
         }
-    }; 
+    };
 
     static final Observable<Long> infinite = Observable.create(new OnSubscribe<Long>() {
 
@@ -302,7 +302,7 @@ public class OperatorOnBackpressureDropTest {
         }
 
     });
-    
+
     private static final Observable<Long> range(final long n) {
         return Observable.create(new OnSubscribe<Long>() {
 
@@ -316,8 +316,8 @@ public class OperatorOnBackpressureDropTest {
                 }
                 s.onCompleted();
             }
-    
+
         });
     }
-    
+
 }

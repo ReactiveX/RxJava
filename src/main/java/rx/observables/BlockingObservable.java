@@ -90,10 +90,10 @@ public final class BlockingObservable<T> {
      * need the {@link Subscriber#onCompleted()} or {@link Subscriber#onError(Throwable)} methods. If the
      * underlying Observable terminates with an error, rather than calling {@code onError}, this method will
      * throw an exception.
-     * 
+     *
      * <p>The difference between this method and {@link #subscribe(Action1)} is that the {@code onNext} action
      * is executed on the emission thread instead of the current thread.
-     * 
+     *
      * @param onNext
      *            the {@link Action1} to invoke for each item emitted by the {@code BlockingObservable}
      * @throws RuntimeException
@@ -122,7 +122,7 @@ public final class BlockingObservable<T> {
                  * If we receive an onError event we set the reference on the
                  * outer thread so we can git it and throw after the
                  * latch.await().
-                 * 
+                 *
                  * We do this instead of throwing directly since this may be on
                  * a different thread and the latch is still waiting.
                  */
@@ -467,7 +467,7 @@ public final class BlockingObservable<T> {
 
         return returnItem.get();
     }
-    
+
     /**
      * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
      */
@@ -486,20 +486,20 @@ public final class BlockingObservable<T> {
                 error[0] = e;
                 cdl.countDown();
             }
-            
+
             @Override
             public void onCompleted() {
                 cdl.countDown();
             }
         });
-        
+
         BlockingUtils.awaitForComplete(cdl, s);
         Throwable e = error[0];
         if (e != null) {
             Exceptions.propagate(e);
         }
     }
-    
+
     /**
      * Subscribes to the source and calls back the Observer methods on the current thread.
      * @param observer the observer to call event methods on
@@ -508,7 +508,7 @@ public final class BlockingObservable<T> {
     public void subscribe(Observer<? super T> observer) {
         final NotificationLite<T> nl = NotificationLite.instance();
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
-        
+
         @SuppressWarnings("unchecked")
         Subscription s = ((Observable<T>)o).subscribe(new Subscriber<T>() {
             @Override
@@ -524,7 +524,7 @@ public final class BlockingObservable<T> {
                 queue.offer(nl.completed());
             }
         });
-        
+
         try {
             for (;;) {
                 Object o = queue.poll();
@@ -542,7 +542,7 @@ public final class BlockingObservable<T> {
             s.unsubscribe();
         }
     }
-    
+
     /**
      * Subscribes to the source and calls the Subscriber methods on the current thread.
      * <p>
@@ -554,8 +554,8 @@ public final class BlockingObservable<T> {
     public void subscribe(Subscriber<? super T> subscriber) {
         final NotificationLite<T> nl = NotificationLite.instance();
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
-        final Producer[] theProducer = { null }; 
-        
+        final Producer[] theProducer = { null };
+
         Subscriber<T> s = new Subscriber<T>() {
             @Override
             public void onNext(T t) {
@@ -569,19 +569,19 @@ public final class BlockingObservable<T> {
             public void onCompleted() {
                 queue.offer(nl.completed());
             }
-            
+
             @Override
             public void setProducer(Producer p) {
                 theProducer[0] = p;
                 queue.offer(SET_PRODUCER);
             }
-            
+
             @Override
             public void onStart() {
                 queue.offer(ON_START);
             }
         };
-        
+
         subscriber.add(s);
         subscriber.add(Subscriptions.create(new Action0() {
             @Override
@@ -589,9 +589,9 @@ public final class BlockingObservable<T> {
                 queue.offer(UNSUBSCRIBE);
             }
         }));
-        
+
         ((Observable<T>)o).subscribe(s);
-        
+
         try {
             for (;;) {
                 if (subscriber.isUnsubscribed()) {
@@ -621,14 +621,14 @@ public final class BlockingObservable<T> {
             s.unsubscribe();
         }
     }
-    
+
     /**
      * Subscribes to the source and calls the given action on the current thread and rethrows any exception wrapped
      * into OnErrorNotImplementedException.
-     * 
+     *
      * <p>The difference between this method and {@link #forEach(Action1)} is that the
      * action is always executed on the current thread.
-     * 
+     *
      * @param onNext the callback action for each source value
      * @see #forEach(Action1)
      */
@@ -641,7 +641,7 @@ public final class BlockingObservable<T> {
             }
         }, Actions.empty());
     }
-    
+
     /**
      * Subscribes to the source and calls the given actions on the current thread.
      * @param onNext the callback action for each source value
@@ -651,7 +651,7 @@ public final class BlockingObservable<T> {
     public void subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError) {
         subscribe(onNext, onError, Actions.empty());
     }
-    
+
     /**
      * Subscribes to the source and calls the given actions on the current thread.
      * @param onNext the callback action for each source value
@@ -665,12 +665,12 @@ public final class BlockingObservable<T> {
             public void onNext(T t) {
                 onNext.call(t);
             }
-            
+
             @Override
             public void onError(Throwable e) {
                 onError.call(e);
             }
-            
+
             @Override
             public void onCompleted() {
                 onCompleted.call();

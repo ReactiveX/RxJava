@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -132,80 +132,80 @@ public class OnSubscribeToObservableFutureTest {
         assertEquals(0, testSubscriber.getCompletions());
         assertEquals(0, testSubscriber.getOnNextEvents().size());
     }
-    
+
     @Test
     public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        
+
         FutureTask<Integer> f = new FutureTask<Integer>(new Runnable() {
             @Override
             public void run() {
-                
+
             }
         }, 1);
-        
+
         f.run();
-        
+
         Observable.from(f).subscribe(ts);
-        
+
         ts.assertNoValues();
-        
+
         ts.requestMore(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void withTimeoutNoTimeout() {
         FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
             @Override
             public void run() {
-                
+
             }
         }, 1);
-        
+
         task.run();
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.from(task, 1, TimeUnit.SECONDS).subscribe(ts);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void withTimeoutTimeout() {
         FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
             @Override
             public void run() {
-                
+
             }
         }, 1);
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.from(task, 10, TimeUnit.MILLISECONDS).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TimeoutException.class);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void withTimeoutNoTimeoutScheduler() {
         FutureTask<Integer> task = new FutureTask<Integer>(new Runnable() {
             @Override
             public void run() {
-                
+
             }
         }, 1);
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.from(task, Schedulers.computation()).subscribe(ts);
 
         task.run();

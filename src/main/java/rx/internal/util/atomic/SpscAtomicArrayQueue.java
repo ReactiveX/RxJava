@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic/SpscAtomicArrayQueue.java
  */
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.*;
  * <i>2010 - Pisa - SPSC Queues on Shared Cache Multi-Core Systems.pdf<br>
  * 2012 - Junchang- BQueue- Efficient and Practical Queuing.pdf <br>
  * </i> This implementation is wait free.
- * 
+ *
  * @param <E>
  */
 public final class SpscAtomicArrayQueue<E> extends AtomicReferenceArrayQueue<E> {
@@ -119,7 +119,7 @@ public final class SpscAtomicArrayQueue<E> extends AtomicReferenceArrayQueue<E> 
     private void soConsumerIndex(long newIndex) {
         consumerIndex.lazySet(newIndex);
     }
-    
+
     private long lvConsumerIndex() {
         return consumerIndex.get();
     }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -72,8 +72,8 @@ public class OperatorPublishPerf {
             cdl.countDown();
         }
     }
-    
-    
+
+
     /** How long the range should be. */
     @Param({"1", "1000", "1000000"})
     private int size;
@@ -86,7 +86,7 @@ public class OperatorPublishPerf {
     /** How often the child subscribers should re-request. */
     @Param({"1", "2", "4", "8", "16", "32", "64"})
     private int batchFrequency;
-    
+
     private ConnectableObservable<Integer> source;
     private Observable<Integer> observable;
     @Setup
@@ -99,13 +99,13 @@ public class OperatorPublishPerf {
         source = src.publish();
         observable = async ? source.observeOn(Schedulers.computation()) : source;
     }
-    
+
     @Benchmark
-    public void benchmark(Blackhole bh) throws InterruptedException, 
+    public void benchmark(Blackhole bh) throws InterruptedException,
             TimeoutException, BrokenBarrierException {
         CountDownLatch completion = null;
         int cc = childCount;
-        
+
         if (cc > 0) {
             completion = new CountDownLatch(cc);
             Observable<Integer> o = observable;
@@ -113,9 +113,9 @@ public class OperatorPublishPerf {
                 o.subscribe(new SharedLatchObserver(completion, batchFrequency, bh));
             }
         }
-        
+
         Subscription s = source.connect();
-        
+
         if (completion != null && !completion.await(2, TimeUnit.SECONDS)) {
             throw new RuntimeException("Source hung!");
         }

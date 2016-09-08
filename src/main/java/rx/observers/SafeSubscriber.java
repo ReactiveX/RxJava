@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ import rx.plugins.RxJavaHooks;
  * </ul>
  * {@code SafeSubscriber} will not synchronize {@code onNext} execution. Use {@link SerializedSubscriber} to do
  * that.
- * 
+ *
  * @param <T>
  *            the type of item expected by the {@link Subscriber}
  */
@@ -83,7 +83,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 Exceptions.throwIfFatal(e);
                 RxJavaHooks.onError(e);
                 throw new OnCompletedFailedException(e.getMessage(), e);
-            } finally { // NOPMD 
+            } finally { // NOPMD
                 try {
                     // Similarly to onError if failure occurs in unsubscribe then Rx contract is broken
                     // and we throw an UnsubscribeFailureException.
@@ -101,7 +101,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
      * <p>
      * If the {@code Observable} calls this method, it will not thereafter call {@link #onNext} or
      * {@link #onCompleted}.
-     * 
+     *
      * @param e
      *          the exception encountered by the Observable
      */
@@ -123,7 +123,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
      * <p>
      * The {@code Observable} will not call this method again after it calls either {@link #onCompleted} or
      * {@link #onError}.
-     * 
+     *
      * @param args
      *          the item emitted by the Observable
      */
@@ -143,21 +143,21 @@ public class SafeSubscriber<T> extends Subscriber<T> {
     /**
      * The logic for {@code onError} without the {@code isFinished} check so it can be called from within
      * {@code onCompleted}.
-     * 
+     *
      * @see <a href="https://github.com/ReactiveX/RxJava/issues/630">the report of this bug</a>
      */
-    protected void _onError(Throwable e) { // NOPMD 
+    protected void _onError(Throwable e) { // NOPMD
         RxJavaHooks.onError(e);
         try {
             actual.onError(e);
-        } catch (OnErrorNotImplementedException e2) { // NOPMD 
+        } catch (OnErrorNotImplementedException e2) { // NOPMD
             /*
              * onError isn't implemented so throw
-             * 
+             *
              * https://github.com/ReactiveX/RxJava/issues/198
-             * 
+             *
              * Rx Design Guidelines 5.2
-             * 
+             *
              * "when calling the Subscribe method that only has an onNext argument, the OnError behavior
              * will be to rethrow the exception on the thread that the message comes out from the observable
              * sequence. The OnCompleted behavior in this case is to do nothing."
@@ -166,13 +166,13 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 unsubscribe();
             } catch (Throwable unsubscribeException) {
                 RxJavaHooks.onError(unsubscribeException);
-                throw new OnErrorNotImplementedException("Observer.onError not implemented and error while unsubscribing.", new CompositeException(Arrays.asList(e, unsubscribeException))); // NOPMD 
+                throw new OnErrorNotImplementedException("Observer.onError not implemented and error while unsubscribing.", new CompositeException(Arrays.asList(e, unsubscribeException))); // NOPMD
             }
             throw e2;
         } catch (Throwable e2) {
             /*
              * throw since the Rx contract is broken if onError failed
-             * 
+             *
              * https://github.com/ReactiveX/RxJava/issues/198
              */
             RxJavaHooks.onError(e2);

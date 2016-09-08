@@ -30,9 +30,9 @@ public class OperatorOnBackpressureLatestTest {
     @Test
     public void testSimple() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         Observable.range(1, 5).onBackpressureLatest().subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
@@ -40,10 +40,10 @@ public class OperatorOnBackpressureLatestTest {
     @Test
     public void testSimpleError() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         Observable.range(1, 5).concatWith(Observable.<Integer>error(new TestException()))
         .onBackpressureLatest().subscribe(ts);
-        
+
         ts.assertTerminalEvent();
         Assert.assertEquals(1, ts.getOnErrorEvents().size());
         Assert.assertTrue(ts.getOnErrorEvents().get(0) instanceof TestException);
@@ -57,9 +57,9 @@ public class OperatorOnBackpressureLatestTest {
                 request(2);
             }
         };
-        
+
         Observable.range(1, 5).onBackpressureLatest().subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2));
         Assert.assertEquals(0, ts.getCompletions());
@@ -73,16 +73,16 @@ public class OperatorOnBackpressureLatestTest {
                 request(0);
             }
         };
-        
+
         source.onBackpressureLatest().subscribe(ts);
 
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
 
         source.onNext(1);
         ts.requestMore(2);
-        
+
         ts.assertReceivedOnNext(Arrays.asList(1));
-        
+
         source.onNext(2);
 
         ts.assertReceivedOnNext(Arrays.asList(1, 2));
@@ -95,17 +95,17 @@ public class OperatorOnBackpressureLatestTest {
         ts.requestMore(2);
 
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 6));
-        
+
         source.onNext(7);
 
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 6, 7));
-        
+
         source.onNext(8);
         source.onNext(9);
         source.onCompleted();
-        
+
         ts.requestMore(1);
-        
+
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 6, 7, 9));
         ts.assertNoErrors();
         ts.assertTerminalEvent();
@@ -137,7 +137,7 @@ public class OperatorOnBackpressureLatestTest {
         .onBackpressureLatest()
         .observeOn(Schedulers.io())
         .subscribe(ts);
-        
+
         ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
         ts.assertTerminalEvent();
         int n = ts.getOnNextEvents().size();

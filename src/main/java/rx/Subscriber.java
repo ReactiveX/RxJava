@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,13 +25,13 @@ import rx.internal.util.SubscriptionList;
  * {@link Observable} calls the Subscriber's {@link #onNext} method to emit items. A well-behaved
  * {@link Observable} will call a Subscriber's {@link #onCompleted} method exactly once or the Subscriber's
  * {@link #onError} method exactly once.
- * 
+ *
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
  *          the type of items the Subscriber expects to observe
  */
 public abstract class Subscriber<T> implements Observer<T>, Subscription {
-    
+
     // represents requested not set yet
     private static final long NOT_SET = Long.MIN_VALUE;
 
@@ -50,7 +50,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      * Construct a Subscriber by using another Subscriber for backpressure and
      * for holding the subscription list (when <code>this.add(sub)</code> is
      * called this will in fact call <code>subscriber.add(sub)</code>).
-     * 
+     *
      * @param subscriber
      *            the other Subscriber
      */
@@ -68,7 +68,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      * To retain the chaining of subscribers when setting
      * <code>shareSubscriptions</code> to <code>false</code>, add the created
      * instance to {@code subscriber} via {@link #add}.
-     * 
+     *
      * @param subscriber
      *            the other Subscriber
      * @param shareSubscriptions
@@ -100,7 +100,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     /**
      * Indicates whether this Subscriber has unsubscribed from its list of subscriptions.
-     * 
+     *
      * @return {@code true} if this Subscriber has unsubscribed from its subscriptions, {@code false} otherwise
      */
     @Override
@@ -116,22 +116,22 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     public void onStart() {
         // do nothing by default
     }
-    
+
     /**
      * Request a certain maximum number of emitted items from the Observable this Subscriber is subscribed to.
      * This is a way of requesting backpressure. To disable backpressure, pass {@code Long.MAX_VALUE} to this
      * method.
      * <p>
-     * Requests are additive but if a sequence of requests totals more than {@code Long.MAX_VALUE} then 
-     * {@code Long.MAX_VALUE} requests will be actioned and the extras <i>may</i> be ignored. Arriving at 
-     * {@code Long.MAX_VALUE} by addition of requests cannot be assumed to disable backpressure. For example, 
+     * Requests are additive but if a sequence of requests totals more than {@code Long.MAX_VALUE} then
+     * {@code Long.MAX_VALUE} requests will be actioned and the extras <i>may</i> be ignored. Arriving at
+     * {@code Long.MAX_VALUE} by addition of requests cannot be assumed to disable backpressure. For example,
      * the code below may result in {@code Long.MAX_VALUE} requests being actioned only.
-     * 
+     *
      * <pre>
      * request(100);
      * request(Long.MAX_VALUE-1);
      * </pre>
-     * 
+     *
      * @param n the maximum number of items you want the Observable to emit to the Subscriber at this time, or
      *           {@code Long.MAX_VALUE} if you want the Observable to emit items at its own pace
      * @throws IllegalArgumentException
@@ -140,8 +140,8 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     protected final void request(long n) {
         if (n < 0) {
             throw new IllegalArgumentException("number requested cannot be negative: " + n);
-        } 
-        
+        }
+
         // if producer is set then we will request from it
         // otherwise we increase the requested count by n
         Producer producerToRequestFrom = null;
@@ -160,7 +160,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     private void addToRequested(long n) {
         if (requested == NOT_SET) {
             requested = n;
-        } else { 
+        } else {
             final long total = requested + n;
             // check if overflow occurred
             if (total < 0) {
@@ -170,7 +170,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
             }
         }
     }
-    
+
     /**
      * If other subscriber is set (by calling constructor
      * {@link #Subscriber(Subscriber)} or
@@ -181,7 +181,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      * is not set and some requests have been made to this subscriber then
      * <code>p.request(n)</code> is called where n is the accumulated requests
      * to this subscriber.
-     * 
+     *
      * @param p
      *            producer to be used by this subscriber or the other subscriber
      *            (or recursively its other subscriber) to make requests from

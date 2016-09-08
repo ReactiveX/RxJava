@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,14 +43,14 @@ public final class UnsafeAccess {
         try {
             /*
              * This mechanism for getting UNSAFE originally from:
-             * 
+             *
              * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
              * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/util/UnsafeAccess.java
              */
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
             u = (Unsafe) field.get(null);
-        } catch (Throwable e) { // NOPMD 
+        } catch (Throwable e) { // NOPMD
             // do nothing, hasUnsafe() will return false
         }
         UNSAFE = u;
@@ -96,7 +96,7 @@ public final class UnsafeAccess {
     public static boolean compareAndSwapInt(Object obj, long offset, int expected, int newValue) {
         return UNSAFE.compareAndSwapInt(obj, offset, expected, newValue);
     }
-    
+
     /**
      * Returns the address of the specific field on the class and
      * wraps a NoSuchFieldException into an internal error.

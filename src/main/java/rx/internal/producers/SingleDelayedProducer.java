@@ -33,12 +33,12 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
     final Subscriber<? super T> child;
     /** The value to emit.*/
     T value;
-    
+
     static final int NO_REQUEST_NO_VALUE = 0;
     static final int NO_REQUEST_HAS_VALUE = 1;
     static final int HAS_REQUEST_NO_VALUE = 2;
     static final int HAS_REQUEST_HAS_VALUE = 3;
-  
+
     /**
      * Constructor, wraps the target child subscriber.
      * @param child the child subscriber, not null
@@ -46,7 +46,7 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
     public SingleDelayedProducer(Subscriber<? super T> child) {
         this.child = child;
     }
-     
+
     @Override
     public void request(long n) {
         if (n < 0) {
@@ -67,10 +67,10 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
                     emit(child, value);
                 }
             }
-            return; // NOPMD 
+            return; // NOPMD
         }
     }
-     
+
     public void setValue(T value) {
         for (;;) {
             int s = get();
@@ -85,7 +85,7 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
                     emit(child, value);
                 }
             }
-            return; // NOPMD 
+            return; // NOPMD
         }
     }
     /**
@@ -108,6 +108,6 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
             return;
         }
         c.onCompleted();
-        
+
     }
 }

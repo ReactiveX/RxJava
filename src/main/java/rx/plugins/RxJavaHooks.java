@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ import rx.internal.operators.*;
  * points as well as Scheduler hooks.
  * <p>
  * The class features a lockdown state, see {@link #lockdown()} and {@link #isLockdown()}, to
- * prevent further changes to the hooks. 
+ * prevent further changes to the hooks.
  */
 @Experimental
 public final class RxJavaHooks {
@@ -36,9 +36,9 @@ public final class RxJavaHooks {
      * Prevents changing the hook callbacks when set to true.
      */
     /* test */ static volatile boolean lockdown;
-    
+
     static volatile Action1<Throwable> onError;
-    
+
     @SuppressWarnings("rawtypes")
     static volatile Func1<Observable.OnSubscribe, Observable.OnSubscribe> onObservableCreate;
 
@@ -60,13 +60,13 @@ public final class RxJavaHooks {
     static volatile Func1<Scheduler, Scheduler> onIOScheduler;
 
     static volatile Func1<Scheduler, Scheduler> onNewThreadScheduler;
-    
+
     static volatile Func1<Action0, Action0> onScheduleAction;
 
     static volatile Func1<Subscription, Subscription> onObservableReturn;
 
     static volatile Func1<Subscription, Subscription> onSingleReturn;
-    
+
     static volatile Func0<? extends ScheduledExecutorService> onGenericScheduledExecutorService;
 
     static volatile Func1<Throwable, Throwable> onObservableSubscribeError;
@@ -92,7 +92,7 @@ public final class RxJavaHooks {
     private RxJavaHooks() {
         throw new IllegalStateException("No instances!");
     }
-    
+
 
     /**
      * Initialize the hooks via delegating to RxJavaPlugins.
@@ -105,35 +105,35 @@ public final class RxJavaHooks {
                 RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
             }
         };
-        
+
         onObservableStart = new Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe>() {
             @Override
             public Observable.OnSubscribe call(Observable t1, Observable.OnSubscribe t2) {
                 return RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeStart(t1, t2);
             }
         };
-        
+
         onObservableReturn = new Func1<Subscription, Subscription>() {
             @Override
             public Subscription call(Subscription f) {
                 return RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeReturn(f);
             }
         };
-        
+
         onSingleStart = new Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe>() {
             @Override
             public Observable.OnSubscribe call(Single t1, Observable.OnSubscribe t2) {
                 return RxJavaPlugins.getInstance().getSingleExecutionHook().onSubscribeStart(t1, t2);
             }
         };
-        
+
         onSingleReturn = new Func1<Subscription, Subscription>() {
             @Override
             public Subscription call(Subscription f) {
                 return RxJavaPlugins.getInstance().getSingleExecutionHook().onSubscribeReturn(f);
             }
         };
-        
+
         onCompletableStart = new Func2<Completable, Completable.OnSubscribe, Completable.OnSubscribe>() {
             @Override
             public Completable.OnSubscribe call(Completable t1, Completable.OnSubscribe t2) {
@@ -147,14 +147,14 @@ public final class RxJavaHooks {
                 return RxJavaPlugins.getInstance().getSchedulersHook().onSchedule(a);
             }
         };
-        
+
         onObservableSubscribeError = new Func1<Throwable, Throwable>() {
             @Override
             public Throwable call(Throwable t) {
                 return RxJavaPlugins.getInstance().getObservableExecutionHook().onSubscribeError(t);
             }
         };
-        
+
         onObservableLift = new Func1<Observable.Operator, Observable.Operator>() {
             @Override
             public Observable.Operator call(Observable.Operator t) {
@@ -168,7 +168,7 @@ public final class RxJavaHooks {
                 return RxJavaPlugins.getInstance().getSingleExecutionHook().onSubscribeError(t);
             }
         };
-        
+
         onSingleLift = new Func1<Observable.Operator, Observable.Operator>() {
             @Override
             public Observable.Operator call(Observable.Operator t) {
@@ -182,7 +182,7 @@ public final class RxJavaHooks {
                 return RxJavaPlugins.getInstance().getCompletableExecutionHook().onSubscribeError(t);
             }
         };
-        
+
         onCompletableLift = new Func1<Completable.Operator, Completable.Operator>() {
             @Override
             public Completable.Operator call(Completable.Operator t) {
@@ -192,7 +192,7 @@ public final class RxJavaHooks {
 
         initCreate();
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
     static void initCreate() {
         onObservableCreate = new Func1<Observable.OnSubscribe, Observable.OnSubscribe>() {
@@ -216,10 +216,10 @@ public final class RxJavaHooks {
             }
         };
     }
-    
+
     /**
      * Reset all hook callbacks to those of the current RxJavaPlugins handlers.
-     * 
+     *
      * @see #clear()
      */
     public static void reset() {
@@ -227,7 +227,7 @@ public final class RxJavaHooks {
             return;
         }
         init();
-        
+
         onComputationScheduler = null;
         onIOScheduler = null;
         onNewThreadScheduler = null;
@@ -238,7 +238,7 @@ public final class RxJavaHooks {
      * Clears all hooks to be no-operations (and passthroughs)
      * and onError hook to signal errors to the caller thread's
      * UncaughtExceptionHandler.
-     * 
+     *
      * @see #reset()
      */
     public static void clear() {
@@ -246,24 +246,24 @@ public final class RxJavaHooks {
             return;
         }
         onError = null;
-        
+
         onObservableCreate = null;
         onObservableStart = null;
         onObservableReturn = null;
         onObservableSubscribeError = null;
         onObservableLift = null;
-        
+
         onSingleCreate = null;
         onSingleStart = null;
         onSingleReturn = null;
         onSingleSubscribeError = null;
         onSingleLift = null;
-        
+
         onCompletableCreate = null;
         onCompletableStart = null;
         onCompletableSubscribeError = null;
         onCompletableLift = null;
-        
+
         onComputationScheduler = null;
         onIOScheduler = null;
         onNewThreadScheduler = null;
@@ -278,7 +278,7 @@ public final class RxJavaHooks {
     public static void lockdown() {
         lockdown = true;
     }
-    
+
     /**
      * Returns true if the hooks can no longer be changed.
      * @return true if the hooks can no longer be changed
@@ -302,21 +302,21 @@ public final class RxJavaHooks {
                  * Since the plugin should never throw this is a safety net
                  * and will complain loudly to System.err so it gets fixed.
                  */
-                System.err.println("The onError handler threw an Exception. It shouldn't. => " + pluginException.getMessage()); // NOPMD 
+                System.err.println("The onError handler threw an Exception. It shouldn't. => " + pluginException.getMessage()); // NOPMD
                 pluginException.printStackTrace(); // NOPMD
-                
+
                 signalUncaught(pluginException);
             }
         }
         signalUncaught(ex);
     }
-    
+
     static void signalUncaught(Throwable ex) {
         Thread current = Thread.currentThread();
         UncaughtExceptionHandler handler = current.getUncaughtExceptionHandler();
         handler.uncaughtException(current, ex);
     }
-    
+
     /**
      * Hook to call when an Observable is created.
      * @param <T> the value type
@@ -359,11 +359,11 @@ public final class RxJavaHooks {
         }
         return onSubscribe;
     }
-    
+
     /**
      * Hook to call when the Schedulers.computation() is called.
      * @param scheduler the default computation scheduler
-     * @return the default of alternative scheduler 
+     * @return the default of alternative scheduler
      */
     public static Scheduler onComputationScheduler(Scheduler scheduler) {
         Func1<Scheduler, Scheduler> f = onComputationScheduler;
@@ -376,7 +376,7 @@ public final class RxJavaHooks {
     /**
      * Hook to call when the Schedulers.io() is called.
      * @param scheduler the default io scheduler
-     * @return the default of alternative scheduler 
+     * @return the default of alternative scheduler
      */
     public static Scheduler onIOScheduler(Scheduler scheduler) {
         Func1<Scheduler, Scheduler> f = onIOScheduler;
@@ -389,7 +389,7 @@ public final class RxJavaHooks {
     /**
      * Hook to call when the Schedulers.newThread() is called.
      * @param scheduler the default new thread scheduler
-     * @return the default of alternative scheduler 
+     * @return the default of alternative scheduler
      */
     public static Scheduler onNewThreadScheduler(Scheduler scheduler) {
         Func1<Scheduler, Scheduler> f = onNewThreadScheduler;
@@ -428,7 +428,7 @@ public final class RxJavaHooks {
         }
         return onSubscribe;
     }
-    
+
     /**
      * Hook to call before the Observable.subscribe() method is about to return a Subscription.
      * @param subscription the original subscription
@@ -572,7 +572,7 @@ public final class RxJavaHooks {
         return operator;
     }
 
-    
+
     /**
      * Sets the global error consumer action unless a lockdown is in effect.
      * <p>
@@ -588,7 +588,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onError = onError;
     }
-    
+
     /**
      * Sets the Completable's onCreate hook function unless a lockdown is in effect.
      * <p>
@@ -606,7 +606,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onCompletableCreate = onCompletableCreate;
     }
-    
+
     /**
      * Sets the Observable onCreate hook function unless a lockdown is in effect.
      * <p>
@@ -625,7 +625,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onObservableCreate = onObservableCreate;
     }
-    
+
     /**
      * Sets the Single onCreate hook function unless a lockdown is in effect.
      * <p>
@@ -643,7 +643,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onSingleCreate = onSingleCreate;
     }
-    
+
     /**
      * Sets the hook function for returning a scheduler when the Schedulers.computation() is called
      * unless a lockdown is in effect.
@@ -661,7 +661,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onComputationScheduler = onComputationScheduler;
     }
-    
+
     /**
      * Sets the hook function for returning a scheduler when the Schedulers.io() is called
      * unless a lockdown is in effect.
@@ -679,7 +679,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onIOScheduler = onIOScheduler;
     }
-    
+
     /**
      * Sets the hook function for returning a scheduler when the Schedulers.newThread() is called
      * unless a lockdown is in effect.
@@ -697,7 +697,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onNewThreadScheduler = onNewThreadScheduler;
     }
-    
+
     /**
      * Sets the hook function that is called before an action is scheduled, allowing
      * decorating that function, unless a lockdown is in effect.
@@ -715,7 +715,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onScheduleAction = onScheduleAction;
     }
-    
+
     /**
      * Sets the hook function that is called when a subscriber subscribes to a Completable
      * unless a lockdown is in effect.
@@ -735,7 +735,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onCompletableStart = onCompletableStart;
     }
-    
+
     /**
      * Sets the hook function that is called when a subscriber subscribes to a Observable
      * unless a lockdown is in effect.
@@ -756,7 +756,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onObservableStart = onObservableStart;
     }
-    
+
     /**
      * Sets the hook function that is called when a subscriber subscribes to a Single
      * unless a lockdown is in effect.
@@ -776,9 +776,9 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onSingleStart = onSingleStart;
     }
-    
+
     /**
-     * Sets a hook function that is called when the Observable.subscribe() call 
+     * Sets a hook function that is called when the Observable.subscribe() call
      * is about to return a Subscription unless a lockdown is in effect.
      * <p>
      * This operation is threadsafe.
@@ -795,9 +795,9 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onObservableReturn = onObservableReturn;
     }
-    
+
     /**
-     * Sets a hook function that is called when the Single.subscribe() call 
+     * Sets a hook function that is called when the Single.subscribe() call
      * is about to return a Subscription unless a lockdown is in effect.
      * <p>
      * This operation is threadsafe.
@@ -843,7 +843,7 @@ public final class RxJavaHooks {
     public static Func1<Throwable, Throwable> getOnSingleSubscribeError() {
         return onSingleSubscribeError;
     }
-    
+
     /**
      * Sets a hook function that is called when the Completable.subscribe() call
      * fails with an exception.
@@ -872,7 +872,7 @@ public final class RxJavaHooks {
     public static Func1<Throwable, Throwable> getOnCompletableSubscribeError() {
         return onCompletableSubscribeError;
     }
-    
+
     /**
      * Sets a hook function that is called when the Observable.subscribe() call
      * fails with an exception.
@@ -901,7 +901,7 @@ public final class RxJavaHooks {
     public static Func1<Throwable, Throwable> getOnObservableSubscribeError() {
         return onObservableSubscribeError;
     }
-    
+
     /**
      * Sets a hook function that is called with an operator when an Observable operator built with
      * lift() gets subscribed to.
@@ -920,7 +920,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onObservableLift = onObservableLift;
     }
-    
+
     /**
      * Returns the current Observable onLift hook function or null if it is
      * set to the default pass-through.
@@ -951,7 +951,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onSingleLift = onSingleLift;
     }
-    
+
     /**
      * Returns the current Single onLift hook function or null if it is
      * set to the default pass-through.
@@ -981,7 +981,7 @@ public final class RxJavaHooks {
         }
         RxJavaHooks.onCompletableLift = onCompletableLift;
     }
-    
+
     /**
      * Returns the current Completable onLift hook function or null if it is
      * set to the default pass-through.
@@ -1003,7 +1003,7 @@ public final class RxJavaHooks {
     public static Func1<Scheduler, Scheduler> getOnComputationScheduler() {
         return onComputationScheduler;
     }
-    
+
     /**
      * Returns the current global error handler hook action or null if it is
      * set to the default one that signals errors to the current threads
@@ -1015,7 +1015,7 @@ public final class RxJavaHooks {
     public static Action1<Throwable> getOnError() {
         return onError;
     }
-    
+
     /**
      * Returns the current io scheduler hook function or null if it is
      * set to the default pass-through.
@@ -1026,7 +1026,7 @@ public final class RxJavaHooks {
     public static Func1<Scheduler, Scheduler> getOnIOScheduler() {
         return onIOScheduler;
     }
-    
+
     /**
      * Returns the current new thread scheduler hook function or null if it is
      * set to the default pass-through.
@@ -1037,7 +1037,7 @@ public final class RxJavaHooks {
     public static Func1<Scheduler, Scheduler> getOnNewThreadScheduler() {
         return onNewThreadScheduler;
     }
-    
+
     /**
      * Returns the current Observable onCreate hook function or null if it is
      * set to the default pass-through.
@@ -1049,7 +1049,7 @@ public final class RxJavaHooks {
     public static Func1<Observable.OnSubscribe, Observable.OnSubscribe> getOnObservableCreate() {
         return onObservableCreate;
     }
-    
+
     /**
      * Returns the current schedule action hook function or null if it is
      * set to the default pass-through.
@@ -1060,7 +1060,7 @@ public final class RxJavaHooks {
     public static Func1<Action0, Action0> getOnScheduleAction() {
         return onScheduleAction;
     }
-    
+
     /**
      * Returns the current Single onCreate hook function or null if it is
      * set to the default pass-through.
@@ -1072,7 +1072,7 @@ public final class RxJavaHooks {
     public static Func1<Single.OnSubscribe, Single.OnSubscribe> getOnSingleCreate() {
         return onSingleCreate;
     }
-    
+
     /**
      * Returns the current Completable onCreate hook function or null if it is
      * set to the default pass-through.
@@ -1083,7 +1083,7 @@ public final class RxJavaHooks {
     public static Func1<Completable.OnSubscribe, Completable.OnSubscribe> getOnCompletableCreate() {
         return onCompletableCreate;
     }
-    
+
     /**
      * Returns the current Completable onStart hook function or null if it is
      * set to the default pass-through.
@@ -1094,7 +1094,7 @@ public final class RxJavaHooks {
     public static Func2<Completable, Completable.OnSubscribe, Completable.OnSubscribe> getOnCompletableStart() {
         return onCompletableStart;
     }
-    
+
     /**
      * Returns the current Observable onStart hook function or null if it is
      * set to the default pass-through.
@@ -1106,7 +1106,7 @@ public final class RxJavaHooks {
     public static Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe> getOnObservableStart() {
         return onObservableStart;
     }
-    
+
     /**
      * Returns the current Single onStart hook function or null if it is
      * set to the default pass-through.
@@ -1118,7 +1118,7 @@ public final class RxJavaHooks {
     public static Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> getOnSingleStart() {
         return onSingleStart;
     }
-    
+
     /**
      * Returns the current Observable onReturn hook function or null if it is
      * set to the default pass-through.
@@ -1129,7 +1129,7 @@ public final class RxJavaHooks {
     public static Func1<Subscription, Subscription> getOnObservableReturn() {
         return onObservableReturn;
     }
-    
+
     /**
      * Returns the current Single onReturn hook function or null if it is
      * set to the default pass-through.
@@ -1175,7 +1175,7 @@ public final class RxJavaHooks {
         if (lockdown) {
             return;
         }
-        
+
         onObservableCreate = new Func1<Observable.OnSubscribe, Observable.OnSubscribe>() {
             @Override
             public Observable.OnSubscribe call(Observable.OnSubscribe f) {
@@ -1217,7 +1217,7 @@ public final class RxJavaHooks {
         }
         onGenericScheduledExecutorService = factory;
     }
-    
+
     /**
      * Returns the current factory for creating ScheduledExecutorServices in
      * GenericScheduledExecutorService utility.

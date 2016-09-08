@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -91,14 +91,14 @@ public final class OperatorTake<T> implements Operator<T, T> {
             @Override
             public void setProducer(final Producer producer) {
                 child.setProducer(new Producer() {
-                    
+
                     // keeps track of requests up to maximum of `limit`
                     final AtomicLong requested = new AtomicLong(0);
-                    
+
                     @Override
                     public void request(long n) {
                         if (n >0 && !completed) {
-                            // because requests may happen concurrently use a CAS loop to 
+                            // because requests may happen concurrently use a CAS loop to
                             // ensure we only request as much as needed, no more no less
                             while (true) {
                                 long r = requested.get();
@@ -125,9 +125,9 @@ public final class OperatorTake<T> implements Operator<T, T> {
         /*
          * We decouple the parent and child subscription so there can be multiple take() in a chain such as for
          * the groupBy Observer use case where you may take(1) on groups and take(20) on the children.
-         * 
+         *
          * Thus, we only unsubscribe UPWARDS to the parent and an onComplete DOWNSTREAM.
-         * 
+         *
          * However, if we receive an unsubscribe from the child we still want to propagate it upwards so we
          * register 'parent' with 'child'
          */

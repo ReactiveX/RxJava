@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,23 +39,23 @@ public final class AssemblyStackTraceException extends RuntimeException {
     }
 
     @Override
-    public synchronized Throwable fillInStackTrace() { // NOPMD 
+    public synchronized Throwable fillInStackTrace() { // NOPMD
         return this;
     }
-    
+
     /**
      * Finds an empty cause slot and assigns itself to it.
      * @param exception the exception to start from
      */
     public void attachTo(Throwable exception) {
         Set<Throwable> memory = new HashSet<Throwable>();
-        
+
         for (;;) {
             if (exception.getCause() == null) {
                 exception.initCause(this);
                 return;
             }
-            
+
             exception = exception.getCause();
             if (!memory.add(exception)) {
                 // in case we run into a cycle, give up and report this to the hooks
@@ -64,12 +64,12 @@ public final class AssemblyStackTraceException extends RuntimeException {
             }
         }
     }
-    
+
     /**
      * Locate the first AssemblyStackTraceException in the causal chain of the
      * given Throwable (or it if it's one).
-     * @param e the input throwable 
-     * @return the AssemblyStackTraceException located or null if not found 
+     * @param e the input throwable
+     * @return the AssemblyStackTraceException located or null if not found
      */
     public static AssemblyStackTraceException find(Throwable e) {
         Set<Throwable> memory = new HashSet<Throwable>();

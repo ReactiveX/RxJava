@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,7 +60,7 @@ public final class Observers {
 
     /**
      * Creates an {@link Observer} that receives the emissions of any {@code Observable} it subscribes to via
-     * {@link Observer#onNext onNext} but ignores {@link Observer#onCompleted onCompleted} notifications; 
+     * {@link Observer#onNext onNext} but ignores {@link Observer#onCompleted onCompleted} notifications;
      * it will throw an {@link OnErrorNotImplementedException} if {@link Observer#onError onError} is invoked.
      *
      * @param <T> the observed value type
@@ -100,7 +100,7 @@ public final class Observers {
      * Creates an {@link Observer} that receives the emissions of any {@code Observable} it subscribes to via
      * {@link Observer#onNext onNext} and handles any {@link Observer#onError onError} notification but ignores
      * an {@link Observer#onCompleted onCompleted} notification.
-     * 
+     *
      * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
@@ -144,7 +144,7 @@ public final class Observers {
      * Creates an {@link Observer} that receives the emissions of any {@code Observable} it subscribes to via
      * {@link Observer#onNext onNext} and handles any {@link Observer#onError onError} or
      * {@link Observer#onCompleted onCompleted} notifications.
-     * 
+     *
      * @param <T> the observed value type
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}

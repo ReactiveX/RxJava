@@ -88,7 +88,7 @@ public class OperatorTakeLastOneTest {
         s.requestMore(1);
         assertEquals(1, s.list.size());
     }
-    
+
     @Test
     public void testTakeLastZeroProcessesAllItemsButIgnoresThem() {
         final AtomicInteger upstreamCount = new AtomicInteger();
@@ -103,7 +103,7 @@ public class OperatorTakeLastOneTest {
         assertEquals(num, upstreamCount.get());
         assertEquals(0, count);
     }
-    
+
     private static class MySubscriber<T> extends Subscriber<T> {
 
         private long initialRequest;

@@ -34,10 +34,10 @@ public class SchedulerLifecycleTest {
     @Test
     public void testShutdown() throws InterruptedException {
         tryOutSchedulers();
-        
+
         System.out.println("testShutdown >> Giving time threads to spin-up");
         Thread.sleep(500);
-        
+
         Set<Thread> rxThreads = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
@@ -47,7 +47,7 @@ public class SchedulerLifecycleTest {
         Schedulers.shutdown();
         System.out.println("testShutdown >> Giving time to threads to stop");
         Thread.sleep(500);
-        
+
         StringBuilder b = new StringBuilder();
         for (Thread t : rxThreads) {
             if (t.isAlive()) {
@@ -63,47 +63,47 @@ public class SchedulerLifecycleTest {
             Schedulers.start(); // restart them anyways
             fail("Rx Threads were still alive:\r\n" + b);
         }
-        
+
         System.out.println("testShutdown >> Restarting schedulers...");
         Schedulers.start();
-        
+
         tryOutSchedulers();
     }
 
     private void tryOutSchedulers() throws InterruptedException {
         final CountDownLatch cdl = new CountDownLatch(4);
-        
+
         final Action0 countAction = new Action0() {
             @Override
             public void call() {
                 cdl.countDown();
             }
         };
-        
+
         CompositeSubscription csub = new CompositeSubscription();
-        
+
         try {
             Worker w1 = Schedulers.computation().createWorker();
             csub.add(w1);
             w1.schedule(countAction);
-            
+
             Worker w2 = Schedulers.io().createWorker();
             csub.add(w2);
             w2.schedule(countAction);
-            
+
             Worker w3 = Schedulers.newThread().createWorker();
             csub.add(w3);
             w3.schedule(countAction);
-            
+
             GenericScheduledExecutorService.getInstance().execute(new Runnable() {
                 @Override
                 public void run() {
                     countAction.call();
                 }
             });
-            
+
             RxRingBuffer.getSpscInstance().release();
-            
+
             if (!cdl.await(3, TimeUnit.SECONDS)) {
                 fail("countAction was not run by every worker");
             }
@@ -111,14 +111,14 @@ public class SchedulerLifecycleTest {
             csub.unsubscribe();
         }
     }
-    
+
     @Test
     public void testStartIdempotence() throws InterruptedException {
         tryOutSchedulers();
-        
+
         System.out.println("testStartIdempotence >> giving some time");
         Thread.sleep(500);
-        
+
         Set<Thread> rxThreads = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
@@ -130,7 +130,7 @@ public class SchedulerLifecycleTest {
         Schedulers.start();
         System.out.println("testStartIdempotence >> giving some time again");
         Thread.sleep(500);
-        
+
         Set<Thread> rxThreads2 = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
@@ -138,7 +138,7 @@ public class SchedulerLifecycleTest {
                 System.out.println("testStartIdempotence >>>> " + t);
             }
         }
-        
+
         assertEquals(rxThreads, rxThreads2);
     }
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,7 @@
 /**
  * Base reactive classes: Observable, Single and Completable; base reactive consumers;
  * other common base interfaces.
- * 
+ *
  * <p>A library that enables subscribing to and composing asynchronous events and
  * callbacks.</p>
  * <p>The Observable/Observer interfaces and associated operators (in
@@ -26,8 +26,8 @@
  * More information can be found at <a
  * href="http://msdn.microsoft.com/en-us/data/gg577609">http://msdn.microsoft.com/en-us/data/gg577609</a>.
  * </p>
- * 
- * 
+ *
+ *
  * <p>Compared with the Microsoft implementation:
  * <ul>
  * <li>Observable == IObservable</li>

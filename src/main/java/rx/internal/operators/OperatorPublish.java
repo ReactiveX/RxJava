@@ -28,7 +28,7 @@ import rx.subscriptions.Subscriptions;
 
 /**
  * A connectable observable which shares an underlying source and dispatches source values to subscribers in a backpressure-aware
- * manner. 
+ * manner.
  * @param <T> the value type
  */
 public final class OperatorPublish<T> extends ConnectableObservable<T> {
@@ -49,7 +49,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         OnSubscribe<T> onSubscribe = new OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> child) {
-                // concurrent connection/disconnection may change the state, 
+                // concurrent connection/disconnection may change the state,
                 // we loop to be atomic while the child subscribes
                 for (;;) {
                     // get the current subscriber-to-source
@@ -62,18 +62,18 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                         u.init();
                         // let's try setting it as the current subscriber-to-source
                         if (!curr.compareAndSet(r, u)) {
-                            // didn't work, maybe someone else did it or the current subscriber 
+                            // didn't work, maybe someone else did it or the current subscriber
                             // to source has just finished
                             continue;
                         }
                         // we won, let's use it going onwards
                         r = u;
                     }
-                    
+
                     // create the backpressure-managing producer for this child
                     InnerProducer<T> inner = new InnerProducer<T>(r, child);
                     /*
-                     * Try adding it to the current subscriber-to-source, add is atomic in respect 
+                     * Try adding it to the current subscriber-to-source, add is atomic in respect
                      * to other adds and the termination of the subscriber-to-source.
                      */
                     if (!r.add(inner)) {
@@ -82,12 +82,12 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                          */
                         continue;
                         /*
-                         * Note: although technically correct, concurrent disconnects can cause 
-                         * unexpected behavior such as child subscribers never receiving anything 
-                         * (unless connected again). An alternative approach, similar to 
-                         * PublishSubject would be to immediately terminate such child 
+                         * Note: although technically correct, concurrent disconnects can cause
+                         * unexpected behavior such as child subscribers never receiving anything
+                         * (unless connected again). An alternative approach, similar to
+                         * PublishSubject would be to immediately terminate such child
                          * subscribers as well:
-                         * 
+                         *
                          * Object term = r.terminalEvent;
                          * if (r.nl.isCompleted(term)) {
                          *     child.onCompleted();
@@ -95,57 +95,57 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                          *     child.onError(r.nl.getError(term));
                          * }
                          * return;
-                         * 
+                         *
                          * The original concurrent behavior was non-deterministic in this regard as well.
                          * Allowing this behavior, however, may introduce another unexpected behavior:
                          * after disconnecting a previous connection, one might not be able to prepare
-                         * a new connection right after a previous termination by subscribing new child 
+                         * a new connection right after a previous termination by subscribing new child
                          * subscribers asynchronously before a connect call.
                          */
                     }
-                    // the producer has been registered with the current subscriber-to-source so 
+                    // the producer has been registered with the current subscriber-to-source so
                     // at least it will receive the next terminal event
                     child.add(inner);
-                    // setting the producer will trigger the first request to be considered by 
+                    // setting the producer will trigger the first request to be considered by
                     // the subscriber-to-source.
                     child.setProducer(inner);
-                    break; // NOPMD 
+                    break; // NOPMD
                 }
             }
         };
         return new OperatorPublish<T>(onSubscribe, source, curr);
     }
 
-    public static <T, R> Observable<R> create(final Observable<? extends T> source, 
+    public static <T, R> Observable<R> create(final Observable<? extends T> source,
             final Func1<? super Observable<T>, ? extends Observable<R>> selector) {
         return create(source, selector, false);
     }
-    
-    public static <T, R> Observable<R> create(final Observable<? extends T> source, 
+
+    public static <T, R> Observable<R> create(final Observable<? extends T> source,
             final Func1<? super Observable<T>, ? extends Observable<R>> selector, final boolean delayError) {
         return create(new OnSubscribe<R>() {
             @Override
             public void call(final Subscriber<? super R> child) {
                 final OnSubscribePublishMulticast<T> op = new OnSubscribePublishMulticast<T>(RxRingBuffer.SIZE, delayError);
-                
+
                 Subscriber<R> subscriber = new Subscriber<R>() {
                     @Override
                     public void onNext(R t) {
                         child.onNext(t);
                     }
-                    
+
                     @Override
                     public void onError(Throwable e) {
                         op.unsubscribe();
                         child.onError(e);
                     }
-                    
+
                     @Override
                     public void onCompleted() {
                         op.unsubscribe();
                         child.onCompleted();
                     }
-                    
+
                     @Override
                     public void setProducer(Producer p) {
                         child.setProducer(p);
@@ -154,15 +154,15 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
 
                 child.add(op);
                 child.add(subscriber);
-                
+
                 selector.call(Observable.create(op)).unsafeSubscribe(subscriber);
-                
+
                 source.unsafeSubscribe(op.subscriber());
             }
         });
     }
 
-    private OperatorPublish(OnSubscribe<T> onSubscribe, Observable<? extends T> source, 
+    private OperatorPublish(OnSubscribe<T> onSubscribe, Observable<? extends T> source,
             final AtomicReference<PublishSubscriber<T>> current) {
         super(onSubscribe);
         this.source = source;
@@ -185,28 +185,28 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 u.init();
                 // try setting it as the current subscriber-to-source
                 if (!current.compareAndSet(ps, u)) {
-                    // did not work, perhaps a new subscriber arrived 
+                    // did not work, perhaps a new subscriber arrived
                     // and created a new subscriber-to-source as well, retry
                     continue;
                 }
                 ps = u;
             }
-            // if connect() was called concurrently, only one of them should actually 
+            // if connect() was called concurrently, only one of them should actually
             // connect to the source
             doConnect = !ps.shouldConnect.get() && ps.shouldConnect.compareAndSet(false, true);
-            break; // NOPMD 
+            break; // NOPMD
         }
-        /* 
+        /*
          * Notify the callback that we have a (new) connection which it can unsubscribe
          * but since ps is unique to a connection, multiple calls to connect() will return the
          * same Subscription and even if there was a connect-disconnect-connect pair, the older
          * references won't disconnect the newer connection.
          * Synchronous source consumers have the opportunity to disconnect via unsubscribe on the
          * Subscription as unsafeSubscribe may never return in its own.
-         * 
-         * Note however, that asynchronously disconnecting a running source might leave 
-         * child-subscribers without any terminal event; PublishSubject does not have this 
-         * issue because the unsubscription was always triggered by the child-subscribers 
+         *
+         * Note however, that asynchronously disconnecting a running source might leave
+         * child-subscribers without any terminal event; PublishSubject does not have this
+         * issue because the unsubscription was always triggered by the child-subscribers
          * themselves.
          */
         connection.call(ps);
@@ -214,7 +214,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             source.unsafeSubscribe(ps);
         }
     }
-    
+
     @SuppressWarnings("rawtypes")
     static final class PublishSubscriber<T> extends Subscriber<T> implements Subscription {
         /** Holds notifications from upstream. */
@@ -225,36 +225,36 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         final AtomicReference<PublishSubscriber<T>> current;
         /** Contains either an onCompleted or an onError token from upstream. */
         volatile Object terminalEvent;
-        
+
         /** Indicates an empty array of inner producers. */
         static final InnerProducer[] EMPTY = new InnerProducer[0];
         /** Indicates a terminated PublishSubscriber. */
         static final InnerProducer[] TERMINATED = new InnerProducer[0];
-        
+
         /** Tracks the subscribed producers. */
         final AtomicReference<InnerProducer[]> producers;
-        /** 
-         * Atomically changed from false to true by connect to make sure the 
-         * connection is only performed by one thread. 
+        /**
+         * Atomically changed from false to true by connect to make sure the
+         * connection is only performed by one thread.
          */
         final AtomicBoolean shouldConnect;
-        
+
         /** Guarded by this. */
         boolean emitting;
         /** Guarded by this. */
         boolean missed;
-        
+
         public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current) {
-            this.queue = UnsafeAccess.isUnsafeAvailable() 
-                    ? new SpscArrayQueue<Object>(RxRingBuffer.SIZE) 
+            this.queue = UnsafeAccess.isUnsafeAvailable()
+                    ? new SpscArrayQueue<Object>(RxRingBuffer.SIZE)
                     : new SynchronizedQueue<Object>(RxRingBuffer.SIZE);
-            
+
             this.nl = NotificationLite.instance();
             this.producers = new AtomicReference<InnerProducer[]>(EMPTY);
             this.current = current;
             this.shouldConnect = new AtomicBoolean();
         }
-        
+
         /** Should be called after the constructor finished to setup nulling-out the current reference. */
         void init() {
             add(Subscriptions.create(new Action0() {
@@ -262,15 +262,15 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 public void call() {
                     PublishSubscriber.this.producers.getAndSet(TERMINATED);
                     current.compareAndSet(PublishSubscriber.this, null);
-                    // we don't care if it fails because it means the current has 
+                    // we don't care if it fails because it means the current has
                     // been replaced in the meantime
                 }
             }));
         }
-        
+
         @Override
         public void onStart() {
-            // since subscribers may have different amount of requests, we try to 
+            // since subscribers may have different amount of requests, we try to
             // optimize by buffering values up-front and replaying it on individual demand
             request(RxRingBuffer.SIZE);
         }
@@ -281,7 +281,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             if (!queue.offer(nl.next(t))) {
                 onError(new MissingBackpressureException());
             } else {
-                // since many things can happen concurrently, we have a common dispatch 
+                // since many things can happen concurrently, we have a common dispatch
                 // loop to act on the current state serially
                 dispatch();
             }
@@ -292,7 +292,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             // no need to CAS in the terminal value
             if (terminalEvent == null) {
                 terminalEvent = nl.error(e);
-                // since many things can happen concurrently, we have a common dispatch 
+                // since many things can happen concurrently, we have a common dispatch
                 // loop to act on the current state serially
                 dispatch();
             }
@@ -303,12 +303,12 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             // no need to CAS in the terminal value
             if (terminalEvent == null) {
                 terminalEvent = nl.completed();
-                // since many things can happen concurrently, we have a common dispatch loop 
+                // since many things can happen concurrently, we have a common dispatch loop
                 // to act on the current state serially
                 dispatch();
             }
         }
-        
+
         /**
          * Atomically try adding a new InnerProducer to this Subscriber or return false if this
          * Subscriber was terminated.
@@ -323,7 +323,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             for (;;) {
                 // get the current producer array
                 InnerProducer[] c = producers.get();
-                // if this subscriber-to-source reached a terminal state by receiving 
+                // if this subscriber-to-source reached a terminal state by receiving
                 // an onError or onCompleted, just refuse to add the new producer
                 if (c == TERMINATED) {
                     return false;
@@ -341,7 +341,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 // so retry
             }
         }
-        
+
         /**
          * Atomically removes the given producer from the producers array.
          * @param producer the producer to remove
@@ -391,7 +391,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 // (a concurrent add/remove or termination), we need to retry
             }
         }
-        
+
         /**
          * Perform termination actions in case the source has terminated in some way and
          * the queue has also become empty.
@@ -406,7 +406,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 if (nl.isCompleted(term)) {
                     // but we also need to have an empty queue
                     if (empty) {
-                        // this will prevent OnSubscribe spinning on a terminated but 
+                        // this will prevent OnSubscribe spinning on a terminated but
                         // not yet unsubscribed PublishSubscriber
                         current.compareAndSet(this, null);
                         try {
@@ -414,7 +414,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                              * This will swap in a terminated array so add() in OnSubscribe will reject
                              * child subscribers to associate themselves with a terminated and thus
                              * never again emitting chain.
-                             * 
+                             *
                              * Since we atomically change the contents of 'producers' only one
                              * operation wins at a time. If an add() wins before this getAndSet,
                              * its value will be part of the returned array by getAndSet and thus
@@ -435,7 +435,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                     }
                 } else {
                     Throwable t = nl.getError(term);
-                    // this will prevent OnSubscribe spinning on a terminated 
+                    // this will prevent OnSubscribe spinning on a terminated
                     // but not yet unsubscribed PublishSubscriber
                     current.compareAndSet(this, null);
                     try {
@@ -457,7 +457,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             // there is still work to be done
             return false;
         }
-        
+
         /**
          * The common serialization point of events arriving from upstream and child-subscribers
          * requesting more.
@@ -509,7 +509,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                         skipFinal = true;
                         return;
                     }
-                    
+
                     // We have elements queued. Note that due to the serialization nature of dispatch()
                     // this loop is the only one which can turn a non-empty queue into an empty one
                     // and as such, no need to ask the queue itself again for that.
@@ -518,13 +518,13 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                         // Concurrent subscribers may miss this iteration, but it is to be expected
                         @SuppressWarnings("unchecked")
                         InnerProducer<T>[] ps = producers.get();
-                        
+
                         int len = ps.length;
                         // Let's assume everyone requested the maximum value.
                         long maxRequested = Long.MAX_VALUE;
                         // count how many have triggered unsubscription
                         int unsubscribed = 0;
-                    
+
                         // Now find the minimum amount each child-subscriber requested
                         // since we can only emit that much to all of them without violating
                         // backpressure constraints
@@ -541,7 +541,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                             }
                             // we ignore those with NOT_REQUESTED as if they aren't even there
                         }
-                        
+
                         // it may happen everyone has unsubscribed between here and producers.get()
                         // or we have no subscribers at all to begin with
                         if (len == unsubscribed) {
@@ -599,19 +599,19 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                             // indicate we emitted one element
                             d++;
                         }
-                        
+
                         // if we did emit at least one element, request more to replenish the queue
                         if (d > 0) {
                             request(d);
                         }
                         // if we have requests but not an empty queue after emission
-                        // let's try again to see if more requests/child-subscribers are 
+                        // let's try again to see if more requests/child-subscribers are
                         // ready to receive more
                         if (maxRequested != 0L && !empty) {
                             continue;
                         }
                     }
-                    
+
                     // we did what we could: either the queue is empty or child subscribers
                     // haven't requested more (or both), let's try to finish dispatching
                     synchronized (this) {
@@ -650,14 +650,14 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
     static final class InnerProducer<T> extends AtomicLong implements Producer, Subscription {
         /** */
         private static final long serialVersionUID = -4453897557930727610L;
-        /** 
+        /**
          * The parent subscriber-to-source used to allow removing the child in case of
          * child unsubscription.
          */
         final PublishSubscriber<T> parent;
         /** The actual child subscriber. */
         final Subscriber<? super T> child;
-        /** 
+        /**
          * Indicates this child has been unsubscribed: the state is swapped in atomically and
          * will prevent the dispatch() to emit (too many) values to a terminated child subscriber.
          */
@@ -670,13 +670,13 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
          * should not cause any problems.
          */
         static final long NOT_REQUESTED = Long.MIN_VALUE / 2;
-        
+
         public InnerProducer(PublishSubscriber<T> parent, Subscriber<? super T> child) {
             this.parent = parent;
             this.child = child;
             this.lazySet(NOT_REQUESTED);
         }
-        
+
         @Override
         public void request(long n) {
             // ignore negative requests
@@ -718,11 +718,11 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                     parent.dispatch();
                     return;
                 }
-                // otherwise, someone else changed the state (perhaps a concurrent 
+                // otherwise, someone else changed the state (perhaps a concurrent
                 // request or unsubscription so retry
             }
         }
-        
+
         /**
          * Indicate that values have been emitted to this child subscriber by the dispatch() method.
          * @param n the number of items emitted
@@ -759,7 +759,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 // otherwise, some concurrent activity happened and we need to retry
             }
         }
-        
+
         @Override
         public boolean isUnsubscribed() {
             return get() == UNSUBSCRIBED;

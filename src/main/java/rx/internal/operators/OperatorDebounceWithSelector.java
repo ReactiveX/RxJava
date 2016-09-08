@@ -25,47 +25,47 @@ import rx.subscriptions.SerialSubscription;
 
 /**
  * Delay the emission via another observable if no new source appears in the meantime.
- * 
+ *
  * @param <T> the value type of the main sequence
  * @param <U> the value type of the boundary sequence
  */
 public final class OperatorDebounceWithSelector<T, U> implements Operator<T, T> {
     final Func1<? super T, ? extends Observable<U>> selector;
-    
+
     public OperatorDebounceWithSelector(Func1<? super T, ? extends Observable<U>> selector) {
         this.selector = selector;
     }
-    
+
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
         final SerialSubscription ssub = new SerialSubscription();
         child.add(ssub);
-        
+
         return new Subscriber<T>(child) {
             final DebounceState<T> state = new DebounceState<T>();
             final Subscriber<?> self = this;
-            
+
             @Override
             public void onStart() {
                 // debounce wants to receive everything as a firehose without backpressure
                 request(Long.MAX_VALUE);
             }
-            
+
             @Override
             public void onNext(T t) {
                 Observable<U> debouncer;
-                
+
                 try {
                     debouncer = selector.call(t);
                 } catch (Throwable e) {
                     Exceptions.throwOrReport(e, this);
                     return;
                 }
-                
-                
+
+
                 final int index = state.next(t);
-                
+
                 Subscriber<U> debounceSubscriber = new Subscriber<U>() {
 
                     @Override
@@ -85,9 +85,9 @@ public final class OperatorDebounceWithSelector<T, U> implements Operator<T, T> 
                     }
                 };
                 ssub.set(debounceSubscriber);
-                
+
                 debouncer.unsafeSubscribe(debounceSubscriber);
-                
+
             }
 
             @Override
@@ -103,5 +103,5 @@ public final class OperatorDebounceWithSelector<T, U> implements Operator<T, T> 
             }
         };
     }
-    
+
 }

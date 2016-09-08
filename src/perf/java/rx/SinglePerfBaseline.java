@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,12 +38,12 @@ public class SinglePerfBaseline {
     public void singleConsumption(Input input) throws InterruptedException {
         input.single.subscribe(input.newSubscriber());
     }
-    
+
     @Benchmark
     public void singleConsumptionUnsafe(Input input) throws InterruptedException {
         input.single.unsafeSubscribe(input.newSubscriber());
     }
-    
+
     @Benchmark
     public void newSingleAndSubscriberEachTime(Input input) throws InterruptedException {
         input.newSingle().subscribe(input.newSubscriber());
@@ -63,7 +63,7 @@ public class SinglePerfBaseline {
         public LatchedObserver<Integer> newLatchedObserver() {
             return new LatchedObserver<Integer>(bh);
         }
-        
+
         public Single<Integer> newSingle() {
             return Single.create(new OnSubscribe<Integer>() {
 
@@ -71,7 +71,7 @@ public class SinglePerfBaseline {
                 public void call(SingleSubscriber<? super Integer> t) {
                     t.onSuccess(1);
                 }
-                
+
             });
         }
 

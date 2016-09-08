@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,7 @@ public class TestSchedulerTest {
 
         final TestScheduler scheduler = new TestScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         try {
             inner.schedulePeriodically(new Action0() {
                 @Override
@@ -56,27 +56,27 @@ public class TestSchedulerTest {
                     calledOp.call(scheduler.now());
                 }
             }, 1, 2, TimeUnit.SECONDS);
-    
+
             verify(calledOp, never()).call(anyLong());
-    
+
             InOrder inOrder = Mockito.inOrder(calledOp);
-    
+
             scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, never()).call(anyLong());
-    
+
             scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, times(1)).call(1000L);
-    
+
             scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, never()).call(3000L);
-    
+
             scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, times(1)).call(3000L);
-    
+
             scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
             inOrder.verify(calledOp, times(1)).call(5000L);
             inOrder.verify(calledOp, times(1)).call(7000L);
-    
+
             inner.unsubscribe();
             scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
             inOrder.verify(calledOp, never()).call(anyLong());
@@ -102,27 +102,27 @@ public class TestSchedulerTest {
                     calledOp.call(scheduler.now());
                 }
             }, 1, 2, TimeUnit.SECONDS);
-    
+
             verify(calledOp, never()).call(anyLong());
-    
+
             InOrder inOrder = Mockito.inOrder(calledOp);
-    
+
             scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, never()).call(anyLong());
-    
+
             scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, times(1)).call(1000L);
-    
+
             scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, never()).call(3000L);
-    
+
             scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
             inOrder.verify(calledOp, times(1)).call(3000L);
-    
+
             scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
             inOrder.verify(calledOp, times(1)).call(5000L);
             inOrder.verify(calledOp, times(1)).call(7000L);
-    
+
             subscription.unsubscribe();
             scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
             inOrder.verify(calledOp, never()).call(anyLong());
@@ -136,17 +136,17 @@ public class TestSchedulerTest {
         TestScheduler s = new TestScheduler();
         final Scheduler.Worker inner = s.createWorker();
         final AtomicInteger counter = new AtomicInteger(0);
-        
+
         try {
             inner.schedule(new Action0() {
-    
+
                 @Override
                 public void call() {
                     counter.incrementAndGet();
                     System.out.println("counter: " + counter.get());
                     inner.schedule(this);
                 }
-    
+
             });
             inner.unsubscribe();
             assertEquals(0, counter.get());
@@ -161,16 +161,16 @@ public class TestSchedulerTest {
         final Scheduler.Worker inner = s.createWorker();
         try {
             final AtomicInteger counter = new AtomicInteger(0);
-    
+
             final Subscription subscription = inner.schedule(new Action0() {
-    
+
                 @Override
                 public void call() {
                     counter.incrementAndGet();
                     System.out.println("counter: " + counter.get());
                     inner.schedule(this);
                 }
-    
+
             });
             subscription.unsubscribe();
             assertEquals(0, counter.get());
@@ -183,10 +183,10 @@ public class TestSchedulerTest {
     public final void testNestedSchedule() {
         final TestScheduler scheduler = new TestScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         try {
             final Action0 calledOp = mock(Action0.class);
-    
+
             Observable<Object> poller;
             poller = Observable.create(new OnSubscribe<Object>() {
                 @Override
@@ -202,19 +202,19 @@ public class TestSchedulerTest {
                     });
                 }
             });
-    
+
             InOrder inOrder = Mockito.inOrder(calledOp);
-    
+
             Subscription sub;
             sub = poller.subscribe();
-    
+
             scheduler.advanceTimeTo(6, TimeUnit.SECONDS);
             inOrder.verify(calledOp, times(2)).call();
-    
+
             sub.unsubscribe();
             scheduler.advanceTimeTo(11, TimeUnit.SECONDS);
             inOrder.verify(calledOp, never()).call();
-    
+
             sub = poller.subscribe();
             scheduler.advanceTimeTo(12, TimeUnit.SECONDS);
             inOrder.verify(calledOp, times(1)).call();

@@ -182,14 +182,14 @@ public class ProducerObserverArbiterTest {
         }
         assertEquals(1, poa.requested);
     }
-    
+
     @Test
     public void requestIsCapped() {
         ProducerObserverArbiter<Integer> poa = new ProducerObserverArbiter<Integer>(new TestSubscriber<Integer>());
-    
+
         poa.request(Long.MAX_VALUE - 1);
         poa.request(2);
-        
+
         assertEquals(Long.MAX_VALUE, Long.MAX_VALUE);
     }
 

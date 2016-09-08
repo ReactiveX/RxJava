@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/MpmcArrayQueue.java
  */
@@ -94,7 +94,7 @@ abstract class MpmcArrayQueueConsumerField<E> extends MpmcArrayQueueL2Pad<E> {
  * <li>Power of 2 capacity: Actual elements buffer (and sequence buffer) is the closest power of 2 larger or
  * equal to the requested capacity.
  * </ol>
- * 
+ *
  * @param <E>
  *            type of the element stored in the {@link java.util.Queue}
  */

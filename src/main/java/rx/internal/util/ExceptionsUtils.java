@@ -23,19 +23,19 @@ import rx.exceptions.CompositeException;
 
 /**
  * Utility methods for terminal atomics with Throwables.
- * 
+ *
  * @since 1.1.2
  */
 public enum ExceptionsUtils {
     ;
-    
+
     /** The single instance of a Throwable indicating a terminal state. */
     private static final Throwable TERMINATED = new Throwable("Terminated");
-    
+
     /**
      * Atomically sets or combines the error with the contents of the field, wrapping multiple
      * errors into CompositeException if necessary.
-     * 
+     *
      * @param field the target field
      * @param error the error to add
      * @return true if successful, false if the target field contains the terminal Throwable.
@@ -46,7 +46,7 @@ public enum ExceptionsUtils {
             if (current == TERMINATED) {
                 return false;
             }
-            
+
             Throwable next;
             if (current == null) {
                 next = error;
@@ -58,17 +58,17 @@ public enum ExceptionsUtils {
             } else {
                 next = new CompositeException(current, error);
             }
-            
+
             if (field.compareAndSet(current, next)) {
                 return true;
             }
         }
     }
-    
+
     /**
      * Atomically swaps in the terminal Throwable and returns the previous
      * contents of the field
-     * 
+     *
      * @param field the target field
      * @return the previous contents of the field before the swap, may be null
      */
@@ -79,10 +79,10 @@ public enum ExceptionsUtils {
         }
         return current;
     }
-    
+
     /**
      * Checks if the given field holds the terminated Throwable instance.
-     * 
+     *
      * @param field the target field
      * @return true if the given field holds the terminated Throwable instance
      */
@@ -92,7 +92,7 @@ public enum ExceptionsUtils {
 
     /**
      * Returns true if the value is the terminated Throwable instance.
-     * 
+     *
      * @param error the error to check
      * @return true if the value is the terminated Throwable instance
      */

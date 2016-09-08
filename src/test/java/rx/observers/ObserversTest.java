@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@ public class ObserversTest {
     public void constructorShouldBePrivate() {
         TestUtil.checkUtilityClass(Observers.class);
     }
-    
+
     @Test
     public void testEmptyOnErrorNotImplemented() {
         try {
@@ -70,7 +70,7 @@ public class ObserversTest {
     public void testCreate3Null() {
         Observers.create(Actions.empty(), null);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testCreate4Null() {
         Action1<Throwable> throwAction = Actions.empty();
@@ -85,7 +85,7 @@ public class ObserversTest {
         Action1<Throwable> throwAction = Actions.empty();
         Observers.create(Actions.empty(), throwAction, null);
     }
-    
+
     @Test
     public void testCreate1Value() {
         final AtomicInteger value = new AtomicInteger();
@@ -96,7 +96,7 @@ public class ObserversTest {
             }
         };
         Observers.create(action).onNext(1);
-        
+
         assertEquals(1, value.get());
     }
     @Test
@@ -110,10 +110,10 @@ public class ObserversTest {
         };
         Action1<Throwable> throwAction = Actions.empty();
         Observers.create(action, throwAction).onNext(1);
-        
+
         assertEquals(1, value.get());
     }
-    
+
     @Test
     public void testCreate3Value() {
         final AtomicInteger value = new AtomicInteger();
@@ -125,10 +125,10 @@ public class ObserversTest {
         };
         Action1<Throwable> throwAction = Actions.empty();
         Observers.create(action, throwAction, Actions.empty()).onNext(1);
-        
+
         assertEquals(1, value.get());
     }
-    
+
     @Test
     public void testError2() {
         final AtomicReference<Throwable> value = new AtomicReference<Throwable>();
@@ -140,10 +140,10 @@ public class ObserversTest {
         };
         TestException exception = new TestException();
         Observers.create(Actions.empty(), action).onError(exception);
-        
+
         assertEquals(exception, value.get());
     }
-    
+
     @Test
     public void testError3() {
         final AtomicReference<Throwable> value = new AtomicReference<Throwable>();
@@ -155,28 +155,28 @@ public class ObserversTest {
         };
         TestException exception = new TestException();
         Observers.create(Actions.empty(), action, Actions.empty()).onError(exception);
-        
+
         assertEquals(exception, value.get());
     }
-    
+
     @Test
     public void testCompleted() {
         Action0 action = mock(Action0.class);
-        
+
         Action1<Throwable> throwAction = Actions.empty();
         Observers.create(Actions.empty(), throwAction, action).onCompleted();
 
         verify(action).call();
     }
-    
+
     @Test
     public void testEmptyCompleted() {
         Observers.create(Actions.empty()).onCompleted();
-        
+
         Action1<Throwable> throwAction = Actions.empty();
         Observers.create(Actions.empty(), throwAction).onCompleted();
     }
-    
+
     @Test
     public void onCompleteQueues() {
         @SuppressWarnings("unchecked")
@@ -188,45 +188,45 @@ public class ObserversTest {
                 observer[0].onNext(1);
                 observer[0].onCompleted();
             }
-            
+
             @Override
             public void onError(Throwable e) {
-                
+
             }
-            
+
             @Override
             public void onCompleted() {
                 completeCalled[0] = true;
             }
         });
         observer[0] = so;
-        
+
         so.onNext(1);
-        
+
         Assert.assertTrue(completeCalled[0]);
     }
-    
+
     @Test
     public void concurrentOnError() throws Exception {
         final Queue<Throwable> queue = new ConcurrentLinkedQueue<Throwable>();
-        
+
         final SerializedObserver<Integer> so = new SerializedObserver<Integer>(new Observer<Integer>() {
             @Override
             public void onNext(Integer t) {
             }
-            
+
             @Override
             public void onError(Throwable e) {
                 queue.offer(e);
             }
-            
+
             @Override
             public void onCompleted() {
             }
         });
 
         final CountDownLatch cdl = new CountDownLatch(1);
-        
+
         synchronized (so) {
             Thread t = new Thread(new Runnable() {
                 @Override
@@ -238,19 +238,19 @@ public class ObserversTest {
             t.start();
 
             Thread.sleep(200);
-            
+
             so.onError(new TestException());
         }
-        
+
         if (!cdl.await(5, TimeUnit.SECONDS)) {
             fail("The wait timed out");
         }
-        
+
         Assert.assertEquals(1, queue.size());
         Throwable ex = queue.poll();
         Assert.assertTrue("" + ex, ex instanceof TestException);
     }
-    
+
     @Test
     public void concurrentOnComplete() throws Exception {
         final int[] completed = { 0 };
@@ -258,11 +258,11 @@ public class ObserversTest {
             @Override
             public void onNext(Integer t) {
             }
-            
+
             @Override
             public void onError(Throwable e) {
             }
-            
+
             @Override
             public void onCompleted() {
                 completed[0]++;
@@ -270,7 +270,7 @@ public class ObserversTest {
         });
 
         final CountDownLatch cdl = new CountDownLatch(1);
-        
+
         synchronized (so) {
             Thread t = new Thread(new Runnable() {
                 @Override
@@ -282,14 +282,14 @@ public class ObserversTest {
             t.start();
 
             Thread.sleep(200);
-            
+
             so.onCompleted();
         }
-        
+
         if (!cdl.await(5, TimeUnit.SECONDS)) {
             fail("The wait timed out");
         }
-        
+
         Assert.assertEquals(1, completed[0]);
     }
 }

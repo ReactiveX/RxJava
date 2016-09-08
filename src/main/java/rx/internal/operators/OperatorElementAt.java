@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -79,14 +79,14 @@ public final class OperatorElementAt<T> implements Operator<T, T> {
                     }
                 }
             }
-            
+
             @Override
             public void setProducer(Producer p) {
                 child.setProducer(new InnerProducer(p));
             }
         };
         child.add(parent);
-        
+
         return parent;
     }
     /**
@@ -96,9 +96,9 @@ public final class OperatorElementAt<T> implements Operator<T, T> {
     static class InnerProducer extends AtomicBoolean implements Producer {
         /** */
         private static final long serialVersionUID = 1L;
-        
+
         final Producer actual;
-        
+
         public InnerProducer(Producer actual) {
             this.actual = actual;
         }

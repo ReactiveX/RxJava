@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -84,7 +84,7 @@ public final class Notification<T> {
 
     /**
      * Retrieves the exception associated with this (onError) notification.
-     * 
+     *
      * @return the Throwable associated with this (onError) notification
      */
     public Throwable getThrowable() {
@@ -93,7 +93,7 @@ public final class Notification<T> {
 
     /**
      * Retrieves the item associated with this (onNext) notification.
-     * 
+     *
      * @return the item associated with this (onNext) notification
      */
     public T getValue() {
@@ -102,7 +102,7 @@ public final class Notification<T> {
 
     /**
      * Indicates whether this notification has an item associated with it.
-     * 
+     *
      * @return a boolean indicating whether or not this notification has an item associated with it
      */
     public boolean hasValue() {
@@ -112,7 +112,7 @@ public final class Notification<T> {
 
     /**
      * Indicates whether this notification has an exception associated with it.
-     * 
+     *
      * @return a boolean indicating whether this notification has an exception associated with it
      */
     public boolean hasThrowable() {
@@ -121,7 +121,7 @@ public final class Notification<T> {
 
     /**
      * Retrieves the kind of this notification: {@code OnNext}, {@code OnError}, or {@code OnCompleted}
-     * 
+     *
      * @return the kind of the notification: {@code OnNext}, {@code OnError}, or {@code OnCompleted}
      */
     public Kind getKind() {
@@ -130,7 +130,7 @@ public final class Notification<T> {
 
     /**
      * Indicates whether this notification represents an {@code onError} event.
-     * 
+     *
      * @return a boolean indicating whether this notification represents an {@code onError} event
      */
     public boolean isOnError() {
@@ -139,7 +139,7 @@ public final class Notification<T> {
 
     /**
      * Indicates whether this notification represents an {@code onCompleted} event.
-     * 
+     *
      * @return a boolean indicating whether this notification represents an {@code onCompleted} event
      */
     public boolean isOnCompleted() {
@@ -148,7 +148,7 @@ public final class Notification<T> {
 
     /**
      * Indicates whether this notification represents an {@code onNext} event.
-     * 
+     *
      * @return a boolean indicating whether this notification represents an {@code onNext} event
      */
     public boolean isOnNext() {

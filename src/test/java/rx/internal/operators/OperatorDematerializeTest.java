@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -112,30 +112,30 @@ public class OperatorDematerializeTest {
     @Test
     public void testHonorsContractWhenCompleted() {
         Observable<Integer> source = Observable.just(1);
-        
+
         Observable<Integer> result = source.materialize().dematerialize();
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
-        
+
         result.unsafeSubscribe(Subscribers.from(o));
-        
+
         verify(o).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testHonorsContractWhenThrows() {
         Observable<Integer> source = Observable.error(new TestException());
-        
+
         Observable<Integer> result = source.materialize().dematerialize();
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
-        
+
         result.unsafeSubscribe(Subscribers.from(o));
-        
+
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onCompleted();
         verify(o).onError(any(TestException.class));

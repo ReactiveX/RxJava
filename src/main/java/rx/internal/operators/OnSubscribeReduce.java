@@ -27,14 +27,14 @@ import rx.plugins.RxJavaHooks;
 public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
 
     final Observable<T> source;
-    
+
     final Func2<T, T, T> reducer;
 
     public OnSubscribeReduce(Observable<T> source, Func2<T, T, T> reducer) {
         this.source = source;
         this.reducer = reducer;
     }
-    
+
     @Override
     public void call(Subscriber<? super T> t) {
         final ReduceSubscriber<T> parent = new ReduceSubscriber<T>(t, reducer);
@@ -47,19 +47,19 @@ public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
         });
         source.unsafeSubscribe(parent);
     }
-    
+
     static final class ReduceSubscriber<T> extends Subscriber<T> {
 
         final Subscriber<? super T> actual;
-        
+
         final Func2<T, T, T> reducer;
 
         T value;
-        
+
         static final Object EMPTY = new Object();
-        
+
         boolean done;
-        
+
         @SuppressWarnings("unchecked")
         public ReduceSubscriber(Subscriber<? super T> actual, Func2<T, T, T> reducer) {
             this.actual = actual;
@@ -87,7 +87,7 @@ public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
                 }
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             if (!done) {
@@ -97,7 +97,7 @@ public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
                 RxJavaHooks.onError(e);
             }
         }
-        
+
         @SuppressWarnings("unchecked")
         @Override
         public void onCompleted() {
@@ -113,7 +113,7 @@ public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
                 actual.onError(new NoSuchElementException());
             }
         }
-        
+
         void downstreamRequest(long n) {
             if (n < 0L) {
                 throw new IllegalArgumentException("n >= 0 required but it was " + n);

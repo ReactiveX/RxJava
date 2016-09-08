@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic/SpscLinkedAtomicQueue.java
  */
@@ -26,9 +26,9 @@ package rx.internal.util.atomic;
  * </ol>
  * The queue is initialized with a stub node which is set to both the producer and consumer node references. From this
  * point follow the notes on offer/poll.
- * 
+ *
  * @author nitsanw
- * 
+ *
  * @param <E>
  */
 public final class SpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
@@ -43,7 +43,7 @@ public final class SpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
 
     /**
      * {@inheritDoc} <br>
-     * 
+     *
      * IMPLEMENTATION NOTES:<br>
      * Offer is allowed from a SINGLE thread.<br>
      * Offer allocates a new node (holding the offered value) and:
@@ -52,7 +52,7 @@ public final class SpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
      * <li>Sets the new node as the producerNode
      * </ol>
      * From this follows that producerNode.next is always null and for all other nodes node.next is not null.
-     * 
+     *
      * @see java.util.Queue#offer(java.lang.Object)
      */
     @Override
@@ -68,7 +68,7 @@ public final class SpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
 
     /**
      * {@inheritDoc} <br>
-     * 
+     *
      * IMPLEMENTATION NOTES:<br>
      * Poll is allowed from a SINGLE thread.<br>
      * Poll reads the next node from the consumerNode and:
@@ -78,7 +78,7 @@ public final class SpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
      * </ol>
      * This means the consumerNode.value is always null, which is also the starting point for the queue. Because null
      * values are not allowed to be offered this is the only node with it's value set to null at any one time.
-     * 
+     *
      */
     @Override
     public E poll() {

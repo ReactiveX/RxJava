@@ -26,16 +26,16 @@ public final class OnSubscribeTakeLastOne<T> implements OnSubscribe<T> {
     public OnSubscribeTakeLastOne(Observable<T> source) {
         this.source = source;
     }
-    
+
     @Override
     public void call(Subscriber<? super T> t) {
         new TakeLastOneSubscriber<T>(t).subscribeTo(source);
     }
-    
+
     static final class TakeLastOneSubscriber<T> extends DeferredScalarSubscriber<T, T> {
 
         static final Object EMPTY = new Object();
-        
+
         @SuppressWarnings("unchecked")
         public TakeLastOneSubscriber(Subscriber<? super T> actual) {
             super(actual);

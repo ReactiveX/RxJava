@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/MpscLinkedQueue.java
  */
@@ -31,19 +31,19 @@ import rx.internal.util.atomic.LinkedQueueNode;
  * </ol>
  * The queue is initialized with a stub node which is set to both the producer and consumer node references. From this
  * point follow the notes on offer/poll.
- * 
+ *
  * @author nitsanw
- * 
+ *
  * @param <E>
  */
 @SuppressAnimalSniffer
 public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
-    
+
     public MpscLinkedQueue() {
         consumerNode = new LinkedQueueNode<E>();
         xchgProducerNode(consumerNode);// this ensures correct construction: StoreLoad
     }
-    
+
     @SuppressWarnings("unchecked")
     protected LinkedQueueNode<E> xchgProducerNode(LinkedQueueNode<E> newVal) {
         Object oldVal;
@@ -52,7 +52,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         } while(!UNSAFE.compareAndSwapObject(this, P_NODE_OFFSET, oldVal, newVal));
         return (LinkedQueueNode<E>) oldVal;
     }
-    
+
     /**
      * {@inheritDoc} <br>
      * <p>
@@ -65,7 +65,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
      * </ol>
      * This works because each producer is guaranteed to 'plant' a new node and link the old node. No 2 producers can
      * get the same producer node as part of XCHG guarantee.
-     * 
+     *
      * @see MessagePassingQueue#offer(Object)
      * @see java.util.Queue#offer(java.lang.Object)
      */
@@ -94,7 +94,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
      * </ol>
      * This means the consumerNode.value is always null, which is also the starting point for the queue. Because null
      * values are not allowed to be offered this is the only node with it's value set to null at any one time.
-     * 
+     *
      * @see MessagePassingQueue#poll()
      * @see java.util.Queue#poll()
      */
@@ -110,9 +110,9 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD 
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD
             // got the next node...
-            
+
             // we have to null out the value because we are going to hang on to the node
             final E nextValue = nextNode.getAndNullValue();
             consumerNode = nextNode;
@@ -130,7 +130,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD 
+            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD
             // got the next node...
             return nextNode.lpValue();
         }

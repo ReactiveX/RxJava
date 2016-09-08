@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -423,7 +423,7 @@ public class SubscriberTest {
 
         assertEquals(1, c.get());
     }
-    
+
     @Test
     public void testNegativeRequestThrowsIllegalArgumentException() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
@@ -434,10 +434,10 @@ public class SubscriberTest {
             public void onStart() {
                 request(1);
             }
-            
+
             @Override
             public void onCompleted() {
-                
+
             }
 
             @Override
@@ -454,7 +454,7 @@ public class SubscriberTest {
         assertTrue(latch.await(10, TimeUnit.SECONDS));
         assertTrue(exception.get() instanceof IllegalArgumentException);
     }
-    
+
     @Test
     public void testOnStartRequestsAreAdditive() {
         final List<Integer> list = new ArrayList<Integer>();
@@ -464,15 +464,15 @@ public class SubscriberTest {
                 request(3);
                 request(2);
             }
-            
+
             @Override
             public void onCompleted() {
-                
+
             }
 
             @Override
             public void onError(Throwable e) {
-                
+
             }
 
             @Override
@@ -481,7 +481,7 @@ public class SubscriberTest {
             }});
         assertEquals(Arrays.asList(1,2,3,4,5), list);
     }
-    
+
     @Test
     public void testOnStartRequestsAreAdditiveAndOverflowBecomesMaxValue() {
         final List<Integer> list = new ArrayList<Integer>();
@@ -491,15 +491,15 @@ public class SubscriberTest {
                 request(2);
                 request(Long.MAX_VALUE-1);
             }
-            
+
             @Override
             public void onCompleted() {
-                
+
             }
 
             @Override
             public void onError(Throwable e) {
-                
+
             }
 
             @Override

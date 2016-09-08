@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -263,31 +263,31 @@ public class RxJavaPluginsTest {
         return RxJavaPlugins.class.getPackage()
                                   .getName() + "." + RxJavaPluginsTest.class.getSimpleName() + "$" + cls.getSimpleName();
     }
-    
+
     @Test
     public void testShortPluginDiscovery() {
         Properties props = new Properties();
-        
+
         props.setProperty("rxjava.plugin.1.class", "Map");
         props.setProperty("rxjava.plugin.1.impl", "java.util.HashMap");
 
         props.setProperty("rxjava.plugin.xyz.class", "List");
         props.setProperty("rxjava.plugin.xyz.impl", "java.util.ArrayList");
 
-        
+
         Object o = RxJavaPlugins.getPluginImplementationViaProperty(Map.class, props);
-        
+
         assertTrue("" + o, o instanceof HashMap);
-        
+
         o = RxJavaPlugins.getPluginImplementationViaProperty(List.class, props);
-        
+
         assertTrue("" + o, o instanceof ArrayList);
     }
-    
+
     @Test(expected = RuntimeException.class)
     public void testShortPluginDiscoveryMissing() {
         Properties props = new Properties();
-        
+
         props.setProperty("rxjava.plugin.1.class", "Map");
 
         RxJavaPlugins.getPluginImplementationViaProperty(Map.class, props);

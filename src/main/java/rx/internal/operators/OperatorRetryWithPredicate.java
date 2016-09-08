@@ -33,7 +33,7 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> child) {
         final Scheduler.Worker inner = Schedulers.trampoline().createWorker();
         child.add(inner);
-        
+
         final SerialSubscription serialSubscription = new SerialSubscription();
         // add serialSubscription so it gets unsubscribed if child is unsubscribed
         child.add(serialSubscription);
@@ -41,19 +41,19 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
         child.setProducer(pa);
         return new SourceSubscriber<T>(child, predicate, inner, serialSubscription, pa);
     }
-    
+
     static final class SourceSubscriber<T> extends Subscriber<Observable<T>> {
         final Subscriber<? super T> child;
         final Func2<Integer, Throwable, Boolean> predicate;
         final Scheduler.Worker inner;
         final SerialSubscription serialSubscription;
         final ProducerArbiter pa;
-        
+
         final AtomicInteger attempts = new AtomicInteger();
 
-        public SourceSubscriber(Subscriber<? super T> child, 
-                final Func2<Integer, Throwable, Boolean> predicate, 
-                Scheduler.Worker inner, 
+        public SourceSubscriber(Subscriber<? super T> child,
+                final Func2<Integer, Throwable, Boolean> predicate,
+                Scheduler.Worker inner,
                 SerialSubscription serialSubscription,
                 ProducerArbiter pa) {
             this.child = child;
@@ -62,8 +62,8 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
             this.serialSubscription = serialSubscription;
             this.pa = pa;
         }
-        
-        
+
+
         @Override
         public void onCompleted() {
             // ignore as we expect a single nested Observable<T>
@@ -122,7 +122,7 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
                             pa.setProducer(p);
                         }
                     };
-                    // register this Subscription (and unsubscribe previous if exists) 
+                    // register this Subscription (and unsubscribe previous if exists)
                     serialSubscription.set(subscriber);
                     o.unsafeSubscribe(subscriber);
                 }

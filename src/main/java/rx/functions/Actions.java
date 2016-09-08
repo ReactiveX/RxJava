@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -99,10 +99,10 @@ public final class Actions {
             // deliberately no op
         }
     }
-    
+
     /**
      * Converts an {@link Action0} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param action
      *            the {@link Action0} to convert
      * @return a {@link Func0} that calls {@code action} and returns {@code null}
@@ -113,7 +113,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action1} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param <T1> the first argument type
      * @param action
      *            the {@link Action1} to convert
@@ -125,7 +125,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action2} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param action
@@ -138,7 +138,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action3} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -152,7 +152,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action4} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -167,7 +167,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action5} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -184,7 +184,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action6} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -202,7 +202,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action7} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -221,7 +221,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action8} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -241,7 +241,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action9} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -262,7 +262,7 @@ public final class Actions {
 
     /**
      * Converts an {@link ActionN} to a function that calls the action and returns {@code null}.
-     * 
+     *
      * @param action
      *            the {@link ActionN} to convert
      * @return a {@link FuncN} that calls {@code action} and returns {@code null}
@@ -274,7 +274,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action0} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <R> the result type
      * @param action
      *            the {@link Action0} to convert
@@ -294,7 +294,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action1} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <R> the result type
      * @param action
@@ -315,7 +315,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action2} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <R> the result type
@@ -337,7 +337,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action3} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -360,7 +360,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action4} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -384,7 +384,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action5} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -410,7 +410,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action6} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -437,7 +437,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action7} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -465,7 +465,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action8} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -494,7 +494,7 @@ public final class Actions {
 
     /**
      * Converts an {@link Action9} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <T1> the first argument type
      * @param <T2> the second argument type
      * @param <T3> the third argument type
@@ -524,7 +524,7 @@ public final class Actions {
 
     /**
      * Converts an {@link ActionN} to a function that calls the action and returns a specified value.
-     * 
+     *
      * @param <R> the result type
      * @param action
      *            the {@link ActionN} to convert
@@ -542,7 +542,7 @@ public final class Actions {
             }
         };
     }
-    
+
     /**
      * Wraps an Action0 instance into an Action1 instance where the latter calls
      * the former.
@@ -553,14 +553,14 @@ public final class Actions {
     public static <T> Action1<T> toAction1(Action0 action) {
         return new Action1CallsAction0<T>(action);
     }
-    
+
     static final class Action1CallsAction0<T> implements Action1<T> {
         final Action0 action;
-        
+
         public Action1CallsAction0(Action0 action) {
             this.action = action;
         }
-        
+
         @Override
         public void call(T t) {
             action.call();

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,12 +33,12 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      * @return true if there is at least one Observer subscribed to this Subject, false otherwise
      */
     public abstract boolean hasObservers();
-    
+
     /**
      * Wraps a {@link Subject} so that it is safe to call its various {@code on} methods from different threads.
      * <p>
-     * When you use an ordinary {@link Subject} as a {@link Subscriber}, you must take care not to call its 
-     * {@link Subscriber#onNext} method (or its other {@code on} methods) from multiple threads, as this could 
+     * When you use an ordinary {@link Subject} as a {@link Subscriber}, you must take care not to call its
+     * {@link Subscriber#onNext} method (or its other {@code on} methods) from multiple threads, as this could
      * lead to non-serialized calls, which violates
      * <a href="http://reactivex.io/documentation/contract.html">the Observable contract</a> and creates an
      * ambiguity in the resulting Subject.
@@ -48,7 +48,7 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      * <p><pre>{@code
      * mySafeSubject = myUnsafeSubject.toSerialized();
      * }</pre>
-     * 
+     *
      * @return SerializedSubject wrapping the current Subject
      */
     public final SerializedSubject<T, R> toSerialized() {

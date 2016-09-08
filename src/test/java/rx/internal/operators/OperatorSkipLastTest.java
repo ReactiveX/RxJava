@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -132,26 +132,26 @@ public class OperatorSkipLastTest {
                 return scheduler;
             }
         });
-        
+
         try {
             TestSubscriber<Integer> ts = TestSubscriber.create();
-            
+
             PublishSubject<Integer> ps = PublishSubject.create();
-            
+
             ps.skipLast(1, TimeUnit.SECONDS).subscribe(ts);
-            
+
             ps.onNext(1);
             ps.onNext(2);
             ps.onNext(3);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-            
+
             ps.onNext(4);
             ps.onNext(5);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
             ps.onCompleted();
-            
+
             ts.assertValues(1, 2, 3);
             ts.assertNoErrors();
             ts.assertCompleted();
