@@ -11,8 +11,8 @@ group = 'io.reactivex.rxjava2'
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
 
 apply plugin: 'java'
-// apply plugin: 'pmd'
-apply plugin: 'findbugs'
+// apply plugin: 'pmd'  // disabled because runs out of memory on Travis
+// apply plugin: 'findbugs'  // disabled because runs out of memory on Travis
 apply plugin: 'checkstyle'
 apply plugin: 'jacoco'
 apply plugin: 'ru.vyarus.animalsniffer'
@@ -126,6 +126,7 @@ checkstyle {
     ignoreFailures = true
 }
 
+/*
 findbugs {
     ignoreFailures true
     toolVersion = '3.0.1'
@@ -140,4 +141,4 @@ findbugsMain {
         xml.enabled = true
     }
 }
-
+*/

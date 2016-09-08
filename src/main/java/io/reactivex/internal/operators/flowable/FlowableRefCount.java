@@ -33,33 +33,35 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T> {
     final ConnectableFlowable<? extends T> source;
     volatile CompositeDisposable baseSubscription = new CompositeDisposable();
-    final AtomicInteger subscriptionCount = new AtomicInteger(0);
+    final AtomicInteger subscriptionCount = new AtomicInteger();
 
     /**
      * Use this lock for every subscription and disconnect action.
      */
     final ReentrantLock lock = new ReentrantLock();
 
-    final class ConnectionSubscriber implements Subscriber<T>, Subscription {
+    final class ConnectionSubscriber
+    extends AtomicReference<Subscription>
+    implements Subscriber<T>, Subscription {
+        /** */
+        private static final long serialVersionUID = 152064694420235350L;
         final Subscriber<? super T> subscriber;
         final CompositeDisposable currentBase;
         final Disposable resource;
 
-        Subscription s;
+        final AtomicLong requested;
 
         ConnectionSubscriber(Subscriber<? super T> subscriber,
                 CompositeDisposable currentBase, Disposable resource) {
             this.subscriber = subscriber;
             this.currentBase = currentBase;
             this.resource = resource;
+            this.requested = new AtomicLong();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                subscriber.onSubscribe(this);
-            }
+            SubscriptionHelper.deferredSetOnce(this, requested, s);
         }
 
         @Override
@@ -81,12 +83,12 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
 
         @Override
         public void request(long n) {
-            s.request(n);
+            SubscriptionHelper.deferredRequest(this, requested, n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            SubscriptionHelper.cancel(this);
             resource.dispose();
         }
 
@@ -173,9 +175,10 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
         // handle unsubscribing from the base subscription
         Disposable d = disconnect(currentBase);
 
-        ConnectionSubscriber s = new ConnectionSubscriber(subscriber, currentBase, d);
+        ConnectionSubscriber connection = new ConnectionSubscriber(subscriber, currentBase, d);
+        subscriber.onSubscribe(connection);
 
-        source.subscribe(s);
+        source.subscribe(connection);
     }
 
     private Disposable disconnect(final CompositeDisposable current) {
