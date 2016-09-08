@@ -17,7 +17,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Cancellable;
 
 /**
- * Abstraction over a RxJava Observer that allows associating
+ * Abstraction over an RxJava {@link Observer} that allows associating
  * a resource with it.
  * <p>
  * The onNext, onError and onComplete methods should be called

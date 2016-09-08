@@ -17,7 +17,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Cancellable;
 
 /**
- * Abstraction over a RxJava CompletableObserver that allows associating
+ * Abstraction over an RxJava {@link CompletableObserver} that allows associating
  * a resource with it.
  * <p>
  * All methods are safe to call from multiple threads.

@@ -17,7 +17,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Cancellable;
 
 /**
- * Abstraction over a RxJava Subscriber that allows associating
+ * Abstraction over an RxJava {@link org.reactivestreams.Subscriber} that allows associating
  * a resource with it and exposes the current number of downstream
  * requested amount.
  * <p>
@@ -43,6 +43,7 @@ public interface FlowableEmitter<T> extends Emitter<T> {
      * @param c the cancellable resource, null is allowed
      */
     void setCancellable(Cancellable c);
+
     /**
      * The current outstanding request amount.
      * <p>This method is thread-safe.
@@ -62,6 +63,7 @@ public interface FlowableEmitter<T> extends Emitter<T> {
      * @return the serialized FlowableEmitter
      */
     FlowableEmitter<T> serialize();
+
     /**
      * Options to handle backpressure in the emitter.
      */
