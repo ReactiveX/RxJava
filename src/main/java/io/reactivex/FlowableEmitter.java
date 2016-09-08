@@ -17,7 +17,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Cancellable;
 
 /**
- * Abstraction over an RxJava {@link org.reactivestreams.Subscriber} that allows associating
+ * Abstraction over a {@link org.reactivestreams.Subscriber} that allows associating
  * a resource with it and exposes the current number of downstream
  * requested amount.
  * <p>
