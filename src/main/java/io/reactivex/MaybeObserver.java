@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
  * first the Maybe calls {@link #onSubscribe(Disposable)} with a {@link Disposable} that allows
  * cancelling the sequence at any time, then the
  * {@code Maybe} calls only one of the MaybeObserver's {@link #onSuccess}, {@link #onError} or
- * {@lingk onComplete} methods to provide notifications.
+ * {@link #onComplete} methods to provide notifications.
  *
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
