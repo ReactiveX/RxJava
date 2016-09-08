@@ -123,6 +123,7 @@ build.dependsOn jacocoTestReport
 
 checkstyle {
     configFile file('checkstyle.xml')
+    ignoreFailures = true
 }
 
 findbugs {
