@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -226,7 +226,7 @@ public class OperatorAnyTest {
         });
         assertEquals((Object)2, source.toBlocking().first());
     }
-    
+
     @Test
     public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0);
@@ -240,7 +240,7 @@ public class OperatorAnyTest {
         ts.assertNoErrors();
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(1);
@@ -255,7 +255,7 @@ public class OperatorAnyTest {
         ts.assertCompleted();
         ts.assertValue(true);
     }
-    
+
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
         TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0);
@@ -274,7 +274,7 @@ public class OperatorAnyTest {
         assertEquals(ex, errors.get(0));
         assertTrue(ex.getCause().getMessage().contains("Boo!"));
     }
-    
+
     @Test
     public void testUpstreamEmitsOnNextAfterFailureWithoutCheckingSubscription() {
         TestSubscriber<Boolean> ts = TestSubscriber.create();
@@ -302,7 +302,7 @@ public class OperatorAnyTest {
                     throw new RuntimeException("boo");
                 else  {
                     once = false;
-                    return true; 
+                    return true;
                 }
             }})
         .unsafeSubscribe(ts);
@@ -310,7 +310,7 @@ public class OperatorAnyTest {
         ts.assertError(RuntimeException.class);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testUpstreamEmitsOnNextWithoutCheckingSubscription() {
         TestSubscriber<Boolean> ts = TestSubscriber.create();
@@ -341,7 +341,7 @@ public class OperatorAnyTest {
         assertEquals(1, ts.getCompletions());
         ts.assertNoErrors();
     }
-    
+
     @Test
     public void testDoesNotEmitMultipleErrorEventsAndReportsSecondErrorToHooks() {
         try {

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -243,7 +243,7 @@ public class BehaviorSubjectTest {
     @Test(timeout = 5000)
     public void testUnsubscriptionCase() {
         BehaviorSubject<String> src = BehaviorSubject.create((String)null);
-        
+
         for (int i = 0; i < 10; i++) {
             @SuppressWarnings("unchecked")
             final Observer<Object> o = mock(Observer.class);
@@ -272,25 +272,25 @@ public class BehaviorSubjectTest {
         @SuppressWarnings("unchecked")
         final Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.subscribe(o);
-        
+
         inOrder.verify(o, never()).onNext(any());
         inOrder.verify(o, never()).onCompleted();
-        
+
         source.onNext(1);
-        
+
         source.onCompleted();
-        
+
         source.onNext(2);
-        
+
         verify(o, never()).onError(any(Throwable.class));
 
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onCompleted();
         inOrder.verifyNoMoreInteractions();
-        
-        
+
+
     }
     @Test
     public void testStartEmptyThenAddOne() {
@@ -311,9 +311,9 @@ public class BehaviorSubjectTest {
 
         inOrder.verify(o).onCompleted();
         inOrder.verifyNoMoreInteractions();
-        
+
         verify(o, never()).onError(any(Throwable.class));
-        
+
     }
     @Test
     public void testStartEmptyCompleteWithOne() {
@@ -331,15 +331,15 @@ public class BehaviorSubjectTest {
         verify(o).onCompleted();
         verifyNoMoreInteractions(o);
     }
-    
+
     @Test
     public void testTakeOneSubscriber() {
         BehaviorSubject<Integer> source = BehaviorSubject.create(1);
         @SuppressWarnings("unchecked")
         final Observer<Object> o = mock(Observer.class);
-        
+
         source.take(1).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onCompleted();
         verifyNoMoreInteractions(o);
@@ -347,7 +347,7 @@ public class BehaviorSubjectTest {
         assertEquals(0, source.subscriberCount());
         assertFalse(source.hasObservers());
     }
-    
+
     @Test
     public void testOnErrorThrowsDoesntPreventDelivery() {
         BehaviorSubject<String> ps = BehaviorSubject.create();
@@ -362,10 +362,10 @@ public class BehaviorSubjectTest {
         } catch (OnErrorNotImplementedException e) {
             // ignore
         }
-        // even though the onError above throws we should still receive it on the other subscriber 
+        // even though the onError above throws we should still receive it on the other subscriber
         assertEquals(1, ts.getOnErrorEvents().size());
     }
-    
+
     /**
      * This one has multiple failures so should get a CompositeException
      */
@@ -388,7 +388,7 @@ public class BehaviorSubjectTest {
             // we should have 5 of them
             assertEquals(5, e.getExceptions().size());
         }
-        // even though the onError above throws we should still receive it on the other subscriber 
+        // even though the onError above throws we should still receive it on the other subscriber
         assertEquals(1, ts.getOnErrorEvents().size());
     }
     @Test
@@ -401,10 +401,10 @@ public class BehaviorSubjectTest {
                     System.out.println(i);
                 }
                 final BehaviorSubject<Object> rs = BehaviorSubject.create();
-                
-                final CountDownLatch finish = new CountDownLatch(1); 
-                final CountDownLatch start = new CountDownLatch(1); 
-                
+
+                final CountDownLatch finish = new CountDownLatch(1);
+                final CountDownLatch start = new CountDownLatch(1);
+
                 worker.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -416,33 +416,33 @@ public class BehaviorSubjectTest {
                         rs.onNext(1);
                     }
                 });
-                
+
                 final AtomicReference<Object> o = new AtomicReference<Object>();
-                
+
                 rs.subscribeOn(s).observeOn(Schedulers.io())
                 .subscribe(new Observer<Object>() {
-    
+
                     @Override
                     public void onCompleted() {
                         o.set(-1);
                         finish.countDown();
                     }
-    
+
                     @Override
                     public void onError(Throwable e) {
                         o.set(e);
                         finish.countDown();
                     }
-    
+
                     @Override
                     public void onNext(Object t) {
                         o.set(t);
                         finish.countDown();
                     }
-                    
+
                 });
                 start.countDown();
-                
+
                 if (!finish.await(5, TimeUnit.SECONDS)) {
                     System.out.println(o.get());
                     System.out.println(rs.hasObservers());
@@ -463,52 +463,52 @@ public class BehaviorSubjectTest {
             worker.unsubscribe();
         }
     }
-    
+
     @Test
     public void testCurrentStateMethodsNormalEmptyStart() {
         BehaviorSubject<Object> as = BehaviorSubject.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onNext(1);
-        
+
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertEquals(1, as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onCompleted();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertTrue(as.hasCompleted());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
     }
-    
+
     @Test
     public void testCurrentStateMethodsNormalSomeStart() {
         BehaviorSubject<Object> as = BehaviorSubject.create((Object)1);
-        
+
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertEquals(1, as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onNext(2);
-        
+
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertEquals(2, as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onCompleted();
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
@@ -516,19 +516,19 @@ public class BehaviorSubjectTest {
         assertNull(as.getValue());
         assertNull(as.getThrowable());
     }
-    
+
     @Test
     public void testCurrentStateMethodsEmpty() {
         BehaviorSubject<Object> as = BehaviorSubject.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onCompleted();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertTrue(as.hasCompleted());
@@ -538,28 +538,28 @@ public class BehaviorSubjectTest {
     @Test
     public void testCurrentStateMethodsError() {
         BehaviorSubject<Object> as = BehaviorSubject.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onError(new TestException());
-        
+
         assertFalse(as.hasValue());
         assertTrue(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
     }
-    
+
     @Test
     public void testBehaviorSubjectValueRelay() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         async.onNext(1);
         async.onCompleted();
-        
+
         assertFalse(async.hasObservers());
         assertTrue(async.hasCompleted());
         assertFalse(async.hasThrowable());
@@ -575,7 +575,7 @@ public class BehaviorSubjectTest {
     public void testBehaviorSubjectValueRelayIncomplete() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         async.onNext(1);
-        
+
         assertFalse(async.hasObservers());
         assertFalse(async.hasCompleted());
         assertFalse(async.hasThrowable());
@@ -590,7 +590,7 @@ public class BehaviorSubjectTest {
     @Test
     public void testBehaviorSubjectIncompleteEmpty() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
-        
+
         assertFalse(async.hasObservers());
         assertFalse(async.hasCompleted());
         assertFalse(async.hasThrowable());
@@ -606,7 +606,7 @@ public class BehaviorSubjectTest {
     public void testBehaviorSubjectEmpty() {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         async.onCompleted();
-        
+
         assertFalse(async.hasObservers());
         assertTrue(async.hasCompleted());
         assertFalse(async.hasThrowable());
@@ -623,7 +623,7 @@ public class BehaviorSubjectTest {
         BehaviorSubject<Integer> async = BehaviorSubject.create();
         TestException te = new TestException();
         async.onError(te);
-        
+
         assertFalse(async.hasObservers());
         assertFalse(async.hasCompleted());
         assertTrue(async.hasThrowable());

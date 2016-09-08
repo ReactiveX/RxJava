@@ -35,7 +35,7 @@ public class BackpressureUtilsTest {
         assertEquals(Long.MAX_VALUE, BackpressureUtils.addCap(Long.MAX_VALUE - 1, Long.MAX_VALUE - 1));
         assertEquals(Long.MAX_VALUE, BackpressureUtils.addCap(Long.MAX_VALUE, Long.MAX_VALUE));
     }
-    
+
     @Test
     public void testMultiplyCap() {
         assertEquals(6, BackpressureUtils.multiplyCap(2, 3));

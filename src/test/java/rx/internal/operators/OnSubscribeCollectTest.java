@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,7 +46,7 @@ public class OnSubscribeCollectTest {
             public List<Integer> call() {
                 return new ArrayList<Integer>();
             }
-            
+
         }, new Action2<List<Integer>, Integer>() {
 
             @Override
@@ -54,14 +54,14 @@ public class OnSubscribeCollectTest {
                 list.add(v);
             }
         });
-        
+
         List<Integer> list =  o.toBlocking().last();
 
         assertEquals(3, list.size());
         assertEquals(1, list.get(0).intValue());
         assertEquals(2, list.get(1).intValue());
         assertEquals(3, list.get(2).intValue());
-        
+
         // test multiple subscribe
         List<Integer> list2 =  o.toBlocking().last();
 
@@ -79,7 +79,7 @@ public class OnSubscribeCollectTest {
             public StringBuilder call() {
                 return new StringBuilder();
             }
-            
+
         }, new Action2<StringBuilder, Integer>() {
 
             @Override
@@ -93,7 +93,7 @@ public class OnSubscribeCollectTest {
 
         assertEquals("1-2-3", value);
     }
-    
+
     @Test
     public void testFactoryFailureResultsInErrorEmission() {
         TestSubscriber<Object> ts = TestSubscriber.create();
@@ -115,7 +115,7 @@ public class OnSubscribeCollectTest {
         ts.assertError(e);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testCollectorFailureDoesNotResultInTwoErrorEmissions() {
         try {
@@ -248,5 +248,5 @@ public class OnSubscribeCollectTest {
         ts.assertNotCompleted();
         assertFalse(added.get());
     }
-    
+
 }

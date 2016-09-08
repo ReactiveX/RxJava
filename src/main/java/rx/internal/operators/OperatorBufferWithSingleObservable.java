@@ -37,7 +37,7 @@ import rx.observers.*;
  * Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
  * exactly one buffer actively storing values.
  * </p>
- * 
+ *
  * @param <T> the buffered value type
  * @param <TClosing> the value type of the Observable signaling the end of each buffer
  */
@@ -104,12 +104,12 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
 
         child.add(closingSubscriber);
         child.add(bsub);
-        
+
         closing.unsafeSubscribe(closingSubscriber);
-        
+
         return bsub;
     }
-    
+
     final class BufferingSubscriber extends Subscriber<T> {
         final Subscriber<? super List<T>> child;
         /** Guarded by this. */
@@ -163,7 +163,7 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
             child.onCompleted();
             unsubscribe();
         }
-        
+
         void emit() {
             List<T> toEmit;
             synchronized (this) {
@@ -187,5 +187,5 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
             }
         }
     }
-    
+
 }

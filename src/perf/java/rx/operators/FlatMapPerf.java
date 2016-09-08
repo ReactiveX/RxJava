@@ -42,7 +42,7 @@ public class FlatMapPerf {
 
     Observable<Integer> rxSource;
     Observable<Integer> rxSource2;
-    
+
     @Setup
     public void setup() {
         Observable<Integer> rxRange = Observable.range(0, times);
@@ -59,7 +59,7 @@ public class FlatMapPerf {
             }
         });
     }
-    
+
     @Benchmark
     public Object rxFlatMap() {
         return rxSource.subscribe();

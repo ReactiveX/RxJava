@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,15 +37,15 @@ import rx.functions.Func1;
  * Methods are also invoked synchronously and will add to execution time of the observable so all behavior
  * should be fast. If anything time-consuming is to be done it should be spawned asynchronously onto separate
  * worker threads.
- * 
+ *
  */
-public abstract class RxJavaObservableExecutionHook { // NOPMD 
+public abstract class RxJavaObservableExecutionHook { // NOPMD
     /**
      * Invoked during the construction by {@link Observable#create(OnSubscribe)}
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
      * logging, metrics and other such things and pass through the function.
-     * 
+     *
      * @param <T> the value type
      * @param f
      *            original {@link OnSubscribe}<{@code T}> to be executed
@@ -62,7 +62,7 @@ public abstract class RxJavaObservableExecutionHook { // NOPMD
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
      * logging, metrics and other such things and pass through the function.
-     * 
+     *
      * @param <T> the value type
      * @param observableInstance the parent observable instance
      * @param onSubscribe
@@ -82,7 +82,7 @@ public abstract class RxJavaObservableExecutionHook { // NOPMD
      * <p>
      * This can be used to decorate or replace the {@link Subscription} instance or just perform extra logging,
      * metrics and other such things and pass through the subscription.
-     * 
+     *
      * @param <T> the value type
      * @param subscription
      *            original {@link Subscription}
@@ -100,7 +100,7 @@ public abstract class RxJavaObservableExecutionHook { // NOPMD
      * <p>
      * This is <em>not</em> errors emitted via {@link Subscriber#onError(Throwable)} but exceptions thrown when
      * attempting to subscribe to a {@link Func1}<{@link Subscriber}{@code <T>}, {@link Subscription}>.
-     * 
+     *
      * @param <T> the value type
      * @param e
      *            Throwable thrown by {@link Observable#subscribe(Subscriber)}
@@ -118,7 +118,7 @@ public abstract class RxJavaObservableExecutionHook { // NOPMD
      * <p>
      * This can be used to decorate or replace the {@link Operator} instance or just perform extra
      * logging, metrics and other such things and pass through the onSubscribe.
-     * 
+     *
      * @param <T> the upstream's value type (input)
      * @param <R> the downstream's value type (output)
      * @param lift

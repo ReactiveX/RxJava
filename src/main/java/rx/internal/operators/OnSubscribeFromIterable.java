@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,20 +46,20 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
     public void call(final Subscriber<? super T> o) {
         Iterator<? extends T> it;
         boolean b;
-        
+
         try {
             it = is.iterator();
-            
+
             b = it.hasNext();
         } catch (Throwable ex) {
             Exceptions.throwOrReport(ex, o);
             return;
         }
-            
+
         if (!o.isUnsubscribed()) {
             if (!b) {
                 o.onCompleted();
-            } else { 
+            } else {
                 o.setProducer(new IterableProducer<T>(o, it));
             }
         }
@@ -84,7 +84,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
             }
             if (n == Long.MAX_VALUE && compareAndSet(0, Long.MAX_VALUE)) {
                 fastpath();
-            } else 
+            } else
             if (n > 0 && BackpressureUtils.getAndAddRequest(this, n) == 0L) {
                 slowpath(n);
             }
@@ -98,22 +98,22 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
             long r = n;
             long e = 0;
-            
+
             for (;;) {
                 while (e != r) {
                     if (o.isUnsubscribed()) {
                         return;
                     }
-                    
+
                     T value;
-                    
+
                     try {
                         value = it.next();
                     } catch (Throwable ex) {
                         Exceptions.throwOrReport(ex, o);
                         return;
                     }
-                    
+
                     o.onNext(value);
 
                     if (o.isUnsubscribed()) {
@@ -121,24 +121,24 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                     }
 
                     boolean b;
-                    
+
                     try {
                         b = it.hasNext();
                     } catch (Throwable ex) {
                         Exceptions.throwOrReport(ex, o);
                         return;
                     }
-                    
+
                     if (!b) {
                         if (!o.isUnsubscribed()) {
                             o.onCompleted();
                         }
                         return;
                     }
-                    
+
                     e++;
                 }
-                
+
                 r = get();
                 if (e == r) {
                     r = BackpressureUtils.produced(this, e);
@@ -148,7 +148,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                     e = 0L;
                 }
             }
-            
+
         }
 
         void fastpath() {
@@ -160,7 +160,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                 if (o.isUnsubscribed()) {
                     return;
                 }
-                
+
                 T value;
 
                 try {
@@ -169,7 +169,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                     Exceptions.throwOrReport(ex, o);
                     return;
                 }
-                
+
                 o.onNext(value);
 
                 if (o.isUnsubscribed()) {

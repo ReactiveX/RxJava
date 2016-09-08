@@ -28,7 +28,7 @@ import rx.plugins.RxJavaHooks;
  * <p>
  * See also the <a href="http://msdn.microsoft.com/en-us/library/hh212133.aspx">MSDN Observable.Finally
  * method</a>
- * 
+ *
  * @param <T> the value type
  */
 public final class OperatorDoAfterTerminate<T> implements Operator<T, T> {
@@ -67,7 +67,7 @@ public final class OperatorDoAfterTerminate<T> implements Operator<T, T> {
                     callAction();
                 }
             }
-            
+
             void callAction() {
                 try {
                     action.call();
@@ -78,5 +78,5 @@ public final class OperatorDoAfterTerminate<T> implements Operator<T, T> {
             }
         };
     }
-    
+
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ import rx.exceptions.Exceptions;
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins: <a
  * href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.
  */
-public abstract class RxJavaErrorHandler { // NOPMD 
+public abstract class RxJavaErrorHandler { // NOPMD
 
     protected static final String ERROR_IN_RENDERING_SUFFIX = ".errorRendering";
 
@@ -41,7 +41,7 @@ public abstract class RxJavaErrorHandler { // NOPMD
      * <p>
      * This should <em>never</em> throw an {@code Exception}. Make sure to try/catch({@code Throwable}) all code
      * inside this method implementation.
-     * 
+     *
      * @param e
      *            the {@code Exception}
      */

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,16 +45,16 @@ public class DeferredScalarPerf {
     Observable<Integer> reduce;
 
     Observable<Integer> reduceSeed;
-    
+
     Observable<int[]> collect;
 
     @Setup
     public void setup() {
         Integer[] array = new Integer[count];
         Arrays.fill(array, 777);
-        
+
         Observable<Integer> source = Observable.from(array);
-        
+
         reduce = source.reduce(new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer a, Integer b) {
@@ -67,9 +67,9 @@ public class DeferredScalarPerf {
                 return b;
             }
         });
-        
+
         last = source.takeLast(1);
-        
+
         collect = source.collect(new Func0<int[]>() {
             @Override
             public int[] call() {
@@ -77,12 +77,12 @@ public class DeferredScalarPerf {
             }
         }, new Action2<int[], Integer>() {
             @Override
-            public void call(int[] a, Integer b) { 
-                a[0] = b.intValue(); 
+            public void call(int[] a, Integer b) {
+                a[0] = b.intValue();
             }
         } );
     }
-    
+
     @Benchmark
     public void reduce(Blackhole bh) {
         reduce.subscribe(new LatchedObserver<Integer>(bh));

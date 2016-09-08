@@ -24,19 +24,19 @@ import rx.*;
 public final class ProducerArbiter implements Producer {
     long requested;
     Producer currentProducer;
- 
+
     boolean emitting;
     long missedRequested;
     long missedProduced;
     Producer missedProducer;
-     
+
     static final Producer NULL_PRODUCER = new Producer() {
         @Override
         public void request(long n) {
             // deliberately ignored
         }
     };
-     
+
     @Override
     public void request(long n) {
         if (n < 0) {
@@ -60,12 +60,12 @@ public final class ProducerArbiter implements Producer {
                 u = Long.MAX_VALUE;
             }
             requested = u;
-             
+
             Producer p = currentProducer;
             if (p != null) {
                 p.request(n);
             }
-             
+
             emitLoop();
             skipFinal = true;
         } finally {
@@ -76,7 +76,7 @@ public final class ProducerArbiter implements Producer {
             }
         }
     }
-     
+
     public void produced(long n) {
         if (n <= 0) {
             throw new IllegalArgumentException("n > 0 required");
@@ -88,7 +88,7 @@ public final class ProducerArbiter implements Producer {
             }
             emitting = true;
         }
-         
+
         boolean skipFinal = false;
         try {
             long r = requested;
@@ -99,7 +99,7 @@ public final class ProducerArbiter implements Producer {
                 }
                 requested = u;
             }
-         
+
             emitLoop();
             skipFinal = true;
         } finally {
@@ -110,7 +110,7 @@ public final class ProducerArbiter implements Producer {
             }
         }
     }
-     
+
     public void setProducer(Producer newProducer) {
         synchronized (this) {
             if (emitting) {
@@ -125,7 +125,7 @@ public final class ProducerArbiter implements Producer {
             if (newProducer != null) {
                 newProducer.request(requested);
             }
-             
+
             emitLoop();
             skipFinal = true;
         } finally {
@@ -136,7 +136,7 @@ public final class ProducerArbiter implements Producer {
             }
         }
     }
- 
+
     public void emitLoop() {
         for (;;) {
             long localRequested;
@@ -146,7 +146,7 @@ public final class ProducerArbiter implements Producer {
                 localRequested = missedRequested;
                 localProduced = missedProduced;
                 localProducer = missedProducer;
-                if (localRequested == 0L 
+                if (localRequested == 0L
                         && localProduced == 0L
                         && localProducer == null) {
                     emitting = false;
@@ -156,9 +156,9 @@ public final class ProducerArbiter implements Producer {
                 missedProduced = 0L;
                 missedProducer = null;
             }
-             
+
             long r = requested;
-             
+
             if (r != Long.MAX_VALUE) {
                 long u = r + localRequested;
                 if (u < 0 || u == Long.MAX_VALUE) {

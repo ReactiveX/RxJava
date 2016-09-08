@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,7 +60,7 @@ import rx.subscriptions.Subscriptions;
  * <p>
  * Limit the amount concurrency two at a time without creating a new fix size
  * thread pool:
- * 
+ *
  * <pre>
  * Scheduler limitSched = Schedulers.computation().when(workers -> {
  * 	// use merge max concurrent to limit the number of concurrent
@@ -78,7 +78,7 @@ import rx.subscriptions.Subscriptions;
  * {@link Observable#zip(Observable, Observable, rx.functions.Func2)} where
  * subscribing to the first {@link Observable} could deadlock the subscription
  * to the second.
- * 
+ *
  * <pre>
  * Scheduler limitSched = Schedulers.computation().when(workers -> {
  * 	// use merge max concurrent to limit the number of concurrent
@@ -86,12 +86,12 @@ import rx.subscriptions.Subscriptions;
  * 	return Completable.merge(Observable.merge(workers, 2));
  * });
  * </pre>
- * 
+ *
  * Slowing down the rate to no more than than 1 a second. This suffers from the
  * same problem as the one above I could find an {@link Observable} operator
  * that limits the rate without dropping the values (aka leaky bucket
  * algorithm).
- * 
+ *
  * <pre>
  * Scheduler slowSched = Schedulers.computation().when(workers -> {
  * 	// use concatenate to make each worker happen one at a time.

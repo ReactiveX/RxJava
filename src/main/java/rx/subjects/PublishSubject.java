@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ import rx.internal.operators.BackpressureUtils;
   subject.onCompleted();
 
   } </pre>
- * 
+ *
  * @param <T>
  *          the type of items observed and emitted by the Subject
  */
@@ -62,7 +62,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
     public static <T> PublishSubject<T> create() {
         return new PublishSubject<T>(new PublishSubjectState<T>());
     }
-    
+
     protected PublishSubject(PublishSubjectState<T> state) {
         super(state);
         this.state = state;
@@ -88,7 +88,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
     public boolean hasObservers() {
         return state.get().length != 0;
     }
-    
+
     /**
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
@@ -117,32 +117,32 @@ public final class PublishSubject<T> extends Subject<T, T> {
         }
         return null;
     }
-    
-    static final class PublishSubjectState<T> 
+
+    static final class PublishSubjectState<T>
     extends AtomicReference<PublishSubjectProducer<T>[]>
     implements OnSubscribe<T>, Observer<T> {
 
         /** */
         private static final long serialVersionUID = -7568940796666027140L;
-        
+
         @SuppressWarnings("rawtypes")
-        static final PublishSubjectProducer[] EMPTY = new PublishSubjectProducer[0]; 
+        static final PublishSubjectProducer[] EMPTY = new PublishSubjectProducer[0];
         @SuppressWarnings("rawtypes")
-        static final PublishSubjectProducer[] TERMINATED = new PublishSubjectProducer[0]; 
-        
+        static final PublishSubjectProducer[] TERMINATED = new PublishSubjectProducer[0];
+
         Throwable error;
-        
+
         @SuppressWarnings("unchecked")
         public PublishSubjectState() {
             lazySet(EMPTY);
         }
-        
+
         @Override
         public void call(Subscriber<? super T> t) {
             PublishSubjectProducer<T> pp = new PublishSubjectProducer<T>(this, t);
             t.add(pp);
             t.setProducer(pp);
-            
+
             if (add(pp)) {
                 if (pp.isUnsubscribed()) {
                     remove(pp);
@@ -156,28 +156,28 @@ public final class PublishSubject<T> extends Subject<T, T> {
                 }
             }
         }
-        
-        
+
+
         boolean add(PublishSubjectProducer<T> inner) {
             for (;;) {
                 PublishSubjectProducer<T>[] curr = get();
                 if (curr == TERMINATED) {
                     return false;
                 }
-                
+
                 int n = curr.length;
-                
+
                 @SuppressWarnings("unchecked")
                 PublishSubjectProducer<T>[] next = new PublishSubjectProducer[n + 1];
                 System.arraycopy(curr, 0, next, 0, n);
-                
+
                 next[n] = inner;
                 if (compareAndSet(curr, next)) {
                     return true;
                 }
             }
         }
-        
+
         @SuppressWarnings("unchecked")
         void remove(PublishSubjectProducer<T> inner) {
             for (;;) {
@@ -185,7 +185,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
                 if (curr == TERMINATED || curr == EMPTY) {
                     return;
                 }
-                
+
                 int n = curr.length;
                 int j = -1;
                 for (int i = 0; i < n; i++) {
@@ -194,11 +194,11 @@ public final class PublishSubject<T> extends Subject<T, T> {
                         break;
                     }
                 }
-                
+
                 if (j < 0) {
                     return;
                 }
-                
+
                 PublishSubjectProducer<T>[] next;
                 if (n == 1) {
                     next = EMPTY;
@@ -207,7 +207,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
                     System.arraycopy(curr, 0, next, 0, j);
                     System.arraycopy(curr, j + 1, next, j, n - j - 1);
                 }
-                
+
                 if (compareAndSet(curr, next)) {
                     return;
                 }
@@ -236,7 +236,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
                     errors.add(ex);
                 }
             }
-            
+
             Exceptions.throwIfAny(errors);
         }
 
@@ -249,24 +249,24 @@ public final class PublishSubject<T> extends Subject<T, T> {
         }
 
     }
-    
-    static final class PublishSubjectProducer<T> 
+
+    static final class PublishSubjectProducer<T>
     extends AtomicLong
     implements Producer, Subscription, Observer<T> {
         /** */
         private static final long serialVersionUID = 6451806817170721536L;
 
         final PublishSubjectState<T> parent;
-        
+
         final Subscriber<? super T> actual;
-        
+
         long produced;
-        
+
         public PublishSubjectProducer(PublishSubjectState<T> parent, Subscriber<? super T> actual) {
             this.parent = parent;
             this.actual = actual;
         }
-        
+
         @Override
         public void request(long n) {
             if (BackpressureUtils.validate(n)) {
@@ -282,19 +282,19 @@ public final class PublishSubject<T> extends Subject<T, T> {
                 }
             }
         }
-        
+
         @Override
         public boolean isUnsubscribed() {
             return get() == Long.MIN_VALUE;
         }
-        
+
         @Override
         public void unsubscribe() {
             if (getAndSet(Long.MIN_VALUE) != Long.MIN_VALUE) {
                 parent.remove(this);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             long r = get();
@@ -309,14 +309,14 @@ public final class PublishSubject<T> extends Subject<T, T> {
                 }
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             if (get() != Long.MIN_VALUE) {
                 actual.onError(e);
             }
         }
-        
+
         @Override
         public void onCompleted() {
             if (get() != Long.MIN_VALUE) {

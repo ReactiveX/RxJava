@@ -75,7 +75,7 @@ public class OnSubscribeSingleTest {
 
         subscriber.assertError(IllegalArgumentException.class);
     }
-    
+
     @Test
     public void testShouldUseUnsafeSubscribeInternallyNotSubscribe() {
         TestSubscriber<String> subscriber = TestSubscriber.create();

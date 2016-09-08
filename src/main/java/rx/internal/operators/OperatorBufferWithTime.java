@@ -37,7 +37,7 @@ import rx.observers.SerializedSubscriber;
  * Note that this operation can produce <strong>non-connected, or overlapping chunks</strong> depending
  * on the input parameters.
  * </p>
- * 
+ *
  * @param <T> the buffered value type
  */
 public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
@@ -71,7 +71,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
     public Subscriber<? super T> call(final Subscriber<? super List<T>> child) {
         final Worker inner = scheduler.createWorker();
         SerializedSubscriber<List<T>> serialized = new SerializedSubscriber<List<T>>(child);
-        
+
         if (timespan == timeshift) {
             ExactSubscriber bsub = new ExactSubscriber(serialized, inner);
             bsub.add(inner);
@@ -79,7 +79,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
             bsub.scheduleExact();
             return bsub;
         }
-        
+
         InexactSubscriber bsub = new InexactSubscriber(serialized, inner);
         bsub.add(inner);
         child.add(bsub);

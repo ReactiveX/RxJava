@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,16 +39,16 @@ public class FlatMapAsFilterPerf {
 
     @Param({"1", "1000", "1000000"})
     public int count;
-    
+
     @Param({"0", "1", "3", "7"})
     public int mask;
-    
+
     public Observable<Integer> justEmptyFlatMap;
-    
+
     public Observable<Integer> rangeEmptyFlatMap;
 
     public Observable<Integer> justEmptyConcatMap;
-    
+
     public Observable<Integer> rangeEmptyConcatMap;
 
     @Setup
@@ -61,20 +61,20 @@ public class FlatMapAsFilterPerf {
             values[i] = i;
         }
         final Observable<Integer> just = Observable.just(1);
-        
+
         final Observable<Integer> range = Observable.range(1, 2);
-        
+
         final Observable<Integer> empty = Observable.empty();
-        
+
         final int m = mask;
-        
+
         justEmptyFlatMap = Observable.from(values).flatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
                 return (v & m) == 0 ? empty : just;
             }
         });
-        
+
         rangeEmptyFlatMap = Observable.from(values).flatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
@@ -88,7 +88,7 @@ public class FlatMapAsFilterPerf {
                 return (v & m) == 0 ? empty : just;
             }
         });
-        
+
         rangeEmptyConcatMap = Observable.from(values).concatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
@@ -101,7 +101,7 @@ public class FlatMapAsFilterPerf {
     public void justEmptyFlatMap(Blackhole bh) {
         justEmptyFlatMap.subscribe(new LatchedObserver<Integer>(bh));
     }
-    
+
     @Benchmark
     public void rangeEmptyFlatMap(Blackhole bh) {
         rangeEmptyFlatMap.subscribe(new LatchedObserver<Integer>(bh));
@@ -111,7 +111,7 @@ public class FlatMapAsFilterPerf {
     public void justEmptyConcatMap(Blackhole bh) {
         justEmptyConcatMap.subscribe(new LatchedObserver<Integer>(bh));
     }
-    
+
     @Benchmark
     public void rangeEmptyConcatMap(Blackhole bh) {
         rangeEmptyConcatMap.subscribe(new LatchedObserver<Integer>(bh));

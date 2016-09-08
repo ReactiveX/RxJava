@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,14 +26,14 @@ import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 
 public final class CompletableOnSubscribeTimeout implements OnSubscribe {
-    
+
     final Completable source;
     final long timeout;
     final TimeUnit unit;
     final Scheduler scheduler;
     final Completable other;
 
-    public CompletableOnSubscribeTimeout(Completable source, long timeout, 
+    public CompletableOnSubscribeTimeout(Completable source, long timeout,
             TimeUnit unit, Scheduler scheduler, Completable other) {
         this.source = source;
         this.timeout = timeout;
@@ -46,11 +46,11 @@ public final class CompletableOnSubscribeTimeout implements OnSubscribe {
     public void call(final CompletableSubscriber s) {
         final CompositeSubscription set = new CompositeSubscription();
         s.onSubscribe(set);
-        
+
         final AtomicBoolean once = new AtomicBoolean();
-        
+
         Scheduler.Worker w = scheduler.createWorker();
-        
+
         set.add(w);
         w.schedule(new Action0() {
             @Override
@@ -61,30 +61,30 @@ public final class CompletableOnSubscribeTimeout implements OnSubscribe {
                         s.onError(new TimeoutException());
                     } else {
                         other.unsafeSubscribe(new CompletableSubscriber() {
-   
+
                             @Override
                             public void onSubscribe(Subscription d) {
                                 set.add(d);
                             }
-   
+
                             @Override
                             public void onError(Throwable e) {
                                 set.unsubscribe();
                                 s.onError(e);
                             }
-   
+
                             @Override
                             public void onCompleted() {
                                 set.unsubscribe();
                                 s.onCompleted();
                             }
-                            
+
                         });
                     }
                 }
             }
         }, timeout, unit);
-        
+
         source.unsafeSubscribe(new CompletableSubscriber() {
 
             @Override
@@ -109,7 +109,7 @@ public final class CompletableOnSubscribeTimeout implements OnSubscribe {
                     s.onCompleted();
                 }
             }
-            
+
         });
     }
 }

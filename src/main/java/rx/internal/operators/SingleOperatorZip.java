@@ -31,7 +31,7 @@ public final class SingleOperatorZip {
     private SingleOperatorZip() {
         throw new IllegalStateException("No instances!");
     }
-    
+
     public static <T, R> Single<R> zip(final Single<? extends T>[] singles, final FuncN<? extends R> zipper) {
         return Single.create(new Single.OnSubscribe<R>() {
             @Override

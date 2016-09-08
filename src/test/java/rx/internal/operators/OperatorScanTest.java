@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -118,7 +118,7 @@ public class OperatorScanTest {
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -136,12 +136,12 @@ public class OperatorScanTest {
                 // this will cause request(1) when 0 is emitted
                 return t1 > 0;
             }
-            
+
         }).subscribe(ts);
-        
+
         assertEquals(100, ts.getOnNextEvents().size());
     }
-    
+
     @Test
     public void testBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
@@ -182,7 +182,7 @@ public class OperatorScanTest {
         // we only expect to receive 10 since we request(10)
         assertEquals(10, count.get());
     }
-    
+
     @Test
     public void testBackpressureWithoutInitialValue() {
         final AtomicInteger count = new AtomicInteger();
@@ -223,7 +223,7 @@ public class OperatorScanTest {
         // we only expect to receive 10 since we request(10)
         assertEquals(10, count.get());
     }
-    
+
     @Test
     public void testNoBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
@@ -272,7 +272,7 @@ public class OperatorScanTest {
                     public List<Integer> call() {
                         return new ArrayList<Integer>();
                     }
-                    
+
                 }, new Action2<List<Integer>, Integer>() {
 
                     @Override
@@ -350,25 +350,25 @@ public class OperatorScanTest {
         verify(producer.get(), never()).request(0);
         verify(producer.get(), times(2)).request(1);
     }
-    
+
     @Test
     public void testInitialValueEmittedNoProducer() {
         PublishSubject<Integer> source = PublishSubject.create();
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         source.scan(0, new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         }).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertNotCompleted();
         ts.assertValue(0);
     }
-    
+
     @Test
     public void testInitialValueEmittedWithProducer() {
         Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
@@ -382,25 +382,25 @@ public class OperatorScanTest {
                 });
             }
         });
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         source.scan(0, new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer t1, Integer t2) {
                 return t1 + t2;
             }
         }).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertNotCompleted();
         ts.assertValue(0);
     }
-    
+
     @Test
     public void testInitialValueNull() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.range(1, 10).scan(null, new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer t1, Integer t2) {
@@ -410,28 +410,28 @@ public class OperatorScanTest {
                 return t1 + t2;
             }
         }).subscribe(ts);
-        
+
         ts.assertValues(null, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void testEverythingIsNull() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.range(1, 6).scan(null, new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer t1, Integer t2) {
                 return null;
             }
         }).subscribe(ts);
-        
+
         ts.assertValues(null, null, null, null, null, null, null);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test(timeout = 1000)
     public void testUnboundedSource() {
         Observable.range(0, Integer.MAX_VALUE)
@@ -451,7 +451,7 @@ public class OperatorScanTest {
             }
         });
     }
-    
+
     @Test
     public void scanShouldPassUpstreamARequestForMaxValue() {
         final List<Long> requests = new ArrayList<Long>();
@@ -466,7 +466,7 @@ public class OperatorScanTest {
             public Integer call(Integer t1, Integer t2) {
                 return 0;
             }}).count().subscribe();
-        
+
         assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
     }
 }

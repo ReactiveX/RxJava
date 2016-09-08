@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,14 +34,14 @@ public class CompletableFromEmitterTest {
     @Test
     public void normal() {
         TestSubscriber<Void> ts = TestSubscriber.create();
-        
+
         Completable.fromEmitter(new Action1<CompletableEmitter>() {
             @Override
             public void call(CompletableEmitter e) {
                 e.onCompleted();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertCompleted();
@@ -50,23 +50,23 @@ public class CompletableFromEmitterTest {
     @Test
     public void error() {
         TestSubscriber<Void> ts = TestSubscriber.create();
-        
+
         Completable.fromEmitter(new Action1<CompletableEmitter>() {
             @Override
             public void call(CompletableEmitter e) {
                 e.onError(new TestException());
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
     }
-    
+
     @Test
-    public void ensureProtocol1() { 
+    public void ensureProtocol1() {
         TestSubscriber<Void> ts = TestSubscriber.create();
-        
+
         Completable.fromEmitter(new Action1<CompletableEmitter>() {
             @Override
             public void call(CompletableEmitter e) {
@@ -75,16 +75,16 @@ public class CompletableFromEmitterTest {
                 e.onError(new IOException());
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
     }
 
     @Test
-    public void ensureProtocol2() { 
+    public void ensureProtocol2() {
         TestSubscriber<Void> ts = TestSubscriber.create();
-        
+
         Completable.fromEmitter(new Action1<CompletableEmitter>() {
             @Override
             public void call(CompletableEmitter e) {
@@ -93,7 +93,7 @@ public class CompletableFromEmitterTest {
                 e.onCompleted();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertCompleted();
@@ -114,14 +114,14 @@ public class CompletableFromEmitterTest {
                 e.onCompleted();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertCompleted();
-        
+
         assertTrue(bs.isUnsubscribed());
     }
-    
+
     @Test
     public void resourceCleanupError() {
         TestSubscriber<Void> ts = TestSubscriber.create();
@@ -137,14 +137,14 @@ public class CompletableFromEmitterTest {
                 e.onError(new TestException());
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
-        
+
         assertTrue(bs.isUnsubscribed());
     }
-    
+
     @Test
     public void resourceCleanupCancellable() throws Exception {
         TestSubscriber<Void> ts = TestSubscriber.create();
@@ -158,14 +158,14 @@ public class CompletableFromEmitterTest {
                 e.onCompleted();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertCompleted();
 
         Mockito.verify(c).cancel();
     }
-    
+
     @Test
     public void resourceCleanupUnsubscirbe() throws Exception {
         TestSubscriber<Void> ts = TestSubscriber.create();
@@ -180,14 +180,14 @@ public class CompletableFromEmitterTest {
                 e.onCompleted();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();
 
         Mockito.verify(c).cancel();
     }
-    
+
     @Test
     public void resourceCleanupOnCompleteCrashes() throws Exception {
         final AsyncEmitter.Cancellable c = Mockito.mock(AsyncEmitter.Cancellable.class);
@@ -212,15 +212,15 @@ public class CompletableFromEmitterTest {
 
             @Override
             public void onSubscribe(Subscription d) {
-                
+
             }
-            
+
         });
-        
+
 
         Mockito.verify(c).cancel();
     }
-    
+
     @Test
     public void resourceCleanupOnErrorCrashes() throws Exception {
         final AsyncEmitter.Cancellable c = Mockito.mock(AsyncEmitter.Cancellable.class);
@@ -245,25 +245,25 @@ public class CompletableFromEmitterTest {
 
             @Override
             public void onSubscribe(Subscription d) {
-                
+
             }
-            
+
         });
-        
+
 
         Mockito.verify(c).cancel();
     }
     @Test
     public void producerCrashes() {
         TestSubscriber<Void> ts = TestSubscriber.create();
-        
+
         Completable.fromEmitter(new Action1<CompletableEmitter>() {
             @Override
             public void call(CompletableEmitter e) {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
@@ -272,7 +272,7 @@ public class CompletableFromEmitterTest {
     @Test
     public void producerCrashesAfterSignal() {
         TestSubscriber<Void> ts = TestSubscriber.create();
-        
+
         Completable.fromEmitter(new Action1<CompletableEmitter>() {
             @Override
             public void call(CompletableEmitter e) {
@@ -280,41 +280,41 @@ public class CompletableFromEmitterTest {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void concurrentUse() {
         for (int i = 0; i < 500; i++) {
             TestSubscriber<Void> ts = TestSubscriber.create();
-            
+
             final CompletableEmitter[] emitter = { null };
-            
+
             Completable.fromEmitter(new Action1<CompletableEmitter>() {
                 @Override
                 public void call(CompletableEmitter e) {
                     emitter[0] = e;
                 }
             }).subscribe(ts);
-            
+
             final TestException ex = new TestException();
             final CompletableEmitter e = emitter[0];
-            
+
             TestUtil.race(new Action0() {
                 @Override
-                public void call() { 
+                public void call() {
                     e.onCompleted();
                 }
             }, new Action0() {
                 @Override
-                public void call() { 
+                public void call() {
                     e.onError(ex);
                 }
             });
-            
+
             if (ts.getCompletions() != 0) {
                 ts.assertNoValues();
                 ts.assertNoErrors();

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -69,7 +69,7 @@ public final class Subscriptions {
 
     /**
      * Creates and returns a {@link Subscription} that invokes the given {@link Action0} when unsubscribed.
-     * 
+     *
      * @param unsubscribe
      *            Action to invoke on unsubscribe.
      * @return {@link Subscription}
@@ -80,7 +80,7 @@ public final class Subscriptions {
 
     /**
      * Converts a {@link Future} into a {@link Subscription} and cancels it when unsubscribed.
-     * 
+     *
      * @param f
      *            the {@link Future} to convert
      * @return a {@link Subscription} that wraps {@code f}
@@ -110,7 +110,7 @@ public final class Subscriptions {
     /**
      * Converts a set of {@link Subscription}s into a {@link CompositeSubscription} that groups the multiple
      * Subscriptions together and unsubscribes from all of them together.
-     * 
+     *
      * @param subscriptions
      *            the Subscriptions to group together
      * @return a {@link CompositeSubscription} representing the {@code subscriptions} set

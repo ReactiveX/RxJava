@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -287,7 +287,7 @@ public class OperatorWindowWithObservableTest {
         assertEquals(1, ts.getOnNextEvents().size());
         assertEquals(Arrays.asList(1, 2), tsw.getOnNextEvents());
     }
-    
+
     @Test
     public void testWindowViaObservableNoUnsubscribe() {
         Observable<Integer> source = Observable.range(1, 10);
@@ -297,13 +297,13 @@ public class OperatorWindowWithObservableTest {
                 return Observable.empty();
             }
         };
-        
+
         TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
         source.window(boundary).unsafeSubscribe(ts);
-        
+
         assertFalse(ts.isUnsubscribed());
     }
-    
+
     @Test
     public void testBoundaryUnsubscribedOnMainCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -314,18 +314,18 @@ public class OperatorWindowWithObservableTest {
                 return boundary;
             }
         };
-        
+
         TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
         source.window(boundaryFunc).subscribe(ts);
-        
+
         assertTrue(source.hasObservers());
         assertTrue(boundary.hasObservers());
-        
+
         source.onCompleted();
 
         assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());
-        
+
         ts.assertCompleted();
         ts.assertNoErrors();
         ts.assertValueCount(1);
@@ -340,18 +340,18 @@ public class OperatorWindowWithObservableTest {
                 return boundary;
             }
         };
-        
+
         TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
         source.window(boundaryFunc).subscribe(ts);
-        
+
         assertTrue(source.hasObservers());
         assertTrue(boundary.hasObservers());
-        
+
         boundary.onCompleted();
 
         assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());
-        
+
         ts.assertCompleted();
         ts.assertNoErrors();
         ts.assertValueCount(1);
@@ -366,10 +366,10 @@ public class OperatorWindowWithObservableTest {
                 return boundary;
             }
         };
-        
+
         TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
         source.window(boundaryFunc).subscribe(ts);
-        
+
         assertTrue(source.hasObservers());
         assertTrue(boundary.hasObservers());
 
@@ -377,7 +377,7 @@ public class OperatorWindowWithObservableTest {
 
         assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());
-        
+
         ts.assertNotCompleted();
         ts.assertNoErrors();
         ts.assertValueCount(1);
@@ -392,7 +392,7 @@ public class OperatorWindowWithObservableTest {
                 return boundary;
             }
         };
-        
+
         final TestSubscriber<Integer> ts = TestSubscriber.create(1);
         final TestSubscriber<Observable<Integer>> ts1 = new TestSubscriber<Observable<Integer>>(1) {
             @Override
@@ -403,17 +403,17 @@ public class OperatorWindowWithObservableTest {
         };
         source.window(boundaryFunc)
         .subscribe(ts1);
-        
+
         ts1.assertNoErrors();
         ts1.assertCompleted();
         ts1.assertValueCount(1);
-        
+
         ts.assertNoErrors();
         ts.assertNotCompleted();
         ts.assertValues(1);
-        
+
         ts.requestMore(11);
-        
+
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts.assertNoErrors();
         ts.assertCompleted();
@@ -430,10 +430,10 @@ public class OperatorWindowWithObservableTest {
                 return boundary;
             }
         };
-        
+
         TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
         source.window(boundaryFunc).subscribe(ts);
-        
+
         source.onNext(1);
         boundary.onNext(1);
         assertTrue(boundary.hasObservers());
@@ -445,10 +445,10 @@ public class OperatorWindowWithObservableTest {
         source.onNext(3);
         boundary.onNext(3);
         assertTrue(boundary.hasObservers());
-        
+
         source.onNext(4);
         source.onCompleted();
-        
+
         ts.assertNoErrors();
         ts.assertValueCount(4);
         ts.assertCompleted();

@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic/SpscUnboundedAtomicArrayQueue.java
  */
@@ -175,10 +175,10 @@ public final class SpscUnboundedAtomicArrayQueue<T> implements Queue<T> {
 
         return (T) e;
     }
-    
+
     @Override
     public void clear() {
-        while (poll() != null || !isEmpty()); // NOPMD 
+        while (poll() != null || !isEmpty()); // NOPMD
     }
 
     @SuppressWarnings("unchecked")
@@ -206,7 +206,7 @@ public final class SpscUnboundedAtomicArrayQueue<T> implements Queue<T> {
             }
         }
     }
-    
+
     @Override
     public boolean isEmpty() {
         return lvProducerIndex() == lvConsumerIndex();

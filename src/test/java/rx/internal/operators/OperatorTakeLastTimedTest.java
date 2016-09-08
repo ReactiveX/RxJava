@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -225,15 +225,15 @@ public class OperatorTakeLastTimedTest {
                 }
                 PublishSubject<Integer> ps = PublishSubject.create();
                 final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-                
+
                 ps.takeLast(n, 1, TimeUnit.DAYS).subscribe(ts);
-                
+
                 for (int j = 0; j < n; j++) {
                     ps.onNext(j);
                 }
 
                 final AtomicBoolean go = new AtomicBoolean();
-                
+
                 w.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -241,16 +241,16 @@ public class OperatorTakeLastTimedTest {
                         ts.requestMore(n + 1);
                     }
                 });
-                
+
                 go.set(true);
                 ps.onCompleted();
-                
+
                 ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
-                
+
                 ts.assertValueCount(n);
                 ts.assertNoErrors();
                 ts.assertCompleted();
-                
+
                 List<Integer> list = ts.getOnNextEvents();
                 for (int j = 0; j < n; j++) {
                     Assert.assertEquals(j, list.get(j).intValue());
@@ -260,31 +260,31 @@ public class OperatorTakeLastTimedTest {
             w.unsubscribe();
         }
     }
-    
+
     @Test
     public void nullElements() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        
+
         Observable.from(new Integer[] { 1, null, 2}).takeLast(4, 1, TimeUnit.DAYS)
         .subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();
-        
+
         ts.requestMore(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertNotCompleted();
-        
+
         ts.requestMore(2);
-        
+
         ts.assertValues(1, null, 2);
         ts.assertCompleted();
         ts.assertNoErrors();
     }
-    
+
     @Test
     public void takeLastDefaultScheduler() {
         final TestScheduler scheduler = new TestScheduler();
@@ -295,24 +295,24 @@ public class OperatorTakeLastTimedTest {
                 return scheduler;
             }
         });
-        
+
         try {
             TestSubscriber<Integer> ts = TestSubscriber.create();
-            
+
             PublishSubject<Integer> ps = PublishSubject.create();
-            
+
             ps.takeLast(1, TimeUnit.SECONDS).subscribe(ts);
-            
+
             ps.onNext(1);
             ps.onNext(2);
             ps.onNext(3);
-            
+
             scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
-            
+
             ps.onNext(4);
             ps.onNext(5);
             ps.onCompleted();
-            
+
             ts.assertValues(4, 5);
             ts.assertNoErrors();
             ts.assertCompleted();

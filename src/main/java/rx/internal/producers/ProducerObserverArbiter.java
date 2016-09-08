@@ -32,31 +32,31 @@ import rx.internal.operators.BackpressureUtils;
  */
 public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
     final Subscriber<? super T> child;
-     
+
     boolean emitting;
-     
+
     List<T> queue;
-    
+
     Producer currentProducer;
     long requested;
-    
+
     long missedRequested;
     Producer missedProducer;
     Object missedTerminal;
-    
+
     volatile boolean hasError;
-    
+
     static final Producer NULL_PRODUCER = new Producer() {
         @Override
         public void request(long n) {
             // deliberately ignored
         }
     };
-     
+
     public ProducerObserverArbiter(Subscriber<? super T> child) {
         this.child = child;
     }
-     
+
     @Override
     public void onNext(T t) {
         synchronized (this) {
@@ -74,12 +74,12 @@ public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
         boolean skipFinal = false;
         try {
             child.onNext(t);
-            
+
             long r = requested;
             if (r != Long.MAX_VALUE) {
                 requested = r - 1;
             }
-            
+
             emitLoop();
             skipFinal = true;
         } finally {
@@ -90,7 +90,7 @@ public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
             }
         }
     }
-     
+
     @Override
     public void onError(Throwable e) {
         boolean emit;
@@ -109,7 +109,7 @@ public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
             hasError = true;
         }
     }
-    
+
     @Override
     public void onCompleted() {
         synchronized (this) {
@@ -121,7 +121,7 @@ public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
         }
         child.onCompleted();
     }
-    
+
     @Override
     public void request(long n) {
         if (n < 0) {
@@ -160,7 +160,7 @@ public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
             p.request(n);
         }
     }
-    
+
     public void setProducer(Producer p) {
         synchronized (this) {
             if (emitting) {
@@ -186,13 +186,13 @@ public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
             p.request(r);
         }
     }
-    
+
     void emitLoop() {
         final Subscriber<? super T> c = child;
 
         long toRequest = 0L;
         Producer requestFrom = null;
-        
+
         outer:
         for (;;) {
             long localRequested;
@@ -222,7 +222,7 @@ public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
                 }
                 return;
             }
-            
+
             boolean empty = q == null || q.isEmpty();
             if (localTerminal != null) {
                 if (localTerminal != Boolean.TRUE) {

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,39 +22,39 @@ import rx.Observable.OnSubscribe;
 import rx.plugins.RxJavaHooks;
 
 /**
- * Nulls out references to upstream data structures when the source terminates or 
+ * Nulls out references to upstream data structures when the source terminates or
  * the child unsubscribes.
  * @param <T> the value type
  */
 public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
-    
+
     final Observable<T> source;
-    
+
     public OnSubscribeDetach(Observable<T> source) {
         this.source = source;
     }
-    
+
     @Override
     public void call(Subscriber<? super T> t) {
         DetachSubscriber<T> parent = new DetachSubscriber<T>(t);
         DetachProducer<T> producer = new DetachProducer<T>(parent);
-        
+
         t.add(producer);
         t.setProducer(producer);
-        
+
         source.unsafeSubscribe(parent);
     }
-    
+
     /**
      * The parent subscriber that forwards events and cleans up on a terminal state.
      * @param <T> the value type
      */
     static final class DetachSubscriber<T> extends Subscriber<T> {
-        
+
         final AtomicReference<Subscriber<? super T>> actual;
-        
+
         final AtomicReference<Producer> producer;
-        
+
         final AtomicLong requested;
 
         public DetachSubscriber(Subscriber<? super T> actual) {
@@ -62,11 +62,11 @@ public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
             this.producer = new AtomicReference<Producer>();
             this.requested = new AtomicLong();
         }
-        
+
         @Override
         public void onNext(T t) {
             Subscriber<? super T> a = actual.get();
-            
+
             if (a != null) {
                 a.onNext(t);
             }
@@ -76,7 +76,7 @@ public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
         public void onError(Throwable e) {
             producer.lazySet(TerminatedProducer.INSTANCE);
             Subscriber<? super T> a = actual.getAndSet(null);
-            
+
             if (a != null) {
                 a.onError(e);
             } else {
@@ -84,17 +84,17 @@ public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
             }
         }
 
-        
+
         @Override
         public void onCompleted() {
             producer.lazySet(TerminatedProducer.INSTANCE);
             Subscriber<? super T> a = actual.getAndSet(null);
-            
+
             if (a != null) {
                 a.onCompleted();
             }
         }
-        
+
         void innerRequest(long n) {
             if (n < 0L) {
                 throw new IllegalArgumentException("n >= 0 required but it was " + n);
@@ -111,7 +111,7 @@ public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
                 }
             }
         }
-        
+
         @Override
         public void setProducer(Producer p) {
             if (producer.compareAndSet(null, p)) {
@@ -123,7 +123,7 @@ public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
                 }
             }
         }
-        
+
         void innerUnsubscribe() {
             producer.lazySet(TerminatedProducer.INSTANCE);
             actual.lazySet(null);
@@ -131,7 +131,7 @@ public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
             unsubscribe();
         }
     }
-    
+
     /**
      * Callbacks from the child Subscriber.
      * @param <T> the value type
@@ -142,29 +142,29 @@ public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
         public DetachProducer(DetachSubscriber<T> parent) {
             this.parent = parent;
         }
-        
+
         @Override
         public void request(long n) {
             parent.innerRequest(n);
         }
-        
+
         @Override
         public boolean isUnsubscribed() {
             return parent.isUnsubscribed();
         }
-        
+
         @Override
         public void unsubscribe() {
             parent.innerUnsubscribe();
         }
     }
-    
+
     /**
      * Singleton instance via enum.
      */
     enum TerminatedProducer implements Producer {
         INSTANCE;
-        
+
         @Override
         public void request(long n) {
             // ignored

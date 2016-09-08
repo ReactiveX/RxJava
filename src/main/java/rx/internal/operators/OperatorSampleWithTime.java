@@ -30,7 +30,7 @@ import rx.observers.SerializedSubscriber;
  * Observable at a specified time interval.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/sample.png" alt="">
- * 
+ *
  * @param <T> the value type
  */
 public final class OperatorSampleWithTime<T> implements Operator<T, T> {
@@ -49,7 +49,7 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
         final Worker worker = scheduler.createWorker();
         child.add(worker);
-        
+
         SamplerSubscriber<T> sampler = new SamplerSubscriber<T>(s);
         child.add(sampler);
         worker.schedulePeriodically(sampler, time, time, unit);
@@ -69,12 +69,12 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         public SamplerSubscriber(Subscriber<? super T> subscriber) {
             this.subscriber = subscriber;
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             value.set(t);

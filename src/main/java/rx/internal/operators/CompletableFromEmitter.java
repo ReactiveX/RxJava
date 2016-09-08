@@ -35,22 +35,22 @@ public final class CompletableFromEmitter implements Completable.OnSubscribe {
     public CompletableFromEmitter(Action1<CompletableEmitter> producer) {
         this.producer = producer;
     }
-    
+
     @Override
     public void call(CompletableSubscriber t) {
         FromEmitter emitter = new FromEmitter(t);
         t.onSubscribe(emitter);
-        
+
         try {
             producer.call(emitter);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             emitter.onError(ex);
         }
-        
+
     }
-    
-    static final class FromEmitter 
+
+    static final class FromEmitter
     extends AtomicBoolean
     implements CompletableEmitter, Subscription {
 
@@ -58,14 +58,14 @@ public final class CompletableFromEmitter implements Completable.OnSubscribe {
         private static final long serialVersionUID = 5539301318568668881L;
 
         final CompletableSubscriber actual;
-        
+
         final SequentialSubscription resource;
-        
+
         public FromEmitter(CompletableSubscriber actual) {
             this.actual = actual;
             resource = new SequentialSubscription();
         }
-        
+
         @Override
         public void onCompleted() {
             if (compareAndSet(false, true)) {
@@ -111,6 +111,6 @@ public final class CompletableFromEmitter implements Completable.OnSubscribe {
         public boolean isUnsubscribed() {
             return get();
         }
-        
+
     }
 }

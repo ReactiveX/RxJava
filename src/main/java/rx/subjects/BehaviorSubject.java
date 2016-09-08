@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -57,7 +57,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
   subject.onNext("one");
   subject.onCompleted();
   subject.subscribe(observer);
-  
+
   // observer will receive only onError
   BehaviorSubject<Object> subject = BehaviorSubject.create("default");
   subject.onNext("zero");
@@ -65,7 +65,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
   subject.onError(new RuntimeException("error"));
   subject.subscribe(observer);
   } </pre>
- * 
+ *
  * @param <T>
  *          the type of item expected to be observed by the Subject
  */
@@ -88,7 +88,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     /**
      * Creates a {@link BehaviorSubject} that emits the last item it observed and all subsequent items to each
      * {@link Observer} that subscribes to it.
-     * 
+     *
      * @param <T>
      *            the type of item the Subject will emit
      * @param defaultValue
@@ -110,10 +110,10 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             public void call(SubjectObserver<T> o) {
                 o.emitFirst(state.getLatest(), state.nl);
             }
-            
+
         };
         state.onTerminated = state.onAdded;
-        return new BehaviorSubject<T>(state, state); 
+        return new BehaviorSubject<T>(state, state);
     }
 
     protected BehaviorSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
@@ -207,7 +207,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * the subject hasn't terminated yet.
      * <p>The method can return {@code null} for various reasons. Use {@link #hasValue()}, {@link #hasThrowable()}
      * and {@link #hasCompleted()} to determine if such {@code null} is a valid value, there was an
-     * exception or the Subject terminated (with or without receiving any value). 
+     * exception or the Subject terminated (with or without receiving any value).
      * @return the current value or {@code null} if the Subject doesn't have a value,
      * has terminated or has an actual {@code null} as a valid value.
      */
@@ -233,10 +233,10 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         return null;
     }
     /**
-     * Returns a snapshot of the currently buffered non-terminal events into 
+     * Returns a snapshot of the currently buffered non-terminal events into
      * the provided {@code a} array or creates a new array if it has not enough capacity.
      * @param a the array to fill in
-     * @return the array {@code a} if it had enough capacity or a new array containing the available values 
+     * @return the array {@code a} if it had enough capacity or a new array containing the available values
      */
     @Beta
     @SuppressWarnings("unchecked")
@@ -256,7 +256,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
         return a;
     }
-    
+
     /**
      * Returns a snapshot of the currently buffered non-terminal events.
      * <p>The operation is threadsafe.

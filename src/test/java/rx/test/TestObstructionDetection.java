@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,7 +49,7 @@ public final class TestObstructionDetection {
      */
     public static void checkObstruction() {
         final int ncpu = Runtime.getRuntime().availableProcessors();
-        
+
         final CountDownLatch cdl = new CountDownLatch(ncpu);
         final List<Scheduler.Worker> workers = new ArrayList<Scheduler.Worker>();
         final Action0 task = new Action0() {
@@ -58,7 +58,7 @@ public final class TestObstructionDetection {
                 cdl.countDown();
             }
         };
-        
+
         for (int i = 0; i < ncpu; i++) {
             workers.add(Schedulers.computation().createWorker());
         }

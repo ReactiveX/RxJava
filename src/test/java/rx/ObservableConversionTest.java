@@ -38,20 +38,20 @@ import rx.schedulers.Schedulers;
 
 @SuppressWarnings("deprecation")
 public class ObservableConversionTest {
-    
+
     public static class Cylon {}
-    
+
     public static class Jail {
         Object cylon;
-        
+
         Jail(Object cylon) {
             this.cylon = cylon;
         }
     }
-    
+
     public static class CylonDetectorObservable<T> {
         protected OnSubscribe<T> onSubscribe;
-        
+
         public static <T> CylonDetectorObservable<T> create(OnSubscribe<T> onSubscribe) {
             return new CylonDetectorObservable<T>(onSubscribe);
         }
@@ -67,7 +67,7 @@ public class ObservableConversionTest {
         public <R> CylonDetectorObservable<R> lift(Operator<? extends R, ? super T> operator) {
             return x(new RobotConversionFunc<T, R>(operator));
         }
-        
+
         public <R, O> O x(Func1<OnSubscribe<T>, O> operator) {
             return operator.call(onSubscribe);
         }
@@ -75,11 +75,11 @@ public class ObservableConversionTest {
         public <R> CylonDetectorObservable<? extends R> compose(Func1<CylonDetectorObservable<? super T>, CylonDetectorObservable<? extends R>> transformer) {
             return transformer.call(this);
         }
-        
+
         public final CylonDetectorObservable<T> beep(Func1<? super T, Boolean> predicate) {
             return create(new OnSubscribeFilter<T>(Observable.create(onSubscribe), predicate));
         }
-        
+
         public final <R> CylonDetectorObservable<R> boop(Func1<? super T, ? extends R> func) {
             return create(new OnSubscribeMap<T, R>(Observable.create(onSubscribe), func));
         }
@@ -99,12 +99,12 @@ public class ObservableConversionTest {
                     }
                 }});
         }
-        
+
         private static void throwOutTheAirlock(Object cylon) {
             // ...
         }
     }
-    
+
     public static class RobotConversionFunc<T, R> implements Func1<OnSubscribe<T>, CylonDetectorObservable<R>> {
         private Operator<? extends R, ? super T> operator;
 
@@ -132,25 +132,25 @@ public class ObservableConversionTest {
                     } catch (Throwable e) {
                         o.onError(e);
                     }
-                
+
                 }});
         }
     }
-    
+
     public static class ConvertToCylonDetector<T> implements Func1<OnSubscribe<T>, CylonDetectorObservable<T>> {
         @Override
         public CylonDetectorObservable<T> call(final OnSubscribe<T> onSubscribe) {
             return CylonDetectorObservable.create(onSubscribe);
         }
     }
-    
+
     public static class ConvertToObservable<T> implements Func1<OnSubscribe<T>, Observable<T>> {
         @Override
         public Observable<T> call(final OnSubscribe<T> onSubscribe) {
             return Observable.create(onSubscribe);
         }
     }
-    
+
     @Test
     public void testConversionBetweenObservableClasses() {
         final TestSubscriber<String> subscriber = new TestSubscriber<String>(new Subscriber<String>(){
@@ -194,7 +194,7 @@ public class ObservableConversionTest {
         subscriber.assertNoErrors();
         subscriber.assertCompleted();
     }
-    
+
     @Test
     public void testConvertToConcurrentQueue() {
         final AtomicReference<Throwable> thrown = new AtomicReference<Throwable>(null);
@@ -225,19 +225,19 @@ public class ObservableConversionTest {
                                 public void onCompleted() {
                                     isFinished.set(true);
                                 }
-        
+
                                 @Override
                                 public void onError(Throwable e) {
                                     thrown.set(e);
                                 }
-        
+
                                 @Override
                                 public void onNext(Integer t) {
                                     q.add(t);
                                 }});
                             return q;
                         }});
-        
+
         int x = 0;
         while(!isFinished.get()) {
             Integer i = queue.poll();

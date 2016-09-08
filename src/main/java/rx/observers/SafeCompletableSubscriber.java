@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ import rx.plugins.RxJavaHooks;
 /**
  * Wraps another CompletableSubscriber and handles exceptions thrown
  * from onError and onCompleted.
- * 
+ *
  * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
  */
 @Experimental
@@ -32,9 +32,9 @@ public final class SafeCompletableSubscriber implements CompletableSubscriber, S
     final CompletableSubscriber actual;
 
     Subscription s;
-    
+
     boolean done;
-    
+
     public SafeCompletableSubscriber(CompletableSubscriber actual) {
         this.actual = actual;
     }
@@ -49,7 +49,7 @@ public final class SafeCompletableSubscriber implements CompletableSubscriber, S
             actual.onCompleted();
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            
+
             throw new OnCompletedFailedException(ex);
         }
     }
@@ -65,7 +65,7 @@ public final class SafeCompletableSubscriber implements CompletableSubscriber, S
             actual.onError(e);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            
+
             throw new OnErrorFailedException(new CompositeException(e, ex));
         }
     }
@@ -81,12 +81,12 @@ public final class SafeCompletableSubscriber implements CompletableSubscriber, S
             onError(ex);
         }
     }
-    
+
     @Override
     public void unsubscribe() {
         s.unsubscribe();
     }
-    
+
     @Override
     public boolean isUnsubscribed() {
         return done || s.isUnsubscribed();

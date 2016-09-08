@@ -30,19 +30,19 @@ import rx.annotations.Experimental;
 public interface CompletableEmitter {
 
     /**
-     * Notifies the CompletableSubscriber that the {@link Completable} has finished 
+     * Notifies the CompletableSubscriber that the {@link Completable} has finished
      * sending push-based notifications.
      * <p>
      * The {@link Observable} will not call this method if it calls {@link #onError}.
      */
     void onCompleted();
-    
+
     /**
      * Notifies the CompletableSubscriber that the {@link Completable} has experienced an error condition.
      * <p>
      * If the {@link Completable} calls this method, it will not thereafter call
      * {@link #onCompleted}.
-     * 
+     *
      * @param t
      *          the exception encountered by the Observable
      */
@@ -54,7 +54,7 @@ public interface CompletableEmitter {
      * @param s the subscription, null is allowed
      */
     void setSubscription(Subscription s);
-    
+
     /**
      * Sets a Cancellable on this emitter; any previous Subscription
      * or Cancellation will be unsubscribed/cancelled.

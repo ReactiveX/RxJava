@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,11 +68,11 @@ public final class OperatorSkipWhile<T> implements Operator<T, T> {
             }
         };
     }
-    /** 
+    /**
      * Convert to Func2 type predicate.
      * @param <T> the input value type
      * @param predicate the single argument predicate function
-     * @return The two argument function which ignores its second parameter  
+     * @return The two argument function which ignores its second parameter
      */
     public static <T> Func2<T, Integer, Boolean> toPredicate2(final Func1<? super T, Boolean> predicate) {
         return new Func2<T, Integer, Boolean>() {

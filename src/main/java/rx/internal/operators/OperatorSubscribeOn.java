@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ import rx.functions.Action0;
  * Subscribes Observers on the specified {@code Scheduler}.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/subscribeOn.png" alt="">
- * 
+ *
  * @param <T> the value type of the actual source
  */
 public final class OperatorSubscribeOn<T> implements OnSubscribe<T> {
@@ -41,18 +41,18 @@ public final class OperatorSubscribeOn<T> implements OnSubscribe<T> {
     public void call(final Subscriber<? super T> subscriber) {
         final Worker inner = scheduler.createWorker();
         subscriber.add(inner);
-        
+
         inner.schedule(new Action0() {
             @Override
             public void call() {
                 final Thread t = Thread.currentThread();
-                
+
                 Subscriber<T> s = new Subscriber<T>(subscriber) {
                     @Override
                     public void onNext(T t) {
                         subscriber.onNext(t);
                     }
-                    
+
                     @Override
                     public void onError(Throwable e) {
                         try {
@@ -61,7 +61,7 @@ public final class OperatorSubscribeOn<T> implements OnSubscribe<T> {
                             inner.unsubscribe();
                         }
                     }
-                    
+
                     @Override
                     public void onCompleted() {
                         try {
@@ -70,7 +70,7 @@ public final class OperatorSubscribeOn<T> implements OnSubscribe<T> {
                             inner.unsubscribe();
                         }
                     }
-                    
+
                     @Override
                     public void setProducer(final Producer p) {
                         subscriber.setProducer(new Producer() {
@@ -90,7 +90,7 @@ public final class OperatorSubscribeOn<T> implements OnSubscribe<T> {
                         });
                     }
                 };
-                
+
                 source.unsafeSubscribe(s);
             }
         });

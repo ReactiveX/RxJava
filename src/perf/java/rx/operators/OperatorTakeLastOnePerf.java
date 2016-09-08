@@ -38,15 +38,15 @@ public class OperatorTakeLastOnePerf {
         }
 
     }
-    
+
     @Benchmark
     public void takeLastOneUsingTakeLast(Input input) {
        input.observable.lift(TAKE_LAST).subscribe(input.observer);
     }
-    
+
     @Benchmark
     public void takeLastOneUsingTakeLastOne(Input input) {
        Observable.create(new OnSubscribeTakeLastOne<Integer>(input.observable)).subscribe(input.observer);
     }
-    
+
 }

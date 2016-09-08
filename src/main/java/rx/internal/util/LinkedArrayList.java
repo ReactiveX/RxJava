@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,7 @@ package rx.internal.util;
 import java.util.*;
 
 /**
- * A list implementation which combines an ArrayList with a LinkedList to 
+ * A list implementation which combines an ArrayList with a LinkedList to
  * avoid copying values when the capacity needs to be increased.
  * <p>
  * The class is non final to allow embedding it directly and thus saving on object allocation.
@@ -26,15 +26,15 @@ import java.util.*;
 public class LinkedArrayList {
     /** The capacity of each array segment. */
     final int capacityHint;
-    /** 
-     * Contains the head of the linked array list if not null. The 
+    /**
+     * Contains the head of the linked array list if not null. The
      * length is always capacityHint + 1 and the last element is an Object[] pointing
      * to the next element of the linked array list.
      */
     Object[] head;
     /** The tail array where new elements will be added. */
     Object[] tail;
-    /** 
+    /**
      * The total size of the list; written after elements have been added (release) and
      * and when read, the value indicates how many elements can be safely read (acquire).
      */
@@ -80,14 +80,14 @@ public class LinkedArrayList {
      * @return the head object array
      */
     public Object[] head() {
-        return head; // NOPMD 
+        return head; // NOPMD
     }
     /**
      * Returns the tail buffer segment or null if the list is empty.
      * @return the tail object array
      */
     public Object[] tail() {
-        return tail; // NOPMD 
+        return tail; // NOPMD
     }
     /**
      * Returns the total size of the list.
@@ -114,7 +114,7 @@ public class LinkedArrayList {
         final int cap = capacityHint;
         final int s = size;
         final List<Object> list = new ArrayList<Object>(s + 1);
-        
+
         Object[] h = head();
         int j = 0;
         int k = 0;
@@ -126,7 +126,7 @@ public class LinkedArrayList {
                 h = (Object[])h[cap];
             }
         }
-        
+
         return list;
     }
     @Override

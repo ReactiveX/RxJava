@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/LinkedQueueNode.java
  */
@@ -22,17 +22,17 @@ public final class LinkedQueueNode<E> extends AtomicReference<LinkedQueueNode<E>
     /** */
     private static final long serialVersionUID = 2404266111789071508L;
     private E value;
-    
+
     public LinkedQueueNode() {
         // no initial value
     }
-    
+
     public LinkedQueueNode(E val) {
         spValue(val);
     }
     /**
      * Gets the current value and nulls out the reference to it from this node.
-     * 
+     *
      * @return value
      */
     public E getAndNullValue() {

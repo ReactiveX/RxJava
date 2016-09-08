@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ import rx.subscriptions.Subscriptions;
  * @param <T> the value type
  */
 public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
-    //give default access instead of private as a micro-optimization 
+    //give default access instead of private as a micro-optimization
     //for access from anonymous classes below
     final Iterable<? extends Observable<? extends T>> sources;
 
@@ -348,7 +348,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
                 unsubscribeOthers(winner);
             }
         }
-        
+
         public void unsubscribeOthers(AmbSubscriber<T> notThis) {
             for (AmbSubscriber<T> other : ambSubscribers) {
                 if (other != notThis) {
@@ -359,7 +359,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         }
 
     }
-    
+
     private OnSubscribeAmb(Iterable<? extends Observable<? extends T>> sources) {
         this.sources = sources;
     }
@@ -367,7 +367,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     @Override
     public void call(final Subscriber<? super T> subscriber) {
         final Selection<T> selection = new Selection<T>();
-        
+
         //setup unsubscription of all the subscribers to the sources
         subscriber.add(Subscriptions.create(new Action0() {
 
@@ -377,16 +377,16 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
                 if ((c = selection.get()) != null) {
                     // there is a single winner so we unsubscribe it
                     c.unsubscribe();
-                } 
+                }
                 // if we are racing with others still existing, we'll also unsubscribe them
-                // if subscriptions are occurring as this is happening then this call may not 
+                // if subscriptions are occurring as this is happening then this call may not
                 // unsubscribe everything. We protect ourselves though by doing another unsubscribe check
                 // after the subscription loop below
                 unsubscribeAmbSubscribers(selection.ambSubscribers);
             }
 
         }));
-        
+
         //need to subscribe to all the sources
         for (Observable<? extends T> source : sources) {
             if (subscriber.isUnsubscribed()) {
@@ -395,7 +395,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
             AmbSubscriber<T> ambSubscriber = new AmbSubscriber<T>(0, subscriber, selection);
             selection.ambSubscribers.add(ambSubscriber);
             // check again if choice has been made so can stop subscribing
-            // if all sources were backpressure aware then this check 
+            // if all sources were backpressure aware then this check
             // would be pointless given that 0 was requested above from each ambSubscriber
             AmbSubscriber<T> c;
             if ((c = selection.get()) != null) {
@@ -422,12 +422,12 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
                     //propagate the request to all the amb subscribers
                     for (AmbSubscriber<T> ambSubscriber: selection.ambSubscribers) {
                         if (!ambSubscriber.isUnsubscribed()) {
-                            // make a best endeavours check to not waste requests 
+                            // make a best endeavours check to not waste requests
                             // if first emission has already occurred
                             if (selection.get() == ambSubscriber) {
                                 ambSubscriber.requestMore(n);
                                 // don't need to request from other subscribers because choice has been made
-                                // and request has gone to choice 
+                                // and request has gone to choice
                                 return;
                             } else {
                                 ambSubscriber.requestMore(n);

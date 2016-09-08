@@ -31,14 +31,14 @@ import rx.schedulers.Schedulers;
  * Test suite for {@link BlockingUtils}.
  */
 public class BlockingUtilsTest {
-    
+
     @Before
     @After
     public void before() {
         // make sure the interrupted flag is cleared
         Thread.interrupted();
     }
-    
+
     @Test
     public void awaitCompleteShouldReturnIfCountIsZero() {
         Subscription subscription = mock(Subscription.class);

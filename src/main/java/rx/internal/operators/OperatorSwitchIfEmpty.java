@@ -91,9 +91,9 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
             arbiter.produced(1);
         }
     }
-    
+
     static final class AlternateSubscriber<T> extends Subscriber<T> {
-        
+
         private final ProducerArbiter arbiter;
         private final Subscriber<? super T> child;
 
@@ -101,7 +101,7 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
             this.child = child;
             this.arbiter = arbiter;
         }
-        
+
         @Override
         public void setProducer(final Producer producer) {
             arbiter.setProducer(producer);
@@ -121,6 +121,6 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
         public void onNext(T t) {
             child.onNext(t);
             arbiter.produced(1);
-        }        
+        }
     }
 }

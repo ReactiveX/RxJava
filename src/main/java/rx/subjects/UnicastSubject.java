@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,7 @@ import rx.internal.util.unsafe.*;
  * amount. In this case, the buffered values are no longer retained. If the Subscriber
  * requests a limited amount, queueing is involved and only those values are retained which
  * weren't requested by the Subscriber at that time.
- * 
+ *
  * @param <T> the input and output value type
  */
 @Experimental
@@ -42,7 +42,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
 
     /**
      * Constructs an empty UnicastSubject instance with the default capacity hint of 16 elements.
-     * 
+     *
      * @param <T> the input and output value type
      * @return the created UnicastSubject instance
      */
@@ -86,27 +86,27 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         super(state);
         this.state = state;
     }
-    
+
     @Override
     public void onNext(T t) {
         state.onNext(t);
     }
-    
+
     @Override
     public void onError(Throwable e) {
         state.onError(e);
     }
-    
+
     @Override
     public void onCompleted() {
         state.onCompleted();
     }
-    
+
     @Override
     public boolean hasObservers() {
         return state.subscriber.get() != null;
     }
-    
+
     /**
      * The single-consumption replaying state.
      *
@@ -144,7 +144,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
             this.nl = NotificationLite.instance();
             this.subscriber = new AtomicReference<Subscriber<? super T>>();
             this.terminateOnce = onTerminated != null ? new AtomicReference<Action0>(onTerminated) : null;
-            
+
             Queue<Object> q;
             if (capacityHint > 1) {
                 q = UnsafeAccess.isUnsafeAvailable()
@@ -157,7 +157,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
             }
             this.queue = q;
         }
-        
+
         @Override
         public void onNext(T t) {
             if (!done) {
@@ -191,9 +191,9 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         @Override
         public void onError(Throwable e) {
             if (!done) {
-                
+
                 doTerminate();
-                
+
                 error = e;
                 done = true;
                 if (!caughtUp) {
@@ -229,7 +229,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                 subscriber.get().onCompleted();
             }
         }
-        
+
         @Override
         public void request(long n) {
             if (n < 0L) {
@@ -275,14 +275,14 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                 if (s != null) {
                     boolean d = done;
                     boolean empty = q.isEmpty();
-                    
+
                     if (checkTerminated(d, empty, s)) {
                         return;
                     }
                     long r = get();
                     unlimited = r == Long.MAX_VALUE;
                     long e = 0L;
-                    
+
                     while (r != 0) {
                         d = done;
                         Object v = q.poll();
@@ -309,7 +309,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                         addAndGet(-e);
                     }
                 }
-                
+
                 synchronized (this) {
                     if (!missed) {
                         if (unlimited && q.isEmpty()) {
@@ -340,12 +340,12 @@ public final class UnicastSubject<T> extends Subject<T, T> {
             }
             queue.clear();
         }
-        
+
         @Override
         public boolean isUnsubscribed() {
             return done;
         }
-        
+
         /**
          * Checks if one of the terminal conditions have been met: child unsubscribed,
          * an error happened or the source terminated and the queue is empty
@@ -373,7 +373,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
             }
             return false;
         }
-        
+
         /**
          * Call the optional termination action at most once.
          */

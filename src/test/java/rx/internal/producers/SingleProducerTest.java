@@ -39,11 +39,11 @@ public class SingleProducerTest {
     public void cancelBeforeOnNext() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         SingleProducer<Integer> pa = new SingleProducer<Integer>(ts, 1);
-        
+
         ts.unsubscribe();
-        
+
         pa.request(1);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();
@@ -53,7 +53,7 @@ public class SingleProducerTest {
     public void cancelAfterOnNext() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1).take(1).subscribe(ts);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
@@ -68,9 +68,9 @@ public class SingleProducerTest {
             }
         };
         SingleProducer<Integer> sp = new SingleProducer<Integer>(ts, 1);
-        
+
         sp.request(1);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotCompleted();

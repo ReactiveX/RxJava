@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,31 +26,31 @@ import rx.subscriptions.CompositeSubscription;
 
 public final class CompletableOnSubscribeMergeDelayErrorArray implements OnSubscribe {
     final Completable[] sources;
-    
+
     public CompletableOnSubscribeMergeDelayErrorArray(Completable[] sources) {
         this.sources = sources;
     }
-    
+
     @Override
     public void call(final CompletableSubscriber s) {
         final CompositeSubscription set = new CompositeSubscription();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
-        
+
         final Queue<Throwable> q = new ConcurrentLinkedQueue<Throwable>();
-        
+
         s.onSubscribe(set);
-        
+
         for (Completable c : sources) {
             if (set.isUnsubscribed()) {
                 return;
             }
-            
+
             if (c == null) {
                 q.offer(new NullPointerException("A completable source is null"));
                 wip.decrementAndGet();
                 continue;
             }
-            
+
             c.unsafeSubscribe(new CompletableSubscriber() {
                 @Override
                 public void onSubscribe(Subscription d) {
@@ -67,7 +67,7 @@ public final class CompletableOnSubscribeMergeDelayErrorArray implements OnSubsc
                 public void onCompleted() {
                     tryTerminate();
                 }
-                
+
                 void tryTerminate() {
                     if (wip.decrementAndGet() == 0) {
                         if (q.isEmpty()) {
@@ -77,10 +77,10 @@ public final class CompletableOnSubscribeMergeDelayErrorArray implements OnSubsc
                         }
                     }
                 }
-                
+
             });
         }
-        
+
         if (wip.decrementAndGet() == 0) {
             if (q.isEmpty()) {
                 s.onCompleted();
@@ -88,6 +88,6 @@ public final class CompletableOnSubscribeMergeDelayErrorArray implements OnSubsc
                 s.onError(CompletableOnSubscribeMerge.collectErrors(q));
             }
         }
-        
+
     }
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -283,14 +283,14 @@ public class SubscriptionListTest {
         // we should have only unsubscribed once
         assertEquals(1, counter.get());
     }
-    
+
     @Test
     public void removeWhenEmpty() {
         SubscriptionList slist = new SubscriptionList();
         Subscription s = Subscriptions.empty();
-        
+
         slist.remove(s);
-        
+
         Assert.assertFalse(s.isUnsubscribed());
     }
 
@@ -299,17 +299,17 @@ public class SubscriptionListTest {
         SubscriptionList slist = new SubscriptionList();
         Subscription s0 = Subscriptions.empty();
         slist.add(s0);
-        
+
         Assert.assertTrue(slist.hasSubscriptions());
-        
+
         Subscription s = Subscriptions.empty();
-        
+
         slist.remove(s);
-        
+
         Assert.assertFalse(s.isUnsubscribed());
-        
+
         slist.clear();
-        
+
         Assert.assertTrue(s0.isUnsubscribed());
 
         Assert.assertFalse(slist.hasSubscriptions());
@@ -318,14 +318,14 @@ public class SubscriptionListTest {
     @Test
     public void unsubscribeClear() {
         SubscriptionList slist = new SubscriptionList();
-        
+
         Assert.assertFalse(slist.hasSubscriptions());
-        
+
         Subscription s0 = Subscriptions.empty();
         slist.add(s0);
-        
+
         slist.unsubscribe();
-        
+
         Assert.assertTrue(s0.isUnsubscribed());
 
         Assert.assertFalse(slist.hasSubscriptions());

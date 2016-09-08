@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -215,8 +215,8 @@ public class OnSubscribeAmbTest {
         ts.assertNoErrors();
         assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
     }
-    
-    
+
+
     @Test
     public void testSubscriptionOnlyHappensOnce() throws InterruptedException {
         final AtomicLong count = new AtomicLong();
@@ -239,7 +239,7 @@ public class OnSubscribeAmbTest {
         ts.assertNoErrors();
         assertEquals(2, count.get());
     }
-    
+
     @Test
     public void testSecondaryRequestsPropagatedToChildren() throws InterruptedException {
         //this aync stream should emit first
@@ -289,13 +289,13 @@ public class OnSubscribeAmbTest {
         TestSubscriber<Long> ts2 = new TestSubscriber<Long>();
 
         Observable<Long> amb = Observable.timer(100, TimeUnit.MILLISECONDS).ambWith(Observable.timer(200, TimeUnit.MILLISECONDS));
-        
+
         amb.subscribe(ts1);
         amb.subscribe(ts2);
-        
+
         ts1.awaitTerminalEvent();
         ts2.awaitTerminalEvent();
-        
+
         ts1.assertValue(0L);
         ts1.assertCompleted();
         ts1.assertNoErrors();
@@ -304,22 +304,22 @@ public class OnSubscribeAmbTest {
         ts2.assertCompleted();
         ts2.assertNoErrors();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void ambIterable() {
         PublishSubject<Integer> ps1 = PublishSubject.create();
         PublishSubject<Integer> ps2 = PublishSubject.create();
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.amb(Arrays.asList(ps1, ps2)).subscribe(ts);
-        
+
         ts.assertNoValues();
-        
+
         ps1.onNext(1);
         ps1.onCompleted();
-        
+
         assertFalse(ps1.hasObservers());
         assertFalse(ps2.hasObservers());
 
@@ -327,22 +327,22 @@ public class OnSubscribeAmbTest {
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void ambIterable2() {
         PublishSubject<Integer> ps1 = PublishSubject.create();
         PublishSubject<Integer> ps2 = PublishSubject.create();
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.amb(Arrays.asList(ps1, ps2)).subscribe(ts);
-        
+
         ts.assertNoValues();
-        
+
         ps2.onNext(2);
         ps2.onCompleted();
-        
+
         assertFalse(ps1.hasObservers());
         assertFalse(ps2.hasObservers());
 
@@ -350,7 +350,7 @@ public class OnSubscribeAmbTest {
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void ambMany() throws Exception {
@@ -361,37 +361,37 @@ public class OnSubscribeAmbTest {
             PublishSubject<Integer>[] ps = new PublishSubject[i];
 
             for (int j = 0; j < i; j++) {
-                
+
                 for (int k = 0; k < i; k++) {
                     ps[k] = PublishSubject.create();
                 }
-                
+
                 Method m = Observable.class.getMethod("amb", clazz);
-                
+
                 Observable<Integer> obs = (Observable<Integer>)m.invoke(null, (Object[])ps);
-            
+
                 TestSubscriber<Integer> ts = TestSubscriber.create();
-                
+
                 obs.subscribe(ts);
-                
+
                 for (int k = 0; k < i; k++) {
                     assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasObservers());
                 }
-                
+
                 ps[j].onNext(j);
                 ps[j].onCompleted();
-                
+
                 for (int k = 0; k < i; k++) {
                     assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasObservers());
                 }
-                
+
                 ts.assertValue(j);
                 ts.assertNoErrors();
                 ts.assertCompleted();
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void ambManyError() throws Exception {
@@ -402,38 +402,38 @@ public class OnSubscribeAmbTest {
             PublishSubject<Integer>[] ps = new PublishSubject[i];
 
             for (int j = 0; j < i; j++) {
-                
+
                 for (int k = 0; k < i; k++) {
                     ps[k] = PublishSubject.create();
                 }
-                
+
                 Method m = Observable.class.getMethod("amb", clazz);
-                
+
                 Observable<Integer> obs = (Observable<Integer>)m.invoke(null, (Object[])ps);
-            
+
                 TestSubscriber<Integer> ts = TestSubscriber.create();
-                
+
                 obs.subscribe(ts);
-                
+
                 for (int k = 0; k < i; k++) {
                     assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasObservers());
                 }
-                
+
                 ps[j].onError(new TestException(Integer.toString(j)));
-                
+
                 for (int k = 0; k < i; k++) {
                     assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasObservers());
                 }
-                
+
                 ts.assertNoValues();
                 ts.assertError(TestException.class);
                 ts.assertNotCompleted();
-                
+
                 assertEquals(Integer.toString(j), ts.getOnErrorEvents().get(0).getMessage());
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void ambManyComplete() throws Exception {
@@ -444,29 +444,29 @@ public class OnSubscribeAmbTest {
             PublishSubject<Integer>[] ps = new PublishSubject[i];
 
             for (int j = 0; j < i; j++) {
-                
+
                 for (int k = 0; k < i; k++) {
                     ps[k] = PublishSubject.create();
                 }
-                
+
                 Method m = Observable.class.getMethod("amb", clazz);
-                
+
                 Observable<Integer> obs = (Observable<Integer>)m.invoke(null, (Object[])ps);
-            
+
                 TestSubscriber<Integer> ts = TestSubscriber.create();
-                
+
                 obs.subscribe(ts);
-                
+
                 for (int k = 0; k < i; k++) {
                     assertTrue("@" + i + "/" + k + " has no observers?", ps[k].hasObservers());
                 }
-                
+
                 ps[j].onCompleted();
-                
+
                 for (int k = 0; k < i; k++) {
                     assertFalse("@" + i + "/" + k + " has observers?", ps[k].hasObservers());
                 }
-                
+
                 ts.assertNoValues();
                 ts.assertNoErrors();
                 ts.assertCompleted();

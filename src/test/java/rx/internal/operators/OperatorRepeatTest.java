@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -101,9 +101,9 @@ public class OperatorRepeatTest {
     public void testRepeatAndTake() {
         @SuppressWarnings("unchecked")
                 Observer<Object> o = mock(Observer.class);
-        
+
         Observable.just(1).repeat().take(10).subscribe(o);
-        
+
         verify(o, times(10)).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -113,9 +113,9 @@ public class OperatorRepeatTest {
     public void testRepeatLimited() {
         @SuppressWarnings("unchecked")
                 Observer<Object> o = mock(Observer.class);
-        
+
         Observable.just(1).repeat(10).subscribe(o);
-        
+
         verify(o, times(10)).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -125,22 +125,22 @@ public class OperatorRepeatTest {
     public void testRepeatError() {
         @SuppressWarnings("unchecked")
                 Observer<Object> o = mock(Observer.class);
-        
+
         Observable.error(new TestException()).repeat(10).subscribe(o);
-        
+
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
-        
+
     }
 
     @Test(timeout = 2000)
     public void testRepeatZero() {
         @SuppressWarnings("unchecked")
                 Observer<Object> o = mock(Observer.class);
-        
+
         Observable.just(1).repeat(0).subscribe(o);
-        
+
         verify(o).onCompleted();
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
@@ -150,14 +150,14 @@ public class OperatorRepeatTest {
     public void testRepeatOne() {
         @SuppressWarnings("unchecked")
                 Observer<Object> o = mock(Observer.class);
-        
+
         Observable.just(1).repeat(1).subscribe(o);
-        
+
         verify(o).onCompleted();
         verify(o, times(1)).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     /** Issue #2587. */
     @Test
     public void testRepeatAndDistinctUnbounded() {
@@ -165,11 +165,11 @@ public class OperatorRepeatTest {
                 .take(3)
                 .repeat(3)
                 .distinct();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         src.subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
@@ -195,53 +195,53 @@ public class OperatorRepeatTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
-        
+
         assertEquals(Arrays.asList(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), concatBase);
     }
-    
+
     @Test
     public void repeatScheduled() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.just(1).repeat(5, Schedulers.computation()).subscribe(ts);
-        
+
         ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
         ts.assertValues(1, 1, 1, 1, 1);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void repeatWhenDefaultScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.just(1).repeatWhen((Func1)new Func1<Observable, Observable>() {
             @Override
             public Observable call(Observable o) {
                 return o.take(2);
             }
         }).subscribe(ts);
-        
+
         ts.assertValues(1, 1);
         ts.assertNoErrors();
         ts.assertCompleted();
-        
+
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void repeatWhenTrampolineScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.just(1).repeatWhen((Func1)new Func1<Observable, Observable>() {
             @Override
             public Observable call(Observable o) {
                 return o.take(2);
             }
         }, Schedulers.trampoline()).subscribe(ts);
-        
+
         ts.assertValues(1, 1);
         ts.assertNoErrors();
         ts.assertCompleted();

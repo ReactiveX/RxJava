@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,24 +25,24 @@ import rx.subscriptions.CompositeSubscription;
 
 public final class CompletableOnSubscribeMergeArray implements OnSubscribe {
     final Completable[] sources;
-    
+
     public CompletableOnSubscribeMergeArray(Completable[] sources) {
         this.sources = sources;
     }
-    
+
     @Override
     public void call(final CompletableSubscriber s) {
         final CompositeSubscription set = new CompositeSubscription();
         final AtomicInteger wip = new AtomicInteger(sources.length + 1);
         final AtomicBoolean once = new AtomicBoolean();
-        
+
         s.onSubscribe(set);
-        
+
         for (Completable c : sources) {
             if (set.isUnsubscribed()) {
                 return;
             }
-            
+
             if (c == null) {
                 set.unsubscribe();
                 NullPointerException npe = new NullPointerException("A completable source is null");
@@ -53,7 +53,7 @@ public final class CompletableOnSubscribeMergeArray implements OnSubscribe {
                     RxJavaHooks.onError(npe);
                 }
             }
-            
+
             c.unsafeSubscribe(new CompletableSubscriber() {
                 @Override
                 public void onSubscribe(Subscription d) {
@@ -78,10 +78,10 @@ public final class CompletableOnSubscribeMergeArray implements OnSubscribe {
                         }
                     }
                 }
-                
+
             });
         }
-        
+
         if (wip.decrementAndGet() == 0) {
             if (once.compareAndSet(false, true)) {
                 s.onCompleted();

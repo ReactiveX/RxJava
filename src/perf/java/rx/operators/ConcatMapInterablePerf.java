@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,21 +47,21 @@ public class ConcatMapInterablePerf {
 
     @Param({"1", "10", "100", "1000", "10000", "100000", "1000000"})
     public int count;
-    
+
     Observable<Integer> justPlain;
-    
+
     Observable<Integer> justIterable;
 
     Observable<Integer> rangePlain;
-    
+
     Observable<Integer> rangeIterable;
 
     Observable<Integer> xrangePlain;
-    
+
     Observable<Integer> xrangeIterable;
 
     Observable<Integer> chainPlain;
-    
+
     Observable<Integer> chainIterable;
 
     @Setup
@@ -70,13 +70,13 @@ public class ConcatMapInterablePerf {
         for (int i = 0; i < count; i++) {
             values[i] = i;
         }
-        
+
         int c = 1000000 / count;
         Integer[] xvalues = new Integer[c];
         for (int i = 0; i < c; i++) {
             xvalues[i] = i;
         }
-        
+
         Observable<Integer> source = Observable.from(values);
 
         justPlain = source.concatMap(new Func1<Integer, Observable<Integer>>() {
@@ -94,7 +94,7 @@ public class ConcatMapInterablePerf {
 
         final Observable<Integer> range = Observable.range(1, 2);
         final List<Integer> xrange = Arrays.asList(1, 2);
-        
+
         rangePlain = source.concatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
@@ -107,10 +107,10 @@ public class ConcatMapInterablePerf {
                 return xrange;
             }
         });
-        
+
         final Observable<Integer> xsource = Observable.from(xvalues);
         final List<Integer> xvaluesList = Arrays.asList(xvalues);
-        
+
         xrangePlain = source.concatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer v) {
@@ -137,7 +137,7 @@ public class ConcatMapInterablePerf {
             }
         });
     }
-    
+
     @Benchmark
     public void justPlain(Blackhole bh) {
         justPlain.subscribe(new LatchedObserver<Integer>(bh));

@@ -15,7 +15,7 @@
  */
 
 /**
- * Exception handling utilities, safe subscriber exception classes, 
+ * Exception handling utilities, safe subscriber exception classes,
  * lifecycle exception classes.
  */
 package rx.exceptions;

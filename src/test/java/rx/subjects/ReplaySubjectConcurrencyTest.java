@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -161,14 +161,14 @@ public class ReplaySubjectConcurrencyTest {
             testReplaySubjectConcurrentSubscriptions();
         }
     }
-    
+
     @Test
     public void testReplaySubjectConcurrentSubscriptions() throws InterruptedException {
         final ReplaySubject<Long> replay = ReplaySubject.create();
-        
+
         concurrencyTest(replay);
     }
-    
+
     public static void concurrencyTest(final ReplaySubject<Long> replay) throws InterruptedException {
         Thread source = new Thread(new Runnable() {
 
@@ -320,7 +320,7 @@ public class ReplaySubjectConcurrencyTest {
         }
 
     }
-    
+
     /**
      * https://github.com/ReactiveX/RxJava/issues/1147
      */
@@ -348,7 +348,7 @@ public class ReplaySubjectConcurrencyTest {
         @Override
         public void run() {
             try {
-                // a timeout exception will happen if we don't get a terminal state 
+                // a timeout exception will happen if we don't get a terminal state
                 String v = subject.timeout(2000, TimeUnit.MILLISECONDS).toBlocking().single();
                 value.set(v);
             } catch (Exception e) {
@@ -366,10 +366,10 @@ public class ReplaySubjectConcurrencyTest {
                     System.out.println(i);
                 }
                 final ReplaySubject<Object> rs = ReplaySubject.create();
-                
-                final CountDownLatch finish = new CountDownLatch(1); 
-                final CountDownLatch start = new CountDownLatch(1); 
-                
+
+                final CountDownLatch finish = new CountDownLatch(1);
+                final CountDownLatch start = new CountDownLatch(1);
+
                 worker.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -381,33 +381,33 @@ public class ReplaySubjectConcurrencyTest {
                         rs.onNext(1);
                     }
                 });
-                
+
                 final AtomicReference<Object> o = new AtomicReference<Object>();
-                
+
                 rs.subscribeOn(s).observeOn(Schedulers.io())
                 .subscribe(new Observer<Object>() {
-    
+
                     @Override
                     public void onCompleted() {
                         o.set(-1);
                         finish.countDown();
                     }
-    
+
                     @Override
                     public void onError(Throwable e) {
                         o.set(e);
                         finish.countDown();
                     }
-    
+
                     @Override
                     public void onNext(Object t) {
                         o.set(t);
                         finish.countDown();
                     }
-                    
+
                 });
                 start.countDown();
-                
+
                 if (!finish.await(5, TimeUnit.SECONDS)) {
                     System.out.println(o.get());
                     System.out.println(rs.hasObservers());
@@ -422,7 +422,7 @@ public class ReplaySubjectConcurrencyTest {
                             rs.onCompleted();
                         }
                     });
-                    
+
                 }
             }
         } finally {
@@ -433,7 +433,7 @@ public class ReplaySubjectConcurrencyTest {
     public void testConcurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.create();
         final CyclicBarrier cb = new CyclicBarrier(2);
-        
+
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -475,7 +475,7 @@ public class ReplaySubjectConcurrencyTest {
             }
             lastSize = size;
         }
-        
+
         t.join();
     }
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -177,10 +177,10 @@ public class OperatorTakeTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        
+
         Subscriber<String> subscriber = Subscribers.from(observer);
         subscriber.add(s);
-        
+
         Observable<String> take = w.lift(new OperatorTake<String>(1));
         take.subscribe(subscriber);
 
@@ -289,23 +289,23 @@ public class OperatorTakeTest {
         }
 
     });
-    
+
     @Test(timeout = 2000)
     public void testTakeObserveOn() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
-        
+
         INFINITE_OBSERVABLE.onBackpressureDrop().observeOn(Schedulers.newThread()).take(1).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        
+
         verify(o).onNext(1L);
         verify(o, never()).onNext(2L);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testProducerRequestThroughTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -328,7 +328,7 @@ public class OperatorTakeTest {
         }).take(3).subscribe(ts);
         assertEquals(3, requested.get());
     }
-    
+
     @Test
     public void testProducerRequestThroughTakeIsModified() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -351,7 +351,7 @@ public class OperatorTakeTest {
         }).take(1).subscribe(ts);
         assertEquals(1, requested.get());
     }
-    
+
     @Test
     public void testInterrupt() throws InterruptedException {
         final AtomicReference<Object> exception = new AtomicReference<Object>();
@@ -375,7 +375,7 @@ public class OperatorTakeTest {
         latch.await();
         assertNull(exception.get());
     }
-    
+
     @Test
     public void testDoesntRequestMoreThanNeededFromUpstream() throws InterruptedException {
         final AtomicLong requests = new AtomicLong();
@@ -400,31 +400,31 @@ public class OperatorTakeTest {
         ts.assertNoErrors();
         assertEquals(2,requests.get());
     }
-    
+
     @Test
     public void takeFinalValueThrows() {
         Observable<Integer> source = Observable.just(1).take(1);
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
             }
         };
-        
+
         source.subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testReentrantTake() {
         final PublishSubject<Integer> source = PublishSubject.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         source
         .rebatchRequests(2) // take(1) requests 1
         .take(1).doOnNext(new Action1<Integer>() {
@@ -433,9 +433,9 @@ public class OperatorTakeTest {
                 source.onNext(2);
             }
         }).subscribe(ts);
-        
+
         source.onNext(1);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
@@ -451,7 +451,7 @@ public class OperatorTakeTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
         Observable.range(1, 1000 * 1000 * 1000).take(0).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertCompleted();

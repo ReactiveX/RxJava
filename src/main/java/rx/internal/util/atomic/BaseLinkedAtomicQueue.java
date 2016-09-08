@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic/BaseLinkedAtomicQueue.java
  */
@@ -42,7 +42,7 @@ abstract class BaseLinkedAtomicQueue<E> extends AbstractQueue<E> {
     protected final LinkedQueueNode<E> lvConsumerNode() {
         return consumerNode.get();
     }
-    
+
     protected final LinkedQueueNode<E> lpConsumerNode() {
         return consumerNode.get();
     }
@@ -59,7 +59,7 @@ abstract class BaseLinkedAtomicQueue<E> extends AbstractQueue<E> {
      * <p>
      * IMPLEMENTATION NOTES:<br>
      * This is an O(n) operation as we run through all the nodes and count them.<br>
-     * 
+     *
      * @see java.util.Queue#size()
      */
     @Override
@@ -70,7 +70,7 @@ abstract class BaseLinkedAtomicQueue<E> extends AbstractQueue<E> {
         // must chase the nodes all the way to the producer node, but there's no need to chase a moving target.
         while (chaserNode != producerNode && size < Integer.MAX_VALUE) {
             LinkedQueueNode<E> next;
-            while((next = chaserNode.lvNext()) == null); // NOPMD 
+            while((next = chaserNode.lvNext()) == null); // NOPMD
             chaserNode = next;
             size++;
         }

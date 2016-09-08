@@ -1,11 +1,11 @@
 /**
  * Copyright 2015 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
@@ -44,7 +44,7 @@ import rx.subscriptions.Subscriptions;
  * <p>
  * For more information see the <a href="http://reactivex.io/documentation/observable.html">ReactiveX
  * documentation</a>.
- * 
+ *
  * @param <T>
  *            the type of the item emitted by the Single
  * @since (If this class graduates from "Experimental" replace this parenthetical with the release number)
@@ -59,7 +59,7 @@ public class Single<T> {
      * <p>
      * <em>Note:</em> Use {@link #create(OnSubscribe)} to create a Single, instead of this constructor,
      * unless you specifically have a need for inheritance.
-     * 
+     *
      * @param f
      *            {@code OnExecute} to be executed when {@code execute(SingleSubscriber)} or
      *            {@code subscribe(Subscriber)} is called
@@ -114,7 +114,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T>
      *            the type of the item that this Single emits
      * @param f
@@ -151,7 +151,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <R> the downstream's value type (output)
      * @param lift
      *            the Operator that implements the Single-operating function to be applied to the source Single
@@ -197,7 +197,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <R> the value type of the single returned by the transformer function
      * @param transformer
      *            implements the function that transforms the source Single
@@ -211,7 +211,7 @@ public class Single<T> {
 
     /**
      * Transformer function used by {@link #compose}.
-     * 
+     *
      * @warn more complete description needed
      * @param <T> the source Single's value type
      * @param <R> the transformed Single's value type
@@ -232,7 +232,7 @@ public class Single<T> {
 
     /**
      * INTERNAL: Used with lift and operators.
-     * 
+     *
      * Converts the source {@code Single<T>} into an {@code Single<Observable<T>>} that emits an Observable
      * that emits the same emission as the source Single.
      * <p>
@@ -241,7 +241,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code nest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @return a Single that emits an Observable that emits the same item as the source Single
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
@@ -263,7 +263,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
@@ -307,7 +307,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
@@ -419,7 +419,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
@@ -452,7 +452,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be concatenated
@@ -488,7 +488,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param exception
      *            the particular Throwable to pass to {@link SingleSubscriber#onError onError}
      * @param <T>
@@ -522,7 +522,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param future
      *            the source {@link Future}
      * @param <T>
@@ -550,7 +550,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param future
      *            the source {@link Future}
      * @param timeout
@@ -580,7 +580,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param future
      *            the source {@link Future}
      * @param scheduler
@@ -645,7 +645,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param value
      *            the item to emit
      * @param <T>
@@ -714,7 +714,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be merged
@@ -738,7 +738,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be merged
@@ -764,7 +764,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be merged
@@ -792,7 +792,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be merged
@@ -822,7 +822,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be merged
@@ -854,7 +854,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be merged
@@ -888,7 +888,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be merged
@@ -924,7 +924,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the common value type
      * @param t1
      *            a Single to be merged
@@ -960,7 +960,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T1> the first source Single's value type
      * @param <T2> the second source Single's value type
      * @param <R> the result value type
@@ -993,7 +993,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T1> the first source Single's value type
      * @param <T2> the second source Single's value type
      * @param <T3> the third source Single's value type
@@ -1029,7 +1029,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T1> the first source Single's value type
      * @param <T2> the second source Single's value type
      * @param <T3> the third source Single's value type
@@ -1068,7 +1068,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T1> the first source Single's value type
      * @param <T2> the second source Single's value type
      * @param <T3> the third source Single's value type
@@ -1110,7 +1110,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T1> the first source Single's value type
      * @param <T2> the second source Single's value type
      * @param <T3> the third source Single's value type
@@ -1156,7 +1156,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T1> the first source Single's value type
      * @param <T2> the second source Single's value type
      * @param <T3> the third source Single's value type
@@ -1205,7 +1205,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T1> the first source Single's value type
      * @param <T2> the second source Single's value type
      * @param <T3> the third source Single's value type
@@ -1257,7 +1257,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T1> the first source Single's value type
      * @param <T2> the second source Single's value type
      * @param <T3> the third source Single's value type
@@ -1341,7 +1341,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            a Single to be concatenated after the current
      * @return an Observable that emits the item emitted by the source Single, followed by the item emitted by
@@ -1361,7 +1361,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <R> the result value type
      * @param func
      *            a function that, when applied to the item emitted by the source Single, returns a Single
@@ -1384,7 +1384,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMapObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <R> the result value type
      * @param func
      *            a function that, when applied to the item emitted by the source Single, returns an
@@ -1450,7 +1450,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param t1
      *            a Single to be merged
      * @return an Observable that emits all of the items emitted by the source Singles
@@ -1469,7 +1469,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param scheduler
      *            the {@link Scheduler} to notify subscribers on
      * @return the source Single modified so that its subscribers are notified on the specified
@@ -1482,7 +1482,7 @@ public class Single<T> {
         if (this instanceof ScalarSynchronousSingle) {
             return ((ScalarSynchronousSingle<T>)this).scalarScheduleOn(scheduler);
         }
-        // Note that since Single emits onSuccess xor onError, 
+        // Note that since Single emits onSuccess xor onError,
         // there is no cut-ahead possible like with regular Observable sequences.
         return lift(new OperatorObserveOn<T>(scheduler, false));
     }
@@ -1506,7 +1506,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param resumeFunction
      *            a function that returns an item that the new Single will emit if the source Single encounters
      *            an error
@@ -1592,7 +1592,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @throws OnErrorNotImplementedException
      *             if the Single tries to call {@link Subscriber#onError}
@@ -1625,7 +1625,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param onSuccess
      *            the {@code Action1<T>} you have designed to accept the emission from the Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
@@ -1667,7 +1667,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param onSuccess
      *            the {@code Action1<T>} you have designed to accept the emission from the Single
      * @param onError
@@ -1717,7 +1717,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code unsafeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param subscriber
      *            the Subscriber that will handle the emission or notification from the Single
      * @return the subscription that allows unsubscribing
@@ -1742,7 +1742,7 @@ public class Single<T> {
                 // TODO could the hook be the cause of the error in the on error handling.
                 RxJavaHooks.onSingleError(r);
                 // TODO why aren't we throwing the hook's return value.
-                throw r; // NOPMD 
+                throw r; // NOPMD
             }
             return Subscriptions.unsubscribed();
         }
@@ -1751,9 +1751,9 @@ public class Single<T> {
     /**
      * Subscribes an Observer to this single and returns a Subscription that allows
      * unsubscription.
-     * 
+     *
      * @param observer the Observer to subscribe
-     * @return the Subscription that allows unsubscription 
+     * @return the Subscription that allows unsubscription
      */
     public final Subscription subscribe(final Observer<? super T> observer) {
         if (observer == null) {
@@ -1771,7 +1771,7 @@ public class Single<T> {
             }
         });
     }
-    
+
     /**
      * Subscribes to a Single and provides a Subscriber that implements functions to handle the item the Single
      * emits or any error notification it issues.
@@ -1793,7 +1793,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param subscriber
      *            the {@link Subscriber} that will handle the emission or notification from the Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
@@ -1852,7 +1852,7 @@ public class Single<T> {
                 // TODO could the hook be the cause of the error in the on error handling.
                 RxJavaHooks.onSingleError(r);
                 // TODO why aren't we throwing the hook's return value.
-                throw r; // NOPMD 
+                throw r; // NOPMD
             }
             return Subscriptions.empty();
         }
@@ -1879,7 +1879,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param te
      *            the {@link SingleSubscriber} that will handle the emission or notification from the Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
@@ -1925,7 +1925,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param scheduler
      *            the {@link Scheduler} to perform subscription actions on
      * @return the source Single modified so that its subscriptions happen on the specified {@link Scheduler}
@@ -2210,12 +2210,12 @@ public class Single<T> {
     public final <R> R to(Func1<? super Single<T>, R> converter) {
         return converter.call(this);
     }
-    
+
     /**
      * Converts this Single into an {@link Observable}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
-     * 
+     *
      * @return an {@link Observable} that emits a single item T.
      */
     public final Observable<T> toObservable() {
@@ -2256,7 +2256,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param timeout
      *            maximum duration before the Single times out
      * @param timeUnit
@@ -2279,7 +2279,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param timeout
      *            maximum duration before the Single times out
      * @param timeUnit
@@ -2304,7 +2304,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param timeout
      *            maximum time before a timeout occurs
      * @param timeUnit
@@ -2328,7 +2328,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     * 
+     *
      * @param timeout
      *            maximum duration before a timeout occurs
      * @param timeUnit
@@ -2371,7 +2371,7 @@ public class Single<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T2>
      *            the type of items emitted by the {@code other} Single
      * @param <R>
@@ -2428,7 +2428,7 @@ public class Single<T> {
 
         return Observable.create(new OnSubscribeDoOnEach<T>(this.toObservable(), observer)).toSingle();
     }
-    
+
     /**
      * Modifies the source {@link Single} so that it invokes an action when it calls {@code onSuccess}.
      * <p>
@@ -2734,13 +2734,13 @@ public class Single<T> {
      * Returns a Single that emits the same values as the source Single with the exception of an
      * {@code onError}. An {@code onError} notification from the source will result in the emission of a
      * {@link Throwable} item to the Observable provided as an argument to the {@code notificationHandler}
-     * function. 
+     * function.
      * <p>Emissions from the handler {@code Observable} is treated as follows:
      * <ul>
      * <li>If the handler {@code Observable} emits an {@code onCompleted} the {@code retryWhen} will call {@code onError}
-     * with {@code NoSuchElementException} on the child subscription.</li> 
+     * with {@code NoSuchElementException} on the child subscription.</li>
      * <li>If the handler {@code Observable} emits an {@code onError} the {@code retryWhen} will call
-     * {@code onError} with the same Throwable instance on the child subscription. 
+     * {@code onError} with the same Throwable instance on the child subscription.
      * <li>Otherwise, the operator will resubscribe to the source Single.</li>
      * </ul>
      * <p>The {@code notificationHandler} function is called for each subscriber individually. This allows per-Subscriber
@@ -2755,7 +2755,7 @@ public class Single<T> {
      * Note that you must compose over the input {@code Observable} provided in the function call because {@retryWhen} expects
      * an emission of the exception to be matched by an event from the handler Observable.
      * <p>
-     * 
+     *
      * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.png" alt="">
      *
      * <dl>
@@ -2782,7 +2782,7 @@ public class Single<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the value type of the generated source
      * @param <Resource> the type of the per-subscriber resource
      * @param resourceFactory
@@ -2801,9 +2801,9 @@ public class Single<T> {
             final Action1<? super Resource> disposeAction) {
         return using(resourceFactory, singleFactory, disposeAction, false);
     }
-    
+
     /**
-     * Constructs a Single that creates a dependent resource object which is disposed of just before 
+     * Constructs a Single that creates a dependent resource object which is disposed of just before
      * termination if you have set {@code disposeEagerly} to {@code true} and unsubscription does not occur
      * before termination. Otherwise resource disposal will occur on unsubscription.  Eager disposal is
      * particularly appropriate for a synchronous Single that reuses resources. {@code disposeAction} will
@@ -2814,7 +2814,7 @@ public class Single<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * 
+     *
      * @param <T> the value type of the generated source
      * @param <Resource> the type of the per-subscriber resource
      * @param resourceFactory
@@ -2824,7 +2824,7 @@ public class Single<T> {
      * @param disposeAction
      *            the function that will dispose of the resource
      * @param disposeEagerly
-     *            if {@code true} then disposal will happen either on unsubscription or just before emission of 
+     *            if {@code true} then disposal will happen either on unsubscription or just before emission of
      *            a terminal event ({@code onComplete} or {@code onError}).
      * @return the Single whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>

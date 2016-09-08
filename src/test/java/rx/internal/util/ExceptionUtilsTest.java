@@ -47,13 +47,13 @@ public class ExceptionUtilsTest {
 
         Assert.assertFalse(ExceptionsUtils.isTerminated(error));
         Assert.assertFalse(ExceptionsUtils.isTerminated(error.get()));
-        
+
         ExceptionsUtils.terminate(error);
-        
+
         Assert.assertTrue(ExceptionsUtils.isTerminated(error));
         Assert.assertTrue(ExceptionsUtils.isTerminated(error.get()));
     }
-    
+
     @Test
     public void utilityEnum() {
         assertEquals(0, ExceptionsUtils.values().length);

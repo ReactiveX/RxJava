@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,9 +40,9 @@ public class SubscriptionListPerf {
         public int loop;
         @Param({ "1", "5", "10", "100" })
         public int count;
-        
+
         public final SubscriptionList csub = new SubscriptionList();
-        
+
         public Subscription[] values;
         @Setup
         public void setup() {
@@ -55,7 +55,7 @@ public class SubscriptionListPerf {
                     }
                     @Override
                     public void unsubscribe() {
-                        
+
                     }
                 };
             }
@@ -65,7 +65,7 @@ public class SubscriptionListPerf {
     public void addClear(TheState state) {
         SubscriptionList csub = state.csub;
         Subscription[] values = state.values;
-        
+
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
                 csub.add(values[j]);
@@ -77,7 +77,7 @@ public class SubscriptionListPerf {
     public void addClearLocal(TheState state, Blackhole bh) {
         SubscriptionList csub = new SubscriptionList();
         Subscription[] values = state.values;
-        
+
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
                 csub.add(values[j]);

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -204,7 +204,7 @@ public class AsyncSubjectTest {
         /*
          * With non-threadsafe code this fails most of the time on my dev laptop and is non-deterministic enough
          * to act as a unit test to the race conditions.
-         * 
+         *
          * With the synchronization code in place I can not get this to fail on my laptop.
          */
         for (int i = 0; i < 50; i++) {
@@ -276,7 +276,7 @@ public class AsyncSubjectTest {
         @Override
         public void run() {
             try {
-                // a timeout exception will happen if we don't get a terminal state 
+                // a timeout exception will happen if we don't get a terminal state
                 String v = subject.timeout(2000, TimeUnit.MILLISECONDS).toBlocking().single();
                 value.set(v);
             } catch (Exception e) {
@@ -284,7 +284,7 @@ public class AsyncSubjectTest {
             }
         }
     }
-    
+
     @Test
     public void testOnErrorThrowsDoesntPreventDelivery() {
         AsyncSubject<String> ps = AsyncSubject.create();
@@ -299,10 +299,10 @@ public class AsyncSubjectTest {
         } catch (OnErrorNotImplementedException e) {
             // ignore
         }
-        // even though the onError above throws we should still receive it on the other subscriber 
+        // even though the onError above throws we should still receive it on the other subscriber
         assertEquals(1, ts.getOnErrorEvents().size());
     }
-    
+
     /**
      * This one has multiple failures so should get a CompositeException
      */
@@ -325,28 +325,28 @@ public class AsyncSubjectTest {
             // we should have 5 of them
             assertEquals(5, e.getExceptions().size());
         }
-        // even though the onError above throws we should still receive it on the other subscriber 
+        // even though the onError above throws we should still receive it on the other subscriber
         assertEquals(1, ts.getOnErrorEvents().size());
     }
 
     @Test
     public void testCurrentStateMethodsNormal() {
         AsyncSubject<Object> as = AsyncSubject.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onNext(1);
-        
+
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertEquals(1, as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onCompleted();
         assertTrue(as.hasValue());
         assertFalse(as.hasThrowable());
@@ -354,19 +354,19 @@ public class AsyncSubjectTest {
         assertEquals(1, as.getValue());
         assertNull(as.getThrowable());
     }
-    
+
     @Test
     public void testCurrentStateMethodsEmpty() {
         AsyncSubject<Object> as = AsyncSubject.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onCompleted();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertTrue(as.hasCompleted());
@@ -376,28 +376,28 @@ public class AsyncSubjectTest {
     @Test
     public void testCurrentStateMethodsError() {
         AsyncSubject<Object> as = AsyncSubject.create();
-        
+
         assertFalse(as.hasValue());
         assertFalse(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertNull(as.getThrowable());
-        
+
         as.onError(new TestException());
-        
+
         assertFalse(as.hasValue());
         assertTrue(as.hasThrowable());
         assertFalse(as.hasCompleted());
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
     }
-    
+
     @Test
     public void testAsyncSubjectValueRelay() {
         AsyncSubject<Integer> async = AsyncSubject.create();
         async.onNext(1);
         async.onCompleted();
-        
+
         assertFalse(async.hasObservers());
         assertTrue(async.hasCompleted());
         assertFalse(async.hasThrowable());
@@ -409,7 +409,7 @@ public class AsyncSubjectTest {
     public void testAsyncSubjectValueEmpty() {
         AsyncSubject<Integer> async = AsyncSubject.create();
         async.onCompleted();
-        
+
         assertFalse(async.hasObservers());
         assertTrue(async.hasCompleted());
         assertFalse(async.hasThrowable());
@@ -422,7 +422,7 @@ public class AsyncSubjectTest {
         AsyncSubject<Integer> async = AsyncSubject.create();
         TestException te = new TestException();
         async.onError(te);
-        
+
         assertFalse(async.hasObservers());
         assertFalse(async.hasCompleted());
         assertTrue(async.hasThrowable());
@@ -430,45 +430,45 @@ public class AsyncSubjectTest {
         assertNull(async.getValue());
         assertFalse(async.hasValue());
     }
-    
+
     @Test
     public void backpressureOnline() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        
+
         AsyncSubject<Integer> subject = AsyncSubject.create();
-        
+
         subject.subscribe(ts);
-        
+
         subject.onNext(1);
         subject.onCompleted();
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();
-        
+
         ts.requestMore(1);
-        
+
         ts.assertValue(1);
         ts.assertCompleted();
         ts.assertNoErrors();
     }
-    
+
     @Test
     public void backpressureOffline() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        
+
         AsyncSubject<Integer> subject = AsyncSubject.create();
         subject.onNext(1);
         subject.onCompleted();
-        
+
         subject.subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();
-        
+
         ts.requestMore(1);
-        
+
         ts.assertValue(1);
         ts.assertCompleted();
         ts.assertNoErrors();

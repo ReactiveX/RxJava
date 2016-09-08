@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ public class BackpressureTests {
     public void doAfterTest() {
         TestObstructionDetection.checkObstruction();
     }
-    
+
     @Test
     public void testObserveOn() {
         int NUM = (int) (RxRingBuffer.SIZE * 2.1);
@@ -133,7 +133,7 @@ public class BackpressureTests {
             int NUM = (int) (RxRingBuffer.SIZE * 4.1);
             AtomicInteger c1 = new AtomicInteger();
             AtomicInteger c2 = new AtomicInteger();
-            
+
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             Observable<Integer> merged = Observable.merge(
                     incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
@@ -146,7 +146,7 @@ public class BackpressureTests {
             assertEquals(NUM, ts.getOnNextEvents().size());
         }
     }
-    
+
     @Test
     public void testMergeAsyncThenObserveOn() {
         int NUM = (int) (RxRingBuffer.SIZE * 4.1);
@@ -445,7 +445,7 @@ public class BackpressureTests {
     public void testOnBackpressureDrop() {
         long t = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
-            // stop the test if we are getting close to the timeout because slow machines 
+            // stop the test if we are getting close to the timeout because slow machines
             // may not get through 100 iterations
             if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
                 break;
@@ -494,7 +494,7 @@ public class BackpressureTests {
             .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
-            
+
             List<Integer> onNextEvents = ts.getOnNextEvents();
             Integer lastEvent = onNextEvents.get(NUM - 1);
             System.out.println(testName.getMethodName() + " => Received: " + onNextEvents.size() + " Passed: " + passCount.get() + " Dropped: " + dropCount.get() + "  Emitted: " + emitCount.get() + " Last value: " + lastEvent);
@@ -584,7 +584,7 @@ public class BackpressureTests {
 
     /**
      * A synchronous Observable that will emit incrementing integers as requested.
-     * 
+     *
      * @param counter
      * @return
      */
@@ -632,7 +632,7 @@ public class BackpressureTests {
 
     /**
      * Incrementing int without backpressure.
-     * 
+     *
      * @param counter
      * @return
      */

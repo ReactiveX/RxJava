@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -101,7 +101,7 @@ public class ZipTests {
     /**
      * Occasionally zip may be invoked with 0 observables. Test that we don't block indefinitely instead
      * of immediately invoking zip with 0 argument.
-     * 
+     *
      * We now expect a NoSuchElementException since last() requires at least one value and nothing will be emitted.
      */
     @Test(expected = NoSuchElementException.class)

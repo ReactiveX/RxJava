@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,13 +17,13 @@ package rx.internal.operators;
 
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,13 +75,13 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
             return ts.map(new Func1<Notification<?>, Notification<?>>() {
 
                 int num;
-                
+
                 @Override
                 public Notification<?> call(Notification<?> terminalNotification) {
                     if(count == 0) {
                         return terminalNotification;
                     }
-                    
+
                     num++;
                     if(num <= count) {
                         return Notification.createOnNext(num);
@@ -89,7 +89,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                         return terminalNotification;
                     }
                 }
-                
+
             }).dematerialize();
         }
     }
@@ -185,10 +185,10 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
     @Override
     public void call(final Subscriber<? super T> child) {
-        
+
         // when true is a marker to say we are ready to resubscribe to source
         final AtomicBoolean resumeBoundary = new AtomicBoolean(true);
-        
+
         // incremented when requests are made, decremented when requests are fulfilled
         final AtomicLong consumerCapacity = new AtomicLong();
 
@@ -198,18 +198,18 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
         final SerialSubscription sourceSubscriptions = new SerialSubscription();
         child.add(sourceSubscriptions);
 
-        // use a subject to receive terminals (onCompleted and onError signals) from 
-        // the source observable. We use a BehaviorSubject because subscribeToSource 
-        // may emit a terminal before the restarts observable (transformed terminals) 
+        // use a subject to receive terminals (onCompleted and onError signals) from
+        // the source observable. We use a BehaviorSubject because subscribeToSource
+        // may emit a terminal before the restarts observable (transformed terminals)
         // is subscribed
         final Subject<Notification<?>, Notification<?>> terminals = BehaviorSubject.<Notification<?>>create().toSerialized();
         final Subscriber<Notification<?>> dummySubscriber = Subscribers.empty();
-        // subscribe immediately so the last emission will be replayed to the next 
+        // subscribe immediately so the last emission will be replayed to the next
         // subscriber (which is the one we care about)
         terminals.subscribe(dummySubscriber);
 
         final ProducerArbiter arbiter = new ProducerArbiter();
-        
+
         final Action0 subscribeToSource = new Action0() {
             @Override
             public void call() {
@@ -274,8 +274,8 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
             }
         };
 
-        // the observable received by the control handler function will receive notifications of onCompleted in the case of 'repeat' 
-        // type operators or notifications of onError for 'retry' this is done by lifting in a custom operator to selectively divert 
+        // the observable received by the control handler function will receive notifications of onCompleted in the case of 'repeat'
+        // type operators or notifications of onError for 'retry' this is done by lifting in a custom operator to selectively divert
         // the retry/repeat relevant values to the control handler
         final Observable<?> restarts = controlHandlerFunction.call(
                 terminals.lift(new Operator<Notification<?>, Notification<?>>() {
@@ -329,8 +329,8 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                     @Override
                     public void onNext(Object t) {
                         if (!child.isUnsubscribed()) {
-                            // perform a best endeavours check on consumerCapacity 
-                            // with the intent of only resubscribing immediately 
+                            // perform a best endeavours check on consumerCapacity
+                            // with the intent of only resubscribing immediately
                             // if there is outstanding capacity
                             if (consumerCapacity.get() > 0) {
                                 worker.schedule(subscribeToSource);
@@ -363,6 +363,6 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 }
             }
         });
-        
+
     }
 }

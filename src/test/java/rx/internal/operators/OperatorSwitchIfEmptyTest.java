@@ -142,7 +142,7 @@ public class OperatorSwitchIfEmptyTest {
             }
         };
         Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(ts);
-        
+
         assertEquals(Arrays.asList(1), ts.getOnNextEvents());
         ts.assertNoErrors();
         ts.requestMore(1);
@@ -163,7 +163,7 @@ public class OperatorSwitchIfEmptyTest {
         assertTrue(ts.getOnNextEvents().isEmpty());
         ts.assertNoErrors();
     }
-    
+
     @Test
     public void testBackpressureOnFirstObservable() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
@@ -172,7 +172,7 @@ public class OperatorSwitchIfEmptyTest {
         ts.assertNoErrors();
         ts.assertNoValues();
     }
-    
+
     @Test(timeout = 10000)
     public void testRequestsNotLost() throws InterruptedException {
         final TestSubscriber<Long> ts = new TestSubscriber<Long>(0);

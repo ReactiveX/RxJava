@@ -31,23 +31,23 @@ import rx.internal.util.unsafe.*;
  * @param <T> the value type
  */
 public final class QueuedValueProducer<T> extends AtomicLong implements Producer {
-     
+
     /** */
     private static final long serialVersionUID = 7277121710709137047L;
-    
+
     final Subscriber<? super T> child;
     final Queue<Object> queue;
     final AtomicInteger wip;
-    
+
     static final Object NULL_SENTINEL = new Object();
-    
+
     /**
      * Constructs an instance with the target child subscriber and an Spsc Linked (Atomic) Queue
      * as the queue implementation.
      * @param child the target child subscriber
      */
     public QueuedValueProducer(Subscriber<? super T> child) {
-        this(child, UnsafeAccess.isUnsafeAvailable() 
+        this(child, UnsafeAccess.isUnsafeAvailable()
                 ? new SpscLinkedQueue<Object>() : new SpscLinkedAtomicQueue<Object>());
     }
     /**
@@ -60,7 +60,7 @@ public final class QueuedValueProducer<T> extends AtomicLong implements Producer
         this.queue = queue;
         this.wip = new AtomicInteger();
     }
-     
+
     @Override
     public void request(long n) {
         if (n < 0) {
@@ -71,7 +71,7 @@ public final class QueuedValueProducer<T> extends AtomicLong implements Producer
             drain();
         }
     }
-    
+
     /**
      * Offers a value to this producer and tries to emit any queued values
      * if the child requests allow it.
@@ -91,7 +91,7 @@ public final class QueuedValueProducer<T> extends AtomicLong implements Producer
         drain();
         return true;
     }
-    
+
     private void drain() {
         if (wip.getAndIncrement() == 0) {
             final Subscriber<? super T> c = child;
@@ -100,13 +100,13 @@ public final class QueuedValueProducer<T> extends AtomicLong implements Producer
                 if (c.isUnsubscribed()) {
                     return;
                 }
- 
+
                 wip.lazySet(1);
-                 
+
                 long r = get();
                 long e = 0;
                 Object v;
-                 
+
                 while (r != 0 && (v = q.poll()) != null) {
                     try {
                         if (v == NULL_SENTINEL) {
@@ -126,7 +126,7 @@ public final class QueuedValueProducer<T> extends AtomicLong implements Producer
                     r--;
                     e++;
                 }
-                 
+
                 if (e != 0 && get() != Long.MAX_VALUE) {
                     addAndGet(-e);
                 }

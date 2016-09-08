@@ -22,7 +22,7 @@ import rx.Scheduler;
  */
 @Deprecated
 // Class was part of public API.
-public final class TrampolineScheduler extends Scheduler { // NOPMD 
+public final class TrampolineScheduler extends Scheduler { // NOPMD
     private TrampolineScheduler() {
         throw new IllegalStateException("No instances!");
     }

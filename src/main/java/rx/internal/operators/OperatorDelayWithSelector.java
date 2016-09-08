@@ -24,7 +24,7 @@ import rx.subjects.PublishSubject;
 
 /**
  * Delay the subscription and emission of the source items by a per-item observable that fires its first element.
- * 
+ *
  * @param <T>
  *            the item type
  * @param <V>

@@ -47,11 +47,11 @@ public class SingleDelayedProducerTest {
                 final AtomicInteger waiter = new AtomicInteger(2);
 
                 TestSubscriber<Integer> ts = TestSubscriber.create();
-                
+
                 final SingleDelayedProducer<Integer> pa = new SingleDelayedProducer<Integer>(ts);
 
                 final CountDownLatch cdl = new CountDownLatch(1);
-                
+
                 w.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -61,14 +61,14 @@ public class SingleDelayedProducerTest {
                         cdl.countDown();
                     }
                 });
-                
+
                 waiter.decrementAndGet();
                 while (waiter.get() != 0) ;
                 pa.setValue(1);
                 if (!cdl.await(5, TimeUnit.SECONDS)) {
                     Assert.fail("The wait for completion timed out");
                 }
-                
+
                 ts.assertValue(1);
                 ts.assertCompleted();
             }

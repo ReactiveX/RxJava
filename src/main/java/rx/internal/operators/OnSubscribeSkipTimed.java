@@ -50,7 +50,7 @@ public final class OnSubscribeSkipTimed<T> implements OnSubscribe<T> {
         worker.schedule(subscriber, time, unit);
         source.unsafeSubscribe(subscriber);
     }
-    
+
     final static class SkipTimedSubscriber<T> extends Subscriber<T> implements Action0 {
 
         final Subscriber<? super T> child;
@@ -64,7 +64,7 @@ public final class OnSubscribeSkipTimed<T> implements OnSubscribe<T> {
         public void call() {
             gate = true;
         }
-        
+
         @Override
         public void onNext(T t) {
             if (gate) {
@@ -89,6 +89,6 @@ public final class OnSubscribeSkipTimed<T> implements OnSubscribe<T> {
                 unsubscribe();
             }
         }
-        
+
     }
 }

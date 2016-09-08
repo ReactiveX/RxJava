@@ -89,15 +89,15 @@ public class OperatorDoOnRequestTest {
                 });
         assertEquals(Arrays.asList(3L,1L,2L,3L,4L,5L), requests);
     }
-    
+
     @Test
     public void dontRequestIfDownstreamRequestsLate() {
         final List<Long> requested = new ArrayList<Long>();
 
         Action1<Long> empty = Actions.empty();
-        
+
         final AtomicReference<Producer> producer = new AtomicReference<Producer>();
-        
+
         Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
@@ -111,25 +111,25 @@ public class OperatorDoOnRequestTest {
         }).doOnRequest(empty).subscribe(new Subscriber<Object>() {
             @Override
             public void onNext(Object t) {
-                
+
             }
-            
+
             @Override
             public void onError(Throwable e) {
-                
+
             }
-            
+
             @Override
             public void onCompleted() {
-                
+
             }
-            
+
             @Override
             public void setProducer(Producer p) {
                 producer.set(p);
             }
         });
-        
+
         producer.get().request(1);
 
         int s = requested.size();

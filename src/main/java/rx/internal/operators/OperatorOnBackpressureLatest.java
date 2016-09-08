@@ -30,7 +30,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
     static final class Holder {
         static final OperatorOnBackpressureLatest<Object> INSTANCE = new OperatorOnBackpressureLatest<Object>();
     }
-    
+
     /**
      * Returns a singleton instance of the OnBackpressureLatest operator since it is stateless.
      * @param <T> the value type
@@ -40,7 +40,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
     public static <T> OperatorOnBackpressureLatest<T> instance() {
         return (OperatorOnBackpressureLatest<T>)Holder.INSTANCE;
     }
-    
+
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> child) {
         final LatestEmitter<T> producer = new LatestEmitter<T>(child);
@@ -73,7 +73,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
         public LatestEmitter(Subscriber<? super T> child) {
             this.child = child;
             this.value = new AtomicReference<Object>(EMPTY);
-            this.lazySet(NOT_REQUESTED); // not 
+            this.lazySet(NOT_REQUESTED); // not
         }
         @Override
         public void request(long n) {
@@ -124,7 +124,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
                 getAndSet(Long.MIN_VALUE);
             }
         }
-        
+
         @Override
         public void onNext(T t) {
             value.lazySet(t); // emit's synchronized block does a full release
@@ -203,7 +203,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
         @Override
         public void onStart() {
             // don't run until the child actually requested to avoid synchronous problems
-            request(0); 
+            request(0);
         }
 
         @Override

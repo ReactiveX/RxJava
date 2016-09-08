@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -229,7 +229,7 @@ public class BlockingOperatorNextTest {
      * Confirm that no buffering or blocking of the Observable onNext calls occurs and it just grabs the next emitted value.
      * <p/>
      * This results in output such as => a: 1 b: 2 c: 89
-     * 
+     *
      * @throws Throwable
      */
     @Test
@@ -266,34 +266,34 @@ public class BlockingOperatorNextTest {
 
         try {
             Iterator<Integer> it = next(obs).iterator();
-    
+
             assertTrue(it.hasNext());
             int a = it.next();
             assertTrue(it.hasNext());
             int b = it.next();
             // we should have a different value
             assertTrue("a and b should be different", a != b);
-    
+
             // wait for some time (if times out we are blocked somewhere so fail ... set very high for very slow, constrained machines)
             timeHasPassed.await(8000, TimeUnit.MILLISECONDS);
-    
+
             assertTrue(it.hasNext());
             int c = it.next();
-    
+
             assertTrue("c should not just be the next in sequence", c != (b + 1));
             assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
-    
+
             assertTrue(it.hasNext());
             int d = it.next();
             assertTrue(d > c);
-    
+
             // shut down the thread
             running.set(false);
-    
+
             finished.await();
-    
+
             assertFalse(it.hasNext());
-    
+
             System.out.println("a: " + a + " b: " + b + " c: " + c);
         } finally {
             running.set(false); // don't let the thread spin indefinitely
@@ -318,7 +318,7 @@ public class BlockingOperatorNextTest {
             terminal.onNext(null);
         }
     }
-    
+
     @Test
     public void testSynchronousNext() {
         assertEquals(1, BehaviorSubject.create(1).take(1).toBlocking().single().intValue());

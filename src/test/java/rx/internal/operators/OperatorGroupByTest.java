@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -176,7 +176,7 @@ public class OperatorGroupByTest {
 
     /**
      * Assert that only a single subscription to a stream occurs and that all events are received.
-     * 
+     *
      * @throws Throwable
      */
     @Test
@@ -1119,7 +1119,7 @@ public class OperatorGroupByTest {
          * baR bar BAR
          * Baz baz bAZ
          * qux
-         * 
+         *
          */
         Func1<String, String> keysel = new Func1<String, String>() {
             @Override
@@ -1439,7 +1439,7 @@ public class OperatorGroupByTest {
         assertEquals(Arrays.asList(e), inner1.getOnErrorEvents());
         assertEquals(Arrays.asList(e), inner2.getOnErrorEvents());
     }
-    
+
     @Test
     public void testRequestOverflow() {
         final AtomicBoolean completed = new AtomicBoolean(false);
@@ -1460,7 +1460,7 @@ public class OperatorGroupByTest {
                     }
                 })
                 .subscribe(new Subscriber<Integer>() {
-                    
+
                     @Override
                     public void onStart() {
                         request(2);
@@ -1469,12 +1469,12 @@ public class OperatorGroupByTest {
                     @Override
                     public void onCompleted() {
                         completed.set(true);
-                        
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        
+
                     }
 
                     @Override
@@ -1485,10 +1485,10 @@ public class OperatorGroupByTest {
                     }});
         assertTrue(completed.get());
     }
-    
+
     /**
      * Issue #3425.
-     * 
+     *
      * The problem is that a request of 1 may create a new group, emit to the desired group
      * or emit to a completely different group. In this test, the merge requests N which
      * must be produced by the range, however it will create a bunch of groups before the actual
@@ -1509,14 +1509,14 @@ public class OperatorGroupByTest {
             ).toBlocking().last();
         }
     }
-    
+
     /**
      * Synchronous verification of issue #3425.
      */
     @Test
     public void testBackpressureInnerDoesntOverflowOuter() {
         TestSubscriber<Object> ts = TestSubscriber.create(0);
-        
+
         Observable.just(1, 2)
                 .groupBy(new Func1<Integer, Object>() {
                     @Override
@@ -1535,17 +1535,17 @@ public class OperatorGroupByTest {
                 .subscribe(ts)
                 ;
         ts.requestMore(1);
-        
+
         ts.assertNotCompleted();
         ts.assertNoErrors();
         ts.assertValueCount(1);
     }
-    
+
     @Test
     public void testOneGroupInnerRequestsTwiceBuffer() {
         TestSubscriber<Object> ts1 = TestSubscriber.create(0);
         final TestSubscriber<Object> ts2 = TestSubscriber.create(0);
-        
+
         Observable.range(1, RxRingBuffer.SIZE * 2)
         .groupBy(new Func1<Integer, Object>() {
             @Override
@@ -1560,27 +1560,27 @@ public class OperatorGroupByTest {
             }
         })
         .subscribe(ts1);
-        
+
         ts1.assertNoValues();
         ts1.assertNoErrors();
         ts1.assertNotCompleted();
-        
+
         ts2.assertNoValues();
         ts2.assertNoErrors();
         ts2.assertNotCompleted();
-        
+
         ts1.requestMore(1);
-        
+
         ts1.assertValueCount(1);
         ts1.assertNoErrors();
         ts1.assertNotCompleted();
-        
+
         ts2.assertNoValues();
         ts2.assertNoErrors();
         ts2.assertNotCompleted();
-        
+
         ts2.requestMore(RxRingBuffer.SIZE * 2);
-        
+
         ts2.assertValueCount(RxRingBuffer.SIZE * 2);
         ts2.assertNoErrors();
         ts2.assertNotCompleted();
@@ -1809,7 +1809,7 @@ public class OperatorGroupByTest {
         outer.assertValueCount(2);
 
     }
-    
+
     @Test
     public void mapFactoryEvictionWorks() {
         Func1<Integer, Integer> keySelector = new Func1<Integer, Integer> (){
@@ -1819,20 +1819,20 @@ public class OperatorGroupByTest {
             }};
         Func1<Integer, Integer> elementSelector = UtilityFunctions.identity();
         final List<Integer> evictedKeys = new ArrayList<Integer>();
-        //normally would use Guava CacheBuilder or similar but for a bit more 
+        //normally would use Guava CacheBuilder or similar but for a bit more
         //control make something custom
         Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = new Func1<Action1<Integer>, Map<Integer, Object>>() {
             @Override
             public Map<Integer, Object> call(final Action1<Integer> evicted) {
-                // is a bit risky to override the put method because 
+                // is a bit risky to override the put method because
                 // of possible side-effects (e.g. remove could call put and we did not know it)
                 // to fix just need to use composition but needs a verbose implementation of Map
                 // interface
                 return new ConcurrentHashMap<Integer,Object>() {
                     private static final long serialVersionUID = -7519109652858021153L;
-                    
+
                     Integer lastKey = null;
-                    
+
                     @Override
                     public Object put(Integer key, Object value) {
                         if (this.size() >= 5) {
@@ -1873,15 +1873,15 @@ public class OperatorGroupByTest {
                 .toList().toBlocking().single();
         assertEquals(expected, ts.getOnNextEvents());
     }
-    
+
     private static final Func1<Integer, Integer> EVICTING_MAP_ELEMENT_SELECTOR = UtilityFunctions.identity();
-    
+
     private static final Func1<Integer, Integer> EVICTING_MAP_KEY_SELECTOR = new Func1<Integer, Integer> (){
         @Override
         public Integer call(Integer t) {
             return t /10;
         }};
-    
+
     @Test
     public void testEvictingMapFactoryIfMapPutThrowsRuntimeExceptionThenErrorEmittedByStream() {
         final RuntimeException exception = new RuntimeException("boo");
@@ -1894,7 +1894,7 @@ public class OperatorGroupByTest {
             .subscribe(ts);
         ts.assertError(exception);
     }
-    
+
     @Test(expected = OnErrorNotImplementedException.class)
     public void testEvictingMapFactoryIfMapPutThrowsFatalErrorThenErrorThrownBySubscribe() {
         final RuntimeException exception = new OnErrorNotImplementedException("boo", new RuntimeException());
@@ -1913,19 +1913,19 @@ public class OperatorGroupByTest {
             @SuppressWarnings("serial")
             @Override
             public Map<Integer, Object> call(final Action1<Integer> evicted) {
-                // is a bit risky to override the put method because 
+                // is a bit risky to override the put method because
                 // of possible side-effects (e.g. remove could call put and we did not know it)
                 // to fix just need to use composition but needs a verbose implementation of Map
                 // interface
                 return new ConcurrentHashMap<Integer,Object>() {
-                    
+
                     @Override
                     public Object put(Integer key, Object value) {
                         throw exception;
                     }};
             }};
     }
-    
+
     @Test
     public void mapFactoryEvictionWorksWithGuavaCache() {
         final List<Integer> evictedKeys = new ArrayList<Integer>();
@@ -1939,7 +1939,7 @@ public class OperatorGroupByTest {
                             @Override
                             public void onRemoval(RemovalNotification<Integer, Object> notification) {
                                 action.call(notification.getKey());
-                                evictedKeys.add(notification.getKey());                            
+                                evictedKeys.add(notification.getKey());
                             }
                         })
                         .build().asMap();
@@ -1975,14 +1975,14 @@ public class OperatorGroupByTest {
                 .toList().toBlocking().single();
         assertEquals(expected, ts.getOnNextEvents());
     }
-    
+
     @Test(expected = NullPointerException.class)
     public void testGroupByThrowsNpeIfEvictingMapFactoryNull() {
         Observable
         .range(1, 100)
         .groupBy(EVICTING_MAP_KEY_SELECTOR, EVICTING_MAP_ELEMENT_SELECTOR, null);
     }
-    
+
     @Test
     public void testEvictingMapFactoryIfMapCreateThrowsRuntimeExceptionThenErrorEmittedByStream() {
         final RuntimeException exception = new RuntimeException("boo");
@@ -1995,7 +1995,7 @@ public class OperatorGroupByTest {
             .subscribe(ts);
         ts.assertError(exception);
     }
-    
+
     @Test(expected=OnErrorNotImplementedException.class)
     public void testEvictingMapFactoryIfMapCreateThrowsFatalErrorThenSubscribeThrows() {
         final OnErrorNotImplementedException exception = new OnErrorNotImplementedException("boo", new RuntimeException());

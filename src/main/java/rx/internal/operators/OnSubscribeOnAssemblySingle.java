@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ import rx.exceptions.AssemblyStackTraceException;
 public final class OnSubscribeOnAssemblySingle<T> implements Single.OnSubscribe<T> {
 
     final Single.OnSubscribe<T> source;
-    
+
     final String stacktrace;
 
     /**
@@ -36,23 +36,23 @@ public final class OnSubscribeOnAssemblySingle<T> implements Single.OnSubscribe<
      * stacktrace instead of the sanitized version.
      */
     public static volatile boolean fullStackTrace;
-    
+
     public OnSubscribeOnAssemblySingle(Single.OnSubscribe<T> source) {
         this.source = source;
         this.stacktrace = OnSubscribeOnAssembly.createStacktrace();
     }
-    
+
     @Override
     public void call(SingleSubscriber<? super T> t) {
         source.call(new OnAssemblySingleSubscriber<T>(t, stacktrace));
     }
-    
+
     static final class OnAssemblySingleSubscriber<T> extends SingleSubscriber<T> {
 
         final SingleSubscriber<? super T> actual;
-        
+
         final String stacktrace;
-        
+
         public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, String stacktrace) {
             this.actual = actual;
             this.stacktrace = stacktrace;
@@ -69,6 +69,6 @@ public final class OnSubscribeOnAssemblySingle<T> implements Single.OnSubscribe<
         public void onSuccess(T t) {
             actual.onSuccess(t);
         }
-        
+
     }
 }

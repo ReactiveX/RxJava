@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -155,12 +155,12 @@ public class OperatorWindowWithTimeTest {
     @Test
     public void testExactWindowSize() {
         Observable<Observable<Integer>> source = Observable.range(1, 10).window(1, TimeUnit.MINUTES, 3, scheduler);
-        
+
         final List<Integer> list = new ArrayList<Integer>();
         final List<List<Integer>> lists = new ArrayList<List<Integer>>();
-        
+
         source.subscribe(observeWindow(list, lists));
-        
+
         assertEquals(4, lists.size());
         assertEquals(3, lists.get(0).size());
         assertEquals(Arrays.asList(1, 2, 3), lists.get(0));
@@ -171,13 +171,13 @@ public class OperatorWindowWithTimeTest {
         assertEquals(1, lists.get(3).size());
         assertEquals(Arrays.asList(10), lists.get(3));
     }
-    
+
     @Test
     public void testTakeFlatMapCompletes() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         final int indicator = 999999999;
-        
+
         OperatorWindowWithSizeTest.hotStream()
         .window(300, TimeUnit.MILLISECONDS)
         .take(10)
@@ -187,7 +187,7 @@ public class OperatorWindowWithTimeTest {
                 return w.startWith(indicator);
             }
         }).subscribe(ts);
-        
+
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
         ts.assertCompleted();
         Assert.assertFalse(ts.getOnNextEvents().isEmpty());
@@ -195,9 +195,9 @@ public class OperatorWindowWithTimeTest {
 
     @Test
     public void timeCountDefaultScheduler() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.range(1, 10).window(5, TimeUnit.SECONDS, 5)
         .flatMap(new Func1<Observable<Integer>, Observable<Integer>>() {
             @Override
@@ -205,18 +205,18 @@ public class OperatorWindowWithTimeTest {
                 return w;
             }
         }).subscribe(ts);
-        
+
         ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
         ts.assertValueCount(10);
         ts.assertNoErrors();
         ts.assertCompleted();
     }
-    
+
     @Test
     public void spanSkipDefaultScheduler() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         Observable.range(1, 10).window(5, 5, TimeUnit.SECONDS)
         .flatMap(new Func1<Observable<Integer>, Observable<Integer>>() {
             @Override
@@ -224,7 +224,7 @@ public class OperatorWindowWithTimeTest {
                 return w;
             }
         }).subscribe(ts);
-        
+
         ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
         ts.assertValueCount(10);
         ts.assertNoErrors();

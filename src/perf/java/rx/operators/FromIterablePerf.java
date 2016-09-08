@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ public class FromIterablePerf {
     OnSubscribeFromIterable<Integer> direct;
     @Param({"1", "1000", "1000000"})
     public int size;
-    
+
     @Setup
     public void setup() {
         Integer[] array = new Integer[size];
@@ -51,7 +51,7 @@ public class FromIterablePerf {
         from = Observable.from(Arrays.asList(array));
         direct = new OnSubscribeFromIterable<Integer>(Arrays.asList(array));
     }
-    
+
     @Benchmark
     public void from(Blackhole bh) {
         from.subscribe(new LatchedObserver<Integer>(bh));
@@ -60,12 +60,12 @@ public class FromIterablePerf {
     public void fromUnsafe(final Blackhole bh) {
         from.unsafeSubscribe(createSubscriber(bh));
     }
-    
+
     @Benchmark
     public void direct(final Blackhole bh) {
         direct.call(createSubscriber(bh));
     }
-    
+
     Subscriber<Integer> createSubscriber(final Blackhole bh) {
         return new Subscriber<Integer>() {
             @Override
@@ -78,7 +78,7 @@ public class FromIterablePerf {
             }
             @Override
             public void onCompleted() {
-                
+
             }
         };
     }

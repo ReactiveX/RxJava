@@ -40,7 +40,7 @@ public class ProducersTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         SingleProducer<Integer> sp = new SingleProducer<Integer>(ts, 1);
         ts.setProducer(sp);
-        
+
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         ts.assertReceivedOnNext(Arrays.asList(1));
@@ -51,18 +51,18 @@ public class ProducersTest {
         ts.requestMore(0);
         SingleProducer<Integer> sp = new SingleProducer<Integer>(ts, 1);
         ts.setProducer(sp);
-        
+
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
         Assert.assertEquals(0, ts.getCompletions());
-        
+
         ts.requestMore(2);
-        
+
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         ts.assertReceivedOnNext(Arrays.asList(1));
     }
-    
+
     @Test
     public void testSingleDelayedNoBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -72,15 +72,15 @@ public class ProducersTest {
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
         Assert.assertEquals(0, ts.getCompletions());
-        
+
         sdp.setValue(1);
-        
+
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         ts.assertReceivedOnNext(Arrays.asList(1));
 
         sdp.setValue(2);
-        
+
         ts.assertReceivedOnNext(Arrays.asList(1));
     }
     @Test
@@ -93,32 +93,32 @@ public class ProducersTest {
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
         Assert.assertEquals(0, ts.getCompletions());
-        
+
         sdp.setValue(1);
 
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
         Assert.assertEquals(0, ts.getCompletions());
-        
+
         ts.requestMore(2);
-        
+
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         ts.assertReceivedOnNext(Arrays.asList(1));
 
         sdp.setValue(2);
-        
+
         ts.assertReceivedOnNext(Arrays.asList(1));
     }
-    
+
     @Test
     public void testQueuedValueNoBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         QueuedValueProducer<Integer> qvp = new QueuedValueProducer<Integer>(ts);
         ts.setProducer(qvp);
-        
+
         qvp.offer(1);
-        
+
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1));
 
@@ -137,35 +137,35 @@ public class ProducersTest {
         ts.setProducer(qvp);
 
         qvp.offer(1);
-        
+
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
-        
+
         qvp.offer(2);
-        ts.requestMore(2);
-        
-        ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(1, 2));
-        
         ts.requestMore(2);
 
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2));
-        
+
+        ts.requestMore(2);
+
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList(1, 2));
+
         qvp.offer(3);
         qvp.offer(4);
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4));
     }
-    
+
     @Test
     public void testQueuedNoBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         QueuedProducer<Integer> qp = new QueuedProducer<Integer>(ts);
         ts.setProducer(qp);
-        
+
         qp.offer(1);
-        
+
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1));
 
@@ -175,9 +175,9 @@ public class ProducersTest {
 
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4));
-        
+
         qp.onCompleted();
-        
+
         ts.assertTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4));
@@ -190,52 +190,52 @@ public class ProducersTest {
         ts.setProducer(qp);
 
         qp.offer(1);
-        
+
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Collections.<Integer>emptyList());
-        
+
         qp.offer(2);
-        ts.requestMore(2);
-        
-        ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(1, 2));
-        
         ts.requestMore(2);
 
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2));
-        
+
+        ts.requestMore(2);
+
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList(1, 2));
+
         qp.offer(3);
         qp.offer(4);
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4));
-        
+
         qp.onCompleted();
         ts.assertTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4));
     }
-    
+
     @Test
     public void testArbiter() {
         Producer p1 = mock(Producer.class);
         Producer p2 = mock(Producer.class);
-        
+
         ProducerArbiter pa = new ProducerArbiter();
-        
+
         pa.request(100);
-        
+
         pa.setProducer(p1);
-        
+
         verify(p1).request(100);
-        
+
         pa.produced(50);
-        
+
         pa.setProducer(p2);
-        
+
         verify(p2).request(50);
     }
-    
+
     static final class TestProducer implements Producer {
         final Observer<Integer> child;
         public TestProducer(Observer<Integer> child) {
@@ -246,7 +246,7 @@ public class ProducersTest {
             child.onNext((int)n);
         }
     }
-    
+
     @Test
     public void testObserverArbiterWithBackpressure() {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -254,11 +254,11 @@ public class ProducersTest {
         final ProducerObserverArbiter<Integer> poa = new ProducerObserverArbiter<Integer>(ts);
         ts.setProducer(poa);
 
-        
+
         poa.setProducer(new TestProducer(poa));
 
         ts.requestMore(1);
-        
+
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1));
 
@@ -272,20 +272,20 @@ public class ProducersTest {
 
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 5));
-        
+
         poa.onCompleted();
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         ts.assertReceivedOnNext(Arrays.asList(1, 5));
     }
-    static final class SwitchTimer<T> 
+    static final class SwitchTimer<T>
     implements OnSubscribe<T> {
         final List<Observable<? extends T>> sources;
         final long time;
         final TimeUnit unit;
         final Scheduler scheduler;
         public SwitchTimer(
-                Iterable<? extends Observable<? extends T>> sources, 
+                Iterable<? extends Observable<? extends T>> sources,
                 long time, TimeUnit unit, Scheduler scheduler) {
             this.scheduler = scheduler;
             this.sources = new ArrayList<Observable<? extends T>>();
@@ -297,19 +297,19 @@ public class ProducersTest {
         }
         @Override
         public void call(Subscriber<? super T> child) {
-            final ProducerObserverArbiter<T> poa = 
+            final ProducerObserverArbiter<T> poa =
                 new ProducerObserverArbiter<T>(child);
-             
+
             Scheduler.Worker w = scheduler.createWorker();
             child.add(w);
-             
+
             child.setProducer(poa);
-             
+
             final SerialSubscription ssub = new SerialSubscription();
             child.add(ssub);
-             
+
             final int[] index = new int[1];
-             
+
             w.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {
@@ -338,7 +338,7 @@ public class ProducersTest {
                             poa.setProducer(producer);
                         }
                     };
-         
+
                     ssub.set(s);
                     sources.get(idx).unsafeSubscribe(s);
                 }
@@ -364,24 +364,24 @@ public class ProducersTest {
             Observable.interval(100, 100, TimeUnit.MILLISECONDS, test)
                 .map(plus(40))
         );
-         
+
         Observable<Long> source = Observable.create(
-            new SwitchTimer<Long>(timers, 550, 
+            new SwitchTimer<Long>(timers, 550,
             TimeUnit.MILLISECONDS, test));
-                 
+
         TestSubscriber<Long> ts = new TestSubscriber<Long>();
         ts.requestMore(100);
         source.subscribe(ts);
-            
+
         test.advanceTimeBy(1, TimeUnit.MINUTES);
-        
+
         ts.assertTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 3L, 4L,
                 20L, 21L, 22L, 23L, 24L,
                 40L, 41L, 42L, 43L, 44L));
     }
-    
+
     @Test(timeout = 1000)
     public void testProducerObserverArbiterUnbounded() {
         Observable.range(0, Integer.MAX_VALUE)
@@ -389,7 +389,7 @@ public class ProducersTest {
             @Override
             public Subscriber<? super Integer> call(Subscriber<? super Integer> t) {
                 final ProducerObserverArbiter<Integer> poa = new ProducerObserverArbiter<Integer>(t);
-                
+
                 Subscriber<Integer> parent = new Subscriber<Integer>() {
 
                     @Override
@@ -406,17 +406,17 @@ public class ProducersTest {
                     public void onNext(Integer t) {
                         poa.onNext(t);
                     }
-                    
-                    
+
+
                     @Override
                     public void setProducer(Producer p) {
                         poa.setProducer(p);
                     }
                 };
-                
+
                 t.add(parent);
                 t.setProducer(poa);
-                
+
                 return parent;
             }
         }).subscribe(new TestSubscriber<Integer>() {
@@ -429,7 +429,7 @@ public class ProducersTest {
             }
         });
     }
-    
+
     @Test
     public void queuedProducerRequestNegative() {
         QueuedProducer<Integer> qp = new QueuedProducer<Integer>(new TestSubscriber<Integer>());
@@ -445,9 +445,9 @@ public class ProducersTest {
         TestSubscriber<Integer> ts = TestSubscriber.create();
         QueuedProducer<Integer> qp = new QueuedProducer<Integer>(ts);
         qp.offer(null);
-        
+
         qp.request(1);
-        
+
         ts.assertValue(null);
     }
 
@@ -457,9 +457,9 @@ public class ProducersTest {
         QueuedProducer<Integer> qp = new QueuedProducer<Integer>(ts, new SpscArrayQueue<Object>(1));
         assertTrue(qp.offer(1));
         assertFalse(qp.offer(2));
-        
+
         qp.request(1);
-        
+
         ts.assertValue(1);
     }
 
@@ -470,9 +470,9 @@ public class ProducersTest {
 
         qp.onNext(1);
         qp.onNext(2);
-        
+
         qp.request(1);
-        
+
         ts.assertError(MissingBackpressureException.class);
     }
 
@@ -483,9 +483,9 @@ public class ProducersTest {
 
         qp.onNext(1);
         qp.onNext(null);
-        
+
         qp.request(1);
-        
+
         ts.assertError(MissingBackpressureException.class);
     }
 
@@ -496,9 +496,9 @@ public class ProducersTest {
 
         qp.onNext(1);
         qp.onCompleted();
-        
+
         qp.request(2);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
@@ -512,9 +512,9 @@ public class ProducersTest {
 
         qp.onNext(1);
         qp.onCompleted();
-        
+
         qp.request(2);
-        
+
         ts.assertNoValues();
         ts.assertNoErrors();
         ts.assertNotCompleted();

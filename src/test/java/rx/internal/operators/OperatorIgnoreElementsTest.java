@@ -59,7 +59,7 @@ public class OperatorIgnoreElementsTest {
         assertEquals(num, upstreamCount.get());
         assertEquals(0, count);
     }
-    
+
     @Test
     public void testCompletedOk() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
@@ -69,7 +69,7 @@ public class OperatorIgnoreElementsTest {
         ts.assertTerminalEvent();
         ts.assertUnsubscribed();
     }
-    
+
     @Test
     public void testErrorReceived() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
@@ -81,7 +81,7 @@ public class OperatorIgnoreElementsTest {
         assertEquals(1, ts.getOnErrorEvents().size());
         assertEquals("boo", ts.getOnErrorEvents().get(0).getMessage());
     }
-    
+
     @Test
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
@@ -142,5 +142,5 @@ public class OperatorIgnoreElementsTest {
         assertEquals(num, upstreamCount.get());
         assertEquals(0, count.get());
     }
-    
+
 }

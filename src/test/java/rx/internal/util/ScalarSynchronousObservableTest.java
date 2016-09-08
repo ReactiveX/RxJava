@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -234,15 +234,15 @@ public class ScalarSynchronousObservableTest {
         ts.assertError(TestException.class);
         ts.assertNotCompleted();
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Test
     public void hookCalled() {
         Func1<OnSubscribe, OnSubscribe> save = RxJavaHooks.getOnObservableCreate();
         try {
             final AtomicInteger c = new AtomicInteger();
-            
-            
+
+
             RxJavaHooks.setOnObservableCreate(new Func1<OnSubscribe, OnSubscribe>() {
                 @Override
                 public OnSubscribe call(OnSubscribe t) {
@@ -250,13 +250,13 @@ public class ScalarSynchronousObservableTest {
                     return t;
                 }
             });
-            
+
             int n = 10;
-            
+
             for (int i = 0; i < n; i++) {
                 Observable.just(1).subscribe();
             }
-            
+
             Assert.assertEquals(n, c.get());
         } finally {
             RxJavaHooks.setOnObservableCreate(save);
@@ -285,15 +285,15 @@ public class ScalarSynchronousObservableTest {
                     return f;
                 }
             });
-            
+
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-            
+
             Observable.just(1).subscribe(ts);
-            
+
             ts.assertValues(1, 1);
             ts.assertNoErrors();
             ts.assertCompleted();
-            
+
         } finally {
             RxJavaHooks.setOnObservableCreate(save);
         }

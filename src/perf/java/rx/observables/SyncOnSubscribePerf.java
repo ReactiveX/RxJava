@@ -47,7 +47,7 @@ public class SyncOnSubscribePerf {
             return new Blackhole();
         }
     }
-    
+
     private static OnSubscribe<Integer> createSyncOnSubscribe(final Iterator<Integer> iterator) {
         return new SyncOnSubscribe<Void, Integer>(){
 
@@ -67,7 +67,7 @@ public class SyncOnSubscribePerf {
                 }
             };
     }
-    
+
 //    @Benchmark
 //  @Group("single")
     public void benchSyncOnSubscribe(final SingleInput input) {
@@ -79,13 +79,13 @@ public class SyncOnSubscribePerf {
     public void benchFromIterable(final SingleInput input) {
         new OnSubscribeFromIterable<Integer>(input.iterable).call(input.newSubscriber());
     }
-    
+
     @Benchmark
 //    @Group("multi")
     public void benchSyncOnSubscribe2(final MultiInput input) {
         createSyncOnSubscribe(input.iterable.iterator()).call(input.newSubscriber());
     }
-    
+
     @Benchmark
 //    @Group("multi")
     public void benchFromIterable2(final MultiInput input) {

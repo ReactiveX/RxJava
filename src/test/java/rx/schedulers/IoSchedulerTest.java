@@ -68,7 +68,7 @@ public class IoSchedulerTest extends AbstractSchedulerConcurrencyTests {
     public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
         SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
-    
+
     @Test(timeout = 60000)
     public void testCancelledTaskRetention() throws InterruptedException {
         Worker w = Schedulers.io().createWorker();

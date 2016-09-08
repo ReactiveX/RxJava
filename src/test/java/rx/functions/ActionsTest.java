@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,10 +30,10 @@ public class ActionsTest {
     public void testEmptyArities() {
         Action0 a0 = Actions.empty();
         a0.call();
-        
+
         Action1<Integer> a1 = Actions.empty();
         a1.call(1);
-        
+
         Action2<Integer, Integer> a2 = Actions.empty();
         a2.call(1, 2);
 
@@ -42,7 +42,7 @@ public class ActionsTest {
 
         Action4<Integer, Integer, Integer, Integer> a4 = Actions.empty();
         a4.call(1, 2, 3, 4);
-        
+
         Action5<Integer, Integer, Integer, Integer, Integer> a5 = Actions.empty();
         a5.call(1, 2, 3, 4, 5);
 
@@ -68,10 +68,10 @@ public class ActionsTest {
         ann.call(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
         ActionN annn = Actions.empty();
-        annn.call(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+        annn.call(1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
                 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
     }
-    
+
     @Test
     public void testToFunc0() {
         final AtomicLong value = new AtomicLong(-1L);
@@ -81,14 +81,14 @@ public class ActionsTest {
                 value.set(0);
             }
         };
-        
+
         assertNull(Actions.toFunc(action).call());
         assertEquals(0, value.get());
         value.set(-1L);
         assertEquals((Integer)0, Actions.toFunc(action, 0).call());
         assertEquals(0, value.get());
     }
-    
+
     @Test
     public void testToFunc1() {
         final AtomicLong value = new AtomicLong(-1L);
@@ -98,14 +98,14 @@ public class ActionsTest {
                 value.set(t1);
             }
         };
-        
+
         assertNull(Actions.toFunc(action).call(1));
         assertEquals(1, value.get());
         value.set(-1L);
         assertEquals((Integer)0, Actions.toFunc(action, 0).call(1));
         assertEquals(1, value.get());
     }
-    
+
     @Test
     public void testToFunc2() {
         final AtomicLong value = new AtomicLong(-1L);
@@ -115,7 +115,7 @@ public class ActionsTest {
                 value.set(t1 | t2);
             }
         };
-        
+
         assertNull(Actions.toFunc(action).call(1, 2));
         assertNull(Actions.toFunc(action).call(1, 2));
         assertEquals(3, value.get());
@@ -123,7 +123,7 @@ public class ActionsTest {
         assertEquals((Integer)0, Actions.toFunc(action, 0).call(1, 2));
         assertEquals(3, value.get());
     }
-    
+
     @Test
     public void testToFunc3() {
         final AtomicLong value = new AtomicLong(-1L);
@@ -133,14 +133,14 @@ public class ActionsTest {
                 value.set(t1 | t2 | t3);
             }
         };
-        
+
         assertNull(Actions.toFunc(action).call(1, 2, 4));
         assertEquals(7, value.get());
         value.set(-1L);
         assertEquals((Integer)0, Actions.toFunc(action, 0).call(1, 2, 4));
         assertEquals(7, value.get());
     }
-    
+
     @Test
     public void testToFunc4() {
         final AtomicLong value = new AtomicLong(-1L);
@@ -150,61 +150,61 @@ public class ActionsTest {
                 value.set(t1 | t2 | t3 | t4);
             }
         };
-        
+
         assertNull(Actions.toFunc(action).call(1, 2, 4, 8));
         assertEquals(15, value.get());
         value.set(-1L);
         assertEquals((Integer)0, Actions.toFunc(action, 0).call(1, 2, 4, 8));
         assertEquals(15, value.get());
     }
-    
+
     @Test
     public void testToFunc5() {
         final AtomicLong value = new AtomicLong(-1L);
-        final Action5<Integer, Integer, Integer, Integer, Integer> action = 
+        final Action5<Integer, Integer, Integer, Integer, Integer> action =
                 new Action5<Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public void call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) {
                 value.set(t1 | t2 | t3 | t4 | t5);
             }
         };
-        
+
         assertNull(Actions.toFunc(action).call(1, 2, 4, 8, 16));
         assertEquals(31, value.get());
         value.set(-1L);
         assertEquals((Integer)0, Actions.toFunc(action, 0).call(1, 2, 4, 8, 16));
         assertEquals(31, value.get());
     }
-    
+
     @Test
     public void testToFunc6() {
         final AtomicLong value = new AtomicLong(-1L);
-        final Action6<Integer, Integer, Integer, Integer, Integer, Integer> action = 
+        final Action6<Integer, Integer, Integer, Integer, Integer, Integer> action =
                 new Action6<Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public void call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6) {
                 value.set(t1 | t2 | t3 | t4 | t5 | t6);
             }
         };
-        
+
         assertNull(Actions.toFunc(action).call(1, 2, 4, 8, 16, 32));
         assertEquals(63, value.get());
         value.set(-1L);
         assertEquals((Integer)0, Actions.toFunc(action, 0).call(1, 2, 4, 8, 16, 32));
         assertEquals(63, value.get());
     }
-    
+
     @Test
     public void testToFunc7() {
         final AtomicLong value = new AtomicLong(-1L);
-        final Action7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> action = 
+        final Action7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> action =
                 new Action7<Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public void call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7) {
                 value.set(t1 | t2 | t3 | t4 | t5 | t6 | t7);
             }
         };
-        
+
         assertNull(Actions.toFunc(action).call(1, 2, 4, 8, 16, 32, 64));
         assertEquals(127, value.get());
         value.set(-1L);
@@ -214,14 +214,14 @@ public class ActionsTest {
     @Test
     public void testToFunc8() {
         final AtomicLong value = new AtomicLong(-1L);
-        final Action8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> action = 
+        final Action8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> action =
                 new Action8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public void call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) {
                 value.set(t1 | t2 | t3 | t4 | t5 | t6 | t7 | t8);
             }
         };
-        
+
         assertNull(Actions.toFunc(action).call(1, 2, 4, 8, 16, 32, 64, 128));
         assertEquals(255, value.get());
         value.set(-1L);
@@ -231,21 +231,21 @@ public class ActionsTest {
     @Test
     public void testToFunc9() {
         final AtomicLong value = new AtomicLong(-1L);
-        final Action9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> action = 
+        final Action9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> action =
                 new Action9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>() {
             @Override
             public void call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) {
                 value.set(t1 | t2 | t3 | t4 | t5 | t6 | t7 | t8 | t9);
             }
         };
-        
+
         assertNull(Actions.toFunc(action).call(1, 2, 4, 8, 16, 32, 64, 128, 256));
         assertEquals(511, value.get());
         value.set(-1L);
         assertEquals((Integer)0, Actions.toFunc(action, 0).call(1, 2, 4, 8, 16, 32, 64, 128, 256));
         assertEquals(511, value.get());
     }
-    
+
     @Test
     public void testToFuncN() {
         for (int i = 0; i < 100; i++) {
@@ -262,7 +262,7 @@ public class ActionsTest {
             };
             Object[] arr = new Object[i];
             Arrays.fill(arr, 1);
-            
+
             assertNull(Actions.toFunc(action).call(arr));
             assertEquals(i, value.get());
             value.set(-1L);
@@ -270,7 +270,7 @@ public class ActionsTest {
             assertEquals(i, value.get());
         }
     }
-    
+
     @Test
     public void constructorShouldBePrivate() {
         TestUtil.checkUtilityClass(Actions.class);

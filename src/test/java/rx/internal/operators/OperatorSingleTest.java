@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -82,7 +82,7 @@ public class OperatorSingleTest {
                 isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
-    
+
     @Test
     public void testSingleDoesNotRequestMoreThanItNeedsToEmitItem() {
         final AtomicLong request = new AtomicLong();
@@ -124,7 +124,7 @@ public class OperatorSingleTest {
             assertEquals(2, request.get());
         }
     }
-    
+
     @Test
     public void testSingleDoesNotRequestMoreThanItNeedsIf1Then2Requested() {
         final List<Long> requests = new ArrayList<Long>();
@@ -163,7 +163,7 @@ public class OperatorSingleTest {
                 });
         assertEquals(Arrays.asList(2L), requests);
     }
-    
+
     @Test
     public void testSingleDoesNotRequestMoreThanItNeedsIf3Requested() {
         final List<Long> requests = new ArrayList<Long>();
@@ -201,7 +201,7 @@ public class OperatorSingleTest {
                 });
         assertEquals(Arrays.asList(2L), requests);
     }
-    
+
     @Test
     public void testSingleRequestsExactlyWhatItNeedsIf1Requested() {
         final List<Long> requests = new ArrayList<Long>();
@@ -457,17 +457,17 @@ public class OperatorSingleTest {
         Integer r = reduced.toBlocking().first();
         assertEquals(21, r.intValue());
     }
-    
+
     @Test
     public void defaultBackpressure() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        
+
         Observable.<Integer>empty().singleOrDefault(1).subscribe(ts);
-        
+
         ts.assertNoValues();
-        
+
         ts.requestMore(1);
-        
+
         ts.assertValue(1);
         ts.assertCompleted();
         ts.assertNoErrors();

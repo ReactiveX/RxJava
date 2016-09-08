@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -238,14 +238,14 @@ public class OperatorOnBackpressureBufferTest {
         }
 
     });
-    
+
     private static final Action0 THROWS_NON_FATAL = new Action0() {
 
         @Override
         public void call() {
             throw new RuntimeException();
-        }}; 
-    
+        }};
+
     @Test
     public void testNonFatalExceptionThrownByOnOverflowIsNotReportedByUpstream() {
          final AtomicBoolean errorOccurred = new AtomicBoolean(false);
@@ -267,9 +267,9 @@ public class OperatorOnBackpressureBufferTest {
     @Test
     public void maxSize() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        
+
         Observable.range(1, 10).onBackpressureBuffer(1).subscribe(ts);
-        
+
         ts.assertNoValues();
         ts.assertError(MissingBackpressureException.class);
         ts.assertNotCompleted();

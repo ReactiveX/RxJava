@@ -29,7 +29,7 @@ import rx.subscriptions.SerialSubscription;
 /**
  * Creates non-overlapping windows of items where each window is terminated by
  * an event from a secondary observable and a new window is started immediately.
- * 
+ *
  * @param <T> the value type
  * @param <U> the boundary value type
  */
@@ -44,16 +44,16 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
     public OperatorWindowWithObservableFactory(Func0<? extends Observable<? extends U>> otherFactory) {
         this.otherFactory = otherFactory;
     }
-    
+
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
-        
+
         SourceSubscriber<T, U> sub = new SourceSubscriber<T, U>(child, otherFactory);
-        
+
         child.add(sub);
-        
+
         sub.replaceWindow();
-        
+
         return sub;
     }
     /** Observes the source. */
@@ -68,12 +68,12 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
         boolean emitting;
         /** Guarded by guard. */
         List<Object> queue;
-        
+
         final SerialSubscription ssub;
-        
+
         final Func0<? extends Observable<? extends U>> otherFactory;
-        
-        public SourceSubscriber(Subscriber<? super Observable<T>> child, 
+
+        public SourceSubscriber(Subscriber<? super Observable<T>> child,
                 Func0<? extends Observable<? extends U>> otherFactory) {
             this.child = new SerializedSubscriber<Observable<T>>(child);
             this.guard = new Object();
@@ -81,12 +81,12 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
             this.otherFactory = otherFactory;
             this.add(ssub);
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             List<Object> localQueue;
@@ -111,7 +111,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
                         once = false;
                         emitValue(t);
                     }
-                    
+
                     synchronized (guard) {
                         localQueue = queue;
                         queue = null;
@@ -173,7 +173,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
                 unsubscribe();
                 return;
             }
-            
+
             BoundarySubscriber<T, U> bs = new BoundarySubscriber<T, U>(this);
             ssub.set(bs);
             other.unsafeSubscribe(bs);
@@ -184,7 +184,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
                 s.onNext(t);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             synchronized (guard) {
@@ -266,7 +266,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
             Observer<T> s = consumer;
             consumer = null;
             producer = null;
-            
+
             if (s != null) {
                 s.onCompleted();
             }
@@ -277,7 +277,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
             Observer<T> s = consumer;
             consumer = null;
             producer = null;
-            
+
             if (s != null) {
                 s.onError(e);
             }
@@ -292,12 +292,12 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
         public BoundarySubscriber(SourceSubscriber<T, U> sub) {
             this.sub = sub;
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(U t) {
             if (!done) {

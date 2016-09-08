@@ -46,11 +46,11 @@ public final class ExecutorScheduler extends Scheduler {
         // TODO: use a better performing structure for task tracking
         final CompositeSubscription tasks;
         // TODO: use MpscLinkedQueue once available
-        final ConcurrentLinkedQueue<ScheduledAction> queue; 
+        final ConcurrentLinkedQueue<ScheduledAction> queue;
         final AtomicInteger wip;
-        
+
         final ScheduledExecutorService service;
-        
+
         public ExecutorSchedulerWorker(Executor executor) {
             this.executor = executor;
             this.queue = new ConcurrentLinkedQueue<ScheduledAction>();
@@ -64,9 +64,9 @@ public final class ExecutorScheduler extends Scheduler {
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            
+
             action = RxJavaHooks.onScheduledAction(action);
-            
+
             ScheduledAction ea = new ScheduledAction(action, tasks);
             tasks.add(ea);
             queue.offer(ea);
@@ -87,7 +87,7 @@ public final class ExecutorScheduler extends Scheduler {
                     throw t;
                 }
             }
-            
+
             return ea;
         }
 
@@ -112,7 +112,7 @@ public final class ExecutorScheduler extends Scheduler {
                 }
             } while (wip.decrementAndGet() != 0);
         }
-        
+
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             if (delayTime <= 0) {
@@ -121,9 +121,9 @@ public final class ExecutorScheduler extends Scheduler {
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            
+
             final Action0 decorated = RxJavaHooks.onScheduledAction(action);
-            
+
             final MultipleAssignmentSubscription first = new MultipleAssignmentSubscription();
             final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
             mas.set(first);
@@ -134,7 +134,7 @@ public final class ExecutorScheduler extends Scheduler {
                     tasks.remove(mas);
                 }
             });
-            
+
             ScheduledAction ea = new ScheduledAction(new Action0() {
                 @Override
                 public void call() {
@@ -156,8 +156,8 @@ public final class ExecutorScheduler extends Scheduler {
             // we don't override the current task in mas.
             first.set(ea);
             // we don't need to add ea to tasks because it will be tracked through mas/first
-            
-            
+
+
             try {
                 Future<?> f = service.schedule(ea, delayTime, unit);
                 ea.add(f);
@@ -166,7 +166,7 @@ public final class ExecutorScheduler extends Scheduler {
                 RxJavaHooks.onError(t);
                 throw t;
             }
-            
+
             /*
              * This allows cancelling either the delayed schedule or the actual schedule referenced
              * by mas and makes sure mas is removed from the tasks composite to avoid leaks.
@@ -184,6 +184,6 @@ public final class ExecutorScheduler extends Scheduler {
             tasks.unsubscribe();
             queue.clear();
         }
-        
+
     }
 }

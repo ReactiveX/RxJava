@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@ import rx.observers.Subscribers;
 
 /**
  * Constructs an observable sequence that depends on a resource object.
- * 
+ *
  * @param <T> the output value type
  * @param <Resource> the resource type
  */
@@ -88,7 +88,7 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
                 // dispose after the terminal signals were sent out
                         .doAfterTerminate(disposeOnceOnly);
             }
-            
+
             try {
                 // start
                 observable.unsafeSubscribe(Subscribers.wrap(subscriber));

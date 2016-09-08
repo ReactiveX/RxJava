@@ -60,21 +60,21 @@ public abstract class InputWithIncrementingInteger {
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
                     int i = 0;
-                    
+
                     @Override
                     public boolean hasNext() {
                         return i < size;
                     }
-                    
+
                     @Override
                     public Integer next() {
                         Blackhole.consumeCPU(10);
                         return i++;
                     }
-                    
+
                     @Override
                     public void remove() {
-                        
+
                     }
                 };
             }

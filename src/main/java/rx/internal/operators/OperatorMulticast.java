@@ -28,7 +28,7 @@ import rx.subscriptions.Subscriptions;
 
 /**
  * Shares a single subscription to a source through a Subject.
- * 
+ *
  * @param <T>
  *            the source value type
  * @param <R>
@@ -110,7 +110,7 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                     }
                 }));
                 guardedSubscription = gs.get();
-                
+
                 // register any subscribers that are waiting with this new subject
                 for(final Subscriber<? super R> s : waitingForConnect) {
                     subject.unsafeSubscribe(new Subscriber<R>(s) {
@@ -133,7 +133,7 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                 // record the Subject so OnSubscribe can see it
                 connectedSubject.set(subject);
             }
-            
+
         }
 
         // in the lock above we determined we should subscribe, do it now outside the lock
@@ -142,7 +142,7 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
 
         // now that everything is hooked up let's subscribe
         // as long as the subscription is not null (which can happen if already unsubscribed)
-        Subscriber<T> sub; 
+        Subscriber<T> sub;
         synchronized (guard) {
             sub = subscription;
         }

@@ -23,14 +23,14 @@ import rx.plugins.RxJavaHooks;
  * Supplements {@code DeferredScalarSubscriber} with defensive behaviour that ensures no emissions
  * occur after a terminal event. If {@code onError} is called more than once then errors after the first
  * are reported to {@code RxJavaHooks.onError}.
- * 
+ *
  * @param <T> source value type
  * @param <R> result value type
  */
 public abstract class DeferredScalarSubscriberSafe<T, R> extends DeferredScalarSubscriber<T,R> {
 
     protected boolean done;
-    
+
     public DeferredScalarSubscriberSafe(Subscriber<? super R> actual) {
         super(actual);
     }
@@ -53,5 +53,5 @@ public abstract class DeferredScalarSubscriberSafe<T, R> extends DeferredScalarS
         done = true;
         super.onCompleted();
     }
-    
+
 }

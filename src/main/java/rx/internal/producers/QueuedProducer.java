@@ -25,32 +25,32 @@ import rx.internal.util.atomic.SpscLinkedAtomicQueue;
 import rx.internal.util.unsafe.*;
 
 /**
- * Producer that holds an unbounded (or custom) queue, handles terminal events, 
+ * Producer that holds an unbounded (or custom) queue, handles terminal events,
  * enqueues values and relays them to a child subscriber on request.
  *
  * @param <T> the value type
  */
 public final class QueuedProducer<T> extends AtomicLong implements Producer, Observer<T> {
-     
+
     /** */
     private static final long serialVersionUID = 7277121710709137047L;
-    
+
     final Subscriber<? super T> child;
     final Queue<Object> queue;
     final AtomicInteger wip;
-    
+
     Throwable error;
     volatile boolean done;
-    
+
     static final Object NULL_SENTINEL = new Object();
-    
+
     /**
      * Constructs an instance with the target child subscriber and an Spsc Linked (Atomic) Queue
      * as the queue implementation.
      * @param child the target child subscriber
      */
     public QueuedProducer(Subscriber<? super T> child) {
-        this(child, UnsafeAccess.isUnsafeAvailable() 
+        this(child, UnsafeAccess.isUnsafeAvailable()
                 ? new SpscLinkedQueue<Object>() : new SpscLinkedAtomicQueue<Object>());
     }
     /**
@@ -63,7 +63,7 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
         this.queue = queue;
         this.wip = new AtomicInteger();
     }
-     
+
     @Override
     public void request(long n) {
         if (n < 0) {
@@ -74,7 +74,7 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
             drain();
         }
     }
-    
+
     /**
      * Offers a value to this producer and tries to emit any queued values
      * if the child requests allow it.
@@ -94,28 +94,28 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
         drain();
         return true;
     }
-    
+
     @Override
     public void onNext(T value) {
         if (!offer(value)) {
             onError(new MissingBackpressureException());
         }
     }
-     
+
     @Override
     public void onError(Throwable e) {
         error = e;
         done = true;
         drain();
     }
-     
+
     @Override
     public void onCompleted() {
         done = true;
         drain();
     }
-    
-    private boolean checkTerminated(boolean isDone, 
+
+    private boolean checkTerminated(boolean isDone,
             boolean isEmpty) {
         if (child.isUnsubscribed()) {
             return true;
@@ -134,7 +134,7 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
         }
         return false;
     }
-    
+
     private void drain() {
         if (wip.getAndIncrement() == 0) {
             final Subscriber<? super T> c = child;
@@ -144,12 +144,12 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
                 if (checkTerminated(done, q.isEmpty())) {    // (1)
                     return;
                 }
-                 
+
                 wip.lazySet(1);
-                 
+
                 long r = get();
                 long e = 0;
- 
+
                 while (r != 0) {
                     boolean d = done;
                     Object v = q.poll();
@@ -159,7 +159,7 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
                     if (v == null) {
                         break;
                     }
-                     
+
                     try {
                         if (v == NULL_SENTINEL) {
                             c.onNext(null);
@@ -175,7 +175,7 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
                     r--;
                     e++;
                 }
-                 
+
                 if (e != 0 && get() != Long.MAX_VALUE) {
                     addAndGet(-e);
                 }

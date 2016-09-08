@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,9 +37,9 @@ public class OperatorTakeUntilPredicateTest {
     public void takeEmpty() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         Observable.empty().takeUntil(UtilityFunctions.alwaysTrue()).subscribe(o);
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
         verify(o).onCompleted();
@@ -48,9 +48,9 @@ public class OperatorTakeUntilPredicateTest {
     public void takeAll() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         Observable.just(1, 2).takeUntil(UtilityFunctions.alwaysFalse()).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onNext(2);
         verify(o, never()).onError(any(Throwable.class));
@@ -60,9 +60,9 @@ public class OperatorTakeUntilPredicateTest {
     public void takeFirst() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         Observable.just(1, 2).takeUntil(UtilityFunctions.alwaysTrue()).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
         verify(o, never()).onError(any(Throwable.class));
@@ -72,14 +72,14 @@ public class OperatorTakeUntilPredicateTest {
     public void takeSome() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         Observable.just(1, 2, 3).takeUntil(new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer t1) {
                 return t1 == 2;
             }
         }).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onNext(2);
         verify(o, never()).onNext(3);
@@ -90,14 +90,14 @@ public class OperatorTakeUntilPredicateTest {
     public void functionThrows() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         Observable.just(1, 2, 3).takeUntil(new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer t1) {
                 throw new TestException("Forced failure");
             }
         }).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
         verify(o, never()).onNext(3);
@@ -108,12 +108,12 @@ public class OperatorTakeUntilPredicateTest {
     public void sourceThrows() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         Observable.just(1)
         .concatWith(Observable.<Integer>error(new TestException()))
         .concatWith(Observable.just(2))
         .takeUntil(UtilityFunctions.alwaysFalse()).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
         verify(o).onError(any(TestException.class));
@@ -127,14 +127,14 @@ public class OperatorTakeUntilPredicateTest {
                 request(5);
             }
         };
-        
+
         Observable.range(1, 1000).takeUntil(UtilityFunctions.alwaysFalse()).subscribe(ts);
-        
+
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
         Assert.assertEquals(0, ts.getCompletions());
     }
-    
+
     @Test
     public void testErrorIncludesLastValueAsCause() {
         TestSubscriber<String> ts = new TestSubscriber<String>();

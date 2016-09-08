@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -72,7 +72,7 @@ public class ExceptionsTest {
         final PublishSubject<Integer> b = PublishSubject.create();
         final int MAX_STACK_DEPTH = 800;
         final AtomicInteger depth = new AtomicInteger();
-        
+
         a.subscribe(new Observer<Integer>() {
 
             @Override
@@ -104,7 +104,7 @@ public class ExceptionsTest {
 
             @Override
             public void onNext(Integer n) {
-                if (depth.get() < MAX_STACK_DEPTH) { 
+                if (depth.get() < MAX_STACK_DEPTH) {
                     depth.set(Thread.currentThread().getStackTrace().length);
                     a.onNext(n + 1);
                 }
@@ -113,7 +113,7 @@ public class ExceptionsTest {
         a.onNext(1);
         assertTrue(depth.get() > MAX_STACK_DEPTH);
     }
-    
+
     @Test(expected = StackOverflowError.class)
     public void testStackOverflowErrorIsThrown() {
         Observable.just(1).subscribe(new Observer<Integer>() {

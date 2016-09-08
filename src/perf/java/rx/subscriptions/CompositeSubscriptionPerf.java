@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,9 +39,9 @@ public class CompositeSubscriptionPerf {
         public int loop;
         @Param({ "1", "5", "10", "100" })
         public int count;
-        
+
         public final CompositeSubscription csub = new CompositeSubscription();
-        
+
         public Subscription[] values;
         @Setup
         public void setup() {
@@ -54,7 +54,7 @@ public class CompositeSubscriptionPerf {
                     }
                     @Override
                     public void unsubscribe() {
-                        
+
                     }
                 };
             }
@@ -64,7 +64,7 @@ public class CompositeSubscriptionPerf {
     public void addRemove(TheState state) {
         CompositeSubscription csub = state.csub;
         Subscription[] values = state.values;
-        
+
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
                 csub.add(values[j]);
@@ -78,7 +78,7 @@ public class CompositeSubscriptionPerf {
     public void addRemoveLocal(TheState state, Blackhole bh) {
         CompositeSubscription csub = new CompositeSubscription();
         Subscription[] values = state.values;
-        
+
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
                 csub.add(values[j]);
@@ -87,14 +87,14 @@ public class CompositeSubscriptionPerf {
                 csub.remove(values[j]);
             }
         }
-        
+
         bh.consume(csub);
     }
     @Benchmark
     public void addClear(TheState state) {
         CompositeSubscription csub = state.csub;
         Subscription[] values = state.values;
-        
+
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
                 csub.add(values[j]);
@@ -106,7 +106,7 @@ public class CompositeSubscriptionPerf {
     public void addClearLocal(TheState state, Blackhole bh) {
         CompositeSubscription csub = new CompositeSubscription();
         Subscription[] values = state.values;
-        
+
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
                 csub.add(values[j]);

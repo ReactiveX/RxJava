@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -148,7 +148,7 @@ public class OperatorSkipTest {
         verify(observer, never()).onCompleted();
 
     }
-    
+
     @Test
     public void testBackpressureMultipleSmallAsyncRequests() throws InterruptedException {
         final AtomicLong requests = new AtomicLong(0);
@@ -169,7 +169,7 @@ public class OperatorSkipTest {
         ts.assertNoErrors();
         assertEquals(6, requests.get());
     }
-    
+
     @Test
     public void testRequestOverflowDoesNotOccur() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(Long.MAX_VALUE-1);
@@ -190,21 +190,21 @@ public class OperatorSkipTest {
                 return scheduler;
             }
         });
-        
+
         try {
             TestSubscriber<Integer> ts = TestSubscriber.create();
-            
+
             PublishSubject<Integer> ps = PublishSubject.create();
-            
+
             ps.skip(1, TimeUnit.SECONDS).subscribe(ts);
-            
+
             ps.onNext(1);
-            
+
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-            
+
             ps.onNext(2);
             ps.onCompleted();
-            
+
             ts.assertValue(2);
             ts.assertNoErrors();
             ts.assertCompleted();

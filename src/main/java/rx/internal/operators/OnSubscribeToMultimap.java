@@ -71,7 +71,7 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
      * @param mapFactory function that returns a Map instance to store keys and values into
      */
     public OnSubscribeToMultimap(
-            Observable<T> source, 
+            Observable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector,
             Func0<? extends Map<K, Collection<V>>> mapFactory) {
@@ -90,7 +90,7 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
      * @param collectionFactory function that returns a Collection for a particular key to store values into
      */
     public OnSubscribeToMultimap(
-            Observable<T> source, 
+            Observable<T> source,
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends V> valueSelector,
             Func0<? extends Map<K, Collection<V>>> mapFactory,
@@ -111,10 +111,10 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
     public Map<K, Collection<V>> call() {
         return new HashMap<K, Collection<V>>();
     }
-    
+
     @Override
     public void call(final Subscriber<? super Map<K, Collection<V>>> subscriber) {
-        
+
         Map<K, Collection<V>> map;
         try {
             map = mapFactory.call();
@@ -127,8 +127,8 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
                 subscriber, map, keySelector, valueSelector, collectionFactory)
             .subscribeTo(source);
     }
-    
-    private static final class ToMultimapSubscriber<T, K, V> 
+
+    private static final class ToMultimapSubscriber<T, K, V>
         extends DeferredScalarSubscriberSafe<T,Map<K, Collection<V>>> {
 
         private final Func1<? super T, ? extends K> keySelector;
@@ -136,7 +136,7 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
         private final Func1<? super K, ? extends Collection<V>> collectionFactory;
 
         ToMultimapSubscriber(
-            Subscriber<? super Map<K, Collection<V>>> subscriber, 
+            Subscriber<? super Map<K, Collection<V>>> subscriber,
             Map<K, Collection<V>> map,
             Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector,
             Func1<? super K, ? extends Collection<V>> collectionFactory) {
@@ -147,7 +147,7 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
             this.valueSelector = valueSelector;
             this.collectionFactory = collectionFactory;
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
@@ -159,10 +159,10 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
                 return;
             }
             try {
-                // any interaction with keySelector, valueSelector, collectionFactory, collection or value 
-                // may fail unexpectedly because their behaviour is customisable by the user. For this 
+                // any interaction with keySelector, valueSelector, collectionFactory, collection or value
+                // may fail unexpectedly because their behaviour is customisable by the user. For this
                 // reason we wrap their calls in try-catch block.
-                
+
                 K key = keySelector.call(t);
                 V v = valueSelector.call(t);
                 Collection<V> collection = value.get(key);
@@ -179,7 +179,7 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
 
           }
     }
-        
+
     /**
      * The default collection factory for a key in the multimap returning
      * an ArrayList independent of the key.
@@ -188,18 +188,18 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
      */
     private static final class DefaultMultimapCollectionFactory<K, V>
             implements Func1<K, Collection<V>> {
-        
+
         private static final DefaultMultimapCollectionFactory<Object,Object> INSTANCE = new DefaultMultimapCollectionFactory<Object, Object>();
-        
+
         @SuppressWarnings("unchecked")
         static <K, V>  DefaultMultimapCollectionFactory<K,V> instance() {
             return (DefaultMultimapCollectionFactory<K, V>) INSTANCE;
         }
-        
+
         @Override
         public Collection<V> call(K t1) {
             return new ArrayList<V>();
         }
     }
-    
+
 }

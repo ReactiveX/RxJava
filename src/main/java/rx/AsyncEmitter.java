@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ import rx.annotations.Experimental;
  * a resource with it and exposes the current number of downstream
  * requested amount.
  * <p>
- * The onNext, onError and onCompleted methods should be called 
+ * The onNext, onError and onCompleted methods should be called
  * in a sequential manner, just like the Observer's methods. The
  * other methods are threadsafe.
  *
@@ -39,7 +39,7 @@ public interface AsyncEmitter<T> extends Observer<T> {
      * @param s the subscription, null is allowed
      */
     void setSubscription(Subscription s);
-    
+
     /**
      * Sets a Cancellable on this emitter; any previous Subscription
      * or Cancellation will be unsubscribed/cancelled.
@@ -52,20 +52,20 @@ public interface AsyncEmitter<T> extends Observer<T> {
      * @return the current outstanding request amount
      */
     long requested();
-    
+
     /**
      * A functional interface that has a single close method
      * that can throw.
      */
     interface Cancellable {
-        
+
         /**
          * Cancel the action or free a resource.
          * @throws Exception on error
          */
         void cancel() throws Exception;
     }
-    
+
     /**
      * Options to handle backpressure in the emitter.
      */

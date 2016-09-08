@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,7 @@ public class OnSubscribeUsingTest {
 
     private interface Resource {
         String getTextFromWeb();
-        
+
         void dispose();
     }
 
@@ -325,15 +325,15 @@ public class OnSubscribeUsingTest {
 
     }
 
-    
-    
+
+
     @Test
     public void testUsingDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
         Func0<Resource> resourceFactory = createResourceFactory(events);
         final Action1<Throwable> onError = createOnErrorAction(events);
         final Action0 unsub = createUnsubAction(events);
-        
+
         Func1<Resource, Observable<String>> observableFactory = new Func1<Resource, Observable<String>>() {
             @Override
             public Observable<String> call(Resource resource) {
@@ -351,14 +351,14 @@ public class OnSubscribeUsingTest {
         assertEquals(Arrays.asList("disposed", "error", "unsub"), events);
 
     }
-    
+
     @Test
     public void testUsingDoesNotDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();
         Func0<Resource> resourceFactory = createResourceFactory(events);
         final Action1<Throwable> onError = createOnErrorAction(events);
         final Action0 unsub = createUnsubAction(events);
-        
+
         Func1<Resource, Observable<String>> observableFactory = new Func1<Resource, Observable<String>>() {
             @Override
             public Observable<String> call(Resource resource) {
@@ -413,7 +413,7 @@ public class OnSubscribeUsingTest {
             }
         };
     }
-    
+
     private static Action0 createOnCompletedAction(final List<String> events) {
         return new Action0() {
             @Override
@@ -422,27 +422,27 @@ public class OnSubscribeUsingTest {
             }
         };
     }
-    
+
     @Test
     public void factoryThrows() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         final AtomicInteger count = new AtomicInteger();
-        
+
         Observable.<Integer, Integer>using(
                 new Func0<Integer>() {
                     @Override
                     public Integer call() {
                         return 1;
                     }
-                }, 
+                },
                 new Func1<Integer, Observable<Integer>>() {
                     @Override
-                    public Observable<Integer> call(Integer v) { 
-                        throw new TestException("forced failure"); 
+                    public Observable<Integer> call(Integer v) {
+                        throw new TestException("forced failure");
                     }
-                }, 
+                },
                 new Action1<Integer>() {
                     @Override
                     public void call(Integer c) {
@@ -451,32 +451,32 @@ public class OnSubscribeUsingTest {
                 }
         )
         .unsafeSubscribe(ts);
-        
+
         ts.assertError(TestException.class);
-        
+
         Assert.assertEquals(1, count.get());
     }
-    
+
     @Test
     public void nonEagerTermination() {
-        
+
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        
+
         final AtomicInteger count = new AtomicInteger();
-        
+
         Observable.<Integer, Integer>using(
                 new Func0<Integer>() {
                     @Override
                     public Integer call() {
                         return 1;
                     }
-                }, 
+                },
                 new Func1<Integer, Observable<Integer>>() {
                     @Override
-                    public Observable<Integer> call(Integer v) { 
+                    public Observable<Integer> call(Integer v) {
                         return Observable.just(v);
                     }
-                }, 
+                },
                 new Action1<Integer>() {
                     @Override
                     public void call(Integer c) {
@@ -485,11 +485,11 @@ public class OnSubscribeUsingTest {
                 }, false
         )
         .unsafeSubscribe(ts);
-        
+
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
-        
+
         Assert.assertEquals(1, count.get());
     }
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ import rx.Observer;
  * affect performance because exceptions should be exceptionally rare.
  * <p>
  * It's implemented as a singleton to maintain some semblance of type safety that is completely non-existent.
- * 
+ *
  * @param <T> the element type
  */
 public final class NotificationLite<T> {
@@ -54,7 +54,7 @@ public final class NotificationLite<T> {
 
     private static final Object ON_COMPLETED_SENTINEL = new Serializable() {
         private static final long serialVersionUID = 1;
-        
+
         @Override
         public String toString() {
             return "Notification=>Completed";
@@ -63,7 +63,7 @@ public final class NotificationLite<T> {
 
     private static final Object ON_NEXT_NULL_SENTINEL = new Serializable() {
         private static final long serialVersionUID = 2;
-        
+
         @Override
         public String toString() {
             return "Notification=>NULL";
@@ -77,7 +77,7 @@ public final class NotificationLite<T> {
         public OnErrorSentinel(Throwable e) {
             this.e = e;
         }
-        
+
         @Override
         public String toString() {
             return "Notification=>Error:" + e;
@@ -87,7 +87,7 @@ public final class NotificationLite<T> {
     /**
      * Creates a lite {@code onNext} notification for the value passed in without doing any allocation. Can
      * be unwrapped and sent with the {@link #accept} method.
-     * 
+     *
      * @param t
      *          the item emitted to {@code onNext}
      * @return the item, or a null token representing the item if the item is {@code null}
@@ -103,7 +103,7 @@ public final class NotificationLite<T> {
     /**
      * Creates a lite {@code onCompleted} notification without doing any allocation. Can be unwrapped and
      * sent with the {@link #accept} method.
-     * 
+     *
      * @return a completion token
      */
     public Object completed() {
@@ -114,7 +114,7 @@ public final class NotificationLite<T> {
      * Create a lite {@code onError} notification. This call creates an object to wrap the {@link Throwable},
      * but since there should only be one of these, the performance impact should be small. Can be unwrapped and
      * sent with the {@link #accept} method.
-     * 
+     *
      * @param e
      *           the {@code Throwable} in the {@code onError} notification
      * @return an object encapsulating the exception
@@ -125,7 +125,7 @@ public final class NotificationLite<T> {
 
     /**
      * Unwraps the lite notification and calls the appropriate method on the {@link Observer}.
-     * 
+     *
      * @param o
      *            the {@link Observer} to call {@code onNext}, {@code onCompleted}, or {@code onError}.
      * @param n
@@ -199,7 +199,7 @@ public final class NotificationLite<T> {
      * Indicates which variety a particular lite notification is. If you need something more complex than
      * simply calling the right method on an {@link Observer} then you can use this method to get the
      * {@link rx.Notification.Kind}.
-     * 
+     *
      * @param n
      *            the lite notification
      * @throws IllegalArgumentException
@@ -224,7 +224,7 @@ public final class NotificationLite<T> {
      * Returns the item corresponding to this {@code OnNext} lite notification. Bad things happen if you pass
      * this an {@code OnComplete} or {@code OnError} notification type. For performance reasons, this method
      * does not check for this, so you are expected to prevent such a mishap.
-     * 
+     *
      * @param n
      *            the lite notification (of type {@code Kind.OnNext})
      * @return the unwrapped value, which can be null
@@ -238,7 +238,7 @@ public final class NotificationLite<T> {
      * Returns the {@link Throwable} corresponding to this {@code OnError} lite notification. Bad things happen
      * if you pass this an {@code OnComplete} or {@code OnNext} notification type. For performance reasons, this
      * method does not check for this, so you are expected to prevent such a mishap.
-     * 
+     *
      * @param n
      *            the lite notification (of type {@code Kind.OnError})
      * @return the {@link Throwable} wrapped inside {@code n}

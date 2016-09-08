@@ -55,7 +55,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      * Possible value of {@link #cachedSetRemoveOnCancelPolicyMethod} which means that cancel policy is not supported.
      */
     private static final Object SET_REMOVE_ON_CANCEL_POLICY_METHOD_NOT_SUPPORTED = new Object();
-    
+
     static {
         EXECUTORS = new ConcurrentHashMap<ScheduledThreadPoolExecutor, ScheduledThreadPoolExecutor>();
         PURGE = new AtomicReference<ScheduledExecutorService>();
@@ -71,10 +71,10 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
         SHOULD_TRY_ENABLE_CANCEL_POLICY = !purgeForce
                 && (androidApiVersion == ANDROID_API_VERSION_IS_NOT_ANDROID || androidApiVersion >= 21);
     }
-    /** 
-     * Registers the given executor service and starts the purge thread if not already started. 
+    /**
+     * Registers the given executor service and starts the purge thread if not already started.
      * <p>{@code public} visibility reason: called from other package(s) within RxJava
-     * @param service a scheduled thread pool executor instance 
+     * @param service a scheduled thread pool executor instance
      */
     public static void registerExecutor(ScheduledThreadPoolExecutor service) {
         do {
@@ -90,19 +90,19 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
                         purgeExecutors();
                     }
                 }, PURGE_FREQUENCY, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
-                
+
                 break;
             } else {
                 exec.shutdownNow();
             }
         } while (true);
-        
+
         EXECUTORS.putIfAbsent(service, service);
     }
-    /** 
-     * Deregisters the executor service. 
+    /**
+     * Deregisters the executor service.
      * <p>{@code public} visibility reason: called from other package(s) within RxJava
-     * @param service a scheduled thread pool executor instance 
+     * @param service a scheduled thread pool executor instance
      */
     public static void deregisterExecutor(ScheduledExecutorService service) {
         EXECUTORS.remove(service);
@@ -133,10 +133,10 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      * If the method returns false, the {@link #registerExecutor(ScheduledThreadPoolExecutor)} may
      * be called to enable the backup option of purging the executors.
      * @param executor the executor to call setRemoveOnCaneclPolicy if available.
-     * @return true if the policy was successfully enabled 
+     * @return true if the policy was successfully enabled
      */
     public static boolean tryEnableCancelPolicy(ScheduledExecutorService executor) {
-        if (SHOULD_TRY_ENABLE_CANCEL_POLICY) { // NOPMD 
+        if (SHOULD_TRY_ENABLE_CANCEL_POLICY) { // NOPMD
             final boolean isInstanceOfScheduledThreadPoolExecutor = executor instanceof ScheduledThreadPoolExecutor;
 
             Method methodToCall;
@@ -202,7 +202,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
 
         return null;
     }
-    
+
     /* package */
     public NewThreadWorker(ThreadFactory threadFactory) {
         ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, threadFactory);
@@ -229,7 +229,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
 
     /**
      * Schedules the given action by wrapping it into a ScheduledAction on the
-     * underlying ExecutorService, returning the ScheduledAction. 
+     * underlying ExecutorService, returning the ScheduledAction.
      * @param action the action to wrap and schedule
      * @param delayTime the delay in execution
      * @param unit the time unit of the delay
@@ -263,12 +263,12 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
 
         return run;
     }
-    
+
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, SubscriptionList parent) {
         Action0 decoratedAction = RxJavaHooks.onScheduledAction(action);
         ScheduledAction run = new ScheduledAction(decoratedAction, parent);
         parent.add(run);
-        
+
         Future<?> f;
         if (delayTime <= 0) {
             f = executor.submit(run);

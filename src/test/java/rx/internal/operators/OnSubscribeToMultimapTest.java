@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -139,7 +139,7 @@ public class OnSubscribeToMultimapTest {
         verify(objectObserver, times(1)).onNext(expected);
         verify(objectObserver, times(1)).onCompleted();
     }
-    
+
     private static final <K,V> Func1<K, Collection<V>> arrayListCollectionFactory() {
         return new Func1<K, Collection<V>>() {
 
@@ -148,7 +148,7 @@ public class OnSubscribeToMultimapTest {
                 return new ArrayList<V>();
             }};
     }
-    
+
     private static final <K, V> Func0<Map<K, Collection<V>>> multimapFactory() {
         return new Func0<Map<K, Collection<V>>>() {
 
@@ -296,27 +296,27 @@ public class OnSubscribeToMultimapTest {
         verify(objectObserver, never()).onNext(expected);
         verify(objectObserver, never()).onCompleted();
     }
-    
+
     @Test
     public void testKeySelectorThrows() {
         TestSubscriber<Object> ts = TestSubscriber.create();
-        
+
         Observable.just(1, 2).toMultimap(new Func1<Integer, Integer>() {
             @Override
             public Integer call(Integer v) {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertError(TestException.class);
         ts.assertNoValues();
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testValueSelectorThrows() {
         TestSubscriber<Object> ts = TestSubscriber.create();
-        
+
         Observable.just(1, 2).toMultimap(new Func1<Integer, Integer>() {
             @Override
             public Integer call(Integer v) {
@@ -328,16 +328,16 @@ public class OnSubscribeToMultimapTest {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertError(TestException.class);
         ts.assertNoValues();
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testMapFactoryThrows() {
         TestSubscriber<Object> ts = TestSubscriber.create();
-        
+
         Observable.just(1, 2).toMultimap(new Func1<Integer, Integer>() {
             @Override
             public Integer call(Integer v) {
@@ -354,16 +354,16 @@ public class OnSubscribeToMultimapTest {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertError(TestException.class);
         ts.assertNoValues();
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testCollectionFactoryThrows() {
         TestSubscriber<Object> ts = TestSubscriber.create();
-        
+
         Observable.just(1, 2).toMultimap(new Func1<Integer, Integer>() {
             @Override
             public Integer call(Integer v) {
@@ -385,12 +385,12 @@ public class OnSubscribeToMultimapTest {
                 throw new TestException();
             }
         }).subscribe(ts);
-        
+
         ts.assertError(TestException.class);
         ts.assertNoValues();
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testKeySelectorFailureDoesNotAllowErrorAndCompletedEmissions() {
         TestSubscriber<Map<Integer, Collection<Integer>>> ts = TestSubscriber.create(0);
@@ -421,7 +421,7 @@ public class OnSubscribeToMultimapTest {
         ts.assertError(e);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testKeySelectorFailureDoesNotAllowTwoErrorEmissions() {
         try {
@@ -466,7 +466,7 @@ public class OnSubscribeToMultimapTest {
             RxJavaHooks.reset();
         }
     }
-    
+
     @Test
     public void testFactoryFailureDoesNotAllowErrorThenOnNextEmissions() {
         TestSubscriber<Map<Integer, Collection<Integer>>> ts = TestSubscriber.create(0);
@@ -497,7 +497,7 @@ public class OnSubscribeToMultimapTest {
         ts.assertError(e);
         ts.assertNotCompleted();
     }
-    
+
     @Test
     public void testBackpressure() {
         TestSubscriber<Object> ts = TestSubscriber.create(0);
@@ -512,5 +512,5 @@ public class OnSubscribeToMultimapTest {
         ts.assertValueCount(1);
         ts.assertNoErrors();
         ts.assertCompleted();
-    }    
+    }
 }

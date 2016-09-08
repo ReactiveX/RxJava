@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ import rx.subscriptions.*;
 
 /**
  * Correlates the elements of two sequences based on overlapping durations.
- * 
+ *
  * @param <TLeft> the left value type
  * @param <TRight> the right value type
  * @param <TLeftDuration> the left duration value type
@@ -63,7 +63,7 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
     /** Manage the left and right sources. */
     final class ResultSink extends HashMap<Integer,TLeft> {
         //HashMap aspect of `this` refers to the `leftMap`
-        
+
         private static final long serialVersionUID = 3491669543549085380L;
 
         final CompositeSubscription group;
@@ -90,13 +90,13 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
         HashMap<Integer, TLeft> leftMap() {
             return this;
         }
-        
+
         public void run() {
             subscriber.add(group);
-            
+
             Subscriber<TLeft> s1 = new LeftSubscriber();
             Subscriber<TRight> s2 = new RightSubscriber();
-            
+
             group.add(s1);
             group.add(s2);
 
@@ -232,7 +232,7 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
 
             @Override
             public void onNext(TRight args) {
-                int id; 
+                int id;
                 int highLeftId;
                 synchronized (ResultSink.this) {
                     id = rightId++;
@@ -248,9 +248,9 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
 
                     Subscriber<TRightDuration> d2 = new RightDurationSubscriber(id);
                     group.add(d2);
-                    
+
                     duration.unsafeSubscribe(d2);
-                    
+
 
                     List<TLeft> leftValues = new ArrayList<TLeft>();
                     synchronized (ResultSink.this) {
@@ -260,12 +260,12 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
                             }
                         }
                     }
-                    
+
                     for (TLeft lv : leftValues) {
                         R result = resultSelector.call(lv, args);
                         subscriber.onNext(result);
                     }
-                    
+
                 } catch (Throwable t) {
                     Exceptions.throwOrReport(t, this);
                 }

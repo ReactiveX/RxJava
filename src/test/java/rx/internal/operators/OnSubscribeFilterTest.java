@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -117,19 +117,19 @@ public class OnSubscribeFilterTest {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L) {
-            
+
             @Override
             public void onCompleted() {
                 System.out.println("onCompleted");
                 latch.countDown();
             }
-            
+
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
                 latch.countDown();
             }
-            
+
             @Override
             public void onNext(Integer t) {
                 System.out.println("Received: " + t);
@@ -145,7 +145,7 @@ public class OnSubscribeFilterTest {
         // this will wait forever unless OperatorTake handles the request(n) on filtered items
         latch.await();
     }
-    
+
     @Test
     public void testFatalError() {
         try {
@@ -173,37 +173,37 @@ public class OnSubscribeFilterTest {
 
     @Test
     public void functionCrashUnsubscribes() {
-        
+
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        
+
         ps.filter(new Func1<Integer, Boolean>() {
             @Override
-            public Boolean call(Integer v) { 
-                throw new TestException(); 
+            public Boolean call(Integer v) {
+                throw new TestException();
             }
         }).unsafeSubscribe(ts);
-        
+
         Assert.assertTrue("Not subscribed?", ps.hasObservers());
-        
+
         ps.onNext(1);
-        
+
         Assert.assertFalse("Subscribed?", ps.hasObservers());
-        
+
         ts.assertError(TestException.class);
     }
 
     @Test
     public void doesntRequestOnItsOwn() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
-        
+
         Observable.range(1, 10).filter(UtilityFunctions.alwaysTrue()).unsafeSubscribe(ts);
-        
+
         ts.assertNoValues();
-        
+
         ts.requestMore(10);
-        
+
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts.assertNoErrors();
         ts.assertCompleted();

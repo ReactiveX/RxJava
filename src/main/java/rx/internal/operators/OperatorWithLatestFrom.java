@@ -34,7 +34,7 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T>  {
     final Observable<? extends U> other;
     /** Indicates the other has not yet emitted a value. */
     static final Object EMPTY = new Object();
-    
+
     public OperatorWithLatestFrom(Observable<? extends U> other, Func2<? super T, ? super U, ? extends R> resultSelector) {
         this.other = other;
         this.resultSelector = resultSelector;
@@ -44,9 +44,9 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T>  {
         // onError and onCompleted may happen either from the main or from other.
         final SerializedSubscriber<R> s = new SerializedSubscriber<R>(child, false);
         child.add(s);
-        
+
         final AtomicReference<Object> current = new AtomicReference<Object>(EMPTY);
-        
+
         final Subscriber<T> subscriber = new Subscriber<T>(s, true) {
             @Override
             public void onNext(T t) {
@@ -56,7 +56,7 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T>  {
                         @SuppressWarnings("unchecked")
                         U u = (U)o;
                         R result = resultSelector.call(t, u);
-                        
+
                         s.onNext(result);
                     } catch (Throwable e) {
                         Exceptions.throwOrReport(e, this);
@@ -74,7 +74,7 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T>  {
                 s.unsubscribe();
             }
         };
-        
+
         Subscriber<U> otherSubscriber = new Subscriber<U>() {
             @Override
             public void onNext(U t) {
@@ -95,9 +95,9 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T>  {
         };
         s.add(subscriber);
         s.add(otherSubscriber);
-        
+
         other.unsafeSubscribe(otherSubscriber);
-        
+
         return subscriber;
     }
 }
