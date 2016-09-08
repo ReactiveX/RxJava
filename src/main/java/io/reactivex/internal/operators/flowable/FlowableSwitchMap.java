@@ -175,6 +175,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
+                s.cancel();
 
                 disposeInner();
             }
@@ -186,7 +187,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
             if (a != CANCELLED) {
                 a = active.getAndSet((SwitchMapInnerSubscriber<T, R>)CANCELLED);
                 if (a != CANCELLED && a != null) {
-                    s.cancel();
+                    a.cancel();
                 }
             }
         }
