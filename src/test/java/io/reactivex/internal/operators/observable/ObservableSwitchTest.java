@@ -607,4 +607,20 @@ public class ObservableSwitchTest {
 
     }
 
+
+    @Test
+    public void switchMapInnerCancelled() {
+        PublishSubject<Integer> pp = PublishSubject.create();
+
+        TestObserver<Integer> ts = Observable.just(1)
+                .switchMap(Functions.justFunction(pp))
+                .test();
+
+        assertTrue(pp.hasObservers());
+
+        ts.cancel();
+
+        assertFalse(pp.hasObservers());
+    }
+
 }

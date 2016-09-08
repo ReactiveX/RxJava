@@ -797,4 +797,18 @@ public class FlowableSwitchTest {
 
     }
 
+    @Test
+    public void switchMapInnerCancelled() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = Flowable.just(1)
+                .switchMap(Functions.justFunction(pp))
+                .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse(pp.hasSubscribers());
+    }
 }

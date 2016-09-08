@@ -160,7 +160,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
-
+                s.dispose();
                 disposeInner();
             }
         }
@@ -176,7 +176,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
             if (a != CANCELLED) {
                 a = active.getAndSet((SwitchMapInnerSubscriber<T, R>)CANCELLED);
                 if (a != CANCELLED && a != null) {
-                    s.dispose();
+                    a.cancel();
                 }
             }
         }
