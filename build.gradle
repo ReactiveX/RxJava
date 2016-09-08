@@ -31,6 +31,9 @@ dependencies {
 
     perfCompile 'org.openjdk.jmh:jmh-core:1.13'
     perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.13'
+
+    testCompile 'org.reactivestreams:reactive-streams-tck:1.0.0'
+    testCompile group: 'org.testng', name: 'testng', version: '6.9.10'
 }
 
 javadoc {
@@ -71,6 +74,12 @@ test {
         maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     }
 }
+
+task testng(type: Test) { 
+     useTestNG() 
+} 
+
+check.dependsOn testng 
 
 jacoco {
     toolVersion = '0.7.7.201606060606' // See http://www.eclemma.org/jacoco/.
