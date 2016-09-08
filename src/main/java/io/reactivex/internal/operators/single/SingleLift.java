@@ -14,7 +14,9 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 
 public final class SingleLift<T, R> extends Single<R> {
 
@@ -29,22 +31,17 @@ public final class SingleLift<T, R> extends Single<R> {
 
     @Override
     protected void subscribeActual(SingleObserver<? super R> s) {
-        try {
-            SingleObserver<? super T> sr = onLift.apply(s);
+        SingleObserver<? super T> sr;
 
-            if (sr == null) {
-                throw new NullPointerException("The onLift returned a null subscriber");
-            }
-            // TODO plugin wrapper
-            source.subscribe(sr);
-        } catch (NullPointerException ex) { // NOPMD
-            throw ex;
+        try {
+            sr = ObjectHelper.requireNonNull(onLift.apply(s), "The onLift returned a null SingleObserver");
         } catch (Throwable ex) {
-            RxJavaPlugins.onError(ex);
-            NullPointerException npe = new NullPointerException("Not really but can't throw other than NPE");
-            npe.initCause(ex);
-            throw npe;
+            Exceptions.throwIfFatal(ex);
+            EmptyDisposable.error(ex, s);
+            return;
         }
+
+        source.subscribe(sr);
     }
 
 }

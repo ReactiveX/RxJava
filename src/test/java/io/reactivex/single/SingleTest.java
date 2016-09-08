@@ -15,7 +15,7 @@ package io.reactivex.single;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -25,6 +25,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.operators.single.SingleInternalHelper;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -505,5 +506,14 @@ public class SingleTest {
         }
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void toFlowableIterableRemove() {
+        @SuppressWarnings("unchecked")
+        Iterable<? extends Flowable<Integer>> f = SingleInternalHelper.iterableToFlowable(Arrays.asList(Single.just(1)));
+
+        Iterator<? extends Flowable<Integer>> iterator = f.iterator();
+        iterator.next();
+        iterator.remove();
+    }
 }
 

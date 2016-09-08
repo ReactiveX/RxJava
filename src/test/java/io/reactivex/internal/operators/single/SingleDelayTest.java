@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -44,6 +45,14 @@ public class SingleDelayTest {
         Thread.sleep(200);
 
         assertEquals(1, value.get());
+    }
+
+    @Test
+    public void delayError() {
+        Single.error(new TestException()).delay(5, TimeUnit.SECONDS)
+        .test()
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
     }
 
     @Test
