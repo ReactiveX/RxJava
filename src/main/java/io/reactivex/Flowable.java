@@ -7472,7 +7472,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.png" alt="">
      * <p>
-     * This differs from {@code finallyDo} in that this happens <em>before</em> the {@code onComplete} or
+     * This differs from {@code doAfterTerminate} in that this happens <em>before</em> the {@code onComplete} or
      * {@code onError} notification.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>

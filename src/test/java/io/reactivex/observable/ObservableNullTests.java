@@ -1329,7 +1329,7 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void finallyDoNull() {
+    public void doAfterTerminateNull() {
         just1.doAfterTerminate(null);
     }
 
