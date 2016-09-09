@@ -11,18 +11,19 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.subscribers.flowable;
+package io.reactivex.internal.util;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observer;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Singleton implementing many interfaces as empty.
  */
-public enum EmptyComponent implements Subscriber<Object>, Observer<Object>, Subscription, Disposable {
+public enum EmptyComponent implements Subscriber<Object>, Observer<Object>, MaybeObserver<Object>,
+SingleObserver<Object>, CompletableObserver, Subscription, Disposable {
     INSTANCE;
 
     @SuppressWarnings("unchecked")
@@ -77,6 +78,11 @@ public enum EmptyComponent implements Subscriber<Object>, Observer<Object>, Subs
 
     @Override
     public void onComplete() {
+        // deliberately no-op
+    }
+
+    @Override
+    public void onSuccess(Object value) {
         // deliberately no-op
     }
 }

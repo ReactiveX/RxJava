@@ -1808,6 +1808,28 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     // ------------------------------------------------------------------
 
     /**
+     * Mirrors the MaybeSource (current or provided) that first signals an event.
+     * <p>
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other
+     *            a MaybeSource competing to react first
+     * @return a Maybe that emits the same sequence as whichever of the source MaybeSources first
+     *         signalled
+     * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
+     */
+    @SuppressWarnings("unchecked")
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> ambWith(MaybeSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return ambArray(this, other);
+    }
+
+    /**
      * Waits in a blocking fashion until the current Maybe signals a success value (which is returned),
      * null if completed or an exception (which is propagated).
      * <dl>
@@ -1816,7 +1838,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * @return the success value
      */
-    public T blockingGet() {
+    public final T blockingGet() {
         BlockingObserver<T> observer = new BlockingObserver<T>();
         subscribe(observer);
         return observer.blockingGet();
@@ -1832,11 +1854,36 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param defaultValue the default item to return if this Maybe is empty
      * @return the success value
      */
-    public T blockingGet(T defaultValue) {
+    public final T blockingGet(T defaultValue) {
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
         BlockingObserver<T> observer = new BlockingObserver<T>();
         subscribe(observer);
         return observer.blockingGet(defaultValue);
+    }
+
+    /**
+     * Returns a Maybe that subscribes to this Maybe lazily, caches its event
+     * and replays it, to all the downstream subscribers.
+     * <p>
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
+     * <p>
+     * The operator subscribes only when the first downstream subscriber subscribes and maintains
+     * a single subscription towards this Maybe.
+     * <p>
+     * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a Flowable that, when first subscribed to, caches all of its items and notifications for the
+     *         benefit of subsequent subscribers
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> cache() {
+        return new MaybeCache<T>(this);
     }
 
     /**
@@ -1898,6 +1945,146 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public final <R> Maybe<R> concatMap(Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new MaybeFlatten<T, R>(this, mapper));
+    }
+
+
+    /**
+     * Returns a Flowable that emits the items emitted from the current MaybeSource, then the next, one after
+     * the other, without interleaving them.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other
+     *            a MaybeSource to be concatenated after the current
+     * @return a Flowable that emits items emitted by the two source MaybeSources, one after the other,
+     *         without interleaving them
+     * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<T> concatWith(MaybeSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return concat(this, other);
+    }
+
+    /**
+     * Returns a Single that emits a Boolean that indicates whether the source Publisher emitted a
+     * specified item.
+     * <p>
+     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/contains.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code contains} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param item
+     *            the item to search for in the emissions from the source Maybe, not null
+     * @return a Single that emits {@code true} if the specified item is emitted by the source Maybe,
+     *         or {@code false} if the source Maybe completes without emitting that item
+     * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<Boolean> contains(final Object item) {
+        ObjectHelper.requireNonNull(item, "item is null");
+        return RxJavaPlugins.onAssembly(new MaybeContains<T>(this, item));
+    }
+
+    /**
+     * Returns a Maybe that counts the total number of items emitted (0 or 1) by the source Maybe and emits
+     * this count as a 64-bit Long.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code countLong} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a Single that emits a single item: the number of items emitted by the source Publisher as a
+     *         64-bit Long item
+     * @see <a href="http://reactivex.io/documentation/operators/count.html">ReactiveX operators documentation: Count</a>
+     * @see #count()
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<Long> count() {
+        return RxJavaPlugins.onAssembly(new MaybeCount<T>(this));
+    }
+
+    /**
+     * Returns a Maybe that emits the item emitted by the source Maybe or a specified default item
+     * if the source Maybe is empty.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defaultIfEmpty.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code defaultIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param defaultItem
+     *            the item to emit if the source Maybe emits no items
+     * @return a Maybe that emits either the specified default item if the source Maybe emits no
+     *         items, or the items emitted by the source Maybe
+     * @see <a href="http://reactivex.io/documentation/operators/defaultifempty.html">ReactiveX operators documentation: DefaultIfEmpty</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> defaultIfEmpty(T defaultItem) {
+        ObjectHelper.requireNonNull(defaultItem, "item is null");
+        return switchIfEmpty(just(defaultItem));
+    }
+
+
+    /**
+     * Returns a Maybe that signals the events emitted by the source Maybe shifted forward in time by a
+     * specified delay.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param delay
+     *            the delay to shift the source by
+     * @param unit
+     *            the {@link TimeUnit} in which {@code period} is defined
+     * @return the new Maybe instance
+     * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
+     */
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Maybe<T> delay(long delay, TimeUnit unit) {
+        return delay(delay, unit, Schedulers.computation());
+    }
+
+    /**
+     * Returns a Maybe that signals the events emitted by the source Maybe shifted forward in time by a
+     * specified delay running on the specified Scheduler.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     *
+     * @param delay
+     *            the delay to shift the source by
+     * @param unit
+     *            the time unit of {@code delay}
+     * @param scheduler
+     *            the {@link Scheduler} to use for delaying
+     * @return the new Maybe instance
+     * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
+     */
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Maybe<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new MaybeDelay<T>(this, Math.max(0L, delay), unit, scheduler));
     }
 
     /**
@@ -2546,6 +2733,58 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         return observer;
     }
 
+    /**
+     * Returns a Maybe that emits the items emitted by the source Maybe or the items of an alternate
+     * MaybeSource if the current Maybe is empty.
+     * <p/>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other
+     *              the alternate MaybeSource to subscribe to if the main does not emit any items
+     * @return  a Maybe that emits the items emitted by the source Maybe or the items of an
+     *          alternate MaybeSource if the source Maybe is empty.
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> switchIfEmpty(MaybeSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new MaybeSwitchIfEmpty<T>(this, other));
+    }
+
+
+    /**
+     * Waits until this and the other MaybeSource signal a success value then applies the given BiFunction
+     * to those values and emits the BiFunction's resulting value to downstream.
+     *
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * 
+     * <p>If either this or the other MaybeSource is empty or signals an error, the resulting Maybe will
+     * terminate immediately and dispose the other source.
+     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <U>
+     *            the type of items emitted by the {@code other} Publisher
+     * @param <R>
+     *            the type of items emitted by the resulting Publisher
+     * @param other
+     *            the other Publisher
+     * @param zipper
+     *            a function that combines the pairs of items from the two Publishers to generate the items to
+     *            be emitted by the resulting Publisher
+     * @return the new Maybe instance
+     * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <U, R> Maybe<R> zipWith(MaybeSource<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return zip(this, other, zipper);
+    }
 
     // ------------------------------------------------------------------
     // Test helper

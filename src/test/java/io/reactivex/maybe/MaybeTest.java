@@ -2739,6 +2739,14 @@ public class MaybeTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void zipWith() {
+        Maybe.just(1).zipWith(Maybe.just(2), ArgsToString.INSTANCE)
+        .test()
+        .assertResult("12");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void zip3() {
         Maybe.zip(Maybe.just(1), Maybe.just(2), Maybe.just(3),
             ArgsToString.INSTANCE)
@@ -2804,4 +2812,50 @@ public class MaybeTest {
         .test()
         .assertResult("123456789");
     }
+
+
+    @Test
+    public void ambWith1SignalsSuccess() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp1.toMaybe().ambWith(pp2.toMaybe())
+        .test();
+
+        ts.assertEmpty();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp1.onNext(1);
+        pp1.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        ts.assertResult(1);
+    }
+
+    @Test
+    public void ambWith2SignalsSuccess() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp1.toMaybe().ambWith(pp2.toMaybe())
+        .test();
+
+        ts.assertEmpty();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onNext(2);
+        pp2.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        ts.assertResult(2);
+    }
+
 }
