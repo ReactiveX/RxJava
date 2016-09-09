@@ -14,12 +14,14 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -909,6 +911,28 @@ public class FlowableDelayTest {
         verify(o, never()).onNext(any());
         verify(o, never()).onComplete();
         verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testOnErrorCalledOnScheduler() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<Thread> thread = new AtomicReference<Thread>();
+
+        Flowable.<String>error(new Exception())
+                .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())
+                .doOnError(new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        thread.set(Thread.currentThread());
+                        latch.countDown();
+                    }
+                })
+                .onErrorResumeNext(Flowable.<String>empty())
+                .subscribe();
+
+        latch.await();
+
+        assertNotEquals(Thread.currentThread(), thread.get());
     }
 
 }

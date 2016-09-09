@@ -14,11 +14,13 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -858,4 +860,27 @@ public class ObservableDelayTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 1);
     }
+
+    @Test
+    public void testOnErrorCalledOnScheduler() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<Thread> thread = new AtomicReference<Thread>();
+
+        Observable.<String>error(new Exception())
+                .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())
+                .doOnError(new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        thread.set(Thread.currentThread());
+                        latch.countDown();
+                    }
+                })
+                .onErrorResumeNext(Observable.<String>empty())
+                .subscribe();
+
+        latch.await();
+
+        assertNotEquals(Thread.currentThread(), thread.get());
+    }
+
 }

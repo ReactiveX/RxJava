@@ -57,16 +57,12 @@ public final class CompletableDelay extends Completable {
 
             @Override
             public void onError(final Throwable e) {
-                if (delayError) {
-                    set.add(scheduler.scheduleDirect(new Runnable() {
-                        @Override
-                        public void run() {
-                            s.onError(e);
-                        }
-                    }, delay, unit));
-                } else {
-                    s.onError(e);
-                }
+                set.add(scheduler.scheduleDirect(new Runnable() {
+                    @Override
+                    public void run() {
+                        s.onError(e);
+                    }
+                }, delayError ? delay : 0, unit));
             }
 
             @Override

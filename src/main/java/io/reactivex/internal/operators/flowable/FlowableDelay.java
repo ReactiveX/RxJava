@@ -88,20 +88,16 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
 
         @Override
         public void onError(final Throwable t) {
-            if (delayError) {
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            actual.onError(t);
-                        } finally {
-                            w.dispose();
-                        }
+            w.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        actual.onError(t);
+                    } finally {
+                        w.dispose();
                     }
-                }, delay, unit);
-            } else {
-                actual.onError(t);
-            }
+                }
+            }, delayError ? delay : 0, unit);
         }
 
         @Override
