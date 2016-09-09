@@ -18,7 +18,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Completable;
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
@@ -29,11 +29,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class ResourceObserverTest {
-
-    static final class TestResourceObserver<T> extends ResourceObserver<T> {
-        final List<T> values = new ArrayList<T>();
-
+public class ResourceCompletableObserverTest {
+    static final class TestResourceCompletableObserver extends ResourceCompletableObserver {
         final List<Throwable> errors = new ArrayList<Throwable>();
 
         int complete;
@@ -48,8 +45,10 @@ public class ResourceObserverTest {
         }
 
         @Override
-        public void onNext(T value) {
-            values.add(value);
+        public void onComplete() {
+            complete++;
+
+            dispose();
         }
 
         @Override
@@ -58,118 +57,109 @@ public class ResourceObserverTest {
 
             dispose();
         }
-
-        @Override
-        public void onComplete() {
-            complete++;
-
-            dispose();
-        }
     }
 
     @Test(expected = NullPointerException.class)
     public void nullResource() {
-        TestResourceObserver<Integer> ro = new TestResourceObserver<Integer>();
-        ro.add(null);
+        TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
+        rco.add(null);
     }
 
     @Test
     public void addResources() {
-        TestResourceObserver<Integer> ro = new TestResourceObserver<Integer>();
+        TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
-        assertFalse(ro.isDisposed());
+        assertFalse(rco.isDisposed());
 
         Disposable d = Disposables.empty();
 
-        ro.add(d);
+        rco.add(d);
 
         assertFalse(d.isDisposed());
 
-        ro.cancel();
+        rco.cancel();
 
-        assertTrue(ro.isDisposed());
+        assertTrue(rco.isDisposed());
 
         assertTrue(d.isDisposed());
 
-        ro.dispose();
+        rco.dispose();
 
-        assertTrue(ro.isDisposed());
+        assertTrue(rco.isDisposed());
 
         assertTrue(d.isDisposed());
     }
 
     @Test
     public void onCompleteCleansUp() {
-        TestResourceObserver<Integer> ro = new TestResourceObserver<Integer>();
+        TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
-        assertFalse(ro.isDisposed());
+        assertFalse(rco.isDisposed());
 
         Disposable d = Disposables.empty();
 
-        ro.add(d);
+        rco.add(d);
 
         assertFalse(d.isDisposed());
 
-        ro.onComplete();
+        rco.onComplete();
 
-        assertTrue(ro.isDisposed());
+        assertTrue(rco.isDisposed());
 
         assertTrue(d.isDisposed());
     }
 
     @Test
     public void onErrorCleansUp() {
-        TestResourceObserver<Integer> ro = new TestResourceObserver<Integer>();
+        TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
-        assertFalse(ro.isDisposed());
+        assertFalse(rco.isDisposed());
 
         Disposable d = Disposables.empty();
 
-        ro.add(d);
+        rco.add(d);
 
         assertFalse(d.isDisposed());
 
-        ro.onError(new TestException());
+        rco.onError(new TestException());
 
-        assertTrue(ro.isDisposed());
+        assertTrue(rco.isDisposed());
 
         assertTrue(d.isDisposed());
     }
 
     @Test
     public void normal() {
-        TestResourceObserver<Integer> tc = new TestResourceObserver<Integer>();
+        TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
-        assertFalse(tc.isDisposed());
-        assertEquals(0, tc.start);
-        assertTrue(tc.values.isEmpty());
-        assertTrue(tc.errors.isEmpty());
+        assertFalse(rco.isDisposed());
+        assertEquals(0, rco.start);
+        assertTrue(rco.errors.isEmpty());
 
-        Observable.just(1).subscribe(tc);
+        Completable.complete().subscribe(rco);
 
-        assertTrue(tc.isDisposed());
-        assertEquals(1, tc.start);
-        assertEquals(1, tc.values.get(0).intValue());
-        assertTrue(tc.errors.isEmpty());
+        assertTrue(rco.isDisposed());
+        assertEquals(1, rco.start);
+        assertEquals(1, rco.complete);
+        assertTrue(rco.errors.isEmpty());
     }
 
     @Test
     public void error() {
-        TestResourceObserver<Integer> tc = new TestResourceObserver<Integer>();
+        TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
-        assertFalse(tc.isDisposed());
-        assertEquals(0, tc.start);
-        assertTrue(tc.values.isEmpty());
-        assertTrue(tc.errors.isEmpty());
+        assertFalse(rco.isDisposed());
+        assertEquals(0, rco.start);
+        assertTrue(rco.errors.isEmpty());
 
         final RuntimeException error = new RuntimeException("error");
-        Observable.<Integer>error(error).subscribe(tc);
+        Completable.error(error).subscribe(rco);
 
-        assertTrue(tc.isDisposed());
-        assertEquals(1, tc.start);
-        assertTrue(tc.values.isEmpty());
-        assertEquals(1, tc.errors.size());
-        assertTrue(tc.errors.contains(error));
+        assertTrue(rco.isDisposed());
+        assertEquals(1, rco.start);
+        assertEquals(0, rco.complete);
+        assertEquals(1, rco.errors.size());
+        assertTrue(rco.errors.contains(error));
     }
 
     @Test
@@ -178,17 +168,17 @@ public class ResourceObserverTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestResourceObserver<Integer> tc = new TestResourceObserver<Integer>();
+            TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
 
-            tc.onSubscribe(Disposables.empty());
+            rco.onSubscribe(Disposables.empty());
 
             Disposable d = Disposables.empty();
 
-            tc.onSubscribe(d);
+            rco.onSubscribe(d);
 
             assertTrue(d.isDisposed());
 
-            assertEquals(1, tc.start);
+            assertEquals(1, rco.start);
 
             TestHelper.assertError(error, 0, IllegalStateException.class, "Disposable already set!");
         } finally {
@@ -198,15 +188,15 @@ public class ResourceObserverTest {
 
     @Test
     public void dispose() {
-        TestResourceObserver<Integer> tc = new TestResourceObserver<Integer>();
-        tc.dispose();
+        TestResourceCompletableObserver rco = new TestResourceCompletableObserver();
+        rco.dispose();
 
         Disposable d = Disposables.empty();
 
-        tc.onSubscribe(d);
+        rco.onSubscribe(d);
 
         assertTrue(d.isDisposed());
 
-        assertEquals(0, tc.start);
+        assertEquals(0, rco.start);
     }
 }
