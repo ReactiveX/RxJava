@@ -171,6 +171,25 @@ public class ResourceMaybeObserverTest {
         assertTrue(rmo.isDisposed());
         assertEquals(1, rmo.start);
         assertEquals(Integer.valueOf(1), rmo.value);
+        assertEquals(0, rmo.complete);
+        assertTrue(rmo.errors.isEmpty());
+    }
+
+    @Test
+    public void empty() {
+        TestResourceMaybeObserver<Integer> rmo = new TestResourceMaybeObserver<Integer>();
+
+        assertFalse(rmo.isDisposed());
+        assertEquals(0, rmo.start);
+        assertNull(rmo.value);
+        assertTrue(rmo.errors.isEmpty());
+
+        Maybe.<Integer>empty().subscribe(rmo);
+
+        assertTrue(rmo.isDisposed());
+        assertEquals(1, rmo.start);
+        assertNull(rmo.value);
+        assertEquals(1, rmo.complete);
         assertTrue(rmo.errors.isEmpty());
     }
 
@@ -189,6 +208,7 @@ public class ResourceMaybeObserverTest {
         assertTrue(rmo.isDisposed());
         assertEquals(1, rmo.start);
         assertNull(rmo.value);
+        assertEquals(0, rmo.complete);
         assertEquals(1, rmo.errors.size());
         assertTrue(rmo.errors.contains(error));
     }
