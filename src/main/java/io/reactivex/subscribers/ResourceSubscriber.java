@@ -13,17 +13,19 @@
 
 package io.reactivex.subscribers;
 
-import java.util.concurrent.atomic.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import org.reactivestreams.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.ListCompositeDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 /**
- * An abstract Subscriber that allows asynchronous cancellation of its
- * subscription.
+ * An abstract Subscriber that allows asynchronous cancellation of its subscription and associated resources.
  *
  * <p>This implementation let's you chose if the AsyncObserver manages resources or not,
  * thus saving memory on cases where there is no need for that.
@@ -36,8 +38,8 @@ public abstract class ResourceSubscriber<T> implements Subscriber<T>, Disposable
     /** The active subscription. */
     private final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 
-    /** The resource composite, can be null. */
-    private final CompositeDisposable resources = new CompositeDisposable();
+    /** The resource composite, can never be null. */
+    private final ListCompositeDisposable resources = new ListCompositeDisposable();
 
     /** Remembers the request(n) counts until a subscription arrives. */
     private final AtomicLong missedRequested = new AtomicLong();
@@ -90,15 +92,11 @@ public abstract class ResourceSubscriber<T> implements Subscriber<T>, Disposable
      * <p>This method can be called before the upstream calls onSubscribe at which
      * case the Subscription will be immediately cancelled.
      */
-    protected final void cancel() {
+    @Override
+    public final void dispose() {
         if (SubscriptionHelper.cancel(s)) {
             resources.dispose();
         }
-    }
-
-    @Override
-    public final void dispose() {
-        cancel();
     }
 
     /**

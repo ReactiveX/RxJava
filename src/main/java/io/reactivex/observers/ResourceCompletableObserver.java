@@ -15,19 +15,18 @@ package io.reactivex.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.Observer;
+import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.ListCompositeDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 
 /**
- * An abstract {@link Observer} that allows asynchronous cancellation of its subscription and associated resources.
+ * An abstract {@link CompletableObserver} that allows asynchronous cancellation of its subscription and associated resources.
  *
  * <p>All pre-implemented final methods are thread-safe.
- *
- * @param <T> the value type
  */
-public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
+public abstract class ResourceCompletableObserver implements CompletableObserver, Disposable {
     /** The active subscription. */
     private final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 

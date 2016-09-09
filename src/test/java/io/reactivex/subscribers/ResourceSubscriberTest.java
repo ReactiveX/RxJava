@@ -62,10 +62,6 @@ public class ResourceSubscriberTest {
             dispose();
         }
 
-        void cancelIt() {
-            cancel();
-        }
-
         void requestMore(long n) {
             request(n);
         }
@@ -89,7 +85,7 @@ public class ResourceSubscriberTest {
 
         assertFalse(d.isDisposed());
 
-        ro.cancelIt();
+        ro.dispose();
 
         assertTrue(ro.isDisposed());
 
