@@ -41,7 +41,7 @@ public class CompletableDelayTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Thread> thread = new AtomicReference<Thread>();
 
-        Completable.<String>error(new Exception())
+        Completable.error(new Exception())
                 .delay(0, TimeUnit.MILLISECONDS, Schedulers.newThread())
                 .doOnError(new Consumer<Throwable>() {
                     @Override
