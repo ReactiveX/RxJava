@@ -85,7 +85,7 @@ public class ResourceObserverTest {
 
         assertFalse(d.isDisposed());
 
-        ro.cancel();
+        ro.dispose();
 
         assertTrue(ro.isDisposed());
 

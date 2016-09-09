@@ -70,15 +70,11 @@ public abstract class ResourceMaybeObserver<T> implements MaybeObserver<T>, Disp
      * <p>This method can be called before the upstream calls onSubscribe at which
      * case the main Disposable will be immediately disposed.
      */
-    protected final void cancel() {
+    @Override
+    public final void dispose() {
         if (DisposableHelper.dispose(s)) {
             resources.dispose();
         }
-    }
-
-    @Override
-    public final void dispose() {
-        cancel();
     }
 
     /**

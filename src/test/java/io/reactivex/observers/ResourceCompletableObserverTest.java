@@ -77,7 +77,7 @@ public class ResourceCompletableObserverTest {
 
         assertFalse(d.isDisposed());
 
-        rco.cancel();
+        rco.dispose();
 
         assertTrue(rco.isDisposed());
 

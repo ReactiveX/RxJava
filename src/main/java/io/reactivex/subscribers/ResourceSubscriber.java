@@ -92,15 +92,11 @@ public abstract class ResourceSubscriber<T> implements Subscriber<T>, Disposable
      * <p>This method can be called before the upstream calls onSubscribe at which
      * case the Subscription will be immediately cancelled.
      */
-    protected final void cancel() {
+    @Override
+    public final void dispose() {
         if (SubscriptionHelper.cancel(s)) {
             resources.dispose();
         }
-    }
-
-    @Override
-    public final void dispose() {
-        cancel();
     }
 
     /**

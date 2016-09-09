@@ -78,7 +78,7 @@ public class ResourceSingleObserverTest {
 
         assertFalse(d.isDisposed());
 
-        rso.cancel();
+        rso.dispose();
 
         assertTrue(rso.isDisposed());
 

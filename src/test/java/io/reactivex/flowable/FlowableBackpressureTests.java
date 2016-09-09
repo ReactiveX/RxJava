@@ -408,7 +408,7 @@ public class FlowableBackpressureTests {
                 int total = totalReceived.incrementAndGet();
                 received.incrementAndGet();
                 if (total >= 2000) {
-                    cancel();
+                    dispose();
                 }
                 if (received.get() == 100) {
                     batches.incrementAndGet();
@@ -457,7 +457,7 @@ public class FlowableBackpressureTests {
                 boolean done = false;
                 if (total >= 2000) {
                     done = true;
-                    cancel();
+                    dispose();
                 }
                 if (received.get() == 100) {
                     batches.incrementAndGet();
