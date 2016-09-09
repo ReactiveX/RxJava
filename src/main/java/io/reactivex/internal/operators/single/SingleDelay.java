@@ -56,8 +56,13 @@ public final class SingleDelay<T> extends Single<T> {
             }
 
             @Override
-            public void onError(Throwable e) {
-                s.onError(e);
+            public void onError(final Throwable e) {
+                sd.replace(scheduler.scheduleDirect(new Runnable() {
+                    @Override
+                    public void run() {
+                        s.onError(e);
+                    }
+                }, 0, unit));
             }
 
         });
