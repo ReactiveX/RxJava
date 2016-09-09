@@ -1602,7 +1602,8 @@ public class CompletableTest {
 
     @Test(timeout = 1000)
     public void delayErrorImmediately() throws InterruptedException {
-        Completable c = error.completable.delay(250, TimeUnit.MILLISECONDS);
+        final TestScheduler scheduler = new TestScheduler();
+        final Completable c = error.completable.delay(250, TimeUnit.MILLISECONDS, scheduler);
 
         final AtomicBoolean done = new AtomicBoolean();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
@@ -1624,14 +1625,14 @@ public class CompletableTest {
             }
         });
 
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
         Assert.assertTrue(error.get().toString(), error.get() instanceof TestException);
         Assert.assertFalse("Already done", done.get());
 
-        Thread.sleep(100);
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
         Assert.assertFalse("Already done", done.get());
-
-        Thread.sleep(200);
     }
 
     @Test(timeout = 1000)
