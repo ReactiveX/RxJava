@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.subscribers.flowable.EmptyComponent;
+import io.reactivex.internal.util.EmptyComponent;
 
 /**
  * Breaks the links between the upstream and the downstream (the Disposable and

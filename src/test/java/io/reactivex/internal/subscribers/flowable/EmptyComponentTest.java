@@ -22,8 +22,8 @@ import org.junit.Test;
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.subscribers.flowable.EmptyComponent;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.EmptyComponent;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public class EmptyComponentTest {
