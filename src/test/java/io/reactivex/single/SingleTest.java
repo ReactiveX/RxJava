@@ -515,5 +515,20 @@ public class SingleTest {
         iterator.next();
         iterator.remove();
     }
+
+    @Test
+    public void zipIterableObject() {
+        final List<Single<Integer>> singles = Arrays.asList(Single.just(1), Single.just(4));
+        Single.zip(singles, new Function<Object[], Object>() {
+            @Override
+            public Object apply(final Object[] o) throws Exception {
+                int sum = 0;
+                for (Object i : o) {
+                    sum += (Integer) i;
+                }
+                return sum;
+            }
+        }).test().assertResult(5);
+    }
 }
 
