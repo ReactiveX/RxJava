@@ -140,6 +140,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -171,6 +176,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -202,6 +212,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -241,6 +256,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -273,6 +293,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -310,6 +335,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Publisher} honors backpressure from downstream. The source {@code Publisher}s
@@ -343,6 +373,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source Publishers terminate.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -377,6 +411,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the source ObservableSources each time an item is received from any of the source Publisher, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source Publishers terminate.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -408,6 +446,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source Publishers terminate.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -450,6 +492,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source Publishers terminate.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -484,6 +530,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source Publishers terminate.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>

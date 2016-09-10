@@ -1343,6 +1343,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a Maybe that emits the results of a specified combiner function applied to combinations of
      * items emitted, in sequence, by an Iterable of other MaybeSources.
      * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <p>This operator terminates eagerly if any of the source MaybeSources signal an onError or onComplete. This
      * also means it is possible some sources may not get subscribed to at all.
@@ -1773,6 +1778,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a Maybe that emits the results of a specified combiner function applied to combinations of
      * items emitted, in sequence, by an array of other MaybeSources.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <p>This operator terminates eagerly if any of the source MaybeSources signal an onError or onComplete. This

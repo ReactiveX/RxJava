@@ -128,6 +128,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines a collection of source ObservableSources by emitting an item that aggregates the latest values of each of
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -156,6 +161,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines a collection of source ObservableSources by emitting an item that aggregates the latest values of each of
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -184,6 +194,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines a collection of source ObservableSources by emitting an item that aggregates the latest values of each of
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -219,6 +234,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines a collection of source ObservableSources by emitting an item that aggregates the latest values of each of
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -246,6 +266,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines a collection of source ObservableSources by emitting an item that aggregates the latest values of each of
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -640,6 +665,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines a collection of source ObservableSources by emitting an item that aggregates the latest values of each of
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -668,6 +698,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source ObservableSources terminate.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -699,6 +733,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source ObservableSources terminate.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -737,6 +775,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source ObservableSources terminate.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -766,6 +808,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source ObservableSources terminate.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -3358,6 +3404,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
      * or unsubscription.
      * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -3404,6 +3455,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
      * or unsubscription.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.o.png" alt="">
      * <dl>
@@ -4074,6 +4130,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
      * or unsubscription.
      * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4128,6 +4189,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <br>To work around this termination property,
      * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
      * or unsubscription.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
