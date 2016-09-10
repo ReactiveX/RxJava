@@ -25,9 +25,9 @@ public final class MaybeZipIterable<T, R> extends Maybe<R> {
 
     final Iterable<? extends MaybeSource<? extends T>> sources;
 
-    final Function<? super T[], ? extends R> zipper;
+    final Function<? super Object[], ? extends R> zipper;
 
-    public MaybeZipIterable(Iterable<? extends MaybeSource<? extends T>> sources, Function<? super T[], ? extends R> zipper) {
+    public MaybeZipIterable(Iterable<? extends MaybeSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         this.sources = sources;
         this.zipper = zipper;
     }

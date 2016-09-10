@@ -1060,4 +1060,34 @@ public class FlowableTests {
     public void toObservableError() {
         Flowable.error(new TestException()).toObservable().test().assertFailure(TestException.class);
     }
+
+    @Test
+    public void zipIterableObject() {
+        final List<Flowable<Integer>> flowables = Arrays.asList(Flowable.just(1, 2, 3), Flowable.just(1, 2, 3));
+        Flowable.zip(flowables, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] o) throws Exception {
+                int sum = 0;
+                for (Object i : o) {
+                    sum += (Integer) i;
+                }
+                return sum;
+            }
+        }).test().assertResult(2, 4, 6);
+    }
+
+    @Test
+    public void combineLatestObject() {
+        final List<Flowable<Integer>> flowables = Arrays.asList(Flowable.just(1, 2, 3), Flowable.just(1, 2, 3));
+        Flowable.combineLatest(flowables, new Function<Object[], Object>() {
+            @Override
+            public Object apply(final Object[] o) throws Exception {
+                int sum = 1;
+                for (Object i : o) {
+                    sum *= (Integer) i;
+                }
+                return sum;
+            }
+        }).test().assertResult(3, 6, 9);
+    }
 }

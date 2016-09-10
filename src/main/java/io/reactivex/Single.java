@@ -877,6 +877,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * value and calls a zipper function with an array of these values to return a result
      * to be emitted to downstream.
      * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * If any of the SingleSources signal an error, all other SingleSources get cancelled and the
@@ -1294,6 +1299,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * Waits until all SingleSource sources provided via an array signal a success
      * value and calls a zipper function with an array of these values to return a result
      * to be emitted to downstream.
+     * <p>
+     * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
+     * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
+     * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <p>

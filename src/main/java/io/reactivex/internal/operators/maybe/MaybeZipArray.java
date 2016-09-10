@@ -27,9 +27,9 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
 
     final MaybeSource<? extends T>[] sources;
 
-    final Function<? super T[], ? extends R> zipper;
+    final Function<? super Object[], ? extends R> zipper;
 
-    public MaybeZipArray(MaybeSource<? extends T>[] sources, Function<? super T[], ? extends R> zipper) {
+    public MaybeZipArray(MaybeSource<? extends T>[] sources, Function<? super Object[], ? extends R> zipper) {
         this.sources = sources;
         this.zipper = zipper;
     }
@@ -71,14 +71,14 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
 
         final MaybeObserver<? super R> actual;
 
-        final Function<? super T[], ? extends R> zipper;
+        final Function<? super Object[], ? extends R> zipper;
 
         final ZipMaybeObserver<T>[] observers;
 
         final Object[] values;
 
         @SuppressWarnings("unchecked")
-        public ZipCoordinator(MaybeObserver<? super R> observer, int n, Function<? super T[], ? extends R> zipper) {
+        public ZipCoordinator(MaybeObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
             super(n);
             this.actual = observer;
             this.zipper = zipper;

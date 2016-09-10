@@ -2858,4 +2858,18 @@ public class MaybeTest {
         ts.assertResult(2);
     }
 
+    @Test
+    public void zipIterableObject() {
+        final List<Maybe<Integer>> maybes = Arrays.asList(Maybe.just(1), Maybe.just(4));
+        Maybe.zip(maybes, new Function<Object[], Object>() {
+            @Override
+            public Object apply(final Object[] o) throws Exception {
+                int sum = 0;
+                for (Object i : o) {
+                    sum += (Integer) i;
+                }
+                return sum;
+            }
+        }).test().assertResult(5);
+    }
 }
