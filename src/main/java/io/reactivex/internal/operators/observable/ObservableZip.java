@@ -27,13 +27,13 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
     final ObservableSource<? extends T>[] sources;
     final Iterable<? extends ObservableSource<? extends T>> sourcesIterable;
-    final Function<? super T[], ? extends R> zipper;
+    final Function<? super Object[], ? extends R> zipper;
     final int bufferSize;
     final boolean delayError;
 
     public ObservableZip(ObservableSource<? extends T>[] sources,
             Iterable<? extends ObservableSource<? extends T>> sourcesIterable,
-            Function<? super T[], ? extends R> zipper,
+            Function<? super Object[], ? extends R> zipper,
             int bufferSize,
             boolean delayError) {
         this.sources = sources;
@@ -75,7 +75,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
         /** */
         private static final long serialVersionUID = 2983708048395377667L;
         final Observer<? super R> actual;
-        final Function<? super T[], ? extends R> zipper;
+        final Function<? super Object[], ? extends R> zipper;
         final ZipSubscriber<T, R>[] subscribers;
         final T[] row;
         final boolean delayError;
@@ -84,7 +84,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
         @SuppressWarnings("unchecked")
         public ZipCoordinator(Observer<? super R> actual,
-                Function<? super T[], ? extends R> zipper,
+                Function<? super Object[], ? extends R> zipper,
                 int count, boolean delayError) {
             this.actual = actual;
             this.zipper = zipper;

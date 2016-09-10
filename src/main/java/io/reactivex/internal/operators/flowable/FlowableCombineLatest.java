@@ -40,14 +40,14 @@ extends Flowable<R> {
 
     final Iterable<? extends Publisher<? extends T>> iterable;
 
-    final Function<? super T[], ? extends R> combiner;
+    final Function<? super Object[], ? extends R> combiner;
 
     final int bufferSize;
 
     final boolean delayErrors;
 
     public FlowableCombineLatest(Publisher<? extends T>[] array,
-            Function<? super T[], ? extends R> combiner,
+            Function<? super Object[], ? extends R> combiner,
                     int bufferSize, boolean delayErrors) {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("BUFFER_SIZE > 0 required but it was " + bufferSize);
@@ -61,7 +61,7 @@ extends Flowable<R> {
     }
 
     public FlowableCombineLatest(Iterable<? extends Publisher<? extends T>> iterable,
-            Function<? super T[], ? extends R> combiner,
+            Function<? super Object[], ? extends R> combiner,
                     int bufferSize, boolean delayErrors) {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("BUFFER_SIZE > 0 required but it was " + bufferSize);
@@ -173,7 +173,7 @@ extends Flowable<R> {
 
         final Subscriber<? super R> actual;
 
-        final Function<? super T[], ? extends R> combiner;
+        final Function<? super Object[], ? extends R> combiner;
 
         final CombineLatestInnerSubscriber<T>[] subscribers;
 
@@ -198,7 +198,7 @@ extends Flowable<R> {
         final AtomicReference<Throwable> error;
 
         public CombineLatestCoordinator(Subscriber<? super R> actual,
-                Function<? super T[], ? extends R> combiner, int n,
+                Function<? super Object[], ? extends R> combiner, int n,
                 int bufferSize, boolean delayErrors) {
             this.actual = actual;
             this.combiner = combiner;

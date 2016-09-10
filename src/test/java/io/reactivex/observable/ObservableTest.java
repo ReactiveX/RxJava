@@ -1056,4 +1056,19 @@ public class ObservableTest {
 
         Observable.empty().toSingle(100).test().assertResult(100);
     }
+
+    @Test
+    public void zipIterableObject() {
+        final List<Observable<Integer>> observables = Arrays.asList(Observable.just(1, 2, 3), Observable.just(1, 2, 3));
+        Observable.zip(observables, new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] o) throws Exception {
+                int sum = 0;
+                for (Object i : o) {
+                    sum += (Integer) i;
+                }
+                return sum;
+            }
+        }).test().assertResult(2, 4, 6);
+    }
 }

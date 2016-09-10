@@ -27,13 +27,13 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class ObservableCombineLatest<T, R> extends Observable<R> {
     final ObservableSource<? extends T>[] sources;
     final Iterable<? extends ObservableSource<? extends T>> sourcesIterable;
-    final Function<? super T[], ? extends R> combiner;
+    final Function<? super Object[], ? extends R> combiner;
     final int bufferSize;
     final boolean delayError;
 
     public ObservableCombineLatest(ObservableSource<? extends T>[] sources,
             Iterable<? extends ObservableSource<? extends T>> sourcesIterable,
-            Function<? super T[], ? extends R> combiner, int bufferSize,
+            Function<? super Object[], ? extends R> combiner, int bufferSize,
             boolean delayError) {
         this.sources = sources;
         this.sourcesIterable = sourcesIterable;
@@ -75,7 +75,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         /** */
         private static final long serialVersionUID = 8567835998786448817L;
         final Observer<? super R> actual;
-        final Function<? super T[], ? extends R> combiner;
+        final Function<? super Object[], ? extends R> combiner;
         final int count;
         final CombinerSubscriber<T, R>[] subscribers;
         final int bufferSize;
@@ -94,7 +94,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
         @SuppressWarnings("unchecked")
         public LatestCoordinator(Observer<? super R> actual,
-                Function<? super T[], ? extends R> combiner,
+                Function<? super Object[], ? extends R> combiner,
                 int count, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.combiner = combiner;

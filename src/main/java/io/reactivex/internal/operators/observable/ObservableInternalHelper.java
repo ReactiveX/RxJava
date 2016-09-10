@@ -296,9 +296,9 @@ public enum ObservableInternalHelper {
 
     static final class ZipIterableFunction<T, R>
     implements Function<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> {
-        private final Function<? super T[], ? extends R> zipper;
+        private final Function<? super Object[], ? extends R> zipper;
 
-        ZipIterableFunction(Function<? super T[], ? extends R> zipper) {
+        ZipIterableFunction(Function<? super Object[], ? extends R> zipper) {
             this.zipper = zipper;
         }
 
@@ -308,7 +308,7 @@ public enum ObservableInternalHelper {
         }
     }
 
-    public static <T, R> Function<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> zipIterable(final Function<? super T[], ? extends R> zipper) {
+    public static <T, R> Function<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> zipIterable(final Function<? super Object[], ? extends R> zipper) {
         return new ZipIterableFunction<T, R>(zipper);
     }
 
