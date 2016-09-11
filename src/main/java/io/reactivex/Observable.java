@@ -77,6 +77,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> amb(Iterable<? extends ObservableSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new ObservableAmb<T>(null, sources));
@@ -89,7 +90,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the common element type
@@ -672,7 +673,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -705,7 +706,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -740,7 +741,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -782,7 +783,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -815,7 +816,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code combineLatestDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -1001,6 +1002,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Concatenates a variable number of ObservableSource sources.
      * <p>
      * Note: named this way because of overload conflict with concat(ObservableSource&lt;ObservableSource&gt;)
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param sources the array of sources
      * @param <T> the common base value type
      * @return the new Observable instance
@@ -1025,7 +1030,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code concatArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param sources the array of sources
      * @param <T> the common base value type
@@ -1265,6 +1270,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * You should call the ObservableEmitter's onNext, onError and onComplete methods in a serialized fashion. The
      * rest of its methods are thread-safe.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <T> the element type
      * @param source the emitter that is called when an Observer subscribes to the returned {@code Observable}
@@ -1385,7 +1394,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code fromArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param items
@@ -1450,7 +1459,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * cancellation effect: {@code futureObservableSource.doOnCancel(() -> future.cancel(true));}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code fromFuture} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param future
@@ -1482,7 +1491,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <em>Important note:</em> This ObservableSource is blocking; you cannot unsubscribe from it.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code fromFuture} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param future
@@ -1519,7 +1528,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <em>Important note:</em> This ObservableSource is blocking; you cannot unsubscribe from it.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code fromFuture} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param future
@@ -1557,7 +1566,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * cancellation effect: {@code futureObservableSource.doOnCancel(() -> future.cancel(true));}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param future
@@ -1584,7 +1593,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code fromIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param source
@@ -1595,6 +1604,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that emits each item in the source {@link Iterable} sequence
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromIterable(Iterable<? extends T> source) {
         ObjectHelper.requireNonNull(source, "source is null");
         return RxJavaPlugins.onAssembly(new ObservableFromIterable<T>(source));
@@ -1603,6 +1613,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Converts an arbitrary Reactive-Streams Publisher into an Observable.
      * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The source {@code publisher} is consumed in an unbounded fashion without applying any
+     *  backpressure to it.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromPublisher} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1611,6 +1624,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Observable instance
      * @throws NullPointerException if publisher is null
      */
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> fromPublisher(Publisher<? extends T> publisher) {
         ObjectHelper.requireNonNull(publisher, "publisher is null");
         return RxJavaPlugins.onAssembly(new ObservableFromPublisher<T>(publisher));
@@ -1621,7 +1636,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code generator} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the generated value type
@@ -1774,7 +1789,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.ps.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param initialDelay
@@ -1826,7 +1841,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/interval.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param period
@@ -2322,7 +2337,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * using the {@code merge} method.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code mergeArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the common element base type
@@ -2419,6 +2434,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         {@code source} ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> merge(ObservableSource<? extends ObservableSource<? extends T>> sources) {
         return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), false, Integer.MAX_VALUE, bufferSize()));
@@ -2560,7 +2576,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * using the {@code merge} method.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code mergeArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the common element base type
@@ -2656,7 +2672,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * invoke the {@code onError} method of its Observers once.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code mergeArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the common element base type
@@ -2734,6 +2750,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         {@code source} ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> mergeDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources) {
         return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), true, Integer.MAX_VALUE, bufferSize()));
@@ -2904,7 +2921,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * invoke the {@code onError} method of its Observers once.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code mergeArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the common element base type
@@ -3173,7 +3190,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * or wrapped into a CompositeException along with the other possible errors the former inner ObservableSources signalled.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code switchOnNextDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the item type
@@ -3205,7 +3222,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * or wrapped into a CompositeException along with the other possible errors the former inner ObservableSources signalled.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code switchOnNextDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the item type
@@ -3254,7 +3271,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param delay
@@ -3363,7 +3380,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code wrap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the value type
@@ -4138,7 +4155,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code zipArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the common element type
@@ -4198,7 +4215,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code zipIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      *
@@ -4259,7 +4276,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param other
@@ -4286,7 +4303,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * idioms.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code exists} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code any} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param predicate
@@ -4314,6 +4331,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             if this {@code Observable} emits no items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingFirst() {
         BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
         subscribe(s);
@@ -4338,6 +4356,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingFirst(T defaultItem) {
         BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
         subscribe(s);
@@ -4372,6 +4391,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX documentation: Subscribe</a>
      * @see #subscribe(Consumer)
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingForEach(Consumer<? super T> onNext) {
         Iterator<T> it = blockingIterable().iterator();
         while (it.hasNext()) {
@@ -4397,6 +4417,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@link Iterable} version of this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingIterable() {
         return blockingIterable(bufferSize());
     }
@@ -4414,6 +4435,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an {@link Iterable} version of this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingIterable(int bufferSize) {
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return new BlockingObservableIterable<T>(this, bufferSize);
@@ -4434,6 +4456,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             if this {@code Observable} emits no items
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingLast() {
         BlockingLastObserver<T> s = new BlockingLastObserver<T>();
         subscribe(s);
@@ -4460,6 +4483,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX documentation: Last</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingLast(T defaultItem) {
         BlockingLastObserver<T> s = new BlockingLastObserver<T>();
         subscribe(s);
@@ -4484,6 +4508,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Iterable that always returns the latest item emitted by this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingLatest() {
         return BlockingObservableLatest.latest(this);
     }
@@ -4505,6 +4530,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         has most recently emitted
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingMostRecent(T initialValue) {
         return BlockingObservableMostRecent.mostRecent(this, initialValue);
     }
@@ -4523,6 +4549,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         a new item, whereupon the Iterable returns that item
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX documentation: TakeLast</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingNext() {
         return BlockingObservableNext.next(this);
     }
@@ -4540,6 +4567,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the single item emitted by this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingSingle() {
         return single().blockingFirst();
     }
@@ -4561,6 +4589,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX documentation: First</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingSingle(T defaultItem) {
         return single(defaultItem).blockingFirst();
     }
@@ -4583,6 +4612,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return a {@link Future} that expects a single item to be emitted by this {@code Observable}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Future<T> toFuture() {
         return subscribeWith(new FutureObserver<T>());
     }
@@ -4595,6 +4625,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingSubscribe() {
         ObservableBlockingSubscribe.subscribe(this);
     }
@@ -4608,6 +4639,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onNext the callback action for each source value
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingSubscribe(Consumer<? super T> onNext) {
         ObservableBlockingSubscribe.subscribe(this, onNext, Functions.ERROR_CONSUMER, Functions.EMPTY_ACTION);
     }
@@ -4622,6 +4654,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onError the callback action for an error event
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
         ObservableBlockingSubscribe.subscribe(this, onNext, onError, Functions.EMPTY_ACTION);
     }
@@ -4638,6 +4671,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onComplete the callback action for the completion event.
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete) {
         ObservableBlockingSubscribe.subscribe(this, onNext, onError, onComplete);
     }
@@ -4653,6 +4687,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param subscriber the subscriber to forward events and calls to in the current thread
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingSubscribe(Observer<? super T> subscriber) {
         ObservableBlockingSubscribe.subscribe(this, subscriber);
     }
@@ -4806,7 +4841,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timespan
@@ -4836,7 +4871,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param <U> the collection subclass type to buffer into
@@ -4930,7 +4965,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timespan
@@ -4963,7 +4998,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param <U> the collection subclass type to buffer into
@@ -5009,7 +5044,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timespan
@@ -5334,7 +5369,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code cacheWithInitialCapacity} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>
      * <em>Note:</em> The capacity hint is not an upper bound on cache size. For that, consider
@@ -5412,7 +5447,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code collect} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code collectInto} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <U> the accumulator and output type
@@ -5450,6 +5485,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the source ObservableSource, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> compose(Function<? super Observable<T>, ? extends ObservableSource<R>> composer) {
         return wrap(to(composer));
     }
@@ -5734,7 +5770,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param other
@@ -5778,7 +5814,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code countLong} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code count} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @return an Observable that emits a single item: the number of items emitted by the source ObservableSource as a
@@ -5871,7 +5907,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </ul>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timeout
@@ -5999,7 +6035,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param delay
@@ -6023,7 +6059,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param delay
@@ -6096,6 +6132,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         until the other Observable emits an element or completes normally.
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<T> delaySubscription(ObservableSource<U> other) {
         ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new ObservableDelaySubscriptionOther<T, U>(this, other));
@@ -6107,7 +6144,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This version of {@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     *  <dd>This version of {@code delaySubscription} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
      * @param delay
@@ -6129,7 +6166,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param delay
@@ -6478,7 +6515,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code doOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code doOnLifecycle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param onSubscribe
@@ -6598,7 +6635,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code elementAtOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param index
@@ -6668,7 +6705,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param defaultItem
@@ -6730,6 +6767,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> flatMap(Function<? super T, ? extends ObservableSource<? extends R>> mapper, boolean delayErrors) {
         return flatMap(mapper, delayErrors, Integer.MAX_VALUE);
     }
@@ -7196,7 +7234,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * onNext Predicate returns false.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code forEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code forEachWhile} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param onNext
@@ -7219,7 +7257,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * onNext Predicate returns false.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code forEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code forEachWhile} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param onNext
@@ -7243,7 +7281,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * onNext Predicate returns false.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code forEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code forEachWhile} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param onNext
@@ -7631,7 +7669,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code last} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param defaultItem
@@ -7671,6 +7709,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that is the result of applying the lifted Operator to the source ObservableSource
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> lift(ObservableOperator<? extends R, ? super T> lifter) {
         ObjectHelper.requireNonNull(lifter, "onLift is null");
         return RxJavaPlugins.onAssembly(new ObservableLift<R, T>(this, lifter));
@@ -7693,6 +7732,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         function
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> map(Function<? super T, ? extends R> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new ObservableMap<T, R>(this, mapper));
@@ -7750,7 +7790,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param scheduler
@@ -7775,7 +7815,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param scheduler
@@ -7804,7 +7844,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param scheduler
@@ -7969,7 +8009,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * encountered.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code onErrorReturnItem} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param item
@@ -8237,7 +8277,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code reduce} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code reduceWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <R> the accumulator and output value type
@@ -8310,7 +8350,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code repeatUntil} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param stop
@@ -8468,7 +8508,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="445" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param <R>
@@ -8508,7 +8548,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fns.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param <R>
@@ -8569,7 +8609,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param <R>
@@ -8603,7 +8643,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fs.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param <R>
@@ -8686,7 +8726,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param bufferSize
@@ -8721,7 +8761,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ns.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param bufferSize
@@ -8771,7 +8811,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param time
@@ -8800,7 +8840,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param scheduler
@@ -8935,7 +8975,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Retries until the given stop function returns true.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code retryUntil} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param stop the function that should return true to stop retrying
      * @return the new Observable instance
@@ -9008,7 +9048,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Reactive-Streams specification).
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code retryWhen} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code safeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param s the incoming Subscriber instance
      * @throws NullPointerException if s is null
@@ -9054,7 +9094,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param period
@@ -9203,7 +9243,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code scanWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <R> the initial, accumulator and result type
@@ -9302,7 +9342,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param defaultItem
@@ -9349,6 +9389,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.t.png" alt="">
      * <dl>
+     *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code skip} does not operate on any particular scheduler but uses the current time
      *  from the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -9361,7 +9402,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         by {@code time} elapses and the emits the remainder
      * @see <a href="http://reactivex.io/documentation/operators/skip.html">ReactiveX operators documentation: Skip</a>
      */
-    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Observable<T> skip(long time, TimeUnit unit) {
         return skipUntil(timer(time, unit));
     }
@@ -9373,7 +9414,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.ts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use for the timed skipping</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use for the timed skipping</dd>
      * </dl>
      *
      * @param time
@@ -9488,7 +9529,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use for tracking the current time</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use for tracking the current time</dd>
      * </dl>
      *
      * @param time
@@ -9515,7 +9556,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use to track the current time</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use to track the current time</dd>
      * </dl>
      *
      * @param time
@@ -9545,7 +9586,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note: this action will cache the latest items arriving in the specified time window.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param time
@@ -9637,6 +9678,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             all other items emitted by the ObservableSource
      * @return an Observable that emits the items emitted by the source ObservableSource in sorted order
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> sorted(){
         return toSortedList().flatMapIterable(Functions.<List<T>>identity());
     }
@@ -9658,6 +9700,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            that indicates their sort order
      * @return an Observable that emits the items emitted by the source ObservableSource in sorted order
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> sorted(Comparator<? super T> sortFunction) {
         return toSortedList(sortFunction).flatMapIterable(Functions.<List<T>>identity());
     }
@@ -9737,7 +9780,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code startWithArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param items
@@ -9892,6 +9935,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return ls;
     }
 
+    @SchedulerSupport(SchedulerSupport.NONE)
     @Override
     public final void subscribe(Observer<? super T> observer) {
         ObjectHelper.requireNonNull(observer, "s is null");
@@ -9938,12 +9982,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * composite.add(source.subscribeWith(rs));
      * </code></pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribeWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param <E> the type of the Observer to use and return
      * @param observer the Observer (subclass) to use and return, not null
      * @return the input {@code observer}
      * @throws NullPointerException if {@code observer} is null
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <E extends Observer<? super T>> E subscribeWith(E observer) {
         subscribe(observer);
         return observer;
@@ -9955,7 +10004,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param scheduler
@@ -10069,7 +10118,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code switchMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <R> the element type of the inner ObservableSources and the output
@@ -10080,6 +10129,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> switchMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
         return switchMapDelayError(mapper, bufferSize());
     }
@@ -10096,7 +10146,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code switchMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code switchMapDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <R> the element type of the inner ObservableSources and the output
@@ -10109,6 +10159,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> switchMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
@@ -10180,7 +10231,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.ts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param time
@@ -10193,7 +10244,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         according to the specified Scheduler
      * @see <a href="http://reactivex.io/documentation/operators/take.html">ReactiveX operators documentation: Take</a>
      */
-    @SchedulerSupport(SchedulerSupport.NONE)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> take(long time, TimeUnit unit, Scheduler scheduler) {
         return takeUntil(timer(time, unit, scheduler));
     }
@@ -10286,7 +10337,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use for tracking the current time</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use for tracking the current time</dd>
      * </dl>
      *
      * @param count
@@ -10317,7 +10368,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tns.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use for tracking the current time</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use for tracking the current time</dd>
      * </dl>
      *
      * @param count
@@ -10408,7 +10459,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param time
@@ -10435,7 +10486,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param time
@@ -10465,7 +10516,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.ts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param time
@@ -10599,7 +10650,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleFirst.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param skipDuration
@@ -10656,7 +10707,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLast.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param intervalDuration
@@ -10731,7 +10782,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </ul>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timeout
@@ -10956,7 +11007,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timeout
@@ -10986,7 +11037,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timeout
@@ -11031,6 +11082,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         the time windows specified by the timeout selectors
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Observable<T> timeout(Callable<? extends ObservableSource<U>> firstTimeoutSelector,
             Function<? super T, ? extends ObservableSource<V>> timeoutSelector) {
         ObjectHelper.requireNonNull(firstTimeoutSelector, "firstTimeoutSelector is null");
@@ -11119,7 +11171,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>The operator does not operate on any particular scheduler but uses the current time
+     *  <dd>This operator does not operate on any particular scheduler but uses the current time
      *  from the specified {@link Scheduler}.</dd>
      * </dl>
      *
@@ -11161,7 +11213,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>The operator does not operate on any particular scheduler but uses the current time
+     *  <dd>This operator does not operate on any particular scheduler but uses the current time
      *  from the specified {@link Scheduler}.</dd>
      * </dl>
      *
@@ -11183,10 +11235,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Calls the specified converter function during assembly time and returns its resulting value.
      * <p>
      * This allows fluent conversion to any other type.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param <R> the resulting object type
      * @param converter the function that receives the current Observable instance and returns a value
      * @return the value returned by the function
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R to(Function<? super Observable<T>, R> converter) {
         try {
             return converter.apply(this);
@@ -11404,7 +11461,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code toMultimap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <K> the key type of the Map
@@ -11431,7 +11488,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code toMultimap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <K> the key type of the Map
@@ -11459,7 +11516,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code toMultimap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <K> the key type of the Map
@@ -11497,7 +11554,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code toMultimap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <K> the key type of the Map
@@ -11527,12 +11584,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator applies the chosen backpressure strategy of {@link BackpressureStrategy} enum.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toObservable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code toFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param strategy the backpressure strategy to apply
      * @return the new Observable instance
      */
+    @BackpressureSupport(BackpressureKind.SPECIAL)
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> toFlowable(BackpressureStrategy strategy) {
         Flowable<T> o = new FlowableFromObservable<T>(this);
 
@@ -11556,7 +11615,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new Maybe instance
      * @since 2.0
      */
-    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> toMaybe() {
         return new MaybeFromObservable<T>(this);
@@ -11706,7 +11764,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * {@link Scheduler}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param scheduler
@@ -11841,7 +11899,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timespan
@@ -11870,7 +11928,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timespan
@@ -11995,7 +12053,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timespan
@@ -12025,7 +12083,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timespan
@@ -12058,7 +12116,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timespan
@@ -12093,7 +12151,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
      * @param timespan
@@ -12351,6 +12409,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new ObservableSource instance
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T1, T2, R> Observable<R> withLatestFrom(
             ObservableSource<T1> o1, ObservableSource<T2> o2,
             Function3<? super T, ? super T1, ? super T2, R> combiner) {
@@ -12386,6 +12445,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new ObservableSource instance
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T1, T2, T3, R> Observable<R> withLatestFrom(
             ObservableSource<T1> o1, ObservableSource<T2> o2,
             ObservableSource<T3> o3,
@@ -12425,6 +12485,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new ObservableSource instance
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <T1, T2, T3, T4, R> Observable<R> withLatestFrom(
             ObservableSource<T1> o1, ObservableSource<T2> o2,
             ObservableSource<T3> o3, ObservableSource<T4> o4,
@@ -12458,6 +12519,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new ObservableSource instance
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> withLatestFrom(ObservableSource<?>[] others, Function<? super Object[], R> combiner) {
         ObjectHelper.requireNonNull(others, "others is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
@@ -12484,6 +12546,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new ObservableSource instance
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> withLatestFrom(Iterable<? extends ObservableSource<?>> others, Function<? super Object[], R> combiner) {
         ObjectHelper.requireNonNull(others, "others is null");
         ObjectHelper.requireNonNull(combiner, "combiner is null");
@@ -12526,7 +12589,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits items that are the result of applying a specified function to pairs of
      * values, one each from the source ObservableSource and another specified ObservableSource.
-     * <p>
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
      * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
@@ -12664,9 +12726,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Creates a TestObserver and subscribes
      * it to this Observable.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @return the new TestObserver instance
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<T> test() { // NoPMD
         TestObserver<T> ts = new TestObserver<T>();
         subscribe(ts);
@@ -12676,10 +12743,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Creates a TestObserver, optionally disposes it and then subscribes
      * it to this Observable.
+     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * @param dispose dispose the TestObserver before it is subscribed to this Observable?
      * @return the new TestObserver instance
      * @since 2.0
      */
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<T> test(boolean dispose) { // NoPMD
         TestObserver<T> ts = new TestObserver<T>();
         if (dispose) {

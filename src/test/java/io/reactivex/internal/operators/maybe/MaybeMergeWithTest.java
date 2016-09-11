@@ -13,31 +13,16 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.*;
-import io.reactivex.disposables.Disposables;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import org.junit.Test;
 
-/**
- * Signals a constant value.
- *
- * @param <T> the value type
- */
-public final class MaybeJust<T> extends Maybe<T> implements ScalarCallable<T> {
+import io.reactivex.Maybe;
 
-    final T value;
+public class MaybeMergeWithTest {
 
-    public MaybeJust(T value) {
-        this.value = value;
-    }
-
-    @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
-        observer.onSubscribe(Disposables.disposed());
-        observer.onSuccess(value);
-    }
-
-    @Override
-    public T call() {
-        return value;
+    @Test
+    public void normal() {
+        Maybe.just(1).mergeWith(Maybe.just(2))
+        .test()
+        .assertResult(1, 2);
     }
 }

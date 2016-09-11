@@ -13,31 +13,31 @@
 
 package io.reactivex.internal.fuseable;
 
-import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 
 /**
- * Interface indicating a operator implementation can be macro-fused back to Flowable in case
- * the operator goes from Flowable to some other reactive type and then the sequence calls
- * for toFlowable again:
+ * Interface indicating a operator implementation can be macro-fused back to Maybe in case
+ * the operator goes from Maybe to some other reactive type and then the sequence calls
+ * for toMaybe again:
  * <pre>
- * Single&lt;Integer> single = Flowable.range(1, 10).reduce((a, b) -> a + b);
- * Flowable&lt;Integer> flowable = single.toFlowable();
+ * Single&lt;Integer> single = Maybe.just(1).isEmpty();
+ * Maybe&lt;Integer> maybe = single.toMaybe();
  * </pre>
  *
- * The {@code Single.toFlowable()} will check for this interface and call the {@link #fuseToFlowable()}
- * to return a Flowable which could be the Flowable-specific implementation of reduce(BiFunction).
+ * The {@code Single.toMaybe()} will check for this interface and call the {@link #fuseToMaybe()}
+ * to return a Maybe which could be the Maybe-specific implementation of isEmpty().
  * <p>
  * This causes a slight overhead in assembly time (1 instanceof check, 1 operator allocation and 1 dropped
  * operator) but does not incur the conversion overhead at runtime.
  *
  * @param <T> the value type
  */
-public interface FuseToFlowable<T> {
+public interface FuseToMaybe<T> {
 
     /**
-     * Returns a (direct) Flowable for the operator.
+     * Returns a (direct) Maybe for the operator.
      * <p>The implementation should handle the necessary RxJavaPlugins wrapping.
-     * @return the Flowable instance
+     * @return the Maybe instance
      */
-    Flowable<T> fuseToFlowable();
+    Maybe<T> fuseToMaybe();
 }

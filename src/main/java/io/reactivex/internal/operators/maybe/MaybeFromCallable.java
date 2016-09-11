@@ -25,7 +25,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class MaybeFromCallable<T> extends Maybe<T> {
+public final class MaybeFromCallable<T> extends Maybe<T> implements Callable<T> {
 
     final Callable<? extends T> callable;
 
@@ -62,5 +62,10 @@ public final class MaybeFromCallable<T> extends Maybe<T> {
                 }
             }
         }
+    }
+
+    @Override
+    public T call() throws Exception {
+        return callable.call();
     }
 }
