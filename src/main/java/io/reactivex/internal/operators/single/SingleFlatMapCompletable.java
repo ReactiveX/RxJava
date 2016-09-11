@@ -54,8 +54,6 @@ public final class SingleFlatMapCompletable<T> extends Completable {
 
         final Function<? super T, ? extends CompletableSource> mapper;
 
-        Disposable d;
-
         public FlatMapCompletableObserver(CompletableObserver actual,
                 Function<? super T, ? extends CompletableSource> mapper) {
             this.actual = actual;

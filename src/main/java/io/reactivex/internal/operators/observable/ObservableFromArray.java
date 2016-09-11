@@ -22,9 +22,6 @@ public final class ObservableFromArray<T> extends Observable<T> {
     public ObservableFromArray(T[] array) {
         this.array = array;
     }
-    public T[] array() {
-        return array; // NOPMD
-    }
     @Override
     public void subscribeActual(Observer<? super T> s) {
         FromArrayDisposable<T> d = new FromArrayDisposable<T>(s, array);

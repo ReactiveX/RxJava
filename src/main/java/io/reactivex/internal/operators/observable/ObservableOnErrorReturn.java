@@ -37,8 +37,6 @@ public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpst
 
         Disposable s;
 
-        volatile boolean done;
-
         public OnErrorReturnSubscriber(Observer<? super T> actual, Function<? super Throwable, ? extends T> valueSupplier) {
             this.actual = actual;
             this.valueSupplier = valueSupplier;
@@ -70,7 +68,6 @@ public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpst
 
         @Override
         public void onError(Throwable t) {
-            done = true;
             T v;
             try {
                 v = valueSupplier.apply(t);

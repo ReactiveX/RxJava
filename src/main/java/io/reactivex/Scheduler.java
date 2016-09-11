@@ -256,9 +256,7 @@ public abstract class Scheduler {
          * of this task has to happen (accounting for clock drifts).
          */
         final class PeriodicTask implements Runnable {
-            final long firstStartInNanoseconds;
             final Runnable decoratedRun;
-            final long firstNowNanoseconds;
             final SequentialDisposable sd;
             final long periodInNanoseconds;
             long count;
@@ -267,9 +265,7 @@ public abstract class Scheduler {
 
             PeriodicTask(long firstStartInNanoseconds, Runnable decoratedRun,
                     long firstNowNanoseconds, SequentialDisposable sd, long periodInNanoseconds) {
-                this.firstStartInNanoseconds = firstStartInNanoseconds;
                 this.decoratedRun = decoratedRun;
-                this.firstNowNanoseconds = firstNowNanoseconds;
                 this.sd = sd;
                 this.periodInNanoseconds = periodInNanoseconds;
                 lastNowNanoseconds = firstNowNanoseconds;

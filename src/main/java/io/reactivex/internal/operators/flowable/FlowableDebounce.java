@@ -46,8 +46,6 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
         final Subscriber<? super T> actual;
         final Function<? super T, ? extends Publisher<U>> debounceSelector;
 
-        volatile boolean gate;
-
         Subscription s;
 
         final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();

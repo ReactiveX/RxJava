@@ -54,8 +54,6 @@ public final class CompletableConcatIterable extends Completable {
         final CompletableObserver actual;
         final Iterator<? extends CompletableSource> sources;
 
-        int index;
-
         final SequentialDisposable sd;
 
         public ConcatInnerObserver(CompletableObserver actual, Iterator<? extends CompletableSource> sources) {

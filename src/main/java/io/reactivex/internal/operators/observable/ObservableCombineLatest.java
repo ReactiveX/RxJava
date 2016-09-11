@@ -76,9 +76,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         private static final long serialVersionUID = 8567835998786448817L;
         final Observer<? super R> actual;
         final Function<? super Object[], ? extends R> combiner;
-        final int count;
         final CombinerSubscriber<T, R>[] subscribers;
-        final int bufferSize;
         final T[] latest;
         final SpscLinkedArrayQueue<Object> queue;
         final boolean delayError;
@@ -98,8 +96,6 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                 int count, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.combiner = combiner;
-            this.count = count;
-            this.bufferSize = bufferSize;
             this.delayError = delayError;
             this.latest = (T[])new Object[count];
             this.subscribers = new CombinerSubscriber[count];

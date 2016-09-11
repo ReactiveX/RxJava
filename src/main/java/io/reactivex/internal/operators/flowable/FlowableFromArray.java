@@ -27,9 +27,6 @@ public final class FlowableFromArray<T> extends Flowable<T> {
     public FlowableFromArray(T[] array) {
         this.array = array;
     }
-    public T[] array() {
-        return array; // NOPMD
-    }
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {

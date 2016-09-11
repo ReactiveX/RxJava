@@ -144,8 +144,6 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         final int prefetch;
 
-        final int limit;
-
         final boolean delayError;
 
         final AtomicReference<Subscription> s;
@@ -161,7 +159,6 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         public MulticastProcessor(int prefetch, boolean delayError) {
             this.prefetch = prefetch;
             this.delayError = delayError;
-            this.limit = prefetch - (prefetch >> 2);
             this.wip = new AtomicInteger();
             this.s = new AtomicReference<Subscription>();
             this.subscribers = new AtomicReference<MulticastSubscription<T>[]>(EMPTY);

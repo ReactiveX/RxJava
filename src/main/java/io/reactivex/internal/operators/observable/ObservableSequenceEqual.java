@@ -223,8 +223,6 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
         volatile boolean done;
         Throwable error;
 
-        Disposable s;
-
         public EqualSubscriber(EqualCoordinator<T> parent, int index, int bufferSize) {
             this.parent = parent;
             this.index = index;
@@ -233,9 +231,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
 
         @Override
         public void onSubscribe(Disposable s) {
-            if (parent.setSubscription(s, index)) {
-                this.s = s;
-            }
+            parent.setSubscription(s, index);
         }
 
         @Override
