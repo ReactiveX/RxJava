@@ -13,9 +13,9 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.reactivestreams.Subscriber;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
@@ -37,9 +37,6 @@ public final class FlowableAutoConnect<T> extends Flowable<T> {
     public FlowableAutoConnect(ConnectableFlowable<? extends T> source,
             int numberOfSubscribers,
             Consumer<? super Disposable> connection) {
-        if (numberOfSubscribers <= 0) {
-            throw new IllegalArgumentException("numberOfSubscribers > 0 required");
-        }
         this.source = source;
         this.numberOfSubscribers = numberOfSubscribers;
         this.connection = connection;

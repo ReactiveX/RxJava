@@ -39,10 +39,7 @@ final Scheduler scheduler;
             boolean delayError,
             int prefetch) {
         super(source);
-        if (prefetch <= 0) {
-            throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
-        }
-        this.scheduler = ObjectHelper.requireNonNull(scheduler, "scheduler");
+        this.scheduler = scheduler;
         this.delayError = delayError;
         this.prefetch = prefetch;
     }

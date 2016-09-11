@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -52,9 +53,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
      * @return the CachedObservable instance
      */
     public static <T> Observable<T> from(Observable<T> source, int capacityHint) {
-        if (capacityHint < 1) {
-            throw new IllegalArgumentException("capacityHint > 0 required");
-        }
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
         CacheState<T> state = new CacheState<T>(source, capacityHint);
         return RxJavaPlugins.onAssembly(new ObservableCache<T>(source, state));
     }

@@ -49,13 +49,9 @@ extends Flowable<R> {
     public FlowableCombineLatest(Publisher<? extends T>[] array,
             Function<? super Object[], ? extends R> combiner,
                     int bufferSize, boolean delayErrors) {
-        if (bufferSize <= 0) {
-            throw new IllegalArgumentException("BUFFER_SIZE > 0 required but it was " + bufferSize);
-        }
-
-        this.array = ObjectHelper.requireNonNull(array, "array");
+        this.array = array;
         this.iterable = null;
-        this.combiner = ObjectHelper.requireNonNull(combiner, "combiner");
+        this.combiner = combiner;
         this.bufferSize = bufferSize;
         this.delayErrors = delayErrors;
     }
@@ -63,13 +59,9 @@ extends Flowable<R> {
     public FlowableCombineLatest(Iterable<? extends Publisher<? extends T>> iterable,
             Function<? super Object[], ? extends R> combiner,
                     int bufferSize, boolean delayErrors) {
-        if (bufferSize <= 0) {
-            throw new IllegalArgumentException("BUFFER_SIZE > 0 required but it was " + bufferSize);
-        }
-
         this.array = null;
-        this.iterable = ObjectHelper.requireNonNull(iterable, "iterable");
-        this.combiner = ObjectHelper.requireNonNull(combiner, "combiner");
+        this.iterable = iterable;
+        this.combiner = combiner;
         this.bufferSize = bufferSize;
         this.delayErrors = delayErrors;
     }
