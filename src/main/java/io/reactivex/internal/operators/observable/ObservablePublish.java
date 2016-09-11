@@ -223,8 +223,6 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         final SpscLinkedArrayQueue<Object> queue;
         /** Holds onto the current connected PublishSubscriber. */
         final AtomicReference<PublishSubscriber<T>> current;
-        /** The prefetch buffer size. */
-        final int bufferSize;
         /** Contains either an onCompleted or an onError token from upstream. */
         volatile Object terminalEvent;
 
@@ -254,7 +252,6 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
             this.producers = new AtomicReference<InnerProducer[]>(EMPTY);
             this.current = current;
             this.shouldConnect = new AtomicBoolean();
-            this.bufferSize = bufferSize;
         }
 
         @Override

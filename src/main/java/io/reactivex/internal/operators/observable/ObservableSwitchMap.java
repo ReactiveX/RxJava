@@ -312,7 +312,6 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         private static final long serialVersionUID = 3837284832786408377L;
         final SwitchMapSubscriber<T, R> parent;
         final long index;
-        final int bufferSize;
         final SpscArrayQueue<R> queue;
 
         volatile boolean done;
@@ -320,7 +319,6 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         public SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
             this.index = index;
-            this.bufferSize = bufferSize;
             this.queue = new SpscArrayQueue<R>(bufferSize);
         }
 

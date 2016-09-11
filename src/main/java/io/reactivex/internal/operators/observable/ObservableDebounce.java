@@ -41,8 +41,6 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
         final Observer<? super T> actual;
         final Function<? super T, ? extends ObservableSource<U>> debounceSelector;
 
-        volatile boolean gate;
-
         Disposable s;
 
         final AtomicReference<Disposable> debouncer = new AtomicReference<Disposable>();

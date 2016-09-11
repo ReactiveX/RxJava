@@ -338,12 +338,6 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
          */
         final AtomicBoolean shouldConnect;
 
-        /** Guarded by this. */
-        boolean emitting;
-        /** Guarded by this. */
-        boolean missed;
-
-
         /** The upstream producer. */
         volatile Disposable subscription;
 

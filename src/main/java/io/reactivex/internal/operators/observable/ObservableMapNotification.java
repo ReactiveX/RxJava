@@ -52,10 +52,6 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
 
         Disposable s;
 
-        Observable<? extends R> value;
-
-        volatile boolean done;
-
         public MapNotificationSubscriber(Observer<? super ObservableSource<? extends R>> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
                 Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,

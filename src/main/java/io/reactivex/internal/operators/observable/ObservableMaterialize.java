@@ -34,8 +34,6 @@ public final class ObservableMaterialize<T> extends AbstractObservableWithUpstre
 
         Disposable s;
 
-        volatile boolean done;
-
         public MaterializeSubscriber(Observer<? super Notification<T>> actual) {
             this.actual = actual;
         }

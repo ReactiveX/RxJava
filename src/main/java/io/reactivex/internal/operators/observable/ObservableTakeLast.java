@@ -40,7 +40,6 @@ public final class ObservableTakeLast<T> extends AbstractObservableWithUpstream<
 
         Disposable s;
 
-        volatile boolean done;
         volatile boolean cancelled;
 
         public TakeLastSubscriber(Observer<? super T> actual, int count) {
@@ -71,7 +70,6 @@ public final class ObservableTakeLast<T> extends AbstractObservableWithUpstream<
 
         @Override
         public void onComplete() {
-            done = true;
             if (cancelled) {
                 return;
             }

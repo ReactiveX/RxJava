@@ -62,7 +62,6 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
         final Observer<? super T> actual;
         final Scheduler.Worker worker;
         final boolean delayError;
-        final int bufferSize;
         final SpscLinkedArrayQueue<T> queue;
 
         Disposable s;
@@ -76,7 +75,6 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             this.actual = actual;
             this.worker = worker;
             this.delayError = delayError;
-            this.bufferSize = bufferSize;
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
         }
 
