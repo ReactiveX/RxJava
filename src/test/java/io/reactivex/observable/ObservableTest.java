@@ -1059,6 +1059,7 @@ public class ObservableTest {
 
     @Test
     public void zipIterableObject() {
+        @SuppressWarnings("unchecked")
         final List<Observable<Integer>> observables = Arrays.asList(Observable.just(1, 2, 3), Observable.just(1, 2, 3));
         Observable.zip(observables, new Function<Object[], Object>() {
             @Override
@@ -1074,6 +1075,7 @@ public class ObservableTest {
 
     @Test
     public void combineLatestObject() {
+        @SuppressWarnings("unchecked")
         final List<Observable<Integer>> observables = Arrays.asList(Observable.just(1, 2, 3), Observable.just(1, 2, 3));
         Observable.combineLatest(observables, new Function<Object[], Object>() {
             @Override

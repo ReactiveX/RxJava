@@ -42,10 +42,9 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
 
         if (n == 1) {
             sources[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new Function<T, R>() {
-                @SuppressWarnings("unchecked")
                 @Override
                 public R apply(T t) throws Exception {
-                    return zipper.apply((T[])new Object[] { t });
+                    return zipper.apply(new Object[] { t });
                 }
             }));
             return;
@@ -104,14 +103,13 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
             }
         }
 
-        @SuppressWarnings("unchecked")
         void innerSuccess(T value, int index) {
             values[index] = value;
             if (decrementAndGet() == 0) {
                 R v;
 
                 try {
-                    v = ObjectHelper.requireNonNull(zipper.apply((T[])values), "The zipper returned a null value");
+                    v = ObjectHelper.requireNonNull(zipper.apply(values), "The zipper returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     actual.onError(ex);

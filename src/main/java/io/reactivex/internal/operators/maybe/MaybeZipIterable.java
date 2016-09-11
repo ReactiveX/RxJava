@@ -58,10 +58,9 @@ public final class MaybeZipIterable<T, R> extends Maybe<R> {
 
         if (n == 1) {
             a[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new Function<T, R>() {
-                @SuppressWarnings("unchecked")
                 @Override
                 public R apply(T t) throws Exception {
-                    return zipper.apply((T[])new Object[] { t });
+                    return zipper.apply(new Object[] { t });
                 }
             }));
             return;

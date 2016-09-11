@@ -21,7 +21,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BooleanSupplier;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;

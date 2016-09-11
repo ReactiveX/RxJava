@@ -142,7 +142,7 @@ extends Flowable<R> {
             new FlowableMap<T, R>((Publisher<T>)a[0], new Function<T, R>() {
                 @Override
                 public R apply(T t) throws Exception {
-                    return combiner.apply((T[])new Object[] { t });
+                    return combiner.apply(new Object[] { t });
                 }
             }).subscribe(s);
             return;

@@ -518,6 +518,7 @@ public class SingleTest {
 
     @Test
     public void zipIterableObject() {
+        @SuppressWarnings("unchecked")
         final List<Single<Integer>> singles = Arrays.asList(Single.just(1), Single.just(4));
         Single.zip(singles, new Function<Object[], Object>() {
             @Override

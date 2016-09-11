@@ -20,7 +20,6 @@ import org.reactivestreams.*;
 import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.exceptions.*;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;

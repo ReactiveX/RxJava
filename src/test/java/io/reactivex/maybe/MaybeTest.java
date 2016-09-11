@@ -2860,6 +2860,7 @@ public class MaybeTest {
 
     @Test
     public void zipIterableObject() {
+        @SuppressWarnings("unchecked")
         final List<Maybe<Integer>> maybes = Arrays.asList(Maybe.just(1), Maybe.just(4));
         Maybe.zip(maybes, new Function<Object[], Object>() {
             @Override
