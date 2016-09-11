@@ -161,9 +161,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static Completable concat(Publisher<? extends CompletableSource> sources, int prefetch) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        if (prefetch < 1) {
-            throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
-        }
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new CompletableConcat(sources, prefetch));
     }
 
@@ -477,9 +475,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     private static Completable merge0(Publisher<? extends CompletableSource> sources, int maxConcurrency, boolean delayErrors) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        if (maxConcurrency < 1) {
-            throw new IllegalArgumentException("maxConcurrency > 0 required but it was " + maxConcurrency);
-        }
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         return RxJavaPlugins.onAssembly(new CompletableMerge(sources, maxConcurrency, delayErrors));
     }
 

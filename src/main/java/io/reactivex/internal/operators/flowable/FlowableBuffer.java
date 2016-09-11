@@ -33,23 +33,11 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
     final Callable<C> bufferSupplier;
 
-    public FlowableBuffer(Publisher<T> source, int size, Callable<C> bufferSupplier) {
-        this(source, size, size, bufferSupplier);
-    }
-
     public FlowableBuffer(Publisher<T> source, int size, int skip, Callable<C> bufferSupplier) {
         super(source);
-        if (size <= 0) {
-            throw new IllegalArgumentException("size > 0 required but it was " + size);
-        }
-
-        if (skip <= 0) {
-            throw new IllegalArgumentException("skip > 0 required but it was " + size);
-        }
-
         this.size = size;
         this.skip = skip;
-        this.bufferSupplier = ObjectHelper.requireNonNull(bufferSupplier, "bufferSupplier");
+        this.bufferSupplier = bufferSupplier;
     }
 
     @Override

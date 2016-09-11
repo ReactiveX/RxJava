@@ -20,6 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -53,9 +54,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
      * @return the CachedObservable instance
      */
     public static <T> Flowable<T> from(Flowable<T> source, int capacityHint) {
-        if (capacityHint < 1) {
-            throw new IllegalArgumentException("capacityHint > 0 required");
-        }
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
         CacheState<T> state = new CacheState<T>(source, capacityHint);
         return RxJavaPlugins.onAssembly(new FlowableCache<T>(source, state));
     }

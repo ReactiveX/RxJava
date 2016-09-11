@@ -38,12 +38,9 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
             Function<? super T, ? extends Publisher<? extends R>> mapper,
             int prefetch, ErrorMode errorMode) {
         super(source);
-        if (prefetch <= 0) {
-            throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
-        }
-        this.mapper = ObjectHelper.requireNonNull(mapper, "mapper");
+        this.mapper = mapper;
         this.prefetch = prefetch;
-        this.errorMode = ObjectHelper.requireNonNull(errorMode, "errorMode");
+        this.errorMode = errorMode;
     }
 
     public static <T, R> Subscriber<T> subscribe(Subscriber<? super R> s, Function<? super T, ? extends Publisher<? extends R>> mapper,

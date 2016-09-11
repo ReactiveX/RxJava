@@ -37,10 +37,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
     public FlowableFlattenIterable(Publisher<T> source,
             Function<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
         super(source);
-        if (prefetch <= 0) {
-            throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
-        }
-        this.mapper = ObjectHelper.requireNonNull(mapper, "mapper");
+        this.mapper = mapper;
         this.prefetch = prefetch;
     }
 
