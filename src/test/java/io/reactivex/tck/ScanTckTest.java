@@ -17,14 +17,20 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.BiFunction;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class ScanTckTest extends BaseTck<Integer> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Integer> createPublisher(long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
+                Flowable.range(0, (int)elements).scan(new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        return a + b;
+                    }
+                })
         );
     }
 }

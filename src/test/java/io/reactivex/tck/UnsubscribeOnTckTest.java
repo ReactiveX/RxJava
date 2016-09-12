@@ -17,14 +17,17 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class UnsubscribeOnTckTest extends BaseTck<Integer> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Integer> createPublisher(long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
+                Flowable.range(0, (int)elements * 2)
+                .unsubscribeOn(Schedulers.single())
+                .take(elements)
         );
     }
 }

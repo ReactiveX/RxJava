@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 import io.reactivex.Flowable;
 
 @Test
-public class FromArrayTckTest extends BaseTck {
+public class FromArrayTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {

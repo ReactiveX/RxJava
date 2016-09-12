@@ -17,8 +17,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Scheduler;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream<T, T> {
     final Scheduler scheduler;
@@ -56,17 +57,25 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            if (!get()) {
+                actual.onNext(t);
+            }
         }
 
         @Override
         public void onError(Throwable t) {
+            if (get()) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
             actual.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            if (!get()) {
+                actual.onComplete();
+            }
         }
 
         @Override

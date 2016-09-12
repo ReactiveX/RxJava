@@ -17,14 +17,21 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class FlatMapTckTest extends BaseTck<Integer> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Integer> createPublisher(long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
-        );
+                Flowable.range(0, (int)elements)
+                .flatMap(new Function<Integer, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(Integer v) throws Exception {
+                        return Flowable.just(v);
+                    }
+                })
+            );
     }
 }

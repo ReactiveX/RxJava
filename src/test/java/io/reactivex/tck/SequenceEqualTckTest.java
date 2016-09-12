@@ -19,12 +19,17 @@ import org.testng.annotations.Test;
 import io.reactivex.Flowable;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class SequenceEqualTckTest extends BaseTck<Boolean> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Boolean> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
-        );
+                Flowable.sequenceEqual(Flowable.range(1, 1000), Flowable.range(1, 1001))
+            );
+    }
+
+    @Override
+    public long maxElementsFromPublisher() {
+        return 1;
     }
 }

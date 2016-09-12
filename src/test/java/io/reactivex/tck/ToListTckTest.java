@@ -13,18 +13,25 @@
 
 package io.reactivex.tck;
 
+import java.util.List;
+
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class ToListTckTest extends BaseTck<List<Integer>> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<List<Integer>> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
-        );
+                Flowable.range(1, 1000).toList()
+            );
+    }
+
+    @Override
+    public long maxElementsFromPublisher() {
+        return 1;
     }
 }

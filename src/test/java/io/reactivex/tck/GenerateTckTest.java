@@ -16,15 +16,27 @@ package io.reactivex.tck;
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.internal.functions.Functions;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class GenerateTckTest extends BaseTck<Long> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Long> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
+            Flowable.generate(Functions.justCallable(0L),
+            new BiFunction<Long, Emitter<Long>, Long>() {
+                @Override
+                public Long apply(Long s, Emitter<Long> e) throws Exception {
+                    e.onNext(s);
+                    if (++s == elements) {
+                        e.onComplete();
+                    }
+                    return s;
+                }
+            }, Functions.<Long>emptyConsumer())
         );
     }
 }

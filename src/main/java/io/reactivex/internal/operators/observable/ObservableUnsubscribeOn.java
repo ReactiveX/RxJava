@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpstream<T, T> {
     final Scheduler scheduler;
@@ -55,17 +56,25 @@ public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpst
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            if (!get()) {
+                actual.onNext(t);
+            }
         }
 
         @Override
         public void onError(Throwable t) {
+            if (get()) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
             actual.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            if (!get()) {
+                actual.onComplete();
+            }
         }
 
         @Override
