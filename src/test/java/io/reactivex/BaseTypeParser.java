@@ -87,7 +87,13 @@ public class BaseTypeParser {
             }
 
             int staticMethodDef = b.indexOf("public static ", javadocEnd + 2);
+            if (staticMethodDef < 0) {
+                staticMethodDef = Integer.MAX_VALUE;
+            }
             int instanceMethodDef = b.indexOf("public final ", javadocEnd + 2);
+            if (instanceMethodDef < 0) {
+                instanceMethodDef = Integer.MAX_VALUE;
+            }
 
             int javadocStartNext = b.indexOf("/**", javadocEnd + 2);
             if (javadocStartNext < 0) {
@@ -99,7 +105,7 @@ public class BaseTypeParser {
             if (staticMethodDef > 0 && staticMethodDef < javadocStartNext && staticMethodDef < instanceMethodDef) {
                 definitionStart = staticMethodDef;
             }
-            if (instanceMethodDef > 0 && staticMethodDef < javadocStartNext && instanceMethodDef < staticMethodDef) {
+            if (instanceMethodDef > 0 && instanceMethodDef < javadocStartNext && instanceMethodDef < staticMethodDef) {
                 definitionStart = instanceMethodDef;
             }
 

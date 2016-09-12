@@ -68,8 +68,26 @@ public class JavadocWording {
                     int idx = m.javadoc.indexOf("Subscriber", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("Publisher")
-                                && !m.signature.contains("Flowable")) {
+                                && !m.signature.contains("Flowable")
+                                && !m.signature.contains("TestSubscriber")
+                        ) {
                             e.append("java.lang.RuntimeException: Maybe doc mentions Subscriber but not using Flowable\r\n at io.reactivex.")
+                            .append("Maybe (Maybe.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf(" Subscription", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("Publisher")
+                                && !m.signature.contains("Flowable")
+                        ) {
+                            e.append("java.lang.RuntimeException: Maybe doc mentions Subscription but not using Flowable\r\n at io.reactivex.")
                             .append("Maybe (Maybe.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
                         }
 
@@ -235,6 +253,32 @@ public class JavadocWording {
                 }
                 jdx = 0;
                 for (;;) {
+                    int idx = m.javadoc.indexOf(" Disposable", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("Observable")
+                                && !m.signature.contains("ObservableSource")
+                                && !m.signature.contains("Single")
+                                && !m.signature.contains("SingleSource")
+                                && !m.signature.contains("Completable")
+                                && !m.signature.contains("CompletableSource")
+                                && !m.signature.contains("Maybe")
+                                && !m.signature.contains("MaybeSource")
+                                && !m.signature.contains("Disposable")
+                        ) {
+                            CharSequence subSequence = m.javadoc.subSequence(idx - 6, idx + 11);
+                            if (idx < 6 || !subSequence.equals("{@link Disposable")) {
+                                e.append("java.lang.RuntimeException: Flowable doc mentions Disposable but not using Flowable\r\n at io.reactivex.")
+                                .append("Flowable (Flowable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                            }
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
                     int idx = m.javadoc.indexOf("Observable", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("Observable")) {
@@ -293,7 +337,23 @@ public class JavadocWording {
                                 && !m.signature.contains("Single")
                                 && !m.signature.contains("SingleSource")) {
                             e.append("java.lang.RuntimeException: Observable doc mentions onSuccess\r\n at io.reactivex.")
-                            .append("Maybe (Maybe.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                            .append("Observable (Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf(" Subscription", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("Flowable")
+                                && !m.signature.contains("Publisher")
+                        ) {
+                            e.append("java.lang.RuntimeException: Observable doc mentions Subscription but not using Flowable\r\n at io.reactivex.")
+                            .append("Observable (Observable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
                         }
 
                         jdx = idx + 6;
@@ -391,8 +451,25 @@ public class JavadocWording {
                     int idx = m.javadoc.indexOf("Subscriber", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("Publisher")
-                                && !m.signature.contains("Flowable")) {
+                                && !m.signature.contains("Flowable")
+                                && !m.signature.contains("TestSubscriber")) {
                             e.append("java.lang.RuntimeException: Single doc mentions Subscriber but not using Flowable\r\n at io.reactivex.")
+                            .append("Single (Single.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf(" Subscription", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("Flowable")
+                                && !m.signature.contains("Publisher")
+                        ) {
+                            e.append("java.lang.RuntimeException: Single doc mentions Subscription but not using Flowable\r\n at io.reactivex.")
                             .append("Single (Single.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
                         }
 
@@ -437,7 +514,7 @@ public class JavadocWording {
                 }
                 jdx = 0;
                 for (;;) {
-                    int idx = m.javadoc.indexOf("Flowable", jdx);
+                    int idx = m.javadoc.indexOf(" Flowable", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("Flowable")) {
                             e.append("java.lang.RuntimeException: Single doc mentions Flowable but not in the signature\r\n at io.reactivex.")
@@ -450,7 +527,7 @@ public class JavadocWording {
                 }
                 jdx = 0;
                 for (;;) {
-                    int idx = m.javadoc.indexOf("Maybe", jdx);
+                    int idx = m.javadoc.indexOf(" Maybe", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("Maybe")) {
                             e.append("java.lang.RuntimeException: Single doc mentions Maybe but not in the signature\r\n at io.reactivex.")
@@ -463,7 +540,7 @@ public class JavadocWording {
                 }
                 jdx = 0;
                 for (;;) {
-                    int idx = m.javadoc.indexOf("MaybeSource", jdx);
+                    int idx = m.javadoc.indexOf(" MaybeSource", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("MaybeSource")) {
                             e.append("java.lang.RuntimeException: Single doc mentions SingleSource but not in the signature\r\n at io.reactivex.")
@@ -476,7 +553,7 @@ public class JavadocWording {
                 }
                 jdx = 0;
                 for (;;) {
-                    int idx = m.javadoc.indexOf("Observable", jdx);
+                    int idx = m.javadoc.indexOf(" Observable", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("Observable")) {
                             e.append("java.lang.RuntimeException: Single doc mentions Observable but not in the signature\r\n at io.reactivex.")
@@ -489,7 +566,7 @@ public class JavadocWording {
                 }
                 jdx = 0;
                 for (;;) {
-                    int idx = m.javadoc.indexOf("ObservableSource", jdx);
+                    int idx = m.javadoc.indexOf(" ObservableSource", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("ObservableSource")) {
                             e.append("java.lang.RuntimeException: Single doc mentions ObservableSource but not in the signature\r\n at io.reactivex.")
@@ -547,8 +624,25 @@ public class JavadocWording {
                     int idx = m.javadoc.indexOf("Subscriber", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("Publisher")
-                                && !m.signature.contains("Flowable")) {
+                                && !m.signature.contains("Flowable")
+                                && !m.signature.contains("TestSubscriber")) {
                             e.append("java.lang.RuntimeException: Completable doc mentions Subscriber but not using Flowable\r\n at io.reactivex.")
+                            .append("Completable (Completable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                        }
+
+                        jdx = idx + 6;
+                    } else {
+                        break;
+                    }
+                }
+                jdx = 0;
+                for (;;) {
+                    int idx = m.javadoc.indexOf(" Subscription", jdx);
+                    if (idx >= 0) {
+                        if (!m.signature.contains("Flowable")
+                                && !m.signature.contains("Publisher")
+                        ) {
+                            e.append("java.lang.RuntimeException: Completable doc mentions Subscription but not using Flowable\r\n at io.reactivex.")
                             .append("Completable (Completable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
                         }
 
@@ -610,7 +704,7 @@ public class JavadocWording {
                     if (idx >= 0) {
                         if (!m.signature.contains("Single")) {
                             e.append("java.lang.RuntimeException: Completable doc mentions Single but not in the signature\r\n at io.reactivex.")
-                            .append("Completable (Maybe.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                            .append("Completable (Completable.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
                         }
                         jdx = idx + 6;
                     } else {
@@ -632,7 +726,7 @@ public class JavadocWording {
                 }
                 jdx = 0;
                 for (;;) {
-                    int idx = m.javadoc.indexOf("Observable", jdx);
+                    int idx = m.javadoc.indexOf(" Observable", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("Observable")) {
                             e.append("java.lang.RuntimeException: Completable doc mentions Observable but not in the signature\r\n at io.reactivex.")

@@ -6262,7 +6262,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a function that projects an emitted item to a key value that is used to decide whether an item
      *            is distinct from another one or not
      * @param collectionSupplier
-     *            function called for each individual Subscriber to return a Collection subtype for holding the extracted
+     *            function called for each individual Observer to return a Collection subtype for holding the extracted
      *            keys and whose add() method's return indicates uniqueness.
      * @return an Observable that emits those items emitted by the source ObservableSource that have distinct keys
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
@@ -6342,7 +6342,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Registers an {@link Action} to be called when this ObservableSource invokes either
-     * {@link Subscriber#onComplete onComplete} or {@link Subscriber#onError onError}.
+     * {@link Observer#onComplete onComplete} or {@link Observer#onError onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/finallyDo.png" alt="">
      * <dl>
@@ -6381,7 +6381,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param onDispose
-     *            the action that gets called when the source {@code ObservableSource}'s Subscription is disposed
+     *            the action that gets called when the source {@code ObservableSource}'s Disposable is disposed
      * @return the source {@code ObservableSource} modified so as to call this Action when appropriate
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
@@ -6472,7 +6472,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param observer
      *            the observer to be notified about onNext, onError and onComplete events on its
-     *            respective methods before the actual downstream Subscriber gets notified.
+     *            respective methods before the actual downstream Observer gets notified.
      * @return the source ObservableSource with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
@@ -6509,7 +6509,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Calls the appropriate onXXX method (shared between all Subscribers) for the lifecycle events of
+     * Calls the appropriate onXXX method (shared between all Observer) for the lifecycle events of
      * the sequence (subscription, cancellation, requesting).
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
@@ -6519,9 +6519,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param onSubscribe
-     *              a Consumer called with the Subscription sent via Subscriber.onSubscribe()
+     *              a Consumer called with the Disposable sent via Observer.onSubscribe()
      * @param onDispose
-     *              called when the downstream disposes the Subscription via dispose()
+     *              called when the downstream disposes the Disposable via dispose()
      * @return the source ObservableSource with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
@@ -6564,7 +6564,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param onSubscribe
-     *            the Consumer that gets called when a Subscriber subscribes to the current {@code Observable}
+     *            the Consumer that gets called when an Observer subscribes to the current {@code Observable}
      * @return the source {@code ObservableSource} modified so as to call this Consumer when appropriate
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
@@ -7313,7 +7313,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single
-     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
+     * {@link Observer} during its lifetime and if this {@code Observer} unsubscribes before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedObservableSource} emission.
      * <p>
@@ -7346,7 +7346,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single
-     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
+     * {@link Observer} during its lifetime and if this {@code Observer} unsubscribes before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedObservableSource} emission.
      * <p>
@@ -7382,7 +7382,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single
-     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
+     * {@link Observer} during its lifetime and if this {@code Observer} unsubscribes before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedObservableSource} emission.
      * <p>
@@ -7419,7 +7419,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single
-     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
+     * {@link Observer} during its lifetime and if this {@code Observer} unsubscribes before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedObservableSource} emission.
      * <p>
@@ -7459,7 +7459,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single
-     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
+     * {@link Observer} during its lifetime and if this {@code Observer} unsubscribes before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedObservableSource} emission.
      * <p>
@@ -7546,9 +7546,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Hides the identity of this Observable and its Subscription.
-     * <p>Allows hiding extra features such as {@link Processor}'s
-     * {@link Subscriber} methods or preventing certain identity-based
+     * Hides the identity of this Observable and its Disposable.
+     * <p>Allows hiding extra features such as {@link io.reactivex.subjects.Subject}'s
+     * {@link Observer} methods or preventing certain identity-based
      * optimizations (fusion).
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -8063,13 +8063,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Nulls out references to the upstream producer and downstream Subscriber if
+     * Nulls out references to the upstream producer and downstream Observer if
      * the sequence is terminated or downstream unsubscribes.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return an Observable which out references to the upstream producer and downstream Subscriber if
+     * @return an Observable which out references to the upstream producer and downstream Observer if
      * the sequence is terminated or downstream unsubscribes
      * @since 2.0
      */
@@ -8112,7 +8112,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the type of items emitted by the resulting ObservableSource
      * @param selector
      *            a function that can use the multicasted source sequence as many times as needed, without
-     *            causing multiple subscriptions to the source sequence. Subscribers to the given source will
+     *            causing multiple subscriptions to the source sequence. Observers to the given source will
      *            receive all notifications of the source from the time of the subscription forward.
      * @return an Observable that emits the results of invoking the selector on the items emitted by a {@link ConnectableObservable} that shares a single subscription to the underlying sequence
      * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
@@ -8136,7 +8136,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the type of items emitted by the resulting ObservableSource
      * @param selector
      *            a function that can use the multicasted source sequence as many times as needed, without
-     *            causing multiple subscriptions to the source sequence. Subscribers to the given source will
+     *            causing multiple subscriptions to the source sequence. Observers to the given source will
      *            receive all notifications of the source from the time of the subscription forward.
      * @param bufferSize
      *            the number of elements to prefetch from the current Observable
@@ -8282,7 +8282,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <R> the accumulator and output value type
      * @param seedSupplier
-     *            the Callable that provides the initial (seed) accumulator value for each individual Subscriber
+     *            the Callable that provides the initial (seed) accumulator value for each individual Observer
      * @param reducer
      *            an accumulator function to be invoked on each item emitted by the source ObservableSource, the
      *            result of which will be used in the next accumulator call
@@ -9001,7 +9001,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * This retries 3 times, each time incrementing the number of seconds it waits.
      *
      * <pre><code>
-     *  ObservableSource.create((Subscriber<? super String> s) -> {
+     *  ObservableSource.create((Observer<? super String> s) -> {
      *      System.out.println("subscribing");
      *      s.onError(new RuntimeException("always fails"));
      *  }).retryWhen(attempts -> {
@@ -9042,15 +9042,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Subscribes to the current Observable and wraps the given Subscriber into a SafeSubscriber
-     * (if not already a SafeSubscriber) that
-     * deals with exceptions thrown by a misbehaving Subscriber (that doesn't follow the
+     * Subscribes to the current Observable and wraps the given Observer into a SafeObserver
+     * (if not already a SafeObserver) that
+     * deals with exceptions thrown by a misbehaving Observer (that doesn't follow the
      * Reactive-Streams specification).
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code safeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param s the incoming Subscriber instance
+     * @param s the incoming Observer instance
      * @throws NullPointerException if s is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -9248,7 +9248,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <R> the initial, accumulator and result type
      * @param seedSupplier
-     *            a Callable that returns the initial (seed) accumulator item for each individual Subscriber
+     *            a Callable that returns the initial (seed) accumulator item for each individual Observer
      * @param accumulator
      *            an accumulator function to be invoked on each item emitted by the source ObservableSource, whose
      *            result will be emitted to {@link Observer}s via {@link Observer#onNext onNext} and used in the
@@ -9268,7 +9268,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Forces an ObservableSource's emissions and notifications to be serialized and for it to obey
      * <a href="http://reactivex.io/documentation/contract.html">the ObservableSource contract</a> in other ways.
      * <p>
-     * It is possible for an ObservableSource to invoke its Subscribers' methods asynchronously, perhaps from
+     * It is possible for an ObservableSource to invoke its Observers' methods asynchronously, perhaps from
      * different threads. This could make such an ObservableSource poorly-behaved, in that it might try to invoke
      * {@code onComplete} or {@code onError} before one of its {@code onNext} invocations, or it might call
      * {@code onNext} from two different threads concurrently. You can force such an ObservableSource to be
@@ -9291,7 +9291,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a new {@link ObservableSource} that multicasts (shares) the original {@link ObservableSource}. As long as
-     * there is at least one {@link Subscriber} this {@link ObservableSource} will be subscribed and emitting data.
+     * there is at least one {@link Observer} this {@link ObservableSource} will be subscribed and emitting data.
      * When all subscribers have unsubscribed it will unsubscribe from the source {@link ObservableSource}.
      * <p>
      * This is an alias for {@link #publish()}.{@link ConnectableObservable#refCount()}.
@@ -9911,7 +9911,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             the {@code Action} you have designed to accept a completion notification from the
      *             ObservableSource
      * @param onSubscribe
-     *             the {@code Consumer} that receives the upstream's Subscription
+     *             the {@code Consumer} that receives the upstream's Disposable
      * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the ObservableSource has finished sending them
      * @throws IllegalArgumentException
@@ -9976,7 +9976,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Observable<Integer> source = Observable.range(1, 10);
      * CompositeDisposable composite = new CompositeDisposable();
      *
-     * ResourceObserver&lt;Integer> rs = new ResourceSubscriber&lt;>() {
+     * ResourceObserver&lt;Integer> rs = new ResourceObserver&lt;>() {
      *     // ...
      * };
      *
@@ -10181,8 +10181,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.png" alt="">
      * <p>
      * This method returns an ObservableSource that will invoke a subscribing {@link Observer}'s
-     * {@link Subscriber#onNext onNext} function a maximum of {@code count} times before invoking
-     * {@link Subscriber#onComplete onComplete}.
+     * {@link Observer#onNext onNext} function a maximum of {@code count} times before invoking
+     * {@link Observer#onComplete onComplete}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code take} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10541,7 +10541,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits the items emitted by the source Publisher until a second Publisher
+     * Returns an Observable that emits the items emitted by the source Observable until a second ObservableSource
      * emits an item.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
@@ -10551,11 +10551,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param other
-     *            the Publisher whose first emitted item will cause {@code takeUntil} to stop emitting items
-     *            from the source Publisher
+     *            the ObservableSource whose first emitted item will cause {@code takeUntil} to stop emitting items
+     *            from the source Observable
      * @param <U>
      *            the type of items emitted by {@code other}
-     * @return an Observable that emits the items emitted by the source Publisher until such time as {@code other} emits its first item
+     * @return an Observable that emits the items emitted by the source Observable until such time as {@code other} emits its first item
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -10565,7 +10565,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits items emitted by the source Publisher, checks the specified predicate
+     * Returns an Observable that emits items emitted by the source Observable, checks the specified predicate
      * for each item, and then completes when the condition is satisfied.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.p.png" alt="">
@@ -10579,8 +10579,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param stopPredicate
-     *            a function that evaluates an item emitted by the source Publisher and returns a Boolean
-     * @return an Observable that first emits items emitted by the source Publisher, checks the specified
+     *            a function that evaluates an item emitted by the source Observable and returns a Boolean
+     * @return an Observable that first emits items emitted by the source Observable, checks the specified
      *         condition after each item, and then completes when the condition is satisfied.
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      * @see Observable#takeWhile(Predicate)
@@ -11357,7 +11357,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <U> the subclass of a collection of Ts
      * @param collectionSupplier
-     *               the Callable returning the collection (for each individual Subscriber) to be filled in
+     *               the Callable returning the collection (for each individual Observer) to be filled in
      * @return an Observable that emits a single item: a List containing all of the items emitted by the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
@@ -11606,7 +11606,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Converts this Observable into a Maybe and expects this Flowable to have at most one item
+     * Converts this Observable into a Maybe and expects this Observable to have at most one item
      * or a completion signal; otherwise the resulting Maybe will signal an IndexOutOfBoundsException.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>

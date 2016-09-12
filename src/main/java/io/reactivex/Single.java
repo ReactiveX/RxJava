@@ -1519,7 +1519,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatWith.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1643,7 +1643,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dl>
      * <dt><b>Backpressure:</b></dt>
      * <dd>The {@code other} publisher is consumed in an unbounded fashion but will be
-     * cancelled after the first item it produced.
+     * cancelled after the first item it produced.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code delaySubscription} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1834,7 +1834,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
-     *  and the {@code Publisher} returned by the mapper function is expected to honor it as well.
+     *  and the {@code Publisher} returned by the mapper function is expected to honor it as well.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMapPublisher} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1842,7 +1842,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <R> the result value type
      * @param mapper
      *            a function that, when applied to the item emitted by the source Single, returns an
-     *            Observable
+     *            Flowable
      * @return the Flowable returned from {@code func} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -1999,15 +1999,15 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Flattens this and another Single into a single Observable, without any transformation.
+     * Flattens this and another Single into a single Flowable, without any transformation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by using
      * the {@code mergeWith} method.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2054,11 +2054,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorReturn.png" alt="">
      * <p>
      * By default, when a Single encounters an error that prevents it from emitting the expected item to its
-     * subscriber, the Single invokes its subscriber's {@link Subscriber#onError} method, and then quits
+     * subscriber, the Single invokes its subscriber's {@link SingleObserver#onError} method, and then quits
      * without invoking any more of its subscriber's methods. The {@code onErrorReturn} method changes this
      * behavior. If you pass a function ({@code resumeFunction}) to a Single's {@code onErrorReturn} method, if
      * the original Single encounters an error, instead of invoking its subscriber's
-     * {@link Subscriber#onError} method, it will instead emit the return value of {@code resumeFunction}.
+     * {@link SingleObserver#onError} method, it will instead emit the return value of {@code resumeFunction}.
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
      * encountered.
@@ -2097,18 +2097,18 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Instructs a Single to pass control to another Single rather than invoking
-     * {@link Observer#onError(Throwable)} if it encounters an error.
+     * {@link SingleObserver#onError(Throwable)} if it encounters an error.
      * <p/>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
      * <p/>
      * By default, when a Single encounters an error that prevents it from emitting the expected item to
-     * its {@link Observer}, the Single invokes its Observer's {@code onError} method, and then quits
-     * without invoking any more of its Observer's methods. The {@code onErrorResumeNext} method changes this
+     * its {@link SingleObserver}, the Single invokes its SingleObserver's {@code onError} method, and then quits
+     * without invoking any more of its SingleObserver's methods. The {@code onErrorResumeNext} method changes this
      * behavior. If you pass another Single ({@code resumeSingleInCaseOfError}) to a Single's
      * {@code onErrorResumeNext} method, if the original Single encounters an error, instead of invoking its
-     * Observer's {@code onError} method, it will instead relinquish control to {@code resumeSingleInCaseOfError} which
-     * will invoke the Observer's {@link Observer#onNext onNext} method if it is able to do so. In such a case,
-     * because no Single necessarily invokes {@code onError}, the Observer may never know that an error
+     * SingleObserver's {@code onError} method, it will instead relinquish control to {@code resumeSingleInCaseOfError} which
+     * will invoke the SingleObserver's {@link SingleObserver#onSuccess onSuccess} method if it is able to do so. In such a case,
+     * because no Single necessarily invokes {@code onError}, the SingleObserver may never know that an error
      * happened.
      * <p/>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
@@ -2130,18 +2130,18 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Instructs a Single to pass control to another Single rather than invoking
-     * {@link Observer#onError(Throwable)} if it encounters an error.
+     * {@link SingleObserver#onError(Throwable)} if it encounters an error.
      * <p/>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
      * <p/>
      * By default, when a Single encounters an error that prevents it from emitting the expected item to
-     * its {@link Observer}, the Single invokes its Observer's {@code onError} method, and then quits
-     * without invoking any more of its Observer's methods. The {@code onErrorResumeNext} method changes this
+     * its {@link SingleObserver}, the Single invokes its SingleObserver's {@code onError} method, and then quits
+     * without invoking any more of its SingleObserver's methods. The {@code onErrorResumeNext} method changes this
      * behavior. If you pass a function that will return another Single ({@code resumeFunctionInCaseOfError}) to a Single's
      * {@code onErrorResumeNext} method, if the original Single encounters an error, instead of invoking its
-     * Observer's {@code onError} method, it will instead relinquish control to {@code resumeSingleInCaseOfError} which
-     * will invoke the Observer's {@link Observer#onNext onNext} method if it is able to do so. In such a case,
-     * because no Single necessarily invokes {@code onError}, the Observer may never know that an error
+     * SingleObserver's {@code onError} method, it will instead relinquish control to {@code resumeSingleInCaseOfError} which
+     * will invoke the SingleObserver's {@link SingleObserver#onSuccess onSuccess} method if it is able to do so. In such a case,
+     * because no Single necessarily invokes {@code onError}, the SingleObserver may never know that an error
      * happened.
      * <p/>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
@@ -2167,7 +2167,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Repeatedly re-subscribes to the current Single and emits each success value.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2184,7 +2184,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Re-subscribes to the current Single at most the given number of times and emits each success value.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2205,7 +2205,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.
-     *  The {@code Publisher} returned by the handler function is expected to honor backpressure as well.
+     *  The {@code Publisher} returned by the handler function is expected to honor backpressure as well.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code repeatWhen} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2226,7 +2226,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Re-subscribes to the current Single until the given BooleanSupplier returns true.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code repeatUntil} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -2401,7 +2401,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a {@link Disposable} reference can request the {@link Single} stop work.
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws IllegalArgumentException
-     *             if {@code onNext} is null, or
+     *             if {@code onSuccess} is null, or
      *             if {@code onError} is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2524,13 +2524,13 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The {@code other} publisher is consumed in an unbounded fashion but will be
-     *  cancelled after the first item it produced.
+     *  cancelled after the first item it produced.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code takeUntil} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param other
-     *            the Flowable whose first emitted item will cause {@code takeUntil} to emit the item from the source
+     *            the Publisher whose first emitted item will cause {@code takeUntil} to emit the item from the source
      *            Single
      * @param <E>
      *            the type of items emitted by {@code other}
@@ -2673,8 +2673,8 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a {@link Completable} that discards result of the {@link Single} (similar to
-     * {@link Observable#ignoreElements()}) and calls {@code onCompleted} when this source {@link Single} calls
+     * Returns a {@link Completable} that discards result of the {@link Single}
+     * and calls {@code onComplete} when this source {@link Single} calls
      * {@code onSuccess}. Error terminal event is propagated.
      * <p>
      * <img width="640" height="295" src=
@@ -2696,17 +2696,17 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Converts this Single into an {@link Flowable}.
+     * Converts this Single into a {@link Flowable}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code toFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an {@link Flowable} that emits a single item T or an error.
+     * @return a {@link Flowable} that emits a single item T or an error.
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2744,7 +2744,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code toMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an {@link Maybe} that emits a single item T or an error.
+     * @return a {@link Maybe} that emits a single item T or an error.
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
@@ -2789,11 +2789,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <R>
      *            the type of items emitted by the resulting Single
      * @param other
-     *            the other Observable
+     *            the other SingleSource
      * @param zipper
-     *            a function that combines the pairs of items from the two Observables to generate the items to
+     *            a function that combines the pairs of items from the two SingleSources to generate the items to
      *            be emitted by the resulting Single
-     * @return a Single that pairs up values from the source Observable and the {@code other} Observable
+     * @return a Single that pairs up values from the source Single and the {@code other} SingleSource
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */

@@ -4985,16 +4985,16 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Invokes a method on each item emitted by this {@code Flowable} and blocks until the Observable
+     * Invokes a method on each item emitted by this {@code Flowable} and blocks until the Flowable
      * completes.
      * <p>
-     * <em>Note:</em> This will block even if the underlying Observable is asynchronous.
+     * <em>Note:</em> This will block even if the underlying Flowable is asynchronous.
      * <p>
      * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
      * <p>
      * This is similar to {@link Flowable#subscribe(Subscriber)}, but it blocks. Because it blocks it does not
      * need the {@link Subscriber#onComplete()} or {@link Subscriber#onError(Throwable)} methods. If the
-     * underlying Observable terminates with an error, rather than calling {@code onError}, this method will
+     * underlying Flowable terminates with an error, rather than calling {@code onError}, this method will
      * throw an exception.
      *
      * <p>The difference between this method and {@link #subscribe(Consumer)} is that the {@code onNext} action
@@ -5036,7 +5036,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator expects the upstream to honor backpressure otherwise the returned
-     *  Iterable's iterator will throw a {@code MissingBackpressureException}.
+     *  Iterable's iterator will throw a {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -5262,7 +5262,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link java.lang.IllegalArgumentException}. If the {@link Flowable} is empty, {@link java.util.concurrent.Future}
      * will receive an {@link java.util.NoSuchElementException}.
      * <p>
-     * If the {@code Flowable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
+     * If the {@code Flowable} may emit more than one item, use {@code Flowable.toList().toBlocking().toFuture()}.
      * <p>
      * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
      * <dl>
@@ -7422,7 +7422,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the source Publisher so that it notifies an Subscriber for each item and terminal event it emits.
+     * Modifies the source Publisher so that it notifies a Subscriber for each item and terminal event it emits.
      * <p>
      * In case the {@code onError} of the supplied Subscriber throws, the downstream will receive a composite
      * exception containing the original exception and the exception thrown by {@code onError}. If either the
@@ -7553,7 +7553,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param onRequest
-     *            the action that gets called when an Subscriber requests items from this
+     *            the action that gets called when a Subscriber requests items from this
      *            {@code Publisher}
      * @return the source {@code Publisher} modified so as to call this Action when appropriate
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators
@@ -8363,7 +8363,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * Alias to {@link #subscribe(Consumer)}
      * <dl>
-     *  <dd><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -8390,7 +8390,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Subscribes to the {@link Publisher} and receives notifications for each element until the
      * onNext Predicate returns false.
      * <dl>
-     *  <dd><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -8400,7 +8400,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param onNext
      *            {@link Predicate} to execute for each item.
      * @return
-     *            a Disposable that allows cancelling an asynchronous sequence
+     *            a {@link Disposable} that allows cancelling an asynchronous sequence
      * @throws NullPointerException
      *             if {@code onNext} is null
      * @throws RuntimeException
@@ -8417,7 +8417,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Subscribes to the {@link Publisher} and receives notifications for each element and error events until the
      * onNext Predicate returns false.
      * <dl>
-     *  <dd><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -8429,7 +8429,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param onError
      *            {@link Consumer} to execute when an error is emitted.
      * @return
-     *            a Disposable that allows cancelling an asynchronous sequence
+     *            a {@link Disposable} that allows cancelling an asynchronous sequence
      * @throws NullPointerException
      *             if {@code onNext} is null, or
      *             if {@code onError} is null
@@ -8445,7 +8445,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Subscribes to the {@link Publisher} and receives notifications for each element and the terminal events until the
      * onNext Predicate returns false.
      * <dl>
-     *  <dd><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -8459,7 +8459,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param onComplete
      *            {@link Action} to execute when completion is signalled.
      * @return
-     *            a Disposable that allows cancelling an asynchronous sequence
+     *            a {@link Disposable} that allows cancelling an asynchronous sequence
      * @throws NullPointerException
      *             if {@code onNext} is null, or
      *             if {@code onError} is null, or
@@ -8480,7 +8480,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Groups the items emitted by an {@code Publisher} according to a specified criterion, and emits these
+     * Groups the items emitted by a {@code Publisher} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedPublisher} allows only a single
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
      * source terminates, the next emission by the source having the same key will trigger a new
@@ -8507,7 +8507,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function that extracts the key for each item
      * @param <K>
      *            the key type
-     * @return an {@code Publisher} that emits {@link GroupedFlowable}s, each of which corresponds to a
+     * @return a {@code Publisher} that emits {@link GroupedFlowable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source Publisher that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
@@ -8519,7 +8519,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Groups the items emitted by an {@code Publisher} according to a specified criterion, and emits these
+     * Groups the items emitted by a {@code Publisher} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedPublisher} allows only a single
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
      * source terminates, the next emission by the source having the same key will trigger a new
@@ -8549,7 +8549,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param delayError
      *            if true, the exception from the current Flowable is delayed in each group until that specific group emitted
      *            the normal values; if false, the exception bypasses values in the groups and is reported immediately.
-     * @return an {@code Publisher} that emits {@link GroupedFlowable}s, each of which corresponds to a
+     * @return a {@code Publisher} that emits {@link GroupedFlowable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source Publisher that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
@@ -8561,7 +8561,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Groups the items emitted by an {@code Publisher} according to a specified criterion, and emits these
+     * Groups the items emitted by a {@code Publisher} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedPublisher} allows only a single
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
      * source terminates, the next emission by the source having the same key will trigger a new
@@ -8592,7 +8592,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the key type
      * @param <V>
      *            the element type
-     * @return an {@code Publisher} that emits {@link GroupedFlowable}s, each of which corresponds to a
+     * @return a {@code Publisher} that emits {@link GroupedFlowable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source Publisher that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
@@ -8605,7 +8605,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Groups the items emitted by an {@code Publisher} according to a specified criterion, and emits these
+     * Groups the items emitted by a {@code Publisher} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedPublisher} allows only a single
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
      * source terminates, the next emission by the source having the same key will trigger a new
@@ -8639,7 +8639,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param delayError
      *            if true, the exception from the current Flowable is delayed in each group until that specific group emitted
      *            the normal values; if false, the exception bypasses values in the groups and is reported immediately.
-     * @return an {@code Publisher} that emits {@link GroupedFlowable}s, each of which corresponds to a
+     * @return a {@code Publisher} that emits {@link GroupedFlowable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source Publisher that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
@@ -8652,7 +8652,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Groups the items emitted by an {@code Publisher} according to a specified criterion, and emits these
+     * Groups the items emitted by a {@code Publisher} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedPublisher} allows only a single
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
      * source terminates, the next emission by the source having the same key will trigger a new
@@ -8688,7 +8688,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the key type
      * @param <V>
      *            the element type
-     * @return an {@code Publisher} that emits {@link GroupedFlowable}s, each of which corresponds to a
+     * @return a {@code Publisher} that emits {@link GroupedFlowable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source Publisher that share that
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
@@ -11131,7 +11131,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code serialize} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an {@link Publisher} that is guaranteed to be well-behaved and to make only serialized calls to
+     * @return a {@link Publisher} that is guaranteed to be well-behaved and to make only serialized calls to
      *         its Subscribers
      * @see <a href="http://reactivex.io/documentation/operators/serialize.html">ReactiveX operators documentation: Serialize</a>
      */
@@ -11158,7 +11158,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code share} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an {@code Publisher} that upon connection causes the source {@code Publisher} to emit items
+     * @return a {@code Publisher} that upon connection causes the source {@code Publisher} to emit items
      *         to its {@link Subscriber}s
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX operators documentation: RefCount</a>
      */
@@ -11740,7 +11740,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * If the Flowable emits an error, it is routed to the RxJavaPlugins.onError handler.
      * <dl>
-     *  <dd><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -11763,7 +11763,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * If the Flowable emits an error, it is routed to the RxJavaPlugins.onError handler.
      * <dl>
-     *  <dd><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -11789,7 +11789,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Subscribes to a Publisher and provides callbacks to handle the items it emits and any error
      * notification it issues.
      * <dl>
-     *  <dd><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -11818,7 +11818,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Subscribes to a Publisher and provides callbacks to handle the items it emits and any error or
      * completion notification it issues.
      * <dl>
-     *  <dd><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -11852,7 +11852,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Subscribes to a Publisher and provides callbacks to handle the items it emits and any error or
      * completion notification it issues.
      * <dl>
-     *  <dd><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator consumes the source {@code Publisher} in an unbounded manner (i.e., no
      *  backpressure is applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -14629,7 +14629,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <B> the element type of the boundary Publisher
      * @param boundaryIndicatorSupplier
-     *            a {@link Callable} that returns an {@code Publisher} that governs the boundary between windows.
+     *            a {@link Callable} that returns a {@code Publisher} that governs the boundary between windows.
      *            When the source {@code Publisher} emits an item, {@code window} emits the current window and begins
      *            a new one.
      * @return a Flowable that emits connected, non-overlapping windows of items from the source Publisher
@@ -14661,7 +14661,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <B> the element type of the boundary Publisher
      * @param boundaryIndicatorSupplier
-     *            a {@link Callable} that returns an {@code Publisher} that governs the boundary between windows.
+     *            a {@link Callable} that returns a {@code Publisher} that governs the boundary between windows.
      *            When the source {@code Publisher} emits an item, {@code window} emits the current window and begins
      *            a new one.
      * @param bufferSize
