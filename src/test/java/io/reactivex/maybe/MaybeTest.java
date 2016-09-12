@@ -16,6 +16,7 @@ package io.reactivex.maybe;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.lang.management.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -2872,5 +2873,128 @@ public class MaybeTest {
                 return sum;
             }
         }).test().assertResult(5);
+    }
+
+    static long usedMemoryNow() {
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+
+        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
+
+        return heapMemoryUsage.getUsed();
+    }
+
+    @Test
+    public void onTerminateDetach() throws Exception {
+        System.gc();
+
+        Thread.sleep(150);
+
+        long before = usedMemoryNow();
+
+        Maybe<Object> source = Flowable.just((Object)new Object[10000000]).toMaybe();
+
+        long middle = usedMemoryNow();
+
+        MaybeObserver<Object> observer = new MaybeObserver<Object>() {
+            @SuppressWarnings("unused")
+            Disposable u;
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                this.u = d;
+            }
+
+            @Override
+            public void onSuccess(Object value) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+
+        };
+        source.onTerminateDetach().subscribe(observer);
+
+        source = null;
+
+        System.gc();
+
+        Thread.sleep(250);
+
+        long after = usedMemoryNow();
+
+        String log = String.format("%.2f MB -> %.2f MB -> %.2f MB%n",
+                before / 1024.0 / 1024.0,
+                middle / 1024.0 / 1024.0,
+                after / 1024.0 / 1024.0);
+
+        System.out.printf(log);
+
+        if (middle < after * 3) {
+            fail("There seems to be a memory leak: " + log);
+        }
+
+        assertNotNull(observer); // hold onto the reference to prevent premature GC
+    }
+
+    @Test
+    public void repeat() {
+        Maybe.just(1).repeat().take(5).test().assertResult(1, 1, 1, 1, 1);
+
+        Maybe.just(1).repeat(5).test().assertResult(1, 1, 1, 1, 1);
+
+        Maybe.just(1).repeatUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return false;
+            }
+        }).take(5).test().assertResult(1, 1, 1, 1, 1);
+
+        Maybe.just(1).repeatWhen(new Function<Flowable<Object>, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Flowable<Object> v) throws Exception {
+                return v;
+            }
+        }).take(5).test().assertResult(1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void retry() {
+        Maybe.just(1).retry().test().assertResult(1);
+
+        Maybe.just(1).retry(5).test().assertResult(1);
+
+        Maybe.just(1).retry(Functions.alwaysTrue()).test().assertResult(1);
+
+        Maybe.just(1).retry(5, Functions.alwaysTrue()).test().assertResult(1);
+
+        Maybe.just(1).retry(new BiPredicate<Integer, Throwable>() {
+            @Override
+            public boolean test(Integer a, Throwable e) throws Exception {
+                return true;
+            }
+        }).test().assertResult(1);
+
+        Maybe.just(1).retryUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return false;
+            }
+        }).test().assertResult(1);
+
+        Maybe.just(1).retryWhen(new Function<Flowable<? extends Throwable>, Publisher<Object>>() {
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @Override
+            public Publisher<Object> apply(Flowable<? extends Throwable> v) throws Exception {
+                return (Publisher)v;
+            }
+        }).test().assertResult(1);
     }
 }

@@ -118,7 +118,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns the default 'island' size or capacity-increment hint for unbounded buffers.
      * <p>Delegates to {@link Flowable#bufferSize} but is public for convenience.
      * <p>The value can be overridden via system parameter {@code rx2.buffer-size}
-     * <em>before</em> the Flowable class is loaded.
+     * <em>before</em> the {@link Flowable} class is loaded.
      * @return the default 'island' size or capacity-increment hint
      */
     public static int bufferSize() {
@@ -1320,7 +1320,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits no items to the {@link Observer} and immediately invokes its
-     * {@link Subscriber#onComplete onComplete} method.
+     * {@link Observer#onComplete onComplete} method.
      * <p>
      * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/empty.png" alt="">
      * <dl>
@@ -1331,7 +1331,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T>
      *            the type of the items (ostensibly) emitted by the ObservableSource
      * @return an Observable that emits no items to the {@link Observer} but immediately invokes the
-     *         {@link Subscriber}'s {@link Subscriber#onComplete() onComplete} method
+     *         {@link Observer}'s {@link Observer#onComplete() onComplete} method
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Empty</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1351,7 +1351,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param errorSupplier
-     *            a Callable factory to return a Throwable for each individual Subscriber
+     *            a Callable factory to return a Throwable for each individual Observer
      * @param <T>
      *            the type of the items (ostensibly) emitted by the ObservableSource
      * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method when
@@ -1640,7 +1640,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param <T> the generated value type
-     * @param generator the Consumer called whenever a particular downstream Subscriber has
+     * @param generator the Consumer called whenever a particular downstream Observer has
      * requested a value. The callback then should call {@code onNext}, {@code onError} or
      * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
      * in a call will make the operator signal {@code IllegalStateException}.
@@ -1661,10 +1661,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <S> the type of the per-Subscriber state
+     * @param <S> the type of the per-Observer state
      * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Subscriber
-     * @param generator the Consumer called with the current state whenever a particular downstream Subscriber has
+     * @param initialState the Callable to generate the initial state for each Observer
+     * @param generator the Consumer called with the current state whenever a particular downstream Observer has
      * requested a value. The callback then should call {@code onNext}, {@code onError} or
      * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
      * in a call will make the operator signal {@code IllegalStateException}.
@@ -1684,10 +1684,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <S> the type of the per-Subscriber state
+     * @param <S> the type of the per-Observer state
      * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Subscriber
-     * @param generator the Consumer called with the current state whenever a particular downstream Subscriber has
+     * @param initialState the Callable to generate the initial state for each Observer
+     * @param generator the Consumer called with the current state whenever a particular downstream Observer has
      * requested a value. The callback then should call {@code onNext}, {@code onError} or
      * {@code onComplete} to signal a value or a terminal event. Signalling multiple {@code onNext}
      * in a call will make the operator signal {@code IllegalStateException}.
@@ -1712,10 +1712,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <S> the type of the per-Subscriber state
+     * @param <S> the type of the per-Observer state
      * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Subscriber
-     * @param generator the Function called with the current state whenever a particular downstream Subscriber has
+     * @param initialState the Callable to generate the initial state for each Observer
+     * @param generator the Function called with the current state whenever a particular downstream Observer has
      * requested a value. The callback then should call {@code onNext}, {@code onError} or
      * {@code onComplete} to signal a value or a terminal event and should return a (new) state for
      * the next invocation. Signalling multiple {@code onNext}
@@ -1735,10 +1735,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code generate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <S> the type of the per-Subscriber state
+     * @param <S> the type of the per-Observer state
      * @param <T> the generated value type
-     * @param initialState the Callable to generate the initial state for each Subscriber
-     * @param generator the Function called with the current state whenever a particular downstream Subscriber has
+     * @param initialState the Callable to generate the initial state for each Observer
+     * @param generator the Function called with the current state whenever a particular downstream Observer has
      * requested a value. The callback then should call {@code onNext}, {@code onError} or
      * {@code onComplete} to signal a value or a terminal event and should return a (new) state for
      * the next invocation. Signalling multiple {@code onNext}

@@ -16,7 +16,7 @@ package io.reactivex.internal.fuseable;
 import io.reactivex.Maybe;
 
 /**
- * Interface indicating a operator implementation can be macro-fused back to Maybe in case
+ * Interface indicating an operator implementation can be macro-fused back to Maybe in case
  * the operator goes from Maybe to some other reactive type and then the sequence calls
  * for toMaybe again:
  * <pre>

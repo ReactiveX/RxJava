@@ -110,7 +110,7 @@ public enum ObservableScalarXMap {
     }
 
     /**
-     * Maps a scalar value to a ObservableSource and subscribes to it.
+     * Maps a scalar value to an ObservableSource and subscribes to it.
      *
      * @param <T> the scalar value type
      * @param <R> the mapped Publisher's element type.

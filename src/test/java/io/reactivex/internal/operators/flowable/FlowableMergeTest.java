@@ -82,7 +82,7 @@ public class FlowableMergeTest {
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
                 observer.onSubscribe(new BooleanSubscription());
-                // simulate what would happen in an Flowable
+                // simulate what would happen in a Flowable
                 observer.onNext(o1);
                 observer.onNext(o2);
                 observer.onComplete();
