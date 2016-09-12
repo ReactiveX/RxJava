@@ -759,16 +759,16 @@ public abstract class Completable implements CompletableSource {
      * Returns a Flowable which will subscribe to this Completable and once that is completed then
      * will subscribe to the {@code next} Flowable. An error event from this Completable will be
      * propagated to the downstream subscriber and will result in skipping the subscription of the
-     * Observable.
+     * Publisher.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
-     *  and expects the other {@code Publisher} to honor it as well.
+     *  and expects the other {@code Publisher} to honor it as well.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type of the next Publisher
-     * @param next the Observable to subscribe after this Completable is completed, not null
+     * @param next the Publisher to subscribe after this Completable is completed, not null
      * @return Flowable that composes this Completable and next
      * @throws NullPointerException if next is null
      */
@@ -1135,7 +1135,7 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * <strong>Advanced use without safeguards:</strong> lifts a CompletableSubscriber
+     * <strong>Advanced use without safeguards:</strong> lifts a CompletableOperator
      * transformation into the chain of Completables.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1360,13 +1360,13 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Returns a Completable which given a Publisher and when this Completable emits an error, delivers
-     * that error through an Observable and the Publisher should return a value indicating a retry in response
+     * that error through a Flowable and the Publisher should return a value indicating a retry in response
      * or a terminal event indicating a termination.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retryWhen} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param handler the handler that receives an Observable delivering Throwables and should return a Publisher that
+     * @param handler the handler that receives a Flowable delivering Throwables and should return a Publisher that
      * emits items to indicate retries or emits terminal events to indicate termination.
      * @return the new Completable instance
      * @throws NullPointerException if handler is null
@@ -1411,18 +1411,18 @@ public abstract class Completable implements CompletableSource {
         return other.concatWith(this.<T>toObservable());
     }
     /**
-     * Returns an Observable which first delivers the events
-     * of the other Observable then runs this Completable.
+     * Returns a Flowable which first delivers the events
+     * of the other Publisher then runs this Completable.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
-     *  and expects the other {@code Publisher} to honor it as well.
+     *  and expects the other {@code Publisher} to honor it as well.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param other the other Observable to run first
-     * @return the new Observable instance
+     * @param other the other Publisher to run first
+     * @return the new Flowable instance
      * @throws NullPointerException if other is null
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1647,7 +1647,7 @@ public abstract class Completable implements CompletableSource {
      * the specified scheduler.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify the {@link Scheduler} this operator runs on.</dd>
+     *  <dd>You specify the {@link Scheduler} this operator runs on.</dd>
      * </dl>
      * @param timeout the timeout value
      * @param unit the timeout unit
@@ -1686,16 +1686,16 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns an Observable which when subscribed to subscribes to this Completable and
+     * Returns a Flowable which when subscribed to subscribes to this Completable and
      * relays the terminal events to the subscriber.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
-     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toFlowable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @return the new Observable created
+     * @return the new Flowable instance
      */
     @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
@@ -1708,16 +1708,16 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Converts this Single into a {@link Maybe}.
+     * Converts this Completable into a {@link Maybe}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toObservable.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code toMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the value type
-     * @return an {@link Maybe} that emits a single item T or an error.
+     * @return a {@link Maybe} that emits a single item T or an error.
      */
     @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)

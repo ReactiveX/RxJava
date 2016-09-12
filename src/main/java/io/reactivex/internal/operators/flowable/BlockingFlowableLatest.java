@@ -25,7 +25,7 @@ import io.reactivex.subscribers.DisposableSubscriber;
 
 /**
  * Wait for and iterate over the latest values of the source observable. If the source works faster than the
- * iterator, values may be skipped, but not the {@code onError} or {@code onCompleted} events.
+ * iterator, values may be skipped, but not the {@code onError} or {@code onComplete} events.
  */
 public enum BlockingFlowableLatest {
     ;
