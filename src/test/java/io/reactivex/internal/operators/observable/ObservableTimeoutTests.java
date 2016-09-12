@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -355,6 +357,22 @@ public class ObservableTimeoutTests {
         inOrder.verifyNoMoreInteractions();
 
         verify(s, times(1)).dispose();
+    }
+
+    @Test
+    public void shouldUnsubscribeFromUnderlyingSubscriptionOnDispose() {
+        final PublishSubject<String> subject = PublishSubject.create();
+        final TestScheduler scheduler = new TestScheduler();
+
+        final TestObserver<String> observer = subject
+                .timeout(100, TimeUnit.MILLISECONDS, scheduler)
+                .test();
+
+        assertTrue(subject.hasObservers());
+
+        observer.dispose();
+
+        assertFalse(subject.hasObservers());
     }
 
     @Test

@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -358,6 +360,21 @@ public class FlowableTimeoutTests {
         verify(s, times(1)).cancel();
     }
 
+    @Test
+    public void shouldUnsubscribeFromUnderlyingSubscriptionOnDispose() {
+        final PublishProcessor<String> subject = PublishProcessor.create();
+        final TestScheduler scheduler = new TestScheduler();
+
+        final TestSubscriber<String> observer = subject
+                .timeout(100, TimeUnit.MILLISECONDS, scheduler)
+                .test();
+
+        assertTrue(subject.hasSubscribers());
+
+        observer.dispose();
+
+        assertFalse(subject.hasSubscribers());
+    }
 
     @Test
     public void timedAndOther() {
