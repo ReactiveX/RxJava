@@ -252,7 +252,6 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
                     public void run() {
                         if (idx == index) {
                             done = true;
-                            s.cancel();
                             dispose();
 
                             actual.onError(new TimeoutException());
@@ -293,6 +292,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         public void dispose() {
             worker.dispose();
             DisposableHelper.dispose(timer);
+            s.cancel();
         }
 
         @Override

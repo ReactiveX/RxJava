@@ -251,7 +251,6 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
                     public void run() {
                         if (idx == index) {
                             done = true;
-                            s.dispose();
                             dispose();
 
                             actual.onError(new TimeoutException());
@@ -292,6 +291,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         public void dispose() {
             worker.dispose();
             DisposableHelper.dispose(timer);
+            s.dispose();
         }
 
         @Override
