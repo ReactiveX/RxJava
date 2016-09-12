@@ -14,10 +14,15 @@
 package io.reactivex.internal.operators.single;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 
+/**
+ * Signals a {@code 0L} after the specified delay
+ */
 public final class SingleTimer extends Single<Long> {
 
     final long delay;
@@ -32,16 +37,37 @@ public final class SingleTimer extends Single<Long> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super Long> s) {
-        SequentialDisposable sd = new SequentialDisposable();
-
-        s.onSubscribe(sd);
-
-        sd.replace(scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                s.onSuccess(0L);
-            }
-        }, delay, unit));
+        TimerDisposable parent = new TimerDisposable(s);
+        s.onSubscribe(parent);
+        parent.setFuture(scheduler.scheduleDirect(parent, delay, unit));
     }
 
+    static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
+        /** */
+        private static final long serialVersionUID = 8465401857522493082L;
+        final SingleObserver<? super Long> actual;
+
+        TimerDisposable(final SingleObserver<? super Long> actual) {
+            this.actual = actual;
+        }
+
+        @Override
+        public void run() {
+            actual.onSuccess(0L);
+        }
+
+        @Override
+        public void dispose() {
+            DisposableHelper.dispose(this);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(get());
+        }
+
+        void setFuture(Disposable d) {
+            DisposableHelper.replace(this, d);
+        }
+    }
 }

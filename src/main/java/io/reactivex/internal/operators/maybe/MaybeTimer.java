@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * Signals a 0L after the specified delay
+ * Signals a {@code 0L} after the specified delay
  */
 public final class MaybeTimer extends Maybe<Long> {
 
@@ -38,20 +38,18 @@ public final class MaybeTimer extends Maybe<Long> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super Long> observer) {
+    protected void subscribeActual(final MaybeObserver<? super Long> observer) {
         TimerDisposable parent = new TimerDisposable(observer);
         observer.onSubscribe(parent);
-
-        parent.setFuture(scheduler.scheduleDirect(parent));
+        parent.setFuture(scheduler.scheduleDirect(parent, delay, unit));
     }
 
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
-
         /** */
         private static final long serialVersionUID = 2875964065294031672L;
         final MaybeObserver<? super Long> actual;
 
-        public TimerDisposable(MaybeObserver<? super Long> actual) {
+        TimerDisposable(final MaybeObserver<? super Long> actual) {
             this.actual = actual;
         }
 
