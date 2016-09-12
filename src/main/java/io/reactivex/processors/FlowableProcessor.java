@@ -18,7 +18,7 @@ import org.reactivestreams.Processor;
 import io.reactivex.Flowable;
 
 /**
- * Represents a Subscriber and an Flowable (Publisher) at the same time, allowing
+ * Represents a Subscriber and a Flowable (Publisher) at the same time, allowing
  * multicasting events from a single source to multiple child Subscribers.
  * <p>All methods except the onSubscribe, onNext, onError and onComplete are thread-safe.
  * Use {@link #toSerialized()} to make these methods thread-safe as well.

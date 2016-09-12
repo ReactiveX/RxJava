@@ -21,7 +21,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Signals true if the source Maybe signals onComplete, signals false if the source Maybe
- * signals onNext.
+ * signals onSuccess.
  * 
  * @param <T> the value type
  */

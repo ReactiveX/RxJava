@@ -408,7 +408,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Combines a collection of source Publishers by emitting an item that aggregates the latest values of each of
-     * the source ObservableSources each time an item is received from any of the source Publisher, where this
+     * the source Publishers each time an item is received from any of the source Publisher, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source Publishers terminate.
      * <p>
@@ -1274,7 +1274,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * in order, each one after the previous one completes.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd><dd>The operator honors backpressure from downstream. The {@code Publisher}
+     *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
      *  sources are expected to honor backpressure as well.
      *  If any of the source {@code Publisher}s violate this, the operator will signal a
      *  {@code MissingBackpressureException}.</dd>
@@ -1300,7 +1300,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * in order, each one after the previous one completes.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd><dd>The operator honors backpressure from downstream. The {@code Publisher}
+     *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
      *  sources are expected to honor backpressure as well.
      *  If any of the source {@code Publisher}s violate this, the operator will signal a
      *  {@code MissingBackpressureException}.</dd>
@@ -1564,7 +1564,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="340" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defer.png" alt="">
      * <p>
      * The defer Subscriber allows you to defer or delay emitting items from a Publisher until such time as an
-     * Subscriber subscribes to the Publisher. This allows an {@link Subscriber} to easily obtain updates or a
+     * Subscriber subscribes to the Publisher. This allows a {@link Subscriber} to easily obtain updates or a
      * refreshed version of the sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -1616,7 +1616,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that invokes an {@link Subscriber}'s {@link Subscriber#onError onError} method when the
+     * Returns a Flowable that invokes a {@link Subscriber}'s {@link Subscriber#onError onError} method when the
      * Subscriber subscribes to it.
      * <p>
      * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.png" alt="">
@@ -1643,7 +1643,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that invokes an {@link Subscriber}'s {@link Subscriber#onError onError} method when the
+     * Returns a Flowable that invokes a {@link Subscriber}'s {@link Subscriber#onError onError} method when the
      * Subscriber subscribes to it.
      * <p>
      * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.png" alt="">
@@ -1702,12 +1702,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that, when an Subscriber subscribes to it, invokes a function you specify and then
+     * Returns a Flowable that, when a Subscriber subscribes to it, invokes a function you specify and then
      * emits the value returned from that function.
      * <p>
      * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
      * <p>
-     * This allows you to defer the execution of the function you specify until an Subscriber subscribes to the
+     * This allows you to defer the execution of the function you specify until a Subscriber subscribes to the
      * Publisher. That is to say, it makes the function "lazy."
      * <dl>
      *   <dt><b>Backpressure:</b></dt>
@@ -1718,7 +1718,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param supplier
      *         a function, the execution of which should be deferred; {@code fromCallable} will invoke this
-     *         function only when an Subscriber subscribes to the Publisher that {@code fromCallable} returns
+     *         function only when a Subscriber subscribes to the Publisher that {@code fromCallable} returns
      * @param <T>
      *         the type of the item emitted by the Publisher
      * @return a Flowable whose {@link Subscriber}s' subscriptions trigger an invocation of the given function
@@ -2151,7 +2151,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator signals a {@code MissingBackpressureException} if the downstream
-     *  is not ready to receive the next value.
+     *  is not ready to receive the next value.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code interval} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -3007,7 +3007,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens an Iterable of Publishers into one Publisher, in a way that allows an Subscriber to receive all
+     * Flattens an Iterable of Publishers into one Publisher, in a way that allows a Subscriber to receive all
      * successfully emitted items from each of the source Publishers without being interrupted by an error
      * notification from one of them.
      * <p>
@@ -3043,7 +3043,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
 
     /**
-     * Flattens an Iterable of Publishers into one Publisher, in a way that allows an Subscriber to receive all
+     * Flattens an Iterable of Publishers into one Publisher, in a way that allows a Subscriber to receive all
      * successfully emitted items from each of the source Publishers without being interrupted by an error
      * notification from one of them, while limiting the number of concurrent subscriptions to these Publishers.
      * <p>
@@ -3082,7 +3082,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens an array of Publishers into one Publisher, in a way that allows an Subscriber to receive all
+     * Flattens an array of Publishers into one Publisher, in a way that allows a Subscriber to receive all
      * successfully emitted items from each of the source Publishers without being interrupted by an error
      * notification from one of them, while limiting the number of concurrent subscriptions to these Publishers.
      * <p>
@@ -3121,7 +3121,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens an Iterable of Publishers into one Publisher, in a way that allows an Subscriber to receive all
+     * Flattens an Iterable of Publishers into one Publisher, in a way that allows a Subscriber to receive all
      * successfully emitted items from each of the source Publishers without being interrupted by an error
      * notification from one of them, while limiting the number of concurrent subscriptions to these Publishers.
      * <p>
@@ -3158,7 +3158,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens a Publisher that emits Publishers into one Publisher, in a way that allows an Subscriber to
+     * Flattens a Publisher that emits Publishers into one Publisher, in a way that allows a Subscriber to
      * receive all successfully emitted items from all of the source Publishers without being interrupted by
      * an error notification from one of them.
      * <p>
@@ -3193,7 +3193,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens a Publisher that emits Publishers into one Publisher, in a way that allows an Subscriber to
+     * Flattens a Publisher that emits Publishers into one Publisher, in a way that allows a Subscriber to
      * receive all successfully emitted items from all of the source Publishers without being interrupted by
      * an error notification from one of them, while limiting the
      * number of concurrent subscriptions to these Publishers.
@@ -3232,7 +3232,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens an array of Publishers into one Flowable, in a way that allows an Subscriber to receive all
+     * Flattens an array of Publishers into one Flowable, in a way that allows a Subscriber to receive all
      * successfully emitted items from each of the source Publishers without being interrupted by an error
      * notification from one of them.
      * <p>
@@ -3267,7 +3267,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens two Publishers into one Publisher, in a way that allows an Subscriber to receive all
+     * Flattens two Publishers into one Publisher, in a way that allows a Subscriber to receive all
      * successfully emitted items from each of the source Publishers without being interrupted by an error
      * notification from one of them.
      * <p>
@@ -3305,7 +3305,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Flattens three Publishers into one Publisher, in a way that allows an Subscriber to receive all
+     * Flattens three Publishers into one Publisher, in a way that allows a Subscriber to receive all
      * successfully emitted items from all of the source Publishers without being interrupted by an error
      * notification from one of them.
      * <p>
@@ -3348,7 +3348,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
 
     /**
-     * Flattens four Publishers into one Publisher, in a way that allows an Subscriber to receive all
+     * Flattens four Publishers into one Publisher, in a way that allows a Subscriber to receive all
      * successfully emitted items from all of the source Publishers without being interrupted by an error
      * notification from one of them.
      * <p>
@@ -3395,7 +3395,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that never sends any items or notifications to an {@link Subscriber}.
+     * Returns a Flowable that never sends any items or notifications to a {@link Subscriber}.
      * <p>
      * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.png" alt="">
      * <p>
@@ -3409,7 +3409,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <T>
      *            the type of items (not) emitted by the Publisher
-     * @return a Flowable that never emits any items or sends any notifications to an {@link Subscriber}
+     * @return a Flowable that never emits any items or sends any notifications to a {@link Subscriber}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Never</a>
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)

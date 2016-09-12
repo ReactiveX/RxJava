@@ -114,7 +114,7 @@ public class SafeSubscriberTest {
     }
 
     /**
-     * A Observable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
+     * An Observable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
      */
     private static class TestObservable implements Publisher<String> {
 

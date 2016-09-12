@@ -86,6 +86,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources provided by
      * an Iterable sequence.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -103,8 +105,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a Flowable that emits the items emitted by two MaybeSources, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concat.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -129,8 +133,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a Flowable that emits the items emitted by three MaybeSources, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concat.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -159,8 +165,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a Flowable that emits the items emitted by four MaybeSources, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concat.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -193,8 +201,12 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources provided by
      * a Publisher sequence.
      * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer and
+     *  expects the {@code Publisher} to honor backpressure as well. If the sources {@code Publisher}
+     *  violates this, a {@code MissingBackpressurException} is signalled.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
      * @param sources the Publisher of MaybeSource instances
@@ -210,6 +222,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources provided by
      * a Publisher sequence.
      * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer and
+     *  expects the {@code Publisher} to honor backpressure as well. If the sources {@code Publisher}
+     *  violates this, a {@code MissingBackpressurException} is signalled.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -230,11 +246,13 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources in the array.
      * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code concatArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param sources the Publisher of MaybeSource instances
+     * @param sources the array of MaybeSource instances
      * @return the new Flowable instance
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -258,9 +276,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream.
-     *  If the {@code Publisher} violate this, it <em>may</em> throw an
-     *  {@code IllegalStateException} when the source {@code Publisher} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatArrayDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -290,7 +306,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * in order, each one after the previous one completes.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd><dd>The operator honors backpressure from downstream.</dd>
+     *  <dd>The operator honors backpressure from downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -306,22 +322,19 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Concatenates the Iterable sequence of Publishers into a single sequence by subscribing to each Publisher,
-     * one after the other, one at a time and delays any errors till the all inner Publishers terminate.
+     * Concatenates the Iterable sequence of MaybeSources into a single sequence by subscribing to each MaybeSource,
+     * one after the other, one at a time and delays any errors till the all inner MaybeSources terminate.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The inner {@code Publisher}
-     *  sources are expected to honor backpressure. If any of the inner {@code Publisher}s violates
-     *  this, it <em>may</em> throw an {@code IllegalStateException} when an
-     *  inner {@code Publisher} completes.</dd>
+     *  <dd>The operator honors backpressure from downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T> the common element base type
      * @param sources the Iterable sequence of MaybeSources
-     * @return the new Publisher with the concatenating behavior
+     * @return the new Flowable with the concatenating behavior
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @BackpressureSupport(BackpressureKind.FULL)
@@ -361,9 +374,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * in order, each one after the previous one completes.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Backpressure is honored towards the downstream and outer Publisher is expected
-     *  to honor backpressure. Violating this assumption, the operator will
-     *  signal {@code MissingBackpressureException}.</dd>
+     *  <dd>Backpressure is honored towards the downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -437,7 +448,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param onSubscribe the emitter that is called when a MaybeObserver subscribes to the returned {@code Flowable}
+     * @param onSubscribe the emitter that is called when a MaybeObserver subscribes to the returned {@code Maybe}
      * @return the new Maybe instance
      * @see MaybeOnSubscribe
      * @see Cancellable
@@ -488,7 +499,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Returns a Maybe that invokes a subscriber's {@link MaybeObserver#onError onError} method when the
      * subscriber subscribes to it.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.error.png" alt="">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.error.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -509,8 +520,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Maybe that invokes an {@link Observer}'s {@link MaybeObserver#onError onError} method when the
-     * Observer subscribes to it.
+     * Returns a Maybe that invokes a {@link MaybeObserver}'s {@link MaybeObserver#onError onError} method when the
+     * MaybeObserver subscribes to it.
      * <p>
      * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.png" alt="">
      * <dl>
@@ -519,7 +530,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param supplier
-     *            a Callable factory to return a Throwable for each individual Subscriber
+     *            a Callable factory to return a Throwable for each individual MaybeObserver
      * @param <T>
      *            the type of the items (ostensibly) emitted by the Maybe
      * @return a Maybe that invokes the {@link MaybeObserver}'s {@link MaybeObserver#onError onError} method when
@@ -596,7 +607,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the source {@link Future}
      * @param <T>
      *            the type of object that the {@link Future} returns, and also the type of item to be emitted by
-     *            the resulting Publisher
+     *            the resulting Maybe
      * @return a Maybe that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
@@ -615,13 +626,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code fromFuture}
      * method.
      * <p>
-     * Unlike 1.x, cancelling the Flowable won't cancel the future. If necessary, one can use composition to achieve the
+     * Unlike 1.x, cancelling the Maybe won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futureMaybe.doOnCancel(() -> future.cancel(true));}.
      * <p>
      * <em>Important note:</em> This Maybe is blocking on the thread it gets subscribed on; you cannot unsubscribe from it.
      * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromFuture} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -634,7 +643,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the {@link TimeUnit} of the {@code timeout} argument
      * @param <T>
      *            the type of object that the {@link Future} returns, and also the type of item to be emitted by
-     *            the resulting Publisher
+     *            the resulting Maybe
      * @return a Maybe that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
@@ -667,9 +676,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a {@code Maybe} that emits a specified item.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.just.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.just.png" alt="">
      * <p>
-     * To convert any object into a {@code Single} that emits that object, pass that object into the
+     * To convert any object into a {@code Maybe} that emits that object, pass that object into the
      * {@code just} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -749,10 +758,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Flattens a {@code Single} that emits a {@code Single} into a single {@code Single} that emits the item
-     * emitted by the nested {@code Single}, without any transformation.
+     * Flattens a {@code MaybeSource} that emits a {@code MaybeSource} into a single {@code MaybeSource} that emits the item
+     * emitted by the nested {@code MaybeSource}, without any transformation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.oo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.oo.png" alt="">
      * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -761,8 +770,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <T> the value type of the sources and the output
      * @param source
-     *            a {@code Single} that emits a {@code Single}
-     * @return a {@code Single} that emits the item that is the result of flattening the {@code Single} emitted
+     *            a {@code MaybeSource} that emits a {@code MaybeSource}
+     * @return a {@code Maybe} that emits the item that is the result of flattening the {@code MaybeSource} emitted
      *         by {@code source}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
@@ -773,11 +782,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Flattens two Singles into a single Observable, without any transformation.
+     * Flattens two MaybeSources into a single Flowable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by
+     * You can combine items emitted by multiple MaybeSources so that they appear as a single Flowable, by
      * using the {@code merge} method.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -788,10 +797,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a MaybeSource to be merged
      * @param source2
-     *            a Single to be merged
-     * @return a Flowable that emits all of the items emitted by the source Singles
+     *            a MaybeSource to be merged
+     * @return a Flowable that emits all of the items emitted by the source MaybeSources
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -806,11 +815,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Flattens three Singles into a single Observable, without any transformation.
+     * Flattens three MaybeSources into a single Flowable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * You can combine items emitted by multiple MaybeSources so that they appear as a single Flowable, by using
      * the {@code merge} method.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -821,12 +830,12 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a MaybeSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a MaybeSource to be merged
      * @param source3
-     *            a Single to be merged
-     * @return a Flowable that emits all of the items emitted by the source Singles
+     *            a MaybeSource to be merged
+     * @return a Flowable that emits all of the items emitted by the source MaybeSources
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -843,11 +852,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Flattens four Singles into a single Observable, without any transformation.
+     * Flattens four MaybeSources into a single Flowable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * You can combine items emitted by multiple MaybeSources so that they appear as a single Flowable, by using
      * the {@code merge} method.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -858,14 +867,14 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a MaybeSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a MaybeSource to be merged
      * @param source3
-     *            a Single to be merged
+     *            a MaybeSource to be merged
      * @param source4
-     *            a Single to be merged
-     * @return a Flowable that emits all of the items emitted by the source Singles
+     *            a MaybeSource to be merged
+     * @return a Flowable that emits all of the items emitted by the source MaybeSources
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -910,17 +919,17 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Flattens an array of MaybeSources into one Publisher, in a way that allows an Subscriber to receive all
+     * Flattens an array of MaybeSources into one Flowable, in a way that allows a Subscriber to receive all
      * successfully emitted items from each of the source MaybeSources without being interrupted by an error
      * notification from one of them.
      * <p>
      * This behaves like {@link #merge(Publisher)} except that if any of the merged MaybeSources notify of an
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
-     * error notification until all of the merged Publishers have finished emitting items.
+     * error notification until all of the merged MaybeSources have finished emitting items.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
-     * Even if multiple merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * Even if multiple merged MaybeSources send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Subscribers once.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -933,7 +942,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param sources
      *            the Iterable of MaybeSources
      * @return a Flowable that emits items that are the result of flattening the items emitted by the
-     *         Publishers in the Iterable
+     *         MaybeSources in the Iterable
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -945,17 +954,17 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
 
     /**
-     * Flattens an Iterable of MaybeSources into one Publisher, in a way that allows an Subscriber to receive all
-     * successfully emitted items from each of the source Publishers without being interrupted by an error
+     * Flattens an Iterable of MaybeSources into one Flowable, in a way that allows a Subscriber to receive all
+     * successfully emitted items from each of the source MaybeSources without being interrupted by an error
      * notification from one of them.
      * <p>
-     * This behaves like {@link #merge(Publisher)} except that if any of the merged Publishers notify of an
+     * This behaves like {@link #merge(Publisher)} except that if any of the merged MaybeSources notify of an
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
-     * error notification until all of the merged Publishers have finished emitting items.
+     * error notification until all of the merged MaybeSources have finished emitting items.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
-     * Even if multiple merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * Even if multiple merged MaybeSources send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Subscribers once.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -966,9 +975,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <T> the common element base type
      * @param sources
-     *            the Iterable of Publishers
+     *            the Iterable of MaybeSources
      * @return a Flowable that emits items that are the result of flattening the items emitted by the
-     *         Publishers in the Iterable
+     *         MaybeSources in the Iterable
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -980,7 +989,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
 
     /**
-     * Flattens a Publisher that emits MaybeSources into one Publisher, in a way that allows an Subscriber to
+     * Flattens a Publisher that emits MaybeSources into one Publisher, in a way that allows a Subscriber to
      * receive all successfully emitted items from all of the source Publishers without being interrupted by
      * an error notification from one of them.
      * <p>
@@ -1015,7 +1024,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Flattens two MaybeSources into one Flowable, in a way that allows an Subscriber to receive all
+     * Flattens two MaybeSources into one Flowable, in a way that allows a Subscriber to receive all
      * successfully emitted items from each of the source MaybeSources without being interrupted by an error
      * notification from one of them.
      * <p>
@@ -1025,7 +1034,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
-     * Even if both merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * Even if both merged MaybeSources send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Subscribers once.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -1052,18 +1061,18 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Flattens three MaybeSource into one Flowable, in a way that allows an Subscriber to receive all
+     * Flattens three MaybeSource into one Flowable, in a way that allows a Subscriber to receive all
      * successfully emitted items from all of the source MaybeSources without being interrupted by an error
      * notification from one of them.
      * <p>
      * This behaves like {@link #merge(MaybeSource, MaybeSource, MaybeSource)} except that if any of the merged
-     * Publishers notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain
-     * from propagating that error notification until all of the merged Publishers have finished emitting
+     * MaybeSources notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain
+     * from propagating that error notification until all of the merged MaybeSources have finished emitting
      * items.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
-     * Even if multiple merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * Even if multiple merged MaybeSources send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Subscribers once.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -1074,7 +1083,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <T> the common element base type
      * @param source1
-     *            a PublMaybeSourceisher to be merged
+     *            a MaybeSource to be merged
      * @param source2
      *            a MaybeSource to be merged
      * @param source3
@@ -1095,18 +1104,18 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
 
     /**
-     * Flattens four MaybeSources into one Flowable, in a way that allows an Subscriber to receive all
-     * successfully emitted items from all of the source Publishers without being interrupted by an error
+     * Flattens four MaybeSources into one Flowable, in a way that allows a Subscriber to receive all
+     * successfully emitted items from all of the source MaybeSources without being interrupted by an error
      * notification from one of them.
      * <p>
      * This behaves like {@link #merge(MaybeSource, MaybeSource, MaybeSource, MaybeSource)} except that if any of
-     * the merged Publishers notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError}
+     * the merged MaybeSources notify of an error via {@link Subscriber#onError onError}, {@code mergeDelayError}
      * will refrain from propagating that error notification until all of the merged MaybeSources have finished
      * emitting items.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
-     * Even if multiple merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * Even if multiple merged MaybeSources send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Subscribers once.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -1141,7 +1150,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Maybe that never sends any items or notifications to an {@link MaybeObserver}.
+     * Returns a Maybe that never sends any items or notifications to a {@link MaybeObserver}.
      * <p>
      * <img width="640" height="185" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/never.png" alt="">
      * <p>
@@ -1153,7 +1162,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <T>
      *            the type of items (not) emitted by the Maybe
-     * @return a Maybe that never emits any items or sends any notifications to an {@link MaybeObserver}
+     * @return a Maybe that never emits any items or sends any notifications to a {@link MaybeObserver}
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Never</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1165,7 +1174,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Returns a Single that emits a Boolean value that indicates whether two MaybeSource sequences are the
-     * same by comparing the items emitted by each Publisher pairwise.
+     * same by comparing the items emitted by each MaybeSource pairwise.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
      * <dl>
@@ -1238,7 +1247,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Flowable that emits one item after a specified delay on a specified Scheduler.
+     * Returns a Maybe that emits one item after a specified delay on a specified Scheduler.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.png" alt="">
      * <dl>
@@ -1292,7 +1301,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <T> the element type of the generated Publisher
+     * @param <T> the element type of the generated MaybeSource
      * @param <D> the type of the resource associated with the output sequence
      * @param resourceSupplier
      *            the factory function to create a resource object that depends on the Maybe
@@ -1323,7 +1332,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <T> the element type of the generated Publisher
+     * @param <T> the element type of the generated MaybeSource
      * @param <D> the type of the resource associated with the output sequence
      * @param resourceSupplier
      *            the factory function to create a resource object that depends on the Maybe
@@ -2161,7 +2170,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * until the other Publisher emits an element or completes normally.
      * <p>
      * <dl>
-     *  <dt><b></b><dt>
+     *  <dt><b>Backpressure:</b><dt>
      *  <dd>The {@code Publisher} source is consumed in an unbounded fashion (without applying backpressure).
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2496,8 +2505,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Observable that is based on applying a specified function to the item emitted by the source Maybe,
-     * where that function returns a ObservableSource.
+     * Returns an Observable that is based on applying a specified function to the item emitted by the source Maybe,
+     * where that function returns an ObservableSource.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMap.png" alt="">
      * <dl>
@@ -2507,7 +2516,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source Maybe, returns a ObservableSource
+     *            a function that, when applied to the item emitted by the source Maybe, returns an ObservableSource
      * @return the Observable returned from {@code func} when applied to the item emitted by the source Maybe
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -2992,6 +3001,302 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public final Maybe<T> onExceptionResumeNext(final MaybeSource<? extends T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
         return RxJavaPlugins.onAssembly(new MaybeOnErrorNext<T>(this, Functions.justFunction(next), false));
+    }
+    /**
+     * Nulls out references to the upstream producer and downstream MaybeObserver if
+     * the sequence is terminated or downstream unsubscribes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return a Maybe which out references to the upstream producer and downstream MaybeObserver if
+     * the sequence is terminated or downstream unsubscribes
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> onTerminateDetach() {
+        return RxJavaPlugins.onAssembly(new MaybeDetach<T>(this));
+    }
+
+    /**
+     * Returns a Flowable that repeats the sequence of items emitted by the source Publisher indefinitely.
+     * <p>
+     * <img width="640" height="309" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.o.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Publisher} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a Flowable that emits the items emitted by the source Publisher repeatedly and in sequence
+     * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<T> repeat() {
+        return repeat(Long.MAX_VALUE);
+    }
+
+    /**
+     * Returns a Flowable that repeats the sequence of items emitted by the source Publisher at most
+     * {@code count} times.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Publisher} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param times
+     *            the number of times the source Publisher items are repeated, a count of 0 will yield an empty
+     *            sequence
+     * @return a Flowable that repeats the sequence of items emitted by the source Publisher at most
+     *         {@code count} times
+     * @throws IllegalArgumentException
+     *             if {@code count} is less than zero
+     * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<T> repeat(long times) {
+        return toFlowable().repeat(times);
+    }
+
+    /**
+     * Returns a Flowable that repeats the sequence of items emitted by the source Publisher until
+     * the provided stop function returns true.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.on.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Publisher} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code repeatUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param stop
+     *                a boolean supplier that is called when the current Flowable completes and unless it returns
+     *                false, the current Flowable is resubscribed
+     * @return the new Flowable instance
+     * @throws NullPointerException
+     *             if {@code stop} is null
+     * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<T> repeatUntil(BooleanSupplier stop) {
+        return toFlowable().repeatUntil(stop);
+    }
+
+    /**
+     * Returns a Flowable that emits the same values as the source Publisher with the exception of an
+     * {@code onComplete}. An {@code onComplete} notification from the source will result in the emission of
+     * a {@code void} item to the Publisher provided as an argument to the {@code notificationHandler}
+     * function. If that Publisher calls {@code onComplete} or {@code onError} then {@code repeatWhen} will
+     * call {@code onComplete} or {@code onError} on the child subscription. Otherwise, this Publisher will
+     * resubscribe to the source Publisher.
+     * <p>
+     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The operator honors downstream backpressure and expects the source {@code Publisher} to honor backpressure as well.
+     *  If this expectation is violated, the operator <em>may</em> throw an {@code IllegalStateException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code repeatWhen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param handler
+     *            receives a Publisher of notifications with which a user can complete or error, aborting the repeat.
+     * @return the source Publisher modified with repeat logic
+     * @see <a href="http://reactivex.io/documentation/operators/repeat.html">ReactiveX operators documentation: Repeat</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Flowable<T> repeatWhen(final Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
+        return toFlowable().repeatWhen(handler);
+    }
+
+
+    /**
+     * Returns a Maybe that mirrors the source Maybe, resubscribing to it if it calls {@code onError}
+     * (infinite retry count).
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+     * <p>
+     * If the source Publisher calls {@link Subscriber#onError}, this method will resubscribe to the source
+     * Publisher rather than propagating the {@code onError} call.
+     * <p>
+     * Any and all items emitted by the source Publisher will be emitted by the resulting Publisher, even
+     * those emitted during failed subscriptions. For example, if a Publisher fails at first but emits
+     * {@code [1, 2]} then succeeds the second time and emits {@code [1, 2, 3, 4, 5]} then the complete sequence
+     * of emissions and notifications would be {@code [1, 2, 1, 2, 3, 4, 5, onComplete]}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return the nww Maybe instance
+     * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> retry() {
+        return retry(Long.MAX_VALUE, Functions.alwaysTrue());
+    }
+
+    /**
+     * Returns a Maybe that mirrors the source Publisher, resubscribing to it if it calls {@code onError}
+     * and the predicate returns true for that specific exception and retry count.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param predicate
+     *            the predicate that determines if a resubscription may happen in case of a specific exception
+     *            and retry count
+     * @return the nww Maybe instance
+     * @see #retry()
+     * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
+        return toFlowable().retry(predicate).toMaybe();
+    }
+
+    /**
+     * Returns a Maybe that mirrors the source Publisher, resubscribing to it if it calls {@code onError}
+     * up to a specified number of retries.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
+     * <p>
+     * If the source Publisher calls {@link Subscriber#onError}, this method will resubscribe to the source
+     * Publisher for a maximum of {@code count} resubscriptions rather than propagating the
+     * {@code onError} call.
+     * <p>
+     * Any and all items emitted by the source Publisher will be emitted by the resulting Publisher, even
+     * those emitted during failed subscriptions. For example, if a Publisher fails at first but emits
+     * {@code [1, 2]} then succeeds the second time and emits {@code [1, 2, 3, 4, 5]} then the complete sequence
+     * of emissions and notifications would be {@code [1, 2, 1, 2, 3, 4, 5, onComplete]}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param count
+     *            number of retry attempts before failing
+     * @return the source Publisher modified with retry logic
+     * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> retry(long count) {
+        return retry(count, Functions.alwaysTrue());
+    }
+
+    /**
+     * Retries at most times or until the predicate returns false, whichever happens first.
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param times the number of times to repeat
+     * @param predicate the predicate called with the failure Throwable and should return true to trigger a retry.
+     * @return the new Maybe instance
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> retry(long times, Predicate<? super Throwable> predicate) {
+        return toFlowable().retry(times, predicate).toMaybe();
+    }
+
+    /**
+     * Retries the current Flowable if the predicate returns true.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param predicate the predicate that receives the failure Throwable and should return true to trigger a retry.
+     * @return the new Maybe instance
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> retry(Predicate<? super Throwable> predicate) {
+        return retry(Long.MAX_VALUE, predicate);
+    }
+
+    /**
+     * Retries until the given stop function returns true.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retryUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param stop the function that should return true to stop retrying
+     * @return the new Maybe instance
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> retryUntil(final BooleanSupplier stop) {
+        ObjectHelper.requireNonNull(stop, "stop is null");
+        return retry(Long.MAX_VALUE, Functions.predicateReverseFor(stop));
+    }
+
+    /**
+     * Returns a Maybe that emits the same values as the source Maybe with the exception of an
+     * {@code onError}. An {@code onError} notification from the source will result in the emission of a
+     * {@link Throwable} item to the Publisher provided as an argument to the {@code notificationHandler}
+     * function. If that Publisher calls {@code onComplete} or {@code onError} then {@code retry} will call
+     * {@code onComplete} or {@code onError} on the child subscription. Otherwise, this Publisher will
+     * resubscribe to the source Publisher.
+     * <p>
+     * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.png" alt="">
+     *
+     * Example:
+     *
+     * This retries 3 times, each time incrementing the number of seconds it waits.
+     *
+     * <pre><code>
+     *  Publisher.create((Subscriber<? super String> s) -> {
+     *      System.out.println("subscribing");
+     *      s.onError(new RuntimeException("always fails"));
+     *  }).retryWhen(attempts -> {
+     *      return attempts.zipWith(Publisher.range(1, 3), (n, i) -> i).flatMap(i -> {
+     *          System.out.println("delay retry by " + i + " second(s)");
+     *          return Publisher.timer(i, TimeUnit.SECONDS);
+     *      });
+     *  }).blockingForEach(System.out::println);
+     * </code></pre>
+     *
+     * Output is:
+     *
+     * <pre> {@code
+     * subscribing
+     * delay retry by 1 second(s)
+     * subscribing
+     * delay retry by 2 second(s)
+     * subscribing
+     * delay retry by 3 second(s)
+     * subscribing
+     * } </pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retryWhen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param handler
+     *            receives a Publisher of notifications with which a user can complete or error, aborting the
+     *            retry
+     * @return the new Maybe instance
+     * @see <a href="http://reactivex.io/documentation/operators/retry.html">ReactiveX operators documentation: Retry</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> retryWhen(
+            final Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler) {
+        return toFlowable().retryWhen(handler).toMaybe();
     }
 
     /**

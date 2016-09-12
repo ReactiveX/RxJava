@@ -88,7 +88,7 @@ public class JavadocForAnnotations {
 
                 if (k < 0 || k > idx) {
                     // when printed on the console, IDEs will create a clickable link to help navigate to the offending point
-                    e.append("java.lang.RuntimeException: missing ").append(inDoc).append("\r\n")
+                    e.append("java.lang.RuntimeException: missing ").append(inDoc).append(" section\r\n")
                     ;
                     int lc = lineNumber(sourceCode, idx);
 
@@ -219,7 +219,6 @@ public class JavadocForAnnotations {
     }
 
     @Test
-    @Ignore("In the next PR these will be fixed")
     public void checkSingleBackpressure() throws Exception {
         checkSource(Single.class.getSimpleName(), false);
     }
@@ -230,7 +229,6 @@ public class JavadocForAnnotations {
     }
 
     @Test
-    @Ignore("In the next PR these will be fixed")
     public void checkCompletableBackpressure() throws Exception {
         checkSource(Completable.class.getSimpleName(), false);
     }
@@ -241,7 +239,6 @@ public class JavadocForAnnotations {
     }
 
     @Test
-    @Ignore("In the next PR these will be fixed")
     public void checkMaybeBackpressure() throws Exception {
         checkSource(Maybe.class.getSimpleName(), false);
     }

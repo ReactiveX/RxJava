@@ -54,7 +54,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
      * @param <U> the value type of the ConnectableObservable
      * @param <R> the result value type
      * @param connectableFactory the factory that returns a ConnectableObservable for each individual subscriber
-     * @param selector the function that receives a Observable and should return another Observable that will be subscribed to
+     * @param selector the function that receives an Observable and should return another Observable that will be subscribed to
      * @return the new Observable instance
      */
     public static <U, R> Observable<R> multicastSelector(

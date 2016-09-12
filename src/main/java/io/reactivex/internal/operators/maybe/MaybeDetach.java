@@ -18,36 +18,36 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * Signals true if the source Maybe signals onComplete, signals false if the source Maybe
- * signals onSuccess.
- * 
+ * Breaks the references between the upstream and downstream when the Maybe terminates.
+ *
  * @param <T> the value type
  */
-public final class MaybeIsEmpty<T> extends AbstractMaybeWithUpstream<T, Boolean> {
+public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    public MaybeIsEmpty(MaybeSource<T> source) {
+    public MaybeDetach(MaybeSource<T> source) {
         super(source);
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super Boolean> observer) {
-        source.subscribe(new IsEmptyMaybeObserver<T>(observer));
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        source.subscribe(new DetachMaybeObserver<T>(observer));
     }
 
-    static final class IsEmptyMaybeObserver<T>
-    implements MaybeObserver<T>, Disposable {
+    static final class DetachMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 
-        final MaybeObserver<? super Boolean> actual;
+        MaybeObserver<? super T> actual;
 
         Disposable d;
 
-        public IsEmptyMaybeObserver(MaybeObserver<? super Boolean> actual) {
+        public DetachMaybeObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 
         @Override
         public void dispose() {
+            actual = null;
             d.dispose();
+            d = DisposableHelper.DISPOSED;
         }
 
         @Override
@@ -66,17 +66,29 @@ public final class MaybeIsEmpty<T> extends AbstractMaybeWithUpstream<T, Boolean>
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(false);
+            d = DisposableHelper.DISPOSED;
+            MaybeObserver<? super T> a = actual;
+            if (a != null) {
+                a.onSuccess(value);
+            }
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            d = DisposableHelper.DISPOSED;
+            MaybeObserver<? super T> a = actual;
+            if (a != null) {
+                a.onError(e);
+            }
         }
 
         @Override
         public void onComplete() {
-            actual.onSuccess(true);
+            d = DisposableHelper.DISPOSED;
+            MaybeObserver<? super T> a = actual;
+            if (a != null) {
+                a.onComplete();
+            }
         }
     }
 }
