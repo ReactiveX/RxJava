@@ -1238,7 +1238,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Flowable that emits one item after a specified delay on a specified Scheduler.
+     * Returns a Maybe that emits one item after a specified delay on a specified Scheduler.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.png" alt="">
      * <dl>
