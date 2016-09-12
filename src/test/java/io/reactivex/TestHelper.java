@@ -31,10 +31,13 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.operators.maybe.MaybeToFlowable;
+import io.reactivex.internal.operators.single.SingleToFlowable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 
 /**
@@ -920,6 +923,142 @@ public enum TestHelper {
             throw ExceptionHelper.wrapOrThrow(ex);
         } finally {
             RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the operator applied to a Maybe source propagates dispose properly.
+     * @param <T> the source value type
+     * @param <U> the output value type
+     * @param composer the function to apply an operator to the provided Maybe source
+     */
+    public static <T, U> void checkDisposedMaybe(Function<Maybe<T>, ? extends MaybeSource<U>> composer) {
+        PublishProcessor<T> pp = PublishProcessor.create();
+
+        TestSubscriber<U> ts = new TestSubscriber<U>();
+
+        try {
+            new MaybeToFlowable<U>(composer.apply(pp.toMaybe())).subscribe(ts);
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
+
+        assertTrue("Not subscribed to source!", pp.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse("Dispose not propagated!", pp.hasSubscribers());
+    }
+
+    /**
+     * Check if the operator applied to a Maybe source propagates dispose properly.
+     * @param <T> the source value type
+     * @param <U> the output value type
+     * @param composer the function to apply an operator to the provided Maybe source
+     */
+    public static <T, U> void checkDisposedMaybeToSingle(Function<Maybe<T>, ? extends SingleSource<U>> composer) {
+        PublishProcessor<T> pp = PublishProcessor.create();
+
+        TestSubscriber<U> ts = new TestSubscriber<U>();
+
+        try {
+            new SingleToFlowable<U>(composer.apply(pp.toMaybe())).subscribe(ts);
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse(pp.hasSubscribers());
+    }
+
+    /**
+     * Check if the TestSubscriber has a CompositeException with the specified class
+     * of Throwables in the given order.
+     * @param ts the TestSubscriber instance
+     * @param classes the array of expected Throwables inside the Composite
+     */
+    public static void assertCompositeExceptions(TestSubscriber<?> ts, Class<? extends Throwable>... classes) {
+        ts
+        .assertSubscribed()
+        .assertError(CompositeException.class)
+        .assertNotComplete();
+
+        List<Throwable> list = compositeList(ts.errors().get(0));
+
+        assertEquals(classes.length, list.size());
+
+        for (int i = 0; i < classes.length; i++) {
+            assertError(list, i, classes[i]);
+        }
+    }
+
+    /**
+     * Check if the TestSubscriber has a CompositeException with the specified class
+     * of Throwables in the given order.
+     * @param ts the TestSubscriber instance
+     * @param classes the array of subsequent Class and String instances representing the
+     * expected Throwable class and the expected error message
+     */
+    @SuppressWarnings("unchecked")
+    public static void assertCompositeExceptions(TestSubscriber<?> ts, Object... classes) {
+        ts
+        .assertSubscribed()
+        .assertError(CompositeException.class)
+        .assertNotComplete();
+
+        List<Throwable> list = compositeList(ts.errors().get(0));
+
+        assertEquals(classes.length, list.size());
+
+        for (int i = 0; i < classes.length; i += 2) {
+            assertError(list, i, (Class<Throwable>)classes[i], (String)classes[i + 1]);
+        }
+    }
+
+    /**
+     * Check if the TestSubscriber has a CompositeException with the specified class
+     * of Throwables in the given order.
+     * @param ts the TestSubscriber instance
+     * @param classes the array of expected Throwables inside the Composite
+     */
+    public static void assertCompositeExceptions(TestObserver<?> ts, Class<? extends Throwable>... classes) {
+        ts
+        .assertSubscribed()
+        .assertError(CompositeException.class)
+        .assertNotComplete();
+
+        List<Throwable> list = compositeList(ts.errors().get(0));
+
+        assertEquals(classes.length, list.size());
+
+        for (int i = 0; i < classes.length; i++) {
+            assertError(list, i, classes[i]);
+        }
+    }
+
+    /**
+     * Check if the TestSubscriber has a CompositeException with the specified class
+     * of Throwables in the given order.
+     * @param ts the TestSubscriber instance
+     * @param classes the array of subsequent Class and String instances representing the
+     * expected Throwable class and the expected error message
+     */
+    @SuppressWarnings("unchecked")
+    public static void assertCompositeExceptions(TestObserver<?> ts, Object... classes) {
+        ts
+        .assertSubscribed()
+        .assertError(CompositeException.class)
+        .assertNotComplete();
+
+        List<Throwable> list = compositeList(ts.errors().get(0));
+
+        assertEquals(classes.length, list.size());
+
+        for (int i = 0; i < classes.length; i += 2) {
+            assertError(list, i, (Class<Throwable>)classes[i], (String)classes[i + 1]);
         }
     }
 }

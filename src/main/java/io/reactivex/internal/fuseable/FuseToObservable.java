@@ -36,6 +36,7 @@ public interface FuseToObservable<T> {
 
     /**
      * Returns a (direct) Observable for the operator.
+     * <p>The implementation should handle the necessary RxJavaPlugins wrapping.
      * @return the Observable instance
      */
     Observable<T> fuseToObservable();

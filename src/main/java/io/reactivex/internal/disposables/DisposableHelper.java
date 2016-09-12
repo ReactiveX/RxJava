@@ -52,6 +52,17 @@ public enum DisposableHelper implements Disposable {
         }
     }
 
+    /**
+     * Atomically sets the field to the given non-null Disposable and returns true
+     * or returns false if the field is non-null.
+     * If the target field contains the common DISPOSED instance, the supplied disposable
+     * is disposed. If the field contains other non-null Disposable, an IllegalStateException
+     * is signalled to the RxJavaPlugins.onError hook.
+     * 
+     * @param field the target field
+     * @param d the disposable to set, not null
+     * @return true if the operation succeeded, false
+     */
     public static boolean setOnce(AtomicReference<Disposable> field, Disposable d) {
         ObjectHelper.requireNonNull(d, "d is null");
         if (!field.compareAndSet(null, d)) {
@@ -64,6 +75,14 @@ public enum DisposableHelper implements Disposable {
         return true;
     }
 
+    /**
+     * Atomically replaces the Disposable in the field with the given new Disposable
+     * but does not dispose the old one.
+     * @param field the target field to change
+     * @param d the new disposable, null allowed
+     * @return true if the operation succeeded, false if the target field contained
+     * the common DISPOSED instance and the given disposable (if not null) is disposed.
+     */
     public static boolean replace(AtomicReference<Disposable> field, Disposable d) {
         for (;;) {
             Disposable current = field.get();
