@@ -14,10 +14,17 @@
 package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.*;
-import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 
+/**
+ * Signals an {@code onCompleted} event after the specified delay
+ */
 public final class CompletableTimer extends Completable {
 
     final long delay;
@@ -30,20 +37,39 @@ public final class CompletableTimer extends Completable {
         this.scheduler = scheduler;
     }
 
-
-
     @Override
     protected void subscribeActual(final CompletableObserver s) {
-        SequentialDisposable sd = new SequentialDisposable();
-        s.onSubscribe(sd);
-        if (!sd.isDisposed()) {
-            sd.replace(scheduler.scheduleDirect(new Runnable() {
-                @Override
-                public void run() {
-                    s.onComplete();
-                }
-            }, delay, unit));
-        }
+        TimerDisposable parent = new TimerDisposable(s);
+        s.onSubscribe(parent);
+        parent.setFuture(scheduler.scheduleDirect(parent, delay, unit));
     }
 
+    static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
+        /** */
+        private static final long serialVersionUID = 3167244060586201109L;
+        final CompletableObserver actual;
+
+        TimerDisposable(final CompletableObserver actual) {
+            this.actual = actual;
+        }
+
+        @Override
+        public void run() {
+            actual.onComplete();
+        }
+
+        @Override
+        public void dispose() {
+            DisposableHelper.dispose(this);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(get());
+        }
+
+        void setFuture(Disposable d) {
+            DisposableHelper.replace(this, d);
+        }
+    }
 }

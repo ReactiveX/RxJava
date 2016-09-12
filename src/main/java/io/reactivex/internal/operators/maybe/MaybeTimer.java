@@ -14,14 +14,16 @@
 package io.reactivex.internal.operators.maybe;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.Scheduler;
-import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * Signals a 0L after the specified delay
+ * Signals a {@code 0L} after the specified delay
  */
 public final class MaybeTimer extends Maybe<Long> {
 
@@ -39,15 +41,37 @@ public final class MaybeTimer extends Maybe<Long> {
 
     @Override
     protected void subscribeActual(final MaybeObserver<? super Long> observer) {
-        SequentialDisposable sd = new SequentialDisposable();
+        TimerDisposable parent = new TimerDisposable(observer);
+        observer.onSubscribe(parent);
+        parent.setFuture(scheduler.scheduleDirect(parent, delay, unit));
+    }
 
-        observer.onSubscribe(sd);
+    static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
+        /** */
+        private static final long serialVersionUID = 2875964065294031672L;
+        final MaybeObserver<? super Long> actual;
 
-        sd.replace(scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                observer.onSuccess(0L);
-            }
-        }, delay, unit));
+        TimerDisposable(final MaybeObserver<? super Long> actual) {
+            this.actual = actual;
+        }
+
+        @Override
+        public void run() {
+            actual.onSuccess(0L);
+        }
+
+        @Override
+        public void dispose() {
+            DisposableHelper.dispose(this);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(get());
+        }
+
+        void setFuture(Disposable d) {
+            DisposableHelper.replace(this, d);
+        }
     }
 }
