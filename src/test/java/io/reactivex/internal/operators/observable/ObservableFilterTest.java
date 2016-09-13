@@ -27,7 +27,7 @@ public class ObservableFilterTest {
     @Test
     public void testFilter() {
         Observable<String> w = Observable.just("one", "two", "three");
-        Observable<String> NbpObservable = w.filter(new Predicate<String>() {
+        Observable<String> observable = w.filter(new Predicate<String>() {
 
             @Override
             public boolean test(String t1) {
@@ -35,22 +35,22 @@ public class ObservableFilterTest {
             }
         });
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, Mockito.never()).onNext("one");
-        verify(NbpObserver, times(1)).onNext("two");
-        verify(NbpObserver, Mockito.never()).onNext("three");
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, Mockito.never()).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     // FIXME subscribers are not allowed to throw
 //    @Test
 //    public void testFatalError() {
 //        try {
-//            NbpObservable.just(1)
+//            Observable.just(1)
 //            .filter(new Predicate<Integer>() {
 //                @Override
 //                public boolean test(Integer t) {

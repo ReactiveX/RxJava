@@ -35,7 +35,7 @@ public enum FlowableBlockingSubscribe {
      * Subscribes to the source and calls the Subscriber methods on the current thread.
      * <p>
      * @param o the source publisher
-     * The unsubscription and backpressure is composed through.
+     * The cancellation and backpressure is composed through.
      * @param subscriber the subscriber to forward events and calls to in the current thread
      * @param <T> the value type
      */

@@ -40,15 +40,15 @@ public class ObservableFromIterableTest {
     public void testListIterable() {
         Observable<String> o = Observable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
-        o.subscribe(NbpObserver);
+        o.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, times(1)).onNext("two");
-        verify(NbpObserver, times(1)).onNext("three");
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     /**
@@ -84,30 +84,30 @@ public class ObservableFromIterableTest {
         };
         Observable<String> o = Observable.fromIterable(it);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
-        o.subscribe(NbpObserver);
+        o.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext("1");
-        verify(NbpObserver, times(1)).onNext("2");
-        verify(NbpObserver, times(1)).onNext("3");
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext("1");
+        verify(observer, times(1)).onNext("2");
+        verify(observer, times(1)).onNext("3");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testObservableFromIterable() {
         Observable<String> o = Observable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
-        o.subscribe(NbpObserver);
+        o.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, times(1)).onNext("two");
-        verify(NbpObserver, times(1)).onNext("three");
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, times(1)).onNext("three");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test

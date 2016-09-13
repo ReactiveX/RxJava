@@ -34,7 +34,7 @@ public class ObservableScanTest {
 
     @Test
     public void testScanIntegersWithInitialValue() {
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<Integer> o = Observable.just(1, 2, 3);
 
@@ -46,21 +46,21 @@ public class ObservableScanTest {
             }
 
         });
-        m.subscribe(NbpObserver);
+        m.subscribe(observer);
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onNext("");
-        verify(NbpObserver, times(1)).onNext("1");
-        verify(NbpObserver, times(1)).onNext("12");
-        verify(NbpObserver, times(1)).onNext("123");
-        verify(NbpObserver, times(4)).onNext(anyString());
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onNext("");
+        verify(observer, times(1)).onNext("1");
+        verify(observer, times(1)).onNext("12");
+        verify(observer, times(1)).onNext("123");
+        verify(observer, times(4)).onNext(anyString());
+        verify(observer, times(1)).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testScanIntegersWithoutInitialValue() {
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
         Observable<Integer> o = Observable.just(1, 2, 3);
 
@@ -72,21 +72,21 @@ public class ObservableScanTest {
             }
 
         });
-        m.subscribe(NbpObserver);
+        m.subscribe(observer);
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onNext(0);
-        verify(NbpObserver, times(1)).onNext(1);
-        verify(NbpObserver, times(1)).onNext(3);
-        verify(NbpObserver, times(1)).onNext(6);
-        verify(NbpObserver, times(3)).onNext(anyInt());
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onNext(0);
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(3);
+        verify(observer, times(1)).onNext(6);
+        verify(observer, times(3)).onNext(anyInt());
+        verify(observer, times(1)).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testScanIntegersWithoutInitialValueAndOnlyOneValue() {
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
         Observable<Integer> o = Observable.just(1);
 
@@ -98,14 +98,14 @@ public class ObservableScanTest {
             }
 
         });
-        m.subscribe(NbpObserver);
+        m.subscribe(observer);
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onNext(0);
-        verify(NbpObserver, times(1)).onNext(1);
-        verify(NbpObserver, times(1)).onNext(anyInt());
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onNext(0);
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(anyInt());
+        verify(observer, times(1)).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -203,11 +203,11 @@ public class ObservableScanTest {
             }
 
         }).take(1);
-        TestObserver<Integer> NbpSubscriber = new TestObserver<Integer>();
-        o.subscribe(NbpSubscriber);
-        NbpSubscriber.assertValue(0);
-        NbpSubscriber.assertTerminated();
-        NbpSubscriber.assertNoErrors();
+        TestObserver<Integer> observer = new TestObserver<Integer>();
+        o.subscribe(observer);
+        observer.assertValue(0);
+        observer.assertTerminated();
+        observer.assertNoErrors();
     }
 
     @Test

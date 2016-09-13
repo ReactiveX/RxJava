@@ -254,16 +254,16 @@ public class ObservableTimeoutWithSelectorTest {
     public void testTimeoutSelectorWithTimeoutAndOnNextRaceCondition() throws InterruptedException {
         // Thread 1                                    Thread 2
         //
-        // NbpObserver.onNext(1)
+        // observer.onNext(1)
         // start timeout
         // unsubscribe timeout in thread 2          start to do some long-time work in "unsubscribe"
-        // NbpObserver.onNext(2)
+        // observer.onNext(2)
         // timeout.onNext(1)
         //                                          "unsubscribe" done
         //
         //
         // In the above case, the timeout operator should ignore "timeout.onNext(1)"
-        // since "NbpObserver" has already seen 2.
+        // since "observer" has already seen 2.
         final CountDownLatch observerReceivedTwo = new CountDownLatch(1);
         final CountDownLatch timeoutEmittedOne = new CountDownLatch(1);
         final CountDownLatch observerCompleted = new CountDownLatch(1);
@@ -277,10 +277,10 @@ public class ObservableTimeoutWithSelectorTest {
                     // Force "unsubscribe" run on another thread
                     return Observable.unsafeCreate(new ObservableSource<Integer>() {
                         @Override
-                        public void subscribe(Observer<? super Integer> NbpSubscriber) {
-                            NbpSubscriber.onSubscribe(Disposables.empty());
+                        public void subscribe(Observer<? super Integer> observer) {
+                            observer.onSubscribe(Disposables.empty());
                             enteredTimeoutOne.countDown();
-                            // force the timeout message be sent after NbpObserver.onNext(2)
+                            // force the timeout message be sent after observer.onNext(2)
                             while (true) {
                                 try {
                                     if (!observerReceivedTwo.await(30, TimeUnit.SECONDS)) {
@@ -294,7 +294,7 @@ public class ObservableTimeoutWithSelectorTest {
                                     // we ignore the interrupt signal from Scheduler.
                                 }
                             }
-                            NbpSubscriber.onNext(1);
+                            observer.onNext(1);
                             timeoutEmittedOne.countDown();
                         }
                     }).subscribeOn(Schedulers.newThread());

@@ -388,7 +388,7 @@ public class SerializedSubjectTest {
     }
 
     @Test
-    public void testDontWrapNbpSerializedSubjectAgain() {
+    public void testDontWrapSerializedSubjectAgain() {
         PublishSubject<Object> s = PublishSubject.create();
         Subject<Object> s1 = s.toSerialized();
         Subject<Object> s2 = s1.toSerialized();

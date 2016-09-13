@@ -647,7 +647,7 @@ public abstract class Completable implements CompletableSource {
      * Returns a Completable instance which manages a resource along
      * with a custom Completable instance while the subscription is active.
      * <p>
-     * This overload performs an eager unsubscription before the terminal event is emitted.
+     * This overload disposes eagerly before the terminal event is emitted.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -670,7 +670,7 @@ public abstract class Completable implements CompletableSource {
      * with a custom Completable instance while the subscription is active and performs eager or lazy
      * resource disposition.
      * <p>
-     * If this overload performs a lazy unsubscription after the terminal event is emitted.
+     * If this overload performs a lazy cancellation after the terminal event is emitted.
      * Exceptions thrown at this time will be delivered to RxJavaPlugins only.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1797,7 +1797,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Completable unsubscribeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new CompletableUnsubscribeOn(this, scheduler));
+        return RxJavaPlugins.onAssembly(new CompletableDisposeOn(this, scheduler));
     }
     // -------------------------------------------------------------------------
     // Fluent test support, super handy and reduces test preparation boilerplate

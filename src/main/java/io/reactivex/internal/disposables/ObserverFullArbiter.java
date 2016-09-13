@@ -119,40 +119,37 @@ public final class ObserverFullArbiter<T> extends FullArbiterPad1 implements Dis
 
                 Object v = q.poll();
 
-                if (o != s) {
-                    continue;
-                } else
-                if (NotificationLite.isDisposable(v)) {
-                    Disposable next = NotificationLite.getDisposable(v);
-                    s.dispose();
-                    if (!cancelled) {
-                        s = next;
-                    } else {
-                        next.dispose();
-                    }
-                } else
-                if (NotificationLite.isError(v)) {
-                    q.clear();
-                    disposeResource();
+                if (o == s) {
+                    if (NotificationLite.isDisposable(v)) {
+                        Disposable next = NotificationLite.getDisposable(v);
+                        s.dispose();
+                        if (!cancelled) {
+                            s = next;
+                        } else {
+                            next.dispose();
+                        }
+                    } else if (NotificationLite.isError(v)) {
+                        q.clear();
+                        disposeResource();
 
-                    Throwable ex = NotificationLite.getError(v);
-                    if (!cancelled) {
-                        cancelled = true;
-                        a.onError(ex);
-                    } else {
-                        RxJavaPlugins.onError(ex);
-                    }
-                } else
-                if (NotificationLite.isComplete(v)) {
-                    q.clear();
-                    disposeResource();
+                        Throwable ex = NotificationLite.getError(v);
+                        if (!cancelled) {
+                            cancelled = true;
+                            a.onError(ex);
+                        } else {
+                            RxJavaPlugins.onError(ex);
+                        }
+                    } else if (NotificationLite.isComplete(v)) {
+                        q.clear();
+                        disposeResource();
 
-                    if (!cancelled) {
-                        cancelled = true;
-                        a.onComplete();
+                        if (!cancelled) {
+                            cancelled = true;
+                            a.onComplete();
+                        }
+                    } else {
+                        a.onNext(NotificationLite.<T>getValue(v));
                     }
-                } else {
-                    a.onNext(NotificationLite.<T>getValue(v));
                 }
             }
 

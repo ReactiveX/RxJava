@@ -128,11 +128,11 @@ public final class CompletableMerge extends Completable {
 
         void terminate() {
             if (decrementAndGet() == 0) {
-                Throwable ex = error.terminate();
-                if (ex == null && ex != ExceptionHelper.TERMINATED) {
+                Throwable ex = error.get();
+                if (ex == null) {
                     actual.onComplete();
                 } else {
-                    actual.onError(ex);
+                    actual.onError(error.terminate());
                 }
             }
             else if (!delayErrors) {

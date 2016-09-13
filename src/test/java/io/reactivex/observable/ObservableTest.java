@@ -996,8 +996,8 @@ public class ObservableTest {
 // FIXME this test doesn't make sense
 //    @Test // cf. https://github.com/ReactiveX/RxJava/issues/2599
 //    public void testSubscribingSubscriberAsObserverMaintainsSubscriptionChain() {
-//        NbpTestSubscriber<Object> subscriber = new NbpTestSubscriber<T>();
-//        Subscription subscription = Observable.just("event").subscribe((Observer<Object>) subscriber);
+//        TestObserver<Object> observer = new TestObserver<T>();
+//        Subscription subscription = Observable.just("event").subscribe((Observer<Object>) observer);
 //        subscription.unsubscribe();
 //
 //        subscriber.assertUnsubscribed();

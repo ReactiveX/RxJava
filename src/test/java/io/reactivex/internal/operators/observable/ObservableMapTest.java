@@ -75,7 +75,7 @@ public class ObservableMapTest {
 
             @Override
             public Observable<String> apply(Integer id) {
-                /* simulate making a nested async call which creates another NbpObservable */
+                /* simulate making a nested async call which creates another Observable */
                 Observable<Map<String, String>> subObservable = null;
                 if (id == 1) {
                     Map<String, String> m1 = getMap("One");
@@ -251,23 +251,23 @@ public class ObservableMapTest {
 //    @Test(expected = OnErrorNotImplementedException.class)
 //    public void verifyExceptionIsThrownIfThereIsNoExceptionHandler() {
 //
-//        ObservableConsumable<Object> creator = new ObservableConsumable<Object>() {
+//        ObservableSource<Object> creator = new ObservableSource<Object>() {
 //
 //            @Override
-//            public void accept(NbpSubscriber<? super Object> NbpObserver) {
-//                NbpObserver.onSubscribe(EmptyDisposable.INSTANCE);
-//                NbpObserver.onNext("a");
-//                NbpObserver.onNext("b");
-//                NbpObserver.onNext("c");
-//                NbpObserver.onComplete();
+//            public void subscribeActual(Observer<? super Object> observer) {
+//                observer.onSubscribe(EmptyDisposable.INSTANCE);
+//                observer.onNext("a");
+//                observer.onNext("b");
+//                observer.onNext("c");
+//                observer.onComplete();
 //            }
 //        };
 //
-//        Function<Object, NbpObservable<Object>> manyMapper = new Function<Object, NbpObservable<Object>>() {
+//        Function<Object, Observable<Object>> manyMapper = new Function<Object, Observable<Object>>() {
 //
 //            @Override
-//            public NbpObservable<Object> apply(Object object) {
-//                return NbpObservable.just(object);
+//            public Observable<Object> apply(Object object) {
+//                return Observable.just(object);
 //            }
 //        };
 //
@@ -293,7 +293,7 @@ public class ObservableMapTest {
 //        };
 //
 //        try {
-//            NbpObservable.create(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
+//            Observable.unsafeCreate(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
 //        } catch (RuntimeException e) {
 //            e.printStackTrace();
 //            throw e;
@@ -310,15 +310,15 @@ public class ObservableMapTest {
     // FIXME RS subscribers can't throw
 //    @Test(expected = OnErrorNotImplementedException.class)
 //    public void testShouldNotSwallowOnErrorNotImplementedException() {
-//        NbpObservable.just("a", "b").flatMap(new Function<String, NbpObservable<String>>() {
+//        Observable.just("a", "b").flatMap(new Function<String, Observable<String>>() {
 //            @Override
-//            public NbpObservable<String> apply(String s) {
-//                return NbpObservable.just(s + "1", s + "2");
+//            public Observable<String> apply(String s) {
+//                return Observable.just(s + "1", s + "2");
 //            }
-//        }).flatMap(new Function<String, NbpObservable<String>>() {
+//        }).flatMap(new Function<String, Observable<String>>() {
 //            @Override
-//            public NbpObservable<String> apply(String s) {
-//                return NbpObservable.error(new Exception("test"));
+//            public Observable<String> apply(String s) {
+//                return Observable.error(new Exception("test"));
 //            }
 //        }).forEach(new Consumer<String>() {
 //            @Override

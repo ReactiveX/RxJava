@@ -47,23 +47,23 @@ public class ObservableTimeoutTests {
 
     @Test
     public void shouldNotTimeoutIfOnNextWithinTimeout() {
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
 
         withTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
-        verify(NbpObserver).onNext("One");
+        verify(observer).onNext("One");
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         ts.dispose();
     }
 
     @Test
     public void shouldNotTimeoutIfSecondOnNextWithinTimeout() {
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
 
         withTimeout.subscribe(ts);
 
@@ -71,59 +71,59 @@ public class ObservableTimeoutTests {
         underlyingSubject.onNext("One");
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("Two");
-        verify(NbpObserver).onNext("Two");
+        verify(observer).onNext("Two");
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         ts.dispose();
     }
 
     @Test
     public void shouldTimeoutIfOnNextNotWithinTimeout() {
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
 
         withTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(TIMEOUT + 1, TimeUnit.SECONDS);
-        verify(NbpObserver).onError(any(TimeoutException.class));
+        verify(observer).onError(any(TimeoutException.class));
         ts.dispose();
     }
 
     @Test
     public void shouldTimeoutIfSecondOnNextNotWithinTimeout() {
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
-        withTimeout.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
+        withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
-        verify(NbpObserver).onNext("One");
+        verify(observer).onNext("One");
         testScheduler.advanceTimeBy(TIMEOUT + 1, TimeUnit.SECONDS);
-        verify(NbpObserver).onError(any(TimeoutException.class));
+        verify(observer).onError(any(TimeoutException.class));
         ts.dispose();
     }
 
     @Test
     public void shouldCompleteIfUnderlyingComletes() {
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
-        withTimeout.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
+        withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onComplete();
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
-        verify(NbpObserver).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
         ts.dispose();
     }
 
     @Test
     public void shouldErrorIfUnderlyingErrors() {
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
-        withTimeout.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
+        withTimeout.subscribe(observer);
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onError(new UnsupportedOperationException());
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
-        verify(NbpObserver).onError(any(UnsupportedOperationException.class));
+        verify(observer).onError(any(UnsupportedOperationException.class));
         ts.dispose();
     }
 
@@ -132,20 +132,20 @@ public class ObservableTimeoutTests {
         Observable<String> other = Observable.just("a", "b", "c");
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
         testScheduler.advanceTimeBy(4, TimeUnit.SECONDS);
         underlyingSubject.onNext("Two");
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext("One");
-        inOrder.verify(NbpObserver, times(1)).onNext("a");
-        inOrder.verify(NbpObserver, times(1)).onNext("b");
-        inOrder.verify(NbpObserver, times(1)).onNext("c");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("One");
+        inOrder.verify(observer, times(1)).onNext("a");
+        inOrder.verify(observer, times(1)).onNext("b");
+        inOrder.verify(observer, times(1)).onNext("c");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
         ts.dispose();
     }
@@ -155,20 +155,20 @@ public class ObservableTimeoutTests {
         Observable<String> other = Observable.just("a", "b", "c");
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
         testScheduler.advanceTimeBy(4, TimeUnit.SECONDS);
         underlyingSubject.onError(new UnsupportedOperationException());
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext("One");
-        inOrder.verify(NbpObserver, times(1)).onNext("a");
-        inOrder.verify(NbpObserver, times(1)).onNext("b");
-        inOrder.verify(NbpObserver, times(1)).onNext("c");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("One");
+        inOrder.verify(observer, times(1)).onNext("a");
+        inOrder.verify(observer, times(1)).onNext("b");
+        inOrder.verify(observer, times(1)).onNext("c");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
         ts.dispose();
     }
@@ -178,20 +178,20 @@ public class ObservableTimeoutTests {
         Observable<String> other = Observable.just("a", "b", "c");
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
         underlyingSubject.onNext("One");
         testScheduler.advanceTimeBy(4, TimeUnit.SECONDS);
         underlyingSubject.onComplete();
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext("One");
-        inOrder.verify(NbpObserver, times(1)).onNext("a");
-        inOrder.verify(NbpObserver, times(1)).onNext("b");
-        inOrder.verify(NbpObserver, times(1)).onNext("c");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("One");
+        inOrder.verify(observer, times(1)).onNext("a");
+        inOrder.verify(observer, times(1)).onNext("b");
+        inOrder.verify(observer, times(1)).onNext("c");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
         ts.dispose();
     }
@@ -201,8 +201,8 @@ public class ObservableTimeoutTests {
         PublishSubject<String> other = PublishSubject.create();
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
         source.subscribe(ts);
 
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -219,10 +219,10 @@ public class ObservableTimeoutTests {
         other.onNext("d");
         other.onComplete();
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext("One");
-        inOrder.verify(NbpObserver, times(1)).onNext("a");
-        inOrder.verify(NbpObserver, times(1)).onNext("b");
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("One");
+        inOrder.verify(observer, times(1)).onNext("a");
+        inOrder.verify(observer, times(1)).onNext("b");
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -232,8 +232,8 @@ public class ObservableTimeoutTests {
         final CountDownLatch exit = new CountDownLatch(1);
         final CountDownLatch timeoutSetuped = new CountDownLatch(1);
 
-        final Observer<String> NbpObserver = TestHelper.mockObserver();
-        final TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        final Observer<String> observer = TestHelper.mockObserver();
+        final TestObserver<String> ts = new TestObserver<String>(observer);
 
         new Thread(new Runnable() {
 
@@ -262,8 +262,8 @@ public class ObservableTimeoutTests {
         timeoutSetuped.await();
         testScheduler.advanceTimeBy(2, TimeUnit.SECONDS);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onError(isA(TimeoutException.class));
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(isA(TimeoutException.class));
         inOrder.verifyNoMoreInteractions();
 
         exit.countDown(); // exit the thread
@@ -276,22 +276,22 @@ public class ObservableTimeoutTests {
 
         Observable<String> never = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpSubscriber) {
-                NbpSubscriber.onSubscribe(s);
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(s);
             }
         });
 
         TestScheduler testScheduler = new TestScheduler();
         Observable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
         observableWithTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver).onError(isA(TimeoutException.class));
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer).onError(isA(TimeoutException.class));
         inOrder.verifyNoMoreInteractions();
 
         verify(s, times(1)).dispose();
@@ -305,9 +305,9 @@ public class ObservableTimeoutTests {
 
         Observable<String> immediatelyComplete = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpSubscriber) {
-                NbpSubscriber.onSubscribe(s);
-                NbpSubscriber.onComplete();
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(s);
+                observer.onComplete();
             }
         });
 
@@ -315,14 +315,14 @@ public class ObservableTimeoutTests {
         Observable<String> observableWithTimeout = immediatelyComplete.timeout(1000, TimeUnit.MILLISECONDS,
                 testScheduler);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
         observableWithTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer).onComplete();
         inOrder.verifyNoMoreInteractions();
 
         verify(s, times(1)).dispose();
@@ -336,9 +336,9 @@ public class ObservableTimeoutTests {
 
         Observable<String> immediatelyError = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpSubscriber) {
-                NbpSubscriber.onSubscribe(s);
-                NbpSubscriber.onError(new IOException("Error"));
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(s);
+                observer.onError(new IOException("Error"));
             }
         });
 
@@ -346,14 +346,14 @@ public class ObservableTimeoutTests {
         Observable<String> observableWithTimeout = immediatelyError.timeout(1000, TimeUnit.MILLISECONDS,
                 testScheduler);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
         observableWithTimeout.subscribe(ts);
 
         testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver).onError(isA(IOException.class));
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer).onError(isA(IOException.class));
         inOrder.verifyNoMoreInteractions();
 
         verify(s, times(1)).dispose();

@@ -235,9 +235,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
             if (missed == 0) {
                 break;
             }
-            if (a == null) {
-                a = actual.get();
-            }
+            a = actual.get();
         }
     }
 

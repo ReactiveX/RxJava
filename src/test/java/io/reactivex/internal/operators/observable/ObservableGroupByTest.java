@@ -144,11 +144,11 @@ public class ObservableGroupByTest {
         assertNotNull(error.get());
     }
 
-    private static <K, V> Map<K, Collection<V>> toMap(Observable<GroupedObservable<K, V>> NbpObservable) {
+    private static <K, V> Map<K, Collection<V>> toMap(Observable<GroupedObservable<K, V>> observable) {
 
         final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-        NbpObservable.blockingForEach(new Consumer<GroupedObservable<K, V>>() {
+        observable.blockingForEach(new Consumer<GroupedObservable<K, V>>() {
 
             @Override
             public void accept(final GroupedObservable<K, V> o) {
@@ -185,8 +185,8 @@ public class ObservableGroupByTest {
         Observable<Event> es = Observable.unsafeCreate(new ObservableSource<Event>() {
 
             @Override
-            public void subscribe(final Observer<? super Event> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
+            public void subscribe(final Observer<? super Event> observer) {
+                observer.onSubscribe(Disposables.empty());
                 System.out.println("*** Subscribing to EventStream ***");
                 subscribeCounter.incrementAndGet();
                 new Thread(new Runnable() {
@@ -197,9 +197,9 @@ public class ObservableGroupByTest {
                             Event e = new Event();
                             e.source = i % groupCount;
                             e.message = "Event-" + i;
-                            NbpObserver.onNext(e);
+                            observer.onNext(e);
                         }
-                        NbpObserver.onComplete();
+                        observer.onComplete();
                     }
 
                 }).start();
@@ -217,7 +217,7 @@ public class ObservableGroupByTest {
 
             @Override
             public Observable<String> apply(GroupedObservable<Integer, Event> eventGroupedObservable) {
-                System.out.println("NbpGroupedObservable Key: " + eventGroupedObservable.getKey());
+                System.out.println("GroupedObservable Key: " + eventGroupedObservable.getKey());
                 groupCounter.incrementAndGet();
 
                 return eventGroupedObservable.map(new Function<Event, String>() {
@@ -297,7 +297,7 @@ public class ObservableGroupByTest {
 
                     @Override
                     public Observable<String> apply(GroupedObservable<Integer, Event> eventGroupedObservable) {
-                        System.out.println("testUnsubscribe => NbpGroupedObservable Key: " + eventGroupedObservable.getKey());
+                        System.out.println("testUnsubscribe => GroupedObservable Key: " + eventGroupedObservable.getKey());
                         groupCounter.incrementAndGet();
 
                         return eventGroupedObservable
@@ -1202,7 +1202,7 @@ public class ObservableGroupByTest {
     }
 
     /**
-     * Assert we get an IllegalStateException if trying to subscribe to an inner NbpGroupedObservable more than once
+     * Assert we get an IllegalStateException if trying to subscribe to an inner GroupedObservable more than once
      */
     @Test
     public void testExceptionIfSubscribeToChildMoreThanOnce() {
@@ -1355,9 +1355,9 @@ public class ObservableGroupByTest {
         }).subscribe(new Consumer<GroupedObservable<String, String>>() {
 
             @Override
-            public void accept(GroupedObservable<String, String> NbpGroupedObservable) {
-                key[0] = NbpGroupedObservable.getKey();
-                NbpGroupedObservable.subscribe(new Consumer<String>() {
+            public void accept(GroupedObservable<String, String> groupedObservable) {
+                key[0] = groupedObservable.getKey();
+                groupedObservable.subscribe(new Consumer<String>() {
 
                     @Override
                     public void accept(String s) {
@@ -1376,8 +1376,8 @@ public class ObservableGroupByTest {
         Observable<Integer> o = Observable.unsafeCreate(
                 new ObservableSource<Integer>() {
                     @Override
-                    public void subscribe(Observer<? super Integer> NbpSubscriber) {
-                        NbpSubscriber.onSubscribe(s);
+                    public void subscribe(Observer<? super Integer> observer) {
+                        observer.onSubscribe(s);
                     }
                 }
         );
@@ -1425,11 +1425,11 @@ public class ObservableGroupByTest {
         Observable.unsafeCreate(
                 new ObservableSource<Integer>() {
                     @Override
-                    public void subscribe(Observer<? super Integer> NbpSubscriber) {
-                        NbpSubscriber.onSubscribe(Disposables.empty());
-                        NbpSubscriber.onNext(0);
-                        NbpSubscriber.onNext(1);
-                        NbpSubscriber.onError(e);
+                    public void subscribe(Observer<? super Integer> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        observer.onNext(0);
+                        observer.onNext(1);
+                        observer.onError(e);
                     }
                 }
         ).groupBy(new Function<Integer, Integer>() {

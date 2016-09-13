@@ -57,58 +57,32 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         Publisher<T> onSubscribe = new Publisher<T>() {
             @Override
             public void subscribe(Subscriber<? super T> child) {
-                // concurrent connection/disconnection may change the state,
-                // we loop to be atomic while the child subscribes
-                for (;;) {
-                    // get the current subscriber-to-source
-                    PublishSubscriber<T> r = curr.get();
-                    // if there isn't one or it is unsubscribed
-                    if (r == null || r.isDisposed()) {
-                        // create a new subscriber to source
-                        PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
-                        // let's try setting it as the current subscriber-to-source
-                        if (!curr.compareAndSet(r, u)) {
-                            // didn't work, maybe someone else did it or the current subscriber
-                            // to source has just finished
-                            continue;
-                        }
-                        // we won, let's use it going onwards
-                        r = u;
-                    }
-
-                    // create the backpressure-managing producer for this child
-                    InnerProducer<T> inner = new InnerProducer<T>(r, child);
-                    /*
-                     * Try adding it to the current subscriber-to-source, add is atomic in respect
-                     * to other adds and the termination of the subscriber-to-source.
-                     */
-                    if (!r.add(inner)) {
-                        /*
-                         * The current PublishSubscriber has been terminated, try with a newer one.
-                         */
+            // concurrent connection/disconnection may change the state,
+            // we loop to be atomic while the child subscribes
+            for (;;) {
+                // get the current subscriber-to-source
+                PublishSubscriber<T> r = curr.get();
+                // if there isn't one or it is unsubscribed
+                if (r == null || r.isDisposed()) {
+                    // create a new subscriber to source
+                    PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
+                    // let's try setting it as the current subscriber-to-source
+                    if (!curr.compareAndSet(r, u)) {
+                        // didn't work, maybe someone else did it or the current subscriber
+                        // to source has just finished
                         continue;
-                        /*
-                         * Note: although technically correct, concurrent disconnects can cause
-                         * unexpected behavior such as child subscribers never receiving anything
-                         * (unless connected again). An alternative approach, similar to
-                         * PublishSubject would be to immediately terminate such child
-                         * subscribers as well:
-                         *
-                         * Object term = r.terminalEvent;
-                         * if (r.nl.isCompleted(term)) {
-                         *     child.onCompleted();
-                         * } else {
-                         *     child.onError(r.nl.getError(term));
-                         * }
-                         * return;
-                         *
-                         * The original concurrent behavior was non-deterministic in this regard as well.
-                         * Allowing this behavior, however, may introduce another unexpected behavior:
-                         * after disconnecting a previous connection, one might not be able to prepare
-                         * a new connection right after a previous termination by subscribing new child
-                         * subscribers asynchronously before a connect call.
-                         */
                     }
+                    // we won, let's use it going onwards
+                    r = u;
+                }
+
+                // create the backpressure-managing producer for this child
+                InnerProducer<T> inner = new InnerProducer<T>(r, child);
+                /*
+                 * Try adding it to the current subscriber-to-source, add is atomic in respect
+                 * to other adds and the termination of the subscriber-to-source.
+                 */
+                if (r.add(inner)) {
                     // the producer has been registered with the current subscriber-to-source so
                     // at least it will receive the next terminal event
                     // setting the producer will trigger the first request to be considered by
@@ -116,6 +90,31 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                     child.onSubscribe(inner);
                     break; // NOPMD
                 }
+                /*
+                 * The current PublishSubscriber has been terminated, try with a newer one.
+                 */
+                /*
+                 * Note: although technically correct, concurrent disconnects can cause
+                 * unexpected behavior such as child subscribers never receiving anything
+                 * (unless connected again). An alternative approach, similar to
+                 * PublishSubject would be to immediately terminate such child
+                 * subscribers as well:
+                 *
+                 * Object term = r.terminalEvent;
+                 * if (r.nl.isCompleted(term)) {
+                 *     child.onCompleted();
+                 * } else {
+                 *     child.onError(r.nl.getError(term));
+                 * }
+                 * return;
+                 *
+                 * The original concurrent behavior was non-deterministic in this regard as well.
+                 * Allowing this behavior, however, may introduce another unexpected behavior:
+                 * after disconnecting a previous connection, one might not be able to prepare
+                 * a new connection right after a previous termination by subscribing new child
+                 * subscribers asynchronously before a connect call.
+                 */
+            }
             }
         };
         return RxJavaPlugins.onAssembly(new FlowablePublish<T>(onSubscribe, source, curr, bufferSize));
@@ -141,13 +140,13 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
 
     @Override
     public void connect(Consumer<? super Disposable> connection) {
-        boolean doConnect = false;
+        boolean doConnect;
         PublishSubscriber<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
         for (;;) {
             // retrieve the current subscriber-to-source instance
             ps = current.get();
-            // if there is none yet or the current has unsubscribed
+            // if there is none yet or the current has been disposed
             if (ps == null || ps.isDisposed()) {
                 // create a new subscriber-to-source
                 PublishSubscriber<T> u = new PublishSubscriber<T>(current, bufferSize);
@@ -174,7 +173,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
          *
          * Note however, that asynchronously disconnecting a running source might leave
          * child-subscribers without any terminal event; PublishSubject does not have this
-         * issue because the unsubscription was always triggered by the child-subscribers
+         * issue because the cancellation was always triggered by the child-subscribers
          * themselves.
          */
         try {
@@ -499,8 +498,8 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                         int len = ps.length;
                         // Let's assume everyone requested the maximum value.
                         long maxRequested = Long.MAX_VALUE;
-                        // count how many have triggered unsubscription
-                        int unsubscribed = 0;
+                        // count how many have triggered cancellation
+                        int cancelled = 0;
 
                         // Now find the minimum amount each child-subscriber requested
                         // since we can only emit that much to all of them without violating
@@ -512,16 +511,16 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                             if (r >= 0L) {
                                 maxRequested = Math.min(maxRequested, r);
                             } else
-                            // unsubscription is indicated by a special value
-                            if (r == InnerProducer.UNSUBSCRIBED) {
-                                unsubscribed++;
+                            // cancellation is indicated by a special value
+                            if (r == InnerProducer.CANCELLED) {
+                                cancelled++;
                             }
                             // we ignore those with NOT_REQUESTED as if they aren't even there
                         }
 
                         // it may happen everyone has unsubscribed between here and producers.get()
                         // or we have no subscribers at all to begin with
-                        if (len == unsubscribed) {
+                        if (len == cancelled) {
                             term = terminalEvent;
                             // so let's consume a value from the queue
                             Object v = queue.poll();
@@ -611,7 +610,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         }
     }
     /**
-     * A Producer and Subscription that manages the request and unsubscription state of a
+     * A Producer and Subscription that manages the request and cancellation state of a
      * child subscriber in thread-safe manner.
      * @param <T> the value type
      */
@@ -620,7 +619,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         private static final long serialVersionUID = -4453897557930727610L;
         /**
          * The parent subscriber-to-source used to allow removing the child in case of
-         * child unsubscription.
+         * child cancellation.
          */
         final PublishSubscriber<T> parent;
         /** The actual child subscriber. */
@@ -629,7 +628,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
          * Indicates this child has been unsubscribed: the state is swapped in atomically and
          * will prevent the dispatch() to emit (too many) values to a terminated child subscriber.
          */
-        static final long UNSUBSCRIBED = Long.MIN_VALUE;
+        static final long CANCELLED = Long.MIN_VALUE;
 
         public InnerProducer(PublishSubscriber<T> parent, Subscriber<? super T> child) {
             this.parent = parent;
@@ -649,7 +648,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 // get the current request amount
                 long r = get();
                 // if child called unsubscribe() do nothing
-                if (r == UNSUBSCRIBED) {
+                if (r == CANCELLED) {
                     return;
                 }
                 // ignore zero requests except any first that sets in zero
@@ -678,7 +677,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                     return;
                 }
                 // otherwise, someone else changed the state (perhaps a concurrent
-                // request or unsubscription so retry
+                // request or cancellation so retry
             }
         }
 
@@ -701,8 +700,8 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                     throw new IllegalStateException("Produced without request");
                 }
                 // if the child has unsubscribed, simply return and indicate this
-                if (r == UNSUBSCRIBED) {
-                    return UNSUBSCRIBED;
+                if (r == CANCELLED) {
+                    return CANCELLED;
                 }
                 // reduce the requested amount
                 long u = r - n;
@@ -721,7 +720,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
 
         @Override
         public boolean isDisposed() {
-            return get() == UNSUBSCRIBED;
+            return get() == CANCELLED;
         }
 
         @Override
@@ -732,18 +731,18 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         public void dispose() {
             long r = get();
             // let's see if we are unsubscribed
-            if (r != UNSUBSCRIBED) {
+            if (r != CANCELLED) {
                 // if not, swap in the terminal state, this is idempotent
                 // because other methods using CAS won't overwrite this value,
                 // concurrent calls to unsubscribe will atomically swap in the same
                 // terminal value
-                r = getAndSet(UNSUBSCRIBED);
+                r = getAndSet(CANCELLED);
                 // and only one of them will see a non-terminated value before the swap
-                if (r != UNSUBSCRIBED) {
+                if (r != CANCELLED) {
                     // remove this from the parent
                     parent.remove(this);
                     // After removal, we might have unblocked the other child subscribers:
-                    // let's assume this child had 0 requested before the unsubscription while
+                    // let's assume this child had 0 requested before the cancellation while
                     // the others had non-zero. By removing this 'blocking' child, the others
                     // are now free to receive events
                     parent.dispatch();

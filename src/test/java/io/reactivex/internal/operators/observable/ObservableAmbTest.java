@@ -46,17 +46,17 @@ public class ObservableAmbTest {
         return Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(final Observer<? super String> NbpSubscriber) {
+            public void subscribe(final Observer<? super String> observer) {
                 CompositeDisposable parentSubscription = new CompositeDisposable();
 
-                NbpSubscriber.onSubscribe(parentSubscription);
+                observer.onSubscribe(parentSubscription);
 
                 long delay = interval;
                 for (final String value : values) {
                     parentSubscription.add(innerScheduler.schedule(new Runnable() {
                         @Override
                         public void run() {
-                            NbpSubscriber.onNext(value);
+                            observer.onNext(value);
                         }
                     }
                     , delay, TimeUnit.MILLISECONDS));
@@ -66,9 +66,9 @@ public class ObservableAmbTest {
                     @Override
                     public void run() {
                             if (e == null) {
-                                NbpSubscriber.onComplete();
+                                observer.onComplete();
                             } else {
-                                NbpSubscriber.onError(e);
+                                observer.onError(e);
                             }
                     }
                 }, delay, TimeUnit.MILLISECONDS));
@@ -89,17 +89,17 @@ public class ObservableAmbTest {
         Observable<String> o = Observable.ambArray(observable1,
                 observable2, observable3);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext("2");
-        inOrder.verify(NbpObserver, times(1)).onNext("22");
-        inOrder.verify(NbpObserver, times(1)).onNext("222");
-        inOrder.verify(NbpObserver, times(1)).onNext("2222");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("2");
+        inOrder.verify(observer, times(1)).onNext("22");
+        inOrder.verify(observer, times(1)).onNext("222");
+        inOrder.verify(observer, times(1)).onNext("2222");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -118,17 +118,17 @@ public class ObservableAmbTest {
         Observable<String> o = Observable.ambArray(observable1,
                 observable2, observable3);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext("2");
-        inOrder.verify(NbpObserver, times(1)).onNext("22");
-        inOrder.verify(NbpObserver, times(1)).onNext("222");
-        inOrder.verify(NbpObserver, times(1)).onNext("2222");
-        inOrder.verify(NbpObserver, times(1)).onError(expectedException);
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("2");
+        inOrder.verify(observer, times(1)).onNext("22");
+        inOrder.verify(observer, times(1)).onNext("222");
+        inOrder.verify(observer, times(1)).onNext("2222");
+        inOrder.verify(observer, times(1)).onError(expectedException);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -145,12 +145,12 @@ public class ObservableAmbTest {
         Observable<String> o = Observable.ambArray(observable1,
                 observable2, observable3);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -180,10 +180,10 @@ public class ObservableAmbTest {
 
     @Test
     public void testSynchronousSources() {
-        // under async subscription the second NbpObservable would complete before
+        // under async subscription the second Observable would complete before
         // the first but because this is a synchronous subscription to sources
-        // then second NbpObservable does not get subscribed to before first
-        // subscription completes hence first NbpObservable emits result through
+        // then second Observable does not get subscribed to before first
+        // subscription completes hence first Observable emits result through
         // amb
         int result = Observable.just(1).doOnNext(new Consumer<Integer>() {
             @Override

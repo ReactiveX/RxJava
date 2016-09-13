@@ -212,7 +212,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         ObservableSource<? extends U> o;
 
                         try {
-                            o = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableConsumable");
+                            o = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             dispose();

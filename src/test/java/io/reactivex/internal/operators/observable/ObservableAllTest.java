@@ -32,7 +32,7 @@ public class ObservableAllTest {
     public void testAll() {
         Observable<String> obs = Observable.just("one", "two", "six");
 
-        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer <Boolean> observer = TestHelper.mockObserver();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -40,19 +40,19 @@ public class ObservableAllTest {
                 return s.length() == 3;
             }
         })
-        .subscribe(NbpObserver);
+        .subscribe(observer);
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver).onNext(true);
-        verify(NbpObserver).onComplete();
-        verifyNoMoreInteractions(NbpObserver);
+        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onNext(true);
+        verify(observer).onComplete();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
     public void testNotAll() {
         Observable<String> obs = Observable.just("one", "two", "three", "six");
 
-        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer <Boolean> observer = TestHelper.mockObserver();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -60,19 +60,19 @@ public class ObservableAllTest {
                 return s.length() == 3;
             }
         })
-        .subscribe(NbpObserver);
+        .subscribe(observer);
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver).onNext(false);
-        verify(NbpObserver).onComplete();
-        verifyNoMoreInteractions(NbpObserver);
+        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onNext(false);
+        verify(observer).onComplete();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
     public void testEmpty() {
         Observable<String> obs = Observable.empty();
 
-        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer <Boolean> observer = TestHelper.mockObserver();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -80,12 +80,12 @@ public class ObservableAllTest {
                 return s.length() == 3;
             }
         })
-        .subscribe(NbpObserver);
+        .subscribe(observer);
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver).onNext(true);
-        verify(NbpObserver).onComplete();
-        verifyNoMoreInteractions(NbpObserver);
+        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onNext(true);
+        verify(observer).onComplete();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class ObservableAllTest {
         Throwable error = new Throwable();
         Observable<String> obs = Observable.error(error);
 
-        Observer <Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer <Boolean> observer = TestHelper.mockObserver();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -101,11 +101,11 @@ public class ObservableAllTest {
                 return s.length() == 3;
             }
         })
-        .subscribe(NbpObserver);
+        .subscribe(observer);
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver).onError(error);
-        verifyNoMoreInteractions(NbpObserver);
+        verify(observer).onSubscribe((Disposable)any());
+        verify(observer).onError(error);
+        verifyNoMoreInteractions(observer);
     }
 
     @Test

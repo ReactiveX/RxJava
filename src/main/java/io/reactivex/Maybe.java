@@ -204,7 +204,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer and
      *  expects the {@code Publisher} to honor backpressure as well. If the sources {@code Publisher}
-     *  violates this, a {@code MissingBackpressurException} is signalled.</dd>
+     *  violates this, a {@link io.reactivex.exceptions.MissingBackpressureException} is signalled.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -225,7 +225,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer and
      *  expects the {@code Publisher} to honor backpressure as well. If the sources {@code Publisher}
-     *  violates this, a {@code MissingBackpressurException} is signalled.</dd>
+     *  violates this, a {@link io.reactivex.exceptions.MissingBackpressureException} is signalled.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -399,7 +399,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Backpressure is honored towards the downstream and the outer Publisher is
      *  expected to support backpressure. Violating this assumption, the operator will
-     *  signal {@code MissingBackpressureException}.</dd>
+     *  signal {@link io.reactivex.exceptions.MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -1293,7 +1293,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Constructs a Maybe that creates a dependent resource object which is disposed of on unsubscription.
+     * Constructs a Maybe that creates a dependent resource object which is disposed of when the
+     * upstream terminates or the downstream calls dispose().
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
      * <dl>
@@ -1321,8 +1322,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Constructs a Maybe that creates a dependent resource object which is disposed of just before
-     * termination if you have set {@code disposeEagerly} to {@code true} and unsubscription does not occur
-     * before termination. Otherwise resource disposal will occur on unsubscription.  Eager disposal is
+     * termination if you have set {@code disposeEagerly} to {@code true} and a downstream dispose() does not occur
+     * before termination. Otherwise resource disposal will occur on call to dispose().  Eager disposal is
      * particularly appropriate for a synchronous Maybe that reuses resources. {@code disposeAction} will
      * only be called once per subscription.
      * <p>
@@ -1341,7 +1342,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param resourceDisposer
      *            the function that will dispose of the resource
      * @param eager
-     *            if {@code true} then disposal will happen either on unsubscription or just before emission of
+     *            if {@code true} then disposal will happen either on a dispose() call or just before emission of
      *            a terminal event ({@code onComplete} or {@code onError}).
      * @return the Maybe whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
@@ -3003,13 +3004,13 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
     /**
      * Nulls out references to the upstream producer and downstream MaybeObserver if
-     * the sequence is terminated or downstream unsubscribes.
+     * the sequence is terminated or downstream calls dispose().
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return a Maybe which out references to the upstream producer and downstream MaybeObserver if
-     * the sequence is terminated or downstream unsubscribes
+     * the sequence is terminated or downstream calls dispose()
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> onTerminateDetach() {
@@ -3649,7 +3650,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> timeout(MaybeSource<U> timeoutIndicator) {
-        ObjectHelper.requireNonNull(timeoutIndicator, "timoutIndicator is null");
+        ObjectHelper.requireNonNull(timeoutIndicator, "timeoutIndicator is null");
         return RxJavaPlugins.onAssembly(new MaybeTimeoutMaybe<T, U>(this, timeoutIndicator, null));
     }
 
@@ -3669,7 +3670,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> timeout(MaybeSource<U> timeoutIndicator, MaybeSource<? extends T> fallback) {
-        ObjectHelper.requireNonNull(timeoutIndicator, "timoutIndicator is null");
+        ObjectHelper.requireNonNull(timeoutIndicator, "timeoutIndicator is null");
         ObjectHelper.requireNonNull(fallback, "fallback is null");
         return RxJavaPlugins.onAssembly(new MaybeTimeoutMaybe<T, U>(this, timeoutIndicator, fallback));
     }
@@ -3692,7 +3693,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> timeout(Publisher<U> timeoutIndicator) {
-        ObjectHelper.requireNonNull(timeoutIndicator, "timoutIndicator is null");
+        ObjectHelper.requireNonNull(timeoutIndicator, "timeoutIndicator is null");
         return RxJavaPlugins.onAssembly(new MaybeTimeoutPublisher<T, U>(this, timeoutIndicator, null));
     }
 
@@ -3716,7 +3717,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Maybe<T> timeout(Publisher<U> timeoutIndicator, MaybeSource<? extends T> fallback) {
-        ObjectHelper.requireNonNull(timeoutIndicator, "timoutIndicator is null");
+        ObjectHelper.requireNonNull(timeoutIndicator, "timeoutIndicator is null");
         ObjectHelper.requireNonNull(fallback, "fallback is null");
         return RxJavaPlugins.onAssembly(new MaybeTimeoutPublisher<T, U>(this, timeoutIndicator, fallback));
     }

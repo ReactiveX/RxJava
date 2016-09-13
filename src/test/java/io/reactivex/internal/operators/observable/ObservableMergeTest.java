@@ -75,12 +75,12 @@ public class ObservableMergeTest {
         Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
 
             @Override
-            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                // simulate what would happen in an NbpObservable
-                NbpObserver.onNext(o1);
-                NbpObserver.onNext(o2);
-                NbpObserver.onComplete();
+            public void subscribe(Observer<? super Observable<String>> observer) {
+                observer.onSubscribe(Disposables.empty());
+                // simulate what would happen in an Observable
+                observer.onNext(o1);
+                observer.onNext(o2);
+                observer.onComplete();
             }
 
         });
@@ -130,7 +130,7 @@ public class ObservableMergeTest {
         Observable<Observable<Long>> source = Observable.unsafeCreate(new ObservableSource<Observable<Long>>() {
 
             @Override
-            public void subscribe(final Observer<? super Observable<Long>> NbpObserver) {
+            public void subscribe(final Observer<? super Observable<Long>> observer) {
                 // verbose on purpose so I can track the inside of it
                 final Disposable s = Disposables.fromRunnable(new Runnable() {
                     @Override
@@ -139,7 +139,7 @@ public class ObservableMergeTest {
                         unsubscribed.set(true);
                     }
                 });
-                NbpObserver.onSubscribe(s);
+                observer.onSubscribe(s);
 
                 new Thread(new Runnable() {
 
@@ -147,10 +147,10 @@ public class ObservableMergeTest {
                     public void run() {
 
                         while (!unsubscribed.get()) {
-                            NbpObserver.onNext(Observable.just(1L, 2L));
+                            observer.onNext(Observable.just(1L, 2L));
                         }
                         System.out.println("Done looping after unsubscribe: " + unsubscribed.get());
-                        NbpObserver.onComplete();
+                        observer.onComplete();
 
                         // mark that the thread is finished
                         latch.countDown();
@@ -357,10 +357,10 @@ public class ObservableMergeTest {
     private static class TestSynchronousObservable implements ObservableSource<String> {
 
         @Override
-        public void subscribe(Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(Disposables.empty());
-            NbpObserver.onNext("hello");
-            NbpObserver.onComplete();
+        public void subscribe(Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
+            observer.onNext("hello");
+            observer.onComplete();
         }
     }
 
@@ -369,20 +369,20 @@ public class ObservableMergeTest {
         final CountDownLatch onNextBeingSent = new CountDownLatch(1);
 
         @Override
-        public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(Disposables.empty());
+        public void subscribe(final Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
                     onNextBeingSent.countDown();
                     try {
-                        NbpObserver.onNext("hello");
+                        observer.onNext("hello");
                         // I can't use a countDownLatch to prove we are actually sending 'onNext'
                         // since it will block if synchronized and I'll deadlock
-                        NbpObserver.onComplete();
+                        observer.onComplete();
                     } catch (Exception e) {
-                        NbpObserver.onError(e);
+                        observer.onError(e);
                     }
                 }
 
@@ -400,17 +400,17 @@ public class ObservableMergeTest {
         }
 
         @Override
-        public void subscribe(Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(Disposables.empty());
+        public void subscribe(Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
             for (String s : valuesToReturn) {
                 if (s == null) {
                     System.out.println("throwing exception");
-                    NbpObserver.onError(new NullPointerException());
+                    observer.onError(new NullPointerException());
                 } else {
-                    NbpObserver.onNext(s);
+                    observer.onNext(s);
                 }
             }
-            NbpObserver.onComplete();
+            observer.onComplete();
         }
     }
 
@@ -658,22 +658,22 @@ public class ObservableMergeTest {
         final AtomicInteger generated2 = new AtomicInteger();
         Observable<Integer> o2 = createInfiniteObservable(generated2).subscribeOn(Schedulers.computation());
 
-        TestObserver<Integer> NbpTestSubscriber = new TestObserver<Integer>() {
+        TestObserver<Integer> testObserver = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
-                System.err.println("NbpTestSubscriber received => " + t + "  on thread " + Thread.currentThread());
+                System.err.println("TestObserver received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
         };
 
-        Observable.merge(o1.take(Flowable.bufferSize() * 2), o2.take(Flowable.bufferSize() * 2)).subscribe(NbpTestSubscriber);
-        NbpTestSubscriber.awaitTerminalEvent();
-        if (NbpTestSubscriber.errors().size() > 0) {
-            NbpTestSubscriber.errors().get(0).printStackTrace();
+        Observable.merge(o1.take(Flowable.bufferSize() * 2), o2.take(Flowable.bufferSize() * 2)).subscribe(testObserver);
+        testObserver.awaitTerminalEvent();
+        if (testObserver.errors().size() > 0) {
+            testObserver.errors().get(0).printStackTrace();
         }
-        NbpTestSubscriber.assertNoErrors();
-        System.err.println(NbpTestSubscriber.values());
-        assertEquals(Flowable.bufferSize() * 4, NbpTestSubscriber.values().size());
+        testObserver.assertNoErrors();
+        System.err.println(testObserver.values());
+        assertEquals(Flowable.bufferSize() * 4, testObserver.values().size());
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated 1: " + generated1.get());
         System.out.println("Generated 2: " + generated2.get());
@@ -696,25 +696,25 @@ public class ObservableMergeTest {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
 
-        TestObserver<Integer> NbpTestSubscriber = new TestObserver<Integer>() {
+        TestObserver<Integer> testObserver = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
             }
         };
 
-        Observable.merge(o1.take(Flowable.bufferSize() * 2), Observable.just(-99)).subscribe(NbpTestSubscriber);
-        NbpTestSubscriber.awaitTerminalEvent();
+        Observable.merge(o1.take(Flowable.bufferSize() * 2), Observable.just(-99)).subscribe(testObserver);
+        testObserver.awaitTerminalEvent();
 
-        List<Integer> onNextEvents = NbpTestSubscriber.values();
+        List<Integer> onNextEvents = testObserver.values();
 
         System.out.println("Generated 1: " + generated1.get() + " / received: " + onNextEvents.size());
         System.out.println(onNextEvents);
 
-        if (NbpTestSubscriber.errors().size() > 0) {
-            NbpTestSubscriber.errors().get(0).printStackTrace();
+        if (testObserver.errors().size() > 0) {
+            testObserver.errors().get(0).printStackTrace();
         }
-        NbpTestSubscriber.assertNoErrors();
+        testObserver.assertNoErrors();
         assertEquals(Flowable.bufferSize() * 2 + 1, onNextEvents.size());
         // it should be between the take num and requested batch size across the async boundary
         assertTrue(generated1.get() >= Flowable.bufferSize() * 2 && generated1.get() <= Flowable.bufferSize() * 3);
@@ -723,7 +723,7 @@ public class ObservableMergeTest {
     /**
      * This is the same as the upstreams ones, but now adds the downstream as well by using observeOn.
      *
-     * This requires merge to also obey the Product.request values coming from it's child NbpSubscriber.
+     * This requires merge to also obey the Product.request values coming from it's child Observer.
      * @throws InterruptedException if the test is interrupted
      */
     @Test(timeout = 10000)
@@ -733,7 +733,7 @@ public class ObservableMergeTest {
         final AtomicInteger generated2 = new AtomicInteger();
         Observable<Integer> o2 = createInfiniteObservable(generated2).subscribeOn(Schedulers.computation());
 
-        TestObserver<Integer> NbpTestSubscriber = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t < 100)
@@ -743,19 +743,19 @@ public class ObservableMergeTest {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                //                System.err.println("NbpTestSubscriber received => " + t + "  on thread " + Thread.currentThread());
+                //                System.err.println("TestObserver received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
         };
 
-        Observable.merge(o1.take(Flowable.bufferSize() * 2), o2.take(Flowable.bufferSize() * 2)).observeOn(Schedulers.computation()).subscribe(NbpTestSubscriber);
-        NbpTestSubscriber.awaitTerminalEvent();
-        if (NbpTestSubscriber.errors().size() > 0) {
-            NbpTestSubscriber.errors().get(0).printStackTrace();
+        Observable.merge(o1.take(Flowable.bufferSize() * 2), o2.take(Flowable.bufferSize() * 2)).observeOn(Schedulers.computation()).subscribe(to);
+        to.awaitTerminalEvent();
+        if (to.errors().size() > 0) {
+            to.errors().get(0).printStackTrace();
         }
-        NbpTestSubscriber.assertNoErrors();
-        System.err.println(NbpTestSubscriber.values());
-        assertEquals(Flowable.bufferSize() * 4, NbpTestSubscriber.values().size());
+        to.assertNoErrors();
+        System.err.println(to.values());
+        assertEquals(Flowable.bufferSize() * 4, to.values().size());
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated 1: " + generated1.get());
         System.out.println("Generated 2: " + generated2.get());
@@ -763,7 +763,7 @@ public class ObservableMergeTest {
     }
 
     /**
-     * Currently there is no solution to this ... we can't exert backpressure on the outer NbpObservable if we
+     * Currently there is no solution to this ... we can't exert backpressure on the outer Observable if we
      * can't know if the ones we've received so far are going to emit or not, otherwise we could starve the system.
      *
      * For example, 10,000 Observables are being merged (bad use case to begin with, but ...) and it's only one of them
@@ -786,7 +786,7 @@ public class ObservableMergeTest {
 
         });
 
-        TestObserver<Integer> NbpTestSubscriber = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() {
             int i = 0;
 
             @Override
@@ -798,21 +798,21 @@ public class ObservableMergeTest {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                //                System.err.println("NbpTestSubscriber received => " + t + "  on thread " + Thread.currentThread());
+                //                System.err.println("TestObserver received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
         };
 
-        Observable.merge(o1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(NbpTestSubscriber);
-        NbpTestSubscriber.awaitTerminalEvent();
-        if (NbpTestSubscriber.errors().size() > 0) {
-            NbpTestSubscriber.errors().get(0).printStackTrace();
+        Observable.merge(o1).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(to);
+        to.awaitTerminalEvent();
+        if (to.errors().size() > 0) {
+            to.errors().get(0).printStackTrace();
         }
-        NbpTestSubscriber.assertNoErrors();
+        to.assertNoErrors();
         System.out.println("Generated 1: " + generated1.get());
-        System.err.println(NbpTestSubscriber.values());
+        System.err.println(to.values());
         System.out.println("done1 testBackpressureBothUpstreamAndDownstreamWithRegularObservables ");
-        assertEquals(Flowable.bufferSize() * 2, NbpTestSubscriber.values().size());
+        assertEquals(Flowable.bufferSize() * 2, to.values().size());
         System.out.println("done2 testBackpressureBothUpstreamAndDownstreamWithRegularObservables ");
         // we can't restrict this ... see comment above
         //        assertTrue(generated1.get() >= Observable.bufferSize() && generated1.get() <= Observable.bufferSize() * 4);

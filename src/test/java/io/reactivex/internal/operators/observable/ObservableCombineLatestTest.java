@@ -86,7 +86,7 @@ public class ObservableCombineLatestTest {
         w3.onNext("3d");
         w3.onComplete();
 
-        /* we should have been called 4 times on the NbpObserver */
+        /* we should have been called 4 times on the Observer */
         InOrder inOrder = inOrder(w);
         inOrder.verify(w).onNext("1a2a3a");
         inOrder.verify(w).onNext("1a2b3a");
@@ -123,7 +123,7 @@ public class ObservableCombineLatestTest {
         w3.onNext("3a");
         w3.onComplete();
 
-        /* we should have been called 1 time only on the NbpObserver since we only combine the "latest" we don't go back and loop through others once completed */
+        /* we should have been called 1 time only on the Observer since we only combine the "latest" we don't go back and loop through others once completed */
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("1d2b3a");
         inOrder.verify(w, never()).onNext(anyString());
@@ -158,7 +158,7 @@ public class ObservableCombineLatestTest {
         w2.onComplete();
         w3.onComplete();
 
-        /* we should have been called 5 times on the NbpObserver */
+        /* we should have been called 5 times on the Observer */
         InOrder inOrder = inOrder(w);
         inOrder.verify(w).onNext("1a2b3a");
         inOrder.verify(w).onNext("1b2b3a");
@@ -174,48 +174,48 @@ public class ObservableCombineLatestTest {
     public void testCombineLatest2Types() {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
-        /* define a NbpObserver to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> w = Observable.combineLatest(Observable.just("one", "two"), Observable.just(2, 3, 4), combineLatestFunction);
-        w.subscribe(NbpObserver);
+        w.subscribe(observer);
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, times(1)).onNext("two2");
-        verify(NbpObserver, times(1)).onNext("two3");
-        verify(NbpObserver, times(1)).onNext("two4");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verify(observer, times(1)).onNext("two2");
+        verify(observer, times(1)).onNext("two3");
+        verify(observer, times(1)).onNext("two4");
     }
 
     @Test
     public void testCombineLatest3TypesA() {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
-        /* define a NbpObserver to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> w = Observable.combineLatest(Observable.just("one", "two"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }), combineLatestFunction);
-        w.subscribe(NbpObserver);
+        w.subscribe(observer);
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, times(1)).onNext("two2[4, 5, 6]");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verify(observer, times(1)).onNext("two2[4, 5, 6]");
     }
 
     @Test
     public void testCombineLatest3TypesB() {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
-        /* define a NbpObserver to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> w = Observable.combineLatest(Observable.just("one"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
-        w.subscribe(NbpObserver);
+        w.subscribe(observer);
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, times(1)).onNext("one2[4, 5, 6]");
-        verify(NbpObserver, times(1)).onNext("one2[7, 8]");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verify(observer, times(1)).onNext("one2[4, 5, 6]");
+        verify(observer, times(1)).onNext("one2[7, 8]");
     }
 
     private Function3<String, String, String, String> getConcat3StringsCombineLatestFunction() {
@@ -282,33 +282,33 @@ public class ObservableCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
-        Observer<Object> NbpObserver = TestHelper.mockObserver();
-        InOrder inOrder = inOrder(NbpObserver);
+        Observer<Object> observer = TestHelper.mockObserver();
+        InOrder inOrder = inOrder(observer);
 
-        source.subscribe(NbpObserver);
+        source.subscribe(observer);
 
         a.onNext(1);
 
-        inOrder.verify(NbpObserver, never()).onNext(any());
+        inOrder.verify(observer, never()).onNext(any());
 
         a.onNext(2);
 
-        inOrder.verify(NbpObserver, never()).onNext(any());
+        inOrder.verify(observer, never()).onNext(any());
 
         b.onNext(0x10);
 
-        inOrder.verify(NbpObserver, times(1)).onNext(0x12);
+        inOrder.verify(observer, times(1)).onNext(0x12);
 
         b.onNext(0x20);
-        inOrder.verify(NbpObserver, times(1)).onNext(0x22);
+        inOrder.verify(observer, times(1)).onNext(0x22);
 
         b.onComplete();
 
-        inOrder.verify(NbpObserver, never()).onComplete();
+        inOrder.verify(observer, never()).onComplete();
 
         a.onComplete();
 
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onComplete();
 
         a.onNext(3);
         b.onNext(0x30);
@@ -316,7 +316,7 @@ public class ObservableCombineLatestTest {
         b.onComplete();
 
         inOrder.verifyNoMoreInteractions();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -383,19 +383,19 @@ public class ObservableCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
-        Observer<Object> NbpObserver = TestHelper.mockObserver();
-        InOrder inOrder = inOrder(NbpObserver);
+        Observer<Object> observer = TestHelper.mockObserver();
+        InOrder inOrder = inOrder(observer);
 
-        source.subscribe(NbpObserver);
+        source.subscribe(observer);
 
         b.onNext(0x10);
         b.onNext(0x20);
 
         a.onComplete();
 
-        inOrder.verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, never()).onNext(any());
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onComplete();
+        verify(observer, never()).onNext(any());
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -405,10 +405,10 @@ public class ObservableCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
-        Observer<Object> NbpObserver = TestHelper.mockObserver();
-        InOrder inOrder = inOrder(NbpObserver);
+        Observer<Object> observer = TestHelper.mockObserver();
+        InOrder inOrder = inOrder(observer);
 
-        source.subscribe(NbpObserver);
+        source.subscribe(observer);
 
         a.onNext(0x1);
         a.onNext(0x2);
@@ -416,9 +416,9 @@ public class ObservableCombineLatestTest {
         b.onComplete();
         a.onComplete();
 
-        inOrder.verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, never()).onNext(any());
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onComplete();
+        verify(observer, never()).onNext(any());
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     public void test0Sources() {

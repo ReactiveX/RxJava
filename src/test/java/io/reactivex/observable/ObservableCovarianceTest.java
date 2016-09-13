@@ -42,7 +42,7 @@ public class ObservableCovarianceTest {
     public void testCovarianceOfFrom() {
         Observable.<Movie> just(new HorrorMovie());
         Observable.<Movie> fromIterable(new ArrayList<HorrorMovie>());
-        // NbpObservable.<HorrorMovie>from(new Movie()); // may not compile
+        // Observable.<HorrorMovie>from(new Movie()); // may not compile
     }
 
     @Test

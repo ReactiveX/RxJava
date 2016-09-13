@@ -130,22 +130,22 @@ public class ObservableSequenceEqualTest {
     }
 
     private void verifyResult(Observable<Boolean> o, boolean result) {
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        o.subscribe(NbpObserver);
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(result);
-        inOrder.verify(NbpObserver).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(result);
+        inOrder.verify(observer).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
-    private void verifyError(Observable<Boolean> NbpObservable) {
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
+    private void verifyError(Observable<Boolean> observable) {
+        Observer<Boolean> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onError(isA(TestException.class));
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(isA(TestException.class));
         inOrder.verifyNoMoreInteractions();
     }
 

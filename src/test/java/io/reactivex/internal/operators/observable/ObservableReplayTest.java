@@ -517,7 +517,7 @@ public class ObservableReplayTest {
         Observer<Integer> spiedSubscriberBeforeConnect = TestHelper.mockObserver();
         Observer<Integer> spiedSubscriberAfterConnect = TestHelper.mockObserver();
 
-        // NbpObservable under test
+        // Observable under test
         Observable<Integer> source = Observable.just(1,2);
 
         ConnectableObservable<Integer> replay = source
@@ -569,7 +569,7 @@ public class ObservableReplayTest {
         Observer<Integer> mockObserverBeforeConnect = TestHelper.mockObserver();
         Observer<Integer> mockObserverAfterConnect = TestHelper.mockObserver();
 
-        // NbpObservable under test
+        // Observable under test
         ConnectableObservable<Integer> replay = Observable.just(1, 2, 3)
                 .doOnNext(sourceNext)
                 .doOnDispose(sourceUnsubscribed)
@@ -622,7 +622,7 @@ public class ObservableReplayTest {
         Observer<Integer> mockObserverBeforeConnect = TestHelper.mockObserver();
         Observer<Integer> mockObserverAfterConnect = TestHelper.mockObserver();
 
-        // NbpObservable under test
+        // Observable under test
         Function<Integer, Integer> mockFunc = mock(Function.class);
         IllegalArgumentException illegalArgumentException = new IllegalArgumentException();
         when(mockFunc.apply(1)).thenReturn(1);
@@ -801,16 +801,16 @@ public class ObservableReplayTest {
         Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(final Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
+            public void subscribe(final Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
                 new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         counter.incrementAndGet();
-                        System.out.println("published NbpObservable being executed");
-                        NbpObserver.onNext("one");
-                        NbpObserver.onComplete();
+                        System.out.println("published Observable being executed");
+                        observer.onNext("one");
+                        observer.onComplete();
                     }
                 }).start();
             }

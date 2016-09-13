@@ -32,7 +32,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ReplaySubjectConcurrencyTest {
 
     @Test(timeout = 4000)
-    public void testNbpReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther() throws InterruptedException {
+    public void testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther() throws InterruptedException {
         final ReplaySubject<Long> replay = ReplaySubject.create();
         Thread source = new Thread(new Runnable() {
 
@@ -142,7 +142,7 @@ public class ReplaySubjectConcurrencyTest {
     }
 
     @Test
-    public void testNbpReplaySubjectConcurrentSubscriptions() throws InterruptedException {
+    public void testReplaySubjectConcurrentSubscriptions() throws InterruptedException {
         final ReplaySubject<Long> replay = ReplaySubject.create();
         Thread source = new Thread(new Runnable() {
 
@@ -323,7 +323,7 @@ public class ReplaySubjectConcurrencyTest {
         }
     }
     @Test
-    public void testNbpReplaySubjectEmissionSubscriptionRace() throws Exception {
+    public void testReplaySubjectEmissionSubscriptionRace() throws Exception {
         Scheduler s = Schedulers.io();
         Scheduler.Worker worker = Schedulers.io().createWorker();
         try {

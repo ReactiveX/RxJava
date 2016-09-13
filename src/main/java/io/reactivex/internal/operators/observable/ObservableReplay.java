@@ -260,13 +260,13 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
     @Override
     public void connect(Consumer<? super Disposable> connection) {
-        boolean doConnect = false;
+        boolean doConnect;
         ReplaySubscriber<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
         for (;;) {
             // retrieve the current subscriber-to-source instance
             ps = current.get();
-            // if there is none yet or the current has unsubscribed
+            // if there is none yet or the current has been disposed
             if (ps == null || ps.isDisposed()) {
                 // create a new subscriber-to-source
                 ReplayBuffer<T> buf;
@@ -302,7 +302,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
          *
          * Note however, that asynchronously disconnecting a running source might leave
          * child-subscribers without any terminal event; ReplaySubject does not have this
-         * issue because the unsubscription was always triggered by the child-subscribers
+         * issue because the dispose() call was always triggered by the child-subscribers
          * themselves.
          */
 
@@ -503,14 +503,14 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
     }
     /**
-     * A Producer and Subscription that manages the request and unsubscription state of a
+     * A Producer and Subscription that manages the request and disposed state of a
      * child subscriber in thread-safe manner.
      * @param <T> the value type
      */
     static final class InnerSubscription<T> implements Disposable {
         /**
          * The parent subscriber-to-source used to allow removing the child in case of
-         * child unsubscription.
+         * child dispose() call.
          */
         final ReplaySubscriber<T> parent;
         /** The actual child subscriber. */

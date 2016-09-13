@@ -71,7 +71,7 @@ public class ObservableRefCountTest {
         }
 
         // now unsubscribe
-        s2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one NbpSubscriber getting a value but not the other
+        s2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one Observer getting a value but not the other
         s1.dispose();
 
         System.out.println("onNext: " + nextCount.get());
@@ -118,7 +118,7 @@ public class ObservableRefCountTest {
         }
 
         // now unsubscribe
-        s2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one NbpSubscriber getting a value but not the other
+        s2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one Observer getting a value but not the other
         s1.dispose();
 
         System.out.println("onNext Count: " + nextCount.get());
@@ -299,9 +299,9 @@ public class ObservableRefCountTest {
     private Observable<Long> synchronousInterval() {
         return Observable.unsafeCreate(new ObservableSource<Long>() {
             @Override
-            public void subscribe(Observer<? super Long> NbpSubscriber) {
+            public void subscribe(Observer<? super Long> observer) {
                 final AtomicBoolean cancel = new AtomicBoolean();
-                NbpSubscriber.onSubscribe(Disposables.fromRunnable(new Runnable() {
+                observer.onSubscribe(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         cancel.set(true);
@@ -315,7 +315,7 @@ public class ObservableRefCountTest {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                     }
-                    NbpSubscriber.onNext(1L);
+                    observer.onNext(1L);
                 }
             }
         });
@@ -327,9 +327,9 @@ public class ObservableRefCountTest {
         final AtomicInteger unsubscriptionCount = new AtomicInteger();
         Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
-            public void subscribe(Observer<? super Integer> NbpObserver) {
+            public void subscribe(Observer<? super Integer> observer) {
                 subscriptionCount.incrementAndGet();
-                NbpObserver.onSubscribe(Disposables.fromRunnable(new Runnable() {
+                observer.onSubscribe(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                             unsubscriptionCount.incrementAndGet();
@@ -540,14 +540,14 @@ public class ObservableRefCountTest {
                 .doOnError(new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable t1) {
-                            System.out.println("NbpSubscriber 1 onError: " + t1);
+                            System.out.println("Observer 1 onError: " + t1);
                     }
                 })
                 .retry(5)
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(String t1) {
-                            System.out.println("NbpSubscriber 1: " + t1);
+                            System.out.println("Observer 1: " + t1);
                     }
                 });
         Thread.sleep(100);
@@ -555,14 +555,14 @@ public class ObservableRefCountTest {
         .doOnError(new Consumer<Throwable>() {
             @Override
             public void accept(Throwable t1) {
-                    System.out.println("NbpSubscriber 2 onError: " + t1);
+                    System.out.println("Observer 2 onError: " + t1);
             }
         })
         .retry(5)
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(String t1) {
-                            System.out.println("NbpSubscriber 2: " + t1);
+                            System.out.println("Observer 2: " + t1);
                     }
                 });
 

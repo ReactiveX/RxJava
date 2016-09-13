@@ -49,10 +49,10 @@ public class BlockingObservableToIteratorTest {
         Observable<String> obs = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                NbpObserver.onNext("one");
-                NbpObserver.onError(new TestException());
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onNext("one");
+                observer.onError(new TestException());
             }
         });
 
@@ -70,7 +70,7 @@ public class BlockingObservableToIteratorTest {
     public void testExceptionThrownFromOnSubscribe() {
         Iterable<String> strings = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpSubscriber) {
+            public void subscribe(Observer<? super String> observer) {
                 throw new TestException("intentional");
             }
         }).blockingIterable();

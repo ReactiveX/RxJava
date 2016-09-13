@@ -354,10 +354,10 @@ public class BehaviorSubjectTest {
     // FIXME RS subscribers are not allowed to throw
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery() {
-//        NbpBehaviorSubject<String> ps = NbpBehaviorSubject.create();
+//        BehaviorSubject<String> ps = BehaviorSubject.create();
 //
 //        ps.subscribe();
-//        TestNbpSubscriber<String> ts = new TestNbpSubscriber<T>();
+//        TestObserver<String> ts = new TestObserver<T>();
 //        ps.subscribe(ts);
 //
 //        try {
@@ -376,11 +376,11 @@ public class BehaviorSubjectTest {
 //     */
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery2() {
-//        NbpBehaviorSubject<String> ps = NbpBehaviorSubject.create();
+//        BehaviorSubject<String> ps = BehaviorSubject.create();
 //
 //        ps.subscribe();
 //        ps.subscribe();
-//        TestNbpSubscriber<String> ts = new TestNbpSubscriber<String>();
+//        TestObserver<String> ts = new TestObserver<String>();
 //        ps.subscribe(ts);
 //        ps.subscribe();
 //        ps.subscribe();

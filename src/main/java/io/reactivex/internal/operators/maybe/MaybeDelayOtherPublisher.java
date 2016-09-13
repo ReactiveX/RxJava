@@ -47,7 +47,7 @@ public final class MaybeDelayOtherPublisher<T, U> extends AbstractMaybeWithUpstr
     implements MaybeObserver<T>, Disposable {
         final OtherSubscriber<T> other;
 
-        Publisher<U> otherSource;
+        final Publisher<U> otherSource;
 
         Disposable d;
 

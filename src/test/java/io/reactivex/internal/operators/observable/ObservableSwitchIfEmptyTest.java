@@ -59,9 +59,9 @@ public class ObservableSwitchIfEmptyTest {
 
         Observable<Long> withProducer = Observable.unsafeCreate(new ObservableSource<Long>() {
             @Override
-            public void subscribe(final Observer<? super Long> NbpSubscriber) {
-                NbpSubscriber.onSubscribe(d);
-                NbpSubscriber.onNext(42L);
+            public void subscribe(final Observer<? super Long> observer) {
+                observer.onSubscribe(d);
+                observer.onNext(42L);
             }
         });
 
@@ -102,9 +102,9 @@ public class ObservableSwitchIfEmptyTest {
 
         Observable.unsafeCreate(new ObservableSource<Long>() {
             @Override
-            public void subscribe(final Observer<? super Long> NbpSubscriber) {
-                NbpSubscriber.onSubscribe(d);
-                NbpSubscriber.onComplete();
+            public void subscribe(final Observer<? super Long> observer) {
+                observer.onSubscribe(d);
+                observer.onComplete();
             }
         }).switchIfEmpty(Observable.<Long>never()).subscribe();
         assertTrue(d.isDisposed());

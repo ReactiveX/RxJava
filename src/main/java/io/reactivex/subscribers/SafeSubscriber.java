@@ -222,7 +222,6 @@ public final class SafeSubscriber<T> implements Subscriber<T>, Subscription {
                 return;
             }
             RxJavaPlugins.onError(e);
-            return;
         }
     }
 
@@ -233,7 +232,6 @@ public final class SafeSubscriber<T> implements Subscriber<T>, Subscription {
         } catch (Throwable e1) {
             Exceptions.throwIfFatal(e1);
             RxJavaPlugins.onError(e1);
-            return;
         }
     }
 }

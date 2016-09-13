@@ -19,8 +19,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 
 /**
- * Waits until the source Future completes or the wait times out; treates null
- * result as indication for empty.
+ * Waits until the source Future completes or the wait times out; treats a {@code null}
+ * result as indication to signal {@code onComplete} instead of {@code onSuccess}.
  *
  * @param <T> the value type
  */

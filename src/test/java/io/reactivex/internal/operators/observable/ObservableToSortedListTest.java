@@ -32,19 +32,19 @@ public class ObservableToSortedListTest {
     @Test
     public void testSortedList() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
-        Observable<List<Integer>> NbpObservable = w.toSortedList();
+        Observable<List<Integer>> observable = w.toSortedList();
 
-        Observer<List<Integer>> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<List<Integer>> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testSortedListWithCustomFunction() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
-        Observable<List<Integer>> NbpObservable = w.toSortedList(new Comparator<Integer>() {
+        Observable<List<Integer>> observable = w.toSortedList(new Comparator<Integer>() {
 
             @Override
             public int compare(Integer t1, Integer t2) {
@@ -53,11 +53,11 @@ public class ObservableToSortedListTest {
 
         });
 
-        Observer<List<Integer>> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<List<Integer>> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test

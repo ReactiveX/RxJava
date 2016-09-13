@@ -43,14 +43,14 @@ public class ObservableDoOnEachTest {
 
         doOnEach.subscribe(subscribedObserver);
 
-        // ensure the leaf NbpObserver is still getting called
+        // ensure the leaf Observer is still getting called
         verify(subscribedObserver, never()).onError(any(Throwable.class));
         verify(subscribedObserver, times(1)).onNext("a");
         verify(subscribedObserver, times(1)).onNext("b");
         verify(subscribedObserver, times(1)).onNext("c");
         verify(subscribedObserver, times(1)).onComplete();
 
-        // ensure our injected NbpObserver is getting called
+        // ensure our injected Observer is getting called
         verify(sideEffectObserver, never()).onError(any(Throwable.class));
         verify(sideEffectObserver, times(1)).onNext("a");
         verify(sideEffectObserver, times(1)).onNext("b");
@@ -160,17 +160,17 @@ public class ObservableDoOnEachTest {
         assertEquals(expectedCount, count.get());
     }
 
-    // FIXME crashing ObservableConsumable can't propagate to a NbpSubscriber
+    // FIXME crashing ObservableSource can't propagate to a Observer
 //    @Test
 //    public void testFatalError() {
 //        try {
-//            NbpObservable.just(1, 2, 3)
-//                    .flatMap(new Function<Integer, NbpObservable<?>>() {
+//            Observable.just(1, 2, 3)
+//                    .flatMap(new Function<Integer, Observable<?>>() {
 //                        @Override
-//                        public NbpObservable<?> apply(Integer integer) {
-//                            return NbpObservable.create(new ObservableConsumable<Object>() {
+//                        public Observable<?> apply(Integer integer) {
+//                            return Observable.create(new ObservableSource<Object>() {
 //                                @Override
-//                                public void accept(NbpSubscriber<Object> o) {
+//                                public void accept(Observer<Object> o) {
 //                                    throw new NullPointerException("Test NPE");
 //                                }
 //                            });

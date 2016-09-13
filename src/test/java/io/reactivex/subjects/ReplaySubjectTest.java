@@ -531,10 +531,10 @@ public class ReplaySubjectTest {
     // FIXME RS subscribers can't throw
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery() {
-//        NbpReplaySubject<String> ps = NbpReplaySubject.create();
+//        ReplaySubject<String> ps = ReplaySubject.create();
 //
 //        ps.subscribe();
-//        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
+//        TestObserver<String> ts = new TestObserver<String>();
 //        ps.subscribe(ts);
 //
 //        try {
@@ -553,11 +553,11 @@ public class ReplaySubjectTest {
 //     */
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery2() {
-//        NbpReplaySubject<String> ps = NbpReplaySubject.create();
+//        ReplaySubject<String> ps = ReplaySubject.create();
 //
 //        ps.subscribe();
 //        ps.subscribe();
-//        NbpTestSubscriber<String> ts = new NbpTestSubscriber<String>();
+//        TestObserver<String> ts = new TestObserver<String>();
 //        ps.subscribe(ts);
 //        ps.subscribe();
 //        ps.subscribe();

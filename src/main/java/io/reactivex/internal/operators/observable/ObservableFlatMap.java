@@ -329,7 +329,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
                 if (svq != null) {
                     for (;;) {
-                        U o = null;
+                        U o;
                         for (;;) {
                             if (checkTerminate()) {
                                 return;

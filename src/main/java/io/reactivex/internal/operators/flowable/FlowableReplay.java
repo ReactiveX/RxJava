@@ -273,7 +273,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
     @Override
     public void connect(Consumer<? super Disposable> connection) {
-        boolean doConnect = false;
+        boolean doConnect;
         ReplaySubscriber<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
         for (;;) {
@@ -316,7 +316,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          *
          * Note however, that asynchronously disconnecting a running source might leave
          * child-subscribers without any terminal event; ReplaySubject does not have this
-         * issue because the unsubscription was always triggered by the child-subscribers
+         * issue because the cancellation was always triggered by the child-subscribers
          * themselves.
          */
         try {
@@ -600,7 +600,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
     /**
-     * A Producer and Subscription that manages the request and unsubscription state of a
+     * A Producer and Subscription that manages the request and cancellation state of a
      * child subscriber in thread-safe manner.
      * @param <T> the value type
      */
@@ -609,7 +609,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         private static final long serialVersionUID = -4453897557930727610L;
         /**
          * The parent subscriber-to-source used to allow removing the child in case of
-         * child unsubscription.
+         * child cancellation.
          */
         final ReplaySubscriber<T> parent;
         /** The actual child subscriber. */
@@ -631,7 +631,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * Indicates this child has been unsubscribed: the state is swapped in atomically and
          * will prevent the dispatch() to emit (too many) values to a terminated child subscriber.
          */
-        static final long UNSUBSCRIBED = Long.MIN_VALUE;
+        static final long CANCELLED = Long.MIN_VALUE;
 
         public InnerSubscription(ReplaySubscriber<T> parent, Subscriber<? super T> child) {
             this.parent = parent;
@@ -652,7 +652,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 // get the current request amount
                 long r = get();
                 // if child called unsubscribe() do nothing
-                if (r == UNSUBSCRIBED) {
+                if (r == CANCELLED) {
                     return;
                 }
                 // ignore zero requests except any first that sets in zero
@@ -674,7 +674,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                     return;
                 }
                 // otherwise, someone else changed the state (perhaps a concurrent
-                // request or unsubscription so retry
+                // request or cancellation) so retry
             }
         }
 
@@ -692,8 +692,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 // get the current request value
                 long r = get();
                 // if the child has unsubscribed, simply return and indicate this
-                if (r == UNSUBSCRIBED) {
-                    return UNSUBSCRIBED;
+                if (r == CANCELLED) {
+                    return CANCELLED;
                 }
                 // reduce the requested amount
                 long u = r - n;
@@ -712,7 +712,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         public boolean isDisposed() {
-            return get() == UNSUBSCRIBED;
+            return get() == CANCELLED;
         }
 
         @Override
@@ -724,18 +724,18 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         public void dispose() {
             long r = get();
             // let's see if we are unsubscribed
-            if (r != UNSUBSCRIBED) {
+            if (r != CANCELLED) {
                 // if not, swap in the terminal state, this is idempotent
                 // because other methods using CAS won't overwrite this value,
                 // concurrent calls to unsubscribe will atomically swap in the same
                 // terminal value
-                r = getAndSet(UNSUBSCRIBED);
+                r = getAndSet(CANCELLED);
                 // and only one of them will see a non-terminated value before the swap
-                if (r != UNSUBSCRIBED) {
+                if (r != CANCELLED) {
                     // remove this from the parent
                     parent.remove(this);
                     // After removal, we might have unblocked the other child subscribers:
-                    // let's assume this child had 0 requested before the unsubscription while
+                    // let's assume this child had 0 requested before the cancellation while
                     // the others had non-zero. By removing this 'blocking' child, the others
                     // are now free to receive events
                     parent.manageRequests();

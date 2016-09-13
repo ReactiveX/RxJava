@@ -574,8 +574,8 @@ public class TestObserver<T> implements Observer<T>, Disposable {
         int i = 0;
         Iterator<T> vit = values.iterator();
         Iterator<? extends T> it = sequence.iterator();
-        boolean actualNext = false;
-        boolean expectedNext = false;
+        boolean actualNext;
+        boolean expectedNext;
         for (;;) {
             actualNext = it.hasNext();
             expectedNext = vit.hasNext();
@@ -591,8 +591,6 @@ public class TestObserver<T> implements Observer<T>, Disposable {
                 throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
             i++;
-            actualNext = false;
-            expectedNext = false;
         }
 
         if (actualNext) {

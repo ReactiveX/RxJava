@@ -38,25 +38,25 @@ public class ObservableObserveOnTest {
      */
     @Test
     public void testObserveOn() {
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        Observable.just(1, 2, 3).observeOn(ImmediateThinScheduler.INSTANCE).subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        Observable.just(1, 2, 3).observeOn(ImmediateThinScheduler.INSTANCE).subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext(1);
-        verify(NbpObserver, times(1)).onNext(2);
-        verify(NbpObserver, times(1)).onNext(3);
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, times(1)).onNext(3);
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testOrdering() throws InterruptedException {
-//        NbpObservable<String> obs = NbpObservable.just("one", null, "two", "three", "four");
+//        Observable<String> obs = Observable.just("one", null, "two", "three", "four");
         // FIXME null values not allowed
         Observable<String> obs = Observable.just("one", "null", "two", "three", "four");
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
-        InOrder inOrder = inOrder(NbpObserver);
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        InOrder inOrder = inOrder(observer);
+        TestObserver<String> ts = new TestObserver<String>(observer);
 
         obs.observeOn(Schedulers.computation()).subscribe(ts);
 
@@ -68,12 +68,12 @@ public class ObservableObserveOnTest {
             fail("failed with exception");
         }
 
-        inOrder.verify(NbpObserver, times(1)).onNext("one");
-        inOrder.verify(NbpObserver, times(1)).onNext("null");
-        inOrder.verify(NbpObserver, times(1)).onNext("two");
-        inOrder.verify(NbpObserver, times(1)).onNext("three");
-        inOrder.verify(NbpObserver, times(1)).onNext("four");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(1)).onNext("null");
+        inOrder.verify(observer, times(1)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("three");
+        inOrder.verify(observer, times(1)).onNext("four");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -81,10 +81,10 @@ public class ObservableObserveOnTest {
     public void testThreadName() throws InterruptedException {
         System.out.println("Main Thread: " + Thread.currentThread().getName());
         // FIXME null values not allowed
-//        NbpObservable<String> obs = NbpObservable.just("one", null, "two", "three", "four");
+//        Observable<String> obs = Observable.just("one", null, "two", "three", "four");
         Observable<String> obs = Observable.just("one", "null", "two", "three", "four");
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
         final String parentThreadName = Thread.currentThread().getName();
 
         final CountDownLatch completedLatch = new CountDownLatch(1);
@@ -119,15 +119,15 @@ public class ObservableObserveOnTest {
                 completedLatch.countDown();
 
             }
-        }).subscribe(NbpObserver);
+        }).subscribe(observer);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
         }
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(5)).onNext(any(String.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(5)).onNext(any(String.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
@@ -379,8 +379,8 @@ public class ObservableObserveOnTest {
     public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
 
-        final Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        TestObserver<Integer> ts = new TestObserver<Integer>(NbpObserver);
+        final Observer<Integer> observer = TestHelper.mockObserver();
+        TestObserver<Integer> ts = new TestObserver<Integer>(observer);
 
         Observable.just(1, 2, 3)
                 .observeOn(testScheduler)
@@ -389,11 +389,11 @@ public class ObservableObserveOnTest {
         ts.dispose();
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        final InOrder inOrder = inOrder(NbpObserver);
+        final InOrder inOrder = inOrder(observer);
 
-        inOrder.verify(NbpObserver, never()).onNext(anyInt());
-        inOrder.verify(NbpObserver, never()).onError(any(Exception.class));
-        inOrder.verify(NbpObserver, never()).onComplete();
+        inOrder.verify(observer, never()).onNext(anyInt());
+        inOrder.verify(observer, never()).onError(any(Exception.class));
+        inOrder.verify(observer, never()).onComplete();
     }
 
     @Test

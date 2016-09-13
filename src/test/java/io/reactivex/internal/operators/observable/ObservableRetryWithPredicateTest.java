@@ -225,24 +225,24 @@ public class ObservableRetryWithPredicateTest {
     @Test(timeout = 10000)
     public void testUnsubscribeAfterError() {
 
-        Observer<Long> NbpObserver = TestHelper.mockObserver();
+        Observer<Long> observer = TestHelper.mockObserver();
 
-        // NbpObservable that always fails after 100ms
+        // Observable that always fails after 100ms
         ObservableRetryTest.SlowObservable so = new ObservableRetryTest.SlowObservable(100, 0);
         Observable<Long> o = Observable
                 .unsafeCreate(so)
                 .retry(retry5);
 
-        ObservableRetryTest.AsyncObserver<Long> async = new ObservableRetryTest.AsyncObserver<Long>(NbpObserver);
+        ObservableRetryTest.AsyncObserver<Long> async = new ObservableRetryTest.AsyncObserver<Long>(observer);
 
         o.subscribe(async);
 
         async.await();
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
         // Should fail once
-        inOrder.verify(NbpObserver, times(1)).onError(any(Throwable.class));
-        inOrder.verify(NbpObserver, never()).onComplete();
+        inOrder.verify(observer, times(1)).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onComplete();
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
         assertEquals("Only 1 active subscription", 1, so.maxActive.get());
@@ -251,25 +251,25 @@ public class ObservableRetryWithPredicateTest {
     @Test(timeout = 10000)
     public void testTimeoutWithRetry() {
 
-        Observer<Long> NbpObserver = TestHelper.mockObserver();
+        Observer<Long> observer = TestHelper.mockObserver();
 
-        // NbpObservable that sends every 100ms (timeout fails instead)
+        // Observable that sends every 100ms (timeout fails instead)
         ObservableRetryTest.SlowObservable so = new ObservableRetryTest.SlowObservable(100, 10);
         Observable<Long> o = Observable
                 .unsafeCreate(so)
                 .timeout(80, TimeUnit.MILLISECONDS)
                 .retry(retry5);
 
-        ObservableRetryTest.AsyncObserver<Long> async = new ObservableRetryTest.AsyncObserver<Long>(NbpObserver);
+        ObservableRetryTest.AsyncObserver<Long> async = new ObservableRetryTest.AsyncObserver<Long>(observer);
 
         o.subscribe(async);
 
         async.await();
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
         // Should fail once
-        inOrder.verify(NbpObserver, times(1)).onError(any(Throwable.class));
-        inOrder.verify(NbpObserver, never()).onComplete();
+        inOrder.verify(observer, times(1)).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onComplete();
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }

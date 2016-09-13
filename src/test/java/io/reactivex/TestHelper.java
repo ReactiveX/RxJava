@@ -77,6 +77,26 @@ public enum TestHelper {
     }
 
     /**
+     * Mocks an MaybeObserver with the proper receiver type.
+     * @param <T> the value type
+     * @return the mocked observer
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> MaybeObserver<T> mockMaybeObserver() {
+        return mock(MaybeObserver.class);
+    }
+
+    /**
+     * Mocks an SingleObserver with the proper receiver type.
+     * @param <T> the value type
+     * @return the mocked observer
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> SingleObserver<T> mockSingleObserver() {
+        return mock(SingleObserver.class);
+    }
+
+    /**
      * Validates that the given class, when forcefully instantiated throws
      * an IllegalArgumentException("No instances!") exception.
      * @param clazz the class to test, not null

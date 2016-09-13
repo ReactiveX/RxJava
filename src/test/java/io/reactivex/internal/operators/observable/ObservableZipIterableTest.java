@@ -36,7 +36,7 @@ public class ObservableZipIterableTest {
     PublishSubject<String> s2;
     Observable<String> zipped;
 
-    Observer<String> NbpObserver;
+    Observer<String> observer;
     InOrder inOrder;
 
     @Before
@@ -52,10 +52,10 @@ public class ObservableZipIterableTest {
         s2 = PublishSubject.create();
         zipped = Observable.zip(s1, s2, concat2Strings);
 
-        NbpObserver = TestHelper.mockObserver();
-        inOrder = inOrder(NbpObserver);
+        observer = TestHelper.mockObserver();
+        inOrder = inOrder(observer);
 
-        zipped.subscribe(NbpObserver);
+        zipped.subscribe(observer);
     }
 
     BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {
@@ -78,7 +78,7 @@ public class ObservableZipIterableTest {
     @Test
     public void testZipIterableSameSize() {
         PublishSubject<String> r1 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
+        /* define a Observer to receive aggregated events */
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
@@ -103,7 +103,7 @@ public class ObservableZipIterableTest {
     @Test
     public void testZipIterableEmptyFirstSize() {
         PublishSubject<String> r1 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
+        /* define a Observer to receive aggregated events */
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
@@ -123,7 +123,7 @@ public class ObservableZipIterableTest {
     @Test
     public void testZipIterableEmptySecond() {
         PublishSubject<String> r1 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
+        /* define a Observer to receive aggregated events */
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
@@ -145,7 +145,7 @@ public class ObservableZipIterableTest {
     @Test
     public void testZipIterableFirstShorter() {
         PublishSubject<String> r1 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
+        /* define a Observer to receive aggregated events */
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
@@ -168,7 +168,7 @@ public class ObservableZipIterableTest {
     @Test
     public void testZipIterableSecondShorter() {
         PublishSubject<String> r1 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
+        /* define a Observer to receive aggregated events */
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
@@ -192,7 +192,7 @@ public class ObservableZipIterableTest {
     @Test
     public void testZipIterableFirstThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
+        /* define a Observer to receive aggregated events */
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
@@ -215,7 +215,7 @@ public class ObservableZipIterableTest {
     @Test
     public void testZipIterableIteratorThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
+        /* define a Observer to receive aggregated events */
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
@@ -242,7 +242,7 @@ public class ObservableZipIterableTest {
     @Test
     public void testZipIterableHasNextThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
+        /* define a Observer to receive aggregated events */
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 
@@ -292,7 +292,7 @@ public class ObservableZipIterableTest {
     @Test
     public void testZipIterableNextThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
+        /* define a Observer to receive aggregated events */
         Observer<String> o = TestHelper.mockObserver();
         InOrder io = inOrder(o);
 

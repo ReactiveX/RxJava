@@ -45,13 +45,13 @@ public class ObservableDematerializeTest {
         Observable<Integer> o = Observable.error(exception);
         Observable<Integer> dematerialize = o.materialize().dematerialize();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
-        dematerialize.subscribe(NbpObserver);
+        dematerialize.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onError(exception);
-        verify(NbpObserver, times(0)).onComplete();
-        verify(NbpObserver, times(0)).onNext(any(Integer.class));
+        verify(observer, times(1)).onError(exception);
+        verify(observer, times(0)).onComplete();
+        verify(observer, times(0)).onNext(any(Integer.class));
     }
 
     @Test
@@ -60,13 +60,13 @@ public class ObservableDematerializeTest {
         Observable<Integer> o = Observable.error(exception);
         Observable<Integer> dematerialize = o.materialize().dematerialize();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
-        dematerialize.subscribe(NbpObserver);
+        dematerialize.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onError(exception);
-        verify(NbpObserver, times(0)).onComplete();
-        verify(NbpObserver, times(0)).onNext(any(Integer.class));
+        verify(observer, times(1)).onError(exception);
+        verify(observer, times(0)).onComplete();
+        verify(observer, times(0)).onNext(any(Integer.class));
     }
 
     @Test
@@ -75,13 +75,13 @@ public class ObservableDematerializeTest {
         Observable<Integer> o = Observable.error(exception);
         Observable<Integer> dematerialize = o.dematerialize();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
-        dematerialize.subscribe(NbpObserver);
+        dematerialize.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onError(exception);
-        verify(NbpObserver, times(0)).onComplete();
-        verify(NbpObserver, times(0)).onNext(any(Integer.class));
+        verify(observer, times(1)).onError(exception);
+        verify(observer, times(0)).onComplete();
+        verify(observer, times(0)).onNext(any(Integer.class));
     }
 
     @Test
@@ -89,16 +89,16 @@ public class ObservableDematerializeTest {
         Observable<Integer> o = Observable.empty();
         Observable<Integer> dematerialize = o.dematerialize();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>(NbpObserver);
+        TestObserver<Integer> ts = new TestObserver<Integer>(observer);
         dematerialize.subscribe(ts);
 
         System.out.println(ts.errors());
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, times(0)).onNext(any(Integer.class));
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verify(observer, times(0)).onNext(any(Integer.class));
     }
 
     @Test

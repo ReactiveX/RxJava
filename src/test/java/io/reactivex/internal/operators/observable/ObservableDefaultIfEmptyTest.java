@@ -27,32 +27,32 @@ public class ObservableDefaultIfEmptyTest {
     @Test
     public void testDefaultIfEmpty() {
         Observable<Integer> source = Observable.just(1, 2, 3);
-        Observable<Integer> NbpObservable = source.defaultIfEmpty(10);
+        Observable<Integer> observable = source.defaultIfEmpty(10);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, never()).onNext(10);
-        verify(NbpObserver).onNext(1);
-        verify(NbpObserver).onNext(2);
-        verify(NbpObserver).onNext(3);
-        verify(NbpObserver).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onNext(10);
+        verify(observer).onNext(1);
+        verify(observer).onNext(2);
+        verify(observer).onNext(3);
+        verify(observer).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testDefaultIfEmptyWithEmpty() {
         Observable<Integer> source = Observable.empty();
-        Observable<Integer> NbpObservable = source.defaultIfEmpty(10);
+        Observable<Integer> observable = source.defaultIfEmpty(10);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver).onNext(10);
-        verify(NbpObserver).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer).onNext(10);
+        verify(observer).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test

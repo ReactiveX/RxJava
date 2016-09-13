@@ -31,12 +31,12 @@ public class ObservableSingleTest {
     public void testSingle() {
         Observable<Integer> o = Observable.just(1).single();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(1);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(1);
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -44,11 +44,11 @@ public class ObservableSingleTest {
     public void testSingleWithTooManyElements() {
         Observable<Integer> o = Observable.just(1, 2).single();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onError(
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
                 isA(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
     }
@@ -57,11 +57,11 @@ public class ObservableSingleTest {
     public void testSingleWithEmpty() {
         Observable<Integer> o = Observable.<Integer> empty().single();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onError(
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
                 isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
@@ -79,12 +79,12 @@ public class ObservableSingleTest {
                 })
                 .single();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(2);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(2);
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -101,11 +101,11 @@ public class ObservableSingleTest {
                 })
                 .single();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onError(
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
                 isA(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
     }
@@ -122,11 +122,11 @@ public class ObservableSingleTest {
                     }
                 })
                 .single();
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onError(
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
                 isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
@@ -135,12 +135,12 @@ public class ObservableSingleTest {
     public void testSingleOrDefault() {
         Observable<Integer> o = Observable.just(1).single(2);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(1);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(1);
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -148,11 +148,11 @@ public class ObservableSingleTest {
     public void testSingleOrDefaultWithTooManyElements() {
         Observable<Integer> o = Observable.just(1, 2).single(3);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onError(
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
                 isA(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
     }
@@ -162,12 +162,12 @@ public class ObservableSingleTest {
         Observable<Integer> o = Observable.<Integer> empty()
                 .single(1);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(1);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(1);
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -182,12 +182,12 @@ public class ObservableSingleTest {
                 })
                 .single(4);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(2);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(2);
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -202,11 +202,11 @@ public class ObservableSingleTest {
                 })
                 .single(6);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onError(
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
                 isA(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
     }
@@ -222,12 +222,12 @@ public class ObservableSingleTest {
                 })
                 .single(2);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        o.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(2);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(2);
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

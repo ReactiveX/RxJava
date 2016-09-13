@@ -34,10 +34,10 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         TestObservable f = new TestObservable("one", "EXCEPTION", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
-        Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
+        Observable<String> observable = w.onExceptionResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -45,15 +45,15 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, Mockito.never()).onNext("two");
-        verify(NbpObserver, Mockito.never()).onNext("three");
-        verify(NbpObserver, times(1)).onNext("twoResume");
-        verify(NbpObserver, times(1)).onNext("threeResume");
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
-        verifyNoMoreInteractions(NbpObserver);
+        verify(observer).onSubscribe((Disposable)any());
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, times(1)).onNext("twoResume");
+        verify(observer, times(1)).onNext("threeResume");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -62,10 +62,10 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         TestObservable f = new TestObservable("one", "RUNTIMEEXCEPTION", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
-        Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
+        Observable<String> observable = w.onExceptionResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -73,15 +73,15 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, Mockito.never()).onNext("two");
-        verify(NbpObserver, Mockito.never()).onNext("three");
-        verify(NbpObserver, times(1)).onNext("twoResume");
-        verify(NbpObserver, times(1)).onNext("threeResume");
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
-        verifyNoMoreInteractions(NbpObserver);
+        verify(observer).onSubscribe((Disposable)any());
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, times(1)).onNext("twoResume");
+        verify(observer, times(1)).onNext("threeResume");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -90,10 +90,10 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         TestObservable f = new TestObservable("one", "THROWABLE", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
-        Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
+        Observable<String> observable = w.onExceptionResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -101,15 +101,15 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, never()).onNext("two");
-        verify(NbpObserver, never()).onNext("three");
-        verify(NbpObserver, never()).onNext("twoResume");
-        verify(NbpObserver, never()).onNext("threeResume");
-        verify(NbpObserver, times(1)).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
-        verifyNoMoreInteractions(NbpObserver);
+        verify(observer).onSubscribe((Disposable)any());
+        verify(observer, times(1)).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onNext("twoResume");
+        verify(observer, never()).onNext("threeResume");
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -118,10 +118,10 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         TestObservable f = new TestObservable("one", "ERROR", "two", "three");
         Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
-        Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
+        Observable<String> observable = w.onExceptionResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -129,26 +129,26 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver).onSubscribe((Disposable)any());
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, never()).onNext("two");
-        verify(NbpObserver, never()).onNext("three");
-        verify(NbpObserver, never()).onNext("twoResume");
-        verify(NbpObserver, never()).onNext("threeResume");
-        verify(NbpObserver, times(1)).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
-        verifyNoMoreInteractions(NbpObserver);
+        verify(observer).onSubscribe((Disposable)any());
+        verify(observer, times(1)).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onNext("twoResume");
+        verify(observer, never()).onNext("threeResume");
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
     public void testMapResumeAsyncNext() {
         // Trigger multiple failures
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
-        // Resume NbpObservable is async
+        // Resume Observable is async
         TestObservable f = new TestObservable("twoResume", "threeResume");
         Observable<String> resume = Observable.unsafeCreate(f);
 
-        // Introduce map function that fails intermittently (Map does not prevent this when the NbpObserver is a
+        // Introduce map function that fails intermittently (Map does not prevent this when the Observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
         w = w.map(new Function<String, String>() {
             @Override
@@ -160,10 +160,10 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
             }
         });
 
-        Observable<String> NbpObservable = w.onExceptionResumeNext(resume);
+        Observable<String> observable = w.onExceptionResumeNext(resume);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
+        Observer<String> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
 
         try {
             // if the thread gets started (which it shouldn't if it's working correctly)
@@ -174,13 +174,13 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, never()).onNext("two");
-        verify(NbpObserver, never()).onNext("three");
-        verify(NbpObserver, times(1)).onNext("twoResume");
-        verify(NbpObserver, times(1)).onNext("threeResume");
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, times(1)).onNext("twoResume");
+        verify(observer, times(1)).onNext("threeResume");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
 
@@ -223,8 +223,8 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(Disposables.empty());
+        public void subscribe(final Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -242,13 +242,13 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
                             else if ("THROWABLE".equals(s))
                                 throw new Throwable("Forced Throwable");
                             System.out.println("TestObservable onNext: " + s);
-                            NbpObserver.onNext(s);
+                            observer.onNext(s);
                         }
                         System.out.println("TestObservable onCompleted");
-                        NbpObserver.onComplete();
+                        observer.onComplete();
                     } catch (Throwable e) {
                         System.out.println("TestObservable onError: " + e);
-                        NbpObserver.onError(e);
+                        observer.onError(e);
                     }
                 }
 

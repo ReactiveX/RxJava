@@ -3315,7 +3315,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Constructs an ObservableSource that creates a dependent resource object which is disposed of on unsubscription.
+     * Constructs an ObservableSource that creates a dependent resource object which is disposed of when the downstream
+     * calls dispose().
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
      * <dl>
@@ -3341,8 +3342,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Constructs an ObservableSource that creates a dependent resource object which is disposed of just before
-     * termination if you have set {@code disposeEagerly} to {@code true} and unsubscription does not occur
-     * before termination. Otherwise resource disposal will occur on unsubscription.  Eager disposal is
+     * termination if you have set {@code disposeEagerly} to {@code true} and a dispose() call does not occur
+     * before termination. Otherwise resource disposal will occur on a dispose() call.  Eager disposal is
      * particularly appropriate for a synchronous ObservableSource that reuses resources. {@code disposeAction} will
      * only be called once per subscription.
      * <p>
@@ -3361,7 +3362,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param disposer
      *            the function that will dispose of the resource
      * @param eager
-     *            if {@code true} then disposal will happen either on unsubscription or just before emission of
+     *            if {@code true} then disposal will happen either on a dispose() call or just before emission of
      *            a terminal event ({@code onComplete} or {@code onError}).
      * @return the ObservableSource whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
@@ -3418,8 +3419,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
@@ -3470,8 +3471,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
@@ -3527,8 +3528,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3579,8 +3580,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3632,8 +3633,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3687,8 +3688,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3743,8 +3744,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3803,8 +3804,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3865,8 +3866,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3930,8 +3931,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3999,8 +4000,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4071,8 +4072,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h, i) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4144,8 +4145,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
@@ -4204,8 +4205,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
@@ -4683,7 +4684,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * The unsubscription is composed through.
+     * The a dispose() call is composed through.
      * @param subscriber the subscriber to forward events and calls to in the current thread
      * @since 2.0
      */
@@ -4805,7 +4806,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
-     * ObservableSource starts a new buffer periodically, as determined by the {@code timeshift} argument. It emits
+     * ObservableSource starts a new buffer periodically, as determined by the {@code timeskip} argument. It emits
      * each buffer after a fixed timespan, specified by the {@code timespan} argument. When the source
      * ObservableSource completes or encounters an error, the resulting ObservableSource emits the current buffer and
      * propagates the notification from the source ObservableSource.
@@ -4821,7 +4822,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param timeskip
      *            the period of time after which a new buffer will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @return an Observable that emits new buffers of items emitted by the source ObservableSource periodically after
      *         a fixed timespan has elapsed
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
@@ -4833,7 +4834,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
-     * ObservableSource starts a new buffer periodically, as determined by the {@code timeshift} argument, and on the
+     * ObservableSource starts a new buffer periodically, as determined by the {@code timeskip} argument, and on the
      * specified {@code scheduler}. It emits each buffer after a fixed timespan, specified by the
      * {@code timespan} argument. When the source ObservableSource completes or encounters an error, the resulting
      * ObservableSource emits the current buffer and propagates the notification from the source ObservableSource.
@@ -4849,7 +4850,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param timeskip
      *            the period of time after which a new buffer will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @param scheduler
      *            the {@link Scheduler} to use when determining the end and start of a buffer
      * @return an Observable that emits new buffers of items emitted by the source ObservableSource periodically after
@@ -4863,7 +4864,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
-     * ObservableSource starts a new buffer periodically, as determined by the {@code timeshift} argument, and on the
+     * ObservableSource starts a new buffer periodically, as determined by the {@code timeskip} argument, and on the
      * specified {@code scheduler}. It emits each buffer after a fixed timespan, specified by the
      * {@code timespan} argument. When the source ObservableSource completes or encounters an error, the resulting
      * ObservableSource emits the current buffer and propagates the notification from the source ObservableSource.
@@ -4880,7 +4881,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param timeskip
      *            the period of time after which a new buffer will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @param scheduler
      *            the {@link Scheduler} to use when determining the end and start of a buffer
      * @param bufferSupplier
@@ -6364,7 +6365,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Calls the unsubscribe {@code Action} if the downstream unsubscribes the sequence.
+     * Calls the unsubscribe {@code Action} if the downstream disposes the sequence.
      * <p>
      * The action is shared between subscriptions and thus may be called concurrently from multiple
      * threads; the action must be thread safe.
@@ -7313,7 +7314,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single
-     * {@link Observer} during its lifetime and if this {@code Observer} unsubscribes before the
+     * {@link Observer} during its lifetime and if this {@code Observer} calls dispose() before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedObservableSource} emission.
      * <p>
@@ -7346,7 +7347,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single
-     * {@link Observer} during its lifetime and if this {@code Observer} unsubscribes before the
+     * {@link Observer} during its lifetime and if this {@code Observer} calls dispose() before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedObservableSource} emission.
      * <p>
@@ -7382,7 +7383,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single
-     * {@link Observer} during its lifetime and if this {@code Observer} unsubscribes before the
+     * {@link Observer} during its lifetime and if this {@code Observer} calls dispose() before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedObservableSource} emission.
      * <p>
@@ -7419,7 +7420,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single
-     * {@link Observer} during its lifetime and if this {@code Observer} unsubscribes before the
+     * {@link Observer} during its lifetime and if this {@code Observer} calls dispose() before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedObservableSource} emission.
      * <p>
@@ -7459,7 +7460,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Groups the items emitted by an {@code ObservableSource} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s. The emitted {@code GroupedObservableSource} allows only a single
-     * {@link Observer} during its lifetime and if this {@code Observer} unsubscribes before the
+     * {@link Observer} during its lifetime and if this {@code Observer} calls dispose() before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedObservableSource} emission.
      * <p>
@@ -8064,13 +8065,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Nulls out references to the upstream producer and downstream Observer if
-     * the sequence is terminated or downstream unsubscribes.
+     * the sequence is terminated or downstream calls dispose().
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return an Observable which out references to the upstream producer and downstream Observer if
-     * the sequence is terminated or downstream unsubscribes
+     * the sequence is terminated or downstream calls dispose()
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -11768,8 +11769,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param scheduler
-     *            the {@link Scheduler} to perform unsubscription actions on
-     * @return the source ObservableSource modified so that its unsubscriptions happen on the specified
+     *            the {@link Scheduler} to perform the call to dispose() of the upstream Disposable
+     * @return the source ObservableSource modified so that its dispose() calls happen on the specified
      *         {@link Scheduler}
      * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
      */
@@ -11864,7 +11865,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits windows of items it collects from the source ObservableSource. The resulting
-     * ObservableSource starts a new window periodically, as determined by the {@code timeshift} argument. It emits
+     * ObservableSource starts a new window periodically, as determined by the {@code timeskip} argument. It emits
      * each window after a fixed timespan, specified by the {@code timespan} argument. When the source
      * ObservableSource completes or ObservableSource completes or encounters an error, the resulting ObservableSource emits the
      * current window and propagates the notification from the source ObservableSource.
@@ -11880,7 +11881,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param timeskip
      *            the period of time after which a new window will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @return an Observable that emits new windows periodically as a fixed timespan elapses
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
@@ -11891,7 +11892,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits windows of items it collects from the source ObservableSource. The resulting
-     * ObservableSource starts a new window periodically, as determined by the {@code timeshift} argument. It emits
+     * ObservableSource starts a new window periodically, as determined by the {@code timeskip} argument. It emits
      * each window after a fixed timespan, specified by the {@code timespan} argument. When the source
      * ObservableSource completes or ObservableSource completes or encounters an error, the resulting ObservableSource emits the
      * current window and propagates the notification from the source ObservableSource.
@@ -11907,7 +11908,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param timeskip
      *            the period of time after which a new window will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @param scheduler
      *            the {@link Scheduler} to use when determining the end and start of a window
      * @return an Observable that emits new windows periodically as a fixed timespan elapses
@@ -11920,7 +11921,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits windows of items it collects from the source ObservableSource. The resulting
-     * ObservableSource starts a new window periodically, as determined by the {@code timeshift} argument. It emits
+     * ObservableSource starts a new window periodically, as determined by the {@code timeskip} argument. It emits
      * each window after a fixed timespan, specified by the {@code timespan} argument. When the source
      * ObservableSource completes or ObservableSource completes or encounters an error, the resulting ObservableSource emits the
      * current window and propagates the notification from the source ObservableSource.
@@ -11936,7 +11937,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param timeskip
      *            the period of time after which a new window will be created
      * @param unit
-     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     *            the unit of time that applies to the {@code timespan} and {@code timeskip} arguments
      * @param scheduler
      *            the {@link Scheduler} to use when determining the end and start of a window
      * @param bufferSize
@@ -12599,8 +12600,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
@@ -12642,8 +12643,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
@@ -12687,8 +12688,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or a dispose() call.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>

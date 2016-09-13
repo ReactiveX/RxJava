@@ -49,14 +49,14 @@ public class ObservableWindowWithTimeTest {
 
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                push(NbpObserver, "one", 10);
-                push(NbpObserver, "two", 90);
-                push(NbpObserver, "three", 110);
-                push(NbpObserver, "four", 190);
-                push(NbpObserver, "five", 210);
-                complete(NbpObserver, 250);
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                push(observer, "one", 10);
+                push(observer, "two", 90);
+                push(observer, "three", 110);
+                push(observer, "four", 190);
+                push(observer, "five", 210);
+                complete(observer, 250);
             }
         });
 
@@ -83,14 +83,14 @@ public class ObservableWindowWithTimeTest {
 
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                push(NbpObserver, "one", 98);
-                push(NbpObserver, "two", 99);
-                push(NbpObserver, "three", 99); // FIXME happens after the window is open
-                push(NbpObserver, "four", 101);
-                push(NbpObserver, "five", 102);
-                complete(NbpObserver, 150);
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                push(observer, "one", 98);
+                push(observer, "two", 99);
+                push(observer, "three", 99); // FIXME happens after the window is open
+                push(observer, "four", 101);
+                push(observer, "five", 102);
+                complete(observer, 150);
             }
         });
 
@@ -114,20 +114,20 @@ public class ObservableWindowWithTimeTest {
         return list;
     }
 
-    private <T> void push(final Observer<T> NbpObserver, final T value, int delay) {
+    private <T> void push(final Observer<T> observer, final T value, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onNext(value);
+                observer.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private void complete(final Observer<?> NbpObserver, int delay) {
+    private void complete(final Observer<?> observer, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onComplete();
+                observer.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
