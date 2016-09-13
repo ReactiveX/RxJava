@@ -20,6 +20,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Cancellable;
 
 public class CompletableCreateTest {
 
@@ -46,6 +47,34 @@ public class CompletableCreateTest {
         .assertResult();
 
         assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void basicWithCancellable() {
+        final Disposable d1 = Disposables.empty();
+        final Disposable d2 = Disposables.empty();
+
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                e.setDisposable(d1);
+                e.setCancellable(new Cancellable() {
+                    @Override
+                    public void cancel() throws Exception {
+                        d2.dispose();
+                    }
+                });
+
+                e.onComplete();
+                e.onError(new TestException());
+                e.onComplete();
+            }
+        })
+        .test()
+        .assertResult();
+
+        assertTrue(d1.isDisposed());
+        assertTrue(d2.isDisposed());
     }
 
     @Test
