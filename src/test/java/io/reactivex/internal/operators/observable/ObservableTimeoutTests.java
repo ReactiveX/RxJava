@@ -130,7 +130,7 @@ public class ObservableTimeoutTests {
     @Test
     public void shouldSwitchToOtherIfOnNextNotWithinTimeout() {
         Observable<String> other = Observable.just("a", "b", "c");
-        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
@@ -153,7 +153,7 @@ public class ObservableTimeoutTests {
     @Test
     public void shouldSwitchToOtherIfOnErrorNotWithinTimeout() {
         Observable<String> other = Observable.just("a", "b", "c");
-        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
@@ -176,7 +176,7 @@ public class ObservableTimeoutTests {
     @Test
     public void shouldSwitchToOtherIfOnCompletedNotWithinTimeout() {
         Observable<String> other = Observable.just("a", "b", "c");
-        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);
@@ -199,7 +199,7 @@ public class ObservableTimeoutTests {
     @Test
     public void shouldSwitchToOtherAndCanBeUnsubscribedIfOnNextNotWithinTimeout() {
         PublishSubject<String> other = PublishSubject.create();
-        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Observer<String> NbpObserver = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(NbpObserver);

@@ -48,19 +48,12 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> call() {
-                return timeout;
-            }
-        };
-
         Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(timeout, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
         source.onNext(2);
@@ -88,19 +81,12 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> call() {
-                return timeout;
-            }
-        };
-
         Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(timeout, timeoutFunc, other).subscribe(o);
 
         timeout.onNext(1);
 
@@ -133,7 +119,7 @@ public class FlowableTimeoutWithSelectorTest {
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(Flowable.defer(firstTimeoutFunc), timeoutFunc, other).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -153,19 +139,12 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> call() {
-                return timeout;
-            }
-        };
-
         Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(timeout, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
 
@@ -187,18 +166,11 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> call() {
-                return Flowable.<Integer> error(new TestException());
-            }
-        };
-
         Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(Flowable.<Integer> error(new TestException()), timeoutFunc, other).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -218,19 +190,12 @@ public class FlowableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> call() {
-                return timeout;
-            }
-        };
-
         Flowable<Integer> other = Flowable.fromIterable(Arrays.asList(100));
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(timeout, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
 
@@ -245,13 +210,6 @@ public class FlowableTimeoutWithSelectorTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> call() {
-                return timeout;
-            }
-        };
-
         Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t1) {
@@ -260,7 +218,7 @@ public class FlowableTimeoutWithSelectorTest {
         };
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        source.timeout(firstTimeoutFunc, timeoutFunc).subscribe(o);
+        source.timeout(timeout, timeoutFunc).subscribe(o);
 
         timeout.onNext(1);
 
@@ -274,13 +232,6 @@ public class FlowableTimeoutWithSelectorTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
-        Callable<Flowable<Integer>> firstTimeoutFunc = new Callable<Flowable<Integer>>() {
-            @Override
-            public Flowable<Integer> call() {
-                return PublishProcessor.create();
-            }
-        };
-
         Function<Integer, Flowable<Integer>> timeoutFunc = new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t1) {
@@ -289,7 +240,7 @@ public class FlowableTimeoutWithSelectorTest {
         };
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
-        source.timeout(firstTimeoutFunc, timeoutFunc).subscribe(o);
+        source.timeout(PublishProcessor.create(), timeoutFunc).subscribe(o);
         source.onNext(1);
 
         timeout.onNext(1);

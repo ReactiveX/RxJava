@@ -2357,22 +2357,22 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void timeoutUnitNull() {
-        just1.timeout(1, null, just1, Schedulers.single());
+        just1.timeout(1, null, Schedulers.single(), just1);
     }
 
     @Test(expected = NullPointerException.class)
     public void timeouOtherNull() {
-        just1.timeout(1, TimeUnit.SECONDS, null, Schedulers.single());
+        just1.timeout(1, TimeUnit.SECONDS, Schedulers.single(), null);
     }
 
     @Test(expected = NullPointerException.class)
     public void timeouSchedulerNull() {
-        just1.timeout(1, TimeUnit.SECONDS, just1, null);
+        just1.timeout(1, TimeUnit.SECONDS, null, just1);
     }
 
     @Test(expected = NullPointerException.class)
     public void timeoutFirstNull() {
-        just1.timeout((Callable<Observable<Integer>>)null, new Function<Integer, Observable<Integer>>() {
+        just1.timeout((Observable<Integer>)null, new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer v) {
                 return just1;
@@ -2381,38 +2381,13 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void timeoutFirstReturnsNull() {
-        just1.timeout(new Callable<Observable<Object>>() {
-            @Override
-            public Observable<Object> call() {
-                return null;
-            }
-        }, new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return just1;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void timeoutFirstItemNull() {
-        just1.timeout(new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return just1;
-            }
-        }, null);
+        just1.timeout(just1, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void timeoutFirstItemReturnsNull() {
-        Observable.just(1, 1).timeout(new Callable<Observable<Object>>() {
-            @Override
-            public Observable<Object> call() {
-                return Observable.never();
-            }
-        }, new Function<Integer, Observable<Object>>() {
+        Observable.just(1, 1).timeout(Observable.never(), new Function<Integer, Observable<Object>>() {
             @Override
             public Observable<Object> apply(Integer v) {
                 return null;

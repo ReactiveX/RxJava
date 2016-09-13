@@ -47,19 +47,12 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return timeout;
-            }
-        };
-
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(timeout, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
         source.onNext(2);
@@ -87,19 +80,12 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return timeout;
-            }
-        };
-
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(timeout, timeoutFunc, other).subscribe(o);
 
         timeout.onNext(1);
 
@@ -132,7 +118,7 @@ public class ObservableTimeoutWithSelectorTest {
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(Observable.defer(firstTimeoutFunc), timeoutFunc, other).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -152,19 +138,12 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return timeout;
-            }
-        };
-
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(timeout, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
 
@@ -186,18 +165,11 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return Observable.<Integer> error(new TestException());
-            }
-        };
-
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(Observable.<Integer> error(new TestException()), timeoutFunc, other).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -217,19 +189,12 @@ public class ObservableTimeoutWithSelectorTest {
             }
         };
 
-        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return timeout;
-            }
-        };
-
         Observable<Integer> other = Observable.fromIterable(Arrays.asList(100));
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
-        source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
+        source.timeout(timeout, timeoutFunc, other).subscribe(o);
 
         source.onNext(1);
 
@@ -244,13 +209,6 @@ public class ObservableTimeoutWithSelectorTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return timeout;
-            }
-        };
-
         Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer t1) {
@@ -259,7 +217,7 @@ public class ObservableTimeoutWithSelectorTest {
         };
 
         Observer<Object> o = TestHelper.mockObserver();
-        source.timeout(firstTimeoutFunc, timeoutFunc).subscribe(o);
+        source.timeout(timeout, timeoutFunc).subscribe(o);
 
         timeout.onNext(1);
 
@@ -273,13 +231,6 @@ public class ObservableTimeoutWithSelectorTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final PublishSubject<Integer> timeout = PublishSubject.create();
 
-        Callable<Observable<Integer>> firstTimeoutFunc = new Callable<Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call() {
-                return PublishSubject.create();
-            }
-        };
-
         Function<Integer, Observable<Integer>> timeoutFunc = new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer t1) {
@@ -288,7 +239,7 @@ public class ObservableTimeoutWithSelectorTest {
         };
 
         Observer<Object> o = TestHelper.mockObserver();
-        source.timeout(firstTimeoutFunc, timeoutFunc).subscribe(o);
+        source.timeout(PublishSubject.create(), timeoutFunc).subscribe(o);
         source.onNext(1);
 
         timeout.onNext(1);
