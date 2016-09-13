@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.single;
+package io.reactivex.maybe;
 
 import static org.junit.Assert.assertTrue;
 
@@ -22,20 +22,19 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Cancellable;
 
-public class SingleCreateTest {
-
+public class MaybeCreateTest {
     @Test(expected = NullPointerException.class)
     public void nullArgument() {
-        Single.create(null);
+        Maybe.create(null);
     }
 
     @Test
     public void basic() {
         final Disposable d = Disposables.empty();
 
-        Single.<Integer>create(new SingleOnSubscribe<Integer>() {
+        Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
             @Override
-            public void subscribe(SingleEmitter<Integer> e) throws Exception {
+            public void subscribe(MaybeEmitter<Integer> e) throws Exception {
                 e.setDisposable(d);
 
                 e.onSuccess(1);
@@ -43,9 +42,7 @@ public class SingleCreateTest {
                 e.onSuccess(2);
                 e.onError(new TestException());
             }
-        })
-        .test()
-        .assertResult(1);
+        }).test().assertResult(1);
 
         assertTrue(d.isDisposed());
     }
@@ -55,9 +52,9 @@ public class SingleCreateTest {
         final Disposable d1 = Disposables.empty();
         final Disposable d2 = Disposables.empty();
 
-        Single.<Integer>create(new SingleOnSubscribe<Integer>() {
+        Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
             @Override
-            public void subscribe(SingleEmitter<Integer> e) throws Exception {
+            public void subscribe(MaybeEmitter<Integer> e) throws Exception {
                 e.setDisposable(d1);
                 e.setCancellable(new Cancellable() {
                     @Override
@@ -71,9 +68,7 @@ public class SingleCreateTest {
                 e.onSuccess(2);
                 e.onError(new TestException());
             }
-        })
-        .test()
-        .assertResult(1);
+        }).test().assertResult(1);
 
         assertTrue(d1.isDisposed());
         assertTrue(d2.isDisposed());
@@ -83,24 +78,41 @@ public class SingleCreateTest {
     public void basicWithError() {
         final Disposable d = Disposables.empty();
 
-        Single.<Integer>create(new SingleOnSubscribe<Integer>() {
+        Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
             @Override
-            public void subscribe(SingleEmitter<Integer> e) throws Exception {
+            public void subscribe(MaybeEmitter<Integer> e) throws Exception {
                 e.setDisposable(d);
 
                 e.onError(new TestException());
                 e.onSuccess(2);
                 e.onError(new TestException());
             }
-        })
-        .test()
-        .assertFailure(TestException.class);
+        }).test().assertFailure(TestException.class);
+
+        assertTrue(d.isDisposed());
+    }
+
+
+    @Test
+    public void basicWithCompletion() {
+        final Disposable d = Disposables.empty();
+
+        Maybe.<Integer>create(new MaybeOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(MaybeEmitter<Integer> e) throws Exception {
+                e.setDisposable(d);
+
+                e.onComplete();
+                e.onSuccess(2);
+                e.onError(new TestException());
+            }
+        }).test().assertComplete();
 
         assertTrue(d.isDisposed());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void unsafeCreate() {
-        Single.unsafeCreate(Single.just(1));
+        Maybe.unsafeCreate(Maybe.just(1));
     }
 }

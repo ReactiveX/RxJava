@@ -21,6 +21,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Cancellable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 
 public class FlowableCreateTest {
@@ -61,6 +62,39 @@ public class FlowableCreateTest {
         .assertResult(1, 2, 3);
 
         assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void basicWithCancellable() {
+        final Disposable d1 = Disposables.empty();
+        final Disposable d2 = Disposables.empty();
+
+        Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                e.setDisposable(d1);
+                e.setCancellable(new Cancellable() {
+                    @Override
+                    public void cancel() throws Exception {
+                        d2.dispose();
+                    }
+                });
+
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onComplete();
+                e.onError(new TestException());
+                e.onNext(4);
+                e.onError(new TestException());
+                e.onComplete();
+            }
+        }, FlowableEmitter.BackpressureMode.BUFFER)
+        .test()
+        .assertResult(1, 2, 3);
+
+        assertTrue(d1.isDisposed());
+        assertTrue(d2.isDisposed());
     }
 
     @Test
