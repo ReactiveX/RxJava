@@ -35,13 +35,13 @@ import io.reactivex.subjects.PublishSubject;
 
 public class ObservableBufferTest {
 
-    private Observer<List<String>> NbpObserver;
+    private Observer<List<String>> observer;
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
 
     @Before
     public void before() {
-        NbpObserver = TestHelper.mockObserver();
+        observer = TestHelper.mockObserver();
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
     }
@@ -51,37 +51,37 @@ public class ObservableBufferTest {
         Observable<String> source = Observable.empty();
 
         Observable<List<String>> buffered = source.buffer(3, 3);
-        buffered.subscribe(NbpObserver);
+        buffered.subscribe(observer);
 
-        Mockito.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
-        Mockito.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
-        Mockito.verify(NbpObserver, Mockito.times(1)).onComplete();
+        Mockito.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        Mockito.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
+        Mockito.verify(observer, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testSkipAndCountOverlappingBuffers() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                NbpObserver.onNext("one");
-                NbpObserver.onNext("two");
-                NbpObserver.onNext("three");
-                NbpObserver.onNext("four");
-                NbpObserver.onNext("five");
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onNext("one");
+                observer.onNext("two");
+                observer.onNext("three");
+                observer.onNext("four");
+                observer.onNext("five");
             }
         });
 
         Observable<List<String>> buffered = source.buffer(3, 1);
-        buffered.subscribe(NbpObserver);
+        buffered.subscribe(observer);
 
-        InOrder inOrder = Mockito.inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two", "three"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("two", "three", "four"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("three", "four", "five"));
-        inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
-        inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(NbpObserver, Mockito.never()).onComplete();
+        InOrder inOrder = Mockito.inOrder(observer);
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three", "four"));
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four", "five"));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(observer, Mockito.never()).onComplete();
     }
 
     @Test
@@ -89,14 +89,14 @@ public class ObservableBufferTest {
         Observable<String> source = Observable.just("one", "two", "three", "four", "five");
 
         Observable<List<String>> buffered = source.buffer(3, 3);
-        buffered.subscribe(NbpObserver);
+        buffered.subscribe(observer);
 
-        InOrder inOrder = Mockito.inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two", "three"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
-        inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
+        InOrder inOrder = Mockito.inOrder(observer);
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
 
     @Test
@@ -104,104 +104,104 @@ public class ObservableBufferTest {
         Observable<String> source = Observable.just("one", "two", "three", "four", "five");
 
         Observable<List<String>> buffered = source.buffer(2, 3);
-        buffered.subscribe(NbpObserver);
+        buffered.subscribe(observer);
 
-        InOrder inOrder = Mockito.inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
-        inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
+        InOrder inOrder = Mockito.inOrder(observer);
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testTimedAndCount() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                push(NbpObserver, "one", 10);
-                push(NbpObserver, "two", 90);
-                push(NbpObserver, "three", 110);
-                push(NbpObserver, "four", 190);
-                push(NbpObserver, "five", 210);
-                complete(NbpObserver, 250);
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                push(observer, "one", 10);
+                push(observer, "two", 90);
+                push(observer, "three", 110);
+                push(observer, "four", 190);
+                push(observer, "five", 210);
+                complete(observer, 250);
             }
         });
 
         Observable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler);
-        buffered.subscribe(NbpObserver);
+        buffered.subscribe(observer);
 
-        InOrder inOrder = Mockito.inOrder(NbpObserver);
+        InOrder inOrder = Mockito.inOrder(observer);
         scheduler.advanceTimeTo(100, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two"));
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
 
         scheduler.advanceTimeTo(200, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("three", "four"));
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four"));
 
         scheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
-        inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testTimed() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                push(NbpObserver, "one", 97);
-                push(NbpObserver, "two", 98);
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                push(observer, "one", 97);
+                push(observer, "two", 98);
                 /**
                  * Changed from 100. Because scheduling the cut to 100ms happens before this
-                 * NbpObservable even runs due how lift works, pushing at 100ms would execute after the
+                 * Observable even runs due how lift works, pushing at 100ms would execute after the
                  * buffer cut.
                  */
-                push(NbpObserver, "three", 99);
-                push(NbpObserver, "four", 101);
-                push(NbpObserver, "five", 102);
-                complete(NbpObserver, 150);
+                push(observer, "three", 99);
+                push(observer, "four", 101);
+                push(observer, "five", 102);
+                complete(observer, 150);
             }
         });
 
         Observable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
-        buffered.subscribe(NbpObserver);
+        buffered.subscribe(observer);
 
-        InOrder inOrder = Mockito.inOrder(NbpObserver);
+        InOrder inOrder = Mockito.inOrder(observer);
         scheduler.advanceTimeTo(101, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two", "three"));
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
 
         scheduler.advanceTimeTo(201, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
-        inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testObservableBasedOpenerAndCloser() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                push(NbpObserver, "one", 10);
-                push(NbpObserver, "two", 60);
-                push(NbpObserver, "three", 110);
-                push(NbpObserver, "four", 160);
-                push(NbpObserver, "five", 210);
-                complete(NbpObserver, 500);
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                push(observer, "one", 10);
+                push(observer, "two", 60);
+                push(observer, "three", 110);
+                push(observer, "four", 160);
+                push(observer, "five", 210);
+                complete(observer, 500);
             }
         });
 
         Observable<Object> openings = Observable.unsafeCreate(new ObservableSource<Object>() {
             @Override
-            public void subscribe(Observer<Object> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                push(NbpObserver, new Object(), 50);
-                push(NbpObserver, new Object(), 200);
-                complete(NbpObserver, 250);
+            public void subscribe(Observer<Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                push(observer, new Object(), 50);
+                push(observer, new Object(), 200);
+                complete(observer, 250);
             }
         });
 
@@ -210,39 +210,39 @@ public class ObservableBufferTest {
             public Observable<Object> apply(Object opening) {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
-                    public void subscribe(Observer<? super Object> NbpObserver) {
-                        NbpObserver.onSubscribe(Disposables.empty());
-                        push(NbpObserver, new Object(), 100);
-                        complete(NbpObserver, 101);
+                    public void subscribe(Observer<? super Object> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        push(observer, new Object(), 100);
+                        complete(observer, 101);
                     }
                 });
             }
         };
 
         Observable<List<String>> buffered = source.buffer(openings, closer);
-        buffered.subscribe(NbpObserver);
+        buffered.subscribe(observer);
 
-        InOrder inOrder = Mockito.inOrder(NbpObserver);
+        InOrder inOrder = Mockito.inOrder(observer);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("two", "three"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
-        inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three"));
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testObservableBasedCloser() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                push(NbpObserver, "one", 10);
-                push(NbpObserver, "two", 60);
-                push(NbpObserver, "three", 110);
-                push(NbpObserver, "four", 160);
-                push(NbpObserver, "five", 210);
-                complete(NbpObserver, 250);
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                push(observer, "one", 10);
+                push(observer, "two", 60);
+                push(observer, "three", 110);
+                push(observer, "four", 160);
+                push(observer, "five", 210);
+                complete(observer, 250);
             }
         });
 
@@ -251,28 +251,28 @@ public class ObservableBufferTest {
             public Observable<Object> call() {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
-                    public void subscribe(Observer<? super Object> NbpObserver) {
-                        NbpObserver.onSubscribe(Disposables.empty());
-                        push(NbpObserver, new Object(), 100);
-                        push(NbpObserver, new Object(), 200);
-                        push(NbpObserver, new Object(), 300);
-                        complete(NbpObserver, 301);
+                    public void subscribe(Observer<? super Object> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        push(observer, new Object(), 100);
+                        push(observer, new Object(), 200);
+                        push(observer, new Object(), 300);
+                        complete(observer, 301);
                     }
                 });
             }
         };
 
         Observable<List<String>> buffered = source.buffer(closer);
-        buffered.subscribe(NbpObserver);
+        buffered.subscribe(observer);
 
-        InOrder inOrder = Mockito.inOrder(NbpObserver);
+        InOrder inOrder = Mockito.inOrder(observer);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("one", "two"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("three", "four"));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(NbpObserver, Mockito.never()).onNext(Mockito.anyListOf(String.class));
-        inOrder.verify(NbpObserver, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(NbpObserver, Mockito.times(1)).onComplete();
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four"));
+        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
 
     @Test
@@ -317,20 +317,20 @@ public class ObservableBufferTest {
         return list;
     }
 
-    private <T> void push(final Observer<T> NbpObserver, final T value, int delay) {
+    private <T> void push(final Observer<T> observer, final T value, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onNext(value);
+                observer.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private void complete(final Observer<?> NbpObserver, int delay) {
+    private void complete(final Observer<?> observer, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onComplete();
+                observer.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }

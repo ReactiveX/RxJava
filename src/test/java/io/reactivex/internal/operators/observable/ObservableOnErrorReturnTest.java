@@ -37,7 +37,7 @@ public class ObservableOnErrorReturnTest {
         Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Observable<String> NbpObservable = w.onErrorReturn(new Function<Throwable, String>() {
+        Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
 
             @Override
             public String apply(Throwable e) {
@@ -48,8 +48,8 @@ public class ObservableOnErrorReturnTest {
         });
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<String> NbpObserver = mock(DefaultObserver.class);
-        NbpObservable.subscribe(NbpObserver);
+        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -57,10 +57,10 @@ public class ObservableOnErrorReturnTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, times(1)).onNext("failure");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("failure");
         assertNotNull(capturedException.get());
     }
 
@@ -73,7 +73,7 @@ public class ObservableOnErrorReturnTest {
         Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Observable<String> NbpObservable = w.onErrorReturn(new Function<Throwable, String>() {
+        Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
 
             @Override
             public String apply(Throwable e) {
@@ -84,8 +84,8 @@ public class ObservableOnErrorReturnTest {
         });
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<String> NbpObserver = mock(DefaultObserver.class);
-        NbpObservable.subscribe(NbpObserver);
+        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -94,11 +94,11 @@ public class ObservableOnErrorReturnTest {
         }
 
         // we should get the "one" value before the error
-        verify(NbpObserver, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("one");
 
-        // we should have received an onError call on the NbpObserver since the resume function threw an exception
-        verify(NbpObserver, times(1)).onError(any(Throwable.class));
-        verify(NbpObserver, times(0)).onComplete();
+        // we should have received an onError call on the Observer since the resume function threw an exception
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, times(0)).onComplete();
         assertNotNull(capturedException.get());
     }
 
@@ -107,7 +107,7 @@ public class ObservableOnErrorReturnTest {
         // Trigger multiple failures
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
 
-        // Introduce map function that fails intermittently (Map does not prevent this when the NbpObserver is a
+        // Introduce map function that fails intermittently (Map does not prevent this when the Observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
         w = w.map(new Function<String, String>() {
             @Override
@@ -119,7 +119,7 @@ public class ObservableOnErrorReturnTest {
             }
         });
 
-        Observable<String> NbpObservable = w.onErrorReturn(new Function<Throwable, String>() {
+        Observable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
 
             @Override
             public String apply(Throwable t1) {
@@ -129,17 +129,17 @@ public class ObservableOnErrorReturnTest {
         });
 
         @SuppressWarnings("unchecked")
-        DefaultObserver<String> NbpObserver = mock(DefaultObserver.class);
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
-        NbpObservable.subscribe(ts);
+        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        TestObserver<String> ts = new TestObserver<String>(observer);
+        observable.subscribe(ts);
         ts.awaitTerminalEvent();
 
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, Mockito.never()).onNext("two");
-        verify(NbpObserver, Mockito.never()).onNext("three");
-        verify(NbpObserver, times(1)).onNext("resume");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, times(1)).onNext("resume");
     }
 
     @Test
@@ -187,8 +187,8 @@ public class ObservableOnErrorReturnTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> NbpSubscriber) {
-            NbpSubscriber.onSubscribe(Disposables.empty());
+        public void subscribe(final Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -198,11 +198,11 @@ public class ObservableOnErrorReturnTest {
                         System.out.println("running TestObservable thread");
                         for (String s : values) {
                             System.out.println("TestObservable onNext: " + s);
-                            NbpSubscriber.onNext(s);
+                            observer.onNext(s);
                         }
                         throw new RuntimeException("Forced Failure");
                     } catch (Throwable e) {
-                        NbpSubscriber.onError(e);
+                        observer.onError(e);
                     }
                 }
 

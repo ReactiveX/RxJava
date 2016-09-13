@@ -29,21 +29,21 @@ public class ObservableRangeTest {
 
     @Test
     public void testRangeStartAt2Count3() {
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
-        Observable.range(2, 3).subscribe(NbpObserver);
+        Observable.range(2, 3).subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext(2);
-        verify(NbpObserver, times(1)).onNext(3);
-        verify(NbpObserver, times(1)).onNext(4);
-        verify(NbpObserver, never()).onNext(5);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext(2);
+        verify(observer, times(1)).onNext(3);
+        verify(observer, times(1)).onNext(4);
+        verify(observer, never()).onNext(5);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testRangeUnsubscribe() {
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
         final AtomicInteger count = new AtomicInteger();
 
@@ -53,14 +53,14 @@ public class ObservableRangeTest {
                 count.incrementAndGet();
             }
         })
-        .take(3).subscribe(NbpObserver);
+        .take(3).subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext(1);
-        verify(NbpObserver, times(1)).onNext(2);
-        verify(NbpObserver, times(1)).onNext(3);
-        verify(NbpObserver, never()).onNext(4);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, times(1)).onNext(3);
+        verify(observer, never()).onNext(4);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
         assertEquals(3, count.get());
     }
 

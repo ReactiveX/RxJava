@@ -153,7 +153,7 @@ public class ObservableTakeUntilTest {
 
     private static class TestObservable implements ObservableSource<String> {
 
-        Observer<? super String> NbpObserver;
+        Observer<? super String> observer;
         Disposable s;
 
         public TestObservable(Disposable s) {
@@ -162,23 +162,23 @@ public class ObservableTakeUntilTest {
 
         /* used to simulate subscription */
         public void sendOnCompleted() {
-            NbpObserver.onComplete();
+            observer.onComplete();
         }
 
         /* used to simulate subscription */
         public void sendOnNext(String value) {
-            NbpObserver.onNext(value);
+            observer.onNext(value);
         }
 
         /* used to simulate subscription */
         public void sendOnError(Throwable e) {
-            NbpObserver.onError(e);
+            observer.onError(e);
         }
 
         @Override
-        public void subscribe(Observer<? super String> NbpObserver) {
-            this.NbpObserver = NbpObserver;
-            NbpObserver.onSubscribe(s);
+        public void subscribe(Observer<? super String> observer) {
+            this.observer = observer;
+            observer.onSubscribe(s);
         }
     }
 

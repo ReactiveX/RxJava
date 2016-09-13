@@ -88,7 +88,7 @@ public class BlockingObservableNextTest {
         } catch (NoSuchElementException e) {
         }
 
-        // If the NbpObservable is completed, hasNext always returns false and next always throw a NoSuchElementException.
+        // If the Observable is completed, hasNext always returns false and next always throw a NoSuchElementException.
         assertFalse(it.hasNext());
         try {
             it.next();
@@ -127,7 +127,7 @@ public class BlockingObservableNextTest {
         } catch (NoSuchElementException e) {
         }
 
-        // If the NbpObservable is completed, hasNext always returns false and next always throw a NoSuchElementException.
+        // If the Observable is completed, hasNext always returns false and next always throw a NoSuchElementException.
         assertFalse(it.hasNext());
         try {
             it.next();
@@ -170,7 +170,7 @@ public class BlockingObservableNextTest {
     }
 
     private void assertErrorAfterObservableFail(Iterator<String> it) {
-        // After the NbpObservable fails, hasNext and next always throw the exception.
+        // After the Observable fails, hasNext and next always throw the exception.
         try {
             it.hasNext();
             fail("hasNext should throw a TestException");
@@ -221,7 +221,7 @@ public class BlockingObservableNextTest {
     }
 
     /**
-     * Confirm that no buffering or blocking of the NbpObservable onNext calls occurs and it just grabs the next emitted value.
+     * Confirm that no buffering or blocking of the Observable onNext calls occurs and it just grabs the next emitted value.
      * <p/>
      * This results in output such as => a: 1 b: 2 c: 89
      *

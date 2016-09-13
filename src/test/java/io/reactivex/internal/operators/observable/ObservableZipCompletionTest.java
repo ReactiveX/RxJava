@@ -23,8 +23,8 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.subjects.PublishSubject;
 
 /**
- * Systematically tests that when zipping an infinite and a finite NbpObservable,
- * the resulting NbpObservable is finite.
+ * Systematically tests that when zipping an infinite and a finite Observable,
+ * the resulting Observable is finite.
  *
  */
 public class ObservableZipCompletionTest {
@@ -34,7 +34,7 @@ public class ObservableZipCompletionTest {
     PublishSubject<String> s2;
     Observable<String> zipped;
 
-    Observer<String> NbpObserver;
+    Observer<String> observer;
     InOrder inOrder;
 
     @Before
@@ -50,10 +50,10 @@ public class ObservableZipCompletionTest {
         s2 = PublishSubject.create();
         zipped = Observable.zip(s1, s2, concat2Strings);
 
-        NbpObserver = TestHelper.mockObserver();
-        inOrder = inOrder(NbpObserver);
+        observer = TestHelper.mockObserver();
+        inOrder = inOrder(observer);
 
-        zipped.subscribe(NbpObserver);
+        zipped.subscribe(observer);
     }
 
     @Test
@@ -62,10 +62,10 @@ public class ObservableZipCompletionTest {
         s1.onNext("b");
         s1.onComplete();
         s2.onNext("1");
-        inOrder.verify(NbpObserver, times(1)).onNext("a-1");
+        inOrder.verify(observer, times(1)).onNext("a-1");
         s2.onNext("2");
-        inOrder.verify(NbpObserver, times(1)).onNext("b-2");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onNext("b-2");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -74,11 +74,11 @@ public class ObservableZipCompletionTest {
         s2.onNext("1");
         s2.onNext("2");
         s1.onNext("a");
-        inOrder.verify(NbpObserver, times(1)).onNext("a-1");
+        inOrder.verify(observer, times(1)).onNext("a-1");
         s1.onNext("b");
-        inOrder.verify(NbpObserver, times(1)).onNext("b-2");
+        inOrder.verify(observer, times(1)).onNext("b-2");
         s1.onComplete();
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -88,10 +88,10 @@ public class ObservableZipCompletionTest {
         s2.onNext("2");
         s2.onComplete();
         s1.onNext("a");
-        inOrder.verify(NbpObserver, times(1)).onNext("a-1");
+        inOrder.verify(observer, times(1)).onNext("a-1");
         s1.onNext("b");
-        inOrder.verify(NbpObserver, times(1)).onNext("b-2");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onNext("b-2");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -100,11 +100,11 @@ public class ObservableZipCompletionTest {
         s1.onNext("a");
         s1.onNext("b");
         s2.onNext("1");
-        inOrder.verify(NbpObserver, times(1)).onNext("a-1");
+        inOrder.verify(observer, times(1)).onNext("a-1");
         s2.onNext("2");
-        inOrder.verify(NbpObserver, times(1)).onNext("b-2");
+        inOrder.verify(observer, times(1)).onNext("b-2");
         s2.onComplete();
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

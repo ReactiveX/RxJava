@@ -29,7 +29,7 @@ import io.reactivex.subjects.PublishSubject;
 public class ObservableSampleTest {
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
-    private Observer<Long> NbpObserver;
+    private Observer<Long> observer;
     private Observer<Object> observer2;
 
     @Before
@@ -37,7 +37,7 @@ public class ObservableSampleTest {
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
-        NbpObserver = TestHelper.mockObserver();
+        observer = TestHelper.mockObserver();
         observer2 = TestHelper.mockObserver();
     }
 
@@ -69,38 +69,38 @@ public class ObservableSampleTest {
         });
 
         Observable<Long> sampled = source.sample(400L, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(NbpObserver);
+        sampled.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
 
         scheduler.advanceTimeTo(800L, TimeUnit.MILLISECONDS);
-        verify(NbpObserver, never()).onNext(any(Long.class));
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onNext(any(Long.class));
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(1200L, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, times(1)).onNext(1L);
-        verify(NbpObserver, never()).onNext(2L);
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onNext(1L);
+        verify(observer, never()).onNext(2L);
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(1600L, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, never()).onNext(1L);
-        verify(NbpObserver, never()).onNext(2L);
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onNext(1L);
+        verify(observer, never()).onNext(2L);
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(2000L, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, never()).onNext(1L);
-        inOrder.verify(NbpObserver, times(1)).onNext(2L);
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onNext(1L);
+        inOrder.verify(observer, times(1)).onNext(2L);
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(3000L, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, never()).onNext(1L);
-        inOrder.verify(NbpObserver, never()).onNext(2L);
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onNext(1L);
+        inOrder.verify(observer, never()).onNext(2L);
+        verify(observer, times(1)).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class ObservableSampleTest {
         inOrder.verify(observer2, never()).onNext(3);
         inOrder.verify(observer2, times(1)).onNext(4);
         inOrder.verify(observer2, times(1)).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -156,7 +156,7 @@ public class ObservableSampleTest {
         inOrder.verify(observer2, never()).onNext(3);
         inOrder.verify(observer2, times(1)).onNext(4);
         inOrder.verify(observer2, times(1)).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class ObservableSampleTest {
         inOrder.verify(observer2, times(1)).onNext(2);
         inOrder.verify(observer2, times(1)).onComplete();
         inOrder.verify(observer2, never()).onNext(any());
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -205,7 +205,7 @@ public class ObservableSampleTest {
         inOrder.verify(observer2, never()).onNext(3);
         inOrder.verify(observer2, times(1)).onComplete();
         inOrder.verify(observer2, never()).onNext(any());
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -222,7 +222,7 @@ public class ObservableSampleTest {
         InOrder inOrder = inOrder(observer2);
         inOrder.verify(observer2, times(1)).onComplete();
         verify(observer2, never()).onNext(any());
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -240,7 +240,7 @@ public class ObservableSampleTest {
         InOrder inOrder = inOrder(observer2);
         inOrder.verify(observer2, times(1)).onError(any(Throwable.class));
         verify(observer2, never()).onNext(any());
-        verify(NbpObserver, never()).onComplete();
+        verify(observer, never()).onComplete();
     }
 
     @Test
@@ -258,7 +258,7 @@ public class ObservableSampleTest {
         InOrder inOrder = inOrder(observer2);
         inOrder.verify(observer2, times(1)).onNext(1);
         inOrder.verify(observer2, times(1)).onError(any(RuntimeException.class));
-        verify(NbpObserver, never()).onComplete();
+        verify(observer, never()).onComplete();
     }
 
     @Test
@@ -267,8 +267,8 @@ public class ObservableSampleTest {
         Observable<Integer> o = Observable.unsafeCreate(
                 new ObservableSource<Integer>() {
                     @Override
-                    public void subscribe(Observer<? super Integer> NbpSubscriber) {
-                        NbpSubscriber.onSubscribe(s);
+                    public void subscribe(Observer<? super Integer> observer) {
+                        observer.onSubscribe(s);
                     }
                 }
         );

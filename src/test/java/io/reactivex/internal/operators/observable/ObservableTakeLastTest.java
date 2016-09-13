@@ -34,11 +34,11 @@ public class ObservableTakeLastTest {
         Observable<String> w = Observable.empty();
         Observable<String> take = w.takeLast(2);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        take.subscribe(NbpObserver);
-        verify(NbpObserver, never()).onNext(any(String.class));
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<String> observer = TestHelper.mockObserver();
+        take.subscribe(observer);
+        verify(observer, never()).onNext(any(String.class));
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
@@ -46,14 +46,14 @@ public class ObservableTakeLastTest {
         Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> take = w.takeLast(2);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        InOrder inOrder = inOrder(NbpObserver);
-        take.subscribe(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext("two");
-        inOrder.verify(NbpObserver, times(1)).onNext("three");
-        verify(NbpObserver, never()).onNext("one");
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<String> observer = TestHelper.mockObserver();
+        InOrder inOrder = inOrder(observer);
+        take.subscribe(observer);
+        inOrder.verify(observer, times(1)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("three");
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
@@ -61,11 +61,11 @@ public class ObservableTakeLastTest {
         Observable<String> w = Observable.just("one");
         Observable<String> take = w.takeLast(10);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        take.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<String> observer = TestHelper.mockObserver();
+        take.subscribe(observer);
+        verify(observer, times(1)).onNext("one");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
@@ -73,11 +73,11 @@ public class ObservableTakeLastTest {
         Observable<String> w = Observable.just("one");
         Observable<String> take = w.takeLast(0);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        take.subscribe(NbpObserver);
-        verify(NbpObserver, never()).onNext("one");
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<String> observer = TestHelper.mockObserver();
+        take.subscribe(observer);
+        verify(observer, never()).onNext("one");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
@@ -86,13 +86,13 @@ public class ObservableTakeLastTest {
         Observable<String> w = Observable.just("one", null, "three");
         Observable<String> take = w.takeLast(2);
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        take.subscribe(NbpObserver);
-        verify(NbpObserver, never()).onNext("one");
-        verify(NbpObserver, times(1)).onNext(null);
-        verify(NbpObserver, times(1)).onNext("three");
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<String> observer = TestHelper.mockObserver();
+        take.subscribe(observer);
+        verify(observer, never()).onNext("one");
+        verify(observer, times(1)).onNext(null);
+        verify(observer, times(1)).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

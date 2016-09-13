@@ -99,7 +99,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
                 remove(ps);
             }
         } else {
-            Throwable ex = error;;
+            Throwable ex = error;
             if (ex != null) {
                 t.onError(ex);
             } else {

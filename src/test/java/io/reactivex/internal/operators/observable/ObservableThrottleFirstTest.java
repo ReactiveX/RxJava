@@ -31,40 +31,40 @@ public class ObservableThrottleFirstTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
-    private Observer<String> NbpObserver;
+    private Observer<String> observer;
 
     @Before
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
-        NbpObserver = TestHelper.mockObserver();
+        observer = TestHelper.mockObserver();
     }
 
     @Test
     public void testThrottlingWithCompleted() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                publishNext(NbpObserver, 100, "one");    // publish as it's first
-                publishNext(NbpObserver, 300, "two");    // skip as it's last within the first 400
-                publishNext(NbpObserver, 900, "three");   // publish
-                publishNext(NbpObserver, 905, "four");   // skip
-                publishCompleted(NbpObserver, 1000);     // Should be published as soon as the timeout expires.
+            public void subscribe(Observer<? super String> innerObserver) {
+                innerObserver.onSubscribe(Disposables.empty());
+                publishNext(innerObserver, 100, "one");    // publish as it's first
+                publishNext(innerObserver, 300, "two");    // skip as it's last within the first 400
+                publishNext(innerObserver, 900, "three");   // publish
+                publishNext(innerObserver, 905, "four");   // skip
+                publishCompleted(innerObserver, 1000);     // Should be published as soon as the timeout expires.
             }
         });
 
         Observable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(NbpObserver);
+        sampled.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
 
         scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, times(1)).onNext("one");
-        inOrder.verify(NbpObserver, times(0)).onNext("two");
-        inOrder.verify(NbpObserver, times(1)).onNext("three");
-        inOrder.verify(NbpObserver, times(0)).onNext("four");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onNext("one");
+        inOrder.verify(observer, times(0)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("three");
+        inOrder.verify(observer, times(0)).onNext("four");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -72,59 +72,59 @@ public class ObservableThrottleFirstTest {
     public void testThrottlingWithError() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
+            public void subscribe(Observer<? super String> innerObserver) {
+                innerObserver.onSubscribe(Disposables.empty());
                 Exception error = new TestException();
-                publishNext(NbpObserver, 100, "one");    // Should be published since it is first
-                publishNext(NbpObserver, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
-                publishError(NbpObserver, 300, error);   // Should be published as soon as the timeout expires.
+                publishNext(innerObserver, 100, "one");    // Should be published since it is first
+                publishNext(innerObserver, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
+                publishError(innerObserver, 300, error);   // Should be published as soon as the timeout expires.
             }
         });
 
         Observable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(NbpObserver);
+        sampled.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
 
         scheduler.advanceTimeTo(400, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver).onNext("one");
-        inOrder.verify(NbpObserver).onError(any(TestException.class));
+        inOrder.verify(observer).onNext("one");
+        inOrder.verify(observer).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
-    private <T> void publishCompleted(final Observer<T> NbpObserver, long delay) {
+    private <T> void publishCompleted(final Observer<T> innerObserver, long delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onComplete();
+                innerObserver.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishError(final Observer<T> NbpObserver, long delay, final Exception error) {
+    private <T> void publishError(final Observer<T> innerObserver, long delay, final Exception error) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onError(error);
+                innerObserver.onError(error);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishNext(final Observer<T> NbpObserver, long delay, final T value) {
+    private <T> void publishNext(final Observer<T> innerObserver, long delay, final T value) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onNext(value);
+                innerObserver.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void testThrottle() {
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
         TestScheduler s = new TestScheduler();
         PublishSubject<Integer> o = PublishSubject.create();
-        o.throttleFirst(500, TimeUnit.MILLISECONDS, s).subscribe(NbpObserver);
+        o.throttleFirst(500, TimeUnit.MILLISECONDS, s).subscribe(observer);
 
         // send events with simulated time increments
         s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
@@ -142,11 +142,11 @@ public class ObservableThrottleFirstTest {
         s.advanceTimeTo(1501, TimeUnit.MILLISECONDS);
         o.onComplete();
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver).onNext(1);
-        inOrder.verify(NbpObserver).onNext(3);
-        inOrder.verify(NbpObserver).onNext(7);
-        inOrder.verify(NbpObserver).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer).onNext(1);
+        inOrder.verify(observer).onNext(3);
+        inOrder.verify(observer).onNext(7);
+        inOrder.verify(observer).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

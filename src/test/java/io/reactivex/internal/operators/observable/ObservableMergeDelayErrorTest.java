@@ -54,10 +54,10 @@ public class ObservableMergeDelayErrorTest {
         verify(stringObserver, times(1)).onNext("three");
         verify(stringObserver, times(1)).onNext("four");
         verify(stringObserver, times(0)).onNext("five");
-        // despite not expecting it ... we don't do anything to prevent it if the source NbpObservable keeps sending after onError
-        // inner NbpObservable errors are considered terminal for that source
+        // despite not expecting it ... we don't do anything to prevent it if the source Observable keeps sending after onError
+        // inner Observable errors are considered terminal for that source
 //        verify(stringObserver, times(1)).onNext("six");
-        // inner NbpObservable errors are considered terminal for that source
+        // inner Observable errors are considered terminal for that source
     }
 
     @Test
@@ -77,8 +77,8 @@ public class ObservableMergeDelayErrorTest {
         verify(stringObserver, times(1)).onNext("three");
         verify(stringObserver, times(1)).onNext("four");
         verify(stringObserver, times(0)).onNext("five");
-        // despite not expecting it ... we don't do anything to prevent it if the source NbpObservable keeps sending after onError
-        // inner NbpObservable errors are considered terminal for that source
+        // despite not expecting it ... we don't do anything to prevent it if the source Observable keeps sending after onError
+        // inner Observable errors are considered terminal for that source
 //        verify(stringObserver, times(1)).onNext("six");
         verify(stringObserver, times(1)).onNext("seven");
         verify(stringObserver, times(1)).onNext("eight");
@@ -179,8 +179,8 @@ public class ObservableMergeDelayErrorTest {
         verify(stringObserver, times(0)).onNext("three");
         verify(stringObserver, times(1)).onNext("four");
         verify(stringObserver, times(0)).onNext("five");
-        // despite not expecting it ... we don't do anything to prevent it if the source NbpObservable keeps sending after onError
-        // inner NbpObservable errors are considered terminal for that source
+        // despite not expecting it ... we don't do anything to prevent it if the source Observable keeps sending after onError
+        // inner Observable errors are considered terminal for that source
 //        verify(stringObserver, times(1)).onNext("six");
     }
 
@@ -218,12 +218,12 @@ public class ObservableMergeDelayErrorTest {
         Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new ObservableSource<Observable<String>>() {
 
             @Override
-            public void subscribe(Observer<? super Observable<String>> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                // simulate what would happen in an NbpObservable
-                NbpObserver.onNext(o1);
-                NbpObserver.onNext(o2);
-                NbpObserver.onComplete();
+            public void subscribe(Observer<? super Observable<String>> observer) {
+                observer.onSubscribe(Disposables.empty());
+                // simulate what would happen in an Observable
+                observer.onNext(o1);
+                observer.onNext(o2);
+                observer.onComplete();
             }
 
         });
@@ -316,10 +316,10 @@ public class ObservableMergeDelayErrorTest {
     private static class TestSynchronousObservable implements ObservableSource<String> {
 
         @Override
-        public void subscribe(Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(Disposables.empty());
-            NbpObserver.onNext("hello");
-            NbpObserver.onComplete();
+        public void subscribe(Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
+            observer.onNext("hello");
+            observer.onComplete();
         }
     }
 
@@ -327,14 +327,14 @@ public class ObservableMergeDelayErrorTest {
         Thread t;
 
         @Override
-        public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(Disposables.empty());
+        public void subscribe(final Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
-                    NbpObserver.onNext("hello");
-                    NbpObserver.onComplete();
+                    observer.onNext("hello");
+                    observer.onComplete();
                 }
 
             });
@@ -351,22 +351,22 @@ public class ObservableMergeDelayErrorTest {
         }
 
         @Override
-        public void subscribe(Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(Disposables.empty());
+        public void subscribe(Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
             boolean errorThrown = false;
             for (String s : valuesToReturn) {
                 if (s == null) {
                     System.out.println("throwing exception");
-                    NbpObserver.onError(new NullPointerException());
+                    observer.onError(new NullPointerException());
                     errorThrown = true;
                     // purposefully not returning here so it will continue calling onNext
                     // so that we also test that we handle bad sequences like this
                 } else {
-                    NbpObserver.onNext(s);
+                    observer.onNext(s);
                 }
             }
             if (!errorThrown) {
-                NbpObserver.onComplete();
+                observer.onComplete();
             }
         }
     }
@@ -382,8 +382,8 @@ public class ObservableMergeDelayErrorTest {
         Thread t;
 
         @Override
-        public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(Disposables.empty());
+        public void subscribe(final Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -396,14 +396,14 @@ public class ObservableMergeDelayErrorTest {
                             } catch (Throwable e) {
 
                             }
-                            NbpObserver.onError(new NullPointerException());
+                            observer.onError(new NullPointerException());
                             return;
                         } else {
-                            NbpObserver.onNext(s);
+                            observer.onNext(s);
                         }
                     }
                     System.out.println("subscription complete");
-                    NbpObserver.onComplete();
+                    observer.onComplete();
                 }
 
             });
@@ -534,8 +534,8 @@ public class ObservableMergeDelayErrorTest {
         Thread t;
 
         @Override
-        public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(Disposables.empty());
+        public void subscribe(final Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -543,10 +543,10 @@ public class ObservableMergeDelayErrorTest {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        NbpObserver.onError(e);
+                        observer.onError(e);
                     }
-                    NbpObserver.onNext("hello");
-                    NbpObserver.onComplete();
+                    observer.onNext("hello");
+                    observer.onComplete();
                 }
 
             });

@@ -30,24 +30,24 @@ public class ObservableTimeIntervalTest {
 
     private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 
-    private Observer<Timed<Integer>> NbpObserver;
+    private Observer<Timed<Integer>> observer;
 
     private TestScheduler testScheduler;
     private PublishSubject<Integer> subject;
-    private Observable<Timed<Integer>> NbpObservable;
+    private Observable<Timed<Integer>> observable;
 
     @Before
     public void setUp() {
-        NbpObserver = TestHelper.mockObserver();
+        observer = TestHelper.mockObserver();
         testScheduler = new TestScheduler();
         subject = PublishSubject.create();
-        NbpObservable = subject.timeInterval(testScheduler);
+        observable = subject.timeInterval(testScheduler);
     }
 
     @Test
     public void testTimeInterval() {
-        InOrder inOrder = inOrder(NbpObserver);
-        NbpObservable.subscribe(NbpObserver);
+        InOrder inOrder = inOrder(observer);
+        observable.subscribe(observer);
 
         testScheduler.advanceTimeBy(1000, TIME_UNIT);
         subject.onNext(1);
@@ -57,13 +57,13 @@ public class ObservableTimeIntervalTest {
         subject.onNext(3);
         subject.onComplete();
 
-        inOrder.verify(NbpObserver, times(1)).onNext(
+        inOrder.verify(observer, times(1)).onNext(
                 new Timed<Integer>(1, 1000, TIME_UNIT));
-        inOrder.verify(NbpObserver, times(1)).onNext(
+        inOrder.verify(observer, times(1)).onNext(
                 new Timed<Integer>(2, 2000, TIME_UNIT));
-        inOrder.verify(NbpObserver, times(1)).onNext(
+        inOrder.verify(observer, times(1)).onNext(
                 new Timed<Integer>(3, 3000, TIME_UNIT));
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

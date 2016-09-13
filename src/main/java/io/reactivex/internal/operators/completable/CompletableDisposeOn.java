@@ -16,13 +16,13 @@ package io.reactivex.internal.operators.completable;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 
-public final class CompletableUnsubscribeOn extends Completable {
+public final class CompletableDisposeOn extends Completable {
 
     final CompletableSource source;
 
     final Scheduler scheduler;
 
-    public CompletableUnsubscribeOn(CompletableSource source, Scheduler scheduler) {
+    public CompletableDisposeOn(CompletableSource source, Scheduler scheduler) {
         this.source = source;
         this.scheduler = scheduler;
     }

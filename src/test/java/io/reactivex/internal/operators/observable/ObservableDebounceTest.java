@@ -32,13 +32,13 @@ import io.reactivex.subjects.PublishSubject;
 public class ObservableDebounceTest {
 
     private TestScheduler scheduler;
-    private Observer<String> NbpObserver;
+    private Observer<String> observer;
     private Scheduler.Worker innerScheduler;
 
     @Before
     public void before() {
         scheduler = new TestScheduler();
-        NbpObserver = TestHelper.mockObserver();
+        observer = TestHelper.mockObserver();
         innerScheduler = scheduler.createWorker();
     }
 
@@ -46,25 +46,25 @@ public class ObservableDebounceTest {
     public void testDebounceWithCompleted() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                publishNext(NbpObserver, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
-                publishNext(NbpObserver, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
-                publishNext(NbpObserver, 900, "three");   // Should be skipped since onCompleted will arrive before the timeout expires.
-                publishCompleted(NbpObserver, 1000);     // Should be published as soon as the timeout expires.
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
+                publishNext(observer, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
+                publishNext(observer, 900, "three");   // Should be skipped since onCompleted will arrive before the timeout expires.
+                publishCompleted(observer, 1000);     // Should be published as soon as the timeout expires.
             }
         });
 
         Observable<String> sampled = source.debounce(400, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(NbpObserver);
+        sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
         // must go to 800 since it must be 400 after when two is sent, which is at 400
         scheduler.advanceTimeTo(800, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, times(1)).onNext("two");
+        inOrder.verify(observer, times(1)).onNext("two");
         scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -72,29 +72,29 @@ public class ObservableDebounceTest {
     public void testDebounceNeverEmits() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
                 // all should be skipped since they are happening faster than the 200ms timeout
-                publishNext(NbpObserver, 100, "a");    // Should be skipped
-                publishNext(NbpObserver, 200, "b");    // Should be skipped
-                publishNext(NbpObserver, 300, "c");    // Should be skipped
-                publishNext(NbpObserver, 400, "d");    // Should be skipped
-                publishNext(NbpObserver, 500, "e");    // Should be skipped
-                publishNext(NbpObserver, 600, "f");    // Should be skipped
-                publishNext(NbpObserver, 700, "g");    // Should be skipped
-                publishNext(NbpObserver, 800, "h");    // Should be skipped
-                publishCompleted(NbpObserver, 900);     // Should be published as soon as the timeout expires.
+                publishNext(observer, 100, "a");    // Should be skipped
+                publishNext(observer, 200, "b");    // Should be skipped
+                publishNext(observer, 300, "c");    // Should be skipped
+                publishNext(observer, 400, "d");    // Should be skipped
+                publishNext(observer, 500, "e");    // Should be skipped
+                publishNext(observer, 600, "f");    // Should be skipped
+                publishNext(observer, 700, "g");    // Should be skipped
+                publishNext(observer, 800, "h");    // Should be skipped
+                publishCompleted(observer, 900);     // Should be published as soon as the timeout expires.
             }
         });
 
         Observable<String> sampled = source.debounce(200, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(NbpObserver);
+        sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(0)).onNext(anyString());
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(0)).onNext(anyString());
         scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -102,51 +102,51 @@ public class ObservableDebounceTest {
     public void testDebounceWithError() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
                 Exception error = new TestException();
-                publishNext(NbpObserver, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
-                publishNext(NbpObserver, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
-                publishError(NbpObserver, 700, error);   // Should be published as soon as the timeout expires.
+                publishNext(observer, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
+                publishNext(observer, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
+                publishError(observer, 700, error);   // Should be published as soon as the timeout expires.
             }
         });
 
         Observable<String> sampled = source.debounce(400, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(NbpObserver);
+        sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
         // 100 + 400 means it triggers at 500
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver).onNext("one");
+        inOrder.verify(observer).onNext("one");
         scheduler.advanceTimeTo(701, TimeUnit.MILLISECONDS);
-        inOrder.verify(NbpObserver).onError(any(TestException.class));
+        inOrder.verify(observer).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
-    private <T> void publishCompleted(final Observer<T> NbpObserver, long delay) {
+    private <T> void publishCompleted(final Observer<T> observer, long delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onComplete();
+                observer.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishError(final Observer<T> NbpObserver, long delay, final Exception error) {
+    private <T> void publishError(final Observer<T> observer, long delay, final Exception error) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onError(error);
+                observer.onError(error);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishNext(final Observer<T> NbpObserver, final long delay, final T value) {
+    private <T> void publishNext(final Observer<T> observer, final long delay, final T value) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onNext(value);
+                observer.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
@@ -278,17 +278,17 @@ public class ObservableDebounceTest {
     @Test
     public void debounceWithTimeBackpressure() throws InterruptedException {
         TestScheduler scheduler = new TestScheduler();
-        TestObserver<Integer> NbpSubscriber = new TestObserver<Integer>();
+        TestObserver<Integer> observer = new TestObserver<Integer>();
         Observable.merge(
                 Observable.just(1),
                 Observable.just(2).delay(10, TimeUnit.MILLISECONDS, scheduler)
-        ).debounce(20, TimeUnit.MILLISECONDS, scheduler).take(1).subscribe(NbpSubscriber);
+        ).debounce(20, TimeUnit.MILLISECONDS, scheduler).take(1).subscribe(observer);
 
         scheduler.advanceTimeBy(30, TimeUnit.MILLISECONDS);
 
-        NbpSubscriber.assertValue(2);
-        NbpSubscriber.assertTerminated();
-        NbpSubscriber.assertNoErrors();
+        observer.assertValue(2);
+        observer.assertTerminated();
+        observer.assertNoErrors();
     }
 
     @Test

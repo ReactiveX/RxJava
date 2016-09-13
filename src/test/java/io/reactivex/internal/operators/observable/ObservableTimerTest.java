@@ -29,7 +29,7 @@ import io.reactivex.schedulers.TestScheduler;
 
 public class ObservableTimerTest {
     @Mock
-    Observer<Object> NbpObserver;
+    Observer<Object> observer;
     @Mock
     Observer<Long> observer2;
 
@@ -37,7 +37,7 @@ public class ObservableTimerTest {
 
     @Before
     public void before() {
-        NbpObserver = TestHelper.mockObserver();
+        observer = TestHelper.mockObserver();
 
         observer2 = TestHelper.mockObserver();
 
@@ -46,12 +46,12 @@ public class ObservableTimerTest {
 
     @Test
     public void testTimerOnce() {
-        Observable.timer(100, TimeUnit.MILLISECONDS, scheduler).subscribe(NbpObserver);
+        Observable.timer(100, TimeUnit.MILLISECONDS, scheduler).subscribe(observer);
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        verify(NbpObserver, times(1)).onNext(0L);
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onNext(0L);
+        verify(observer, times(1)).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -233,26 +233,26 @@ public class ObservableTimerTest {
 
             @Override
             public void onError(Throwable e) {
-                NbpObserver.onError(e);
+                observer.onError(e);
             }
 
             @Override
             public void onComplete() {
-                NbpObserver.onComplete();
+                observer.onComplete();
             }
         });
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        verify(NbpObserver).onError(any(TestException.class));
-        verify(NbpObserver, never()).onNext(anyLong());
-        verify(NbpObserver, never()).onComplete();
+        verify(observer).onError(any(TestException.class));
+        verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onComplete();
     }
     @Test
     public void testPeriodicObserverThrows() {
         Observable<Long> source = Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
 
         source.safeSubscribe(new DefaultObserver<Long>() {
 
@@ -261,25 +261,25 @@ public class ObservableTimerTest {
                 if (t > 0) {
                     throw new TestException();
                 }
-                NbpObserver.onNext(t);
+                observer.onNext(t);
             }
 
             @Override
             public void onError(Throwable e) {
-                NbpObserver.onError(e);
+                observer.onError(e);
             }
 
             @Override
             public void onComplete() {
-                NbpObserver.onComplete();
+                observer.onComplete();
             }
         });
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        inOrder.verify(NbpObserver).onNext(0L);
-        inOrder.verify(NbpObserver).onError(any(TestException.class));
+        inOrder.verify(observer).onNext(0L);
+        inOrder.verify(observer).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(NbpObserver, never()).onComplete();
+        verify(observer, never()).onComplete();
     }
 }

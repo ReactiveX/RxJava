@@ -24,11 +24,11 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 
 public class ObservableReduceTest {
-    Observer<Object> NbpObserver;
+    Observer<Object> observer;
 
     @Before
     public void before() {
-        NbpObserver = TestHelper.mockObserver();
+        observer = TestHelper.mockObserver();
     }
 
     BiFunction<Integer, Integer, Integer> sum = new BiFunction<Integer, Integer, Integer>() {
@@ -49,11 +49,11 @@ public class ObservableReduceTest {
                     }
                 });
 
-        result.subscribe(NbpObserver);
+        result.subscribe(observer);
 
-        verify(NbpObserver).onNext(1 + 2 + 3 + 4 + 5);
-        verify(NbpObserver).onComplete();
-        verify(NbpObserver, never()).onError(any(Throwable.class));
+        verify(observer).onNext(1 + 2 + 3 + 4 + 5);
+        verify(observer).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -67,11 +67,11 @@ public class ObservableReduceTest {
                     }
                 });
 
-        result.subscribe(NbpObserver);
+        result.subscribe(observer);
 
-        verify(NbpObserver, never()).onNext(any());
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, times(1)).onError(any(TestException.class));
+        verify(observer, never()).onNext(any());
+        verify(observer, never()).onComplete();
+        verify(observer, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -91,11 +91,11 @@ public class ObservableReduceTest {
                     }
                 });
 
-        result.subscribe(NbpObserver);
+        result.subscribe(observer);
 
-        verify(NbpObserver, never()).onNext(any());
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, times(1)).onError(any(TestException.class));
+        verify(observer, never()).onNext(any());
+        verify(observer, never()).onComplete();
+        verify(observer, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -112,11 +112,11 @@ public class ObservableReduceTest {
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
                 .reduce(0, sum).map(error);
 
-        result.subscribe(NbpObserver);
+        result.subscribe(observer);
 
-        verify(NbpObserver, never()).onNext(any());
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, times(1)).onError(any(TestException.class));
+        verify(observer, never()).onNext(any());
+        verify(observer, never()).onComplete();
+        verify(observer, times(1)).onError(any(TestException.class));
     }
 
     @Test

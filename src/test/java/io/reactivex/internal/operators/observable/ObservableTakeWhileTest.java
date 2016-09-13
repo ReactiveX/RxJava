@@ -38,13 +38,13 @@ public class ObservableTakeWhileTest {
             }
         });
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        take.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext(1);
-        verify(NbpObserver, times(1)).onNext(2);
-        verify(NbpObserver, never()).onNext(3);
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<Integer> observer = TestHelper.mockObserver();
+        take.subscribe(observer);
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, never()).onNext(3);
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
@@ -57,8 +57,8 @@ public class ObservableTakeWhileTest {
             }
         });
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
-        take.subscribe(NbpObserver);
+        Observer<Integer> observer = TestHelper.mockObserver();
+        take.subscribe(observer);
 
         s.onNext(1);
         s.onNext(2);
@@ -67,13 +67,13 @@ public class ObservableTakeWhileTest {
         s.onNext(5);
         s.onComplete();
 
-        verify(NbpObserver, times(1)).onNext(1);
-        verify(NbpObserver, times(1)).onNext(2);
-        verify(NbpObserver, never()).onNext(3);
-        verify(NbpObserver, never()).onNext(4);
-        verify(NbpObserver, never()).onNext(5);
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, never()).onNext(3);
+        verify(observer, never()).onNext(4);
+        verify(observer, never()).onNext(5);
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
@@ -88,23 +88,23 @@ public class ObservableTakeWhileTest {
             }
         });
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        take.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, times(1)).onNext("two");
-        verify(NbpObserver, never()).onNext("three");
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<String> observer = TestHelper.mockObserver();
+        take.subscribe(observer);
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("two");
+        verify(observer, never()).onNext("three");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testTakeWhileDoesntLeakErrors() {
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                NbpObserver.onNext("one");
-                NbpObserver.onError(new Throwable("test failed"));
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onNext("one");
+                observer.onError(new Throwable("test failed"));
             }
         });
 
@@ -121,7 +121,7 @@ public class ObservableTakeWhileTest {
         TestObservable source = new TestObservable(mock(Disposable.class), "one");
         final RuntimeException testException = new RuntimeException("test exception");
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
         Observable<String> take = Observable.unsafeCreate(source)
                 .takeWhile(new Predicate<String>() {
             @Override
@@ -129,9 +129,9 @@ public class ObservableTakeWhileTest {
                 throw testException;
             }
         });
-        take.subscribe(NbpObserver);
+        take.subscribe(observer);
 
-        // wait for the NbpObservable to complete
+        // wait for the Observable to complete
         try {
             source.t.join();
         } catch (Throwable e) {
@@ -139,8 +139,8 @@ public class ObservableTakeWhileTest {
             fail(e.getMessage());
         }
 
-        verify(NbpObserver, never()).onNext(any(String.class));
-        verify(NbpObserver, times(1)).onError(testException);
+        verify(observer, never()).onNext(any(String.class));
+        verify(observer, times(1)).onError(testException);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class ObservableTakeWhileTest {
         Disposable s = mock(Disposable.class);
         TestObservable w = new TestObservable(s, "one", "two", "three");
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
         Observable<String> take = Observable.unsafeCreate(w)
                 .takeWhile(new Predicate<String>() {
             int index = 0;
@@ -158,9 +158,9 @@ public class ObservableTakeWhileTest {
                 return index++ < 1;
             }
         });
-        take.subscribe(NbpObserver);
+        take.subscribe(observer);
 
-        // wait for the NbpObservable to complete
+        // wait for the Observable to complete
         try {
             w.t.join();
         } catch (Throwable e) {
@@ -169,9 +169,9 @@ public class ObservableTakeWhileTest {
         }
 
         System.out.println("TestObservable thread finished");
-        verify(NbpObserver, times(1)).onNext("one");
-        verify(NbpObserver, never()).onNext("two");
-        verify(NbpObserver, never()).onNext("three");
+        verify(observer, times(1)).onNext("one");
+        verify(observer, never()).onNext("two");
+        verify(observer, never()).onNext("three");
         verify(s, times(1)).dispose();
     }
 
@@ -187,9 +187,9 @@ public class ObservableTakeWhileTest {
         }
 
         @Override
-        public void subscribe(final Observer<? super String> NbpObserver) {
+        public void subscribe(final Observer<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
-            NbpObserver.onSubscribe(s);
+            observer.onSubscribe(s);
             t = new Thread(new Runnable() {
 
                 @Override
@@ -198,9 +198,9 @@ public class ObservableTakeWhileTest {
                         System.out.println("running TestObservable thread");
                         for (String s : values) {
                             System.out.println("TestObservable onNext: " + s);
-                            NbpObserver.onNext(s);
+                            observer.onNext(s);
                         }
-                        NbpObserver.onComplete();
+                        observer.onComplete();
                     } catch (Throwable e) {
                         throw new RuntimeException(e);
                     }

@@ -618,8 +618,8 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         int i = 0;
         Iterator<T> vit = values.iterator();
         Iterator<? extends T> it = sequence.iterator();
-        boolean actualNext = false;
-        boolean expectedNext = false;
+        boolean actualNext;
+        boolean expectedNext;
         for (;;) {
             actualNext = it.hasNext();
             expectedNext = vit.hasNext();
@@ -635,8 +635,6 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
                 throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
             i++;
-            actualNext = false;
-            expectedNext = false;
         }
 
         if (actualNext) {

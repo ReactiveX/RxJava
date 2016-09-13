@@ -34,14 +34,14 @@ public class ObservableSubscribeOnTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch doneLatch = new CountDownLatch(1);
 
-        TestObserver<Integer> NbpObserver = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
         Observable
         .unsafeCreate(new ObservableSource<Integer>() {
             @Override
             public void subscribe(
-                    final Observer<? super Integer> NbpSubscriber) {
-                NbpSubscriber.onSubscribe(Disposables.empty());
+                    final Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
                 scheduled.countDown();
                 try {
                     try {
@@ -51,27 +51,27 @@ public class ObservableSubscribeOnTest {
                         // ... but we'll pretend we are like many Observables that ignore interrupts
                     }
 
-                    NbpSubscriber.onComplete();
+                    observer.onComplete();
                 } catch (Throwable e) {
-                    NbpSubscriber.onError(e);
+                    observer.onError(e);
                 } finally {
                     doneLatch.countDown();
                 }
             }
-        }).subscribeOn(Schedulers.computation()).subscribe(NbpObserver);
+        }).subscribeOn(Schedulers.computation()).subscribe(to);
 
         // wait for scheduling
         scheduled.await();
         // trigger unsubscribe
-        NbpObserver.dispose();
+        to.dispose();
         latch.countDown();
         doneLatch.await();
-        NbpObserver.assertNoErrors();
-        NbpObserver.assertComplete();
+        to.assertNoErrors();
+        to.assertComplete();
     }
 
     @Test
-    @Ignore("ObservableConsumable.subscribe can't throw")
+    @Ignore("ObservableSource.subscribe can't throw")
     public void testThrownErrorHandling() {
         TestObserver<String> ts = new TestObserver<String>();
         Observable.unsafeCreate(new ObservableSource<String>() {

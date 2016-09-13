@@ -47,24 +47,24 @@ public class ObservableWindowWithStartEndObservableTest {
 
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                push(NbpObserver, "one", 10);
-                push(NbpObserver, "two", 60);
-                push(NbpObserver, "three", 110);
-                push(NbpObserver, "four", 160);
-                push(NbpObserver, "five", 210);
-                complete(NbpObserver, 500);
+            public void subscribe(Observer<? super String> innerObserver) {
+                innerObserver.onSubscribe(Disposables.empty());
+                push(innerObserver, "one", 10);
+                push(innerObserver, "two", 60);
+                push(innerObserver, "three", 110);
+                push(innerObserver, "four", 160);
+                push(innerObserver, "five", 210);
+                complete(innerObserver, 500);
             }
         });
 
         Observable<Object> openings = Observable.unsafeCreate(new ObservableSource<Object>() {
             @Override
-            public void subscribe(Observer<? super Object> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                push(NbpObserver, new Object(), 50);
-                push(NbpObserver, new Object(), 200);
-                complete(NbpObserver, 250);
+            public void subscribe(Observer<? super Object> innerObserver) {
+                innerObserver.onSubscribe(Disposables.empty());
+                push(innerObserver, new Object(), 50);
+                push(innerObserver, new Object(), 200);
+                complete(innerObserver, 250);
             }
         });
 
@@ -73,10 +73,10 @@ public class ObservableWindowWithStartEndObservableTest {
             public Observable<Object> apply(Object opening) {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
-                    public void subscribe(Observer<? super Object> NbpObserver) {
-                        NbpObserver.onSubscribe(Disposables.empty());
-                        push(NbpObserver, new Object(), 100);
-                        complete(NbpObserver, 101);
+                    public void subscribe(Observer<? super Object> innerObserver) {
+                        innerObserver.onSubscribe(Disposables.empty());
+                        push(innerObserver, new Object(), 100);
+                        complete(innerObserver, 101);
                     }
                 });
             }
@@ -98,14 +98,14 @@ public class ObservableWindowWithStartEndObservableTest {
 
         Observable<String> source = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
-                push(NbpObserver, "one", 10);
-                push(NbpObserver, "two", 60);
-                push(NbpObserver, "three", 110);
-                push(NbpObserver, "four", 160);
-                push(NbpObserver, "five", 210);
-                complete(NbpObserver, 250);
+            public void subscribe(Observer<? super String> innerObserver) {
+                innerObserver.onSubscribe(Disposables.empty());
+                push(innerObserver, "one", 10);
+                push(innerObserver, "two", 60);
+                push(innerObserver, "three", 110);
+                push(innerObserver, "four", 160);
+                push(innerObserver, "five", 210);
+                complete(innerObserver, 250);
             }
         });
 
@@ -115,16 +115,16 @@ public class ObservableWindowWithStartEndObservableTest {
             public Observable<Object> call() {
                 return Observable.unsafeCreate(new ObservableSource<Object>() {
                     @Override
-                    public void subscribe(Observer<? super Object> NbpObserver) {
-                        NbpObserver.onSubscribe(Disposables.empty());
+                    public void subscribe(Observer<? super Object> innerObserver) {
+                        innerObserver.onSubscribe(Disposables.empty());
                         int c = calls++;
                         if (c == 0) {
-                            push(NbpObserver, new Object(), 100);
+                            push(innerObserver, new Object(), 100);
                         } else
                         if (c == 1) {
-                            push(NbpObserver, new Object(), 100);
+                            push(innerObserver, new Object(), 100);
                         } else {
-                            complete(NbpObserver, 101);
+                            complete(innerObserver, 101);
                         }
                     }
                 });
@@ -149,20 +149,20 @@ public class ObservableWindowWithStartEndObservableTest {
         return list;
     }
 
-    private <T> void push(final Observer<T> NbpObserver, final T value, int delay) {
+    private <T> void push(final Observer<T> observer, final T value, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onNext(value);
+                observer.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private void complete(final Observer<?> NbpObserver, int delay) {
+    private void complete(final Observer<?> observer, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                NbpObserver.onComplete();
+                observer.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }

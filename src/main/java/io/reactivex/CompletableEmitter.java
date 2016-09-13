@@ -39,14 +39,14 @@ public interface CompletableEmitter {
 
     /**
      * Sets a Disposable on this emitter; any previous Disposable
-     * or Cancellation will be unsubscribed/cancelled.
+     * or Cancellation will be disposed/cancelled.
      * @param d the disposable, null is allowed
      */
     void setDisposable(Disposable d);
 
     /**
      * Sets a Cancellable on this emitter; any previous Disposable
-     * or Cancellation will be unsubscribed/cancelled.
+     * or Cancellation will be disposed/cancelled.
      * @param c the cancellable resource, null is allowed
      */
     void setCancellable(Cancellable c);

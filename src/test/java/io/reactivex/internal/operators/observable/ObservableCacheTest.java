@@ -68,7 +68,7 @@ public class ObservableCacheTest {
                     @Override
                     public void run() {
                         counter.incrementAndGet();
-                        System.out.println("published NbpObservable being executed");
+                        System.out.println("published Observable being executed");
                         observer.onNext("one");
                         observer.onComplete();
                     }

@@ -41,7 +41,7 @@ public class ObservableZipTest {
     PublishSubject<String> s2;
     Observable<String> zipped;
 
-    Observer<String> NbpObserver;
+    Observer<String> observer;
     InOrder inOrder;
 
     @Before
@@ -57,10 +57,10 @@ public class ObservableZipTest {
         s2 = PublishSubject.create();
         zipped = Observable.zip(s1, s2, concat2Strings);
 
-        NbpObserver = TestHelper.mockObserver();
-        inOrder = inOrder(NbpObserver);
+        observer = TestHelper.mockObserver();
+        inOrder = inOrder(observer);
 
-        zipped.subscribe(NbpObserver);
+        zipped.subscribe(observer);
     }
 
     @SuppressWarnings("unchecked")
@@ -69,17 +69,17 @@ public class ObservableZipTest {
         Function<Object[], String> zipr = Functions.toFunction(getConcatStringIntegerIntArrayZipr());
         //Function3<String, Integer, int[], String>
 
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
         @SuppressWarnings("rawtypes")
         Collection ws = java.util.Collections.singleton(Observable.just("one", "two"));
         Observable<String> w = Observable.zip(ws, zipr);
-        w.subscribe(NbpObserver);
+        w.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, never()).onNext(any(String.class));
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, never()).onNext(any(String.class));
     }
 
     @Test
@@ -97,20 +97,20 @@ public class ObservableZipTest {
 
         /* simulate sending data */
         // once for w1
-        w1.NbpObserver.onNext("1a");
-        w1.NbpObserver.onComplete();
+        w1.observer.onNext("1a");
+        w1.observer.onComplete();
         // twice for w2
-        w2.NbpObserver.onNext("2a");
-        w2.NbpObserver.onNext("2b");
-        w2.NbpObserver.onComplete();
+        w2.observer.onNext("2a");
+        w2.observer.onNext("2b");
+        w2.observer.onComplete();
         // 4 times for w3
-        w3.NbpObserver.onNext("3a");
-        w3.NbpObserver.onNext("3b");
-        w3.NbpObserver.onNext("3c");
-        w3.NbpObserver.onNext("3d");
-        w3.NbpObserver.onComplete();
+        w3.observer.onNext("3a");
+        w3.observer.onNext("3b");
+        w3.observer.onNext("3c");
+        w3.observer.onNext("3d");
+        w3.observer.onComplete();
 
-        /* we should have been called 1 time on the NbpSubscriber */
+        /* we should have been called 1 time on the Observer */
         InOrder io = inOrder(w);
         io.verify(w).onNext("1a2a3a");
 
@@ -130,20 +130,20 @@ public class ObservableZipTest {
 
         /* simulate sending data */
         // 4 times for w1
-        w1.NbpObserver.onNext("1a");
-        w1.NbpObserver.onNext("1b");
-        w1.NbpObserver.onNext("1c");
-        w1.NbpObserver.onNext("1d");
-        w1.NbpObserver.onComplete();
+        w1.observer.onNext("1a");
+        w1.observer.onNext("1b");
+        w1.observer.onNext("1c");
+        w1.observer.onNext("1d");
+        w1.observer.onComplete();
         // twice for w2
-        w2.NbpObserver.onNext("2a");
-        w2.NbpObserver.onNext("2b");
-        w2.NbpObserver.onComplete();
+        w2.observer.onNext("2a");
+        w2.observer.onNext("2b");
+        w2.observer.onComplete();
         // 1 times for w3
-        w3.NbpObserver.onNext("3a");
-        w3.NbpObserver.onComplete();
+        w3.observer.onNext("3a");
+        w3.observer.onComplete();
 
-        /* we should have been called 1 time on the NbpSubscriber */
+        /* we should have been called 1 time on the Observer */
         InOrder io = inOrder(w);
         io.verify(w).onNext("1a2a3a");
 
@@ -175,90 +175,90 @@ public class ObservableZipTest {
     public void testAggregatorSimple() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
-        Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
+        Observable.zip(r1, r2, zipr2).subscribe(observer);
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
-        inOrder.verify(NbpObserver, times(1)).onNext("helloworld");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        inOrder.verify(observer, times(1)).onNext("helloworld");
 
         r1.onNext("hello ");
         r2.onNext("again");
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
-        inOrder.verify(NbpObserver, times(1)).onNext("hello again");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        inOrder.verify(observer, times(1)).onNext("hello again");
 
         r1.onComplete();
         r2.onComplete();
 
-        inOrder.verify(NbpObserver, never()).onNext(anyString());
-        verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, never()).onNext(anyString());
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testAggregatorDifferentSizedResultsWithOnComplete() {
         /* create the aggregator which will execute the zip function when all Observables provide values */
-        /* define a NbpSubscriber to receive aggregated events */
+        /* define a Observer to receive aggregated events */
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
+        Observable.zip(r1, r2, zipr2).subscribe(observer);
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
         r2.onComplete();
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
 
-        inOrder.verify(NbpObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(NbpObserver, times(1)).onNext("helloworld");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onNext("helloworld");
+        inOrder.verify(observer, times(1)).onComplete();
 
         r1.onNext("hi");
         r1.onComplete();
 
-        inOrder.verify(NbpObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(NbpObserver, never()).onComplete();
-        inOrder.verify(NbpObserver, never()).onNext(anyString());
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onComplete();
+        inOrder.verify(observer, never()).onNext(anyString());
     }
 
     @Test
     public void testAggregateMultipleTypes() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<Integer> r2 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
-        Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
+        Observable.zip(r1, r2, zipr2).subscribe(observer);
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext(1);
         r2.onComplete();
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
 
-        inOrder.verify(NbpObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(NbpObserver, times(1)).onNext("hello1");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onNext("hello1");
+        inOrder.verify(observer, times(1)).onComplete();
 
         r1.onNext("hi");
         r1.onComplete();
 
-        inOrder.verify(NbpObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(NbpObserver, never()).onComplete();
-        inOrder.verify(NbpObserver, never()).onNext(anyString());
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onComplete();
+        inOrder.verify(observer, never()).onNext(anyString());
     }
 
     @Test
@@ -266,29 +266,29 @@ public class ObservableZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<Integer> r2 = PublishSubject.create();
         PublishSubject<List<Integer>> r3 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
-        Observable.zip(r1, r2, r3, zipr3).subscribe(NbpObserver);
+        Observable.zip(r1, r2, r3, zipr3).subscribe(observer);
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext(2);
         r3.onNext(Arrays.asList(5, 6, 7));
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, times(1)).onNext("hello2[5, 6, 7]");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, times(1)).onNext("hello2[5, 6, 7]");
     }
 
     @Test
     public void testAggregatorsWithDifferentSizesAndTiming() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
-        Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
+        Observable.zip(r1, r2, zipr2).subscribe(observer);
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("one");
@@ -296,60 +296,60 @@ public class ObservableZipTest {
         r1.onNext("three");
         r2.onNext("A");
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, times(1)).onNext("oneA");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, times(1)).onNext("oneA");
 
         r1.onNext("four");
         r1.onComplete();
         r2.onNext("B");
-        verify(NbpObserver, times(1)).onNext("twoB");
+        verify(observer, times(1)).onNext("twoB");
         r2.onNext("C");
-        verify(NbpObserver, times(1)).onNext("threeC");
+        verify(observer, times(1)).onNext("threeC");
         r2.onNext("D");
-        verify(NbpObserver, times(1)).onNext("fourD");
+        verify(observer, times(1)).onNext("fourD");
         r2.onNext("E");
-        verify(NbpObserver, never()).onNext("E");
+        verify(observer, never()).onNext("E");
         r2.onComplete();
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testAggregatorError() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
-        Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
+        Observable.zip(r1, r2, zipr2).subscribe(observer);
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, times(1)).onNext("helloworld");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, times(1)).onNext("helloworld");
 
         r1.onError(new RuntimeException(""));
         r1.onNext("hello");
         r2.onNext("again");
 
-        verify(NbpObserver, times(1)).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
         // we don't want to be called again after an error
-        verify(NbpObserver, times(0)).onNext("helloagain");
+        verify(observer, times(0)).onNext("helloagain");
     }
 
     @Test
     public void testAggregatorUnsubscribe() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(NbpObserver);
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
+        TestObserver<String> ts = new TestObserver<String>(observer);
 
         Observable.zip(r1, r2, zipr2).subscribe(ts);
 
@@ -357,28 +357,28 @@ public class ObservableZipTest {
         r1.onNext("hello");
         r2.onNext("world");
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
-        verify(NbpObserver, times(1)).onNext("helloworld");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
+        verify(observer, times(1)).onNext("helloworld");
 
         ts.dispose();
         r1.onNext("hello");
         r2.onNext("again");
 
-        verify(NbpObserver, times(0)).onError(any(Throwable.class));
-        verify(NbpObserver, never()).onComplete();
+        verify(observer, times(0)).onError(any(Throwable.class));
+        verify(observer, never()).onComplete();
         // we don't want to be called again after an error
-        verify(NbpObserver, times(0)).onNext("helloagain");
+        verify(observer, times(0)).onNext("helloagain");
     }
 
     @Test
     public void testAggregatorEarlyCompletion() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
-        Observable.zip(r1, r2, zipr2).subscribe(NbpObserver);
+        Observable.zip(r1, r2, zipr2).subscribe(observer);
 
         /* simulate the Observables pushing data into the aggregator */
         r1.onNext("one");
@@ -386,62 +386,62 @@ public class ObservableZipTest {
         r1.onComplete();
         r2.onNext("A");
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
 
-        inOrder.verify(NbpObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(NbpObserver, never()).onComplete();
-        inOrder.verify(NbpObserver, times(1)).onNext("oneA");
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onComplete();
+        inOrder.verify(observer, times(1)).onNext("oneA");
 
         r2.onComplete();
 
-        inOrder.verify(NbpObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(NbpObserver, times(1)).onComplete();
-        inOrder.verify(NbpObserver, never()).onNext(anyString());
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(observer, never()).onNext(anyString());
     }
 
     @Test
     public void testStart2Types() {
         BiFunction<String, Integer, String> zipr = getConcatStringIntegerZipr();
 
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> w = Observable.zip(Observable.just("one", "two"), Observable.just(2, 3, 4), zipr);
-        w.subscribe(NbpObserver);
+        w.subscribe(observer);
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, times(1)).onNext("one2");
-        verify(NbpObserver, times(1)).onNext("two3");
-        verify(NbpObserver, never()).onNext("4");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verify(observer, times(1)).onNext("one2");
+        verify(observer, times(1)).onNext("two3");
+        verify(observer, never()).onNext("4");
     }
 
     @Test
     public void testStart3Types() {
         Function3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
 
-        /* define a NbpSubscriber to receive aggregated events */
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        /* define a Observer to receive aggregated events */
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> w = Observable.zip(Observable.just("one", "two"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }), zipr);
-        w.subscribe(NbpObserver);
+        w.subscribe(observer);
 
-        verify(NbpObserver, never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
-        verify(NbpObserver, times(1)).onNext("one2[4, 5, 6]");
-        verify(NbpObserver, never()).onNext("two");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+        verify(observer, times(1)).onNext("one2[4, 5, 6]");
+        verify(observer, never()).onNext("two");
     }
 
     @Test
     public void testOnNextExceptionInvokesOnError() {
         BiFunction<Integer, Integer, Integer> zipr = getDivideZipr();
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
         Observable<Integer> w = Observable.zip(Observable.just(10, 20, 30), Observable.just(0, 1, 2), zipr);
-        w.subscribe(NbpObserver);
+        w.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onError(any(Throwable.class));
+        verify(observer, times(1)).onError(any(Throwable.class));
     }
 
     @Test
@@ -617,13 +617,13 @@ public class ObservableZipTest {
 
     private static class TestObservable implements ObservableSource<String> {
 
-        Observer<? super String> NbpObserver;
+        Observer<? super String> observer;
 
         @Override
-        public void subscribe(Observer<? super String> NbpObserver) {
+        public void subscribe(Observer<? super String> observer) {
             // just store the variable where it can be accessed so we can manually trigger it
-            this.NbpObserver = NbpObserver;
-            NbpObserver.onSubscribe(Disposables.empty());
+            this.observer = observer;
+            observer.onSubscribe(Disposables.empty());
         }
 
     }
@@ -634,10 +634,10 @@ public class ObservableZipTest {
         s1.onNext("b");
         s1.onComplete();
         s2.onNext("1");
-        inOrder.verify(NbpObserver, times(1)).onNext("a-1");
+        inOrder.verify(observer, times(1)).onNext("a-1");
         s2.onNext("2");
-        inOrder.verify(NbpObserver, times(1)).onNext("b-2");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onNext("b-2");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -646,11 +646,11 @@ public class ObservableZipTest {
         s2.onNext("1");
         s2.onNext("2");
         s1.onNext("a");
-        inOrder.verify(NbpObserver, times(1)).onNext("a-1");
+        inOrder.verify(observer, times(1)).onNext("a-1");
         s1.onNext("b");
-        inOrder.verify(NbpObserver, times(1)).onNext("b-2");
+        inOrder.verify(observer, times(1)).onNext("b-2");
         s1.onComplete();
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -660,10 +660,10 @@ public class ObservableZipTest {
         s2.onNext("2");
         s2.onComplete();
         s1.onNext("a");
-        inOrder.verify(NbpObserver, times(1)).onNext("a-1");
+        inOrder.verify(observer, times(1)).onNext("a-1");
         s1.onNext("b");
-        inOrder.verify(NbpObserver, times(1)).onNext("b-2");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onNext("b-2");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -672,11 +672,11 @@ public class ObservableZipTest {
         s1.onNext("a");
         s1.onNext("b");
         s2.onNext("1");
-        inOrder.verify(NbpObserver, times(1)).onNext("a-1");
+        inOrder.verify(observer, times(1)).onNext("a-1");
         s2.onNext("2");
-        inOrder.verify(NbpObserver, times(1)).onNext("b-2");
+        inOrder.verify(observer, times(1)).onNext("b-2");
         s2.onComplete();
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -685,14 +685,14 @@ public class ObservableZipTest {
         s2.onNext("a");
         s1.onError(new RuntimeException("Forced failure"));
 
-        inOrder.verify(NbpObserver, times(1)).onError(any(RuntimeException.class));
+        inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
 
         s2.onNext("b");
         s1.onNext("1");
         s1.onNext("2");
 
-        inOrder.verify(NbpObserver, never()).onComplete();
-        inOrder.verify(NbpObserver, never()).onNext(any(String.class));
+        inOrder.verify(observer, never()).onComplete();
+        inOrder.verify(observer, never()).onNext(any(String.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -702,13 +702,13 @@ public class ObservableZipTest {
         s1.onNext("b");
         s2.onError(new RuntimeException("Forced failure"));
 
-        inOrder.verify(NbpObserver, times(1)).onError(any(RuntimeException.class));
+        inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
 
         s2.onNext("1");
         s2.onNext("2");
 
-        inOrder.verify(NbpObserver, never()).onComplete();
-        inOrder.verify(NbpObserver, never()).onNext(any(String.class));
+        inOrder.verify(observer, never()).onComplete();
+        inOrder.verify(observer, never()).onNext(any(String.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -716,14 +716,14 @@ public class ObservableZipTest {
     public void testStartWithOnCompletedTwice() {
         // issue: https://groups.google.com/forum/#!topic/rxjava/79cWTv3TFp0
         // The problem is the original "zip" implementation does not wrap
-        // an internal NbpObserver with a SafeSubscriber. However, in the "zip",
+        // an internal observer with a SafeSubscriber. However, in the "zip",
         // it may calls "onCompleted" twice. That breaks the Rx contract.
 
         // This test tries to emulate this case.
-        // As "TestHelper.mockNbpSubscriber()" will create an instance in the package "rx",
-        // we need to wrap "TestHelper.mockNbpSubscriber()" with an NbpObserver instance
+        // As "TestHelper.mockObserver()" will create an instance in the package "rx",
+        // we need to wrap "TestHelper.mockObserver()" with an observer instance
         // which is in the package "rx.operators".
-        final Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        final Observer<Integer> observer = TestHelper.mockObserver();
 
         Observable.zip(Observable.just(1),
                 Observable.just(1), new BiFunction<Integer, Integer, Integer>() {
@@ -735,24 +735,24 @@ public class ObservableZipTest {
 
             @Override
             public void onComplete() {
-                NbpObserver.onComplete();
+                observer.onComplete();
             }
 
             @Override
             public void onError(Throwable e) {
-                NbpObserver.onError(e);
+                observer.onError(e);
             }
 
             @Override
             public void onNext(Integer args) {
-                NbpObserver.onNext(args);
+                observer.onNext(args);
             }
 
         });
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext(2);
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(2);
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

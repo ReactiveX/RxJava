@@ -151,46 +151,43 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
                         s.request(mr);
                     }
                 } else
-                if (o != s) {
-                    continue;
-                } else
-                if (NotificationLite.isSubscription(v)) {
-                    Subscription next = NotificationLite.getSubscription(v);
-                    if (!cancelled) {
-                        s = next;
-                        long r = requested;
-                        if (r != 0L) {
-                            next.request(r);
+                if (o == s) {
+                    if (NotificationLite.isSubscription(v)) {
+                        Subscription next = NotificationLite.getSubscription(v);
+                        if (!cancelled) {
+                            s = next;
+                            long r = requested;
+                            if (r != 0L) {
+                                next.request(r);
+                            }
+                        } else {
+                            next.cancel();
+                        }
+                    } else if (NotificationLite.isError(v)) {
+                        q.clear();
+                        dispose();
+
+                        Throwable ex = NotificationLite.getError(v);
+                        if (!cancelled) {
+                            cancelled = true;
+                            a.onError(ex);
+                        } else {
+                            RxJavaPlugins.onError(ex);
+                        }
+                    } else if (NotificationLite.isComplete(v)) {
+                        q.clear();
+                        dispose();
+
+                        if (!cancelled) {
+                            cancelled = true;
+                            a.onComplete();
                         }
                     } else {
-                        next.cancel();
-                    }
-                } else
-                if (NotificationLite.isError(v)) {
-                    q.clear();
-                    dispose();
-
-                    Throwable ex = NotificationLite.getError(v);
-                    if (!cancelled) {
-                        cancelled = true;
-                        a.onError(ex);
-                    } else {
-                        RxJavaPlugins.onError(ex);
-                    }
-                } else
-                if (NotificationLite.isComplete(v)) {
-                    q.clear();
-                    dispose();
-
-                    if (!cancelled) {
-                        cancelled = true;
-                        a.onComplete();
-                    }
-                } else {
-                    long r = requested;
-                    if (r != 0) {
-                        a.onNext(NotificationLite.<T>getValue(v));
-                        requested = r - 1;
+                        long r = requested;
+                        if (r != 0) {
+                            a.onNext(NotificationLite.<T>getValue(v));
+                            requested = r - 1;
+                        }
                     }
                 }
             }

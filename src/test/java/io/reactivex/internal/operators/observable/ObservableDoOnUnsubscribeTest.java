@@ -45,7 +45,7 @@ public class ObservableDoOnUnsubscribeTest {
                     @Override
                     public void run() {
                         // Test that upper stream will be notified for un-subscription
-                        // from a child NbpSubscriber
+                        // from a child Observer
                             upperLatch.countDown();
                             upperCount.incrementAndGet();
                     }
@@ -70,10 +70,10 @@ public class ObservableDoOnUnsubscribeTest {
         List<TestObserver<Long>> subscribers = new ArrayList<TestObserver<Long>>();
 
         for (int i = 0; i < subCount; ++i) {
-            TestObserver<Long> NbpSubscriber = new TestObserver<Long>();
-            subscriptions.add(NbpSubscriber);
-            longs.subscribe(NbpSubscriber);
-            subscribers.add(NbpSubscriber);
+            TestObserver<Long> observer = new TestObserver<Long>();
+            subscriptions.add(observer);
+            longs.subscribe(observer);
+            subscribers.add(observer);
         }
 
         onNextLatch.await();
@@ -133,10 +133,10 @@ public class ObservableDoOnUnsubscribeTest {
         List<TestObserver<Long>> subscribers = new ArrayList<TestObserver<Long>>();
 
         for (int i = 0; i < subCount; ++i) {
-            TestObserver<Long> NbpSubscriber = new TestObserver<Long>();
-            longs.subscribe(NbpSubscriber);
-            subscriptions.add(NbpSubscriber);
-            subscribers.add(NbpSubscriber);
+            TestObserver<Long> observer = new TestObserver<Long>();
+            longs.subscribe(observer);
+            subscriptions.add(observer);
+            subscribers.add(observer);
         }
 
         onNextLatch.await();

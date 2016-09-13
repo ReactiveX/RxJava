@@ -31,37 +31,37 @@ public class ObservableToListTest {
     @Test
     public void testList() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> NbpObservable = w.toList();
+        Observable<List<String>> observable = w.toList();
 
-        Observer<List<String>> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<List<String>> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testListViaObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> NbpObservable = w.toList();
+        Observable<List<String>> observable = w.toList();
 
-        Observer<List<String>> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext(Arrays.asList("one", "two", "three"));
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<List<String>> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testListMultipleSubscribers() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> NbpObservable = w.toList();
+        Observable<List<String>> observable = w.toList();
 
         Observer<List<String>> o1 = TestHelper.mockObserver();
-        NbpObservable.subscribe(o1);
+        observable.subscribe(o1);
 
         Observer<List<String>> o2 = TestHelper.mockObserver();
-        NbpObservable.subscribe(o2);
+        observable.subscribe(o2);
 
         List<String> expected = Arrays.asList("one", "two", "three");
 
@@ -78,13 +78,13 @@ public class ObservableToListTest {
     @Ignore("Null values are not allowed")
     public void testListWithNullValue() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", null, "three"));
-        Observable<List<String>> NbpObservable = w.toList();
+        Observable<List<String>> observable = w.toList();
 
-        Observer<List<String>> NbpObserver = TestHelper.mockObserver();
-        NbpObservable.subscribe(NbpObserver);
-        verify(NbpObserver, times(1)).onNext(Arrays.asList("one", null, "three"));
-        verify(NbpObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        Observer<List<String>> observer = TestHelper.mockObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onNext(Arrays.asList("one", null, "three"));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test

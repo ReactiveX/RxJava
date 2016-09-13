@@ -21,8 +21,9 @@ import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 
 public final class SingleFromObservable<T> extends Single<T> {
-    private final Observable<T> upstream;
-    private final T defaultValue;
+    final Observable<T> upstream;
+
+    final T defaultValue;
 
     public SingleFromObservable(Observable<T> upstream, T defaultValue) {
         this.upstream = upstream;

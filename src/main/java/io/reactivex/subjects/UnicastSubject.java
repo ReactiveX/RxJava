@@ -312,9 +312,7 @@ public final class UnicastSubject<T> extends Subject<T> {
                 break;
             }
 
-            if (a == null) {
-                a = actual.get();
-            }
+            a = actual.get();
         }
     }
 

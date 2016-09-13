@@ -29,187 +29,187 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithTwoItems() {
         Observable<Integer> w = Observable.just(1, 2);
-        Observable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, never()).onNext(false);
-        verify(NbpObserver, times(1)).onNext(true);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, never()).onNext(false);
+        verify(observer, times(1)).onNext(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testIsEmptyWithTwoItems() {
         Observable<Integer> w = Observable.just(1, 2);
-        Observable<Boolean> NbpObservable = w.isEmpty();
+        Observable<Boolean> observable = w.isEmpty();
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, never()).onNext(true);
-        verify(NbpObserver, times(1)).onNext(false);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, never()).onNext(true);
+        verify(observer, times(1)).onNext(false);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testAnyWithOneItem() {
         Observable<Integer> w = Observable.just(1);
-        Observable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, never()).onNext(false);
-        verify(NbpObserver, times(1)).onNext(true);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, never()).onNext(false);
+        verify(observer, times(1)).onNext(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testIsEmptyWithOneItem() {
         Observable<Integer> w = Observable.just(1);
-        Observable<Boolean> NbpObservable = w.isEmpty();
+        Observable<Boolean> observable = w.isEmpty();
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, never()).onNext(true);
-        verify(NbpObserver, times(1)).onNext(false);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, never()).onNext(true);
+        verify(observer, times(1)).onNext(false);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testAnyWithEmpty() {
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext(false);
-        verify(NbpObserver, never()).onNext(true);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext(false);
+        verify(observer, never()).onNext(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testIsEmptyWithEmpty() {
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> NbpObservable = w.isEmpty();
+        Observable<Boolean> observable = w.isEmpty();
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext(true);
-        verify(NbpObserver, never()).onNext(false);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext(true);
+        verify(observer, never()).onNext(false);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testAnyWithPredicate1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
                 return t1 < 2;
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, never()).onNext(false);
-        verify(NbpObserver, times(1)).onNext(true);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, never()).onNext(false);
+        verify(observer, times(1)).onNext(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testExists1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
                 return t1 < 2;
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, never()).onNext(false);
-        verify(NbpObserver, times(1)).onNext(true);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, never()).onNext(false);
+        verify(observer, times(1)).onNext(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testAnyWithPredicate2() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Observable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
                 return t1 < 1;
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext(false);
-        verify(NbpObserver, never()).onNext(true);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext(false);
+        verify(observer, never()).onNext(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testAnyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> NbpObservable = w.any(new Predicate<Integer>() {
+        Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t) {
                 return true;
             }
         });
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext(false);
-        verify(NbpObserver, never()).onNext(true);
-        verify(NbpObserver, never()).onError(org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onNext(false);
+        verify(observer, never()).onNext(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, times(1)).onComplete();
     }
 
     @Test

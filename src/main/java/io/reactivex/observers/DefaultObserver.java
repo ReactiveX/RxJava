@@ -39,7 +39,7 @@ public abstract class DefaultObserver<T> implements Observer<T> {
      */
     protected final void cancel() {
         Disposable s = this.s;
-        this.s = DisposableHelper.DISPOSED;;
+        this.s = DisposableHelper.DISPOSED;
         s.dispose();
     }
     /**

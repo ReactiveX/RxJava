@@ -21,7 +21,7 @@ import org.reactivestreams.Subscriber;
  * Note that the class leaks all methods of {@link java.util.concurrent.atomic.AtomicLong}.
  * Use {@link #complete(Object)} to signal the single value.
  * <p>
- * The this atomic integer stores a bitfield:<br>
+ * The this atomic integer stores a bit field:<br>
  * bit 0: indicates that there is a value available<br>
  * bit 1: indicates that there was a request made<br>
  * bit 2: indicates there was a cancellation, exclusively set<br>

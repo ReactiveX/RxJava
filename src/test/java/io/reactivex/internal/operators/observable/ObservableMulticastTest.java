@@ -18,13 +18,12 @@ public class ObservableMulticastTest {
 //
 //    @Test
 //    public void testMulticast() {
-//        Subject<String, String> source = NbpPublishSubject.create();
+//        Subject<String, String> source = PublishSubject.create();
 //
 //        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishSubjectFactory());
 //
-//        @SuppressWarnings("unchecked")
-//        NbpObserver<String> NbpObserver = mock(NbpObserver.class);
-//        multicasted.subscribe(NbpObserver);
+//        Observer<String> observer = TestHelper.mockObserver(Observer.class);
+//        multicasted.subscribe(observer);
 //
 //        source.onNext("one");
 //        source.onNext("two");
@@ -35,23 +34,23 @@ public class ObservableMulticastTest {
 //        source.onNext("four");
 //        source.onCompleted();
 //
-//        verify(NbpObserver, never()).onNext("one");
-//        verify(NbpObserver, never()).onNext("two");
-//        verify(NbpObserver, times(1)).onNext("three");
-//        verify(NbpObserver, times(1)).onNext("four");
-//        verify(NbpObserver, times(1)).onCompleted();
+//        verify(observer, never()).onNext("one");
+//        verify(observer, never()).onNext("two");
+//        verify(observer, times(1)).onNext("three");
+//        verify(observer, times(1)).onNext("four");
+//        verify(observer, times(1)).onCompleted();
 //
 //    }
 //
 //    @Test
 //    public void testMulticastConnectTwice() {
-//        Subject<String, String> source = NbpPublishSubject.create();
+//        Subject<String, String> source = PublishSubject.create();
 //
 //        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishSubjectFactory());
 //
 //        @SuppressWarnings("unchecked")
-//        NbpObserver<String> NbpObserver = mock(NbpObserver.class);
-//        multicasted.subscribe(NbpObserver);
+//        Observer<String> observer = TestHelper.mockObserver(Observer.class);
+//        multicasted.subscribe(observer);
 //
 //        source.onNext("one");
 //
@@ -61,9 +60,9 @@ public class ObservableMulticastTest {
 //        source.onNext("two");
 //        source.onCompleted();
 //
-//        verify(NbpObserver, never()).onNext("one");
-//        verify(NbpObserver, times(1)).onNext("two");
-//        verify(NbpObserver, times(1)).onCompleted();
+//        verify(observer, never()).onNext("one");
+//        verify(observer, times(1)).onNext("two");
+//        verify(observer, times(1)).onCompleted();
 //
 //        assertEquals(sub, sub2);
 //
@@ -71,13 +70,13 @@ public class ObservableMulticastTest {
 //
 //    @Test
 //    public void testMulticastDisconnect() {
-//        Subject<String, String> source = NbpPublishSubject.create();
+//        Subject<String, String> source = PublisherSubject.create();
 //
 //        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishSubjectFactory());
 //
 //        @SuppressWarnings("unchecked")
-//        NbpObserver<String> NbpObserver = mock(NbpObserver.class);
-//        multicasted.subscribe(NbpObserver);
+//        Observer<String> observer = mock(Observer.class);
+//        multicasted.subscribe(observer);
 //
 //        source.onNext("one");
 //
@@ -88,17 +87,17 @@ public class ObservableMulticastTest {
 //        source.onNext("three");
 //
 //        // subscribe again
-//        multicasted.subscribe(NbpObserver);
+//        multicasted.subscribe(observer);
 //        // reconnect
 //        multicasted.connect();
 //        source.onNext("four");
 //        source.onCompleted();
 //
-//        verify(NbpObserver, never()).onNext("one");
-//        verify(NbpObserver, times(1)).onNext("two");
-//        verify(NbpObserver, never()).onNext("three");
-//        verify(NbpObserver, times(1)).onNext("four");
-//        verify(NbpObserver, times(1)).onCompleted();
+//        verify(observer, never()).onNext("one");
+//        verify(observer, times(1)).onNext("two");
+//        verify(observer, never()).onNext("three");
+//        verify(observer, times(1)).onNext("four");
+//        verify(observer, times(1)).onCompleted();
 //
 //    }
 //
@@ -106,7 +105,7 @@ public class ObservableMulticastTest {
 //
 //        @Override
 //        public Subject<String, String> call() {
-//            return NbpPublishSubject.<String> create();
+//            return PublisherSubject.<String> create();
 //        }
 //
 //    }

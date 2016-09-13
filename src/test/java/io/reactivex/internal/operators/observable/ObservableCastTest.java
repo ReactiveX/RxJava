@@ -24,29 +24,29 @@ public class ObservableCastTest {
     @Test
     public void testCast() {
         Observable<?> source = Observable.just(1, 2);
-        Observable<Integer> NbpObservable = source.cast(Integer.class);
+        Observable<Integer> observable = source.cast(Integer.class);
 
-        Observer<Integer> NbpObserver = TestHelper.mockObserver();
+        Observer<Integer> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onNext(1);
-        verify(NbpObserver, times(1)).onNext(1);
-        verify(NbpObserver, never()).onError(
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(1);
+        verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
-        verify(NbpObserver, times(1)).onComplete();
+        verify(observer, times(1)).onComplete();
     }
 
     @Test
     public void testCastWithWrongType() {
         Observable<?> source = Observable.just(1, 2);
-        Observable<Boolean> NbpObservable = source.cast(Boolean.class);
+        Observable<Boolean> observable = source.cast(Boolean.class);
 
-        Observer<Boolean> NbpObserver = TestHelper.mockObserver();
+        Observer<Boolean> observer = TestHelper.mockObserver();
 
-        NbpObservable.subscribe(NbpObserver);
+        observable.subscribe(observer);
 
-        verify(NbpObserver, times(1)).onError(
+        verify(observer, times(1)).onError(
                 org.mockito.Matchers.any(ClassCastException.class));
     }
 }

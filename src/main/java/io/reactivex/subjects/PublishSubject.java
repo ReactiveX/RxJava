@@ -88,7 +88,7 @@ public final class PublishSubject<T> extends Subject<T> {
                 remove(ps);
             }
         } else {
-            Throwable ex = error;;
+            Throwable ex = error;
             if (ex != null) {
                 t.onError(ex);
             } else {
@@ -166,7 +166,6 @@ public final class PublishSubject<T> extends Subject<T> {
     public void onSubscribe(Disposable s) {
         if (subscribers.get() == TERMINATED) {
             s.dispose();
-            return;
         }
     }
 

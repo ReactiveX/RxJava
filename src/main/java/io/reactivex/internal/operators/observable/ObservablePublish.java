@@ -55,58 +55,32 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         ObservableSource<T> onSubscribe = new ObservableSource<T>() {
             @Override
             public void subscribe(Observer<? super T> child) {
-                // concurrent connection/disconnection may change the state,
-                // we loop to be atomic while the child subscribes
-                for (;;) {
-                    // get the current subscriber-to-source
-                    PublishSubscriber<T> r = curr.get();
-                    // if there isn't one or it is unsubscribed
-                    if (r == null || r.isDisposed()) {
-                        // create a new subscriber to source
-                        PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
-                        // let's try setting it as the current subscriber-to-source
-                        if (!curr.compareAndSet(r, u)) {
-                            // didn't work, maybe someone else did it or the current subscriber
-                            // to source has just finished
-                            continue;
-                        }
-                        // we won, let's use it going onwards
-                        r = u;
-                    }
-
-                    // create the backpressure-managing producer for this child
-                    InnerProducer<T> inner = new InnerProducer<T>(r, child);
-                    /*
-                     * Try adding it to the current subscriber-to-source, add is atomic in respect
-                     * to other adds and the termination of the subscriber-to-source.
-                     */
-                    if (!r.add(inner)) {
-                        /*
-                         * The current PublishSubscriber has been terminated, try with a newer one.
-                         */
+            // concurrent connection/disconnection may change the state,
+            // we loop to be atomic while the child subscribes
+            for (;;) {
+                // get the current subscriber-to-source
+                PublishSubscriber<T> r = curr.get();
+                // if there isn't one or it is unsubscribed
+                if (r == null || r.isDisposed()) {
+                    // create a new subscriber to source
+                    PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
+                    // let's try setting it as the current subscriber-to-source
+                    if (!curr.compareAndSet(r, u)) {
+                        // didn't work, maybe someone else did it or the current subscriber
+                        // to source has just finished
                         continue;
-                        /*
-                         * Note: although technically correct, concurrent disconnects can cause
-                         * unexpected behavior such as child subscribers never receiving anything
-                         * (unless connected again). An alternative approach, similar to
-                         * PublishSubject would be to immediately terminate such child
-                         * subscribers as well:
-                         *
-                         * Object term = r.terminalEvent;
-                         * if (r.nl.isCompleted(term)) {
-                         *     child.onCompleted();
-                         * } else {
-                         *     child.onError(r.nl.getError(term));
-                         * }
-                         * return;
-                         *
-                         * The original concurrent behavior was non-deterministic in this regard as well.
-                         * Allowing this behavior, however, may introduce another unexpected behavior:
-                         * after disconnecting a previous connection, one might not be able to prepare
-                         * a new connection right after a previous termination by subscribing new child
-                         * subscribers asynchronously before a connect call.
-                         */
                     }
+                    // we won, let's use it going onwards
+                    r = u;
+                }
+
+                // create the backpressure-managing producer for this child
+                InnerProducer<T> inner = new InnerProducer<T>(r, child);
+                /*
+                 * Try adding it to the current subscriber-to-source, add is atomic in respect
+                 * to other adds and the termination of the subscriber-to-source.
+                 */
+                if (r.add(inner)) {
                     // the producer has been registered with the current subscriber-to-source so
                     // at least it will receive the next terminal event
                     // setting the producer will trigger the first request to be considered by
@@ -114,6 +88,31 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                     child.onSubscribe(inner);
                     break; // NOPMD
                 }
+                /*
+                 * The current PublishSubscriber has been terminated, try with a newer one.
+                 */
+                /*
+                 * Note: although technically correct, concurrent disconnects can cause
+                 * unexpected behavior such as child subscribers never receiving anything
+                 * (unless connected again). An alternative approach, similar to
+                 * PublishSubject would be to immediately terminate such child
+                 * subscribers as well:
+                 *
+                 * Object term = r.terminalEvent;
+                 * if (r.nl.isCompleted(term)) {
+                 *     child.onCompleted();
+                 * } else {
+                 *     child.onError(r.nl.getError(term));
+                 * }
+                 * return;
+                 *
+                 * The original concurrent behavior was non-deterministic in this regard as well.
+                 * Allowing this behavior, however, may introduce another unexpected behavior:
+                 * after disconnecting a previous connection, one might not be able to prepare
+                 * a new connection right after a previous termination by subscribing new child
+                 * subscribers asynchronously before a connect call.
+                 */
+            }
             }
         };
         return RxJavaPlugins.onAssembly(new ObservablePublish<T>(onSubscribe, source, curr, bufferSize));
@@ -170,13 +169,13 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
 
     @Override
     public void connect(Consumer<? super Disposable> connection) {
-        boolean doConnect = false;
+        boolean doConnect;
         PublishSubscriber<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
         for (;;) {
             // retrieve the current subscriber-to-source instance
             ps = current.get();
-            // if there is none yet or the current has unsubscribed
+            // if there is none yet or the current has been disposed
             if (ps == null || ps.isDisposed()) {
                 // create a new subscriber-to-source
                 PublishSubscriber<T> u = new PublishSubscriber<T>(current, bufferSize);
@@ -203,7 +202,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
          *
          * Note however, that asynchronously disconnecting a running source might leave
          * child-subscribers without any terminal event; PublishSubject does not have this
-         * issue because the unsubscription was always triggered by the child-subscribers
+         * issue because the dispose() was always triggered by the child-subscribers
          * themselves.
          */
         try {
@@ -522,22 +521,22 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                         InnerProducer<T>[] ps = producers.get();
 
                         int len = ps.length;
-                        // count how many have triggered unsubscription
-                        int unsubscribed = 0;
+                        // count how many have triggered dispose()
+                        int disposed = 0;
 
                         // Now find the minimum amount each child-subscriber requested
                         // since we can only emit that much to all of them without violating
                         // backpressure constraints
                         for (InnerProducer<T> ip : ps) {
                             if (ip.cancelled) {
-                                unsubscribed++;
+                                disposed++;
                             }
                             // we ignore those with NOT_REQUESTED as if they aren't even there
                         }
 
                         // it may happen everyone has unsubscribed between here and producers.get()
                         // or we have no subscribers at all to begin with
-                        if (len == unsubscribed) {
+                        if (len == disposed) {
                             term = terminalEvent;
                             // so let's consume a value from the queue
                             Object v = queue.poll();
@@ -616,14 +615,14 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         }
     }
     /**
-     * A Producer and Subscription that manages the request and unsubscription state of a
+     * A Producer and Subscription that manages the request and disposed state of a
      * child subscriber in thread-safe manner.
      * @param <T> the value type
      */
     static final class InnerProducer<T> implements Disposable {
         /**
          * The parent subscriber-to-source used to allow removing the child in case of
-         * child unsubscription.
+         * child dispose() call.
          */
         final PublishSubscriber<T> parent;
         /** The actual child subscriber. */
@@ -650,10 +649,6 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 cancelled = true;
                 // remove this from the parent
                 parent.remove(this);
-                // After removal, we might have unblocked the other child subscribers:
-                // let's assume this child had 0 requested before the unsubscription while
-                // the others had non-zero. By removing this 'blocking' child, the others
-                // are now free to receive events
                 parent.dispatch();
             }
         }

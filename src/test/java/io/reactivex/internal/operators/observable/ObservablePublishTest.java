@@ -38,15 +38,15 @@ public class ObservablePublishTest {
         ConnectableObservable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(final Observer<? super String> NbpObserver) {
-                NbpObserver.onSubscribe(Disposables.empty());
+            public void subscribe(final Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
                 new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         counter.incrementAndGet();
-                        NbpObserver.onNext("one");
-                        NbpObserver.onComplete();
+                        observer.onNext("one");
+                        observer.onComplete();
                     }
                 }).start();
             }
@@ -251,13 +251,13 @@ public class ObservablePublishTest {
         co.connect();
         // Emit 0
         scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
-        TestObserver<Long> NbpSubscriber = new TestObserver<Long>();
-        co.subscribe(NbpSubscriber);
+        TestObserver<Long> to = new TestObserver<Long>();
+        co.subscribe(to);
         // Emit 1 and 2
         scheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS);
-        NbpSubscriber.assertValues(1L, 2L);
-        NbpSubscriber.assertNoErrors();
-        NbpSubscriber.assertTerminated();
+        to.assertValues(1L, 2L);
+        to.assertNoErrors();
+        to.assertTerminated();
     }
 
     @Test

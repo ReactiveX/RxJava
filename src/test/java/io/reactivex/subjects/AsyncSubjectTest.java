@@ -273,7 +273,7 @@ public class AsyncSubjectTest {
     // FIXME subscriber methods are not allowed to throw
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery() {
-//        NbpAsyncSubject<String> ps = NbpAsyncSubject.create();
+//        AsyncSubject<String> ps = AsyncSubject.create();
 //
 //        ps.subscribe();
 //        TestObserver<String> ts = new TestObserver<String>();
@@ -296,7 +296,7 @@ public class AsyncSubjectTest {
 //     */
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery2() {
-//        NbpAsyncSubject<String> ps = NbpAsyncSubject.create();
+//        AsyncSubject<String> ps = AsyncSubject.create();
 //
 //        ps.subscribe();
 //        ps.subscribe();

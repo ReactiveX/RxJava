@@ -190,7 +190,7 @@ extends AbstractObservableWithUpstream<T, U> {
         public void run() {
             /*
              * If running on a synchronous scheduler, the timer might never
-             * be set so the periodic timer can't be stopped this loopback way.
+             * be set so the periodic timer can't be stopped this loop-back way.
              * The last resort is to crash the task so it hopefully won't
              * be rescheduled.
              */

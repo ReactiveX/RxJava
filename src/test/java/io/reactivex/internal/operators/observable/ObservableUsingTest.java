@@ -83,16 +83,16 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), disposeEagerly);
-        o.subscribe(NbpObserver);
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
-        inOrder.verify(NbpObserver, times(1)).onNext("Hello");
-        inOrder.verify(NbpObserver, times(1)).onNext("world!");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext("Hello");
+        inOrder.verify(observer, times(1)).onNext("world!");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
 
         // The resouce should be closed
@@ -143,22 +143,22 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), disposeEagerly);
-        o.subscribe(NbpObserver);
-        o.subscribe(NbpObserver);
+        o.subscribe(observer);
+        o.subscribe(observer);
 
-        InOrder inOrder = inOrder(NbpObserver);
+        InOrder inOrder = inOrder(observer);
 
-        inOrder.verify(NbpObserver, times(1)).onNext("Hello");
-        inOrder.verify(NbpObserver, times(1)).onNext("world!");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onNext("Hello");
+        inOrder.verify(observer, times(1)).onNext("world!");
+        inOrder.verify(observer, times(1)).onComplete();
 
-        inOrder.verify(NbpObserver, times(1)).onNext("Hello");
-        inOrder.verify(NbpObserver, times(1)).onNext("world!");
-        inOrder.verify(NbpObserver, times(1)).onComplete();
+        inOrder.verify(observer, times(1)).onNext("Hello");
+        inOrder.verify(observer, times(1)).onNext("world!");
+        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -287,14 +287,14 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), true)
         .doOnDispose(unsub)
         .doOnComplete(completion);
 
-        o.safeSubscribe(NbpObserver);
+        o.safeSubscribe(observer);
 
         assertEquals(Arrays.asList("disposed", "completed" /* , "unsub" */), events);
 
@@ -314,14 +314,14 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), false)
         .doOnDispose(unsub)
         .doOnComplete(completion);
 
-        o.safeSubscribe(NbpObserver);
+        o.safeSubscribe(observer);
 
         assertEquals(Arrays.asList("completed", /*"unsub",*/ "disposed"), events);
 
@@ -344,14 +344,14 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), true)
         .doOnDispose(unsub)
         .doOnError(onError);
 
-        o.safeSubscribe(NbpObserver);
+        o.safeSubscribe(observer);
 
         assertEquals(Arrays.asList("disposed", "error" /*, "unsub"*/), events);
 
@@ -372,14 +372,14 @@ public class ObservableUsingTest {
             }
         };
 
-        Observer<String> NbpObserver = TestHelper.mockObserver();
+        Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> o = Observable.using(resourceFactory, observableFactory,
                 new DisposeAction(), false)
         .doOnDispose(unsub)
         .doOnError(onError);
 
-        o.safeSubscribe(NbpObserver);
+        o.safeSubscribe(observer);
 
         assertEquals(Arrays.asList("error", /* "unsub",*/ "disposed"), events);
     }

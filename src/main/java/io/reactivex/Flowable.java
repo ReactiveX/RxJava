@@ -3828,7 +3828,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Constructs a Publisher that creates a dependent resource object which is disposed of on unsubscription.
+     * Constructs a Publisher that creates a dependent resource object which is disposed of on cancellation.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
      * <dl>
@@ -3859,8 +3859,8 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Constructs a Publisher that creates a dependent resource object which is disposed of just before
-     * termination if you have set {@code disposeEagerly} to {@code true} and unsubscription does not occur
-     * before termination. Otherwise resource disposal will occur on unsubscription.  Eager disposal is
+     * termination if you have set {@code disposeEagerly} to {@code true} and cancellation does not occur
+     * before termination. Otherwise resource disposal will occur on cancellation.  Eager disposal is
      * particularly appropriate for a synchronous Publisher that reuses resources. {@code disposeAction} will
      * only be called once per subscription.
      * <p>
@@ -3882,7 +3882,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param resourceDisposer
      *            the function that will dispose of the resource
      * @param eager
-     *            if {@code true} then disposal will happen either on unsubscription or just before emission of
+     *            if {@code true} then disposal will happen either on cancellation or just before emission of
      *            a terminal event ({@code onComplete} or {@code onError}).
      * @return the Publisher whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
@@ -3920,8 +3920,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
@@ -3972,8 +3972,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.o.png" alt="">
      * <dl>
@@ -4027,8 +4027,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4086,8 +4086,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4147,8 +4147,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4209,8 +4209,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4273,8 +4273,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4342,8 +4342,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4414,8 +4414,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4490,8 +4490,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4571,8 +4571,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4656,8 +4656,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h, i) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator expects backpressure from the sources and honors backpressure from the downstream.
@@ -4744,8 +4744,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
@@ -4804,8 +4804,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
@@ -5366,7 +5366,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * The unsubscription and backpressure is composed through.
+     * The cancellation and backpressure is composed through.
      * @param subscriber the subscriber to forward events and calls to in the current thread
      * @since 2.0
      */
@@ -7311,7 +7311,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Calls the unsubscribe {@code Action} if the downstream unsubscribes the sequence.
+     * Calls the unsubscribe {@code Action} if the downstream cancels the sequence.
      * <p>
      * The action is shared between subscriptions and thus may be called concurrently from multiple
      * threads; the action must be thread safe.
@@ -8482,7 +8482,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Groups the items emitted by a {@code Publisher} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedPublisher} allows only a single
-     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
+     * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedPublisher} emission.
      * <p>
@@ -8521,7 +8521,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Groups the items emitted by a {@code Publisher} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedPublisher} allows only a single
-     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
+     * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedPublisher} emission.
      * <p>
@@ -8563,7 +8563,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Groups the items emitted by a {@code Publisher} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedPublisher} allows only a single
-     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
+     * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedPublisher} emission.
      * <p>
@@ -8607,7 +8607,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Groups the items emitted by a {@code Publisher} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedPublisher} allows only a single
-     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
+     * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedPublisher} emission.
      * <p>
@@ -8654,7 +8654,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Groups the items emitted by a {@code Publisher} according to a specified criterion, and emits these
      * grouped items as {@link GroupedFlowable}s. The emitted {@code GroupedPublisher} allows only a single
-     * {@link Subscriber} during its lifetime and if this {@code Subscriber} unsubscribes before the
+     * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedPublisher} emission.
      * <p>
@@ -9692,7 +9692,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Nulls out references to the upstream producer and downstream Subscriber if
-     * the sequence is terminated or downstream unsubscribes.
+     * the sequence is terminated or downstream cancels.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
@@ -9701,7 +9701,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return a Flowable which out references to the upstream producer and downstream Subscriber if
-     * the sequence is terminated or downstream unsubscribes
+     * the sequence is terminated or downstream cancels
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
@@ -13674,7 +13674,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
-        Function<? super T, ? extends T> valueSelector = Functions.identity();
+        Function<T, T> valueSelector = Functions.identity();
         Callable<Map<K, Collection<T>>> mapSupplier = HashMapSupplier.asCallable();
         Function<K, List<T>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
@@ -13981,8 +13981,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param scheduler
-     *            the {@link Scheduler} to perform unsubscription actions on
-     * @return the source Publisher modified so that its unsubscriptions happen on the specified
+     *            the {@link Scheduler} to perform cancellation actions on
+     * @return the source Publisher modified so that its cancellations happen on the specified
      *         {@link Scheduler}
      * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
      */
@@ -14941,8 +14941,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
@@ -14988,8 +14988,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
@@ -15038,8 +15038,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
-     * use {@code doOnUnsubscribed()} as well or use {@code using()} to do cleanup in case of completion
-     * or unsubscription.
+     * use {@link #doOnCancel(Action)} as well or use {@code using()} to do cleanup in case of completion
+     * or cancellation.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>

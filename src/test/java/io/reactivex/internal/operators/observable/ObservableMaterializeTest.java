@@ -148,8 +148,8 @@ public class ObservableMaterializeTest {
         volatile Thread t;
 
         @Override
-        public void subscribe(final Observer<? super String> NbpObserver) {
-            NbpObserver.onSubscribe(Disposables.empty());
+        public void subscribe(final Observer<? super String> observer) {
+            observer.onSubscribe(Disposables.empty());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -162,14 +162,14 @@ public class ObservableMaterializeTest {
                             } catch (Throwable e) {
 
                             }
-                            NbpObserver.onError(new NullPointerException());
+                            observer.onError(new NullPointerException());
                             return;
                         } else {
-                            NbpObserver.onNext(s);
+                            observer.onNext(s);
                         }
                     }
                     System.out.println("subscription complete");
-                    NbpObserver.onComplete();
+                    observer.onComplete();
                 }
 
             });
