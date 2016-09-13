@@ -2997,4 +2997,15 @@ public class MaybeTest {
             }
         }).test().assertResult(1);
     }
+
+    @Test
+    public void switchIfEmptySingle() {
+        Maybe.empty().switchIfEmpty(Single.just(1)).test().assertResult(1);
+
+        Maybe.just(1).switchIfEmpty(Single.just(2)).test().assertResult(1);
+
+        Throwable throwable = new RuntimeException();
+
+        Maybe.empty().switchIfEmpty(Single.error(throwable)).test().assertError(throwable);
+    }
 }

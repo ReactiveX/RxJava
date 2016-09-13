@@ -3482,6 +3482,25 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Returns a Single that emits the items emitted by the source Maybe or the items of an alternate
+     * SingleSource if the current Maybe is empty.
+     * <p/>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other
+     *              the alternate SingleSource to subscribe to if the main does not emit any items
+     * @return  a Single that emits the items emitted by the source Maybe or the items of an
+     *          alternate SingleSource if the source Maybe is empty.
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<T> switchIfEmpty(SingleSource<? extends T> other) {
+        return switchIfEmpty(Single.wrap(other).toMaybe()).toSingle();
+    }
+
+    /**
      * Returns a Maybe that emits the items emitted by the source Maybe until a second MaybeSource
      * emits an item.
      * <p>
@@ -3744,10 +3763,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * to those values and emits the BiFunction's resulting value to downstream.
      *
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * 
+     *
      * <p>If either this or the other MaybeSource is empty or signals an error, the resulting Maybe will
      * terminate immediately and dispose the other source.
-     * 
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
