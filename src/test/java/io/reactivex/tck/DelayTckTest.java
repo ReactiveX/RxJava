@@ -26,7 +26,9 @@ public class DelayTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(long elements) {
         return FlowableTck.wrap(
+            FlowableAwaitOnSubscribeTck.wrap(
                 Flowable.range(0, (int)elements).delay(1, TimeUnit.MILLISECONDS)
+            )
         );
     }
 }

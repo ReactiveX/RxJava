@@ -10903,7 +10903,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <V>
      *            the timeout value type (ignored)
-     * @param timeoutSelector
+     * @param itemTimeoutIndicator
      *            a function that returns an ObservableSource for each item emitted by the source
      *            ObservableSource and that determines the timeout window for the subsequent item
      * @return an Observable that mirrors the source ObservableSource, but notifies observers of a
@@ -10912,8 +10912,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <V> Observable<T> timeout(Function<? super T, ? extends ObservableSource<V>> timeoutSelector) {
-        return timeout0(null, timeoutSelector, null);
+    public final <V> Observable<T> timeout(Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator) {
+        return timeout0(null, itemTimeoutIndicator, null);
     }
 
     /**
@@ -10932,7 +10932,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <V>
      *            the timeout value type (ignored)
-     * @param timeoutSelector
+     * @param itemTimeoutIndicator
      *            a function that returns an ObservableSource, for each item emitted by the source ObservableSource, that
      *            determines the timeout window for the subsequent item
      * @param other
@@ -10943,10 +10943,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <V> Observable<T> timeout(Function<? super T, ? extends ObservableSource<V>> timeoutSelector,
+    public final <V> Observable<T> timeout(Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator,
             ObservableSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return timeout0(null, timeoutSelector, other);
+        return timeout0(null, itemTimeoutIndicator, other);
     }
 
     /**
@@ -11014,16 +11014,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            maximum duration between items before a timeout occurs
      * @param timeUnit
      *            the unit of time that applies to the {@code timeout} argument
-     * @param other
-     *            the ObservableSource to use as the fallback in case of a timeout
      * @param scheduler
      *            the {@link Scheduler} to run the timeout timers on
+     * @param other
+     *            the ObservableSource to use as the fallback in case of a timeout
      * @return the source ObservableSource modified so that it will switch to the fallback ObservableSource in case of a
      *         timeout
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Observable<T> timeout(long timeout, TimeUnit timeUnit, ObservableSource<? extends T> other, Scheduler scheduler) {
+    public final Observable<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler, ObservableSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
         return timeout0(timeout, timeUnit, other, scheduler);
     }
@@ -11070,10 +11070,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the first timeout value type (ignored)
      * @param <V>
      *            the subsequent timeout value type (ignored)
-     * @param firstTimeoutSelector
+     * @param firstTimeoutIndicator
      *            a function that returns an ObservableSource that determines the timeout window for the first source
      *            item
-     * @param timeoutSelector
+     * @param itemTimeoutIndicator
      *            a function that returns an ObservableSource for each item emitted by the source ObservableSource and that
      *            determines the timeout window in which the subsequent source item must arrive in order to
      *            continue the sequence
@@ -11083,10 +11083,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U, V> Observable<T> timeout(Callable<? extends ObservableSource<U>> firstTimeoutSelector,
-            Function<? super T, ? extends ObservableSource<V>> timeoutSelector) {
-        ObjectHelper.requireNonNull(firstTimeoutSelector, "firstTimeoutSelector is null");
-        return timeout0(firstTimeoutSelector, timeoutSelector, null);
+    public final <U, V> Observable<T> timeout(ObservableSource<U> firstTimeoutIndicator,
+            Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator) {
+        ObjectHelper.requireNonNull(firstTimeoutIndicator, "firstTimeoutIndicator is null");
+        return timeout0(firstTimeoutIndicator, itemTimeoutIndicator, null);
     }
 
     /**
@@ -11104,10 +11104,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the first timeout value type (ignored)
      * @param <V>
      *            the subsequent timeout value type (ignored)
-     * @param firstTimeoutSelector
+     * @param firstTimeoutIndicator
      *            a function that returns an ObservableSource which determines the timeout window for the first source
      *            item
-     * @param timeoutSelector
+     * @param itemTimeoutIndicator
      *            a function that returns an ObservableSource for each item emitted by the source ObservableSource and that
      *            determines the timeout window in which the subsequent source item must arrive in order to
      *            continue the sequence
@@ -11117,17 +11117,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         either the first item emitted by the source ObservableSource or any subsequent item doesn't arrive
      *         within time windows defined by the timeout selectors
      * @throws NullPointerException
-     *             if {@code timeoutSelector} is null
+     *             if {@code itemTimeoutIndicator} is null
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Observable<T> timeout(
-            Callable<? extends ObservableSource<U>> firstTimeoutSelector,
-            Function<? super T, ? extends ObservableSource<V>> timeoutSelector,
+            ObservableSource<U> firstTimeoutIndicator,
+            Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator,
                     ObservableSource<? extends T> other) {
-        ObjectHelper.requireNonNull(firstTimeoutSelector, "firstTimeoutSelector is null");
+        ObjectHelper.requireNonNull(firstTimeoutIndicator, "firstTimeoutIndicator is null");
         ObjectHelper.requireNonNull(other, "other is null");
-        return timeout0(firstTimeoutSelector, timeoutSelector, other);
+        return timeout0(firstTimeoutIndicator, itemTimeoutIndicator, other);
     }
 
     private Observable<T> timeout0(long timeout, TimeUnit timeUnit, ObservableSource<? extends T> other,
@@ -11138,11 +11138,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     private <U, V> Observable<T> timeout0(
-            Callable<? extends ObservableSource<U>> firstTimeoutSelector,
-            Function<? super T, ? extends ObservableSource<V>> timeoutSelector,
+            ObservableSource<U> firstTimeoutIndicator,
+            Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator,
                     ObservableSource<? extends T> other) {
-        ObjectHelper.requireNonNull(timeoutSelector, "timeoutSelector is null");
-        return RxJavaPlugins.onAssembly(new ObservableTimeout<T, U, V>(this, firstTimeoutSelector, timeoutSelector, other));
+        ObjectHelper.requireNonNull(itemTimeoutIndicator, "itemTimeoutIndicator is null");
+        return RxJavaPlugins.onAssembly(new ObservableTimeout<T, U, V>(this, firstTimeoutIndicator, itemTimeoutIndicator, other));
     }
 
     /**

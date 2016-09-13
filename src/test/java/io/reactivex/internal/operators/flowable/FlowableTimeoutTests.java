@@ -131,7 +131,7 @@ public class FlowableTimeoutTests {
     @Test
     public void shouldSwitchToOtherIfOnNextNotWithinTimeout() {
         Flowable<String> other = Flowable.just("a", "b", "c");
-        Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<String>(observer);
@@ -154,7 +154,7 @@ public class FlowableTimeoutTests {
     @Test
     public void shouldSwitchToOtherIfOnErrorNotWithinTimeout() {
         Flowable<String> other = Flowable.just("a", "b", "c");
-        Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<String>(observer);
@@ -177,7 +177,7 @@ public class FlowableTimeoutTests {
     @Test
     public void shouldSwitchToOtherIfOnCompletedNotWithinTimeout() {
         Flowable<String> other = Flowable.just("a", "b", "c");
-        Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<String>(observer);
@@ -200,7 +200,7 @@ public class FlowableTimeoutTests {
     @Test
     public void shouldSwitchToOtherAndCanBeUnsubscribedIfOnNextNotWithinTimeout() {
         PublishProcessor<String> other = PublishProcessor.create();
-        Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
+        Flowable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, testScheduler, other);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<String>(observer);

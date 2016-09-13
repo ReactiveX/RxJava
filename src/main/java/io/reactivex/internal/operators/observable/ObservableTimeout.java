@@ -26,18 +26,18 @@ import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpstream<T, T> {
-    final Callable<? extends ObservableSource<U>> firstTimeoutSelector;
-    final Function<? super T, ? extends ObservableSource<V>> timeoutSelector;
+    final ObservableSource<U> firstTimeoutIndicator;
+    final Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator;
     final ObservableSource<? extends T> other;
 
     public ObservableTimeout(
             ObservableSource<T> source,
-            Callable<? extends ObservableSource<U>> firstTimeoutSelector,
-            Function<? super T, ? extends ObservableSource<V>> timeoutSelector,
+            ObservableSource<U> firstTimeoutIndicator,
+            Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator,
                     ObservableSource<? extends T> other) {
         super(source);
-        this.firstTimeoutSelector = firstTimeoutSelector;
-        this.timeoutSelector = timeoutSelector;
+        this.firstTimeoutIndicator = firstTimeoutIndicator;
+        this.itemTimeoutIndicator = itemTimeoutIndicator;
         this.other = other;
     }
 
@@ -46,10 +46,10 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         if (other == null) {
             source.subscribe(new TimeoutSubscriber<T, U, V>(
                     new SerializedObserver<T>(t),
-                    firstTimeoutSelector, timeoutSelector));
+                    firstTimeoutIndicator, itemTimeoutIndicator));
         } else {
             source.subscribe(new TimeoutOtherSubscriber<T, U, V>(
-                    t, firstTimeoutSelector, timeoutSelector, other));
+                    t, firstTimeoutIndicator, itemTimeoutIndicator, other));
         }
     }
 
@@ -59,19 +59,19 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         /** */
         private static final long serialVersionUID = 2672739326310051084L;
         final Observer<? super T> actual;
-        final Callable<? extends ObservableSource<U>> firstTimeoutSelector;
-        final Function<? super T, ? extends ObservableSource<V>> timeoutSelector;
+        final ObservableSource<U> firstTimeoutIndicator;
+        final Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator;
 
         Disposable s;
 
         volatile long index;
 
         public TimeoutSubscriber(Observer<? super T> actual,
-                Callable<? extends ObservableSource<U>> firstTimeoutSelector,
-                Function<? super T, ? extends ObservableSource<V>> timeoutSelector) {
+                ObservableSource<U> firstTimeoutIndicator,
+                Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator) {
             this.actual = actual;
-            this.firstTimeoutSelector = firstTimeoutSelector;
-            this.timeoutSelector = timeoutSelector;
+            this.firstTimeoutIndicator = firstTimeoutIndicator;
+            this.itemTimeoutIndicator = itemTimeoutIndicator;
         }
 
         @Override
@@ -81,24 +81,9 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
 
                 Observer<? super T> a = actual;
 
-                ObservableSource<U> p;
+                ObservableSource<U> p = firstTimeoutIndicator;
 
-                if (firstTimeoutSelector != null) {
-                    try {
-                        p = firstTimeoutSelector.call();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        dispose();
-                        EmptyDisposable.error(ex, a);
-                        return;
-                    }
-
-                    if (p == null) {
-                        dispose();
-                        EmptyDisposable.error(new NullPointerException("The first timeout Observable is null"), a);
-                        return;
-                    }
-
+                if (p != null) {
                     TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
 
                     if (compareAndSet(null, tis)) {
@@ -126,7 +111,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             ObservableSource<V> p;
 
             try {
-                p = timeoutSelector.apply(t);
+                p = itemTimeoutIndicator.apply(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
@@ -228,8 +213,8 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         /** */
         private static final long serialVersionUID = -1957813281749686898L;
         final Observer<? super T> actual;
-        final Callable<? extends ObservableSource<U>> firstTimeoutSelector;
-        final Function<? super T, ? extends ObservableSource<V>> timeoutSelector;
+        final ObservableSource<U> firstTimeoutIndicator;
+        final Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator;
         final ObservableSource<? extends T> other;
         final ObserverFullArbiter<T> arbiter;
 
@@ -240,11 +225,11 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         volatile long index;
 
         public TimeoutOtherSubscriber(Observer<? super T> actual,
-                                      Callable<? extends ObservableSource<U>> firstTimeoutSelector,
-                                      Function<? super T, ? extends ObservableSource<V>> timeoutSelector, ObservableSource<? extends T> other) {
+                                      ObservableSource<U> firstTimeoutIndicator,
+                                      Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator, ObservableSource<? extends T> other) {
             this.actual = actual;
-            this.firstTimeoutSelector = firstTimeoutSelector;
-            this.timeoutSelector = timeoutSelector;
+            this.firstTimeoutIndicator = firstTimeoutIndicator;
+            this.itemTimeoutIndicator = itemTimeoutIndicator;
             this.other = other;
             this.arbiter = new ObserverFullArbiter<T>(actual, this, 8);
         }
@@ -259,24 +244,9 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 }
                 Observer<? super T> a = actual;
 
-                if (firstTimeoutSelector != null) {
-                    ObservableSource<U> p;
+                ObservableSource<U> p = firstTimeoutIndicator;
 
-                    try {
-                        p = firstTimeoutSelector.call();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        dispose();
-                        EmptyDisposable.error(ex, a);
-                        return;
-                    }
-
-                    if (p == null) {
-                        dispose();
-                        EmptyDisposable.error(new NullPointerException("The first timeout Observable is null"), a);
-                        return;
-                    }
-
+                if (p != null) {
                     TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
 
                     if (compareAndSet(null, tis)) {
@@ -309,7 +279,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             ObservableSource<V> p;
 
             try {
-                p = timeoutSelector.apply(t);
+                p = itemTimeoutIndicator.apply(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);

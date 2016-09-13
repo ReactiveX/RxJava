@@ -2286,22 +2286,22 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void timeoutUnitNull() {
-        just1.timeout(1, null, just1, Schedulers.single());
+        just1.timeout(1, null, Schedulers.single(), just1);
     }
 
     @Test(expected = NullPointerException.class)
     public void timeouOtherNull() {
-        just1.timeout(1, TimeUnit.SECONDS, null, Schedulers.single());
+        just1.timeout(1, TimeUnit.SECONDS, Schedulers.single(), null);
     }
 
     @Test(expected = NullPointerException.class)
     public void timeouSchedulerNull() {
-        just1.timeout(1, TimeUnit.SECONDS, just1, null);
+        just1.timeout(1, TimeUnit.SECONDS, null, just1);
     }
 
     @Test(expected = NullPointerException.class)
     public void timeoutFirstNull() {
-        just1.timeout((Callable<Publisher<Integer>>)null, new Function<Integer, Publisher<Integer>>() {
+        just1.timeout((Publisher<Integer>)null, new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
                 return just1;
@@ -2310,38 +2310,13 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void timeoutFirstReturnsNull() {
-        just1.timeout(new Callable<Publisher<Object>>() {
-            @Override
-            public Publisher<Object> call() {
-                return null;
-            }
-        }, new Function<Integer, Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> apply(Integer v) {
-                return just1;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void timeoutFirstItemNull() {
-        just1.timeout(new Callable<Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> call() {
-                return just1;
-            }
-        }, null);
+        just1.timeout(just1, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void timeoutFirstItemReturnsNull() {
-        just1.timeout(new Callable<Publisher<Integer>>() {
-            @Override
-            public Publisher<Integer> call() {
-                return just1;
-            }
-        }, new Function<Integer, Publisher<Object>>() {
+        just1.timeout(just1, new Function<Integer, Publisher<Object>>() {
             @Override
             public Publisher<Object> apply(Integer v) {
                 return null;
