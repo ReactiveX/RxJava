@@ -25,17 +25,25 @@ import io.reactivex.exceptions.TestException;
 /**
  * Base abstract class for Flowable verifications, contains support for creating
  * Iterable range of values
+ * 
+ * @param <T> the element type
  */
 @Test
-public abstract class BaseTck extends PublisherVerification<Long> {
+public abstract class BaseTck<T> extends PublisherVerification<T> {
 
     public BaseTck() {
-        super(new TestEnvironment(300L));
+        super(new TestEnvironment(25L));
     }
 
     @Override
-    public Publisher<Long> createFailedPublisher() {
+    public Publisher<T> createFailedPublisher() {
         return Flowable.error(new TestException());
+    }
+
+
+    @Override
+    public long maxElementsFromPublisher() {
+        return 1024;
     }
 
     /**

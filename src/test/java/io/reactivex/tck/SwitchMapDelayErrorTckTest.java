@@ -17,14 +17,17 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
+import io.reactivex.internal.functions.Functions;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class SwitchMapDelayErrorTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
+            Flowable.just(1).switchMapDelayError(Functions.justFunction(
+                    Flowable.fromIterable(iterate(elements)))
+            )
         );
     }
 }

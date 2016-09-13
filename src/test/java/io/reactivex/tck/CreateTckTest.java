@@ -16,15 +16,24 @@ package io.reactivex.tck;
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
+import io.reactivex.FlowableEmitter.BackpressureMode;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class CreateTckTest extends BaseTck<Long> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Long> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
+            Flowable.create(new FlowableOnSubscribe<Long>() {
+                @Override
+                public void subscribe(FlowableEmitter<Long> e) throws Exception {
+                    for (long i = 0; i < elements && !e.isCancelled(); i++) {
+                        e.onNext(i);
+                    }
+                    e.onComplete();
+                }
+            }, BackpressureMode.BUFFER)
         );
     }
 }

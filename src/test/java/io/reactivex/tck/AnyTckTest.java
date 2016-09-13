@@ -17,14 +17,25 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Predicate;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class AnyTckTest extends BaseTck<Boolean> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Boolean> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
-        );
+                Flowable.range(1, 1000).any(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer e) throws Exception {
+                        return e == 500;
+                    }
+                })
+            );
+    }
+
+    @Override
+    public long maxElementsFromPublisher() {
+        return 1;
     }
 }

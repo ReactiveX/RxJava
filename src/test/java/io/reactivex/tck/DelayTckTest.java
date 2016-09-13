@@ -13,18 +13,20 @@
 
 package io.reactivex.tck;
 
+import java.util.concurrent.TimeUnit;
+
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class DelayTckTest extends BaseTck<Integer> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Integer> createPublisher(long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
+                Flowable.range(0, (int)elements).delay(1, TimeUnit.MILLISECONDS)
         );
     }
 }

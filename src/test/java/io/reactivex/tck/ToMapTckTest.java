@@ -13,18 +13,26 @@
 
 package io.reactivex.tck;
 
+import java.util.Map;
+
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
+import io.reactivex.internal.functions.Functions;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class ToMapTckTest extends BaseTck<Map<Integer, Integer>> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Map<Integer, Integer>> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
-        );
+                Flowable.range(1, 1000).toMap(Functions.<Integer>identity())
+            );
+    }
+
+    @Override
+    public long maxElementsFromPublisher() {
+        return 1;
     }
 }

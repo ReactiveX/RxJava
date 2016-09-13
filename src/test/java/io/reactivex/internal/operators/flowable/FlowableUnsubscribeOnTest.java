@@ -182,4 +182,17 @@ public class FlowableUnsubscribeOnTest {
         }
 
     }
+
+    @Test
+    public void takeHalf() {
+        int elements = 1024;
+        Flowable.range(0, elements * 2).unsubscribeOn(Schedulers.single())
+        .take(elements)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertValueCount(elements)
+        .assertComplete()
+        .assertNoErrors()
+        .assertSubscribed();
+    }
 }

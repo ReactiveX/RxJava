@@ -19,12 +19,14 @@ import org.testng.annotations.Test;
 import io.reactivex.Flowable;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class SwitchOnNextTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
+            Flowable.switchOnNext(Flowable.just(
+                    Flowable.fromIterable(iterate(elements)))
+            )
         );
     }
 }

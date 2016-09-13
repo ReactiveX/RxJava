@@ -17,14 +17,15 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
+import io.reactivex.schedulers.Timed;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class TimestampTckTest extends BaseTck<Timed<Integer>> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Timed<Integer>> createPublisher(long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
+                Flowable.range(0, (int)elements).timestamp()
         );
     }
 }

@@ -19,12 +19,17 @@ import org.testng.annotations.Test;
 import io.reactivex.Flowable;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class IgnoreElementsTckTest extends BaseTck<Integer> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Integer> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
-        );
+                Flowable.range(1, 1000).ignoreElements()
+            );
+    }
+
+    @Override
+    public long maxElementsFromPublisher() {
+        return 0;
     }
 }

@@ -13,18 +13,25 @@
 
 package io.reactivex.tck;
 
+import java.util.Arrays;
+
 import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.Flowable;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class AmbTckTest extends BaseTck<Long> {
 
+    @SuppressWarnings("unchecked")
     @Override
     public Publisher<Long> createPublisher(long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
+            Flowable.amb(Arrays.asList(
+                    Flowable.fromIterable(iterate(elements)),
+                    Flowable.<Long>never()
+                )
+            )
         );
     }
 }

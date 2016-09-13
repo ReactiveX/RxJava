@@ -19,12 +19,16 @@ import org.testng.annotations.Test;
 import io.reactivex.Flowable;
 
 @Test
-public class FromIterableTckTest extends BaseTck<Long> {
+public class EmptyTckTest extends BaseTck<Long> {
 
     @Override
-    public Publisher<Long> createPublisher(long elements) {
+    public Publisher<Long> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
-        );
+                Flowable.<Long>empty());
+    }
+
+    @Override
+    public long maxElementsFromPublisher() {
+        return 0;
     }
 }
