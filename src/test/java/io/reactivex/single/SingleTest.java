@@ -294,7 +294,7 @@ public class SingleTest {
     }
 
     /**
-     * Assert that unsubscribe propagates when passing in a SingleObserver and not a Subscriber
+     * Assert that unsubscribe propagates when passing in a SingleObserver and not a Subscriber.
      * @throws InterruptedException if the test is interrupted
      */
     @Test
@@ -369,7 +369,7 @@ public class SingleTest {
     }
 
     /**
-     * Assert that unsubscribe propagates when passing in a SingleObserver and not a Subscriber
+     * Assert that unsubscribe propagates when passing in a SingleObserver and not a Subscriber.
      * @throws InterruptedException if the test is interrupted
      */
     @Test
@@ -446,13 +446,13 @@ public class SingleTest {
     }
 
     @Test
-    public void testToObservable() {
-    	Flowable<String> a = Single.just("a").toFlowable();
-    	TestSubscriber<String> ts = new TestSubscriber<String>();
-    	a.subscribe(ts);
-    	ts.assertValue("a");
-    	ts.assertNoErrors();
-    	ts.assertComplete();
+    public void toObservable() {
+        Flowable<String> a = Single.just("a").toFlowable();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        a.subscribe(ts);
+        ts.assertValue("a");
+        ts.assertNoErrors();
+        ts.assertComplete();
     }
 
     @Test(expected = NullPointerException.class)

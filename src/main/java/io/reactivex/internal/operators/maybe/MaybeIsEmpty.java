@@ -41,7 +41,7 @@ public final class MaybeIsEmpty<T> extends AbstractMaybeWithUpstream<T, Boolean>
 
         Disposable d;
 
-        public IsEmptyMaybeObserver(MaybeObserver<? super Boolean> actual) {
+        IsEmptyMaybeObserver(MaybeObserver<? super Boolean> actual) {
             this.actual = actual;
         }
 

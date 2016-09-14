@@ -34,7 +34,7 @@ public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T
 
         Disposable d;
 
-        public SkipSubscriber(Observer<? super T> actual, long n) {
+        SkipSubscriber(Observer<? super T> actual, long n) {
             this.actual = actual;
             this.remaining = n;
         }

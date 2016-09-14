@@ -55,7 +55,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     extends AtomicInteger
     implements Subscriber<T>, Subscription, Runnable {
 
-        /** */
+
         private static final long serialVersionUID = -2365647875069161133L;
 
         final Subscriber<? super Flowable<T>> actual;
@@ -74,7 +74,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         boolean done;
 
-        public WindowExactSubscriber(Subscriber<? super Flowable<T>> actual, long size, int bufferSize) {
+        WindowExactSubscriber(Subscriber<? super Flowable<T>> actual, long size, int bufferSize) {
             super(1);
             this.actual = actual;
             this.size = size;
@@ -178,7 +178,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     extends AtomicInteger
     implements Subscriber<T>, Subscription, Runnable {
 
-        /** */
+
         private static final long serialVersionUID = -8792836352386833856L;
 
         final Subscriber<? super Flowable<T>> actual;
@@ -201,7 +201,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         boolean done;
 
-        public WindowSkipSubscriber(Subscriber<? super Flowable<T>> actual, long size, long skip, int bufferSize) {
+        WindowSkipSubscriber(Subscriber<? super Flowable<T>> actual, long size, long skip, int bufferSize) {
             super(1);
             this.actual = actual;
             this.size = size;
@@ -320,7 +320,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     extends AtomicInteger
     implements Subscriber<T>, Subscription, Runnable {
 
-        /** */
+
         private static final long serialVersionUID = 2428527070996323976L;
 
         final Subscriber<? super Flowable<T>> actual;
@@ -354,7 +354,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         volatile boolean cancelled;
 
-        public WindowOverlapSubscriber(Subscriber<? super Flowable<T>> actual, long size, long skip, int bufferSize) {
+        WindowOverlapSubscriber(Subscriber<? super Flowable<T>> actual, long size, long skip, int bufferSize) {
             super(1);
             this.actual = actual;
             this.size = size;

@@ -65,7 +65,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         final AtomicInteger windows = new AtomicInteger();
 
-        public BufferBoundarySubscriber(Subscriber<? super U> actual,
+        BufferBoundarySubscriber(Subscriber<? super U> actual,
                 Publisher<? extends Open> bufferOpen,
                 Function<? super Open, ? extends Publisher<? extends Close>> bufferClose,
                         Callable<U> bufferSupplier) {
@@ -252,7 +252,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         boolean done;
 
-        public BufferOpenSubscriber(BufferBoundarySubscriber<T, U, Open, Close> parent) {
+        BufferOpenSubscriber(BufferBoundarySubscriber<T, U, Open, Close> parent) {
             this.parent = parent;
         }
         @Override
@@ -288,7 +288,7 @@ extends AbstractFlowableWithUpstream<T, U> {
         final BufferBoundarySubscriber<T, U, Open, Close> parent;
         final U value;
         boolean done;
-        public BufferCloseSubscriber(U value, BufferBoundarySubscriber<T, U, Open, Close> parent) {
+        BufferCloseSubscriber(U value, BufferBoundarySubscriber<T, U, Open, Close> parent) {
             this.parent = parent;
             this.value = value;
         }

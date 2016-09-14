@@ -24,7 +24,7 @@ import io.reactivex.internal.util.SuppressAnimalSniffer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Manages the creating of ScheduledExecutorServices and sets up purging
+ * Manages the creating of ScheduledExecutorServices and sets up purging.
  */
 public enum SchedulerPoolFactory {
     ;

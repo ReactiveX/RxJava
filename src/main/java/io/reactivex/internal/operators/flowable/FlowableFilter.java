@@ -40,7 +40,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
     implements ConditionalSubscriber<T> {
         final Predicate<? super T> filter;
 
-        public FilterSubscriber(Subscriber<? super T> actual, Predicate<? super T> filter) {
+        FilterSubscriber(Subscriber<? super T> actual, Predicate<? super T> filter) {
             super(actual);
             this.filter = filter;
         }
@@ -106,7 +106,7 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
     static final class FilterConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {
         final Predicate<? super T> filter;
 
-        public FilterConditionalSubscriber(ConditionalSubscriber<? super T> actual, Predicate<? super T> filter) {
+        FilterConditionalSubscriber(ConditionalSubscriber<? super T> actual, Predicate<? super T> filter) {
             super(actual);
             this.filter = filter;
         }

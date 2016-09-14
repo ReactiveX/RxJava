@@ -33,14 +33,14 @@ public final class ObservableSkipLast<T> extends AbstractObservableWithUpstream<
     }
 
     static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -3807491841935125653L;
         final Observer<? super T> actual;
         final int skip;
 
         Disposable s;
 
-        public SkipLastSubscriber(Observer<? super T> actual, int skip) {
+        SkipLastSubscriber(Observer<? super T> actual, int skip) {
             super(skip);
             this.actual = actual;
             this.skip = skip;

@@ -56,7 +56,7 @@ public final class FlowableTck<T> extends Flowable<T> {
     static final class TckSubscriber<T>
     extends AtomicInteger
     implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -4945028590049415624L;
 
         final Subscriber<? super T> actual;
@@ -65,7 +65,7 @@ public final class FlowableTck<T> extends Flowable<T> {
 
         Subscription s;
 
-        public TckSubscriber(Subscriber<? super T> actual) {
+        TckSubscriber(Subscriber<? super T> actual) {
             this.actual = actual;
             this.error = new AtomicThrowable();
         }

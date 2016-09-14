@@ -74,7 +74,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
     }
 
     static final class UsingSubscriber<T, D> extends AtomicBoolean implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 5904473792286235046L;
 
         final Subscriber<? super T> actual;
@@ -84,7 +84,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
 
         Subscription s;
 
-        public UsingSubscriber(Subscriber<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
+        UsingSubscriber(Subscriber<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
             this.actual = actual;
             this.resource = resource;
             this.disposer = disposer;

@@ -69,8 +69,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
         }
     }
 
-    static abstract class BaseRangeSubscription<T> extends BasicQueueSubscription<T> {
-        /** */
+    abstract static class BaseRangeSubscription<T> extends BasicQueueSubscription<T> {
         private static final long serialVersionUID = -2252972430506210021L;
 
         final Iterator<? extends T> it;
@@ -79,7 +78,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
         boolean once;
 
-        public BaseRangeSubscription(Iterator<? extends T> it) {
+        BaseRangeSubscription(Iterator<? extends T> it) {
             this.it = it;
         }
 
@@ -137,12 +136,12 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
     static final class IteratorSubscription<T> extends BaseRangeSubscription<T> {
 
-        /** */
+
         private static final long serialVersionUID = -6022804456014692607L;
 
         final Subscriber<? super T> actual;
 
-        public IteratorSubscription(Subscriber<? super T> actual, Iterator<? extends T> it) {
+        IteratorSubscription(Subscriber<? super T> actual, Iterator<? extends T> it) {
             super(it);
             this.actual = actual;
         }
@@ -297,12 +296,12 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
     static final class IteratorConditionalSubscription<T> extends BaseRangeSubscription<T> {
 
-        /** */
+
         private static final long serialVersionUID = -6022804456014692607L;
 
         final ConditionalSubscriber<? super T> actual;
 
-        public IteratorConditionalSubscription(ConditionalSubscriber<? super T> actual, Iterator<? extends T> it) {
+        IteratorConditionalSubscription(ConditionalSubscriber<? super T> actual, Iterator<? extends T> it) {
             super(it);
             this.actual = actual;
         }

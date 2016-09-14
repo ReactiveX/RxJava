@@ -36,7 +36,7 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
 
         Disposable s;
 
-        public DematerializeSubscriber(Observer<? super T> actual) {
+        DematerializeSubscriber(Observer<? super T> actual) {
             this.actual = actual;
         }
 

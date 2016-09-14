@@ -101,7 +101,7 @@ public class CompletableTest {
      * A class containing a completable instance and counts the number of subscribers.
      */
     static final class NormalCompletable extends AtomicInteger {
-        /** */
+
         private static final long serialVersionUID = 7192337844700923752L;
 
         public final Completable completable = Completable.unsafeCreate(new CompletableSource() {
@@ -126,7 +126,7 @@ public class CompletableTest {
      * the number of subscribers.
      */
     static final class ErrorCompletable extends AtomicInteger {
-        /** */
+
         private static final long serialVersionUID = 7192337844700923752L;
 
         public final Completable completable = Completable.unsafeCreate(new CompletableSource() {
@@ -1991,7 +1991,7 @@ public class CompletableTest {
         c.blockingAwait();
     }
 
-    final static class CompletableOperatorSwap implements CompletableOperator {
+    static final class CompletableOperatorSwap implements CompletableOperator {
         @Override
         public CompletableObserver apply(final CompletableObserver v) {
             return new CompletableObserver() {
@@ -3438,8 +3438,8 @@ public class CompletableTest {
             assertEquals("Should have received exactly 1 exception", 1, handler.count);
             Throwable caught = handler.caught;
             while (caught != null) {
-                if (caught instanceof TestException) break;
-                if (caught == caught.getCause()) break;
+                if (caught instanceof TestException) { break; }
+                if (caught == caught.getCause()) { break; }
                 caught = caught.getCause();
             }
             assertTrue("A TestException should have been delivered to the handler",
@@ -3587,7 +3587,7 @@ public class CompletableTest {
         stringSubject.onComplete();
 
         assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
-        assertNotNull("Unsubscribed before the call to onCompleted", subscriptionRef.get());
+        assertNotNull("Unsubscribed before the call to onComplete", subscriptionRef.get());
     }
 
     @Test
@@ -4085,7 +4085,7 @@ public class CompletableTest {
             normal.completable.subscribe(new CompletableSubscriber() {
 
                 @Override
-                public void onCompleted() {
+                public void onComplete() {
                     throw new TestException("Forced failure");
                 }
 
@@ -4118,7 +4118,7 @@ public class CompletableTest {
             error.completable.subscribe(new CompletableSubscriber() {
 
                 @Override
-                public void onCompleted() {
+                public void onComplete() {
                 }
 
                 @Override
@@ -4173,7 +4173,7 @@ public class CompletableTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Completable completable = Completable.create(new CompletableOnSubscribe() {
             @Override public void call(CompletableSubscriber s) {
-                s.onCompleted();
+                s.onComplete();
             }
         });
         completable.unsafeSubscribe(ts);
@@ -4262,7 +4262,7 @@ public class CompletableTest {
         stringSubject.onComplete();
 
         assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
-        assertNotNull("Unsubscribed before the call to onCompleted", subscriptionRef.get());
+        assertNotNull("Unsubscribed before the call to onComplete", subscriptionRef.get());
     }
 
     @Test
@@ -4328,7 +4328,7 @@ public class CompletableTest {
             error.completable.subscribe(new Subscriber<Object>() {
 
                 @Override
-                public void onCompleted() {
+                public void onComplete() {
 
                 }
 

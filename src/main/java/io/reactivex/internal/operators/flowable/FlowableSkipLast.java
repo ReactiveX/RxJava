@@ -33,14 +33,14 @@ public final class FlowableSkipLast<T> extends AbstractFlowableWithUpstream<T, T
     }
 
     static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -3807491841935125653L;
         final Subscriber<? super T> actual;
         final int skip;
 
         Subscription s;
 
-        public SkipLastSubscriber(Subscriber<? super T> actual, int skip) {
+        SkipLastSubscriber(Subscriber<? super T> actual, int skip) {
             super(skip);
             this.actual = actual;
             this.skip = skip;

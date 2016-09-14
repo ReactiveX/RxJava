@@ -121,7 +121,7 @@ public class ObservableUnsubscribeOnTest {
     }
 
     private static class ThreadSubscription extends AtomicBoolean implements Disposable {
-        /** */
+
         private static final long serialVersionUID = -5011338112974328771L;
 
         private volatile Thread thread;

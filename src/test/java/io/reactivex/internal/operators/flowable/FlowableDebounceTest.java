@@ -51,7 +51,7 @@ public class FlowableDebounceTest {
                 observer.onSubscribe(new BooleanSubscription());
                 publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
                 publishNext(observer, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
-                publishNext(observer, 900, "three");   // Should be skipped since onCompleted will arrive before the timeout expires.
+                publishNext(observer, 900, "three");   // Should be skipped since onComplete will arrive before the timeout expires.
                 publishCompleted(observer, 1000);     // Should be published as soon as the timeout expires.
             }
         });

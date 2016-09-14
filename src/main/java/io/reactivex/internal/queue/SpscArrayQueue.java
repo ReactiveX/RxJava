@@ -38,7 +38,6 @@ import io.reactivex.internal.util.Pow2;
  * @param <E>
  */
 public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements SimpleQueue<E> {
-    /** */
     private static final long serialVersionUID = -1296597691183856449L;
     private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     final int mask;
@@ -66,10 +65,9 @@ public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements 
         final int offset = calcElementOffset(index, mask);
         if (index >= producerLookAhead) {
             int step = lookAheadStep;
-            if (null == lvElement(calcElementOffset(index + step, mask))) {// LoadLoad
+            if (null == lvElement(calcElementOffset(index + step, mask))) { // LoadLoad
                 producerLookAhead = index + step;
-            }
-            else if (null != lvElement(offset)){
+            } else if (null != lvElement(offset)) {
                 return false;
             }
         }
@@ -114,7 +112,7 @@ public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements 
     @Override
     public void clear() {
         // we have to test isEmpty because of the weaker poll() guarantee
-        while (poll() != null || !isEmpty()) ; // NOPMD
+        while (poll() != null || !isEmpty()) { } // NOPMD
     }
 
     int calcElementOffset(long index, int mask) {

@@ -53,7 +53,7 @@ public final class FlowableIntervalRange extends Flowable<Long> {
 
     static final class IntervalRangeSubscriber extends AtomicLong
     implements Subscription, Runnable {
-        /** */
+
         private static final long serialVersionUID = -2809475196591179431L;
 
         final Subscriber<? super Long> actual;
@@ -63,7 +63,7 @@ public final class FlowableIntervalRange extends Flowable<Long> {
 
         final AtomicReference<Disposable> resource = new AtomicReference<Disposable>();
 
-        public IntervalRangeSubscriber(Subscriber<? super Long> actual, long start, long end) {
+        IntervalRangeSubscriber(Subscriber<? super Long> actual, long start, long end) {
             this.actual = actual;
             this.count = start;
             this.end = end;

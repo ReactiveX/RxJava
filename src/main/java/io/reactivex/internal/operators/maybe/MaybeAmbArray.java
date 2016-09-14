@@ -56,14 +56,14 @@ public final class MaybeAmbArray<T> extends Maybe<T> {
     extends AtomicBoolean
     implements MaybeObserver<T>, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = -7044685185359438206L;
 
         final MaybeObserver<? super T> actual;
 
         final CompositeDisposable set;
 
-        public AmbMaybeObserver(MaybeObserver<? super T> actual) {
+        AmbMaybeObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
             this.set = new CompositeDisposable();
         }

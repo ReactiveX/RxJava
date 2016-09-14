@@ -62,7 +62,7 @@ public class ObservableFromIterableTest {
             public Iterator<String> iterator() {
                 return new Iterator<String>() {
 
-                    int i = 0;
+                    int i;
 
                     @Override
                     public boolean hasNext() {
@@ -158,8 +158,8 @@ public class ObservableFromIterableTest {
                         if (count > 1) {
                             called.set(true);
                             return false;
-                        } else
-                            return true;
+                        }
+                        return true;
                     }
 
                     @Override
@@ -195,8 +195,8 @@ public class ObservableFromIterableTest {
                         if (count > 1) {
                             called.set(true);
                             return false;
-                        } else
-                            return true;
+                        }
+                        return true;
                     }
 
                     @Override

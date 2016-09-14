@@ -41,7 +41,7 @@ public final class ObservableDetach<T> extends AbstractObservableWithUpstream<T,
 
         Disposable s;
 
-        public DetachObserver(Observer<? super T> actual) {
+        DetachObserver(Observer<? super T> actual) {
             this.actual = actual;
         }
 

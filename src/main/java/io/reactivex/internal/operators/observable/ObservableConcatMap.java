@@ -56,7 +56,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
     }
 
     static final class SourceSubscriber<T, U> extends AtomicInteger implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 8828587559905699186L;
         final Observer<? super U> actual;
         final SequentialDisposable sa;
@@ -76,7 +76,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
         int fusionMode;
 
-        public SourceSubscriber(Observer<? super U> actual,
+        SourceSubscriber(Observer<? super U> actual,
                                 Function<? super T, ? extends ObservableSource<? extends U>> mapper, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
@@ -236,7 +236,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             final Observer<? super U> actual;
             final SourceSubscriber<?, ?> parent;
 
-            public InnerSubscriber(Observer<? super U> actual, SourceSubscriber<?, ?> parent) {
+            InnerSubscriber(Observer<? super U> actual, SourceSubscriber<?, ?> parent) {
                 this.actual = actual;
                 this.parent = parent;
             }
@@ -266,7 +266,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
     extends AtomicInteger
     implements Observer<T>, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = -6951100001833242599L;
 
         final Observer<? super R> actual;
@@ -295,7 +295,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
         int sourceMode;
 
-        public ConcatMapDelayErrorObserver(Observer<? super R> actual,
+        ConcatMapDelayErrorObserver(Observer<? super R> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
                         boolean tillTheEnd) {
             this.actual = actual;
@@ -483,7 +483,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
             final ConcatMapDelayErrorObserver<?, R> parent;
 
-            public DelayErrorInnerObserver(Observer<? super R> actual, ConcatMapDelayErrorObserver<?, R> parent) {
+            DelayErrorInnerObserver(Observer<? super R> actual, ConcatMapDelayErrorObserver<?, R> parent) {
                 this.actual = actual;
                 this.parent = parent;
             }

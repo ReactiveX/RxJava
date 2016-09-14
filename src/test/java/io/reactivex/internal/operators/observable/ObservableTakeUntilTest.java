@@ -125,7 +125,7 @@ public class ObservableTakeUntilTest {
     }
 
     /**
-     * If the 'other' onCompletes then we unsubscribe from the source and onComplete
+     * If the 'other' onCompletes then we unsubscribe from the source and onComplete.
      */
     @Test
     public void testTakeUntilOtherCompleted() {
@@ -156,7 +156,7 @@ public class ObservableTakeUntilTest {
         Observer<? super String> observer;
         Disposable s;
 
-        public TestObservable(Disposable s) {
+        TestObservable(Disposable s) {
             this.s = s;
         }
 

@@ -89,7 +89,7 @@ public class ObservableToMultimapTest {
             @Override
             public Map<Integer, Collection<String>> call() {
                 return new LinkedHashMap<Integer, Collection<String>>() {
-                    /** */
+
                     private static final long serialVersionUID = -2084477070717362859L;
 
                     @Override

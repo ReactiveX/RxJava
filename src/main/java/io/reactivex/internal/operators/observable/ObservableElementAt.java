@@ -41,7 +41,7 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
 
         boolean done;
 
-        public ElementAtSubscriber(Observer<? super T> actual, long index, T defaultValue) {
+        ElementAtSubscriber(Observer<? super T> actual, long index, T defaultValue) {
             this.actual = actual;
             this.index = index;
             this.defaultValue = defaultValue;

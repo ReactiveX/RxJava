@@ -553,7 +553,7 @@ public class ObservableReplayTest {
     }
 
     /**
-     * Specifically test interaction with a Scheduler with subscribeOn
+     * Specifically test interaction with a Scheduler with subscribeOn.
      *
      * @throws Exception
      */
@@ -606,7 +606,7 @@ public class ObservableReplayTest {
     }
 
     /**
-     * Specifically test interaction with a Scheduler with subscribeOn
+     * Specifically test interaction with a Scheduler with subscribeOn.
      *
      * @throws Exception
      */
@@ -679,11 +679,11 @@ public class ObservableReplayTest {
     }
 
 
-    private static class InprocessWorker extends Worker {
+    static class InprocessWorker extends Worker {
         private final Disposable mockDisposable;
         public boolean unsubscribed;
 
-        public InprocessWorker(Disposable mockDisposable) {
+        InprocessWorker(Disposable mockDisposable) {
             this.mockDisposable = mockDisposable;
         }
 

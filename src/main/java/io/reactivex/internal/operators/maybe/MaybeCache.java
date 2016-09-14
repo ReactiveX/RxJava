@@ -172,12 +172,12 @@ public final class MaybeCache<T> extends Maybe<T> implements MaybeObserver<T> {
     static final class CacheDisposable<T>
     extends AtomicReference<MaybeCache<T>>
     implements Disposable {
-        /** */
+
         private static final long serialVersionUID = -5791853038359966195L;
 
         final MaybeObserver<? super T> actual;
 
-        public CacheDisposable(MaybeObserver<? super T> actual, MaybeCache<T> parent) {
+        CacheDisposable(MaybeObserver<? super T> actual, MaybeCache<T> parent) {
             super(parent);
             this.actual = actual;
         }

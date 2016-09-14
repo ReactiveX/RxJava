@@ -139,7 +139,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
     final class ConnectionSubscriber
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 3813126992133394324L;
 
         final Observer<? super T> subscriber;

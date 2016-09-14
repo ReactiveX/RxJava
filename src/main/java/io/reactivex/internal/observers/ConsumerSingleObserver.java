@@ -26,7 +26,7 @@ public final class ConsumerSingleObserver<T>
 extends AtomicReference<Disposable>
 implements SingleObserver<T>, Disposable {
 
-    /** */
+
     private static final long serialVersionUID = -7012088219455310787L;
 
     final Consumer<? super T> onSuccess;

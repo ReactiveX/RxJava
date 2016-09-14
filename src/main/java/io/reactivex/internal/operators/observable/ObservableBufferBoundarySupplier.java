@@ -45,7 +45,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
     static final class BufferBoundarySupplierSubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
-        /** */
+
         final Callable<U> bufferSupplier;
         final Callable<? extends ObservableSource<B>> boundarySupplier;
 
@@ -55,7 +55,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         U buffer;
 
-        public BufferBoundarySupplierSubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
+        BufferBoundarySupplierSubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
                                                 Callable<? extends ObservableSource<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -248,7 +248,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         boolean once;
 
-        public BufferBoundarySubscriber(BufferBoundarySupplierSubscriber<T, U, B> parent) {
+        BufferBoundarySubscriber(BufferBoundarySupplierSubscriber<T, U, B> parent) {
             this.parent = parent;
         }
 

@@ -68,7 +68,7 @@ public final class ObservableAmb<T> extends Observable<T> {
         final AtomicInteger winner = new AtomicInteger();
 
         @SuppressWarnings("unchecked")
-        public AmbCoordinator(Observer<? super T> actual, int count) {
+        AmbCoordinator(Observer<? super T> actual, int count) {
             this.actual = actual;
             this.subscribers = new AmbInnerSubscriber[count];
         }
@@ -127,7 +127,7 @@ public final class ObservableAmb<T> extends Observable<T> {
     }
 
     static final class AmbInnerSubscriber<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -1185974347409665484L;
         final AmbCoordinator<T> parent;
         final int index;
@@ -135,7 +135,7 @@ public final class ObservableAmb<T> extends Observable<T> {
 
         boolean won;
 
-        public AmbInnerSubscriber(AmbCoordinator<T> parent, int index, Observer<? super T> actual) {
+        AmbInnerSubscriber(AmbCoordinator<T> parent, int index, Observer<? super T> actual) {
             this.parent = parent;
             this.index = index;
             this.actual = actual;

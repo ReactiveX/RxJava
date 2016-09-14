@@ -61,7 +61,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
 
         boolean done;
 
-        public ScanSeedSubscriber(Observer<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
+        ScanSeedSubscriber(Observer<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
             this.actual = actual;
             this.accumulator = accumulator;
             this.value = value;

@@ -40,7 +40,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
     static final class MapSubscriber<T, U> extends BasicFuseableSubscriber<T, U> {
         final Function<? super T, ? extends U> mapper;
 
-        public MapSubscriber(Subscriber<? super U> actual, Function<? super T, ? extends U> mapper) {
+        MapSubscriber(Subscriber<? super U> actual, Function<? super T, ? extends U> mapper) {
             super(actual);
             this.mapper = mapper;
         }
@@ -82,7 +82,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
     static final class MapConditionalSubscriber<T, U> extends BasicFuseableConditionalSubscriber<T, U> {
         final Function<? super T, ? extends U> mapper;
 
-        public MapConditionalSubscriber(ConditionalSubscriber<? super U> actual, Function<? super T, ? extends U> function) {
+        MapConditionalSubscriber(ConditionalSubscriber<? super U> actual, Function<? super T, ? extends U> function) {
             super(actual);
             this.mapper = function;
         }

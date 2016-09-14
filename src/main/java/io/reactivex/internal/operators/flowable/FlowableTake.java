@@ -32,14 +32,14 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
     }
 
     static final class TakeSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -5636543848937116287L;
         boolean done;
         Subscription subscription;
         final Subscriber<? super T> actual;
         final long limit;
         long remaining;
-        public TakeSubscriber(Subscriber<? super T> actual, long limit) {
+        TakeSubscriber(Subscriber<? super T> actual, long limit) {
             this.actual = actual;
             this.limit = limit;
             this.remaining = limit;

@@ -35,7 +35,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
 
     static final class SingleElementSubscriber<T> extends DeferredScalarSubscription<T>
     implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = -5526049321428043809L;
 
         final T defaultValue;
@@ -44,7 +44,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
 
         boolean done;
 
-        public SingleElementSubscriber(Subscriber<? super T> actual, T defaultValue) {
+        SingleElementSubscriber(Subscriber<? super T> actual, T defaultValue) {
             super(actual);
             this.defaultValue = defaultValue;
         }

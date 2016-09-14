@@ -23,11 +23,12 @@ import org.reactivestreams.Publisher;
 import io.reactivex.annotations.*;
 
 /**
- * Verifies that
+ * Verifies several properties.
  * <ul>
  * <li>All public base type methods have the {@link SchedulerSupport} present</li>
  * <li>All public base type methods which return Flowable have the {@link BackpressureSupport} present</li>
  * <li>All public base types that don't return Flowable don't have the {@link BackpressureSupport} present (these are copy-paste errors)</li>
+ * </ul>
  */
 public class BaseTypeAnnotations {
 

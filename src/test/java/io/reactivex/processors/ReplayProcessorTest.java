@@ -95,12 +95,12 @@ public class ReplayProcessorTest {
 
         channel.onComplete();
 
-        // B is subscribed so should receive onCompleted
+        // B is subscribed so should receive onComplete
         inOrderB.verify(observerB).onComplete();
 
         channel.subscribe(observerC);
 
-        // when C subscribes it should receive 42, 4711, onCompleted
+        // when C subscribes it should receive 42, 4711, onComplete
         inOrderC.verify(observerC).onNext(42);
         inOrderC.verify(observerC).onNext(4711);
         inOrderC.verify(observerC).onComplete();
@@ -111,7 +111,7 @@ public class ReplayProcessorTest {
         channel.onNext(15);
         channel.onError(new RuntimeException());
 
-        // a new subscription should only receive what was emitted prior to terminal state onCompleted
+        // a new subscription should only receive what was emitted prior to terminal state onComplete
         channel.subscribe(observerD);
 
         inOrderD.verify(observerD).onNext(42);
@@ -327,7 +327,7 @@ public class ReplayProcessorTest {
         // if subscription blocked existing subscribers then 'makeSlow' would cause this to not be there yet
         assertEquals("three", lastValueForSubscriber1.get());
 
-        System.out.println("about to send onCompleted");
+        System.out.println("about to send onComplete");
 
         subject.onComplete();
 

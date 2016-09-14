@@ -49,14 +49,14 @@ public final class CompletableSubscribeOn extends Completable {
     static final class SubscribeOnObserver
     extends AtomicReference<Disposable>
     implements CompletableObserver, Disposable {
-        /** */
+
         private static final long serialVersionUID = 7000911171163930287L;
 
         final CompletableObserver actual;
 
         final SequentialDisposable task;
 
-        public SubscribeOnObserver(CompletableObserver actual) {
+        SubscribeOnObserver(CompletableObserver actual) {
             this.actual = actual;
             this.task = new SequentialDisposable();
         }

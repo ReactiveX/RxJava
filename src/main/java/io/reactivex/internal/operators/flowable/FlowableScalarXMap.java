@@ -120,7 +120,7 @@ public enum FlowableScalarXMap {
 
         final Function<? super T, ? extends Publisher<? extends R>> mapper;
 
-        public ScalarXMapFlowable(T value,
+        ScalarXMapFlowable(T value,
                 Function<? super T, ? extends Publisher<? extends R>> mapper) {
             this.value = value;
             this.mapper = mapper;

@@ -18,7 +18,7 @@ import java.util.concurrent.Future;
  * A Disposable container that cancels a Future instance.
  */
 final class FutureDisposable extends ReferenceDisposable<Future<?>> {
-    /** */
+
     private static final long serialVersionUID = 6545242830671168775L;
 
     private final boolean allowInterrupt;

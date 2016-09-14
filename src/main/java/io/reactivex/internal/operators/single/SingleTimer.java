@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * Signals a {@code 0L} after the specified delay
+ * Signals a {@code 0L} after the specified delay.
  */
 public final class SingleTimer extends Single<Long> {
 
@@ -43,7 +43,7 @@ public final class SingleTimer extends Single<Long> {
     }
 
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
-        /** */
+
         private static final long serialVersionUID = 8465401857522493082L;
         final SingleObserver<? super Long> actual;
 

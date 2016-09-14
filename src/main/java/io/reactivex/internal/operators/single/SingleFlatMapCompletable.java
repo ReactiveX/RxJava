@@ -47,14 +47,14 @@ public final class SingleFlatMapCompletable<T> extends Completable {
     static final class FlatMapCompletableObserver<T>
     extends AtomicReference<Disposable>
     implements SingleObserver<T>, CompletableObserver, Disposable {
-        /** */
+
         private static final long serialVersionUID = -2177128922851101253L;
 
         final CompletableObserver actual;
 
         final Function<? super T, ? extends CompletableSource> mapper;
 
-        public FlatMapCompletableObserver(CompletableObserver actual,
+        FlatMapCompletableObserver(CompletableObserver actual,
                 Function<? super T, ? extends CompletableSource> mapper) {
             this.actual = actual;
             this.mapper = mapper;

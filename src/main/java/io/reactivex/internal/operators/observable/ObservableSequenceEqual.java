@@ -44,7 +44,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
     }
 
     static final class EqualCoordinator<T> extends AtomicInteger implements Disposable {
-        /** */
+
         private static final long serialVersionUID = -6178010334400373240L;
         final Observer<? super Boolean> actual;
         final BiPredicate<? super T, ? super T> comparer;
@@ -59,7 +59,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
 
         T v2;
 
-        public EqualCoordinator(Observer<? super Boolean> actual, int bufferSize,
+        EqualCoordinator(Observer<? super Boolean> actual, int bufferSize,
                                 ObservableSource<? extends T> first, ObservableSource<? extends T> second,
                                 BiPredicate<? super T, ? super T> comparer) {
             this.actual = actual;
@@ -223,7 +223,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
         volatile boolean done;
         Throwable error;
 
-        public EqualSubscriber(EqualCoordinator<T> parent, int index, int bufferSize) {
+        EqualSubscriber(EqualCoordinator<T> parent, int index, int bufferSize) {
             this.parent = parent;
             this.index = index;
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);

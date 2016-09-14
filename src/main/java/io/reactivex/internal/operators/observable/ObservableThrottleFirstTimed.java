@@ -68,7 +68,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
 
         boolean done;
 
-        public DebounceTimedSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        DebounceTimedSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
             this.timeout = timeout;
             this.unit = unit;

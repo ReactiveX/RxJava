@@ -29,14 +29,15 @@ public class ObservableSkipWhileTest {
     private static final Predicate<Integer> LESS_THAN_FIVE = new Predicate<Integer>() {
         @Override
         public boolean test(Integer v) {
-            if (v == 42)
+            if (v == 42) {
                 throw new RuntimeException("that's not the answer to everything!");
+            }
             return v < 5;
         }
     };
 
     private static final Predicate<Integer> INDEX_LESS_THAN_THREE = new Predicate<Integer>() {
-        int index = 0;
+        int index;
         @Override
         public boolean test(Integer value) {
             return index++ < 3;

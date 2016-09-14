@@ -24,14 +24,14 @@ import io.reactivex.observers.DisposableObserver;
 
 /**
  * Wait for and iterate over the latest values of the source observable. If the source works faster than the
- * iterator, values may be skipped, but not the {@code onError} or {@code onCompleted} events.
+ * iterator, values may be skipped, but not the {@code onError} or {@code onComplete} events.
  */
 public enum BlockingObservableLatest {
     ;
 
     /**
      * Returns an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
-     * been returned by the {@code Iterable}, then returns that item
+     * been returned by the {@code Iterable}, then returns that item.
      *
      * @param <T> the value type
      * @param source

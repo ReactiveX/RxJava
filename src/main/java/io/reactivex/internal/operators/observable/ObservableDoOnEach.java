@@ -53,7 +53,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
 
         boolean done;
 
-        public DoOnEachSubscriber(
+        DoOnEachSubscriber(
                 Observer<? super T> actual,
                 Consumer<? super T> onNext,
                 Consumer<? super Throwable> onError,

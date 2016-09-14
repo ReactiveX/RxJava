@@ -48,14 +48,14 @@ public final class MaybeTakeUntilMaybe<T, U> extends AbstractMaybeWithUpstream<T
 
     static final class TakeUntilMainMaybeObserver<T, U>
     extends AtomicReference<Disposable> implements MaybeObserver<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -2187421758664251153L;
 
         final MaybeObserver<? super T> actual;
 
         final TakeUntilOtherMaybeObserver<U> other;
 
-        public TakeUntilMainMaybeObserver(MaybeObserver<? super T> actual) {
+        TakeUntilMainMaybeObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
             this.other = new TakeUntilOtherMaybeObserver<U>(this);
         }
@@ -119,12 +119,11 @@ public final class MaybeTakeUntilMaybe<T, U> extends AbstractMaybeWithUpstream<T
         static final class TakeUntilOtherMaybeObserver<U>
         extends AtomicReference<Disposable> implements MaybeObserver<U> {
 
-            /** */
             private static final long serialVersionUID = -1266041316834525931L;
 
             final TakeUntilMainMaybeObserver<?, U> parent;
 
-            public TakeUntilOtherMaybeObserver(TakeUntilMainMaybeObserver<?, U> parent) {
+            TakeUntilOtherMaybeObserver(TakeUntilMainMaybeObserver<?, U> parent) {
                 this.parent = parent;
             }
 

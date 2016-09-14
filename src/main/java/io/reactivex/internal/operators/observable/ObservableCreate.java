@@ -48,12 +48,12 @@ public final class ObservableCreate<T> extends Observable<T> {
     extends AtomicReference<Disposable>
     implements ObservableEmitter<T>, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = -3434801548987643227L;
 
         final Observer<? super T> observer;
 
-        public CreateEmitter(Observer<? super T> observer) {
+        CreateEmitter(Observer<? super T> observer) {
             this.observer = observer;
         }
 
@@ -128,7 +128,7 @@ public final class ObservableCreate<T> extends Observable<T> {
     static final class SerializedEmitter<T>
     extends AtomicInteger
     implements ObservableEmitter<T> {
-        /** */
+
         private static final long serialVersionUID = 4883307006032401862L;
 
         final ObservableEmitter<T> emitter;
@@ -139,7 +139,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         volatile boolean done;
 
-        public SerializedEmitter(ObservableEmitter<T> emitter) {
+        SerializedEmitter(ObservableEmitter<T> emitter) {
             this.emitter = emitter;
             this.error = new AtomicThrowable();
             this.queue = new SpscLinkedArrayQueue<T>(16);

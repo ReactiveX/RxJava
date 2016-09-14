@@ -36,7 +36,7 @@ public final class ObservableSkipWhile<T> extends AbstractObservableWithUpstream
         final Predicate<? super T> predicate;
         Disposable s;
         boolean notSkipping;
-        public SkipWhileSubscriber(Observer<? super T> actual, Predicate<? super T> predicate) {
+        SkipWhileSubscriber(Observer<? super T> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

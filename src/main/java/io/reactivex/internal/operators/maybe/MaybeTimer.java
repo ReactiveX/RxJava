@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * Signals a {@code 0L} after the specified delay
+ * Signals a {@code 0L} after the specified delay.
  */
 public final class MaybeTimer extends Maybe<Long> {
 
@@ -45,7 +45,7 @@ public final class MaybeTimer extends Maybe<Long> {
     }
 
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
-        /** */
+
         private static final long serialVersionUID = 2875964065294031672L;
         final MaybeObserver<? super Long> actual;
 

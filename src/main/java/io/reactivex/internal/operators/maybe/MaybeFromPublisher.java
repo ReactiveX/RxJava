@@ -49,14 +49,14 @@ public final class MaybeFromPublisher<T> extends Maybe<T> implements HasUpstream
     static final class FromPublisherToMaybeObserver<T>
     extends AtomicReference<Subscription>
     implements Subscriber<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -8017657973346356002L;
 
         final MaybeObserver<? super T> actual;
 
         T value;
 
-        public FromPublisherToMaybeObserver(MaybeObserver<? super T> observer) {
+        FromPublisherToMaybeObserver(MaybeObserver<? super T> observer) {
             this.actual = observer;
         }
 

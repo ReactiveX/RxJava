@@ -59,7 +59,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
 
         Disposable s;
 
-        public DelaySubscriber(Observer<? super T> actual, long delay, TimeUnit unit, Worker w, boolean delayError) {
+        DelaySubscriber(Observer<? super T> actual, long delay, TimeUnit unit, Worker w, boolean delayError) {
             super();
             this.actual = actual;
             this.delay = delay;

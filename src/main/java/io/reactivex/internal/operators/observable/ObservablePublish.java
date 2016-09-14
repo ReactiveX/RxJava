@@ -100,7 +100,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                  *
                  * Object term = r.terminalEvent;
                  * if (r.nl.isCompleted(term)) {
-                 *     child.onCompleted();
+                 *     child.onComplete();
                  * } else {
                  *     child.onError(r.nl.getError(term));
                  * }
@@ -222,7 +222,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         final SpscLinkedArrayQueue<Object> queue;
         /** Holds onto the current connected PublishSubscriber. */
         final AtomicReference<PublishSubscriber<T>> current;
-        /** Contains either an onCompleted or an onError token from upstream. */
+        /** Contains either an onComplete or an onError token from upstream. */
         volatile Object terminalEvent;
 
         /** Indicates an empty array of inner producers. */
@@ -245,7 +245,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
 
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
-        public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
+        PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
             this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
 
             this.producers = new AtomicReference<InnerProducer[]>(EMPTY);
@@ -325,7 +325,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 // get the current producer array
                 InnerProducer[] c = producers.get();
                 // if this subscriber-to-source reached a terminal state by receiving
-                // an onError or onCompleted, just refuse to add the new producer
+                // an onError or onComplete, just refuse to add the new producer
                 if (c == TERMINATED) {
                     return false;
                 }
@@ -633,7 +633,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
          */
         volatile boolean cancelled;
 
-        public InnerProducer(PublishSubscriber<T> parent, Observer<? super T> child) {
+        InnerProducer(PublishSubscriber<T> parent, Observer<? super T> child) {
             this.parent = parent;
             this.child = child;
         }

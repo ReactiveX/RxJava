@@ -56,7 +56,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
     static final class TimeoutSubscriber<T, U, V>
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable, OnTimeout {
-        /** */
+
         private static final long serialVersionUID = 2672739326310051084L;
         final Observer<? super T> actual;
         final ObservableSource<U> firstTimeoutIndicator;
@@ -66,7 +66,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
 
         volatile long index;
 
-        public TimeoutSubscriber(Observer<? super T> actual,
+        TimeoutSubscriber(Observer<? super T> actual,
                 ObservableSource<U> firstTimeoutIndicator,
                 Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator) {
             this.actual = actual;
@@ -177,7 +177,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
 
         boolean done;
 
-        public TimeoutInnerSubscriber(OnTimeout parent, final long index) {
+        TimeoutInnerSubscriber(OnTimeout parent, final long index) {
             this.parent = parent;
             this.index = index;
         }
@@ -210,7 +210,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
     static final class TimeoutOtherSubscriber<T, U, V>
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable, OnTimeout {
-        /** */
+
         private static final long serialVersionUID = -1957813281749686898L;
         final Observer<? super T> actual;
         final ObservableSource<U> firstTimeoutIndicator;
@@ -224,7 +224,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
 
         volatile long index;
 
-        public TimeoutOtherSubscriber(Observer<? super T> actual,
+        TimeoutOtherSubscriber(Observer<? super T> actual,
                                       ObservableSource<U> firstTimeoutIndicator,
                                       Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator, ObservableSource<? extends T> other) {
             this.actual = actual;

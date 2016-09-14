@@ -51,11 +51,11 @@ import io.reactivex.plugins.RxJavaPlugins;
   processor.onNext("two");
   processor.onNext("three");
 
-  // observer will receive only onCompleted
+  // observer will receive only onComplete
   BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
   processor.onNext("zero");
   processor.onNext("one");
-  processor.onCompleted();
+  processor.onComplete();
   processor.subscribe(observer);
 
   // observer will receive only onError
@@ -393,7 +393,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     static final class BehaviorSubscription<T> extends AtomicLong implements Subscription, Predicate<Object> {
-        /** */
+
         private static final long serialVersionUID = 3293175281126227086L;
 
         final Subscriber<? super T> actual;
@@ -409,7 +409,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
         long index;
 
-        public BehaviorSubscription(Subscriber<? super T> actual, BehaviorProcessor<T> state) {
+        BehaviorSubscription(Subscriber<? super T> actual, BehaviorProcessor<T> state) {
             this.actual = actual;
             this.state = state;
         }

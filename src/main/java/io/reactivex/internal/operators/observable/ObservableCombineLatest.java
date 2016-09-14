@@ -72,7 +72,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
     }
 
     static final class LatestCoordinator<T, R> extends AtomicInteger implements Disposable {
-        /** */
+
         private static final long serialVersionUID = 8567835998786448817L;
         final Observer<? super R> actual;
         final Function<? super Object[], ? extends R> combiner;
@@ -91,7 +91,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         int complete;
 
         @SuppressWarnings("unchecked")
-        public LatestCoordinator(Observer<? super R> actual,
+        LatestCoordinator(Observer<? super R> actual,
                 Function<? super Object[], ? extends R> combiner,
                 int count, int bufferSize, boolean delayError) {
             this.actual = actual;
@@ -320,7 +320,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
-        public CombinerSubscriber(LatestCoordinator<T, R> parent, int index) {
+        CombinerSubscriber(LatestCoordinator<T, R> parent, int index) {
             this.parent = parent;
             this.index = index;
         }

@@ -134,7 +134,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
          */
         boolean sourceDone;
 
-        public CacheState(Flowable<? extends T> source, int capacityHint) {
+        CacheState(Flowable<? extends T> source, int capacityHint) {
             super(capacityHint);
             this.source = source;
             this.producers = EMPTY;
@@ -244,7 +244,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
      * @param <T>
      */
     static final class ReplaySubscription<T> extends AtomicLong implements Subscription, Disposable {
-        /** */
+
         private static final long serialVersionUID = -2557562030197141021L;
         private static final long CANCELLED = -1;
         /** The actual child subscriber. */
@@ -272,7 +272,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         /** Indicates there were some state changes/replay attempts; guarded by this. */
         boolean missed;
 
-        public ReplaySubscription(Subscriber<? super T> child, CacheState<T> state) {
+        ReplaySubscription(Subscriber<? super T> child, CacheState<T> state) {
             this.child = child;
             this.state = state;
         }

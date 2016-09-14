@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 
 public final class ObserverResourceWrapper<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
-    /** */
+
     private static final long serialVersionUID = -8612022020200669122L;
 
     final Observer<? super T> actual;

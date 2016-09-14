@@ -64,7 +64,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
 
         boolean terminate;
 
-        public GeneratorDisposable(Observer<? super T> actual,
+        GeneratorDisposable(Observer<? super T> actual,
                 BiFunction<S, ? super Emitter<T>, S> generator,
                 Consumer<? super S> disposeState, S initialState) {
             this.actual = actual;

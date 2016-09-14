@@ -39,7 +39,7 @@ public final class ObservableAll<T> extends AbstractObservableWithUpstream<T, Bo
 
         boolean done;
 
-        public AllSubscriber(Observer<? super Boolean> actual, Predicate<? super T> predicate) {
+        AllSubscriber(Observer<? super Boolean> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

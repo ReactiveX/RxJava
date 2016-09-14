@@ -203,7 +203,7 @@ public class FlowableDistinctUntilChangedTest {
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
 
-    private final static Function<String, String> THROWS_NON_FATAL = new Function<String, String>() {
+    private static final Function<String, String> THROWS_NON_FATAL = new Function<String, String>() {
         @Override
         public String apply(String s) {
             throw new RuntimeException();

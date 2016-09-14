@@ -114,7 +114,7 @@ public class FlowableOnBackpressureDropTest {
             public void onNext(Long t) {
                 count.incrementAndGet();
                 //cause overflow of requested if not handled properly in onBackpressureDrop operator
-                request(Long.MAX_VALUE-1);
+                request(Long.MAX_VALUE - 1);
             }});
         assertEquals(n, count.get());
     }
@@ -133,14 +133,14 @@ public class FlowableOnBackpressureDropTest {
 
     });
 
-    private static final Flowable<Long> range(final long n) {
+    private static Flowable<Long> range(final long n) {
         return Flowable.unsafeCreate(new Publisher<Long>() {
 
             @Override
             public void subscribe(Subscriber<? super Long> s) {
                 BooleanSubscription bs = new BooleanSubscription();
                 s.onSubscribe(bs);
-                for (long i=0;i < n; i++) {
+                for (long i = 0; i < n; i++) {
                     if (bs.isCancelled()) {
                         break;
                     }

@@ -108,7 +108,7 @@ public class FlowableOnBackpressureLatestTest {
                 if (rnd.nextDouble() < 0.001) {
                     try {
                         Thread.sleep(1);
-                    } catch(InterruptedException ex) {
+                    } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
                 }

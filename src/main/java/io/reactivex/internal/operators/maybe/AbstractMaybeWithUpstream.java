@@ -26,7 +26,7 @@ abstract class AbstractMaybeWithUpstream<T, R> extends Maybe<R> implements HasUp
 
     protected final MaybeSource<T> source;
 
-    public AbstractMaybeWithUpstream(MaybeSource<T> source) {
+    AbstractMaybeWithUpstream(MaybeSource<T> source) {
         this.source = source;
     }
 

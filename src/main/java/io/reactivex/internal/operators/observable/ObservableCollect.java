@@ -59,7 +59,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
 
         boolean done;
 
-        public CollectSubscriber(Observer<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
+        CollectSubscriber(Observer<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
             this.actual = actual;
             this.collector = collector;
             this.u = u;

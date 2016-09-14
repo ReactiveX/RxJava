@@ -55,9 +55,9 @@ public class ObservableRetryTest {
                 if (count.getAndDecrement() == 0) {
                     t1.onNext("hello");
                     t1.onComplete();
-                }
-                else
+                } else {
                     t1.onError(new RuntimeException());
+                }
             }
 
         });
@@ -73,7 +73,7 @@ public class ObservableRetryTest {
                         public Tuple apply(Throwable n) {
                             return new Tuple(new Long(1), n);
                         }})
-                    .scan(new BiFunction<Tuple, Tuple, Tuple>(){
+                    .scan(new BiFunction<Tuple, Tuple, Tuple>() {
                         @Override
                         public Tuple apply(Tuple t, Tuple n) {
                             return new Tuple(t.count + n.count, n.n);
@@ -81,10 +81,10 @@ public class ObservableRetryTest {
                     .flatMap(new Function<Tuple, Observable<Long>>() {
                         @Override
                         public Observable<Long> apply(Tuple t) {
-                            System.out.println("Retry # "+t.count);
+                            System.out.println("Retry # " + t.count);
                             return t.count > 20 ?
                                 Observable.<Long>error(t.n) :
-                                Observable.timer(t.count *1L, TimeUnit.MILLISECONDS);
+                                Observable.timer(t.count * 1L, TimeUnit.MILLISECONDS);
                     }}).cast(Object.class);
             }
         }).subscribe(ts);
@@ -123,7 +123,7 @@ public class ObservableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -163,7 +163,7 @@ public class ObservableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -193,7 +193,7 @@ public class ObservableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -316,7 +316,7 @@ public class ObservableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -335,7 +335,7 @@ public class ObservableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -525,7 +525,7 @@ public class ObservableRetryTest {
 
         private final int emitDelay;
 
-        public SlowObservable(int emitDelay, int countNext) {
+        SlowObservable(int emitDelay, int countNext) {
             this.emitDelay = emitDelay;
             this.nextBeforeFailure = new AtomicInteger(countNext);
         }
@@ -564,7 +564,7 @@ public class ObservableRetryTest {
         }
     }
 
-    /** Observer for listener on seperate thread */
+    /** Observer for listener on seperate thread. */
     static final class AsyncObserver<T> extends DefaultObserver<T> {
 
         protected CountDownLatch latch = new CountDownLatch(1);
@@ -572,14 +572,14 @@ public class ObservableRetryTest {
         protected Observer<T> target;
 
         /**
-         * Wrap existing Observer
+         * Wrap existing Observer.
          * @param target the target nbp subscriber
          */
-        public AsyncObserver(Observer<T> target) {
+        AsyncObserver(Observer<T> target) {
             this.target = target;
         }
 
-        /** Wait */
+        /** Wait. */
         public void await() {
             try {
                 latch.await();
@@ -659,7 +659,7 @@ public class ObservableRetryTest {
     @Test//(timeout = 15000)
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
-        for (int j=0;j<NUM_LOOPS;j++) {
+        for (int j = 0; j < NUM_LOOPS; j++) {
             final int NUM_RETRIES = Flowable.bufferSize() * 2;
             for (int i = 0; i < 400; i++) {
                 Observer<String> observer = TestHelper.mockObserver();
@@ -675,7 +675,7 @@ public class ObservableRetryTest {
                 inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
                 // should have a single success
                 inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-                // should have a single successful onCompleted
+                // should have a single successful onComplete
                 inOrder.verify(observer, times(1)).onComplete();
                 inOrder.verifyNoMoreInteractions();
             }
@@ -717,7 +717,7 @@ public class ObservableRetryTest {
                                         onNextEvents.add(t.toString());
                                     }
                                     for (long err = ts.completions(); err != 0; err--) {
-                                        onNextEvents.add("onCompleted");
+                                        onNextEvents.add("onComplete");
                                     }
                                     data.put(j, onNextEvents);
                                 }
@@ -817,7 +817,7 @@ public class ObservableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         //inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -832,7 +832,7 @@ public class ObservableRetryTest {
             @Override
             public void subscribe(Observer<? super String> o) {
                 o.onSubscribe(Disposables.empty());
-                for(int i=0; i<NUM_MSG; i++) {
+                for (int i = 0; i < NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());
                 }
                 o.onComplete();
@@ -861,7 +861,7 @@ public class ObservableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         //inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }

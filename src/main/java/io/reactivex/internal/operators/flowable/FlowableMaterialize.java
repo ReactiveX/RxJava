@@ -34,7 +34,7 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
 
     // FIXME needs post-complete drain management
     static final class MaterializeSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -3740826063558713822L;
         final Subscriber<? super Notification<T>> actual;
 
@@ -51,7 +51,7 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
         static final int HAS_REQUEST_NO_VALUE = 2;
         static final int HAS_REQUEST_HAS_VALUE = 3;
 
-        public MaterializeSubscriber(Subscriber<? super Notification<T>> actual) {
+        MaterializeSubscriber(Subscriber<? super Notification<T>> actual) {
             this.actual = actual;
         }
 

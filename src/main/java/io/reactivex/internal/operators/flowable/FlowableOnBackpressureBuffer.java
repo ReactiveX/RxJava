@@ -45,7 +45,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
     }
 
     static final class BackpressureBufferSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -2514538129242366402L;
         final Subscriber<? super T> actual;
         final SimpleQueue<T> queue;
@@ -61,7 +61,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
 
         final AtomicLong requested = new AtomicLong();
 
-        public BackpressureBufferSubscriber(Subscriber<? super T> actual, int bufferSize,
+        BackpressureBufferSubscriber(Subscriber<? super T> actual, int bufferSize,
                 boolean unbounded, boolean delayError, Action onOverflow) {
             this.actual = actual;
             this.onOverflow = onOverflow;

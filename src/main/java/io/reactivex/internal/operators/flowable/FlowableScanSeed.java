@@ -61,7 +61,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
 
         Subscription s;
 
-        public ScanSeedSubscriber(Subscriber<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
+        ScanSeedSubscriber(Subscriber<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
             super(actual, new SpscArrayQueue<R>(2));
             this.accumulator = accumulator;
             this.value = value;

@@ -41,7 +41,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
         } else {
             Scheduler.Worker w = scheduler.createWorker();
 
-            source.subscribe(new ObserveOnSubscriber<T>(observer, w, delayError, bufferSize));
+            source.subscribe(new ObserveOnObserver<T>(observer, w, delayError, bufferSize));
         }
     }
 
@@ -49,15 +49,15 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
      * Pads the base atomic integer used for wip counting.
      */
     static class Padding0 extends AtomicInteger {
-        /** */
+
         private static final long serialVersionUID = 3172843496016154809L;
 
         volatile long p01, p02, p03, p04, p05, p06, p07;
         volatile long p08, p09, p0A, p0B, p0C, p0D, p0E, p0F;
     }
 
-    static final class ObserveOnSubscriber<T> extends Padding0 implements Observer<T>, Disposable, Runnable {
-        /** */
+    static final class ObserveOnObserver<T> extends Padding0 implements Observer<T>, Disposable, Runnable {
+
         private static final long serialVersionUID = 6576896619930983584L;
         final Observer<? super T> actual;
         final Scheduler.Worker worker;
@@ -71,7 +71,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
 
         volatile boolean cancelled;
 
-        public ObserveOnSubscriber(Observer<? super T> actual, Scheduler.Worker worker, boolean delayError, int bufferSize) {
+        ObserveOnObserver(Observer<? super T> actual, Scheduler.Worker worker, boolean delayError, int bufferSize) {
             this.actual = actual;
             this.worker = worker;
             this.delayError = delayError;

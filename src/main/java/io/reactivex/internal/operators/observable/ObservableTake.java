@@ -37,7 +37,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
         Disposable subscription;
 
         long remaining;
-        public TakeSubscriber(Observer<? super T> actual, long limit) {
+        TakeSubscriber(Observer<? super T> actual, long limit) {
             this.actual = actual;
             this.remaining = limit;
         }

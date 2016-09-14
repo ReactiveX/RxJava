@@ -60,7 +60,7 @@ public final class Burst<T> extends Observable<T> {
     public static final class Builder<T> {
 
         private final List<T> items;
-        private Throwable error = null;
+        private Throwable error;
 
         private Builder(List<T> items) {
             this.items = items;

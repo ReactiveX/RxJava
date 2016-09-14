@@ -22,7 +22,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ScheduledRunnable extends AtomicReferenceArray<Object>
 implements Runnable, Callable<Object>, Disposable {
-    /** */
+
     private static final long serialVersionUID = -6120223772001106981L;
     final Runnable actual;
 

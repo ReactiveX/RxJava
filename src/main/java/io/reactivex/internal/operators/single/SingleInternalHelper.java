@@ -46,7 +46,7 @@ public enum SingleInternalHelper {
         INSTANCE;
         @SuppressWarnings("unchecked")
         @Override
-        public Publisher apply(SingleSource v){
+        public Publisher apply(SingleSource v) {
             return new SingleToFlowable(v);
         }
     }
@@ -102,7 +102,7 @@ public enum SingleInternalHelper {
         INSTANCE;
         @SuppressWarnings("unchecked")
         @Override
-        public Observable apply(SingleSource v){
+        public Observable apply(SingleSource v) {
             return new SingleToObservable(v);
         }
     }

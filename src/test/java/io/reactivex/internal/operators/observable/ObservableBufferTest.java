@@ -288,9 +288,9 @@ public class ObservableBufferTest {
     private static class LongTimeAction implements Consumer<List<Integer>> {
 
         CountDownLatch latch;
-        boolean fail = false;
+        boolean fail;
 
-        public LongTimeAction(CountDownLatch latch) {
+        LongTimeAction(CountDownLatch latch) {
             this.latch = latch;
         }
 

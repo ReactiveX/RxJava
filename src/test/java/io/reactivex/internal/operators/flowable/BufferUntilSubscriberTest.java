@@ -31,8 +31,9 @@ public class BufferUntilSubscriberTest {
     public void testIssue1677() throws InterruptedException {
         final AtomicLong counter = new AtomicLong();
         final Integer[] numbers = new Integer[5000];
-        for (int i = 0; i < numbers.length; i++)
+        for (int i = 0; i < numbers.length; i++) {
             numbers[i] = i + 1;
+        }
         final int NITERS = 250;
         final CountDownLatch latch = new CountDownLatch(NITERS);
         for (int iters = 0; iters < NITERS; iters++) {
@@ -70,12 +71,14 @@ public class BufferUntilSubscriberTest {
                         }
                     })
                     .subscribe();
-            if (!innerLatch.await(30, TimeUnit.SECONDS))
+            if (!innerLatch.await(30, TimeUnit.SECONDS)) {
                 Assert.fail("Failed inner latch wait, iteration " + iters);
+            }
         }
-        if (!latch.await(30, TimeUnit.SECONDS))
+        if (!latch.await(30, TimeUnit.SECONDS)) {
             Assert.fail("Incomplete! Went through " + latch.getCount() + " iterations");
-        else
+        } else {
             Assert.assertEquals(NITERS, counter.get());
+        }
     }
 }

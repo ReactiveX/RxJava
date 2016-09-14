@@ -33,7 +33,7 @@ public final class SafeSubscriber<T> implements Subscriber<T>, Subscription {
     boolean done;
 
     /**
-     * Constructs a SafeSubscriber by wrapping the given actual Subscriber
+     * Constructs a SafeSubscriber by wrapping the given actual Subscriber.
      * @param actual the actual Subscriber to wrap, not null (not validated)
      */
     public SafeSubscriber(Subscriber<? super T> actual) {

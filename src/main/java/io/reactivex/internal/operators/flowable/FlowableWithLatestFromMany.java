@@ -98,7 +98,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
     static final class WithLatestFromSubscriber<T, R>
     extends AtomicInteger
     implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 1577321883966341961L;
 
         final Subscriber<? super R> actual;
@@ -117,7 +117,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
         volatile boolean done;
 
-        public WithLatestFromSubscriber(Subscriber<? super R> actual, Function<? super Object[], R> combiner, int n) {
+        WithLatestFromSubscriber(Subscriber<? super R> actual, Function<? super Object[], R> combiner, int n) {
             this.actual = actual;
             this.combiner = combiner;
             WithLatestInnerSubscriber[] s = new WithLatestInnerSubscriber[n];
@@ -246,7 +246,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
     static final class WithLatestInnerSubscriber
     extends AtomicReference<Subscription>
     implements Subscriber<Object>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 3256684027868224024L;
 
         final WithLatestFromSubscriber<?, ?> parent;
@@ -255,7 +255,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
         boolean hasValue;
 
-        public WithLatestInnerSubscriber(WithLatestFromSubscriber<?, ?> parent, int index) {
+        WithLatestInnerSubscriber(WithLatestFromSubscriber<?, ?> parent, int index) {
             this.parent = parent;
             this.index = index;
         }

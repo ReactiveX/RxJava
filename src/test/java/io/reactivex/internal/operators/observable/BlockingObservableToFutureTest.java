@@ -60,7 +60,7 @@ public class BlockingObservableToFutureTest {
             f.get();
             fail("Should have thrown!");
         }
-        catch(ExecutionException e) {
+        catch (ExecutionException e) {
             throw e.getCause();
         }
     }
@@ -86,7 +86,7 @@ public class BlockingObservableToFutureTest {
         }
     }
 
-    @Test(expected=CancellationException.class)
+    @Test(expected = CancellationException.class)
     public void testGetAfterCancel() throws Exception {
         Observable<String> obs = Observable.never();
         Future<String> f = obs.toFuture();
@@ -95,7 +95,7 @@ public class BlockingObservableToFutureTest {
         f.get();                // Future.get() docs require this to throw
     }
 
-    @Test(expected=CancellationException.class)
+    @Test(expected = CancellationException.class)
     public void testGetWithTimeoutAfterCancel() throws Exception {
         Observable<String> obs = Observable.never();
         Future<String> f = obs.toFuture();
@@ -111,7 +111,7 @@ public class BlockingObservableToFutureTest {
         try {
             f.get();
         }
-        catch(ExecutionException e) {
+        catch (ExecutionException e) {
             throw e.getCause();
         }
     }

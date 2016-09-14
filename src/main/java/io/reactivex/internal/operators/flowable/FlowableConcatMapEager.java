@@ -59,7 +59,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
     static final class ConcatMapEagerDelayErrorSubscriber<T, R>
     extends AtomicInteger
     implements Subscriber<T>, Subscription, InnerQueuedSubscriberSupport<R> {
-        /** */
+
         private static final long serialVersionUID = -4255299542215038287L;
 
         final Subscriber<? super R> actual;
@@ -86,7 +86,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
         volatile InnerQueuedSubscriber<R> current;
 
-        public ConcatMapEagerDelayErrorSubscriber(Subscriber<? super R> actual,
+        ConcatMapEagerDelayErrorSubscriber(Subscriber<? super R> actual,
                 Function<? super T, ? extends Publisher<? extends R>> mapper, int maxConcurrency, int prefetch,
                 ErrorMode errorMode) {
             this.actual = actual;

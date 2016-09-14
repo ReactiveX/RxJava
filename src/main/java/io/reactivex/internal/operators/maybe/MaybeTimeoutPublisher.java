@@ -57,7 +57,7 @@ public final class MaybeTimeoutPublisher<T, U> extends AbstractMaybeWithUpstream
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = -5955289211445418871L;
 
         final MaybeObserver<? super T> actual;
@@ -68,7 +68,7 @@ public final class MaybeTimeoutPublisher<T, U> extends AbstractMaybeWithUpstream
 
         final TimeoutFallbackMaybeObserver<T> otherObserver;
 
-        public TimeoutMainMaybeObserver(MaybeObserver<? super T> actual, MaybeSource<? extends T> fallback) {
+        TimeoutMainMaybeObserver(MaybeObserver<? super T> actual, MaybeSource<? extends T> fallback) {
             this.actual = actual;
             this.other = new TimeoutOtherMaybeObserver<T, U>(this);
             this.fallback = fallback;
@@ -144,12 +144,12 @@ public final class MaybeTimeoutPublisher<T, U> extends AbstractMaybeWithUpstream
     extends AtomicReference<Subscription>
     implements Subscriber<Object> {
 
-        /** */
+
         private static final long serialVersionUID = 8663801314800248617L;
 
         final TimeoutMainMaybeObserver<T, U> parent;
 
-        public TimeoutOtherMaybeObserver(TimeoutMainMaybeObserver<T, U> parent) {
+        TimeoutOtherMaybeObserver(TimeoutMainMaybeObserver<T, U> parent) {
             this.parent = parent;
         }
 
@@ -181,12 +181,12 @@ public final class MaybeTimeoutPublisher<T, U> extends AbstractMaybeWithUpstream
     extends AtomicReference<Disposable>
     implements MaybeObserver<T> {
 
-        /** */
+
         private static final long serialVersionUID = 8663801314800248617L;
 
         final MaybeObserver<? super T> actual;
 
-        public TimeoutFallbackMaybeObserver(MaybeObserver<? super T> actual) {
+        TimeoutFallbackMaybeObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 

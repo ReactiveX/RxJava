@@ -24,7 +24,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class LambdaSubscriber<T> extends AtomicReference<Subscription> implements Subscriber<T>, Subscription, Disposable {
-    /** */
+
     private static final long serialVersionUID = -7251123623727029452L;
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;

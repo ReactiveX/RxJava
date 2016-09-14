@@ -46,7 +46,7 @@ public final class SingleFromPublisher<T> extends Single<T> {
 
         volatile boolean disposed;
 
-        public ToSingleObserver(SingleObserver<? super T> actual) {
+        ToSingleObserver(SingleObserver<? super T> actual) {
             this.actual = actual;
         }
 

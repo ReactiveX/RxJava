@@ -33,7 +33,7 @@ public class FlowableMapTest {
     Subscriber<String> stringObserver;
     Subscriber<String> stringObserver2;
 
-    final static BiFunction<String, Integer, String> APPEND_INDEX = new BiFunction<String, Integer, String>() {
+    static final BiFunction<String, Integer, String> APPEND_INDEX = new BiFunction<String, Integer, String>() {
         @Override
         public String apply(String value, Integer index) {
             return value + index;
@@ -341,7 +341,7 @@ public class FlowableMapTest {
 //                observer.onNext("a");
 //                observer.onNext("b");
 //                observer.onNext("c");
-//                observer.onCompleted();
+//                observer.onComplete();
 //            }
 //        };
 //

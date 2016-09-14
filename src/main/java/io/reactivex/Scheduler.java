@@ -173,7 +173,7 @@ public abstract class Scheduler {
      * <p>
      * Unsubscribing the {@link Worker} cancels all outstanding work and allows resource cleanup.
      */
-    public static abstract class Worker implements Disposable {
+    public abstract static class Worker implements Disposable {
         /**
          * Schedules a Runnable for execution without delay.
          *
@@ -310,7 +310,7 @@ public abstract class Scheduler {
 
         volatile boolean disposed;
 
-        public PeriodicDirectTask(Runnable run, Worker worker) {
+        PeriodicDirectTask(Runnable run, Worker worker) {
             this.run = run;
             this.worker = worker;
         }

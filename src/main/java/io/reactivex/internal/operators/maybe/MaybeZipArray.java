@@ -65,7 +65,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
 
     static final class ZipCoordinator<T, R> extends AtomicInteger implements Disposable {
 
-        /** */
+
         private static final long serialVersionUID = -5556924161382950569L;
 
         final MaybeObserver<? super R> actual;
@@ -77,7 +77,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         final Object[] values;
 
         @SuppressWarnings("unchecked")
-        public ZipCoordinator(MaybeObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
+        ZipCoordinator(MaybeObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
             super(n);
             this.actual = observer;
             this.zipper = zipper;
@@ -151,14 +151,14 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
     static final class ZipMaybeObserver<T>
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 3323743579927613702L;
 
         final ZipCoordinator<T, ?> parent;
 
         final int index;
 
-        public ZipMaybeObserver(ZipCoordinator<T, ?> parent, int index) {
+        ZipMaybeObserver(ZipCoordinator<T, ?> parent, int index) {
             this.parent = parent;
             this.index = index;
         }

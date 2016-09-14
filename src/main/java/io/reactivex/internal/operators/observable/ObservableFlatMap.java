@@ -49,11 +49,11 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             return;
         }
 
-        source.subscribe(new MergeSubscriber<T, U>(t, mapper, delayErrors, maxConcurrency, bufferSize));
+        source.subscribe(new MergeObserver<T, U>(t, mapper, delayErrors, maxConcurrency, bufferSize));
     }
 
-    static final class MergeSubscriber<T, U> extends AtomicInteger implements Disposable, Observer<T> {
-        /** */
+    static final class MergeObserver<T, U> extends AtomicInteger implements Disposable, Observer<T> {
+
         private static final long serialVersionUID = -2117620485640801370L;
 
         final Observer<? super U> actual;
@@ -72,11 +72,11 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         volatile boolean cancelled;
 
-        final AtomicReference<InnerSubscriber<?, ?>[]> subscribers;
+        final AtomicReference<InnerObserver<?, ?>[]> subscribers;
 
-        static final InnerSubscriber<?, ?>[] EMPTY = new InnerSubscriber<?, ?>[0];
+        static final InnerObserver<?, ?>[] EMPTY = new InnerObserver<?, ?>[0];
 
-        static final InnerSubscriber<?, ?>[] CANCELLED = new InnerSubscriber<?, ?>[0];
+        static final InnerObserver<?, ?>[] CANCELLED = new InnerObserver<?, ?>[0];
 
         Disposable s;
 
@@ -88,7 +88,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         int wip;
 
-        public MergeSubscriber(Observer<? super U> actual, Function<? super T, ? extends ObservableSource<? extends U>> mapper,
+        MergeObserver(Observer<? super U> actual, Function<? super T, ? extends ObservableSource<? extends U>> mapper,
                 boolean delayErrors, int maxConcurrency, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
@@ -98,7 +98,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             if (maxConcurrency != Integer.MAX_VALUE) {
                 sources = new ArrayDeque<ObservableSource<? extends U>>(maxConcurrency);
             }
-            this.subscribers = new AtomicReference<InnerSubscriber<?, ?>[]>(EMPTY);
+            this.subscribers = new AtomicReference<InnerObserver<?, ?>[]>(EMPTY);
         }
 
         @Override
@@ -143,20 +143,20 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         void subscribeInner(ObservableSource<? extends U> p) {
-            InnerSubscriber<T, U> inner = new InnerSubscriber<T, U>(this, uniqueId++);
+            InnerObserver<T, U> inner = new InnerObserver<T, U>(this, uniqueId++);
             addInner(inner);
             p.subscribe(inner);
         }
 
-        void addInner(InnerSubscriber<T, U> inner) {
+        void addInner(InnerObserver<T, U> inner) {
             for (;;) {
-                InnerSubscriber<?, ?>[] a = subscribers.get();
+                InnerObserver<?, ?>[] a = subscribers.get();
                 if (a == CANCELLED) {
                     inner.dispose();
                     return;
                 }
                 int n = a.length;
-                InnerSubscriber<?, ?>[] b = new InnerSubscriber[n + 1];
+                InnerObserver<?, ?>[] b = new InnerObserver[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = inner;
                 if (subscribers.compareAndSet(a, b)) {
@@ -165,9 +165,9 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             }
         }
 
-        void removeInner(InnerSubscriber<T, U> inner) {
+        void removeInner(InnerObserver<T, U> inner) {
             for (;;) {
-                InnerSubscriber<?, ?>[] a = subscribers.get();
+                InnerObserver<?, ?>[] a = subscribers.get();
                 if (a == CANCELLED || a == EMPTY) {
                     return;
                 }
@@ -182,11 +182,11 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 if (j < 0) {
                     return;
                 }
-                InnerSubscriber<?, ?>[] b;
+                InnerObserver<?, ?>[] b;
                 if (n == 1) {
                     b = EMPTY;
                 } else {
-                    b = new InnerSubscriber<?, ?>[n - 1];
+                    b = new InnerObserver<?, ?>[n - 1];
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, n - j - 1);
                 }
@@ -243,7 +243,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             drainLoop();
         }
 
-        SimpleQueue<U> getInnerQueue(InnerSubscriber<T, U> inner) {
+        SimpleQueue<U> getInnerQueue(InnerObserver<T, U> inner) {
             SimpleQueue<U> q = inner.queue;
             if (q == null) {
                 q = new SpscArrayQueue<U>(bufferSize);
@@ -252,7 +252,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             return q;
         }
 
-        void tryEmit(U value, InnerSubscriber<T, U> inner) {
+        void tryEmit(U value, InnerObserver<T, U> inner) {
             if (get() == 0 && compareAndSet(0, 1)) {
                 actual.onNext(value);
                 if (decrementAndGet() == 0) {
@@ -355,7 +355,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
                 boolean d = done;
                 svq = queue;
-                InnerSubscriber<?, ?>[] inner = subscribers.get();
+                InnerObserver<?, ?>[] inner = subscribers.get();
                 int n = inner.length;
 
                 if (d && (svq == null || svq.isEmpty()) && n == 0) {
@@ -398,7 +398,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                             return;
                         }
                         @SuppressWarnings("unchecked")
-                        InnerSubscriber<T, U> is = (InnerSubscriber<T, U>)inner[j];
+                        InnerObserver<T, U> is = (InnerObserver<T, U>)inner[j];
 
                         U o = null;
                         for (;;) {
@@ -525,12 +525,12 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         void unsubscribe() {
-            InnerSubscriber<?, ?>[] a = subscribers.get();
+            InnerObserver<?, ?>[] a = subscribers.get();
             if (a != CANCELLED) {
                 a = subscribers.getAndSet(CANCELLED);
                 if (a != CANCELLED) {
                     errors.getAndSet(ERRORS_CLOSED);
-                    for (InnerSubscriber<?, ?> inner : a) {
+                    for (InnerObserver<?, ?> inner : a) {
                         inner.dispose();
                     }
                 }
@@ -551,19 +551,19 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
     }
 
-    static final class InnerSubscriber<T, U> extends AtomicReference<Disposable>
+    static final class InnerObserver<T, U> extends AtomicReference<Disposable>
     implements Observer<U>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -4606175640614850599L;
         final long id;
-        final MergeSubscriber<T, U> parent;
+        final MergeObserver<T, U> parent;
 
         volatile boolean done;
         volatile SimpleQueue<U> queue;
 
         int fusionMode;
 
-        public InnerSubscriber(MergeSubscriber<T, U> parent, long id) {
+        InnerObserver(MergeObserver<T, U> parent, long id) {
             this.id = id;
             this.parent = parent;
         }

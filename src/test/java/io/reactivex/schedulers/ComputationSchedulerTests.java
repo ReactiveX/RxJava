@@ -45,7 +45,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             inner.schedule(new Runnable() {
 
                 private HashMap<String, Integer> statefulMap = map;
-                int nonThreadSafeCounter = 0;
+                int nonThreadSafeCounter;
 
                 @Override
                 public void run() {

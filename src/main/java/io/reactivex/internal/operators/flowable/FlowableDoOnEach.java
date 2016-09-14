@@ -55,7 +55,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
         final Action onComplete;
         final Action onAfterTerminate;
 
-        public DoOnEachSubscriber(
+        DoOnEachSubscriber(
                 Subscriber<? super T> actual,
                 Consumer<? super T> onNext,
                 Consumer<? super Throwable> onError,
@@ -171,7 +171,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
         final Action onComplete;
         final Action onAfterTerminate;
 
-        public DoOnEachConditionalSubscriber(
+        DoOnEachConditionalSubscriber(
                 ConditionalSubscriber<? super T> actual,
                 Consumer<? super T> onNext,
                 Consumer<? super Throwable> onError,

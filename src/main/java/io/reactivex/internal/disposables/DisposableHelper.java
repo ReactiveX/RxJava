@@ -24,8 +24,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public enum DisposableHelper implements Disposable {
     /**
-     * The singleton instance representing a terminal, disposed state;
-     * Don't leak it!
+     * The singleton instance representing a terminal, disposed state, don't leak it.
      */
     DISPOSED
     ;
@@ -115,7 +114,7 @@ public enum DisposableHelper implements Disposable {
 
     /**
      * Verifies that current is null, next is not null, otherwise signals errors
-     * to the RxJavaPlugins and returns false
+     * to the RxJavaPlugins and returns false.
      * @param current the current Disposable, expected to be null
      * @param next the next Disposable, expected to be non-null
      * @return true if the validation succeeded

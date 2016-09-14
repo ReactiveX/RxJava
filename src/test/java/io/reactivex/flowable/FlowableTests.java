@@ -355,7 +355,7 @@ public class FlowableTests {
     }
 
     /**
-     * The error from the user provided Observer is handled by the subscribe try/catch because this is synchronous
+     * The error from the user provided Observer is handled by the subscribe try/catch because this is synchronous.
      *
      * Result: Passes
      */
@@ -397,8 +397,7 @@ public class FlowableTests {
     }
 
     /**
-     * The error from the user provided Observable is handled by the subscribe try/catch because this is synchronous
-     *
+     * The error from the user provided Observable is handled by the subscribe try/catch because this is synchronous.
      *
      * Result: Passes
      */

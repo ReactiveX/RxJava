@@ -46,7 +46,7 @@ public final class MaybeFromSingle<T> extends Maybe<T> implements HasUpstreamSin
 
         Disposable d;
 
-        public FromSingleObserver(MaybeObserver<? super T> actual) {
+        FromSingleObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 

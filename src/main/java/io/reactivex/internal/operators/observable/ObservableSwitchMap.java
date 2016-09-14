@@ -50,7 +50,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
     }
 
     static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -3491074160481096299L;
         final Observer<? super R> actual;
         final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
@@ -76,7 +76,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         volatile long unique;
 
-        public SwitchMapSubscriber(Observer<? super R> actual,
+        SwitchMapSubscriber(Observer<? super R> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
                         boolean delayErrors) {
             this.actual = actual;
@@ -308,7 +308,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
     }
 
     static final class SwitchMapInnerSubscriber<T, R> extends AtomicReference<Disposable> implements Observer<R> {
-        /** */
+
         private static final long serialVersionUID = 3837284832786408377L;
         final SwitchMapSubscriber<T, R> parent;
         final long index;
@@ -316,7 +316,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         volatile boolean done;
 
-        public SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
+        SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
             this.index = index;
             this.queue = new SpscArrayQueue<R>(bufferSize);

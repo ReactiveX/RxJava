@@ -38,9 +38,9 @@ import io.reactivex.plugins.RxJavaPlugins;
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
-  subject.onCompleted();
+  subject.onComplete();
 
-  // both of the following will get the onNext/onCompleted calls from above
+  // both of the following will get the onNext/onComplete calls from above
   subject.subscribe(observer1);
   subject.subscribe(observer2);
 
@@ -155,10 +155,10 @@ public final class ReplaySubject<T> extends Subject<T> {
      * observer subscribes, it observes items without gaps in the sequence except for any outdated items at the
      * beginning of the sequence.
      * <p>
-     * Note that terminal notifications ({@code onError} and {@code onCompleted}) trigger eviction as well. For
-     * example, with a max age of 5, the first item is observed at T=0, then an {@code onCompleted} notification
+     * Note that terminal notifications ({@code onError} and {@code onComplete}) trigger eviction as well. For
+     * example, with a max age of 5, the first item is observed at T=0, then an {@code onComplete} notification
      * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplaySubject} with just
-     * an {@code onCompleted} notification.
+     * an {@code onComplete} notification.
      *
      * @param <T>
      *          the type of items observed and emitted by the Subject
@@ -191,10 +191,10 @@ public final class ReplaySubject<T> extends Subject<T> {
      * subscribes, it observes items without gaps in the sequence except for the outdated items at the beginning
      * of the sequence.
      * <p>
-     * Note that terminal notifications ({@code onError} and {@code onCompleted}) trigger eviction as well. For
-     * example, with a max age of 5, the first item is observed at T=0, then an {@code onCompleted} notification
+     * Note that terminal notifications ({@code onError} and {@code onComplete}) trigger eviction as well. For
+     * example, with a max age of 5, the first item is observed at T=0, then an {@code onComplete} notification
      * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplaySubject} with just
-     * an {@code onCompleted} notification.
+     * an {@code onComplete} notification.
      *
      * @param <T>
      *          the type of items observed and emitted by the Subject
@@ -480,7 +480,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     }
 
     static final class ReplayDisposable<T> extends AtomicInteger implements Disposable {
-        /** */
+
         private static final long serialVersionUID = 466549804534799122L;
         final Observer<? super T> actual;
         final ReplaySubject<T> state;
@@ -489,7 +489,7 @@ public final class ReplaySubject<T> extends Subject<T> {
 
         volatile boolean cancelled;
 
-        public ReplayDisposable(Observer<? super T> actual, ReplaySubject<T> state) {
+        ReplayDisposable(Observer<? super T> actual, ReplaySubject<T> state) {
             this.actual = actual;
             this.state = state;
         }
@@ -511,7 +511,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     static final class UnboundedReplayBuffer<T>
     extends AtomicReference<Object>
     implements ReplayBuffer<T> {
-        /** */
+
         private static final long serialVersionUID = -733876083048047795L;
 
         final List<Object> buffer;
@@ -520,7 +520,7 @@ public final class ReplaySubject<T> extends Subject<T> {
 
         volatile int size;
 
-        public UnboundedReplayBuffer(int capacityHint) {
+        UnboundedReplayBuffer(int capacityHint) {
             this.buffer = new ArrayList<Object>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
         }
 
@@ -678,24 +678,24 @@ public final class ReplaySubject<T> extends Subject<T> {
     }
 
     static final class Node<T> extends AtomicReference<Node<T>> {
-        /** */
+
         private static final long serialVersionUID = 6404226426336033100L;
 
         final T value;
 
-        public Node(T value) {
+        Node(T value) {
             this.value = value;
         }
     }
 
     static final class TimedNode<T> extends AtomicReference<TimedNode<T>> {
-        /** */
+
         private static final long serialVersionUID = 6404226426336033100L;
 
         final T value;
         final long time;
 
-        public TimedNode(T value, long time) {
+        TimedNode(T value, long time) {
             this.value = value;
             this.time = time;
         }
@@ -704,7 +704,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     static final class SizeBoundReplayBuffer<T>
     extends AtomicReference<Object>
     implements ReplayBuffer<T> {
-        /** */
+
         private static final long serialVersionUID = 1107649250281456395L;
 
         final int maxSize;
@@ -716,7 +716,7 @@ public final class ReplaySubject<T> extends Subject<T> {
 
         volatile boolean done;
 
-        public SizeBoundReplayBuffer(int maxSize) {
+        SizeBoundReplayBuffer(int maxSize) {
             this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
             Node<Object> h = new Node<Object>(null);
             this.tail = h;
@@ -903,7 +903,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     static final class SizeAndTimeBoundReplayBuffer<T>
     extends AtomicReference<Object>
     implements ReplayBuffer<T> {
-        /** */
+
         private static final long serialVersionUID = -8056260896137901749L;
 
         final int maxSize;
@@ -919,7 +919,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         volatile boolean done;
 
 
-        public SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
+        SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
             this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
             this.maxAge = ObjectHelper.verifyPositive(maxAge, "maxAge");
             this.unit = ObjectHelper.requireNonNull(unit, "unit is null");

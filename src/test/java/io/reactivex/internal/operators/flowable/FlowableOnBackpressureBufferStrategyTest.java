@@ -110,7 +110,7 @@ public class FlowableOnBackpressureBufferStrategyTest {
             while (!bs.isCancelled() && i < 500) {
                 s.onNext(i++);
             }
-            if(!bs.isCancelled()){
+            if (!bs.isCancelled()) {
                 s.onComplete();
             }
         }

@@ -50,7 +50,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
     }
 
     static final class CollectSubscriber<T, U> extends DeferredScalarSubscription<U> implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = -3589550218733891694L;
 
         final BiConsumer<? super U, ? super T> collector;
@@ -61,7 +61,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
 
         boolean done;
 
-        public CollectSubscriber(Subscriber<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
+        CollectSubscriber(Subscriber<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
             super(actual);
             this.collector = collector;
             this.u = u;

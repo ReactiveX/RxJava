@@ -67,7 +67,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
         int index;
 
-        public PublisherBufferExactSubscriber(Subscriber<? super C> actual, int size, Callable<C> bufferSupplier) {
+        PublisherBufferExactSubscriber(Subscriber<? super C> actual, int size, Callable<C> bufferSupplier) {
             this.actual = actual;
             this.size = size;
             this.bufferSupplier = bufferSupplier;
@@ -163,7 +163,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
     extends AtomicInteger
     implements Subscriber<T>, Subscription {
 
-        /** */
+
         private static final long serialVersionUID = -5616169793639412593L;
 
         final Subscriber<? super C> actual;
@@ -182,7 +182,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
         long index;
 
-        public PublisherBufferSkipSubscriber(Subscriber<? super C> actual, int size, int skip,
+        PublisherBufferSkipSubscriber(Subscriber<? super C> actual, int size, int skip,
                 Callable<C> bufferSupplier) {
             this.actual = actual;
             this.size = size;
@@ -296,7 +296,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
     static final class PublisherBufferOverlappingSubscriber<T, C extends Collection<? super T>>
     extends AtomicLong
     implements Subscriber<T>, Subscription, BooleanSupplier {
-        /** */
+
         private static final long serialVersionUID = -7370244972039324525L;
 
         final Subscriber<? super C> actual;
@@ -321,7 +321,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
         long produced;
 
-        public PublisherBufferOverlappingSubscriber(Subscriber<? super C> actual, int size, int skip,
+        PublisherBufferOverlappingSubscriber(Subscriber<? super C> actual, int size, int skip,
                 Callable<C> bufferSupplier) {
             this.actual = actual;
             this.size = size;

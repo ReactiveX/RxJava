@@ -82,7 +82,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
     extends BasicIntQueueSubscription<R>
     implements Subscriber<T> {
 
-        /** */
+
         private static final long serialVersionUID = -3096000382929934955L;
 
         final Subscriber<? super R> actual;
@@ -111,7 +111,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
         int fusionMode;
 
-        public FlattenIterableSubscriber(Subscriber<? super R> actual,
+        FlattenIterableSubscriber(Subscriber<? super R> actual,
                 Function<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
             this.actual = actual;
             this.mapper = mapper;

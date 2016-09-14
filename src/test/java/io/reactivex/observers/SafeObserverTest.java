@@ -56,7 +56,7 @@ public class SafeObserverTest {
     }
 
     @Test
-    public void onCompletedFailure() {
+    public void onCompleteFailure() {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
         try {
             OBSERVER_ONCOMPLETED_FAIL(onError).onComplete();
@@ -64,7 +64,7 @@ public class SafeObserverTest {
         } catch (Exception e) {
             assertNull(onError.get());
             assertTrue(e instanceof SafeObserverTestException);
-            assertEquals("onCompletedFail", e.getMessage());
+            assertEquals("onCompleteFail", e.getMessage());
         }
     }
 
@@ -420,7 +420,7 @@ public class SafeObserverTest {
 
             @Override
             public void onComplete() {
-                throw new SafeObserverTestException("onCompletedFail");
+                throw new SafeObserverTestException("onCompleteFail");
             }
 
             @Override
@@ -437,8 +437,8 @@ public class SafeObserverTest {
     }
 
     @SuppressWarnings("serial")
-    private static class SafeObserverTestException extends RuntimeException {
-        public SafeObserverTestException(String message) {
+    static class SafeObserverTestException extends RuntimeException {
+        SafeObserverTestException(String message) {
             super(message);
         }
     }
@@ -603,7 +603,7 @@ public class SafeObserverTest {
 
         Throwable error;
 
-        public CrashDummy(boolean crashOnSubscribe, int crashOnNext,
+        CrashDummy(boolean crashOnSubscribe, int crashOnNext,
                 boolean crashOnError, boolean crashOnComplete, boolean crashDispose) {
             this.crashOnSubscribe = crashOnSubscribe;
             this.crashOnNext = crashOnNext;

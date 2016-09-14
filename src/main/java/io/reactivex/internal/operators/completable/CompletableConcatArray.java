@@ -34,7 +34,7 @@ public final class CompletableConcatArray extends Completable {
     }
 
     static final class ConcatInnerObserver extends AtomicInteger implements CompletableObserver {
-        /** */
+
         private static final long serialVersionUID = -7965400327305809232L;
 
         final CompletableObserver actual;
@@ -44,7 +44,7 @@ public final class CompletableConcatArray extends Completable {
 
         final SequentialDisposable sd;
 
-        public ConcatInnerObserver(CompletableObserver actual, CompletableSource[] sources) {
+        ConcatInnerObserver(CompletableObserver actual, CompletableSource[] sources) {
             this.actual = actual;
             this.sources = sources;
             this.sd = new SequentialDisposable();

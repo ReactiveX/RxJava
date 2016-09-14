@@ -21,9 +21,6 @@ import io.reactivex.TestHelper;
 public class QueueSubscriptionTest {
     static final class EmptyQS extends BasicQueueSubscription<Integer> {
 
-        /**
-         *
-         */
         private static final long serialVersionUID = -5312809687598840520L;
 
         @Override
@@ -60,9 +57,6 @@ public class QueueSubscriptionTest {
 
     static final class EmptyIntQS extends BasicIntQueueSubscription<Integer> {
 
-        /**
-         *
-         */
         private static final long serialVersionUID = -1374033403007296252L;
 
         @Override

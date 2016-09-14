@@ -64,11 +64,10 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         source.subscribe(subscribe(s, mapper, prefetch, errorMode));
     }
 
-    static abstract class BaseConcatMapSubscriber<T, R>
+    abstract static class BaseConcatMapSubscriber<T, R>
     extends AtomicInteger
     implements Subscriber<T>, ConcatMapSupport<R>, Subscription {
 
-        /** */
         private static final long serialVersionUID = -3511336836796789179L;
 
         final ConcatMapInner<R> inner;
@@ -95,7 +94,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
         int sourceMode;
 
-        public BaseConcatMapSubscriber(
+        BaseConcatMapSubscriber(
                 Function<? super T, ? extends Publisher<? extends R>> mapper,
                 int prefetch) {
             this.mapper = mapper;
@@ -113,7 +112,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked") QueueSubscription<T> f = (QueueSubscription<T>)s;
                     int m = f.requestFusion(QueueSubscription.ANY);
-                    if (m == QueueSubscription.SYNC){
+                    if (m == QueueSubscription.SYNC) {
                         sourceMode = m;
                         queue = f;
                         done = true;
@@ -176,14 +175,14 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
     static final class ConcatMapImmediate<T, R>
     extends BaseConcatMapSubscriber<T, R> {
 
-        /** */
+
         private static final long serialVersionUID = 7898995095634264146L;
 
         final Subscriber<? super R> actual;
 
         final AtomicInteger wip;
 
-        public ConcatMapImmediate(Subscriber<? super R> actual,
+        ConcatMapImmediate(Subscriber<? super R> actual,
                 Function<? super T, ? extends Publisher<? extends R>> mapper,
                 int prefetch) {
             super(mapper, prefetch);
@@ -372,7 +371,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
         final T value;
         boolean once;
 
-        public WeakScalarSubscription(T value, Subscriber<? super T> actual) {
+        WeakScalarSubscription(T value, Subscriber<? super T> actual) {
             this.value = value;
             this.actual = actual;
         }
@@ -396,14 +395,14 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
     static final class ConcatMapDelayed<T, R>
     extends BaseConcatMapSubscriber<T, R> {
 
-        /** */
+
         private static final long serialVersionUID = -2945777694260521066L;
 
         final Subscriber<? super R> actual;
 
         final boolean veryEnd;
 
-        public ConcatMapDelayed(Subscriber<? super R> actual,
+        ConcatMapDelayed(Subscriber<? super R> actual,
                 Function<? super T, ? extends Publisher<? extends R>> mapper,
                 int prefetch, boolean veryEnd) {
             super(mapper, prefetch);
@@ -590,14 +589,14 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
     extends SubscriptionArbiter
     implements Subscriber<R> {
 
-        /** */
+
         private static final long serialVersionUID = 897683679971470653L;
 
         final ConcatMapSupport<R> parent;
 
         long produced;
 
-        public ConcatMapInner(ConcatMapSupport<R> parent) {
+        ConcatMapInner(ConcatMapSupport<R> parent) {
             this.parent = parent;
         }
 

@@ -70,7 +70,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
         final AtomicLong windows = new AtomicLong();
 
-        public WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> actual,
+        WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> actual,
                 Publisher<B> open, Function<? super B, ? extends Publisher<V>> close, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.open = open;
@@ -342,7 +342,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
     static final class WindowOperation<T, B> {
         final UnicastProcessor<T> w;
         final B open;
-        public WindowOperation(UnicastProcessor<T> w, B open) {
+        WindowOperation(UnicastProcessor<T> w, B open) {
             this.w = w;
             this.open = open;
         }
@@ -353,7 +353,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
         boolean done;
 
-        public OperatorWindowBoundaryOpenSubscriber(WindowBoundaryMainSubscriber<T, B, ?> parent) {
+        OperatorWindowBoundaryOpenSubscriber(WindowBoundaryMainSubscriber<T, B, ?> parent) {
             this.parent = parent;
         }
 
@@ -391,7 +391,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
         boolean done;
 
-        public OperatorWindowBoundaryCloseSubscriber(WindowBoundaryMainSubscriber<T, ?, V> parent, UnicastProcessor<T> w) {
+        OperatorWindowBoundaryCloseSubscriber(WindowBoundaryMainSubscriber<T, ?, V> parent, UnicastProcessor<T> w) {
             this.parent = parent;
             this.w = w;
         }

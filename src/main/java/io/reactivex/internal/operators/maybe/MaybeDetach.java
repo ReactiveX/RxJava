@@ -39,7 +39,7 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
 
         Disposable d;
 
-        public DetachMaybeObserver(MaybeObserver<? super T> actual) {
+        DetachMaybeObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 

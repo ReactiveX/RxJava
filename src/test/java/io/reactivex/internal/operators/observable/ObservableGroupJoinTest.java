@@ -115,7 +115,7 @@ public class ObservableGroupJoinTest {
         final int id;
         final String name;
 
-        public Person(int id, String name) {
+        Person(int id, String name) {
             this.id = id;
             this.name = name;
         }
@@ -125,7 +125,7 @@ public class ObservableGroupJoinTest {
         final int personId;
         final String fruit;
 
-        public PersonFruit(int personId, String fruit) {
+        PersonFruit(int personId, String fruit) {
             this.personId = personId;
             this.fruit = fruit;
         }
@@ -135,7 +135,7 @@ public class ObservableGroupJoinTest {
         final Person person;
         final Observable<PersonFruit> fruits;
 
-        public PPF(Person person, Observable<PersonFruit> fruits) {
+        PPF(Person person, Observable<PersonFruit> fruits) {
             this.person = person;
             this.fruits = fruits;
         }

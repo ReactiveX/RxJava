@@ -278,7 +278,7 @@ public final class Functions {
     static final class FutureAction implements Action {
         final Future<?> future;
 
-        public FutureAction(Future<?> future) {
+        FutureAction(Future<?> future) {
             this.future = future;
         }
 
@@ -300,7 +300,7 @@ public final class Functions {
     static final class JustValue<T, U> implements Callable<U>, Function<T, U> {
         final U value;
 
-        public JustValue(U value) {
+        JustValue(U value) {
             this.value = value;
         }
 
@@ -339,7 +339,7 @@ public final class Functions {
     static final class CastToClass<T, U> implements Function<T, U> {
         final Class<U> clazz;
 
-        public CastToClass(Class<U> clazz) {
+        CastToClass(Class<U> clazz) {
             this.clazz = clazz;
         }
 
@@ -363,7 +363,7 @@ public final class Functions {
     static final class ArrayListCapacityCallable<T> implements Callable<List<T>> {
         final int capacity;
 
-        public ArrayListCapacityCallable(int capacity) {
+        ArrayListCapacityCallable(int capacity) {
             this.capacity = capacity;
         }
 
@@ -380,7 +380,7 @@ public final class Functions {
     static final class EqualsPredicate<T> implements Predicate<T> {
         final T value;
 
-        public EqualsPredicate(T value) {
+        EqualsPredicate(T value) {
             this.value = value;
         }
 
@@ -410,7 +410,7 @@ public final class Functions {
     static final class NotificationOnNext<T> implements Consumer<T> {
         final Consumer<? super Notification<T>> onNotification;
 
-        public NotificationOnNext(Consumer<? super Notification<T>> onNotification) {
+        NotificationOnNext(Consumer<? super Notification<T>> onNotification) {
             this.onNotification = onNotification;
         }
 
@@ -423,7 +423,7 @@ public final class Functions {
     static final class NotificationOnError<T> implements Consumer<Throwable> {
         final Consumer<? super Notification<T>> onNotification;
 
-        public NotificationOnError(Consumer<? super Notification<T>> onNotification) {
+        NotificationOnError(Consumer<? super Notification<T>> onNotification) {
             this.onNotification = onNotification;
         }
 
@@ -436,7 +436,7 @@ public final class Functions {
     static final class NotificationOnComplete<T> implements Action {
         final Consumer<? super Notification<T>> onNotification;
 
-        public NotificationOnComplete(Consumer<? super Notification<T>> onNotification) {
+        NotificationOnComplete(Consumer<? super Notification<T>> onNotification) {
             this.onNotification = onNotification;
         }
 
@@ -461,7 +461,7 @@ public final class Functions {
     static final class ActionConsumer<T> implements Consumer<T> {
         final Action action;
 
-        public ActionConsumer(Action action) {
+        ActionConsumer(Action action) {
             this.action = action;
         }
 
@@ -478,7 +478,7 @@ public final class Functions {
     static final class ClassFilter<T, U> implements Predicate<T> {
         final Class<U> clazz;
 
-        public ClassFilter(Class<U> clazz) {
+        ClassFilter(Class<U> clazz) {
             this.clazz = clazz;
         }
 
@@ -495,7 +495,7 @@ public final class Functions {
     static final class BooleanSupplierPredicateReverse<T> implements Predicate<T> {
         final BooleanSupplier supplier;
 
-        public BooleanSupplierPredicateReverse(BooleanSupplier supplier) {
+        BooleanSupplierPredicateReverse(BooleanSupplier supplier) {
             this.supplier = supplier;
         }
 
@@ -514,7 +514,7 @@ public final class Functions {
 
         final Scheduler scheduler;
 
-        public TimestampFunction(TimeUnit unit, Scheduler scheduler) {
+        TimestampFunction(TimeUnit unit, Scheduler scheduler) {
             this.unit = unit;
             this.scheduler = scheduler;
         }

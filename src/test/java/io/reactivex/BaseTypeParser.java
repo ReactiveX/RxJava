@@ -19,7 +19,11 @@ import java.util.*;
 /**
  * Parses the java file of a reactive base type to allow discovering Javadoc mistakes algorithmically.
  */
-public class BaseTypeParser {
+public final class BaseTypeParser {
+
+    private BaseTypeParser() {
+        throw new IllegalStateException("No instances!");
+    }
 
     public static class RxMethod {
         public String signature;

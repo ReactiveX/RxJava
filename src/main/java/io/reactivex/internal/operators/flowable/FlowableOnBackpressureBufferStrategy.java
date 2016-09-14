@@ -54,7 +54,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
     static final class OnBackpressureBufferStrategySubscriber<T>
     extends AtomicInteger
     implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 3240706908776709697L;
 
         final Subscriber<? super T> actual;
@@ -76,7 +76,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
         volatile boolean done;
         Throwable error;
 
-        public OnBackpressureBufferStrategySubscriber(Subscriber<? super T> actual, Action onOverflow,
+        OnBackpressureBufferStrategySubscriber(Subscriber<? super T> actual, Action onOverflow,
                 BackpressureOverflowStrategy strategy, long bufferSize) {
             this.actual = actual;
             this.onOverflow = onOverflow;
@@ -138,7 +138,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                         onError(ex);
                     }
                 }
-            } else if(callError) {
+            } else if (callError) {
                 s.cancel();
                 onError(new MissingBackpressureException());
             } else {

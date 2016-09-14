@@ -73,7 +73,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
     }
 
     static final class UsingSubscriber<T, D> extends AtomicBoolean implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 5904473792286235046L;
 
         final Observer<? super T> actual;
@@ -83,7 +83,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
 
         Disposable s;
 
-        public UsingSubscriber(Observer<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
+        UsingSubscriber(Observer<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
             this.actual = actual;
             this.resource = resource;
             this.disposer = disposer;

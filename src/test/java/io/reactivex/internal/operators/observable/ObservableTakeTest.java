@@ -228,12 +228,12 @@ public class ObservableTakeTest {
         assertEquals(1, count.get());
     }
 
-    private static class TestObservableFunc implements ObservableSource<String> {
+    static class TestObservableFunc implements ObservableSource<String> {
 
         final String[] values;
-        Thread t = null;
+        Thread t;
 
-        public TestObservableFunc(String... values) {
+        TestObservableFunc(String... values) {
             this.values = values;
         }
 

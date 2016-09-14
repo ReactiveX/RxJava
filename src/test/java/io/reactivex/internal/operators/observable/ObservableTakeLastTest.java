@@ -123,7 +123,7 @@ public class ObservableTakeLastTest {
 
     private Function<Integer, Integer> newSlowProcessor() {
         return new Function<Integer, Integer>() {
-            int c = 0;
+            int c;
 
             @Override
             public Integer apply(Integer i) {

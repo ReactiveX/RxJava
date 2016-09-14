@@ -33,7 +33,7 @@ public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpst
     }
 
     static final class UnsubscribeSubscriber<T> extends AtomicBoolean implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 1015244841293359600L;
 
         final Observer<? super T> actual;
@@ -41,7 +41,7 @@ public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpst
 
         Disposable s;
 
-        public UnsubscribeSubscriber(Observer<? super T> actual, Scheduler scheduler) {
+        UnsubscribeSubscriber(Observer<? super T> actual, Scheduler scheduler) {
             this.actual = actual;
             this.scheduler = scheduler;
         }

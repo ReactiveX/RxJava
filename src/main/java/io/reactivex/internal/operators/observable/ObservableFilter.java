@@ -28,16 +28,16 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
 
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new FilterSubscriber<T>(s, predicate));
+        source.subscribe(new FilterObserver<T>(s, predicate));
     }
 
-    static final class FilterSubscriber<T> implements Observer<T>, Disposable {
+    static final class FilterObserver<T> implements Observer<T>, Disposable {
         final Predicate<? super T> filter;
         final Observer<? super T> actual;
 
         Disposable s;
 
-        public FilterSubscriber(Observer<? super T> actual, Predicate<? super T> filter) {
+        FilterObserver(Observer<? super T> actual, Predicate<? super T> filter) {
             this.actual = actual;
             this.filter = filter;
         }

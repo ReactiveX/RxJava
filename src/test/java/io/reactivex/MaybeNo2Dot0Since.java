@@ -28,13 +28,13 @@ public class MaybeNo2Dot0Since {
 
     /**
      * Given a base reactive type name, try to find its source in the current runtime
-     * path and return a file to it or null if not found
+     * path and return a file to it or null if not found.
      * @param baseClassName the class name such as {@code Maybe}
      * @return the File pointing to the source
      * @throws Exception on error
      */
     public static File findSource(String baseClassName) throws Exception {
-        URL u = MaybeNo2Dot0Since.class.getResource(MaybeNo2Dot0Since.class.getSimpleName()+ ".class");
+        URL u = MaybeNo2Dot0Since.class.getResource(MaybeNo2Dot0Since.class.getSimpleName() + ".class");
 
         String path = new File(u.toURI()).toString().replace('\\', '/');
 

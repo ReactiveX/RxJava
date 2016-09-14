@@ -133,7 +133,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
          */
         boolean sourceDone;
 
-        public CacheState(Observable<? extends T> source, int capacityHint) {
+        CacheState(Observable<? extends T> source, int capacityHint) {
             super(capacityHint);
             this.source = source;
             this.producers = EMPTY;
@@ -270,7 +270,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         /** Set if the Subscription has been cancelled/disposed. */
         volatile boolean cancelled;
 
-        public ReplayDisposable(Observer<? super T> child, CacheState<T> state) {
+        ReplayDisposable(Observer<? super T> child, CacheState<T> state) {
             this.child = child;
             this.state = state;
         }

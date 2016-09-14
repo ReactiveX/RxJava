@@ -46,7 +46,7 @@ public final class FlowableTimeInterval<T> extends AbstractFlowableWithUpstream<
 
         long lastTime;
 
-        public TimeIntervalSubscriber(Subscriber<? super Timed<T>> actual, TimeUnit unit, Scheduler scheduler) {
+        TimeIntervalSubscriber(Subscriber<? super Timed<T>> actual, TimeUnit unit, Scheduler scheduler) {
             this.actual = actual;
             this.scheduler = scheduler;
             this.unit = unit;

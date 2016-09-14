@@ -22,7 +22,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.NotificationLite;
 
 public final class BlockingSubscriber<T> extends AtomicReference<Subscription> implements Subscriber<T>, Subscription {
-    /** */
+
     private static final long serialVersionUID = -4875965440900746268L;
 
     public static final Object TERMINATED = new Object();

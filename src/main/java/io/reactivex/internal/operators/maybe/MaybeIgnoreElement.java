@@ -39,7 +39,7 @@ public final class MaybeIgnoreElement<T> extends AbstractMaybeWithUpstream<T, T>
 
         Disposable d;
 
-        public IgnoreMaybeObserver(MaybeObserver<? super T> actual) {
+        IgnoreMaybeObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 

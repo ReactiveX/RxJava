@@ -150,7 +150,7 @@ public class CompositeExceptionTest {
         if (root == null) {
             return null;
         } else {
-            while(true) {
+            while (true) {
                 if (root.getCause() == null) {
                     return root;
                 } else {
@@ -176,7 +176,7 @@ public class CompositeExceptionTest {
     @Test(timeout = 1000)
     public void testCompositeExceptionWithUnsupportedInitCause() {
         Throwable t = new Throwable() {
-            /** */
+
             private static final long serialVersionUID = -3282577447436848385L;
 
             @Override
@@ -200,7 +200,7 @@ public class CompositeExceptionTest {
     @Test(timeout = 1000)
     public void testCompositeExceptionWithNullInitCause() {
         Throwable t = new Throwable("ThrowableWithNullInitCause") {
-            /** */
+
             private static final long serialVersionUID = -7984762607894527888L;
 
             @Override
@@ -248,7 +248,7 @@ public class CompositeExceptionTest {
         e5.initCause(e6);
 
         CompositeException compositeException = new CompositeException(e1, e3, e5);
-        assert(compositeException.getCause() instanceof CompositeExceptionCausalChain);
+        assertTrue(compositeException.getCause() instanceof CompositeExceptionCausalChain);
 
         List<Throwable> causeChain = new ArrayList<Throwable>();
         Throwable cause = compositeException.getCause().getCause();
@@ -311,7 +311,7 @@ public class CompositeExceptionTest {
     @Test
     public void cyclicRootCause() {
         RuntimeException te = new RuntimeException() {
-            /** */
+
             private static final long serialVersionUID = -8492568224555229753L;
             Throwable cause;
 
@@ -334,7 +334,7 @@ public class CompositeExceptionTest {
     @Test
     public void nullRootCause() {
         RuntimeException te = new RuntimeException() {
-            /** */
+
             private static final long serialVersionUID = -8492568224555229753L;
 
             @Override

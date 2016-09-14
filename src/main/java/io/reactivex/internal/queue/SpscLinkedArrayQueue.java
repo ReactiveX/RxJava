@@ -78,7 +78,7 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
             final int lookAheadStep = producerLookAheadStep;
             // go around the buffer or resize if full (unless we hit max capacity)
             int lookAheadElementOffset = calcWrappedOffset(index + lookAheadStep, mask);
-            if (null == lvElement(buffer, lookAheadElementOffset)) {// LoadLoad
+            if (null == lvElement(buffer, lookAheadElementOffset)) { // LoadLoad
                 producerLookAhead = index + lookAheadStep - 1; // joy, there's plenty of room
                 return writeToQueue(buffer, e, index, offset);
             } else if (null == lvElement(buffer, calcWrappedOffset(index + 1, mask))) { // buffer is not full
@@ -178,7 +178,7 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
     }
     @Override
     public void clear() {
-        while (poll() != null || !isEmpty()); // NOPMD
+        while (poll() != null || !isEmpty()) { } // NOPMD
     }
 
     public int size() {

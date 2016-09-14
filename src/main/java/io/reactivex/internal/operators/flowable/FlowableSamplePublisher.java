@@ -38,7 +38,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
     }
 
     static final class SamplePublisherSubscriber<T> extends AtomicReference<T> implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -3517602651313910099L;
 
         final Subscriber<? super T> actual;
@@ -50,7 +50,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
         Subscription s;
 
-        public SamplePublisherSubscriber(Subscriber<? super T> actual, Publisher<?> other) {
+        SamplePublisherSubscriber(Subscriber<? super T> actual, Publisher<?> other) {
             this.actual = actual;
             this.sampler = other;
         }
@@ -137,7 +137,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
     static final class SamplerSubscriber<T> implements Subscriber<Object> {
         final SamplePublisherSubscriber<T> parent;
-        public SamplerSubscriber(SamplePublisherSubscriber<T> parent) {
+        SamplerSubscriber(SamplePublisherSubscriber<T> parent) {
             this.parent = parent;
 
         }

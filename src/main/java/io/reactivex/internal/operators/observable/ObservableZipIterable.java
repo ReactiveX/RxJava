@@ -79,7 +79,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
 
         boolean done;
 
-        public ZipIterableSubscriber(Observer<? super V> actual, Iterator<U> iterator,
+        ZipIterableSubscriber(Observer<? super V> actual, Iterator<U> iterator,
                 BiFunction<? super T, ? super U, ? extends V> zipper) {
             this.actual = actual;
             this.iterator = iterator;

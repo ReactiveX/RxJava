@@ -47,12 +47,12 @@ public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstream
 
     static final class MaybeToFlowableSubscriber<T> extends DeferredScalarSubscription<T>
     implements MaybeObserver<T> {
-        /** */
+
         private static final long serialVersionUID = 7603343402964826922L;
 
         Disposable d;
 
-        public MaybeToFlowableSubscriber(Subscriber<? super T> actual) {
+        MaybeToFlowableSubscriber(Subscriber<? super T> actual) {
             super(actual);
         }
 

@@ -142,7 +142,7 @@ public class FlowableOnBackpressureBufferTest {
 
         int size = ts.values().size();
         assertTrue(size <= 150);  // will get up to 50 more
-        assertTrue(ts.values().get(size-1) == size-1);
+        assertTrue(ts.values().get(size - 1) == size - 1);
         // FIXME no longer assertable
 //        assertTrue(s.isUnsubscribed());
     }

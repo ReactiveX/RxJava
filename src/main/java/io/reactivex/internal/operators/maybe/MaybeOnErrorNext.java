@@ -50,7 +50,7 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = 2026620218879969836L;
 
         final MaybeObserver<? super T> actual;
@@ -59,7 +59,7 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
 
         final boolean allowFatal;
 
-        public OnErrorNextMaybeObserver(MaybeObserver<? super T> actual,
+        OnErrorNextMaybeObserver(MaybeObserver<? super T> actual,
                 Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction,
                         boolean allowFatal) {
             this.actual = actual;
@@ -120,7 +120,7 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
 
             final AtomicReference<Disposable> d;
 
-            public NextMaybeObserver(MaybeObserver<? super T> actual, AtomicReference<Disposable> d) {
+            NextMaybeObserver(MaybeObserver<? super T> actual, AtomicReference<Disposable> d) {
                 this.actual = actual;
                 this.d = d;
             }

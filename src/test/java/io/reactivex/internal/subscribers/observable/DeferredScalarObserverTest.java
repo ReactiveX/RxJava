@@ -26,12 +26,12 @@ import io.reactivex.observers.*;
 public class DeferredScalarObserverTest {
 
     static final class TakeFirst extends DeferredScalarObserver<Integer, Integer> {
-        public TakeFirst(Observer<? super Integer> actual) {
+
+        private static final long serialVersionUID = -2793723002312330530L;
+
+        TakeFirst(Observer<? super Integer> actual) {
             super(actual);
         }
-
-        /** */
-        private static final long serialVersionUID = -2793723002312330530L;
 
         @Override
         public void onNext(Integer value) {
@@ -150,12 +150,13 @@ public class DeferredScalarObserverTest {
     }
 
     static final class TakeLast extends DeferredScalarObserver<Integer, Integer> {
-        public TakeLast(Observer<? super Integer> actual) {
+
+        private static final long serialVersionUID = -2793723002312330530L;
+
+        TakeLast(Observer<? super Integer> actual) {
             super(actual);
         }
 
-        /** */
-        private static final long serialVersionUID = -2793723002312330530L;
 
         @Override
         public void onNext(Integer value) {

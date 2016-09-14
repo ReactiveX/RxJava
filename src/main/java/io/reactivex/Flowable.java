@@ -11591,7 +11591,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> sorted(){
+    public final Flowable<T> sorted() {
         return toSortedList().flatMapIterable(Functions.<List<T>>identity());
     }
 
@@ -11932,7 +11932,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Subscriber as is.
      * <p>Usage example:
      * <pre><code>
-     * Flowable<Integer> source = Flowable.range(1, 10);
+     * Flowable&lt;Integer> source = Flowable.range(1, 10);
      * CompositeDisposable composite = new CompositeDisposable();
      *
      * ResourceSubscriber&lt;Integer> rs = new ResourceSubscriber&lt;>() {

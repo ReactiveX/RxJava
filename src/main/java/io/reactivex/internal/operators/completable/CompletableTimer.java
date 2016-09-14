@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * Signals an {@code onCompleted} event after the specified delay
+ * Signals an {@code onComplete} event after the specified delay.
  */
 public final class CompletableTimer extends Completable {
 
@@ -43,7 +43,7 @@ public final class CompletableTimer extends Completable {
     }
 
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
-        /** */
+
         private static final long serialVersionUID = 3167244060586201109L;
         final CompletableObserver actual;
 

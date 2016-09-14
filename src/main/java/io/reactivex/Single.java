@@ -2446,7 +2446,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * SingleObserver as is.
      * <p>Usage example:
      * <pre><code>
-     * Single<Integer> source = Single.just(1);
+     * Single&lt;Integer> source = Single.just(1);
      * CompositeDisposable composite = new CompositeDisposable();
      *
      * class ResourceSingleObserver implements SingleObserver&lt;Integer>, Disposable {
@@ -2685,7 +2685,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a {@link Completable} that calls {@code onCompleted} on it's subscriber when the source {@link Single}
+     * @return a {@link Completable} that calls {@code onComplete} on it's subscriber when the source {@link Single}
      *         calls {@code onSuccess}.
      * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation: Completable</a>
      * @since 2.0

@@ -474,7 +474,7 @@ public class FlowableGroupByTest {
 
                     @Override
                     public void onComplete() {
-                        System.out.println("=> onCompleted");
+                        System.out.println("=> onComplete");
                         latch.countDown();
                     }
 
@@ -634,7 +634,7 @@ public class FlowableGroupByTest {
                         }
 
                     })
-                            // must take(2) so an onCompleted + unsubscribe happens on these first 2 groups
+                            // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
@@ -713,7 +713,7 @@ public class FlowableGroupByTest {
                         }
 
                     })
-                            // must take(2) so an onCompleted + unsubscribe happens on these first 2 groups
+                            // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
@@ -805,7 +805,7 @@ public class FlowableGroupByTest {
                         }
 
                     })
-                            // must take(2) so an onCompleted + unsubscribe happens on these first 2 groups
+                            // must take(2) so an onComplete + unsubscribe happens on these first 2 groups
                             .take(2).doOnComplete(new Action() {
 
                                 @Override
@@ -1113,7 +1113,7 @@ public class FlowableGroupByTest {
                 "    fOo    "
                 ));
 
-        /**
+        /*
          * foo FoO foO FOO fOo
          * baR bar BAR
          * Baz baz bAZ
@@ -1140,7 +1140,7 @@ public class FlowableGroupByTest {
                 System.out.println("-----------> NEXT: " + g.getKey());
                 return g.take(2).map(new Function<String, String>() {
 
-                    int count = 0;
+                    int count;
 
                     @Override
                     public String apply(String v) {
@@ -1202,7 +1202,7 @@ public class FlowableGroupByTest {
     }
 
     /**
-     * Assert we get an IllegalStateException if trying to subscribe to an inner GroupedObservable more than once
+     * Assert we get an IllegalStateException if trying to subscribe to an inner GroupedObservable more than once.
      */
     @Test
     public void testExceptionIfSubscribeToChildMoreThanOnce() {
@@ -1262,7 +1262,7 @@ public class FlowableGroupByTest {
 
                 }).observeOn(Schedulers.computation()).map(new Function<Integer, String>() {
 
-                    int c = 0;
+                    int c;
 
                     @Override
                     public String apply(Integer l) {
@@ -1492,7 +1492,7 @@ public class FlowableGroupByTest {
                     public void onNext(Integer t) {
                         System.out.println(t);
                         //provoke possible request overflow
-                        request(Long.MAX_VALUE-1);
+                        request(Long.MAX_VALUE - 1);
                     }});
         assertTrue(completed.get());
     }

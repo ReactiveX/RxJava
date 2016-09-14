@@ -50,11 +50,11 @@ import io.reactivex.plugins.RxJavaPlugins;
   subject.onNext("two");
   subject.onNext("three");
 
-  // observer will receive only onCompleted
+  // observer will receive only onComplete
   BehaviorSubject<Object> subject = BehaviorSubject.create("default");
   subject.onNext("zero");
   subject.onNext("one");
-  subject.onCompleted();
+  subject.onComplete();
   subject.subscribe(observer);
 
   // observer will receive only onError
@@ -403,7 +403,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
         long index;
 
-        public BehaviorDisposable(Observer<? super T> actual, BehaviorSubject<T> state) {
+        BehaviorDisposable(Observer<? super T> actual, BehaviorSubject<T> state) {
             this.actual = actual;
             this.state = state;
         }

@@ -30,7 +30,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Verifies the operators handle null values properly by emitting/throwing NullPointerExceptions
+ * Verifies the operators handle null values properly by emitting/throwing NullPointerExceptions.
  */
 public class ObservableNullTests {
 

@@ -86,7 +86,7 @@ public final class SingleUsing<T, U> extends Single<T> {
 
     static final class UsingSingleObserver<T, U> extends
     AtomicReference<Object> implements SingleObserver<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -5331524057054083935L;
 
         final SingleObserver<? super T> actual;
@@ -97,7 +97,7 @@ public final class SingleUsing<T, U> extends Single<T> {
 
         Disposable d;
 
-        public UsingSingleObserver(SingleObserver<? super T> actual, U resource, boolean eager,
+        UsingSingleObserver(SingleObserver<? super T> actual, U resource, boolean eager,
                 Consumer<? super U> disposer) {
             super(resource);
             this.actual = actual;

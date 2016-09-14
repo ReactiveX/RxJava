@@ -72,7 +72,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 
         boolean done;
 
-        public ReduceSubscriber(SingleObserver<? super T> actual, BiFunction<T, T, T> reducer) {
+        ReduceSubscriber(SingleObserver<? super T> actual, BiFunction<T, T, T> reducer) {
             this.actual = actual;
             this.reducer = reducer;
         }

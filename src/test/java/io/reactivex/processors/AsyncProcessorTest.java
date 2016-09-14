@@ -183,7 +183,7 @@ public class AsyncProcessorTest {
     }
 
     /**
-     * Can receive timeout if subscribe never receives an onError/onCompleted ... which reveals a race condition.
+     * Can receive timeout if subscribe never receives an onError/onComplete ... which reveals a race condition.
      */
     @Test(timeout = 10000)
     public void testSubscribeCompletionRaceCondition() {
@@ -255,7 +255,7 @@ public class AsyncProcessorTest {
         private final AsyncProcessor<String> subject;
         private final AtomicReference<String> value = new AtomicReference<String>();
 
-        public SubjectSubscriberThread(AsyncProcessor<String> subject) {
+        SubjectSubscriberThread(AsyncProcessor<String> subject) {
             this.subject = subject;
         }
 

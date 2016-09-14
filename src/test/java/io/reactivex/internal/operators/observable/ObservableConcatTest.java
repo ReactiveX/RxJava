@@ -140,7 +140,7 @@ public class ObservableConcatTest {
     }
 
     /**
-     * Test an async Observable that emits more async Observables
+     * Test an async Observable that emits more async Observables.
      * @throws InterruptedException if the test is interrupted
      */
     @Test
@@ -470,7 +470,7 @@ public class ObservableConcatTest {
         verify(observer, never()).onError(any(Throwable.class));
     }
 
-    private static class TestObservable<T> implements ObservableSource<T> {
+    static class TestObservable<T> implements ObservableSource<T> {
 
         private final Disposable s = new Disposable() {
             @Override
@@ -484,8 +484,8 @@ public class ObservableConcatTest {
             }
         };
         private final List<T> values;
-        private Thread t = null;
-        private int count = 0;
+        private Thread t;
+        private int count;
         private volatile boolean subscribed = true;
         private final CountDownLatch once;
         private final CountDownLatch okToContinue;
@@ -493,11 +493,11 @@ public class ObservableConcatTest {
         private final T seed;
         private final int size;
 
-        public TestObservable(T... values) {
+        TestObservable(T... values) {
             this(null, null, values);
         }
 
-        public TestObservable(CountDownLatch once, CountDownLatch okToContinue, T... values) {
+        TestObservable(CountDownLatch once, CountDownLatch okToContinue, T... values) {
             this.values = Arrays.asList(values);
             this.size = this.values.size();
             this.once = once;
@@ -505,7 +505,7 @@ public class ObservableConcatTest {
             this.seed = null;
         }
 
-        public TestObservable(T seed, int size) {
+        TestObservable(T seed, int size) {
             values = null;
             once = null;
             okToContinue = null;
@@ -522,20 +522,24 @@ public class ObservableConcatTest {
                 public void run() {
                     try {
                         while (count < size && subscribed) {
-                            if (null != values)
+                            if (null != values) {
                                 observer.onNext(values.get(count));
-                            else
+                            } else {
                                 observer.onNext(seed);
+                            }
                             count++;
                             //Unblock the main thread to call unsubscribe.
-                            if (null != once)
+                            if (null != once) {
                                 once.countDown();
+                            }
                             //Block until the main thread has called unsubscribe.
-                            if (null != okToContinue)
+                            if (null != okToContinue) {
                                 okToContinue.await(5, TimeUnit.SECONDS);
+                            }
                         }
-                        if (subscribed)
+                        if (subscribed) {
                             observer.onComplete();
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         fail(e.getMessage());
@@ -736,8 +740,9 @@ public class ObservableConcatTest {
         final long startTime = System.currentTimeMillis();
         for (int i = 0;; i++) {
             //only run this for a max of ten seconds
-            if (System.currentTimeMillis()-startTime > TimeUnit.SECONDS.toMillis(durationSeconds))
+            if (System.currentTimeMillis() - startTime > TimeUnit.SECONDS.toMillis(durationSeconds)) {
                 return;
+            }
             if (i % 1000 == 0) {
                 System.out.println("concatMapRangeAsyncLoop > " + i);
             }

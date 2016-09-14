@@ -33,9 +33,9 @@ import io.reactivex.subscribers.TestSubscriber;
 public class FlowableUsingTest {
 
     private interface Resource {
-        public String getTextFromWeb();
+        String getTextFromWeb();
 
-        public void dispose();
+        void dispose();
     }
 
     private static class DisposeAction implements Consumer<Resource> {

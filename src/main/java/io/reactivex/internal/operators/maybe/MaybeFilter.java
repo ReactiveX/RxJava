@@ -21,7 +21,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
  * Filters the upstream via a predicate, returning the success item or completing if
- * the predicate returns false
+ * the predicate returns false.
  *
  * @param <T> the upstream value type
  */
@@ -47,7 +47,7 @@ public final class MaybeFilter<T> extends AbstractMaybeWithUpstream<T, T> {
 
         Disposable d;
 
-        public FilterMaybeObserver(MaybeObserver<? super T> actual, Predicate<? super T> predicate) {
+        FilterMaybeObserver(MaybeObserver<? super T> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

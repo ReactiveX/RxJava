@@ -646,7 +646,7 @@ public class ObservableDelayTest {
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
 
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer apply(Integer t) {
@@ -675,7 +675,7 @@ public class ObservableDelayTest {
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
 
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer apply(Integer t) {
@@ -710,7 +710,7 @@ public class ObservableDelayTest {
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
 
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer apply(Integer t) {
@@ -746,7 +746,7 @@ public class ObservableDelayTest {
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
 
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer apply(Integer t) {

@@ -37,8 +37,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
         }
     }
 
-    static abstract class BaseArraySubscription<T> extends BasicQueueSubscription<T> {
-        /** */
+    abstract static class BaseArraySubscription<T> extends BasicQueueSubscription<T> {
         private static final long serialVersionUID = -2252972430506210021L;
 
         final T[] array;
@@ -47,7 +46,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
 
         volatile boolean cancelled;
 
-        public BaseArraySubscription(T[] array) {
+        BaseArraySubscription(T[] array) {
             this.array = array;
         }
 
@@ -105,12 +104,12 @@ public final class FlowableFromArray<T> extends Flowable<T> {
 
     static final class ArraySubscription<T> extends BaseArraySubscription<T> {
 
-        /** */
+
         private static final long serialVersionUID = 2587302975077663557L;
 
         final Subscriber<? super T> actual;
 
-        public ArraySubscription(Subscriber<? super T> actual, T[] array) {
+        ArraySubscription(Subscriber<? super T> actual, T[] array) {
             super(array);
             this.actual = actual;
         }
@@ -189,12 +188,12 @@ public final class FlowableFromArray<T> extends Flowable<T> {
 
     static final class ArrayConditionalSubscription<T> extends BaseArraySubscription<T> {
 
-        /** */
+
         private static final long serialVersionUID = 2587302975077663557L;
 
         final ConditionalSubscriber<? super T> actual;
 
-        public ArrayConditionalSubscription(ConditionalSubscriber<? super T> actual, T[] array) {
+        ArrayConditionalSubscription(ConditionalSubscriber<? super T> actual, T[] array) {
             super(array);
             this.actual = actual;
         }

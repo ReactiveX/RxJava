@@ -27,7 +27,7 @@ import io.reactivex.disposables.Disposable;
  * and should be used by internal means only.
  */
 public final class ArrayCompositeSubscription extends AtomicReferenceArray<Subscription> implements Disposable {
-    /** */
+
     private static final long serialVersionUID = 2746389416410565408L;
 
     public ArrayCompositeSubscription(int capacity) {

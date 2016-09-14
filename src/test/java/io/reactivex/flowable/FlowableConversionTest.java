@@ -29,7 +29,7 @@ import io.reactivex.subscribers.*;
 
 public class FlowableConversionTest {
 
-    public static class Cylon {}
+    public static class Cylon { }
 
     public static class Jail {
         Object cylon;
@@ -228,7 +228,7 @@ public class FlowableConversionTest {
                         @Override
                         public ConcurrentLinkedQueue<Integer> apply(Flowable<Integer> onSubscribe) {
                             final ConcurrentLinkedQueue<Integer> q = new ConcurrentLinkedQueue<Integer>();
-                            onSubscribe.subscribe(new DefaultSubscriber<Integer>(){
+                            onSubscribe.subscribe(new DefaultSubscriber<Integer>() {
                                 @Override
                                 public void onComplete() {
                                     isFinished.set(true);

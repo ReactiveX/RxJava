@@ -22,7 +22,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Utility methods to perform half-serialization: a form of serialization
  * where onNext is guaranteed to be called from a single thread but
- * onError or onCompleted may be called from any threads.
+ * onError or onComplete may be called from any threads.
  */
 public final class HalfSerializer {
     /** Utility class. */

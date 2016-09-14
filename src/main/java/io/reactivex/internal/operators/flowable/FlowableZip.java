@@ -83,7 +83,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
     extends AtomicInteger
     implements Subscription {
 
-        /** */
+
         private static final long serialVersionUID = -2434867452883857743L;
 
         final Subscriber<? super R> actual;
@@ -104,7 +104,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         final Object[] current;
 
-        public ZipCoordinator(Subscriber<? super R> actual,
+        ZipCoordinator(Subscriber<? super R> actual,
                 Function<? super Object[], ? extends R> zipper, int n, int prefetch, boolean delayErrors) {
             this.actual = actual;
             this.zipper = zipper;
@@ -324,7 +324,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
 
     static final class ZipSubscriber<T, R> extends AtomicReference<Subscription> implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -4627193790118206028L;
 
         final ZipCoordinator<T, R> parent;
@@ -343,7 +343,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         int sourceMode;
 
-        public ZipSubscriber(ZipCoordinator<T, R> parent, int prefetch, int index) {
+        ZipSubscriber(ZipCoordinator<T, R> parent, int prefetch, int index) {
             this.parent = parent;
             this.prefetch = prefetch;
             this.index = index;

@@ -59,7 +59,7 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
 
         Subscription s;
 
-        public DelaySubscriber(Subscriber<? super T> actual, long delay, TimeUnit unit, Worker w, boolean delayError) {
+        DelaySubscriber(Subscriber<? super T> actual, long delay, TimeUnit unit, Worker w, boolean delayError) {
             super();
             this.actual = actual;
             this.delay = delay;

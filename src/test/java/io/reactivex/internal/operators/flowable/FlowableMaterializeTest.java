@@ -47,7 +47,7 @@ public class FlowableMaterializeTest {
         }
 
         assertFalse(observer.onError);
-        assertTrue(observer.onCompleted);
+        assertTrue(observer.onComplete);
         assertEquals(3, observer.notifications.size());
 
         assertTrue(observer.notifications.get(0).isOnNext());
@@ -75,7 +75,7 @@ public class FlowableMaterializeTest {
         }
 
         assertFalse(subscriber.onError);
-        assertTrue(subscriber.onCompleted);
+        assertTrue(subscriber.onComplete);
         assertEquals(4, subscriber.notifications.size());
         assertTrue(subscriber.notifications.get(0).isOnNext());
         assertEquals("one", subscriber.notifications.get(0).getValue());
@@ -203,13 +203,13 @@ public class FlowableMaterializeTest {
 
     private static class TestNotificationSubscriber extends DefaultSubscriber<Notification<String>> {
 
-        boolean onCompleted = false;
-        boolean onError = false;
+        boolean onComplete;
+        boolean onError;
         List<Notification<String>> notifications = new Vector<Notification<String>>();
 
         @Override
         public void onComplete() {
-            this.onCompleted = true;
+            this.onComplete = true;
         }
 
         @Override
@@ -262,5 +262,24 @@ public class FlowableMaterializeTest {
             });
             t.start();
         }
+    }
+
+    @Test
+    public void backpressure() {
+        TestSubscriber<Notification<Integer>> ts = Flowable.range(1, 5).materialize().test(0);
+
+        ts.assertEmpty();
+
+        ts.request(5);
+
+        ts.assertValueCount(5)
+        .assertNoErrors()
+        .assertNotComplete();
+
+        ts.request(1);
+
+        ts.assertValueCount(6)
+        .assertNoErrors()
+        .assertComplete();
     }
 }

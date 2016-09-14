@@ -34,7 +34,7 @@ public final class ObservableCount<T> extends AbstractObservableWithUpstream<T, 
 
         long count;
 
-        public CountSubscriber(Observer<? super Long> actual) {
+        CountSubscriber(Observer<? super Long> actual) {
             this.actual = actual;
         }
 

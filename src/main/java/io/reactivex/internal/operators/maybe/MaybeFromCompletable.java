@@ -46,7 +46,7 @@ public final class MaybeFromCompletable<T> extends Maybe<T> implements HasUpstre
 
         Disposable d;
 
-        public FromCompletableObserver(MaybeObserver<? super T> actual) {
+        FromCompletableObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 

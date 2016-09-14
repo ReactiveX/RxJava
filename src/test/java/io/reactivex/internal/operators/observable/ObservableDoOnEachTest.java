@@ -113,7 +113,7 @@ public class ObservableDoOnEachTest {
         // https://github.com/Netflix/RxJava/issues/1451
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
-        for (int i=0; i < expectedCount; i++) {
+        for (int i = 0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
                     .takeWhile(new Predicate<Boolean>() {
@@ -139,7 +139,7 @@ public class ObservableDoOnEachTest {
         // https://github.com/Netflix/RxJava/issues/1451
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
-        for (int i=0; i < expectedCount; i++) {
+        for (int i = 0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
                     .takeWhile(new Predicate<Boolean>() {

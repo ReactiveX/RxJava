@@ -117,7 +117,7 @@ public class FlowableDoOnRequestTest {
 //            }
 //
 //            @Override
-//            public void onCompleted() {
+//            public void onComplete() {
 //
 //            }
 //

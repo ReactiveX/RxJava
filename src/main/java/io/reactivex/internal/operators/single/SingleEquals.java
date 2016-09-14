@@ -41,7 +41,7 @@ public final class SingleEquals<T> extends Single<Boolean> {
 
         class InnerObserver implements SingleObserver<T> {
             final int index;
-            public InnerObserver(int index) {
+            InnerObserver(int index) {
                 this.index = index;
             }
             @Override

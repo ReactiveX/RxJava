@@ -49,7 +49,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
     static final class MapNotificationSubscriber<T, R>
     extends AtomicLong
     implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 2757120512858778108L;
 
         final Subscriber<? super R> actual;
@@ -70,7 +70,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
         static final int HAS_REQUEST_NO_VALUE = 2;
         static final int HAS_REQUEST_HAS_VALUE = 3;
 
-        public MapNotificationSubscriber(Subscriber<? super R> actual,
+        MapNotificationSubscriber(Subscriber<? super R> actual,
                 Function<? super T, ? extends R> onNextMapper,
                 Function<? super Throwable, ? extends R> onErrorMapper,
                 Callable<? extends R> onCompleteSupplier) {

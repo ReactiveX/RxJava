@@ -34,7 +34,7 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
     }
 
     static final class UnsubscribeSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 1015244841293359600L;
 
         final Subscriber<? super T> actual;
@@ -42,7 +42,7 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
 
         Subscription s;
 
-        public UnsubscribeSubscriber(Subscriber<? super T> actual, Scheduler scheduler) {
+        UnsubscribeSubscriber(Subscriber<? super T> actual, Scheduler scheduler) {
             this.actual = actual;
             this.scheduler = scheduler;
         }

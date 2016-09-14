@@ -22,7 +22,7 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.util.NotificationLite;
 
 public final class BlockingObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
-    /** */
+
     private static final long serialVersionUID = -4875965440900746268L;
 
     public static final Object TERMINATED = new Object();

@@ -80,7 +80,7 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
 
         boolean done;
 
-        public ZipIterableSubscriber(Subscriber<? super V> actual, Iterator<U> iterator,
+        ZipIterableSubscriber(Subscriber<? super V> actual, Iterator<U> iterator,
                 BiFunction<? super T, ? super U, ? extends V> zipper) {
             this.actual = actual;
             this.iterator = iterator;

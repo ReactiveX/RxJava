@@ -54,14 +54,14 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
     static final class TakeUntilMainObserver<T>
     extends AtomicReference<Disposable>
     implements SingleObserver<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -622603812305745221L;
 
         final SingleObserver<? super T> actual;
 
         final TakeUntilOtherSubscriber other;
 
-        public TakeUntilMainObserver(SingleObserver<? super T> actual) {
+        TakeUntilMainObserver(SingleObserver<? super T> actual) {
             this.actual = actual;
             this.other = new TakeUntilOtherSubscriber(this);
         }
@@ -128,12 +128,12 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
     static final class TakeUntilOtherSubscriber
     extends AtomicReference<Subscription>
     implements Subscriber<Object>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 5170026210238877381L;
 
         final TakeUntilMainObserver<?> parent;
 
-        public TakeUntilOtherSubscriber(TakeUntilMainObserver<?> parent) {
+        TakeUntilOtherSubscriber(TakeUntilMainObserver<?> parent) {
             this.parent = parent;
         }
 

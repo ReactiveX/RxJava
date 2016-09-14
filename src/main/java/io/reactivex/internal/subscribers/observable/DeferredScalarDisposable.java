@@ -22,7 +22,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type received and emitted
  */
 public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
-    /** */
+
     private static final long serialVersionUID = -5502432239815349361L;
 
     /** The target of the events. */
@@ -85,7 +85,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
     }
 
     /**
-     * Complete the target with an error signal
+     * Complete the target with an error signal.
      * @param t the Throwable to signal, not null (not verified)
      */
      public final void error(Throwable t) {

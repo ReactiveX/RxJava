@@ -39,7 +39,7 @@ public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream
 
         boolean done;
 
-        public TakeWhileSubscriber(Observer<? super T> actual, Predicate<? super T> predicate) {
+        TakeWhileSubscriber(Observer<? super T> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

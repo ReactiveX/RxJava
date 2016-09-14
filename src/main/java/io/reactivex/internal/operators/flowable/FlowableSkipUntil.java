@@ -75,7 +75,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
 
 
     static final class SkipUntilSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -1113667257122396604L;
         final Subscriber<? super T> actual;
         final ArrayCompositeSubscription frc;
@@ -85,7 +85,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
         volatile boolean notSkipping;
         boolean notSkippingLocal;
 
-        public SkipUntilSubscriber(Subscriber<? super T> actual, ArrayCompositeSubscription frc) {
+        SkipUntilSubscriber(Subscriber<? super T> actual, ArrayCompositeSubscription frc) {
             this.actual = actual;
             this.frc = frc;
         }

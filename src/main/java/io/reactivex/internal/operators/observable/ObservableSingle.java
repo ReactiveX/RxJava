@@ -42,7 +42,7 @@ public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T,
 
         boolean done;
 
-        public SingleElementSubscriber(Observer<? super T> actual, T defaultValue) {
+        SingleElementSubscriber(Observer<? super T> actual, T defaultValue) {
             this.actual = actual;
             this.defaultValue = defaultValue;
         }

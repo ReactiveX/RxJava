@@ -25,7 +25,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 public abstract class DeferredScalarObserver<T, R>
 extends DeferredScalarDisposable<R>
 implements Observer<T> {
-    /** */
+
     private static final long serialVersionUID = -266195175408988651L;
 
     /** The upstream disposable. */

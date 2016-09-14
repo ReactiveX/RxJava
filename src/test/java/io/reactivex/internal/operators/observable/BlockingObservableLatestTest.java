@@ -33,8 +33,8 @@ public class BlockingObservableLatestTest {
 
         Iterator<Long> it = iter.iterator();
 
-        // only 9 because take(10) will immediately call onCompleted when receiving the 10th item
-        // which onCompleted will overwrite the previous value
+        // only 9 because take(10) will immediately call onComplete when receiving the 10th item
+        // which onComplete will overwrite the previous value
         for (int i = 0; i < 9; i++) {
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -58,8 +58,8 @@ public class BlockingObservableLatestTest {
         for (int j = 0; j < 3; j++) {
             Iterator<Long> it = iter.iterator();
 
-            // only 9 because take(10) will immediately call onCompleted when receiving the 10th item
-            // which onCompleted will overwrite the previous value
+            // only 9 because take(10) will immediately call onComplete when receiving the 10th item
+            // which onComplete will overwrite the previous value
             for (int i = 0; i < 9; i++) {
                 scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -96,8 +96,8 @@ public class BlockingObservableLatestTest {
 
         Iterator<Long> it = iter.iterator();
 
-        // only 9 because take(10) will immediately call onCompleted when receiving the 10th item
-        // which onCompleted will overwrite the previous value
+        // only 9 because take(10) will immediately call onComplete when receiving the 10th item
+        // which onComplete will overwrite the previous value
         for (int i = 0; i < 10; i++) {
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 

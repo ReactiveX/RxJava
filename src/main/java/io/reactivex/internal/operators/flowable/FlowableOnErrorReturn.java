@@ -36,7 +36,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
 
     // FIXME requires post-complete drain management
     static final class OnErrorReturnSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -3740826063558713822L;
         final Subscriber<? super T> actual;
         final Function<? super Throwable, ? extends T> valueSupplier;
@@ -54,7 +54,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
         static final int HAS_REQUEST_NO_VALUE = 2;
         static final int HAS_REQUEST_HAS_VALUE = 3;
 
-        public OnErrorReturnSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends T> valueSupplier) {
+        OnErrorReturnSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends T> valueSupplier) {
             this.actual = actual;
             this.valueSupplier = valueSupplier;
         }

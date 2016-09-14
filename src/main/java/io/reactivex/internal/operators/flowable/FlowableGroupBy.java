@@ -50,7 +50,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
     public static final class GroupBySubscriber<T, K, V>
     extends BasicIntQueueSubscription<GroupedFlowable<K, V>>
     implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = -3688291656102519502L;
 
         final Subscriber<? super GroupedFlowable<K, V>> actual;
@@ -403,7 +403,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
     }
 
     static final class State<T, K> extends BasicIntQueueSubscription<T> implements Publisher<T> {
-        /** */
+
         private static final long serialVersionUID = -3852313036005250360L;
 
         final K key;
@@ -426,7 +426,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         int produced;
 
-        public State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
+        State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
             this.parent = parent;
             this.key = key;

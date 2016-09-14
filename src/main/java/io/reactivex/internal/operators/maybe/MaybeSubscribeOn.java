@@ -44,7 +44,7 @@ public final class MaybeSubscribeOn<T> extends AbstractMaybeWithUpstream<T, T> {
         final MaybeObserver<? super T> observer;
         final MaybeSource<T> source;
 
-        public SubscribeTask(MaybeObserver<? super T> observer, MaybeSource<T> source) {
+        SubscribeTask(MaybeObserver<? super T> observer, MaybeSource<T> source) {
             this.observer = observer;
             this.source = source;
         }
@@ -60,12 +60,12 @@ public final class MaybeSubscribeOn<T> extends AbstractMaybeWithUpstream<T, T> {
     implements MaybeObserver<T>, Disposable {
 
         final SequentialDisposable task;
-        /** */
+
         private static final long serialVersionUID = 8571289934935992137L;
 
         final MaybeObserver<? super T> actual;
 
-        public SubscribeOnMaybeObserver(MaybeObserver<? super T> actual) {
+        SubscribeOnMaybeObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
             this.task = new SequentialDisposable();
         }

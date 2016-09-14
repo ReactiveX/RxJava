@@ -27,12 +27,12 @@ public final class ObservableIgnoreElements<T> extends AbstractObservableWithUps
         source.subscribe(new IgnoreObservable<T>(t));
     }
 
-    final static class IgnoreObservable<T> implements Observer<T>, Disposable {
+    static final class IgnoreObservable<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
 
         Disposable d;
 
-        public IgnoreObservable(Observer<? super T> t) {
+        IgnoreObservable(Observer<? super T> t) {
             this.actual = t;
         }
 

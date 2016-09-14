@@ -48,7 +48,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
 
     static final class DebounceTimedSubscriber<T> extends AtomicLong
     implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -9102637559663639004L;
         final Subscriber<? super T> actual;
         final long timeout;
@@ -63,7 +63,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
 
         boolean done;
 
-        public DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
             this.timeout = timeout;
             this.unit = unit;
@@ -164,7 +164,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
     }
 
     static final class DebounceEmitter<T> extends AtomicReference<Disposable> implements Runnable, Disposable {
-        /** */
+
         private static final long serialVersionUID = 6812032969491025141L;
 
         final T value;
@@ -174,7 +174,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
         final AtomicBoolean once = new AtomicBoolean();
 
 
-        public DebounceEmitter(T value, long idx, DebounceTimedSubscriber<T> parent) {
+        DebounceEmitter(T value, long idx, DebounceTimedSubscriber<T> parent) {
             this.value = value;
             this.idx = idx;
             this.parent = parent;

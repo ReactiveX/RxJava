@@ -44,7 +44,7 @@ public enum SubscriptionHelper implements Subscription {
 
     /**
      * Verifies that current is null, next is not null, otherwise signals errors
-     * to the RxJavaPlugins and returns false
+     * to the RxJavaPlugins and returns false.
      * @param current the current Subscription, expected to be null
      * @param next the next Subscription, expected to be non-null
      * @return true if the validation succeeded

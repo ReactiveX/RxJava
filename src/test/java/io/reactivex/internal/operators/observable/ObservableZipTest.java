@@ -717,7 +717,7 @@ public class ObservableZipTest {
         // issue: https://groups.google.com/forum/#!topic/rxjava/79cWTv3TFp0
         // The problem is the original "zip" implementation does not wrap
         // an internal observer with a SafeSubscriber. However, in the "zip",
-        // it may calls "onCompleted" twice. That breaks the Rx contract.
+        // it may calls "onComplete" twice. That breaks the Rx contract.
 
         // This test tries to emulate this case.
         // As "TestHelper.mockObserver()" will create an instance in the package "rx",
@@ -976,7 +976,7 @@ public class ObservableZipTest {
     }
 
     /**
-     * Expect NoSuchElementException instead of blocking forever as zip should emit onCompleted and no onNext
+     * Expect NoSuchElementException instead of blocking forever as zip should emit onComplete and no onNext
      * and last() expects at least a single response.
      */
     @Test(expected = NoSuchElementException.class)
@@ -1134,7 +1134,7 @@ public class ObservableZipTest {
         // time limit of 9 seconds ( 1 second less than the test timeout) is
         // used so that this test will not timeout on slow machines.
         int i = 0;
-        while (System.currentTimeMillis()-startTime < 9000 && i++ < 100000) {
+        while (System.currentTimeMillis() - startTime < 9000 && i++ < 100000) {
             int value = Observable.zip(src, src, new BiFunction<Integer, Integer, Integer>() {
                 @Override
                 public Integer apply(Integer t1, Integer t2) {

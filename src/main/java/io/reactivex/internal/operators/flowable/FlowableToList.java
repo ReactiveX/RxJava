@@ -53,11 +53,11 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
     extends DeferredScalarSubscription<U>
     implements Subscriber<T>, Subscription {
 
-        /** */
+
         private static final long serialVersionUID = -8134157938864266736L;
         Subscription s;
 
-        public ToListSubscriber(Subscriber<? super U> actual, U collection) {
+        ToListSubscriber(Subscriber<? super U> actual, U collection) {
             super(actual);
             this.value = collection;
         }

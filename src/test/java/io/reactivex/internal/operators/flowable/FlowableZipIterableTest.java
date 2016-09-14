@@ -343,8 +343,8 @@ public class FlowableZipIterableTest {
         @Override
         public String apply(Integer t1) {
             counter.incrementAndGet();
-            System.out.println("Omg I'm calculating so hard: " + t1 + "*" + t1 + "=" + (t1*t1));
-            return " " + (t1*t1);
+            System.out.println("Omg I'm calculating so hard: " + t1 + "*" + t1 + "=" + (t1 * t1));
+            return " " + (t1 * t1);
         }
     }
 

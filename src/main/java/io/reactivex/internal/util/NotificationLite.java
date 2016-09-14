@@ -31,7 +31,7 @@ public enum NotificationLite {
      * Wraps a Throwable.
      */
     static final class ErrorNotification implements Serializable {
-        /** */
+
         private static final long serialVersionUID = -8759979445933046293L;
         final Throwable e;
         ErrorNotification(Throwable e) {
@@ -62,7 +62,7 @@ public enum NotificationLite {
      * Wraps a Subscription.
      */
     static final class SubscriptionNotification implements Serializable {
-        /** */
+
         private static final long serialVersionUID = -1322257508628817540L;
         final Subscription s;
         SubscriptionNotification(Subscription s) {
@@ -79,7 +79,7 @@ public enum NotificationLite {
      * Wraps a Disposable.
      */
     static final class DisposableNotification implements Serializable {
-        /** */
+
         private static final long serialVersionUID = -7482590109178395495L;
         final Disposable d;
 
@@ -170,7 +170,7 @@ public enum NotificationLite {
     }
 
     /**
-     * Extracts the value from the notification object
+     * Extracts the value from the notification object.
      * @param <T> the expected value type when unwrapped
      * @param o the notification object
      * @return the extracted value
@@ -181,7 +181,7 @@ public enum NotificationLite {
     }
 
     /**
-     * Extracts the Throwable from the notification object
+     * Extracts the Throwable from the notification object.
      * @param o the notification object
      * @return the extracted Throwable
      */
@@ -190,7 +190,7 @@ public enum NotificationLite {
     }
 
     /**
-     * Extracts the Subscription from the notification object
+     * Extracts the Subscription from the notification object.
      * @param o the notification object
      * @return the extracted Subscription
      */

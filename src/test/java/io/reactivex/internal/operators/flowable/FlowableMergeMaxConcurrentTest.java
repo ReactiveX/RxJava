@@ -88,7 +88,7 @@ public class FlowableMergeMaxConcurrentTest {
 
         private final AtomicInteger subscriptionCount;
         private final int maxConcurrent;
-        volatile boolean failed = false;
+        volatile boolean failed;
 
         SubscriptionCheckObservable(AtomicInteger subscriptionCount, int maxConcurrent) {
             this.subscriptionCount = subscriptionCount;

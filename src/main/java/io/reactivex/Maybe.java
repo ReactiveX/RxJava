@@ -1222,7 +1222,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<Boolean> sequenceEqual(MaybeSource<? extends T> source1, MaybeSource<? extends T> source2,
             BiPredicate<? super T, ? super T> isEqual) {
-        return RxJavaPlugins.onAssembly(new SingleMaybeEqual<T>(source1, source2, isEqual));
+        return RxJavaPlugins.onAssembly(new MaybeEqualSingle<T>(source1, source2, isEqual));
     }
 
     /**
@@ -2288,7 +2288,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Modifies the source Maybe so that it invokes an action when it calls {@code onCompleted}.
+     * Modifies the source Maybe so that it invokes an action when it calls {@code onComplete}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.png" alt="">
      * <dl>
@@ -2297,7 +2297,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param onComplete
-     *            the action to invoke when the source Maybe calls {@code onCompleted}
+     *            the action to invoke when the source Maybe calls {@code onComplete}
      * @return the new Maybe with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
@@ -2458,11 +2458,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param <R>
      *            the result type
      * @param onSuccessMapper
-     *            a function that returns a MaybeSource to merge for the success item emitted by this Maybe
+     *            a function that returns a MaybeSource to merge for the onSuccess item emitted by this Maybe
      * @param onErrorMapper
      *            a function that returns a MaybeSource to merge for an onError notification from this Maybe
      * @param onCompleteSupplier
-     *            a function that returns a MaybeSource to merge for an onCompleted notification this Maybe
+     *            a function that returns a MaybeSource to merge for an onComplete notification this Maybe
      * @return the new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
@@ -2589,7 +2589,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Ignores the item emitted by the source Maybe and only calls {@code onCompleted} or {@code onError}.
+     * Ignores the item emitted by the source Maybe and only calls {@code onComplete} or {@code onError}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.png" alt="">
      * <dl>
@@ -3437,7 +3437,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * MaybeObserver as is.
      * <p>Usage example:
      * <pre><code>
-     * Maybe<Integer> source = Maybe.just(1);
+     * Maybe&lt;Integer> source = Maybe.just(1);
      * CompositeDisposable composite = new CompositeDisposable();
      *
      * MaybeObserver&lt;Integer> ms = new MaybeObserver&lt;>() {

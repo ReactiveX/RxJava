@@ -34,7 +34,7 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
 
         T value;
 
-        public TakeLastOneSubscriber(Observer<? super T> actual) {
+        TakeLastOneSubscriber(Observer<? super T> actual) {
             this.actual = actual;
         }
 

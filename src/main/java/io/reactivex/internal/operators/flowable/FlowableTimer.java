@@ -46,14 +46,14 @@ public final class FlowableTimer extends Flowable<Long> {
 
     static final class IntervalOnceSubscriber extends AtomicReference<Disposable>
     implements Subscription, Runnable {
-        /** */
+
         private static final long serialVersionUID = -2809475196591179431L;
 
         final Subscriber<? super Long> actual;
 
         volatile boolean requested;
 
-        public IntervalOnceSubscriber(Subscriber<? super Long> actual) {
+        IntervalOnceSubscriber(Subscriber<? super Long> actual) {
             this.actual = actual;
         }
 

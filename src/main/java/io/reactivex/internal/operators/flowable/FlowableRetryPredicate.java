@@ -43,7 +43,7 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
 
     // FIXME update to a fresh Rsc algorithm
     static final class RepeatSubscriber<T> extends AtomicInteger implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = -7098360935104053232L;
 
         final Subscriber<? super T> actual;
@@ -51,7 +51,7 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
         final Publisher<? extends T> source;
         final Predicate<? super Throwable> predicate;
         long remaining;
-        public RepeatSubscriber(Subscriber<? super T> actual, long count,
+        RepeatSubscriber(Subscriber<? super T> actual, long count,
                 Predicate<? super Throwable> predicate, SubscriptionArbiter sa, Publisher<? extends T> source) {
             this.actual = actual;
             this.sa = sa;

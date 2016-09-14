@@ -41,7 +41,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
     }
 
     static final class SampleTimedSubscriber<T> extends AtomicReference<T> implements Observer<T>, Disposable, Runnable {
-        /** */
+
         private static final long serialVersionUID = -3517602651313910099L;
 
         final Observer<? super T> actual;
@@ -53,7 +53,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
         Disposable s;
 
-        public SampleTimedSubscriber(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
+        SampleTimedSubscriber(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
             this.actual = actual;
             this.period = period;
             this.unit = unit;

@@ -62,7 +62,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         Disposable s;
 
-        public ToListSubscriber(Observer<? super U> actual, U collection) {
+        ToListSubscriber(Observer<? super U> actual, U collection) {
             this.actual = actual;
             this.collection = collection;
         }

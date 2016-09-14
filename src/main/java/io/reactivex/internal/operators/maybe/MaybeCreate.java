@@ -55,11 +55,11 @@ public final class MaybeCreate<T> extends Maybe<T> {
 
         final MaybeObserver<? super T> actual;
 
-        public Emitter(MaybeObserver<? super T> actual) {
+        Emitter(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 
-        /** */
+
         private static final long serialVersionUID = -2467358622224974244L;
 
         @Override

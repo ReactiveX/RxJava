@@ -44,7 +44,7 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
 
         Disposable s;
 
-        public TimeIntervalSubscriber(Observer<? super Timed<T>> actual, TimeUnit unit, Scheduler scheduler) {
+        TimeIntervalSubscriber(Observer<? super Timed<T>> actual, TimeUnit unit, Scheduler scheduler) {
             this.actual = actual;
             this.scheduler = scheduler;
             this.unit = unit;

@@ -41,14 +41,14 @@ public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T>
     static final class SwitchIfEmptyMaybeObserver<T>
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -2223459372976438024L;
 
         final MaybeObserver<? super T> actual;
 
         final MaybeSource<? extends T> other;
 
-        public SwitchIfEmptyMaybeObserver(MaybeObserver<? super T> actual, MaybeSource<? extends T> other) {
+        SwitchIfEmptyMaybeObserver(MaybeObserver<? super T> actual, MaybeSource<? extends T> other) {
             this.actual = actual;
             this.other = other;
         }
@@ -95,7 +95,7 @@ public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T>
             final MaybeObserver<? super T> actual;
 
             final AtomicReference<Disposable> parent;
-            public OtherMaybeObserver(MaybeObserver<? super T> actual, AtomicReference<Disposable> parent) {
+            OtherMaybeObserver(MaybeObserver<? super T> actual, AtomicReference<Disposable> parent) {
                 this.actual = actual;
                 this.parent = parent;
             }

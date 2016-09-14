@@ -88,7 +88,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Disposable, JoinSupport {
 
-        /** */
+
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Observer<? super R> actual;
@@ -125,7 +125,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
 
         static final Integer RIGHT_CLOSE = 4;
 
-        public GroupJoinSubscription(
+        GroupJoinSubscription(
                 Observer<? super R> actual,
                 Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
@@ -382,14 +382,14 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     static final class LeftRightSubscriber
     extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 1883890389173668373L;
 
         final JoinSupport parent;
 
         final boolean isLeft;
 
-        public LeftRightSubscriber(JoinSupport parent, boolean isLeft) {
+        LeftRightSubscriber(JoinSupport parent, boolean isLeft) {
             this.parent = parent;
             this.isLeft = isLeft;
         }
@@ -429,7 +429,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     static final class LeftRightEndSubscriber
     extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 1883890389173668373L;
 
         final JoinSupport parent;
@@ -438,7 +438,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
 
         final int index;
 
-        public LeftRightEndSubscriber(JoinSupport parent,
+        LeftRightEndSubscriber(JoinSupport parent,
                 boolean isLeft, int index) {
             this.parent = parent;
             this.isLeft = isLeft;

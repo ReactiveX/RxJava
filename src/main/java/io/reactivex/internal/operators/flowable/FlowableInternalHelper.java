@@ -31,7 +31,7 @@ public enum FlowableInternalHelper {
     static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
         final Consumer<Emitter<T>> consumer;
 
-        public SimpleGenerator(Consumer<Emitter<T>> consumer) {
+        SimpleGenerator(Consumer<Emitter<T>> consumer) {
             this.consumer = consumer;
         }
 
@@ -49,7 +49,7 @@ public enum FlowableInternalHelper {
     static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
         final BiConsumer<S, Emitter<T>> consumer;
 
-        public SimpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
+        SimpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
             this.consumer = consumer;
         }
 
@@ -67,7 +67,7 @@ public enum FlowableInternalHelper {
     static final class ItemDelayFunction<T, U> implements Function<T, Publisher<T>> {
         final Function<? super T, ? extends Publisher<U>> itemDelay;
 
-        public ItemDelayFunction(Function<? super T, ? extends Publisher<U>> itemDelay) {
+        ItemDelayFunction(Function<? super T, ? extends Publisher<U>> itemDelay) {
             this.itemDelay = itemDelay;
         }
 
@@ -84,7 +84,7 @@ public enum FlowableInternalHelper {
     static final class SubscriberOnNext<T> implements Consumer<T> {
         final Subscriber<T> subscriber;
 
-        public SubscriberOnNext(Subscriber<T> subscriber) {
+        SubscriberOnNext(Subscriber<T> subscriber) {
             this.subscriber = subscriber;
         }
 
@@ -97,7 +97,7 @@ public enum FlowableInternalHelper {
     static final class SubscriberOnError<T> implements Consumer<Throwable> {
         final Subscriber<T> subscriber;
 
-        public SubscriberOnError(Subscriber<T> subscriber) {
+        SubscriberOnError(Subscriber<T> subscriber) {
             this.subscriber = subscriber;
         }
 
@@ -110,7 +110,7 @@ public enum FlowableInternalHelper {
     static final class SubscriberOnComplete<T> implements Action {
         final Subscriber<T> subscriber;
 
-        public SubscriberOnComplete(Subscriber<T> subscriber) {
+        SubscriberOnComplete(Subscriber<T> subscriber) {
             this.subscriber = subscriber;
         }
 
@@ -188,7 +188,7 @@ public enum FlowableInternalHelper {
         return new FlatMapIntoIterable<T, U>(mapper);
     }
 
-    enum MapToInt implements Function<Object, Object>{
+    enum MapToInt implements Function<Object, Object> {
         INSTANCE;
         @Override
         public Object apply(Object t) throws Exception {

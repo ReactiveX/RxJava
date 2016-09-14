@@ -293,12 +293,11 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     static final class AsyncSubscription<T> extends DeferredScalarSubscription<T> {
-        /** */
         private static final long serialVersionUID = 5629876084736248016L;
 
         final AsyncProcessor<T> parent;
 
-        public AsyncSubscription(Subscriber<? super T> actual, AsyncProcessor<T> parent) {
+        AsyncSubscription(Subscriber<? super T> actual, AsyncProcessor<T> parent) {
             super(actual);
             this.parent = parent;
         }

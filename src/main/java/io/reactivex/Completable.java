@@ -307,7 +307,7 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Returns a Completable which when subscribed, executes the callable function, ignores its
-     * normal result and emits onError or onCompleted only.
+     * normal result and emits onError or onComplete only.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1478,7 +1478,7 @@ public abstract class Completable implements CompletableSource {
      * CompletableObserver as is.
      * <p>Usage example:
      * <pre><code>
-     * Completable<Integer> source = Completable.complete().delay(1, TimeUnit.SECONDS);
+     * Completable source = Completable.complete().delay(1, TimeUnit.SECONDS);
      * CompositeDisposable composite = new CompositeDisposable();
      *
      * class ResourceCompletableObserver implements CompletableObserver, Disposable {

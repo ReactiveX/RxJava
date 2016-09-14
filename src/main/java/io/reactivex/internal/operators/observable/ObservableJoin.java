@@ -74,7 +74,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
     static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Disposable, JoinSupport {
 
-        /** */
+
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Observer<? super R> actual;
@@ -111,7 +111,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
 
         static final Integer RIGHT_CLOSE = 4;
 
-        public GroupJoinSubscription(Observer<? super R> actual,
+        GroupJoinSubscription(Observer<? super R> actual,
                 Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
                         BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {

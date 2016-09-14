@@ -33,12 +33,12 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        OnErrorNextSubscriber<T> parent = new OnErrorNextSubscriber<T>(t, nextSupplier, allowFatal);
+        OnErrorNextObserver<T> parent = new OnErrorNextObserver<T>(t, nextSupplier, allowFatal);
         t.onSubscribe(parent.arbiter);
         source.subscribe(parent);
     }
 
-    static final class OnErrorNextSubscriber<T> implements Observer<T> {
+    static final class OnErrorNextObserver<T> implements Observer<T> {
         final Observer<? super T> actual;
         final Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier;
         final boolean allowFatal;
@@ -48,7 +48,7 @@ public final class ObservableOnErrorNext<T> extends AbstractObservableWithUpstre
 
         boolean done;
 
-        public OnErrorNextSubscriber(Observer<? super T> actual, Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
+        OnErrorNextObserver(Observer<? super T> actual, Function<? super Throwable, ? extends ObservableSource<? extends T>> nextSupplier, boolean allowFatal) {
             this.actual = actual;
             this.nextSupplier = nextSupplier;
             this.allowFatal = allowFatal;

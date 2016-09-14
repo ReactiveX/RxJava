@@ -31,14 +31,14 @@ public final class FlowableCount<T> extends AbstractFlowableWithUpstream<T, Long
     static final class CountSubscriber extends DeferredScalarSubscription<Long>
     implements Subscriber<Object> {
 
-        /** */
+
         private static final long serialVersionUID = 4973004223787171406L;
 
         Subscription s;
 
         long count;
 
-        public CountSubscriber(Subscriber<? super Long> actual) {
+        CountSubscriber(Subscriber<? super Long> actual) {
             super(actual);
         }
 

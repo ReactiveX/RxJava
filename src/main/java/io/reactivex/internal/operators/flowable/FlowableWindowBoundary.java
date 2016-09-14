@@ -64,7 +64,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
 
         final AtomicLong windows = new AtomicLong();
 
-        public WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> actual, Publisher<B> other,
+        WindowBoundaryMainSubscriber(Subscriber<? super Flowable<T>> actual, Publisher<B> other,
                 int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.other = other;
@@ -276,7 +276,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
 
         boolean done;
 
-        public WindowBoundaryInnerSubscriber(WindowBoundaryMainSubscriber<T, B> parent) {
+        WindowBoundaryInnerSubscriber(WindowBoundaryMainSubscriber<T, B> parent) {
             this.parent = parent;
         }
 

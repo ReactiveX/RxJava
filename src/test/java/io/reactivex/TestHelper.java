@@ -290,7 +290,7 @@ public enum TestHelper {
             @Override
             public void run() {
                 if (count.decrementAndGet() != 0) {
-                    while (count.get() != 0);
+                    while (count.get() != 0) { }
                 }
 
                 try {
@@ -306,7 +306,7 @@ public enum TestHelper {
         });
 
         if (count.decrementAndGet() != 0) {
-            while (count.get() != 0);
+            while (count.get() != 0) { }
         }
 
         try {
@@ -387,7 +387,7 @@ public enum TestHelper {
 
     /**
      * Returns an Consumer that asserts the TestSubscriber has exaclty one value + completed
-     * normally and that single value is not the value specified
+     * normally and that single value is not the value specified.
      * @param <T> the value type
      * @param value the value not expected
      * @return the consumer
@@ -410,7 +410,7 @@ public enum TestHelper {
 
     /**
      * Returns an Consumer that asserts the TestObserver has exaclty one value + completed
-     * normally and that single value is not the value specified
+     * normally and that single value is not the value specified.
      * @param <T> the value type
      * @param value the value not expected
      * @return the consumer

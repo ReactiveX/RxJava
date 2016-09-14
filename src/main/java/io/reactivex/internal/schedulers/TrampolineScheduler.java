@@ -160,7 +160,7 @@ public final class TrampolineScheduler extends Scheduler {
         private final TrampolineWorker worker;
         private final long execTime;
 
-        public SleepingRunnable(Runnable run, TrampolineWorker worker, long execTime) {
+        SleepingRunnable(Runnable run, TrampolineWorker worker, long execTime) {
             this.run = run;
             this.worker = worker;
             this.execTime = execTime;
