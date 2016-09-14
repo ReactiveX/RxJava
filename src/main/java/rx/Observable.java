@@ -5879,7 +5879,7 @@ public class Observable<T> {
      * @return the source Observable with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
-    public final Observable<T> doOnError(final Action1<Throwable> onError) {
+    public final Observable<T> doOnError(final Action1<? super Throwable> onError) {
         Action1<T> onNext = Actions.empty();
         Action0 onCompleted = Actions.empty();
         Observer<T> observer = new ActionObserver<T>(onNext, onError, onCompleted);
@@ -5934,7 +5934,7 @@ public class Observable<T> {
      *      documentation: Do</a>
      * @since 1.2
      */
-    public final Observable<T> doOnRequest(final Action1<Long> onRequest) {
+    public final Observable<T> doOnRequest(final Action1<? super Long> onRequest) {
         return lift(new OperatorDoOnRequest<T>(onRequest));
     }
 
