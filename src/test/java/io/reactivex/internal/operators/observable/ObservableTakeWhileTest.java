@@ -80,7 +80,7 @@ public class ObservableTakeWhileTest {
     public void testTakeWhile2() {
         Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> take = w.takeWhile(new Predicate<String>() {
-            int index = 0;
+            int index;
 
             @Override
             public boolean test(String input) {
@@ -151,7 +151,7 @@ public class ObservableTakeWhileTest {
         Observer<String> observer = TestHelper.mockObserver();
         Observable<String> take = Observable.unsafeCreate(w)
                 .takeWhile(new Predicate<String>() {
-            int index = 0;
+            int index;
 
             @Override
             public boolean test(String s) {
@@ -179,9 +179,9 @@ public class ObservableTakeWhileTest {
 
         final Disposable s;
         final String[] values;
-        Thread t = null;
+        Thread t;
 
-        public TestObservable(Disposable s, String... values) {
+        TestObservable(Disposable s, String... values) {
             this.s = s;
             this.values = values;
         }

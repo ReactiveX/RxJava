@@ -89,7 +89,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Subscription, JoinSupport {
 
-        /** */
+
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Subscriber<? super R> actual;
@@ -128,7 +128,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
         static final Integer RIGHT_CLOSE = 4;
 
-        public GroupJoinSubscription(Subscriber<? super R> actual, Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
+        GroupJoinSubscription(Subscriber<? super R> actual, Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
                         BiFunction<? super TLeft, ? super Flowable<TRight>, ? extends R> resultSelector) {
             this.actual = actual;
@@ -393,14 +393,14 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     static final class LeftRightSubscriber
     extends AtomicReference<Subscription>
     implements Subscriber<Object>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 1883890389173668373L;
 
         final JoinSupport parent;
 
         final boolean isLeft;
 
-        public LeftRightSubscriber(JoinSupport parent, boolean isLeft) {
+        LeftRightSubscriber(JoinSupport parent, boolean isLeft) {
             this.parent = parent;
             this.isLeft = isLeft;
         }
@@ -442,7 +442,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     static final class LeftRightEndSubscriber
     extends AtomicReference<Subscription>
     implements Subscriber<Object>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 1883890389173668373L;
 
         final JoinSupport parent;
@@ -451,7 +451,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
         final int index;
 
-        public LeftRightEndSubscriber(JoinSupport parent,
+        LeftRightEndSubscriber(JoinSupport parent,
                 boolean isLeft, int index) {
             this.parent = parent;
             this.isLeft = isLeft;

@@ -48,7 +48,7 @@ public final class MaybeMap<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
         Disposable d;
 
-        public MapMaybeObserver(MaybeObserver<? super R> actual, Function<? super T, ? extends R> mapper) {
+        MapMaybeObserver(MaybeObserver<? super R> actual, Function<? super T, ? extends R> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }

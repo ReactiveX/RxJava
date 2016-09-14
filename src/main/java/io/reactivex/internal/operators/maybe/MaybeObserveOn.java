@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * Signals the onSuccess, onError or onComplete events on a the specific scheduler
+ * Signals the onSuccess, onError or onComplete events on a the specific scheduler.
  *
  * @param <T> the value type delivered
  */
@@ -42,7 +42,7 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable, Runnable {
 
-        /** */
+
         private static final long serialVersionUID = 8571289934935992137L;
 
         final MaybeObserver<? super T> actual;
@@ -52,7 +52,7 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
         T value;
         Throwable error;
 
-        public ObserveOnMaybeObserver(MaybeObserver<? super T> actual, Scheduler scheduler) {
+        ObserveOnMaybeObserver(MaybeObserver<? super T> actual, Scheduler scheduler) {
             this.actual = actual;
             this.scheduler = scheduler;
         }

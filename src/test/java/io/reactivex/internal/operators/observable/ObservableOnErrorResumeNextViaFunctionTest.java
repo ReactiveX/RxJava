@@ -108,7 +108,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
     }
 
     /**
-     * Test that when a function throws an exception this is propagated through onError
+     * Test that when a function throws an exception this is propagated through onError.
      */
     @Test
     public void testFunctionThrowsError() {
@@ -240,8 +240,9 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         w = w.map(new Function<String, String>() {
             @Override
             public String apply(String s) {
-                if ("fail".equals(s))
+                if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
+                }
                 System.out.println("BadMapper:" + s);
                 return s;
             }
@@ -272,12 +273,12 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         verify(observer, times(1)).onNext("threeResume");
     }
 
-    private static class TestObservable implements ObservableSource<String> {
+    static class TestObservable implements ObservableSource<String> {
 
         final String[] values;
-        Thread t = null;
+        Thread t;
 
-        public TestObservable(Subscription s, String... values) {
+        TestObservable(Subscription s, String... values) {
             this.values = values;
         }
 
@@ -323,7 +324,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
                 })
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer apply(Integer t1) {

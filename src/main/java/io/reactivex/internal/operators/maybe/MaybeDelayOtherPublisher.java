@@ -51,7 +51,7 @@ public final class MaybeDelayOtherPublisher<T, U> extends AbstractMaybeWithUpstr
 
         Disposable d;
 
-        public DelayMaybeObserver(MaybeObserver<? super T> actual, Publisher<U> otherSource) {
+        DelayMaybeObserver(MaybeObserver<? super T> actual, Publisher<U> otherSource) {
             this.other = new OtherSubscriber<T>(actual);
             this.otherSource = otherSource;
         }
@@ -105,7 +105,7 @@ public final class MaybeDelayOtherPublisher<T, U> extends AbstractMaybeWithUpstr
     static final class OtherSubscriber<T> extends
     AtomicReference<Subscription>
     implements Subscriber<Object> {
-        /** */
+
         private static final long serialVersionUID = -1215060610805418006L;
 
         final MaybeObserver<? super T> actual;
@@ -114,7 +114,7 @@ public final class MaybeDelayOtherPublisher<T, U> extends AbstractMaybeWithUpstr
 
         Throwable error;
 
-        public OtherSubscriber(MaybeObserver<? super T> actual) {
+        OtherSubscriber(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 

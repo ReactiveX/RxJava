@@ -24,7 +24,7 @@ import io.reactivex.exceptions.TestException;
 
 /**
  * Base abstract class for Flowable verifications, contains support for creating
- * Iterable range of values
+ * Iterable range of values.
  * 
  * @param <T> the element type
  */
@@ -75,7 +75,7 @@ public abstract class BaseTck<T> extends PublisherVerification<T> {
 
     static final class FiniteRange implements Iterable<Long> {
         final long end;
-        public FiniteRange(long end) {
+        FiniteRange(long end) {
             this.end = end;
         }
 
@@ -88,7 +88,7 @@ public abstract class BaseTck<T> extends PublisherVerification<T> {
             final long end;
             long count;
 
-            public FiniteRangeIterator(long end) {
+            FiniteRangeIterator(long end) {
                 this.end = end;
             }
 

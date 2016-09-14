@@ -128,7 +128,7 @@ public final class SingleScheduler extends Scheduler {
 
         volatile boolean disposed;
 
-        public ScheduledWorker(ScheduledExecutorService executor) {
+        ScheduledWorker(ScheduledExecutorService executor) {
             this.executor = executor;
             this.tasks = new CompositeDisposable();
         }

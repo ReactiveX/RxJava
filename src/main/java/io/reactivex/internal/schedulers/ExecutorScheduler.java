@@ -268,10 +268,11 @@ public final class ExecutorScheduler extends Scheduler {
         }
 
         static final class BooleanRunnable extends AtomicBoolean implements Runnable, Disposable {
-            /** */
+
             private static final long serialVersionUID = -2421395018820541164L;
+
             final Runnable actual;
-            public BooleanRunnable(Runnable actual) {
+            BooleanRunnable(Runnable actual) {
                 this.actual = actual;
             }
 

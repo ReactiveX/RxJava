@@ -47,7 +47,7 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
 
         boolean hasValue;
 
-        public DistinctUntilChangedSubscriber(Subscriber<? super T> actual,
+        DistinctUntilChangedSubscriber(Subscriber<? super T> actual,
                 BiPredicate<? super T, ? super T> comparer) {
             super(actual);
             this.comparer = comparer;
@@ -130,7 +130,7 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
 
         boolean hasValue;
 
-        public DistinctUntilChangedConditionalSubscriber(ConditionalSubscriber<? super T> actual,
+        DistinctUntilChangedConditionalSubscriber(ConditionalSubscriber<? super T> actual,
                 BiPredicate<? super T, ? super T> comparer) {
             super(actual);
             this.comparer = comparer;

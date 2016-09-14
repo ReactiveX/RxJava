@@ -18,7 +18,7 @@ package io.reactivex.exceptions;
 import org.junit.*;
 
 /**
- * Checks the Exception classes to verify they don't crash with null argument
+ * Checks the Exception classes to verify they don't crash with null argument.
  */
 public class ExceptionsNullTest {
 

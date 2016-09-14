@@ -45,7 +45,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
     static final class WindowExactSubscriber<T>
     extends AtomicInteger
     implements Observer<T>, Disposable, Runnable {
-        /** */
+
         private static final long serialVersionUID = -7481782523886138128L;
         final Observer<? super Observable<T>> actual;
         final long count;
@@ -59,7 +59,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
 
         volatile boolean cancelled;
 
-        public WindowExactSubscriber(Observer<? super Observable<T>> actual, long count, int capacityHint) {
+        WindowExactSubscriber(Observer<? super Observable<T>> actual, long count, int capacityHint) {
             this.actual = actual;
             this.count = count;
             this.capacityHint = capacityHint;
@@ -136,7 +136,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
 
     static final class WindowSkipSubscriber<T> extends AtomicBoolean
     implements Observer<T>, Disposable, Runnable {
-        /** */
+
         private static final long serialVersionUID = 3366976432059579510L;
         final Observer<? super Observable<T>> actual;
         final long count;
@@ -155,7 +155,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
 
         final AtomicInteger wip = new AtomicInteger();
 
-        public WindowSkipSubscriber(Observer<? super Observable<T>> actual, long count, long skip, int capacityHint) {
+        WindowSkipSubscriber(Observer<? super Observable<T>> actual, long count, long skip, int capacityHint) {
             this.actual = actual;
             this.count = count;
             this.skip = skip;

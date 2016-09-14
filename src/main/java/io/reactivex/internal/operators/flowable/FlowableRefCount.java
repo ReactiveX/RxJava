@@ -43,7 +43,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
     final class ConnectionSubscriber
     extends AtomicReference<Subscription>
     implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 152064694420235350L;
         final Subscriber<? super T> subscriber;
         final CompositeDisposable currentBase;

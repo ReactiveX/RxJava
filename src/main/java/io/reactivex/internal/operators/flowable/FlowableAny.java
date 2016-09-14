@@ -31,7 +31,7 @@ public final class FlowableAny<T> extends AbstractFlowableWithUpstream<T, Boolea
     }
 
     static final class AnySubscriber<T> extends DeferredScalarSubscription<Boolean> implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = -2311252482644620661L;
 
         final Predicate<? super T> predicate;
@@ -40,7 +40,7 @@ public final class FlowableAny<T> extends AbstractFlowableWithUpstream<T, Boolea
 
         boolean done;
 
-        public AnySubscriber(Subscriber<? super Boolean> actual, Predicate<? super T> predicate) {
+        AnySubscriber(Subscriber<? super Boolean> actual, Predicate<? super T> predicate) {
             super(actual);
             this.predicate = predicate;
         }

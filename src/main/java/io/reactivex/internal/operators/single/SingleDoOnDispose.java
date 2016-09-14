@@ -43,7 +43,7 @@ public final class SingleDoOnDispose<T> extends Single<T> {
 
         Disposable d;
 
-        public DoOnDisposeObserver(SingleObserver<? super T> actual, Action onDispose) {
+        DoOnDisposeObserver(SingleObserver<? super T> actual, Action onDispose) {
             this.actual = actual;
             this.onDispose = onDispose;
         }

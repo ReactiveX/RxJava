@@ -129,7 +129,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
 
         Subscription s;
 
-        public DistinctSubscriber(Subscriber<? super T> actual, Function<? super T, K> keySelector, Predicate<? super K> predicate) {
+        DistinctSubscriber(Subscriber<? super T> actual, Function<? super T, K> keySelector, Predicate<? super K> predicate) {
             this.actual = actual;
             this.keySelector = keySelector;
             this.predicate = predicate;

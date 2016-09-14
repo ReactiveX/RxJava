@@ -29,12 +29,12 @@ public final class FlowableTakeLastOne<T> extends AbstractFlowableWithUpstream<T
 
     static final class TakeLastOneSubscriber<T> extends DeferredScalarSubscription<T>
     implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = -5467847744262967226L;
 
         Subscription s;
 
-        public TakeLastOneSubscriber(Subscriber<? super T> actual) {
+        TakeLastOneSubscriber(Subscriber<? super T> actual) {
             super(actual);
         }
 

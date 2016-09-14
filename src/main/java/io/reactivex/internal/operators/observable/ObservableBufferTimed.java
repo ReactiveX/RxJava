@@ -92,7 +92,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        public BufferExactUnboundedSubscriber(
+        BufferExactUnboundedSubscriber(
                 Observer<? super U> actual, Callable<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
             super(actual, new MpscLinkedQueue<U>());
@@ -253,7 +253,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         Disposable s;
 
-        public BufferSkipBoundedSubscriber(Observer<? super U> actual,
+        BufferSkipBoundedSubscriber(Observer<? super U> actual,
                 Callable<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
             super(actual, new MpscLinkedQueue<U>());
@@ -428,7 +428,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         long consumerIndex;
 
-        public BufferExactBoundedSubscriber(
+        BufferExactBoundedSubscriber(
                 Observer<? super U> actual,
                 Callable<U> bufferSupplier,
                 long timespan, TimeUnit unit, int maxSize,

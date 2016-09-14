@@ -39,7 +39,7 @@ public final class ObservableDistinctUntilChanged<T> extends AbstractObservableW
 
         boolean hasValue;
 
-        public DistinctUntilChangedObserver(Observer<? super T> actual,
+        DistinctUntilChangedObserver(Observer<? super T> actual,
                 BiPredicate<? super T, ? super T> comparer) {
             super(actual);
             this.comparer = comparer;

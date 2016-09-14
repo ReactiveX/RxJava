@@ -39,7 +39,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
 
         T value;
 
-        public ScanSubscriber(Subscriber<? super T> actual, BiFunction<T, T, T> accumulator) {
+        ScanSubscriber(Subscriber<? super T> actual, BiFunction<T, T, T> accumulator) {
             this.actual = actual;
             this.accumulator = accumulator;
         }

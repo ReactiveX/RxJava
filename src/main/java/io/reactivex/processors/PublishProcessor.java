@@ -43,11 +43,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <pre> {@code
 
   PublishProcessor<Object> processor = PublishProcessor.create();
-  // subscriber1 will receive all onNext and onCompleted events
+  // subscriber1 will receive all onNext and onComplete events
   processor.subscribe(subscriber1);
   processor.onNext("one");
   processor.onNext("two");
-  // subscriber2 will only receive "three" and onCompleted
+  // subscriber2 will only receive "three" and onComplete
   processor.subscribe(subscriber2);
   processor.onNext("three");
   processor.onComplete();
@@ -255,7 +255,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      * @param <T> the value type
      */
     static final class PublishSubscription<T> extends AtomicLong implements Subscription {
-        /** */
+
         private static final long serialVersionUID = 3562861878281475070L;
         /** The actual subscriber. */
         final Subscriber<? super T> actual;
@@ -267,7 +267,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
          * @param actual the actual subscriber
          * @param parent the parent PublishProcessor
          */
-        public PublishSubscription(Subscriber<? super T> actual, PublishProcessor<T> parent) {
+        PublishSubscription(Subscriber<? super T> actual, PublishProcessor<T> parent) {
             this.actual = actual;
             this.parent = parent;
         }

@@ -54,9 +54,9 @@ public class FlowableRetryTest {
                 if (count.getAndDecrement() == 0) {
                     t1.onNext("hello");
                     t1.onComplete();
-                }
-                else
+                } else {
                     t1.onError(new RuntimeException());
+                }
             }
 
         });
@@ -72,7 +72,7 @@ public class FlowableRetryTest {
                         public Tuple apply(Throwable n) {
                             return new Tuple(new Long(1), n);
                         }})
-                    .scan(new BiFunction<Tuple, Tuple, Tuple>(){
+                    .scan(new BiFunction<Tuple, Tuple, Tuple>() {
                         @Override
                         public Tuple apply(Tuple t, Tuple n) {
                             return new Tuple(t.count + n.count, n.n);
@@ -80,10 +80,10 @@ public class FlowableRetryTest {
                     .flatMap(new Function<Tuple, Flowable<Object>>() {
                         @Override
                         public Flowable<Object> apply(Tuple t) {
-                            System.out.println("Retry # "+t.count);
+                            System.out.println("Retry # " + t.count);
                             return t.count > 20 ?
                                 Flowable.<Object>error(t.n) :
-                                Flowable.timer(t.count *1L, TimeUnit.MILLISECONDS)
+                                Flowable.timer(t.count * 1L, TimeUnit.MILLISECONDS)
                                 .cast(Object.class);
                     }});
             }
@@ -123,7 +123,7 @@ public class FlowableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -161,7 +161,7 @@ public class FlowableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -191,7 +191,7 @@ public class FlowableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -314,7 +314,7 @@ public class FlowableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -333,7 +333,7 @@ public class FlowableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -396,7 +396,7 @@ public class FlowableRetryTest {
                 final AtomicLong req = new AtomicLong();
                 // 0 = not set, 1 = fast path, 2 = backpressure
                 final AtomicInteger path = new AtomicInteger(0);
-                volatile boolean done = false;
+                volatile boolean done;
 
                 @Override
                 public void request(long n) {
@@ -562,12 +562,13 @@ public class FlowableRetryTest {
     static final class SlowObservable implements Publisher<Long> {
 
         final AtomicInteger efforts = new AtomicInteger(0);
-        final AtomicInteger active = new AtomicInteger(0), maxActive = new AtomicInteger(0);
+        final AtomicInteger active = new AtomicInteger(0);
+        final AtomicInteger maxActive = new AtomicInteger(0);
         final AtomicInteger nextBeforeFailure;
 
         private final int emitDelay;
 
-        public SlowObservable(int emitDelay, int countNext) {
+        SlowObservable(int emitDelay, int countNext) {
             this.emitDelay = emitDelay;
             this.nextBeforeFailure = new AtomicInteger(countNext);
         }
@@ -612,7 +613,7 @@ public class FlowableRetryTest {
         }
     }
 
-    /** Observer for listener on seperate thread */
+    /** Observer for listener on seperate thread. */
     static final class AsyncObserver<T> extends DefaultSubscriber<T> {
 
         protected CountDownLatch latch = new CountDownLatch(1);
@@ -620,14 +621,14 @@ public class FlowableRetryTest {
         protected Subscriber<T> target;
 
         /**
-         * Wrap existing Observer
+         * Wrap existing Observer.
          * @param target the target subscriber
          */
-        public AsyncObserver(Subscriber<T> target) {
+        AsyncObserver(Subscriber<T> target) {
             this.target = target;
         }
 
-        /** Wait */
+        /** Wait. */
         public void await() {
             try {
                 latch.await();
@@ -708,7 +709,7 @@ public class FlowableRetryTest {
     @Test//(timeout = 15000)
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
-        for (int j=0;j<NUM_LOOPS;j++) {
+        for (int j = 0;j < NUM_LOOPS; j++) {
             final int NUM_RETRIES = Flowable.bufferSize() * 2;
             for (int i = 0; i < 400; i++) {
                 Subscriber<String> observer = TestHelper.mockSubscriber();
@@ -724,7 +725,7 @@ public class FlowableRetryTest {
                 inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
                 // should have a single success
                 inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-                // should have a single successful onCompleted
+                // should have a single successful onComplete
                 inOrder.verify(observer, times(1)).onComplete();
                 inOrder.verifyNoMoreInteractions();
             }
@@ -766,7 +767,7 @@ public class FlowableRetryTest {
                                         onNextEvents.add(t.toString());
                                     }
                                     for (long err = ts.completions(); err != 0; err--) {
-                                        onNextEvents.add("onCompleted");
+                                        onNextEvents.add("onComplete");
                                     }
                                     data.put(j, onNextEvents);
                                 }
@@ -866,7 +867,7 @@ public class FlowableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         //inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
@@ -881,7 +882,7 @@ public class FlowableRetryTest {
             @Override
             public void subscribe(Subscriber<? super String> o) {
                 o.onSubscribe(new BooleanSubscription());
-                for(int i=0; i<NUM_MSG; i++) {
+                for (int i = 0; i < NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());
                 }
                 o.onComplete();
@@ -910,7 +911,7 @@ public class FlowableRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         //inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
+        // should have a single successful onComplete
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }

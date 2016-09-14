@@ -28,14 +28,14 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the common base type of the sources
  */
-public final class SingleMaybeEqual<T> extends Single<Boolean> {
+public final class MaybeEqualSingle<T> extends Single<Boolean> {
     final MaybeSource<? extends T> source1;
 
     final MaybeSource<? extends T> source2;
 
     final BiPredicate<? super T, ? super T> isEqual;
 
-    public SingleMaybeEqual(MaybeSource<? extends T> source1, MaybeSource<? extends T> source2,
+    public MaybeEqualSingle(MaybeSource<? extends T> source1, MaybeSource<? extends T> source2,
             BiPredicate<? super T, ? super T> isEqual) {
         this.source1 = source1;
         this.source2 = source2;
@@ -61,7 +61,7 @@ public final class SingleMaybeEqual<T> extends Single<Boolean> {
 
         final BiPredicate<? super T, ? super T> isEqual;
 
-        public EqualCoordinator(SingleObserver<? super Boolean> actual, BiPredicate<? super T, ? super T> isEqual) {
+        EqualCoordinator(SingleObserver<? super Boolean> actual, BiPredicate<? super T, ? super T> isEqual) {
             super(2);
             this.actual = actual;
             this.isEqual = isEqual;
@@ -127,14 +127,14 @@ public final class SingleMaybeEqual<T> extends Single<Boolean> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = -3031974433025990931L;
 
         final EqualCoordinator<T> parent;
 
         Object value;
 
-        public EqualObserver(EqualCoordinator<T> parent) {
+        EqualObserver(EqualCoordinator<T> parent) {
             this.parent = parent;
         }
 

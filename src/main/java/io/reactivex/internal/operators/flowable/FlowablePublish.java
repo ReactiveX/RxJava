@@ -102,7 +102,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                  *
                  * Object term = r.terminalEvent;
                  * if (r.nl.isCompleted(term)) {
-                 *     child.onCompleted();
+                 *     child.onComplete();
                  * } else {
                  *     child.onError(r.nl.getError(term));
                  * }
@@ -195,7 +195,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         final AtomicReference<PublishSubscriber<T>> current;
         /** The prefetch buffer size. */
         final int bufferSize;
-        /** Contains either an onCompleted or an onError token from upstream. */
+        /** Contains either an onComplete or an onError token from upstream. */
         volatile Object terminalEvent;
 
         /** Indicates an empty array of inner producers. */
@@ -218,7 +218,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
 
         final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 
-        public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
+        PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
             this.queue = new SpscArrayQueue<Object>(bufferSize);
 
             this.producers = new AtomicReference<InnerProducer[]>(EMPTY);
@@ -300,7 +300,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 // get the current producer array
                 InnerProducer[] c = producers.get();
                 // if this subscriber-to-source reached a terminal state by receiving
-                // an onError or onCompleted, just refuse to add the new producer
+                // an onError or onComplete, just refuse to add the new producer
                 if (c == TERMINATED) {
                     return false;
                 }
@@ -615,7 +615,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
      * @param <T> the value type
      */
     static final class InnerProducer<T> extends AtomicLong implements Subscription, Disposable {
-        /** */
+
         private static final long serialVersionUID = -4453897557930727610L;
         /**
          * The parent subscriber-to-source used to allow removing the child in case of
@@ -630,7 +630,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
          */
         static final long CANCELLED = Long.MIN_VALUE;
 
-        public InnerProducer(PublishSubscriber<T> parent, Subscriber<? super T> child) {
+        InnerProducer(PublishSubscriber<T> parent, Subscriber<? super T> child) {
             this.parent = parent;
             this.child = child;
         }

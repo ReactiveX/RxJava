@@ -452,7 +452,7 @@ public class FlowableSwitchTest {
         final TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
         Flowable.switchOnNext(o).subscribe(new DefaultSubscriber<String>() {
 
-            private int requested = 0;
+            private int requested;
 
             @Override
             public void onStart() {
@@ -475,7 +475,7 @@ public class FlowableSwitchTest {
             public void onNext(String s) {
                 testSubscriber.onNext(s);
                 requested--;
-                if(requested == 0) {
+                if (requested == 0) {
                     requested = 3;
                     request(3);
                 }
@@ -632,7 +632,7 @@ public class FlowableSwitchTest {
         assertTrue(ts.valueCount() > 0);
         System.out.println(requests);
         assertEquals(5, requests.size());
-        assertEquals(Long.MAX_VALUE, (long) requests.get(requests.size()-1));
+        assertEquals(Long.MAX_VALUE, (long) requests.get(requests.size() - 1));
     }
 
     @Test

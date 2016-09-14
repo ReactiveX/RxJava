@@ -69,7 +69,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
         final AtomicLong windows = new AtomicLong();
 
-        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual,
+        WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual,
                                             ObservableSource<B> open, Function<? super B, ? extends ObservableSource<V>> close, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.open = open;
@@ -326,7 +326,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
     static final class WindowOperation<T, B> {
         final UnicastSubject<T> w;
         final B open;
-        public WindowOperation(UnicastSubject<T> w, B open) {
+        WindowOperation(UnicastSubject<T> w, B open) {
             this.w = w;
             this.open = open;
         }
@@ -337,7 +337,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
         boolean done;
 
-        public OperatorWindowBoundaryOpenSubscriber(WindowBoundaryMainSubscriber<T, B, ?> parent) {
+        OperatorWindowBoundaryOpenSubscriber(WindowBoundaryMainSubscriber<T, B, ?> parent) {
             this.parent = parent;
         }
 
@@ -375,7 +375,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
         boolean done;
 
-        public OperatorWindowBoundaryCloseSubscriber(WindowBoundaryMainSubscriber<T, ?, V> parent, UnicastSubject<T> w) {
+        OperatorWindowBoundaryCloseSubscriber(WindowBoundaryMainSubscriber<T, ?, V> parent, UnicastSubject<T> w) {
             this.parent = parent;
             this.w = w;
         }

@@ -40,7 +40,7 @@ import io.reactivex.plugins.RxJavaPlugins;
      * Constructor that wraps an actual subject.
      * @param actual the subject wrapped
      */
-    public SerializedSubject(final Subject<T> actual) {
+    SerializedSubject(final Subject<T> actual) {
         this.actual = actual;
     }
 

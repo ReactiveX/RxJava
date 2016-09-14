@@ -31,7 +31,7 @@ public class ObservableMapTest {
     Observer<String> stringObserver;
     Observer<String> stringObserver2;
 
-    final static BiFunction<String, Integer, String> APPEND_INDEX = new BiFunction<String, Integer, String>() {
+    static final BiFunction<String, Integer, String> APPEND_INDEX = new BiFunction<String, Integer, String>() {
         @Override
         public String apply(String value, Integer index) {
             return value + index;

@@ -554,7 +554,7 @@ public class FlowableReplayTest {
     }
 
     /**
-     * Specifically test interaction with a Scheduler with subscribeOn
+     * Specifically test interaction with a Scheduler with subscribeOn.
      *
      * @throws Exception
      */
@@ -616,7 +616,7 @@ public class FlowableReplayTest {
     }
 
     /**
-     * Specifically test interaction with a Scheduler with subscribeOn
+     * Specifically test interaction with a Scheduler with subscribeOn.
      *
      * @throws Exception
      */
@@ -703,7 +703,7 @@ public class FlowableReplayTest {
         private final Disposable mockDisposable;
         public boolean unsubscribed;
 
-        public InprocessWorker(Disposable mockDisposable) {
+        InprocessWorker(Disposable mockDisposable) {
             this.mockDisposable = mockDisposable;
         }
 

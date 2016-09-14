@@ -24,7 +24,7 @@ import io.reactivex.internal.fuseable.QueueSubscription;
  * @param <T> the value type
  */
 public final class ScalarSubscription<T> extends AtomicInteger implements QueueSubscription<T> {
-    /** */
+
     private static final long serialVersionUID = -3830916580126663321L;
     /** The single value to emit, set to null. */
     final T value;

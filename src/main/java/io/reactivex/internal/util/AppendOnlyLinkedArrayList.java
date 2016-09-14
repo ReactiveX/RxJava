@@ -30,7 +30,7 @@ public class AppendOnlyLinkedArrayList<T> {
     int offset;
 
     /**
-     * Constructs an empty list with a per-link capacity
+     * Constructs an empty list with a per-link capacity.
      * @param capacity the capacity of each link
      */
     public AppendOnlyLinkedArrayList(int capacity) {

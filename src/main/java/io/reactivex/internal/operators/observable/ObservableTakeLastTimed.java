@@ -46,7 +46,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
     }
 
     static final class TakeLastTimedSubscriber<T> extends AtomicInteger implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -5677354903406201275L;
         final Observer<? super T> actual;
         final long count;
@@ -63,7 +63,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
         volatile boolean done;
         Throwable error;
 
-        public TakeLastTimedSubscriber(Observer<? super T> actual, long count, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
+        TakeLastTimedSubscriber(Observer<? super T> actual, long count, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.count = count;
             this.time = time;

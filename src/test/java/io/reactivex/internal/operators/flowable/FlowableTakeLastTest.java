@@ -125,7 +125,7 @@ public class FlowableTakeLastTest {
 
     private Function<Integer, Integer> newSlowProcessor() {
         return new Function<Integer, Integer>() {
-            int c = 0;
+            int c;
 
             @Override
             public Integer apply(Integer i) {
@@ -289,7 +289,7 @@ public class FlowableTakeLastTest {
         assertEquals(1,count.get());
     }
 
-    @Test(timeout=10000)
+    @Test(timeout = 10000)
     public void testRequestOverflow() {
         final List<Integer> list = new ArrayList<Integer>();
         Flowable.range(1, 100).takeLast(50).subscribe(new DefaultSubscriber<Integer>() {
@@ -312,7 +312,7 @@ public class FlowableTakeLastTest {
             @Override
             public void onNext(Integer t) {
                 list.add(t);
-                request(Long.MAX_VALUE-1);
+                request(Long.MAX_VALUE - 1);
             }});
         assertEquals(50, list.size());
     }

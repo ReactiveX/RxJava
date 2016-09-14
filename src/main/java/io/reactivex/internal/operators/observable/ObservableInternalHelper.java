@@ -29,7 +29,7 @@ public enum ObservableInternalHelper {
     static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
         final Consumer<Emitter<T>> consumer;
 
-        public SimpleGenerator(Consumer<Emitter<T>> consumer) {
+        SimpleGenerator(Consumer<Emitter<T>> consumer) {
             this.consumer = consumer;
         }
 
@@ -47,7 +47,7 @@ public enum ObservableInternalHelper {
     static final class SimpleBiGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
         final BiConsumer<S, Emitter<T>> consumer;
 
-        public SimpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
+        SimpleBiGenerator(BiConsumer<S, Emitter<T>> consumer) {
             this.consumer = consumer;
         }
 
@@ -65,7 +65,7 @@ public enum ObservableInternalHelper {
     static final class ItemDelayFunction<T, U> implements Function<T, ObservableSource<T>> {
         final Function<? super T, ? extends ObservableSource<U>> itemDelay;
 
-        public ItemDelayFunction(Function<? super T, ? extends ObservableSource<U>> itemDelay) {
+        ItemDelayFunction(Function<? super T, ? extends ObservableSource<U>> itemDelay) {
             this.itemDelay = itemDelay;
         }
 
@@ -83,7 +83,7 @@ public enum ObservableInternalHelper {
     static final class ObserverOnNext<T> implements Consumer<T> {
         final Observer<T> observer;
 
-        public ObserverOnNext(Observer<T> observer) {
+        ObserverOnNext(Observer<T> observer) {
             this.observer = observer;
         }
 
@@ -96,7 +96,7 @@ public enum ObservableInternalHelper {
     static final class ObserverOnError<T> implements Consumer<Throwable> {
         final Observer<T> observer;
 
-        public ObserverOnError(Observer<T> observer) {
+        ObserverOnError(Observer<T> observer) {
             this.observer = observer;
         }
 
@@ -109,7 +109,7 @@ public enum ObservableInternalHelper {
     static final class ObserverOnComplete<T> implements Action {
         final Observer<T> observer;
 
-        public ObserverOnComplete(Observer<T> observer) {
+        ObserverOnComplete(Observer<T> observer) {
             this.observer = observer;
         }
 
@@ -187,7 +187,7 @@ public enum ObservableInternalHelper {
         return new FlatMapIntoIterable<T, U>(mapper);
     }
 
-    enum MapToInt implements Function<Object, Object>{
+    enum MapToInt implements Function<Object, Object> {
         INSTANCE;
         @Override
         public Object apply(Object t) throws Exception {

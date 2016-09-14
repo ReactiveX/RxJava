@@ -46,7 +46,7 @@ public final class MaybeCount<T> extends Single<Long> implements HasUpstreamMayb
 
         Disposable d;
 
-        public CountMaybeObserver(SingleObserver<? super Long> actual) {
+        CountMaybeObserver(SingleObserver<? super Long> actual) {
             this.actual = actual;
         }
 

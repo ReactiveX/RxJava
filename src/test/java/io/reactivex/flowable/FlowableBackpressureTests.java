@@ -34,7 +34,7 @@ import io.reactivex.subscribers.*;
 public class FlowableBackpressureTests {
 
     static final class FirehoseNoBackpressure extends AtomicBoolean implements Subscription {
-        /** */
+
         private static final long serialVersionUID = -669931580197884015L;
         final Subscriber<? super Integer> s;
         private final AtomicInteger counter;
@@ -680,7 +680,7 @@ public class FlowableBackpressureTests {
             @Override
             public void subscribe(final Subscriber<? super Integer> s) {
                 s.onSubscribe(new Subscription() {
-                    int i = 0;
+                    int i;
 
                     volatile boolean cancelled;
 
@@ -733,7 +733,7 @@ public class FlowableBackpressureTests {
         });
     }
 
-    final static Function<Integer, Integer> SLOW_PASS_THRU = new Function<Integer, Integer>() {
+    static final Function<Integer, Integer> SLOW_PASS_THRU = new Function<Integer, Integer>() {
         volatile int sink;
         @Override
         public Integer apply(Integer t1) {

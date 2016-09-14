@@ -75,14 +75,14 @@ public final class FlowableTakeUntil<T, U> extends AbstractFlowableWithUpstream<
     }
 
     static final class TakeUntilSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 3451719290311127173L;
         final Subscriber<? super T> actual;
         final ArrayCompositeSubscription frc;
 
         Subscription s;
 
-        public TakeUntilSubscriber(Subscriber<? super T> actual, ArrayCompositeSubscription frc) {
+        TakeUntilSubscriber(Subscriber<? super T> actual, ArrayCompositeSubscription frc) {
             this.actual = actual;
             this.frc = frc;
         }

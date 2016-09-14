@@ -49,11 +49,11 @@ public final class SingleCreate<T> extends Single<T> {
 
         final SingleObserver<? super T> actual;
 
-        public Emitter(SingleObserver<? super T> actual) {
+        Emitter(SingleObserver<? super T> actual) {
             this.actual = actual;
         }
 
-        /** */
+
         private static final long serialVersionUID = -2467358622224974244L;
 
         @Override

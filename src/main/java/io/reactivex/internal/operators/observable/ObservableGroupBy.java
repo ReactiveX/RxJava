@@ -48,7 +48,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
     }
 
     public static final class GroupBySubscriber<T, K, V> extends AtomicInteger implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -3688291656102519502L;
 
         final Observer<? super GroupedObservable<K, V>> actual;
@@ -212,7 +212,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
     }
 
     static final class State<T, K> extends AtomicInteger implements Disposable, ObservableSource<T> {
-        /** */
+
         private static final long serialVersionUID = -3852313036005250360L;
 
         final K key;
@@ -227,7 +227,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         final AtomicReference<Observer<? super T>> actual = new AtomicReference<Observer<? super T>>();
 
-        public State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
+        State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
             this.parent = parent;
             this.key = key;

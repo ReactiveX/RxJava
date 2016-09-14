@@ -69,8 +69,9 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         w = w.map(new Function<String, String>() {
             @Override
             public String apply(String s) {
-                if ("fail".equals(s))
+                if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
+                }
                 System.out.println("BadMapper:" + s);
                 return s;
             }
@@ -145,13 +146,13 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         verify(observer, times(1)).onNext("resume");
     }
 
-    private static class TestObservable implements ObservableSource<String> {
+    static class TestObservable implements ObservableSource<String> {
 
         final Disposable s;
         final String[] values;
-        Thread t = null;
+        Thread t;
 
-        public TestObservable(Disposable s, String... values) {
+        TestObservable(Disposable s, String... values) {
             this.s = s;
             this.values = values;
         }
@@ -167,12 +168,13 @@ public class ObservableOnErrorResumeNextViaObservableTest {
                     try {
                         System.out.println("running TestObservable thread");
                         for (String s : values) {
-                            if ("fail".equals(s))
+                            if ("fail".equals(s)) {
                                 throw new RuntimeException("Forced Failure");
+                            }
                             System.out.println("TestObservable onNext: " + s);
                             observer.onNext(s);
                         }
-                        System.out.println("TestObservable onCompleted");
+                        System.out.println("TestObservable onComplete");
                         observer.onComplete();
                     } catch (Throwable e) {
                         System.out.println("TestObservable onError: " + e);
@@ -194,7 +196,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
                 .onErrorResumeNext(Observable.just(1))
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer apply(Integer t1) {

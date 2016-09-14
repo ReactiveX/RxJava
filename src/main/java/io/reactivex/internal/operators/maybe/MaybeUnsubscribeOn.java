@@ -40,7 +40,7 @@ public final class MaybeUnsubscribeOn<T> extends AbstractMaybeWithUpstream<T, T>
 
     static final class UnsubscribeOnMaybeObserver<T> extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable, Runnable {
-        /** */
+
         private static final long serialVersionUID = 3256698449646456986L;
 
         final MaybeObserver<? super T> actual;
@@ -49,7 +49,7 @@ public final class MaybeUnsubscribeOn<T> extends AbstractMaybeWithUpstream<T, T>
 
         Disposable ds;
 
-        public UnsubscribeOnMaybeObserver(MaybeObserver<? super T> actual, Scheduler scheduler) {
+        UnsubscribeOnMaybeObserver(MaybeObserver<? super T> actual, Scheduler scheduler) {
             this.actual = actual;
             this.scheduler = scheduler;
         }

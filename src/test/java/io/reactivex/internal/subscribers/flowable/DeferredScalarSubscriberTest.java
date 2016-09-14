@@ -320,14 +320,14 @@ public class DeferredScalarSubscriberTest {
                     @Override
                     public void run() {
                         ready.decrementAndGet();
-                        while (ready.get() != 0) ;
+                        while (ready.get() != 0) { }
 
                         ts.request(1);
                     }
                 });
 
                 ready.decrementAndGet();
-                while (ready.get() != 0) ;
+                while (ready.get() != 0) { }
 
                 ds.onComplete();
 
@@ -364,7 +364,7 @@ public class DeferredScalarSubscriberTest {
                     @Override
                     public void run() {
                         ready.decrementAndGet();
-                        while (ready.get() != 0) ;
+                        while (ready.get() != 0) { }
 
                         ts.request(1);
                     }
@@ -374,14 +374,14 @@ public class DeferredScalarSubscriberTest {
                     @Override
                     public void run() {
                         ready.decrementAndGet();
-                        while (ready.get() != 0) ;
+                        while (ready.get() != 0) { }
 
                         ts.request(1);
                     }
                 });
 
                 ready.decrementAndGet();
-                while (ready.get() != 0) ;
+                while (ready.get() != 0) { }
 
                 ds.onComplete();
 
@@ -399,10 +399,9 @@ public class DeferredScalarSubscriberTest {
 
     static final class TestingDeferredScalarSubscriber extends DeferredScalarSubscriber<Integer, Integer> {
 
-        /** */
         private static final long serialVersionUID = 6285096158319517837L;
 
-        public TestingDeferredScalarSubscriber(Subscriber<? super Integer> actual) {
+        TestingDeferredScalarSubscriber(Subscriber<? super Integer> actual) {
             super(actual);
         }
 

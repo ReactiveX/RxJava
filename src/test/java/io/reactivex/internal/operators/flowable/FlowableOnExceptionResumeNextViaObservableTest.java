@@ -156,8 +156,9 @@ public class FlowableOnExceptionResumeNextViaObservableTest {
         w = w.map(new Function<String, String>() {
             @Override
             public String apply(String s) {
-                if ("fail".equals(s))
+                if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
+                }
                 System.out.println("BadMapper:" + s);
                 return s;
             }
@@ -194,7 +195,7 @@ public class FlowableOnExceptionResumeNextViaObservableTest {
                 .onExceptionResumeNext(Flowable.just(1))
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer apply(Integer t1) {
@@ -219,9 +220,9 @@ public class FlowableOnExceptionResumeNextViaObservableTest {
     private static class TestObservable implements Publisher<String> {
 
         final String[] values;
-        Thread t = null;
+        Thread t;
 
-        public TestObservable(String... values) {
+        TestObservable(String... values) {
             this.values = values;
         }
 
@@ -236,18 +237,19 @@ public class FlowableOnExceptionResumeNextViaObservableTest {
                     try {
                         System.out.println("running TestObservable thread");
                         for (String s : values) {
-                            if ("EXCEPTION".equals(s))
+                            if ("EXCEPTION".equals(s)) {
                                 throw new Exception("Forced Exception");
-                            else if ("RUNTIMEEXCEPTION".equals(s))
+                            } else if ("RUNTIMEEXCEPTION".equals(s)) {
                                 throw new RuntimeException("Forced RuntimeException");
-                            else if ("ERROR".equals(s))
+                            } else if ("ERROR".equals(s)) {
                                 throw new Error("Forced Error");
-                            else if ("THROWABLE".equals(s))
+                            } else if ("THROWABLE".equals(s)) {
                                 throw new Throwable("Forced Throwable");
+                            }
                             System.out.println("TestObservable onNext: " + s);
                             observer.onNext(s);
                         }
-                        System.out.println("TestObservable onCompleted");
+                        System.out.println("TestObservable onComplete");
                         observer.onComplete();
                     } catch (Throwable e) {
                         System.out.println("TestObservable onError: " + e);

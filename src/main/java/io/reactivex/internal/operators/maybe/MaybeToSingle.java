@@ -52,7 +52,7 @@ public final class MaybeToSingle<T> extends Single<T> implements HasUpstreamMayb
 
         Disposable d;
 
-        public ToSingleMaybeSubscriber(SingleObserver<? super T> actual, T defaultValue) {
+        ToSingleMaybeSubscriber(SingleObserver<? super T> actual, T defaultValue) {
             this.actual = actual;
             this.defaultValue = defaultValue;
         }

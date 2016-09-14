@@ -43,7 +43,7 @@ public final class CompletableMerge extends Completable {
     static final class CompletableMergeSubscriber
     extends AtomicInteger
     implements Subscriber<CompletableSource>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -2108443387387077490L;
 
         final CompletableObserver actual;
@@ -61,7 +61,7 @@ public final class CompletableMerge extends Completable {
         volatile boolean done;
 
 
-        public CompletableMergeSubscriber(CompletableObserver actual, int maxConcurrency, boolean delayErrors) {
+        CompletableMergeSubscriber(CompletableObserver actual, int maxConcurrency, boolean delayErrors) {
             this.actual = actual;
             this.maxConcurrency = maxConcurrency;
             this.delayErrors = delayErrors;

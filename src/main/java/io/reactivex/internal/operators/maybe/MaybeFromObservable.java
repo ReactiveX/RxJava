@@ -47,14 +47,14 @@ public final class MaybeFromObservable<T> extends Maybe<T> implements HasUpstrea
     static final class FromObservableToMaybeObserver<T>
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -8017657973346356002L;
 
         final MaybeObserver<? super T> actual;
 
         T value;
 
-        public FromObservableToMaybeObserver(MaybeObserver<? super T> observer) {
+        FromObservableToMaybeObserver(MaybeObserver<? super T> observer) {
             this.actual = observer;
         }
 

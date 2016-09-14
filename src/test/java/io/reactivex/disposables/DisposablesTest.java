@@ -63,7 +63,7 @@ public class DisposablesTest {
     @Test
     public void fromAction() {
         class AtomicAction extends AtomicBoolean implements Action {
-            /** */
+
             private static final long serialVersionUID = -1517510584253657229L;
 
             @Override

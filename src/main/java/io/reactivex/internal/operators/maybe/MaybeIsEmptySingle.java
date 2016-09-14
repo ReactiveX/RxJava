@@ -56,7 +56,7 @@ implements HasUpstreamMaybeSource<T>, FuseToMaybe<Boolean> {
 
         Disposable d;
 
-        public IsEmptyMaybeObserver(SingleObserver<? super Boolean> actual) {
+        IsEmptyMaybeObserver(SingleObserver<? super Boolean> actual) {
             this.actual = actual;
         }
 

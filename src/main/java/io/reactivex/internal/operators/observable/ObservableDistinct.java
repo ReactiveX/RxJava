@@ -128,7 +128,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
 
         Disposable s;
 
-        public DistinctSubscriber(Observer<? super T> actual, Function<? super T, K> keySelector, Predicate<? super K> predicate) {
+        DistinctSubscriber(Observer<? super T> actual, Function<? super T, K> keySelector, Predicate<? super K> predicate) {
             this.actual = actual;
             this.keySelector = keySelector;
             this.predicate = predicate;

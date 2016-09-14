@@ -49,7 +49,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
     static final class DebounceTimedSubscriber<T>
     extends AtomicLong
     implements Subscriber<T>, Subscription, Runnable {
-        /** */
+
         private static final long serialVersionUID = -9102637559663639004L;
         final Subscriber<? super T> actual;
         final long timeout;
@@ -73,7 +73,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
 
         boolean done;
 
-        public DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
             this.timeout = timeout;
             this.unit = unit;

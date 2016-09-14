@@ -96,7 +96,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         volatile boolean terminated;
 
-        public WindowExactUnboundedSubscriber(Observer<? super Observable<T>> actual, long timespan, TimeUnit unit,
+        WindowExactUnboundedSubscriber(Observer<? super Observable<T>> actual, long timespan, TimeUnit unit,
                 Scheduler scheduler, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.timespan = timespan;
@@ -299,7 +299,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        public WindowExactBoundedSubscriber(
+        WindowExactBoundedSubscriber(
                 Observer<? super Observable<T>> actual,
                 long timespan, TimeUnit unit, Scheduler scheduler,
                 int bufferSize, long maxSize, boolean restartTimerOnMaxSize) {
@@ -534,7 +534,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         static final class ConsumerIndexHolder implements Runnable {
             final long index;
             final WindowExactBoundedSubscriber<?> parent;
-            public ConsumerIndexHolder(long index, WindowExactBoundedSubscriber<?> parent) {
+            ConsumerIndexHolder(long index, WindowExactBoundedSubscriber<?> parent) {
                 this.index = index;
                 this.parent = parent;
             }
@@ -574,7 +574,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         volatile boolean terminated;
 
-        public WindowSkipSubscriber(Observer<? super Observable<T>> actual,
+        WindowSkipSubscriber(Observer<? super Observable<T>> actual,
                 long timespan, long timeskip, TimeUnit unit,
                 Worker worker, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
@@ -795,7 +795,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         static final class SubjectWork<T> {
             final UnicastSubject<T> w;
             final boolean open;
-            public SubjectWork(UnicastSubject<T> w, boolean open) {
+            SubjectWork(UnicastSubject<T> w, boolean open) {
                 this.w = w;
                 this.open = open;
             }

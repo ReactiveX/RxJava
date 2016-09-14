@@ -72,7 +72,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
     }
 
     static final class ZipCoordinator<T, R> extends AtomicInteger implements Disposable {
-        /** */
+
         private static final long serialVersionUID = 2983708048395377667L;
         final Observer<? super R> actual;
         final Function<? super Object[], ? extends R> zipper;
@@ -83,7 +83,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
         volatile boolean cancelled;
 
         @SuppressWarnings("unchecked")
-        public ZipCoordinator(Observer<? super R> actual,
+        ZipCoordinator(Observer<? super R> actual,
                 Function<? super Object[], ? extends R> zipper,
                 int count, boolean delayError) {
             this.actual = actual;
@@ -255,7 +255,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
-        public ZipSubscriber(ZipCoordinator<T, R> parent, int bufferSize) {
+        ZipSubscriber(ZipCoordinator<T, R> parent, int bufferSize) {
             this.parent = parent;
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
         }

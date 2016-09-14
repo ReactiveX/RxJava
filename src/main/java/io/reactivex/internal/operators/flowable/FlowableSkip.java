@@ -35,7 +35,7 @@ public final class FlowableSkip<T> extends AbstractFlowableWithUpstream<T, T> {
 
         Subscription s;
 
-        public SkipSubscriber(Subscriber<? super T> actual, long n) {
+        SkipSubscriber(Subscriber<? super T> actual, long n) {
             this.actual = actual;
             this.remaining = n;
         }

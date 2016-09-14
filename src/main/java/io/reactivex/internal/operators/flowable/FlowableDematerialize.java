@@ -37,7 +37,7 @@ public final class FlowableDematerialize<T> extends AbstractFlowableWithUpstream
 
         Subscription s;
 
-        public DematerializeSubscriber(Subscriber<? super T> actual) {
+        DematerializeSubscriber(Subscriber<? super T> actual) {
             this.actual = actual;
         }
 

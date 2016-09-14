@@ -38,7 +38,7 @@ public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpst
 
         boolean empty;
 
-        public SwitchIfEmptySubscriber(Observer<? super T> actual, ObservableSource<? extends T> other) {
+        SwitchIfEmptySubscriber(Observer<? super T> actual, ObservableSource<? extends T> other) {
             this.actual = actual;
             this.other = other;
             this.empty = true;

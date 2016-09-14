@@ -63,7 +63,7 @@ public final class MaybePeek<T> extends AbstractMaybeWithUpstream<T, T> {
 
         Disposable d;
 
-        public MaybePeekObserver(MaybeObserver<? super T> actual, MaybePeek<T> parent) {
+        MaybePeekObserver(MaybeObserver<? super T> actual, MaybePeek<T> parent) {
             this.actual = actual;
             this.parent = parent;
         }

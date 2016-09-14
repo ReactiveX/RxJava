@@ -27,7 +27,7 @@ import io.reactivex.processors.BehaviorProcessor;
 
 public class FlowableCombineLatestTests {
     /**
-     * This won't compile if super/extends isn't done correctly on generics
+     * This won't compile if super/extends isn't done correctly on generics.
      */
     @Test
     public void testCovarianceOfCombineLatest() {

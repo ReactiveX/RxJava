@@ -50,7 +50,7 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
         Subscription s;
 
-        public OtherSubscriber(MaybeObserver<? super T> actual, MaybeSource<T> source) {
+        OtherSubscriber(MaybeObserver<? super T> actual, MaybeSource<T> source) {
             this.main = new DelayMaybeObserver<T>(actual);
             this.source = source;
         }
@@ -118,12 +118,12 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
     static final class DelayMaybeObserver<T> extends AtomicReference<Disposable>
     implements MaybeObserver<T> {
-        /** */
+
         private static final long serialVersionUID = 706635022205076709L;
 
         final MaybeObserver<? super T> actual;
 
-        public DelayMaybeObserver(MaybeObserver<? super T> actual) {
+        DelayMaybeObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 

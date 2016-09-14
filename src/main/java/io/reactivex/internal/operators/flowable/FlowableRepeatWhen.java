@@ -68,7 +68,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
     extends AtomicInteger
     implements Subscriber<Object>, Subscription {
 
-        /** */
+
         private static final long serialVersionUID = 2827772011130406689L;
 
         final Publisher<T> source;
@@ -79,7 +79,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
         WhenSourceSubscriber<T, U> subscriber;
 
-        public WhenReceiver(Publisher<T> source) {
+        WhenReceiver(Publisher<T> source) {
             this.source = source;
             this.subscription = new AtomicReference<Subscription>();
             this.requested = new AtomicLong();
@@ -130,9 +130,8 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         }
     }
 
-    static abstract class WhenSourceSubscriber<T, U> extends SubscriptionArbiter implements Subscriber<T> {
+    abstract static class WhenSourceSubscriber<T, U> extends SubscriptionArbiter implements Subscriber<T> {
 
-        /** */
         private static final long serialVersionUID = -5604623027276966720L;
 
         protected final Subscriber<? super T> actual;
@@ -143,7 +142,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
         private long produced;
 
-        public WhenSourceSubscriber(Subscriber<? super T> actual, FlowableProcessor<U> processor,
+        WhenSourceSubscriber(Subscriber<? super T> actual, FlowableProcessor<U> processor,
                 Subscription receiver) {
             this.actual = actual;
             this.processor = processor;
@@ -180,10 +179,10 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
     static final class RepeatWhenSubscriber<T> extends WhenSourceSubscriber<T, Object> {
 
-        /** */
+
         private static final long serialVersionUID = -2680129890138081029L;
 
-        public RepeatWhenSubscriber(Subscriber<? super T> actual, FlowableProcessor<Object> processor,
+        RepeatWhenSubscriber(Subscriber<? super T> actual, FlowableProcessor<Object> processor,
                 Subscription receiver) {
             super(actual, processor, receiver);
         }

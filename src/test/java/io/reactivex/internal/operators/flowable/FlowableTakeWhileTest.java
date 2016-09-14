@@ -81,7 +81,7 @@ public class FlowableTakeWhileTest {
     public void testTakeWhile2() {
         Flowable<String> w = Flowable.just("one", "two", "three");
         Flowable<String> take = w.takeWhile(new Predicate<String>() {
-            int index = 0;
+            int index;
 
             @Override
             public boolean test(String input) {
@@ -152,7 +152,7 @@ public class FlowableTakeWhileTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Flowable<String> take = Flowable.unsafeCreate(w)
                 .takeWhile(new Predicate<String>() {
-            int index = 0;
+            int index;
 
             @Override
             public boolean test(String s) {
@@ -180,9 +180,9 @@ public class FlowableTakeWhileTest {
 
         final Subscription s;
         final String[] values;
-        Thread t = null;
+        Thread t;
 
-        public TestObservable(Subscription s, String... values) {
+        TestObservable(Subscription s, String... values) {
             this.s = s;
             this.values = values;
         }

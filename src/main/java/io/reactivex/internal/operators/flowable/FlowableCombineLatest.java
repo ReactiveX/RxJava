@@ -160,7 +160,7 @@ extends Flowable<R> {
     static final class CombineLatestCoordinator<T, R>
     extends BasicIntQueueSubscription<R> {
 
-        /** */
+
         private static final long serialVersionUID = -5082275438355852221L;
 
         final Subscriber<? super R> actual;
@@ -189,7 +189,7 @@ extends Flowable<R> {
 
         final AtomicReference<Throwable> error;
 
-        public CombineLatestCoordinator(Subscriber<? super R> actual,
+        CombineLatestCoordinator(Subscriber<? super R> actual,
                 Function<? super Object[], ? extends R> combiner, int n,
                 int bufferSize, boolean delayErrors) {
             this.actual = actual;
@@ -504,7 +504,7 @@ extends Flowable<R> {
     extends AtomicReference<Subscription>
             implements Subscriber<T> {
 
-        /** */
+
         private static final long serialVersionUID = -8730235182291002949L;
 
         final CombineLatestCoordinator<T, ?> parent;
@@ -517,7 +517,7 @@ extends Flowable<R> {
 
         int produced;
 
-        public CombineLatestInnerSubscriber(CombineLatestCoordinator<T, ?> parent, int index, int prefetch) {
+        CombineLatestInnerSubscriber(CombineLatestCoordinator<T, ?> parent, int index, int prefetch) {
             this.parent = parent;
             this.index = index;
             this.prefetch = prefetch;

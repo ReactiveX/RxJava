@@ -65,7 +65,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
     }
 
     static final class WithLatestFromSubscriber<T, U, R> extends AtomicReference<U> implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -312246233408980075L;
 
         final Subscriber<? super R> actual;
@@ -75,7 +75,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
 
-        public WithLatestFromSubscriber(Subscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
+        WithLatestFromSubscriber(Subscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
             this.actual = actual;
             this.combiner = combiner;
         }

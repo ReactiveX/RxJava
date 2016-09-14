@@ -200,7 +200,7 @@ public class ObservableObserveOnTest {
     }
 
     /**
-     * Confirm that running on a NewThreadScheduler uses the same thread for the entire stream
+     * Confirm that running on a NewThreadScheduler uses the same thread for the entire stream.
      */
     @Test
     public void testObserveOnWithNewThreadScheduler() {
@@ -312,7 +312,7 @@ public class ObservableObserveOnTest {
 
             @Override
             public void onComplete() {
-                System.out.println("onCompleted");
+                System.out.println("onComplete");
                 completeTime.set(System.nanoTime());
                 completedLatch.countDown();
             }

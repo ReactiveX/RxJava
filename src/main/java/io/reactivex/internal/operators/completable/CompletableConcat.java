@@ -43,7 +43,6 @@ public final class CompletableConcat extends Completable {
     static final class CompletableConcatSubscriber
     extends AtomicInteger
     implements Subscriber<CompletableSource>, Disposable {
-        /** */
         private static final long serialVersionUID = 7412667182931235013L;
         final CompletableObserver actual;
         final int prefetch;
@@ -59,7 +58,7 @@ public final class CompletableConcat extends Completable {
 
         final ConcatInnerObserver inner;
 
-        public CompletableConcatSubscriber(CompletableObserver actual, int prefetch) {
+        CompletableConcatSubscriber(CompletableObserver actual, int prefetch) {
             this.actual = actual;
             this.prefetch = prefetch;
             this.queue = new SpscArrayQueue<CompletableSource>(prefetch);

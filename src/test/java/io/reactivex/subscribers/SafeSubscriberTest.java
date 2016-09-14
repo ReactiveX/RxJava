@@ -32,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public class SafeSubscriberTest {
 
     /**
-     * Ensure onNext can not be called after onError
+     * Ensure onNext can not be called after onError.
      */
     @Test
     public void testOnNextAfterOnError() {
@@ -52,7 +52,7 @@ public class SafeSubscriberTest {
     }
 
     /**
-     * Ensure onCompleted can not be called after onError
+     * Ensure onComplete can not be called after onError.
      */
     @Test
     public void testOnCompletedAfterOnError() {
@@ -73,7 +73,7 @@ public class SafeSubscriberTest {
     }
 
     /**
-     * Ensure onNext can not be called after onCompleted
+     * Ensure onNext can not be called after onComplete.
      */
     @Test
     public void testOnNextAfterOnCompleted() {
@@ -94,7 +94,7 @@ public class SafeSubscriberTest {
     }
 
     /**
-     * Ensure onError can not be called after onCompleted
+     * Ensure onError can not be called after onComplete.
      */
     @Test
     public void testOnErrorAfterOnCompleted() {
@@ -118,7 +118,7 @@ public class SafeSubscriberTest {
      */
     private static class TestObservable implements Publisher<String> {
 
-        Subscriber<? super String> observer = null;
+        Subscriber<? super String> observer;
 
         /* used to simulate subscription */
         public void sendOnCompleted() {
@@ -185,7 +185,7 @@ public class SafeSubscriberTest {
     }
 
     @Test
-    public void onCompletedFailure() {
+    public void onCompleteFailure() {
         AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
         try {
             OBSERVER_ONCOMPLETED_FAIL(onError).onComplete();
@@ -193,7 +193,7 @@ public class SafeSubscriberTest {
         } catch (Exception e) {
             assertNull(onError.get());
             assertTrue(e instanceof SafeSubscriberTestException);
-            assertEquals("onCompletedFail", e.getMessage());
+            assertEquals("onCompleteFail", e.getMessage());
         }
     }
 
@@ -548,7 +548,7 @@ public class SafeSubscriberTest {
 
             @Override
             public void onComplete() {
-                throw new SafeSubscriberTestException("onCompletedFail");
+                throw new SafeSubscriberTestException("onCompleteFail");
             }
 
             @Override
@@ -566,7 +566,7 @@ public class SafeSubscriberTest {
 
     @SuppressWarnings("serial")
     private static class SafeSubscriberTestException extends RuntimeException {
-        public SafeSubscriberTestException(String message) {
+        SafeSubscriberTestException(String message) {
             super(message);
         }
     }
@@ -736,7 +736,7 @@ public class SafeSubscriberTest {
 
         Throwable error;
 
-        public CrashDummy(boolean crashOnSubscribe, int crashOnNext,
+        CrashDummy(boolean crashOnSubscribe, int crashOnNext,
                 boolean crashOnError, boolean crashOnComplete, boolean crashDispose, boolean crashRequest) {
             this.crashOnSubscribe = crashOnSubscribe;
             this.crashOnNext = crashOnNext;

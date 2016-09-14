@@ -299,7 +299,7 @@ public class FlowableMergeTest {
     }
 
     /**
-     * unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge
+     * Unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge.
      */
     @Test
     public void testError1() {
@@ -321,7 +321,7 @@ public class FlowableMergeTest {
     }
 
     /**
-     * unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge
+     * Unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge.
      */
     @Test
     public void testError2() {
@@ -565,7 +565,7 @@ public class FlowableMergeTest {
             ts.assertComplete();
             List<Integer> onNextEvents = ts.values();
             assertEquals(30000, onNextEvents.size());
-            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+            //            System.out.println("onNext: " + onNextEvents.size() + " onComplete: " + ts.getOnCompletedEvents().size());
         }
     }
 
@@ -616,7 +616,7 @@ public class FlowableMergeTest {
             ts.assertComplete();
             List<Integer> onNextEvents = ts.values();
             assertEquals(300, onNextEvents.size());
-            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+            //            System.out.println("onNext: " + onNextEvents.size() + " onComplete: " + ts.getOnCompletedEvents().size());
         }
     }
 
@@ -664,7 +664,7 @@ public class FlowableMergeTest {
             ts.assertComplete();
             List<Integer> onNextEvents = ts.values();
             assertEquals(30000, onNextEvents.size());
-            //                System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+            //                System.out.println("onNext: " + onNextEvents.size() + " onComplete: " + ts.getOnCompletedEvents().size());
         }
     }
 
@@ -752,13 +752,14 @@ public class FlowableMergeTest {
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                if (t < 100)
+                if (t < 100) {
                     try {
                         // force a slow consumer
                         Thread.sleep(1);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
                 //                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
@@ -794,13 +795,14 @@ public class FlowableMergeTest {
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                if (t < 100)
+                if (t < 100) {
                     try {
                         // force a slow consumer
                         Thread.sleep(2);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
                 //                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
@@ -844,17 +846,18 @@ public class FlowableMergeTest {
         });
 
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
-            int i = 0;
+            int i;
 
             @Override
             public void onNext(Integer t) {
-                if (i++ < 400)
+                if (i++ < 400) {
                     try {
                         // force a slow consumer
                         Thread.sleep(1);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
                 //                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
@@ -1286,7 +1289,7 @@ public class FlowableMergeTest {
             public void onNext(Integer t) {
                 latch.countDown();
                 request(2);
-                request(Long.MAX_VALUE-1);
+                request(Long.MAX_VALUE - 1);
             }});
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }

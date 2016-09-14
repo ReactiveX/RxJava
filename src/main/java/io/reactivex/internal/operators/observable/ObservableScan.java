@@ -39,7 +39,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
         T value;
 
-        public ScanSubscriber(Observer<? super T> actual, BiFunction<T, T, T> accumulator) {
+        ScanSubscriber(Observer<? super T> actual, BiFunction<T, T, T> accumulator) {
             this.actual = actual;
             this.accumulator = accumulator;
         }

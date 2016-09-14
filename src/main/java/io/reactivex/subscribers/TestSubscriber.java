@@ -43,7 +43,7 @@ import io.reactivex.internal.util.*;
 public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposable {
     /** The actual subscriber to forward events to. */
     private final Subscriber<? super T> actual;
-    /** The latch that indicates an onError or onCompleted has been called. */
+    /** The latch that indicates an onError or onComplete has been called. */
     private final CountDownLatch done;
     /** The list of values received. */
     private final List<T> values;

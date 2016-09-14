@@ -36,7 +36,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
     static final class MapObserver<T, U> extends BasicFuseableObserver<T, U> {
         final Function<? super T, ? extends U> mapper;
 
-        public MapObserver(Observer<? super U> actual, Function<? super T, ? extends U> mapper) {
+        MapObserver(Observer<? super U> actual, Function<? super T, ? extends U> mapper) {
             super(actual);
             this.mapper = mapper;
         }

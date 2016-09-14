@@ -72,14 +72,14 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
     }
 
     static final class TakeUntilSubscriber<T> extends AtomicBoolean implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 3451719290311127173L;
         final Observer<? super T> actual;
         final ArrayCompositeDisposable frc;
 
         Disposable s;
 
-        public TakeUntilSubscriber(Observer<? super T> actual, ArrayCompositeDisposable frc) {
+        TakeUntilSubscriber(Observer<? super T> actual, ArrayCompositeDisposable frc) {
             this.actual = actual;
             this.frc = frc;
         }

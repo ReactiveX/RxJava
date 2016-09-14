@@ -54,14 +54,13 @@ public final class FlowableAwaitOnSubscribeTck<T> extends Flowable<T> {
     extends AtomicReference<Subscription>
     implements Subscriber<T>, Subscription {
 
-        /** */
         private static final long serialVersionUID = -4850665729904103852L;
 
         final Subscriber<? super T> actual;
 
         final AtomicLong requested;
 
-        public PublisherPostOnSubscribeSubscriber(Subscriber<? super T> actual) {
+        PublisherPostOnSubscribeSubscriber(Subscriber<? super T> actual) {
             this.actual = actual;
             this.requested = new AtomicLong();
         }

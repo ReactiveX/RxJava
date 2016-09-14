@@ -44,14 +44,14 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
     }
 
     static final class ReduceSubscriber<T> extends DeferredScalarSubscription<T> implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = -4663883003264602070L;
 
         final BiFunction<T, T, T> reducer;
 
         Subscription s;
 
-        public ReduceSubscriber(Subscriber<? super T> actual, BiFunction<T, T, T> reducer) {
+        ReduceSubscriber(Subscriber<? super T> actual, BiFunction<T, T, T> reducer) {
             super(actual);
             this.reducer = reducer;
         }

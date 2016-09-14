@@ -41,7 +41,7 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
     }
 
     static final class ConcatArraySubscriber<T> extends SubscriptionArbiter implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = -8158322871608889516L;
 
         final Subscriber<? super T> actual;
@@ -58,7 +58,7 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
 
         long produced;
 
-        public ConcatArraySubscriber(Publisher<? extends T>[] sources, boolean delayError, Subscriber<? super T> actual) {
+        ConcatArraySubscriber(Publisher<? extends T>[] sources, boolean delayError, Subscriber<? super T> actual) {
             this.actual = actual;
             this.sources = sources;
             this.delayError = delayError;

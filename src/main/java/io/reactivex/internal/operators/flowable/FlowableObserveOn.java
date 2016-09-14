@@ -74,10 +74,9 @@ final Scheduler scheduler;
         source.subscribe(new PublisherObserveOnSubscriber<T>(s, worker, delayError, prefetch));
     }
 
-    static abstract class BaseObserveOnSubscriber<T>
+    abstract static class BaseObserveOnSubscriber<T>
     extends BasicIntQueueSubscription<T>
     implements Runnable, Subscriber<T> {
-        /** */
         private static final long serialVersionUID = -8241002408341274697L;
 
         final Worker worker;
@@ -106,7 +105,7 @@ final Scheduler scheduler;
 
         boolean outputFused;
 
-        public BaseObserveOnSubscriber(
+        BaseObserveOnSubscriber(
                 Worker worker,
                 boolean delayError,
                 int prefetch) {
@@ -276,12 +275,12 @@ final Scheduler scheduler;
 
     static final class PublisherObserveOnSubscriber<T> extends BaseObserveOnSubscriber<T>
     implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = -4547113800637756442L;
 
         final Subscriber<? super T> actual;
 
-        public PublisherObserveOnSubscriber(
+        PublisherObserveOnSubscriber(
                 Subscriber<? super T> actual,
                 Worker worker,
                 boolean delayError,
@@ -534,14 +533,14 @@ final Scheduler scheduler;
 
     static final class PublisherObserveOnConditionalSubscriber<T>
     extends BaseObserveOnSubscriber<T> {
-        /** */
+
         private static final long serialVersionUID = 644624475404284533L;
 
         final ConditionalSubscriber<? super T> actual;
 
         long consumed;
 
-        public PublisherObserveOnConditionalSubscriber(
+        PublisherObserveOnConditionalSubscriber(
                 ConditionalSubscriber<? super T> actual,
                 Worker worker,
                 boolean delayError,

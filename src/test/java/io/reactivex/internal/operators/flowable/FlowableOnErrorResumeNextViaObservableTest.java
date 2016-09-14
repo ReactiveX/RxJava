@@ -71,8 +71,9 @@ public class FlowableOnErrorResumeNextViaObservableTest {
         w = w.map(new Function<String, String>() {
             @Override
             public String apply(String s) {
-                if ("fail".equals(s))
+                if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
+                }
                 System.out.println("BadMapper:" + s);
                 return s;
             }
@@ -147,13 +148,13 @@ public class FlowableOnErrorResumeNextViaObservableTest {
         verify(observer, times(1)).onNext("resume");
     }
 
-    private static class TestObservable implements Publisher<String> {
+    static final class TestObservable implements Publisher<String> {
 
         final Subscription s;
         final String[] values;
-        Thread t = null;
+        Thread t;
 
-        public TestObservable(Subscription s, String... values) {
+        TestObservable(Subscription s, String... values) {
             this.s = s;
             this.values = values;
         }
@@ -169,12 +170,13 @@ public class FlowableOnErrorResumeNextViaObservableTest {
                     try {
                         System.out.println("running TestObservable thread");
                         for (String s : values) {
-                            if ("fail".equals(s))
+                            if ("fail".equals(s)) {
                                 throw new RuntimeException("Forced Failure");
+                            }
                             System.out.println("TestObservable onNext: " + s);
                             observer.onNext(s);
                         }
-                        System.out.println("TestObservable onCompleted");
+                        System.out.println("TestObservable onComplete");
                         observer.onComplete();
                     } catch (Throwable e) {
                         System.out.println("TestObservable onError: " + e);
@@ -196,7 +198,7 @@ public class FlowableOnErrorResumeNextViaObservableTest {
                 .onErrorResumeNext(Flowable.just(1))
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer apply(Integer t1) {

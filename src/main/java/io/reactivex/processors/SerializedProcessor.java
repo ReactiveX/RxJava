@@ -40,7 +40,7 @@ import io.reactivex.plugins.RxJavaPlugins;
      * Constructor that wraps an actual subject.
      * @param actual the subject wrapped
      */
-    public SerializedProcessor(final FlowableProcessor<T> actual) {
+    SerializedProcessor(final FlowableProcessor<T> actual) {
         this.actual = actual;
     }
 

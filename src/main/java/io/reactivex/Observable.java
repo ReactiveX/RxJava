@@ -9680,7 +9680,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return an Observable that emits the items emitted by the source ObservableSource in sorted order
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> sorted(){
+    public final Observable<T> sorted() {
         return toSortedList().flatMapIterable(Functions.<List<T>>identity());
     }
 
@@ -9974,7 +9974,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Observer as is.
      * <p>Usage example:
      * <pre><code>
-     * Observable<Integer> source = Observable.range(1, 10);
+     * Observable&lt;Integer> source = Observable.range(1, 10);
      * CompositeDisposable composite = new CompositeDisposable();
      *
      * ResourceObserver&lt;Integer> rs = new ResourceObserver&lt;>() {

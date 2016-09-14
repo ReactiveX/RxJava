@@ -38,7 +38,7 @@ public final class CompletableFromPublisher<T> extends Completable {
 
         Subscription s;
 
-        public FromPublisherSubscriber(CompletableObserver actual) {
+        FromPublisherSubscriber(CompletableObserver actual) {
             this.cs = actual;
         }
 

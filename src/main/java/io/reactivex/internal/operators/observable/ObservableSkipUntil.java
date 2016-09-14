@@ -73,7 +73,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
     }
 
     static final class SkipUntilSubscriber<T> extends AtomicBoolean implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -1113667257122396604L;
         final Observer<? super T> actual;
         final ArrayCompositeDisposable frc;
@@ -83,7 +83,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         volatile boolean notSkipping;
         boolean notSkippingLocal;
 
-        public SkipUntilSubscriber(Observer<? super T> actual, ArrayCompositeDisposable frc) {
+        SkipUntilSubscriber(Observer<? super T> actual, ArrayCompositeDisposable frc) {
             this.actual = actual;
             this.frc = frc;
         }

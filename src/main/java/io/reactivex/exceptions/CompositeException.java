@@ -96,7 +96,7 @@ public final class CompositeException extends RuntimeException {
     }
 
     /**
-     * Retrieves the list of exceptions that make up the {@code CompositeException}
+     * Retrieves the list of exceptions that make up the {@code CompositeException}.
      *
      * @return the exceptions that make up the {@code CompositeException}, as a {@link List} of {@link Throwable}s
      */
@@ -137,7 +137,7 @@ public final class CompositeException extends RuntimeException {
 
                 List<Throwable> listOfCauses = getListOfCauses(e);
                 // check if any of them have been seen before
-                for(Throwable child : listOfCauses) {
+                for (Throwable child : listOfCauses) {
                     if (seenCauses.contains(child)) {
                         // already seen this outer Throwable so skip
                         e = new RuntimeException("Duplicate found in causal chain so cropping to prevent loop ...");
@@ -220,12 +220,12 @@ public final class CompositeException extends RuntimeException {
     }
 
     abstract static class PrintStreamOrWriter {
-        /** Prints the specified string as a line on this StreamOrWriter */
+        /** Prints the specified string as a line on this StreamOrWriter. */
         abstract void println(Object o);
     }
 
     /**
-     * Same abstraction and implementation as in JDK to allow PrintStream and PrintWriter to share implementation
+     * Same abstraction and implementation as in JDK to allow PrintStream and PrintWriter to share implementation.
      */
     static final class WrappedPrintStream extends PrintStreamOrWriter {
         private final PrintStream printStream;
@@ -253,7 +253,7 @@ public final class CompositeException extends RuntimeException {
         }
     }
 
-    final static class CompositeExceptionCausalChain extends RuntimeException {
+    static final class CompositeExceptionCausalChain extends RuntimeException {
         private static final long serialVersionUID = 3875212506787802066L;
         /* package-private */static final String MESSAGE = "Chain of Causes for CompositeException In Order Received =>";
 
@@ -269,7 +269,7 @@ public final class CompositeException extends RuntimeException {
         if (root == null) {
             return list;
         } else {
-            while(true) {
+            while (true) {
                 list.add(root);
                 if (root.getCause() == null) {
                     return list;
@@ -309,7 +309,7 @@ public final class CompositeException extends RuntimeException {
         if (root == null /* || cause == root */) { // case might not be possible
             return e;
         }
-        while(true) {
+        while (true) {
             Throwable cause = root.getCause();
             if (cause == null /* || cause == root */) { // case might not be possible
                 return root;

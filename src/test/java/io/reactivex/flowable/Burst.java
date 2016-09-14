@@ -55,7 +55,7 @@ public final class Burst<T> extends Flowable<T> {
 
             final Queue<T> q = new ConcurrentLinkedQueue<T>(items);
             final AtomicLong requested = new AtomicLong();
-            volatile boolean cancelled = false;
+            volatile boolean cancelled;
 
             @Override
             public void request(long n) {
@@ -67,8 +67,9 @@ public final class Burst<T> extends Flowable<T> {
                     // just for testing, don't care about perf
                     // so no attempt made to reduce volatile reads
                     if (BackpressureHelper.add(requested, n) == 0) {
-                        if (q.isEmpty())
+                        if (q.isEmpty()) {
                             return;
+                        }
                         while (!q.isEmpty() && requested.get() > 0) {
                             T item = q.poll();
                             requested.decrementAndGet();
@@ -105,7 +106,7 @@ public final class Burst<T> extends Flowable<T> {
     public static final class Builder<T> {
 
         private final List<T> items;
-        private Throwable error = null;
+        private Throwable error;
 
         private Builder(List<T> items) {
             this.items = items;

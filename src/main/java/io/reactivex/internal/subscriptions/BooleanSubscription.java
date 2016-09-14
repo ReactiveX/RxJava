@@ -21,7 +21,7 @@ import org.reactivestreams.Subscription;
  * which can be checked via isCancelled.
  */
 public final class BooleanSubscription extends AtomicBoolean implements Subscription {
-    /** */
+
     private static final long serialVersionUID = -8127758972444290902L;
 
     @Override

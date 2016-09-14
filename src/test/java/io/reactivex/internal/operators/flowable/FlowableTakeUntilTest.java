@@ -125,7 +125,7 @@ public class FlowableTakeUntilTest {
     }
 
     /**
-     * If the 'other' onCompletes then we unsubscribe from the source and onComplete
+     * If the 'other' onCompletes then we unsubscribe from the source and onComplete.
      */
     @Test
     public void testTakeUntilOtherCompleted() {
@@ -156,7 +156,7 @@ public class FlowableTakeUntilTest {
         Subscriber<? super String> observer;
         Subscription s;
 
-        public TestObservable(Subscription s) {
+        TestObservable(Subscription s) {
             this.s = s;
         }
 

@@ -21,7 +21,7 @@ import org.junit.*;
 
 /**
  * Checks the source code of the base reactive types and locates missing
- * mention of {@code Backpressure:} and {@code Scheduler:} of methods
+ * mention of {@code Backpressure:} and {@code Scheduler:} of methods.
  */
 public class JavadocForAnnotations {
 

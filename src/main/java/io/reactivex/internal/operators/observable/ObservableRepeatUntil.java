@@ -38,14 +38,14 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
     }
 
     static final class RepeatSubscriber<T> extends AtomicInteger implements Observer<T> {
-        /** */
+
         private static final long serialVersionUID = -7098360935104053232L;
 
         final Observer<? super T> actual;
         final SequentialDisposable sd;
         final ObservableSource<? extends T> source;
         final BooleanSupplier stop;
-        public RepeatSubscriber(Observer<? super T> actual, BooleanSupplier until, SequentialDisposable sd, ObservableSource<? extends T> source) {
+        RepeatSubscriber(Observer<? super T> actual, BooleanSupplier until, SequentialDisposable sd, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sd = sd;
             this.source = source;

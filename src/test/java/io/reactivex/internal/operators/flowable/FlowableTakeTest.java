@@ -229,12 +229,12 @@ public class FlowableTakeTest {
         assertEquals(1, count.get());
     }
 
-    private static class TestObservableFunc implements Publisher<String> {
+    static class TestObservableFunc implements Publisher<String> {
 
         final String[] values;
-        Thread t = null;
+        Thread t;
 
-        public TestObservableFunc(String... values) {
+        TestObservableFunc(String... values) {
             this.values = values;
         }
 

@@ -50,7 +50,7 @@ import io.reactivex.plugins.RxJavaPlugins;
   processor.onNext("one");
   processor.onNext("two");
   processor.onNext("three");
-  processor.onCompleted();
+  processor.onComplete();
 
   // both of the following will get the onNext/onComplete calls from above
   processor.subscribe(subscriber1);
@@ -170,10 +170,10 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * observer subscribes, it observes items without gaps in the sequence except for any outdated items at the
      * beginning of the sequence.
      * <p>
-     * Note that terminal notifications ({@code onError} and {@code onCompleted}) trigger eviction as well. For
-     * example, with a max age of 5, the first item is observed at T=0, then an {@code onCompleted} notification
+     * Note that terminal notifications ({@code onError} and {@code onComplete}) trigger eviction as well. For
+     * example, with a max age of 5, the first item is observed at T=0, then an {@code onComplete} notification
      * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplayProcessor} with just
-     * an {@code onCompleted} notification.
+     * an {@code onComplete} notification.
      *
      * @param <T>
      *          the type of items observed and emitted by the Subject
@@ -206,10 +206,10 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * subscribes, it observes items without gaps in the sequence except for the outdated items at the beginning
      * of the sequence.
      * <p>
-     * Note that terminal notifications ({@code onError} and {@code onCompleted}) trigger eviction as well. For
-     * example, with a max age of 5, the first item is observed at T=0, then an {@code onCompleted} notification
+     * Note that terminal notifications ({@code onError} and {@code onComplete}) trigger eviction as well. For
+     * example, with a max age of 5, the first item is observed at T=0, then an {@code onComplete} notification
      * arrives at T=10. If an observer subscribes at T=11, it will find an empty {@code ReplayProcessor} with just
-     * an {@code onCompleted} notification.
+     * an {@code onComplete} notification.
      *
      * @param <T>
      *          the type of items observed and emitted by the Subject
@@ -495,7 +495,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     static final class ReplaySubscription<T> extends AtomicInteger implements Subscription {
-        /** */
+
         private static final long serialVersionUID = 466549804534799122L;
         final Subscriber<? super T> actual;
         final ReplayProcessor<T> state;
@@ -506,7 +506,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         volatile boolean cancelled;
 
-        public ReplaySubscription(Subscriber<? super T> actual, ReplayProcessor<T> state) {
+        ReplaySubscription(Subscriber<? super T> actual, ReplayProcessor<T> state) {
             this.actual = actual;
             this.state = state;
             this.requested = new AtomicLong();
@@ -531,7 +531,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     static final class UnboundedReplayBuffer<T>
     extends AtomicReference<Object>
     implements ReplayBuffer<T> {
-        /** */
+
         private static final long serialVersionUID = -4457200895834877300L;
 
         final List<Object> buffer;
@@ -540,7 +540,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         volatile int size;
 
-        public UnboundedReplayBuffer(int capacityHint) {
+        UnboundedReplayBuffer(int capacityHint) {
             this.buffer = new ArrayList<Object>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
         }
 
@@ -714,24 +714,24 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     static final class Node<T> extends AtomicReference<Node<T>> {
-        /** */
+
         private static final long serialVersionUID = 6404226426336033100L;
 
         final T value;
 
-        public Node(T value) {
+        Node(T value) {
             this.value = value;
         }
     }
 
     static final class TimedNode<T> extends AtomicReference<TimedNode<T>> {
-        /** */
+
         private static final long serialVersionUID = 6404226426336033100L;
 
         final T value;
         final long time;
 
-        public TimedNode(T value, long time) {
+        TimedNode(T value, long time) {
             this.value = value;
             this.time = time;
         }
@@ -740,7 +740,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     static final class SizeBoundReplayBuffer<T>
     extends AtomicReference<Object>
     implements ReplayBuffer<T> {
-        /** */
+
         private static final long serialVersionUID = 3027920763113911982L;
         final int maxSize;
         int size;
@@ -751,7 +751,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         volatile boolean done;
 
-        public SizeBoundReplayBuffer(int maxSize) {
+        SizeBoundReplayBuffer(int maxSize) {
             this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
             Node<Object> h = new Node<Object>(null);
             this.tail = h;
@@ -956,7 +956,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     static final class SizeAndTimeBoundReplayBuffer<T>
     extends AtomicReference<Object>
     implements ReplayBuffer<T> {
-        /** */
+
         private static final long serialVersionUID = 1242561386470847675L;
 
         final int maxSize;
@@ -972,7 +972,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         volatile boolean done;
 
 
-        public SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
+        SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
             this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
             this.maxAge = ObjectHelper.verifyPositive(maxAge, "maxAge");
             this.unit = ObjectHelper.requireNonNull(unit, "unit is null");

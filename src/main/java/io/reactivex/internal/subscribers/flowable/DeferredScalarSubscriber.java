@@ -25,7 +25,7 @@ import io.reactivex.internal.subscriptions.*;
  */
 public abstract class DeferredScalarSubscriber<T, R> extends DeferredScalarSubscription<R>
 implements Subscriber<T> {
-    /** */
+
     private static final long serialVersionUID = 2984505488220891551L;
 
     /** The upstream subscription. */

@@ -39,14 +39,14 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
     extends AtomicReference<Disposable>
     implements CompletableObserver, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = -8565274649390031272L;
 
         final SingleObserver<? super T> actual;
 
         final SingleSource<T> source;
 
-        public OtherObserver(SingleObserver<? super T> actual, SingleSource<T> source) {
+        OtherObserver(SingleObserver<? super T> actual, SingleSource<T> source) {
             this.actual = actual;
             this.source = source;
         }
@@ -86,7 +86,7 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
 
         final SingleObserver<? super T> actual;
 
-        public DelayWithMainObserver(AtomicReference<Disposable> parent, SingleObserver<? super T> actual) {
+        DelayWithMainObserver(AtomicReference<Disposable> parent, SingleObserver<? super T> actual) {
             this.parent = parent;
             this.actual = actual;
         }

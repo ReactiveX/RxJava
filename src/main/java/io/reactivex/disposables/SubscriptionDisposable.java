@@ -18,7 +18,7 @@ import org.reactivestreams.Subscription;
  * A Disposable container that handles a {@link Subscription}.
  */
 final class SubscriptionDisposable extends ReferenceDisposable<Subscription> {
-    /** */
+
     private static final long serialVersionUID = -707001650852963139L;
 
     SubscriptionDisposable(Subscription value) {

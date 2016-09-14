@@ -81,7 +81,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         Subscription s;
 
-        public OutputCanceller(Subscriber<? super R> actual, MulticastProcessor<?> processor) {
+        OutputCanceller(Subscriber<? super R> actual, MulticastProcessor<?> processor) {
             this.actual = actual;
             this.processor = processor;
         }
@@ -156,7 +156,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         Throwable error;
 
         @SuppressWarnings("unchecked")
-        public MulticastProcessor(int prefetch, boolean delayError) {
+        MulticastProcessor(int prefetch, boolean delayError) {
             this.prefetch = prefetch;
             this.delayError = delayError;
             this.wip = new AtomicInteger();
@@ -455,14 +455,14 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
     extends AtomicLong
     implements Subscription {
 
-        /** */
+
         private static final long serialVersionUID = 8664815189257569791L;
 
         final Subscriber<? super T> actual;
 
         final MulticastProcessor<T> parent;
 
-        public MulticastSubscription(Subscriber<? super T> actual, MulticastProcessor<T> parent) {
+        MulticastSubscription(Subscriber<? super T> actual, MulticastProcessor<T> parent) {
             this.actual = actual;
             this.parent = parent;
         }

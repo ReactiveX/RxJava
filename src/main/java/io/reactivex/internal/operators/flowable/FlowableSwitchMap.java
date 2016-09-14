@@ -47,7 +47,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
     }
 
     static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -3491074160481096299L;
         final Subscriber<? super R> actual;
         final Function<? super T, ? extends Publisher<? extends R>> mapper;
@@ -74,7 +74,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
         volatile long unique;
 
-        public SwitchMapSubscriber(Subscriber<? super R> actual,
+        SwitchMapSubscriber(Subscriber<? super R> actual,
                 Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize,
                         boolean delayErrors) {
             this.actual = actual;
@@ -353,7 +353,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
     }
 
     static final class SwitchMapInnerSubscriber<T, R> extends AtomicReference<Subscription> implements Subscriber<R> {
-        /** */
+
         private static final long serialVersionUID = 3837284832786408377L;
         final SwitchMapSubscriber<T, R> parent;
         final long index;
@@ -362,7 +362,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
         volatile boolean done;
 
-        public SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
+        SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
             this.index = index;
             this.bufferSize = bufferSize;

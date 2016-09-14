@@ -205,7 +205,7 @@ public class SchedulerTest {
 
 
     @Test
-    public void periodicDirectTaskRaceIO() throws Exception{
+    public void periodicDirectTaskRaceIO() throws Exception {
         final Scheduler scheduler = Schedulers.io();
 
         for (int i = 0; i < 100; i++) {

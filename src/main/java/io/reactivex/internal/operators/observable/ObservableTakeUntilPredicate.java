@@ -37,7 +37,7 @@ public final class ObservableTakeUntilPredicate<T> extends AbstractObservableWit
         final Predicate<? super T> predicate;
         Disposable s;
         boolean done;
-        public TakeUntilPredicateSubscriber(Observer<? super T> actual, Predicate<? super T> predicate) {
+        TakeUntilPredicateSubscriber(Observer<? super T> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

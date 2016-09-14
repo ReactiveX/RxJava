@@ -65,7 +65,7 @@ public final class Timed<T> {
     }
 
     /**
-     * Returns the contained time value in the time unit specified
+     * Returns the contained time value in the time unit specified.
      * @param unit the time unt
      * @return the converted time
      */

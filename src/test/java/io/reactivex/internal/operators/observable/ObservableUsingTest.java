@@ -31,10 +31,10 @@ import io.reactivex.functions.*;
 
 public class ObservableUsingTest {
 
-    private interface Resource {
-        public String getTextFromWeb();
+    interface Resource {
+        String getTextFromWeb();
 
-        public void dispose();
+        void dispose();
     }
 
     private static class DisposeAction implements Consumer<Resource> {

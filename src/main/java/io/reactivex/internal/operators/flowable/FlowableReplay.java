@@ -334,8 +334,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     static final class ReplaySubscriber<T> implements Subscriber<T>, Disposable {
         /** Holds notifications from upstream. */
         final ReplayBuffer<T> buffer;
-        /** The notification-lite factory. */
-        /** Contains either an onCompleted or an onError token from upstream. */
+        /** Indicates this Subscriber received a terminal event. */
         boolean done;
 
         /** Indicates an empty array of inner producers. */
@@ -364,7 +363,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         /** The upstream producer. */
         volatile Subscription subscription;
 
-        public ReplaySubscriber(ReplayBuffer<T> buffer) {
+        ReplaySubscriber(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
 
             this.producers = new AtomicReference<InnerSubscription[]>(EMPTY);
@@ -402,7 +401,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 // get the current producer array
                 InnerSubscription[] c = producers.get();
                 // if this subscriber-to-source reached a terminal state by receiving
-                // an onError or onCompleted, just refuse to add the new producer
+                // an onError or onComplete, just refuse to add the new producer
                 if (c == TERMINATED) {
                     return false;
                 }
@@ -501,6 +500,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 } finally {
                     dispose(); // expectation of testIssue2191
                 }
+            } else {
+                RxJavaPlugins.onError(e);
             }
         }
         @Override
@@ -605,7 +606,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param <T> the value type
      */
     static final class InnerSubscription<T> extends AtomicLong implements Subscription, Disposable {
-        /** */
+
         private static final long serialVersionUID = -4453897557930727610L;
         /**
          * The parent subscriber-to-source used to allow removing the child in case of
@@ -633,7 +634,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          */
         static final long CANCELLED = Long.MIN_VALUE;
 
-        public InnerSubscription(ReplaySubscriber<T> parent, Subscriber<? super T> child) {
+        InnerSubscription(ReplaySubscriber<T> parent, Subscriber<? super T> child) {
             this.parent = parent;
             this.child = child;
             this.totalRequested = new AtomicLong();
@@ -763,12 +764,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          */
         void next(T value);
         /**
-         * Adds a terminal exception to the buffer
+         * Adds a terminal exception to the buffer.
          * @param e the Throwable instance
          */
         void error(Throwable e);
         /**
-         * Adds a completion event to the buffer
+         * Adds a completion event to the buffer.
          */
         void complete();
         /**
@@ -787,12 +788,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param <T> the value type
      */
     static final class UnboundedReplayBuffer<T> extends ArrayList<Object> implements ReplayBuffer<T> {
-        /** */
+
         private static final long serialVersionUID = 7063189396499112664L;
         /** The total number of events in the buffer. */
         volatile int size;
 
-        public UnboundedReplayBuffer(int capacityHint) {
+        UnboundedReplayBuffer(int capacityHint) {
             super(capacityHint);
         }
         @Override
@@ -880,11 +881,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * Represents a node in a bounded replay buffer's linked list.
      */
     static final class Node extends AtomicReference<Node> {
-        /** */
+
         private static final long serialVersionUID = 245354315435971818L;
         final Object value;
         final long index;
-        public Node(Object value, long index) {
+
+        Node(Object value, long index) {
             this.value = value;
             this.index = index;
         }
@@ -897,7 +899,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param <T> the value type
      */
     static class BoundedReplayBuffer<T> extends AtomicReference<Node> implements ReplayBuffer<T> {
-        /** */
+
         private static final long serialVersionUID = 2346567790059478686L;
 
         Node tail;
@@ -905,7 +907,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         long index;
 
-        public BoundedReplayBuffer() {
+        BoundedReplayBuffer() {
             Node n = new Node(null, 0);
             tail = n;
             set(n);
@@ -1112,11 +1114,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param <T> the value type
      */
     static final class SizeBoundReplayBuffer<T> extends BoundedReplayBuffer<T> {
-        /** */
+
         private static final long serialVersionUID = -5898283885385201806L;
 
         final int limit;
-        public SizeBoundReplayBuffer(int limit) {
+        SizeBoundReplayBuffer(int limit) {
             this.limit = limit;
         }
 
@@ -1137,13 +1139,13 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param <T> the buffered value type
      */
     static final class SizeAndTimeBoundReplayBuffer<T> extends BoundedReplayBuffer<T> {
-        /** */
+
         private static final long serialVersionUID = 3457957419649567404L;
         final Scheduler scheduler;
         final long maxAge;
         final TimeUnit unit;
         final int limit;
-        public SizeAndTimeBoundReplayBuffer(int limit, long maxAge, TimeUnit unit, Scheduler scheduler) {
+        SizeAndTimeBoundReplayBuffer(int limit, long maxAge, TimeUnit unit, Scheduler scheduler) {
             this.scheduler = scheduler;
             this.limit = limit;
             this.maxAge = maxAge;

@@ -34,7 +34,7 @@ public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstrea
 
         Subscription s;
 
-        public IgnoreElementsSubscriber(Subscriber<? super T> actual) {
+        IgnoreElementsSubscriber(Subscriber<? super T> actual) {
             this.actual = actual;
         }
 

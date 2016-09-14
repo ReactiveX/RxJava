@@ -59,7 +59,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
 
         final AtomicLong windows = new AtomicLong();
 
-        public WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, ObservableSource<B> other,
+        WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, ObservableSource<B> other,
                 int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.other = other;
@@ -249,7 +249,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
 
         boolean done;
 
-        public WindowBoundaryInnerSubscriber(WindowBoundaryMainSubscriber<T, B> parent) {
+        WindowBoundaryInnerSubscriber(WindowBoundaryMainSubscriber<T, B> parent) {
             this.parent = parent;
         }
 

@@ -42,7 +42,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
     }
 
     static final class RepeatSubscriber<T> extends AtomicInteger implements Observer<T> {
-        /** */
+
         private static final long serialVersionUID = -7098360935104053232L;
 
         final Observer<? super T> actual;
@@ -50,7 +50,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
         final ObservableSource<? extends T> source;
         final Predicate<? super Throwable> predicate;
         long remaining;
-        public RepeatSubscriber(Observer<? super T> actual, long count,
+        RepeatSubscriber(Observer<? super T> actual, long count,
                 Predicate<? super Throwable> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sa = sa;

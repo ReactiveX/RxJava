@@ -65,7 +65,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         final AtomicInteger windows = new AtomicInteger();
 
-        public BufferBoundarySubscriber(Observer<? super U> actual,
+        BufferBoundarySubscriber(Observer<? super U> actual,
                 ObservableSource<? extends Open> bufferOpen,
                 Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose,
                         Callable<U> bufferSupplier) {
@@ -238,7 +238,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         boolean done;
 
-        public BufferOpenSubscriber(BufferBoundarySubscriber<T, U, Open, Close> parent) {
+        BufferOpenSubscriber(BufferBoundarySubscriber<T, U, Open, Close> parent) {
             this.parent = parent;
         }
         @Override
@@ -274,7 +274,7 @@ extends AbstractObservableWithUpstream<T, U> {
         final BufferBoundarySubscriber<T, U, Open, Close> parent;
         final U value;
         boolean done;
-        public BufferCloseSubscriber(U value, BufferBoundarySubscriber<T, U, Open, Close> parent) {
+        BufferCloseSubscriber(U value, BufferBoundarySubscriber<T, U, Open, Close> parent) {
             this.parent = parent;
             this.value = value;
         }

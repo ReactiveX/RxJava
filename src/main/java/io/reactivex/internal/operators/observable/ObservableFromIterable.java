@@ -72,7 +72,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
 
         boolean checkNext;
 
-        public FromIterableDisposable(Observer<? super T> actual, Iterator<? extends T> it) {
+        FromIterableDisposable(Observer<? super T> actual, Iterator<? extends T> it) {
             this.actual = actual;
             this.it = it;
         }

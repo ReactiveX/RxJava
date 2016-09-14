@@ -222,7 +222,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
     }
 
     /**
-     * Can receive timeout if subscribe never receives an onError/onCompleted ... which reveals a race condition.
+     * Can receive timeout if subscribe never receives an onError/onComplete ... which reveals a race condition.
      */
     @Test(timeout = 10000)
     public void testSubscribeCompletionRaceCondition() {
@@ -303,7 +303,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
         private final ReplayProcessor<String> subject;
         private final AtomicReference<String> value = new AtomicReference<String>();
 
-        public SubjectObserverThread(ReplayProcessor<String> subject) {
+        SubjectObserverThread(ReplayProcessor<String> subject) {
             this.subject = subject;
         }
 

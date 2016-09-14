@@ -96,7 +96,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
         volatile boolean terminated;
 
-        public WindowExactUnboundedSubscriber(Subscriber<? super Flowable<T>> actual, long timespan, TimeUnit unit,
+        WindowExactUnboundedSubscriber(Subscriber<? super Flowable<T>> actual, long timespan, TimeUnit unit,
                 Scheduler scheduler, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.timespan = timespan;
@@ -333,7 +333,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        public WindowExactBoundedSubscriber(
+        WindowExactBoundedSubscriber(
                 Subscriber<? super Flowable<T>> actual,
                 long timespan, TimeUnit unit, Scheduler scheduler,
                 int bufferSize, long maxSize, boolean restartTimerOnMaxSize) {
@@ -631,7 +631,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
         static final class ConsumerIndexHolder implements Runnable {
             final long index;
             final WindowExactBoundedSubscriber<?> parent;
-            public ConsumerIndexHolder(long index, WindowExactBoundedSubscriber<?> parent) {
+            ConsumerIndexHolder(long index, WindowExactBoundedSubscriber<?> parent) {
                 this.index = index;
                 this.parent = parent;
             }
@@ -671,7 +671,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
         volatile boolean terminated;
 
-        public WindowSkipSubscriber(Subscriber<? super Flowable<T>> actual,
+        WindowSkipSubscriber(Subscriber<? super Flowable<T>> actual,
                 long timespan, long timeskip, TimeUnit unit,
                 Worker worker, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
@@ -920,7 +920,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
         static final class SubjectWork<T> {
             final UnicastProcessor<T> w;
             final boolean open;
-            public SubjectWork(UnicastProcessor<T> w, boolean open) {
+            SubjectWork(UnicastProcessor<T> w, boolean open) {
                 this.w = w;
                 this.open = open;
             }

@@ -47,14 +47,13 @@ public final class CompletableCreate extends Completable {
     extends AtomicReference<Disposable>
     implements CompletableEmitter, Disposable {
 
+        private static final long serialVersionUID = -2467358622224974244L;
+
         final CompletableObserver actual;
 
-        public Emitter(CompletableObserver actual) {
+        Emitter(CompletableObserver actual) {
             this.actual = actual;
         }
-
-        /** */
-        private static final long serialVersionUID = -2467358622224974244L;
 
         @Override
         public void onComplete() {

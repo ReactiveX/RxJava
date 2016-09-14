@@ -41,7 +41,7 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
     extends AtomicReference<Disposable>
     implements Observer<U>, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = -8565274649390031272L;
 
         final SingleObserver<? super T> actual;
@@ -50,7 +50,7 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
 
         boolean done;
 
-        public OtherSubscriber(SingleObserver<? super T> actual, SingleSource<T> source) {
+        OtherSubscriber(SingleObserver<? super T> actual, SingleSource<T> source) {
             this.actual = actual;
             this.source = source;
         }

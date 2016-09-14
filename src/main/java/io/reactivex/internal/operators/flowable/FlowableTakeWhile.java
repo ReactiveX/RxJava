@@ -39,7 +39,7 @@ public final class FlowableTakeWhile<T> extends AbstractFlowableWithUpstream<T, 
 
         boolean done;
 
-        public TakeWhileSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
+        TakeWhileSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

@@ -32,13 +32,13 @@ public class ObservableMulticastTest {
 //
 //        source.onNext("three");
 //        source.onNext("four");
-//        source.onCompleted();
+//        source.onComplete();
 //
 //        verify(observer, never()).onNext("one");
 //        verify(observer, never()).onNext("two");
 //        verify(observer, times(1)).onNext("three");
 //        verify(observer, times(1)).onNext("four");
-//        verify(observer, times(1)).onCompleted();
+//        verify(observer, times(1)).onComplete();
 //
 //    }
 //
@@ -58,11 +58,11 @@ public class ObservableMulticastTest {
 //        Subscription sub2 = multicasted.connect();
 //
 //        source.onNext("two");
-//        source.onCompleted();
+//        source.onComplete();
 //
 //        verify(observer, never()).onNext("one");
 //        verify(observer, times(1)).onNext("two");
-//        verify(observer, times(1)).onCompleted();
+//        verify(observer, times(1)).onComplete();
 //
 //        assertEquals(sub, sub2);
 //
@@ -91,13 +91,13 @@ public class ObservableMulticastTest {
 //        // reconnect
 //        multicasted.connect();
 //        source.onNext("four");
-//        source.onCompleted();
+//        source.onComplete();
 //
 //        verify(observer, never()).onNext("one");
 //        verify(observer, times(1)).onNext("two");
 //        verify(observer, never()).onNext("three");
 //        verify(observer, times(1)).onNext("four");
-//        verify(observer, times(1)).onCompleted();
+//        verify(observer, times(1)).onComplete();
 //
 //    }
 //

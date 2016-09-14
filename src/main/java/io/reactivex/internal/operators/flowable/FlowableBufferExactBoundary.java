@@ -44,7 +44,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
     static final class BufferExactBoundarySubscriber<T, U extends Collection<? super T>, B>
     extends QueueDrainSubscriber<T, U, U> implements Subscriber<T>, Subscription, Disposable {
-        /** */
+
         final Callable<U> bufferSupplier;
         final Publisher<B> boundary;
 
@@ -54,7 +54,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         U buffer;
 
-        public BufferExactBoundarySubscriber(Subscriber<? super U> actual, Callable<U> bufferSupplier,
+        BufferExactBoundarySubscriber(Subscriber<? super U> actual, Callable<U> bufferSupplier,
                                              Publisher<B> boundary) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -204,7 +204,7 @@ extends AbstractFlowableWithUpstream<T, U> {
     static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B> extends DisposableSubscriber<B> {
         final BufferExactBoundarySubscriber<T, U, B> parent;
 
-        public BufferBoundarySubscriber(BufferExactBoundarySubscriber<T, U, B> parent) {
+        BufferBoundarySubscriber(BufferExactBoundarySubscriber<T, U, B> parent) {
             this.parent = parent;
         }
 

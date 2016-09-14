@@ -40,7 +40,7 @@ public final class FlowableHide<T> extends AbstractFlowableWithUpstream<T, T> {
 
         Subscription s;
 
-        public HideSubscriber(Subscriber<? super T> actual) {
+        HideSubscriber(Subscriber<? super T> actual) {
             this.actual = actual;
         }
 

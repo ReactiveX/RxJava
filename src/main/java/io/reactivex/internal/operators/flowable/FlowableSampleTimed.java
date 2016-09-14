@@ -44,7 +44,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
     }
 
     static final class SampleTimedSubscriber<T> extends AtomicReference<T> implements Subscriber<T>, Subscription, Runnable {
-        /** */
+
         private static final long serialVersionUID = -3517602651313910099L;
 
         final Subscriber<? super T> actual;
@@ -58,7 +58,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         Subscription s;
 
-        public SampleTimedSubscriber(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
+        SampleTimedSubscriber(Subscriber<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
             this.actual = actual;
             this.period = period;
             this.unit = unit;

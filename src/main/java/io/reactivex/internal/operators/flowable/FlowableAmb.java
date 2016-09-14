@@ -70,7 +70,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
         final AtomicInteger winner = new AtomicInteger();
 
         @SuppressWarnings("unchecked")
-        public AmbCoordinator(Subscriber<? super T> actual, int count) {
+        AmbCoordinator(Subscriber<? super T> actual, int count) {
             this.actual = actual;
             this.subscribers = new AmbInnerSubscriber[count];
         }
@@ -141,7 +141,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
     }
 
     static final class AmbInnerSubscriber<T> extends AtomicReference<Subscription> implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -1185974347409665484L;
         final AmbCoordinator<T> parent;
         final int index;
@@ -151,7 +151,7 @@ public final class FlowableAmb<T> extends Flowable<T> {
 
         final AtomicLong missedRequested = new AtomicLong();
 
-        public AmbInnerSubscriber(AmbCoordinator<T> parent, int index, Subscriber<? super T> actual) {
+        AmbInnerSubscriber(AmbCoordinator<T> parent, int index, Subscriber<? super T> actual) {
             this.parent = parent;
             this.index = index;
             this.actual = actual;

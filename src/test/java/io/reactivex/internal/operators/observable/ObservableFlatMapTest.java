@@ -172,14 +172,14 @@ public class ObservableFlatMapTest {
     @Test
     public void testFlatMapTransformsNormal() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
-        Observable<Integer> onCompleted = Observable.fromIterable(Arrays.asList(4));
+        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        source.flatMap(just(onNext), just(onError), just0(onCompleted)).subscribe(o);
+        source.flatMap(just(onNext), just(onError), just0(onComplete)).subscribe(o);
 
         verify(o, times(3)).onNext(1);
         verify(o, times(3)).onNext(2);
@@ -194,7 +194,7 @@ public class ObservableFlatMapTest {
     @Test
     public void testFlatMapTransformsException() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
-        Observable<Integer> onCompleted = Observable.fromIterable(Arrays.asList(4));
+        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
 
         Observable<Integer> source = Observable.concat(
@@ -205,7 +205,7 @@ public class ObservableFlatMapTest {
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        source.flatMap(just(onNext), just(onError), just0(onCompleted)).subscribe(o);
+        source.flatMap(just(onNext), just(onError), just0(onComplete)).subscribe(o);
 
         verify(o, times(3)).onNext(1);
         verify(o, times(3)).onNext(2);
@@ -237,14 +237,14 @@ public class ObservableFlatMapTest {
 
     @Test
     public void testFlatMapTransformsOnNextFuncThrows() {
-        Observable<Integer> onCompleted = Observable.fromIterable(Arrays.asList(4));
+        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        source.flatMap(funcThrow(1, onError), just(onError), just0(onCompleted)).subscribe(o);
+        source.flatMap(funcThrow(1, onError), just(onError), just0(onComplete)).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -254,14 +254,14 @@ public class ObservableFlatMapTest {
     @Test
     public void testFlatMapTransformsOnErrorFuncThrows() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
-        Observable<Integer> onCompleted = Observable.fromIterable(Arrays.asList(4));
+        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
 
         Observable<Integer> source = Observable.error(new TestException());
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onCompleted)).subscribe(o);
+        source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onComplete)).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -271,14 +271,14 @@ public class ObservableFlatMapTest {
     @Test
     public void testFlatMapTransformsOnCompletedFuncThrows() {
         Observable<Integer> onNext = Observable.fromIterable(Arrays.asList(1, 2, 3));
-        Observable<Integer> onCompleted = Observable.fromIterable(Arrays.asList(4));
+        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
 
         Observable<Integer> source = Observable.fromIterable(Arrays.<Integer> asList());
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        source.flatMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
+        source.flatMap(just(onNext), just(onError), funcThrow0(onComplete)).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -288,14 +288,14 @@ public class ObservableFlatMapTest {
     @Test
     public void testFlatMapTransformsMergeException() {
         Observable<Integer> onNext = Observable.error(new TestException());
-        Observable<Integer> onCompleted = Observable.fromIterable(Arrays.asList(4));
+        Observable<Integer> onComplete = Observable.fromIterable(Arrays.asList(4));
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
 
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
         Observer<Object> o = TestHelper.mockObserver();
 
-        source.flatMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
+        source.flatMap(just(onNext), just(onError), funcThrow0(onComplete)).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -403,7 +403,7 @@ public class ObservableFlatMapTest {
                 .subscribeOn(Schedulers.computation())
                 ;
 
-        Observable<Integer> onCompleted = composer(Observable.fromIterable(Arrays.asList(4)), subscriptionCount, m)
+        Observable<Integer> onComplete = composer(Observable.fromIterable(Arrays.asList(4)), subscriptionCount, m)
                 .subscribeOn(Schedulers.computation());
 
         Observable<Integer> onError = Observable.fromIterable(Arrays.asList(5));
@@ -414,7 +414,7 @@ public class ObservableFlatMapTest {
         TestObserver<Object> ts = new TestObserver<Object>(o);
 
         Function<Throwable, Observable<Integer>> just = just(onError);
-        source.flatMap(just(onNext), just, just0(onCompleted), m).subscribe(ts);
+        source.flatMap(just(onNext), just, just0(onComplete), m).subscribe(ts);
 
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertNoErrors();

@@ -59,7 +59,7 @@ public class BlockingFlowableToFutureTest {
             f.get();
             fail("Should have thrown!");
         }
-        catch(ExecutionException e) {
+        catch (ExecutionException e) {
             throw e.getCause();
         }
     }
@@ -85,7 +85,7 @@ public class BlockingFlowableToFutureTest {
         }
     }
 
-    @Test(expected=CancellationException.class)
+    @Test(expected = CancellationException.class)
     public void testGetAfterCancel() throws Exception {
         Flowable<String> obs = Flowable.never();
         Future<String> f = obs.toFuture();
@@ -94,7 +94,7 @@ public class BlockingFlowableToFutureTest {
         f.get();                // Future.get() docs require this to throw
     }
 
-    @Test(expected=CancellationException.class)
+    @Test(expected = CancellationException.class)
     public void testGetWithTimeoutAfterCancel() throws Exception {
         Flowable<String> obs = Flowable.never();
         Future<String> f = obs.toFuture();
@@ -110,7 +110,7 @@ public class BlockingFlowableToFutureTest {
         try {
             f.get();
         }
-        catch(ExecutionException e) {
+        catch (ExecutionException e) {
             throw e.getCause();
         }
     }

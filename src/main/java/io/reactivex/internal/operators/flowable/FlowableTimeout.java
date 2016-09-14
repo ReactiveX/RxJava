@@ -68,7 +68,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
 
         final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
 
-        public TimeoutSubscriber(Subscriber<? super T> actual,
+        TimeoutSubscriber(Subscriber<? super T> actual,
                 Publisher<U> firstTimeoutIndicator,
                 Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator) {
             this.actual = actual;
@@ -184,7 +184,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
 
         boolean done;
 
-        public TimeoutInnerSubscriber(OnTimeout parent, final long index) {
+        TimeoutInnerSubscriber(OnTimeout parent, final long index) {
             this.parent = parent;
             this.index = index;
         }
@@ -231,7 +231,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
 
         final AtomicReference<Disposable> timeout = new AtomicReference<Disposable>();
 
-        public TimeoutOtherSubscriber(Subscriber<? super T> actual,
+        TimeoutOtherSubscriber(Subscriber<? super T> actual,
                 Publisher<U> firstTimeoutIndicator,
                 Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator, Publisher<? extends T> other) {
             this.actual = actual;

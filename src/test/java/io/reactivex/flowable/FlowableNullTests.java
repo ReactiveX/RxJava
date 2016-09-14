@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 /**
- * Verifies the operators handle null values properly by emitting/throwing NullPointerExceptions
+ * Verifies the operators handle null values properly by emitting/throwing NullPointerExceptions.
  */
 public class FlowableNullTests {
 

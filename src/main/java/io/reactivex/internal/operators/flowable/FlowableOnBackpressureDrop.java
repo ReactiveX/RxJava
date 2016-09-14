@@ -48,7 +48,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
 
     static final class BackpressureDropSubscriber<T>
     extends AtomicLong implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -6246093802440953054L;
 
         final Subscriber<? super T> actual;
@@ -58,7 +58,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
 
         boolean done;
 
-        public BackpressureDropSubscriber(Subscriber<? super T> actual, Consumer<? super T> onDrop) {
+        BackpressureDropSubscriber(Subscriber<? super T> actual, Consumer<? super T> onDrop) {
             this.actual = actual;
             this.onDrop = onDrop;
         }

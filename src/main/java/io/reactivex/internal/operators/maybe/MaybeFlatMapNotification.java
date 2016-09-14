@@ -56,7 +56,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = 4375739915521278546L;
 
         final MaybeObserver<? super R> actual;
@@ -69,7 +69,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
         Disposable d;
 
-        public FlatMapMaybeObserver(MaybeObserver<? super R> actual,
+        FlatMapMaybeObserver(MaybeObserver<? super R> actual,
                 Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper,
                 Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper,
                 Callable<? extends MaybeSource<? extends R>> onCompleteSupplier) {

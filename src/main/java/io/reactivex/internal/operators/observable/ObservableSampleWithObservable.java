@@ -36,7 +36,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
     static final class SamplePublisherSubscriber<T> extends AtomicReference<T>
     implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -3517602651313910099L;
 
         final Observer<? super T> actual;
@@ -46,7 +46,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
         Disposable s;
 
-        public SamplePublisherSubscriber(Observer<? super T> actual, ObservableSource<?> other) {
+        SamplePublisherSubscriber(Observer<? super T> actual, ObservableSource<?> other) {
             this.actual = actual;
             this.sampler = other;
         }
@@ -120,7 +120,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
     static final class SamplerSubscriber<T> implements Observer<Object> {
         final SamplePublisherSubscriber<T> parent;
-        public SamplerSubscriber(SamplePublisherSubscriber<T> parent) {
+        SamplerSubscriber(SamplePublisherSubscriber<T> parent) {
             this.parent = parent;
 
         }

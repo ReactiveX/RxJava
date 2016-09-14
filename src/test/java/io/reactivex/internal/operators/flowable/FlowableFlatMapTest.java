@@ -172,14 +172,14 @@ public class FlowableFlatMapTest {
     @Test
     public void testFlatMapTransformsNormal() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
-        Flowable<Integer> onCompleted = Flowable.fromIterable(Arrays.asList(4));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
 
         Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        source.flatMap(just(onNext), just(onError), just0(onCompleted)).subscribe(o);
+        source.flatMap(just(onNext), just(onError), just0(onComplete)).subscribe(o);
 
         verify(o, times(3)).onNext(1);
         verify(o, times(3)).onNext(2);
@@ -194,7 +194,7 @@ public class FlowableFlatMapTest {
     @Test
     public void testFlatMapTransformsException() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
-        Flowable<Integer> onCompleted = Flowable.fromIterable(Arrays.asList(4));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
 
         Flowable<Integer> source = Flowable.concat(
@@ -205,7 +205,7 @@ public class FlowableFlatMapTest {
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        source.flatMap(just(onNext), just(onError), just0(onCompleted)).subscribe(o);
+        source.flatMap(just(onNext), just(onError), just0(onComplete)).subscribe(o);
 
         verify(o, times(3)).onNext(1);
         verify(o, times(3)).onNext(2);
@@ -237,14 +237,14 @@ public class FlowableFlatMapTest {
 
     @Test
     public void testFlatMapTransformsOnNextFuncThrows() {
-        Flowable<Integer> onCompleted = Flowable.fromIterable(Arrays.asList(4));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
 
         Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        source.flatMap(funcThrow(1, onError), just(onError), just0(onCompleted)).subscribe(o);
+        source.flatMap(funcThrow(1, onError), just(onError), just0(onComplete)).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -254,14 +254,14 @@ public class FlowableFlatMapTest {
     @Test
     public void testFlatMapTransformsOnErrorFuncThrows() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
-        Flowable<Integer> onCompleted = Flowable.fromIterable(Arrays.asList(4));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
 
         Flowable<Integer> source = Flowable.error(new TestException());
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onCompleted)).subscribe(o);
+        source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onComplete)).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -271,14 +271,14 @@ public class FlowableFlatMapTest {
     @Test
     public void testFlatMapTransformsOnCompletedFuncThrows() {
         Flowable<Integer> onNext = Flowable.fromIterable(Arrays.asList(1, 2, 3));
-        Flowable<Integer> onCompleted = Flowable.fromIterable(Arrays.asList(4));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
 
         Flowable<Integer> source = Flowable.fromIterable(Arrays.<Integer> asList());
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        source.flatMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
+        source.flatMap(just(onNext), just(onError), funcThrow0(onComplete)).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -288,14 +288,14 @@ public class FlowableFlatMapTest {
     @Test
     public void testFlatMapTransformsMergeException() {
         Flowable<Integer> onNext = Flowable.error(new TestException());
-        Flowable<Integer> onCompleted = Flowable.fromIterable(Arrays.asList(4));
+        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
 
         Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        source.flatMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
+        source.flatMap(just(onNext), just(onError), funcThrow0(onComplete)).subscribe(o);
 
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
@@ -403,7 +403,7 @@ public class FlowableFlatMapTest {
                 .subscribeOn(Schedulers.computation())
                 ;
 
-        Flowable<Integer> onCompleted = composer(Flowable.fromIterable(Arrays.asList(4)), subscriptionCount, m)
+        Flowable<Integer> onComplete = composer(Flowable.fromIterable(Arrays.asList(4)), subscriptionCount, m)
                 .subscribeOn(Schedulers.computation());
 
         Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
@@ -415,7 +415,7 @@ public class FlowableFlatMapTest {
 
         Function<Integer, Flowable<Integer>> just = just(onNext);
         Function<Throwable, Flowable<Integer>> just2 = just(onError);
-        Callable<Flowable<Integer>> just0 = just0(onCompleted);
+        Callable<Flowable<Integer>> just0 = just0(onComplete);
         source.flatMap(just, just2, just0, m).subscribe(ts);
 
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);

@@ -41,7 +41,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
 
     static final class DebounceSubscriber<T, U> extends AtomicLong
     implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 6725975399620862591L;
         final Subscriber<? super T> actual;
         final Function<? super T, ? extends Publisher<U>> debounceSelector;
@@ -54,7 +54,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
 
         boolean done;
 
-        public DebounceSubscriber(Subscriber<? super T> actual,
+        DebounceSubscriber(Subscriber<? super T> actual,
                 Function<? super T, ? extends Publisher<U>> debounceSelector) {
             this.actual = actual;
             this.debounceSelector = debounceSelector;
@@ -166,7 +166,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
 
             final AtomicBoolean once = new AtomicBoolean();
 
-            public DebounceInnerSubscriber(DebounceSubscriber<T, U> parent, long index, T value) {
+            DebounceInnerSubscriber(DebounceSubscriber<T, U> parent, long index, T value) {
                 this.parent = parent;
                 this.index = index;
                 this.value = value;

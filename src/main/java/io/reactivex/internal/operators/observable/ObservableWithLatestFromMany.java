@@ -97,7 +97,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     static final class WithLatestFromObserver<T, R>
     extends AtomicInteger
     implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 1577321883966341961L;
 
         final Observer<? super R> actual;
@@ -114,7 +114,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         volatile boolean done;
 
-        public WithLatestFromObserver(Observer<? super R> actual, Function<? super Object[], R> combiner, int n) {
+        WithLatestFromObserver(Observer<? super R> actual, Function<? super Object[], R> combiner, int n) {
             this.actual = actual;
             this.combiner = combiner;
             WithLatestInnerSubscriber[] s = new WithLatestInnerSubscriber[n];
@@ -241,7 +241,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     static final class WithLatestInnerSubscriber
     extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 3256684027868224024L;
 
         final WithLatestFromObserver<?, ?> parent;
@@ -250,7 +250,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         boolean hasValue;
 
-        public WithLatestInnerSubscriber(WithLatestFromObserver<?, ?> parent, int index) {
+        WithLatestInnerSubscriber(WithLatestFromObserver<?, ?> parent, int index) {
             this.parent = parent;
             this.index = index;
         }

@@ -56,7 +56,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
 
         final InnerObserver<T, U, R> inner;
 
-        public FlatMapBiMainObserver(MaybeObserver<? super R> actual,
+        FlatMapBiMainObserver(MaybeObserver<? super R> actual,
                 Function<? super T, ? extends MaybeSource<? extends U>> mapper,
                 BiFunction<? super T, ? super U, ? extends R> resultSelector) {
             this.inner = new InnerObserver<T, U, R>(actual, resultSelector);
@@ -111,7 +111,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
         static final class InnerObserver<T, U, R>
         extends AtomicReference<Disposable>
         implements MaybeObserver<U> {
-            /** */
+
             private static final long serialVersionUID = -2897979525538174559L;
 
             final MaybeObserver<? super R> actual;
@@ -120,7 +120,7 @@ public final class MaybeFlatMapBiSelector<T, U, R> extends AbstractMaybeWithUpst
 
             T value;
 
-            public InnerObserver(MaybeObserver<? super R> actual,
+            InnerObserver(MaybeObserver<? super R> actual,
                     BiFunction<? super T, ? super U, ? extends R> resultSelector) {
                 this.actual = actual;
                 this.resultSelector = resultSelector;

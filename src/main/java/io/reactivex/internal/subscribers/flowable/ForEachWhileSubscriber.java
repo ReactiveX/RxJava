@@ -27,7 +27,7 @@ public final class ForEachWhileSubscriber<T>
 extends AtomicReference<Subscription>
 implements Subscriber<T>, Disposable {
 
-    /** */
+
     private static final long serialVersionUID = -4403180040475402120L;
 
     final Predicate<? super T> onNext;

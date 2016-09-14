@@ -634,7 +634,7 @@ public class FlowableFromSourceTest {
 
         FlowableEmitter<Integer> current;
 
-        public PublishAsyncEmitter() {
+        PublishAsyncEmitter() {
             this.subject = PublishProcessor.create();
         }
 
@@ -701,7 +701,7 @@ public class FlowableFromSourceTest {
 
         final PublishProcessor<Integer> subject;
 
-        public PublishAsyncEmitterNoCancel() {
+        PublishAsyncEmitterNoCancel() {
             this.subject = PublishProcessor.create();
         }
 

@@ -57,7 +57,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
     static final class ConcatMapEagerMainObserver<T, R>
     extends AtomicInteger
     implements Observer<T>, Disposable, InnerQueuedObserverSupport<R> {
-        /** */
+
         private static final long serialVersionUID = 8080567949447303262L;
 
         final Observer<? super R> actual;
@@ -88,7 +88,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         int activeCount;
 
-        public ConcatMapEagerMainObserver(Observer<? super R> actual,
+        ConcatMapEagerMainObserver(Observer<? super R> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> mapper,
                 int maxConcurrency, int prefetch, ErrorMode errorMode) {
             this.actual = actual;

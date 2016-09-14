@@ -47,7 +47,7 @@ public final class MaybeToCompletable<T> extends Completable implements HasUpstr
 
         Disposable d;
 
-        public ToSingleMaybeSubscriber(CompletableObserver actual) {
+        ToSingleMaybeSubscriber(CompletableObserver actual) {
             this.actual = actual;
         }
 

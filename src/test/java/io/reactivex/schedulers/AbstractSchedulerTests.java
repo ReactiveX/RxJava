@@ -37,7 +37,7 @@ import io.reactivex.subscribers.DefaultSubscriber;
 public abstract class AbstractSchedulerTests {
 
     /**
-     * The scheduler to test
+     * The scheduler to test.
      */
     protected abstract Scheduler getScheduler();
 
@@ -297,7 +297,7 @@ public abstract class AbstractSchedulerTests {
 
             inner.schedule(new Runnable() {
 
-                int state = 0;
+                int state;
 
                 @Override
                 public void run() {
@@ -330,7 +330,7 @@ public abstract class AbstractSchedulerTests {
                 as.setResource(inner);
 
                 inner.schedule(new Runnable() {
-                    int i = 0;
+                    int i;
 
                     @Override
                     public void run() {

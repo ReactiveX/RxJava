@@ -39,7 +39,7 @@ public final class MaybeHide<T> extends AbstractMaybeWithUpstream<T, T> {
 
         Disposable d;
 
-        public HideMaybeObserver(MaybeObserver<? super T> actual) {
+        HideMaybeObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 

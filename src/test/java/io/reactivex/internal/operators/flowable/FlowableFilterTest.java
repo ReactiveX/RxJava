@@ -74,7 +74,7 @@ public class FlowableFilterTest {
 
             @Override
             public void onComplete() {
-                System.out.println("onCompleted");
+                System.out.println("onComplete");
                 latch.countDown();
             }
 
@@ -121,7 +121,7 @@ public class FlowableFilterTest {
 
             @Override
             public void onComplete() {
-                System.out.println("onCompleted");
+                System.out.println("onComplete");
                 latch.countDown();
             }
 

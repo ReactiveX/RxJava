@@ -121,7 +121,7 @@ public enum ObservableScalarXMap {
 
         final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
 
-        public ScalarXMapObservable(T value,
+        ScalarXMapObservable(T value,
                 Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
             this.value = value;
             this.mapper = mapper;
@@ -169,7 +169,7 @@ public enum ObservableScalarXMap {
     public static final class ScalarDisposable<T>
     extends AtomicInteger
     implements QueueDisposable<T>, Runnable {
-        /** */
+
         private static final long serialVersionUID = 3880992722410194083L;
 
         final Observer<? super T> observer;

@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * sets the created Thread's name to {@code prefix-count}.
  */
 public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
-    /** */
+
     private static final long serialVersionUID = -7789753024099756196L;
 
     final String prefix;

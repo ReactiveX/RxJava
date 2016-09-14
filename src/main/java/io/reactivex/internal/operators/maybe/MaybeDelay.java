@@ -48,7 +48,7 @@ public final class MaybeDelay<T> extends AbstractMaybeWithUpstream<T, T> {
     static final class DelayMaybeObserver<T>
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable, Runnable {
-        /** */
+
         private static final long serialVersionUID = 5566860102500855068L;
 
         final MaybeObserver<? super T> actual;
@@ -63,7 +63,7 @@ public final class MaybeDelay<T> extends AbstractMaybeWithUpstream<T, T> {
 
         Throwable error;
 
-        public DelayMaybeObserver(MaybeObserver<? super T> actual, long delay, TimeUnit unit, Scheduler scheduler) {
+        DelayMaybeObserver(MaybeObserver<? super T> actual, long delay, TimeUnit unit, Scheduler scheduler) {
             this.actual = actual;
             this.delay = delay;
             this.unit = unit;

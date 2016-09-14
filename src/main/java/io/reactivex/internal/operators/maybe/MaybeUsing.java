@@ -99,7 +99,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
     extends AtomicReference<Object>
     implements MaybeObserver<T>, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = -674404550052917487L;
 
         final MaybeObserver<? super T> actual;
@@ -110,7 +110,7 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
 
         Disposable d;
 
-        public UsingObserver(MaybeObserver<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
+        UsingObserver(MaybeObserver<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
             super(resource);
             this.actual = actual;
             this.disposer = disposer;

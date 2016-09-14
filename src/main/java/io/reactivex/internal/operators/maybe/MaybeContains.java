@@ -54,7 +54,7 @@ public final class MaybeContains<T> extends Single<Boolean> implements HasUpstre
 
         Disposable d;
 
-        public ContainsMaybeObserver(SingleObserver<? super Boolean> actual, Object value) {
+        ContainsMaybeObserver(SingleObserver<? super Boolean> actual, Object value) {
             this.actual = actual;
             this.value = value;
         }

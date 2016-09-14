@@ -36,7 +36,7 @@ import io.reactivex.subscribers.*;
 public class FlowableSubscriberTest {
 
     /**
-     * Should request n for whatever the final Subscriber asks for
+     * Should request n for whatever the final Subscriber asks for.
      */
     @Test
     public void testRequestFromFinalSubscribeWithRequestValue() {
@@ -60,7 +60,7 @@ public class FlowableSubscriberTest {
     }
 
     /**
-     * Should request -1 for infinite
+     * Should request -1 for infinite.
      */
     @Test
     public void testRequestFromFinalSubscribeWithoutRequestValue() {
@@ -530,7 +530,7 @@ public class FlowableSubscriberTest {
             @Override
             public void onStart() {
                 request(2);
-                request(Long.MAX_VALUE-1);
+                request(Long.MAX_VALUE - 1);
             }
 
             @Override

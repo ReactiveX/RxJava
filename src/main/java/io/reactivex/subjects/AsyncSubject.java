@@ -292,12 +292,11 @@ public final class AsyncSubject<T> extends Subject<T> {
     }
 
     static final class AsyncDisposable<T> extends DeferredScalarDisposable<T> {
-        /** */
         private static final long serialVersionUID = 5629876084736248016L;
 
         final AsyncSubject<T> parent;
 
-        public AsyncDisposable(Observer<? super T> actual, AsyncSubject<T> parent) {
+        AsyncDisposable(Observer<? super T> actual, AsyncSubject<T> parent) {
             super(actual);
             this.parent = parent;
         }

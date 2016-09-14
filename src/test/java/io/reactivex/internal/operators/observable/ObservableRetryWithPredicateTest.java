@@ -311,7 +311,7 @@ public class ObservableRetryWithPredicateTest {
     public void testIssue3008RetryWithPredicate() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>(){
+        Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
             @Override
             public Long apply(Long x) {
                 System.out.println("map " + x);
@@ -339,7 +339,7 @@ public class ObservableRetryWithPredicateTest {
     public void testIssue3008RetryInfinite() {
         final List<Long> list = new CopyOnWriteArrayList<Long>();
         final AtomicBoolean isFirst = new AtomicBoolean(true);
-        Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>(){
+        Observable.<Long> just(1L, 2L, 3L).map(new Function<Long, Long>() {
             @Override
             public Long apply(Long x) {
                 System.out.println("map " + x);

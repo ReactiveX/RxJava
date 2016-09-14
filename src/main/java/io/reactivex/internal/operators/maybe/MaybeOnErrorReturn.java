@@ -47,7 +47,7 @@ public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T>
 
         Disposable d;
 
-        public OnErrorReturnMaybeObserver(MaybeObserver<? super T> actual,
+        OnErrorReturnMaybeObserver(MaybeObserver<? super T> actual,
                 Function<? super Throwable, ? extends T> valueSupplier) {
             this.actual = actual;
             this.valueSupplier = valueSupplier;

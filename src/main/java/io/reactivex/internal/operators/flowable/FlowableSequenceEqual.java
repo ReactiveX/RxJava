@@ -48,7 +48,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     }
 
     static final class EqualCoordinator<T> extends DeferredScalarSubscription<Boolean> {
-        /** */
+
         private static final long serialVersionUID = -6178010334400373240L;
 
         final BiPredicate<? super T, ? super T> comparer;
@@ -67,7 +67,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         T v2;
 
-        public EqualCoordinator(Subscriber<? super Boolean> actual, int prefetch, BiPredicate<? super T, ? super T> comparer) {
+        EqualCoordinator(Subscriber<? super Boolean> actual, int prefetch, BiPredicate<? super T, ? super T> comparer) {
             super(actual);
             this.prefetch = prefetch;
             this.comparer = comparer;
@@ -227,7 +227,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
     static final class EqualSubscriber<T>
     extends AtomicReference<Subscription>
     implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = 4804128302091633067L;
 
         final EqualCoordinator<T> parent;
@@ -244,7 +244,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         int sourceMode;
 
-        public EqualSubscriber(EqualCoordinator<T> parent, int prefetch) {
+        EqualSubscriber(EqualCoordinator<T> parent, int prefetch) {
             this.parent = parent;
             this.limit = prefetch - (prefetch >> 2);
             this.prefetch = prefetch;

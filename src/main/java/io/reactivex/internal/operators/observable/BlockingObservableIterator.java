@@ -26,7 +26,7 @@ public final class BlockingObservableIterator<T>
 extends AtomicReference<Disposable>
 implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
 
-    /** */
+
     private static final long serialVersionUID = 6695226475494099826L;
 
     final SpscLinkedArrayQueue<T> queue;

@@ -38,7 +38,7 @@ public final class FlowableSwitchIfEmpty<T> extends AbstractFlowableWithUpstream
 
         boolean empty;
 
-        public SwitchIfEmptySubscriber(Subscriber<? super T> actual, Publisher<? extends T> other) {
+        SwitchIfEmptySubscriber(Subscriber<? super T> actual, Publisher<? extends T> other) {
             this.actual = actual;
             this.other = other;
             this.empty = true;

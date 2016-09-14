@@ -49,14 +49,14 @@ public final class SingleSubscribeOn<T> extends Single<T> {
     static final class SubscribeOnObserver<T>
     extends AtomicReference<Disposable>
     implements SingleObserver<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = 7000911171163930287L;
 
         final SingleObserver<? super T> actual;
 
         final SequentialDisposable task;
 
-        public SubscribeOnObserver(SingleObserver<? super T> actual) {
+        SubscribeOnObserver(SingleObserver<? super T> actual) {
             this.actual = actual;
             this.task = new SequentialDisposable();
         }

@@ -36,7 +36,7 @@ public final class FlowableTakeUntilPredicate<T> extends AbstractFlowableWithUps
         final Predicate<? super T> predicate;
         Subscription s;
         boolean done;
-        public InnerSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
+        InnerSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

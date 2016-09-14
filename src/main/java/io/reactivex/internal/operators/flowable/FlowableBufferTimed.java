@@ -93,7 +93,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        public BufferExactUnboundedSubscriber(
+        BufferExactUnboundedSubscriber(
                 Subscriber<? super U> actual, Callable<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
             super(actual, new MpscLinkedQueue<U>());
@@ -270,7 +270,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         Subscription s;
 
 
-        public BufferSkipBoundedSubscriber(Subscriber<? super U> actual,
+        BufferSkipBoundedSubscriber(Subscriber<? super U> actual,
                 Callable<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
             super(actual, new MpscLinkedQueue<U>());
@@ -446,7 +446,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         long consumerIndex;
 
-        public BufferExactBoundedSubscriber(
+        BufferExactBoundedSubscriber(
                 Subscriber<? super U> actual,
                 Callable<U> bufferSupplier,
                 long timespan, TimeUnit unit, int maxSize,

@@ -47,10 +47,10 @@ public final class ExceptionHelper {
 
     /**
      * A singleton instance of a Throwable indicating a terminal state for exceptions,
-     * don't leak this!
+     * don't leak this.
      */
     public static final Throwable TERMINATED = new Throwable("No further exceptions") {
-        /** */
+
         private static final long serialVersionUID = -4649703670690200604L;
 
         @Override
@@ -89,7 +89,7 @@ public final class ExceptionHelper {
     }
 
     /**
-     * Returns a flattened list of Throwables from tree-like CompositeException chain
+     * Returns a flattened list of Throwables from tree-like CompositeException chain.
      * @param t the starting throwable
      * @return the list of Throwables flattened in a depth-first manner
      */

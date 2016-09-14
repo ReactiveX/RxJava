@@ -42,7 +42,7 @@ public final class SingleFlatMap<T, R> extends Single<R> {
 
         final SequentialDisposable sd;
 
-        public SingleFlatMapCallback(SingleObserver<? super R> actual,
+        SingleFlatMapCallback(SingleObserver<? super R> actual,
                 Function<? super T, ? extends SingleSource<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;

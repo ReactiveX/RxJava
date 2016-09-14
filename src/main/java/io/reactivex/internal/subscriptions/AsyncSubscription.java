@@ -27,7 +27,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
  * <p>All methods are thread-safe.
  */
 public final class AsyncSubscription extends AtomicLong implements Subscription, Disposable {
-    /** */
+
     private static final long serialVersionUID = 7028635084060361255L;
 
     final AtomicReference<Subscription> actual;

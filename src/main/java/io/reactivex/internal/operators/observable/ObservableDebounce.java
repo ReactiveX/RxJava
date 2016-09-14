@@ -49,7 +49,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
         boolean done;
 
-        public DebounceSubscriber(Observer<? super T> actual,
+        DebounceSubscriber(Observer<? super T> actual,
                 Function<? super T, ? extends ObservableSource<U>> debounceSelector) {
             this.actual = actual;
             this.debounceSelector = debounceSelector;
@@ -149,7 +149,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
             final AtomicBoolean once = new AtomicBoolean();
 
-            public DebounceInnerSubscriber(DebounceSubscriber<T, U> parent, long index, T value) {
+            DebounceInnerSubscriber(DebounceSubscriber<T, U> parent, long index, T value) {
                 this.parent = parent;
                 this.index = index;
                 this.value = value;

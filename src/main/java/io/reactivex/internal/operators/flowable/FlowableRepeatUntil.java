@@ -39,14 +39,14 @@ public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T
 
     // FIXME update to a fresh Rsc algorithm
     static final class RepeatSubscriber<T> extends AtomicInteger implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = -7098360935104053232L;
 
         final Subscriber<? super T> actual;
         final SubscriptionArbiter sa;
         final Publisher<? extends T> source;
         final BooleanSupplier stop;
-        public RepeatSubscriber(Subscriber<? super T> actual, BooleanSupplier until, SubscriptionArbiter sa, Publisher<? extends T> source) {
+        RepeatSubscriber(Subscriber<? super T> actual, BooleanSupplier until, SubscriptionArbiter sa, Publisher<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
             this.source = source;

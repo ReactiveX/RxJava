@@ -84,7 +84,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
     static final class SerializedEmitter<T>
     extends AtomicInteger
     implements FlowableEmitter<T> {
-        /** */
+
         private static final long serialVersionUID = 4883307006032401862L;
 
         final BaseEmitter<T> emitter;
@@ -95,7 +95,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         volatile boolean done;
 
-        public SerializedEmitter(BaseEmitter<T> emitter) {
+        SerializedEmitter(BaseEmitter<T> emitter) {
             this.emitter = emitter;
             this.error = new AtomicThrowable();
             this.queue = new SpscLinkedArrayQueue<T>(16);
@@ -236,17 +236,16 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
     }
 
-    static abstract class BaseEmitter<T>
+    abstract static class BaseEmitter<T>
     extends AtomicLong
     implements FlowableEmitter<T>, Subscription {
-        /** */
         private static final long serialVersionUID = 7326289992464377023L;
 
         final Subscriber<? super T> actual;
 
         final SequentialDisposable serial;
 
-        public BaseEmitter(Subscriber<? super T> actual) {
+        BaseEmitter(Subscriber<? super T> actual) {
             this.actual = actual;
             this.serial = new SequentialDisposable();
         }
@@ -325,10 +324,10 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class NoneEmitter<T> extends BaseEmitter<T> {
 
-        /** */
+
         private static final long serialVersionUID = 3776720187248809713L;
 
-        public NoneEmitter(Subscriber<? super T> actual) {
+        NoneEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
 
@@ -350,12 +349,11 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     }
 
-    static abstract class NoOverflowBaseAsyncEmitter<T> extends BaseEmitter<T> {
+    abstract static class NoOverflowBaseAsyncEmitter<T> extends BaseEmitter<T> {
 
-        /** */
         private static final long serialVersionUID = 4127754106204442833L;
 
-        public NoOverflowBaseAsyncEmitter(Subscriber<? super T> actual) {
+        NoOverflowBaseAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
 
@@ -378,10 +376,10 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class DropAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
 
-        /** */
+
         private static final long serialVersionUID = 8360058422307496563L;
 
-        public DropAsyncEmitter(Subscriber<? super T> actual) {
+        DropAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
 
@@ -394,10 +392,10 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class ErrorAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
 
-        /** */
+
         private static final long serialVersionUID = 338953216916120960L;
 
-        public ErrorAsyncEmitter(Subscriber<? super T> actual) {
+        ErrorAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
 
@@ -410,7 +408,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class BufferAsyncEmitter<T> extends BaseEmitter<T> {
 
-        /** */
+
         private static final long serialVersionUID = 2427151001689639875L;
 
         final SpscLinkedArrayQueue<T> queue;
@@ -420,7 +418,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         final AtomicInteger wip;
 
-        public BufferAsyncEmitter(Subscriber<? super T> actual, int capacityHint) {
+        BufferAsyncEmitter(Subscriber<? super T> actual, int capacityHint) {
             super(actual);
             this.queue = new SpscLinkedArrayQueue<T>(capacityHint);
             this.wip = new AtomicInteger();
@@ -536,7 +534,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class LatestAsyncEmitter<T> extends BaseEmitter<T> {
 
-        /** */
+
         private static final long serialVersionUID = 4023437720691792495L;
 
         final AtomicReference<T> queue;
@@ -546,7 +544,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         final AtomicInteger wip;
 
-        public LatestAsyncEmitter(Subscriber<? super T> actual) {
+        LatestAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
             this.queue = new AtomicReference<T>();
             this.wip = new AtomicInteger();

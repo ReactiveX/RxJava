@@ -32,7 +32,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
     }
 
     static final class ElementAtSubscriber<T> extends DeferredScalarSubscription<T> implements Subscriber<T> {
-        /** */
+
         private static final long serialVersionUID = 4066607327284737757L;
 
         final long index;
@@ -44,7 +44,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
 
         boolean done;
 
-        public ElementAtSubscriber(Subscriber<? super T> actual, long index, T defaultValue) {
+        ElementAtSubscriber(Subscriber<? super T> actual, long index, T defaultValue) {
             super(actual);
             this.index = index;
             this.defaultValue = defaultValue;

@@ -36,7 +36,7 @@ public final class SingleHide<T> extends Single<T> {
 
         Disposable d;
 
-        public HideSingleObserver(SingleObserver<? super T> actual) {
+        HideSingleObserver(SingleObserver<? super T> actual) {
             this.actual = actual;
         }
 

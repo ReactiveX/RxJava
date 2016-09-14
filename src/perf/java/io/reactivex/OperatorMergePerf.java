@@ -41,7 +41,7 @@ public class OperatorMergePerf {
         Flowable.merge(os).subscribe(o);
 
         if (input.size == 1) {
-            while (o.latch.getCount() != 0);
+            while (o.latch.getCount() != 0) { }
         } else {
             o.latch.await();
         }
@@ -60,7 +60,7 @@ public class OperatorMergePerf {
         Flowable.merge(os).subscribe(o);
 
         if (input.size == 1) {
-            while (o.latch.getCount() != 0);
+            while (o.latch.getCount() != 0) { }
         } else {
             o.latch.await();
         }
@@ -77,7 +77,7 @@ public class OperatorMergePerf {
         PerfSubscriber o = input.newLatchedObserver();
         Flowable.merge(os).subscribe(o);
         if (input.size == 1) {
-            while (o.latch.getCount() != 0);
+            while (o.latch.getCount() != 0) { }
         } else {
             o.latch.await();
         }
@@ -94,7 +94,7 @@ public class OperatorMergePerf {
         PerfSubscriber o = input.newLatchedObserver();
         Flowable.merge(os).subscribe(o);
         if (input.size == 1) {
-            while (o.latch.getCount() != 0);
+            while (o.latch.getCount() != 0) { }
         } else {
             o.latch.await();
         }
@@ -106,7 +106,7 @@ public class OperatorMergePerf {
         Flowable<Integer> ob = Flowable.range(0, input.size).subscribeOn(Schedulers.computation());
         Flowable.merge(ob, ob).subscribe(o);
         if (input.size == 1) {
-            while (o.latch.getCount() != 0);
+            while (o.latch.getCount() != 0) { }
         } else {
             o.latch.await();
         }
@@ -117,7 +117,7 @@ public class OperatorMergePerf {
         PerfSubscriber o = input.newLatchedObserver();
         Flowable.merge(input.observables).subscribe(o);
         if (input.size == 1) {
-            while (o.latch.getCount() != 0);
+            while (o.latch.getCount() != 0) { }
         } else {
             o.latch.await();
         }

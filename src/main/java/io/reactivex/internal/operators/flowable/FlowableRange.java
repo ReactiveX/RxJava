@@ -40,8 +40,7 @@ public final class FlowableRange extends Flowable<Integer> {
         }
     }
 
-    static abstract class BaseRangeSubscription extends BasicQueueSubscription<Integer> {
-        /** */
+    abstract static class BaseRangeSubscription extends BasicQueueSubscription<Integer> {
         private static final long serialVersionUID = -2252972430506210021L;
 
         final int end;
@@ -50,7 +49,7 @@ public final class FlowableRange extends Flowable<Integer> {
 
         volatile boolean cancelled;
 
-        public BaseRangeSubscription(int index, int end) {
+        BaseRangeSubscription(int index, int end) {
             this.index = index;
             this.end = end;
         }
@@ -107,12 +106,12 @@ public final class FlowableRange extends Flowable<Integer> {
 
     static final class RangeSubscription extends BaseRangeSubscription {
 
-        /** */
+
         private static final long serialVersionUID = 2587302975077663557L;
 
         final Subscriber<? super Integer> actual;
 
-        public RangeSubscription(Subscriber<? super Integer> actual, int index, int end) {
+        RangeSubscription(Subscriber<? super Integer> actual, int index, int end) {
             super(index, end);
             this.actual = actual;
         }
@@ -176,12 +175,12 @@ public final class FlowableRange extends Flowable<Integer> {
 
     static final class RangeConditionalSubscription extends BaseRangeSubscription {
 
-        /** */
+
         private static final long serialVersionUID = 2587302975077663557L;
 
         final ConditionalSubscriber<? super Integer> actual;
 
-        public RangeConditionalSubscription(ConditionalSubscriber<? super Integer> actual, int index, int end) {
+        RangeConditionalSubscription(ConditionalSubscriber<? super Integer> actual, int index, int end) {
             super(index, end);
             this.actual = actual;
         }

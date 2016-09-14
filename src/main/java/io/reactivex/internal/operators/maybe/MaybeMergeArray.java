@@ -69,7 +69,6 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
     static final class MergeMaybeObserver<T>
     extends BasicIntQueueSubscription<T> implements MaybeObserver<T> {
 
-        /** */
         private static final long serialVersionUID = -660395290758764731L;
 
         final Subscriber<? super T> actual;
@@ -90,7 +89,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
         long consumed;
 
-        public MergeMaybeObserver(Subscriber<? super T> actual, int sourceCount, SimpleQueueWithConsumerIndex<Object> queue) {
+        MergeMaybeObserver(Subscriber<? super T> actual, int sourceCount, SimpleQueueWithConsumerIndex<Object> queue) {
             this.actual = actual;
             this.sourceCount = sourceCount;
             this.set = new CompositeDisposable();
@@ -316,13 +315,13 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
     extends AtomicReferenceArray<T>
     implements SimpleQueueWithConsumerIndex<T> {
 
-        /** */
+
         private static final long serialVersionUID = -7969063454040569579L;
         final AtomicInteger producerIndex;
 
         int consumerIndex;
 
-        public MpscFillOnceSimpleQueue(int length) {
+        MpscFillOnceSimpleQueue(int length) {
             super(length);
             this.producerIndex = new AtomicInteger();
         }
@@ -386,7 +385,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
         @Override
         public void clear() {
-            while (poll() != null && !isEmpty());
+            while (poll() != null && !isEmpty()) { }
         }
 
         @Override
@@ -402,14 +401,13 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
     static final class ClqSimpleQueue<T> extends ConcurrentLinkedQueue<T> implements SimpleQueueWithConsumerIndex<T> {
 
-        /** */
         private static final long serialVersionUID = -4025173261791142821L;
 
         int consumerIndex;
 
         final AtomicInteger producerIndex;
 
-        public ClqSimpleQueue() {
+        ClqSimpleQueue() {
             this.producerIndex = new AtomicInteger();
         }
 

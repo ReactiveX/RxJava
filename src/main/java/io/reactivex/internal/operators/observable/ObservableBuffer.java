@@ -57,7 +57,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
 
         Disposable s;
 
-        public BufferExactSubscriber(Observer<? super U> actual, int count, Callable<U> bufferSupplier) {
+        BufferExactSubscriber(Observer<? super U> actual, int count, Callable<U> bufferSupplier) {
             this.actual = actual;
             this.count = count;
             this.bufferSupplier = bufferSupplier;
@@ -148,7 +148,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
 
     static final class BufferSkipSubscriber<T, U extends Collection<? super T>>
     extends AtomicBoolean implements Observer<T>, Disposable {
-        /** */
+
         private static final long serialVersionUID = -8223395059921494546L;
         final Observer<? super U> actual;
         final int count;
@@ -161,7 +161,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
 
         long index;
 
-        public BufferSkipSubscriber(Observer<? super U> actual, int count, int skip, Callable<U> bufferSupplier) {
+        BufferSkipSubscriber(Observer<? super U> actual, int count, int skip, Callable<U> bufferSupplier) {
             this.actual = actual;
             this.count = count;
             this.skip = skip;

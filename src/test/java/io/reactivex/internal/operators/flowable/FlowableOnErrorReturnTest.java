@@ -67,7 +67,7 @@ public class FlowableOnErrorReturnTest {
     }
 
     /**
-     * Test that when a function throws an exception this is propagated through onError
+     * Test that when a function throws an exception this is propagated through onError.
      */
     @Test
     public void testFunctionThrowsError() {
@@ -114,8 +114,9 @@ public class FlowableOnErrorReturnTest {
         w = w.map(new Function<String, String>() {
             @Override
             public String apply(String s) {
-                if ("fail".equals(s))
+                if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
+                }
                 System.out.println("BadMapper:" + s);
                 return s;
             }
@@ -158,7 +159,7 @@ public class FlowableOnErrorReturnTest {
                 })
                 .observeOn(Schedulers.computation())
                 .map(new Function<Integer, Integer>() {
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer apply(Integer t1) {
@@ -182,9 +183,9 @@ public class FlowableOnErrorReturnTest {
     private static class TestObservable implements Publisher<String> {
 
         final String[] values;
-        Thread t = null;
+        Thread t;
 
-        public TestObservable(String... values) {
+        TestObservable(String... values) {
             this.values = values;
         }
 

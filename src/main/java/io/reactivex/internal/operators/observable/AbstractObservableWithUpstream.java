@@ -31,7 +31,7 @@ abstract class AbstractObservableWithUpstream<T, U> extends Observable<U> implem
      * Constructs the ObservableSource with the given consumable.
      * @param source the consumable Observable
      */
-    public AbstractObservableWithUpstream(ObservableSource<T> source) {
+    AbstractObservableWithUpstream(ObservableSource<T> source) {
         this.source = source;
     }
 

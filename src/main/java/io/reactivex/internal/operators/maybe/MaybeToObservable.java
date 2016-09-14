@@ -45,12 +45,12 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
 
     static final class MaybeToFlowableSubscriber<T> extends DeferredScalarDisposable<T>
     implements MaybeObserver<T> {
-        /** */
+
         private static final long serialVersionUID = 7603343402964826922L;
 
         Disposable d;
 
-        public MaybeToFlowableSubscriber(Observer<? super T> actual) {
+        MaybeToFlowableSubscriber(Observer<? super T> actual) {
             super(actual);
         }
 

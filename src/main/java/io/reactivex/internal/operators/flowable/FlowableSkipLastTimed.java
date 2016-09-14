@@ -45,7 +45,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
     }
 
     static final class SkipLastTimedSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = -5677354903406201275L;
         final Subscriber<? super T> actual;
         final long time;
@@ -63,7 +63,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
         volatile boolean done;
         Throwable error;
 
-        public SkipLastTimedSubscriber(Subscriber<? super T> actual, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
+        SkipLastTimedSubscriber(Subscriber<? super T> actual, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.time = time;
             this.unit = unit;

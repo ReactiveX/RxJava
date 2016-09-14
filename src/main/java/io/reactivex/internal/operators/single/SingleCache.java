@@ -151,14 +151,14 @@ public final class SingleCache<T> extends Single<T> implements SingleObserver<T>
     static final class CacheDisposable<T>
     extends AtomicBoolean
     implements Disposable {
-        /** */
+
         private static final long serialVersionUID = 7514387411091976596L;
 
         final SingleObserver<? super T> actual;
 
         final SingleCache<T> parent;
 
-        public CacheDisposable(SingleObserver<? super T> actual, SingleCache<T> parent) {
+        CacheDisposable(SingleObserver<? super T> actual, SingleCache<T> parent) {
             this.actual = actual;
             this.parent = parent;
         }

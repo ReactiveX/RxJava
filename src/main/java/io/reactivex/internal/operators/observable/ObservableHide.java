@@ -40,7 +40,7 @@ public final class ObservableHide<T> extends AbstractObservableWithUpstream<T, T
 
         Disposable d;
 
-        public HideDisposable(Observer<? super T> actual) {
+        HideDisposable(Observer<? super T> actual) {
             this.actual = actual;
         }
 

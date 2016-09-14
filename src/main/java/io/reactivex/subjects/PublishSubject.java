@@ -30,14 +30,14 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <pre> {@code
 
   PublishSubject<Object> subject = PublishSubject.create();
-  // observer1 will receive all onNext and onCompleted events
+  // observer1 will receive all onNext and onComplete events
   subject.subscribe(observer1);
   subject.onNext("one");
   subject.onNext("two");
-  // observer2 will only receive "three" and onCompleted
+  // observer2 will only receive "three" and onComplete
   subject.subscribe(observer2);
   subject.onNext("three");
-  subject.onCompleted();
+  subject.onComplete();
 
   } </pre>
  *
@@ -241,7 +241,7 @@ public final class PublishSubject<T> extends Subject<T> {
      * @param <T> the value type
      */
     static final class PublishDisposable<T> extends AtomicBoolean implements Disposable {
-        /** */
+
         private static final long serialVersionUID = 3562861878281475070L;
         /** The actual subscriber. */
         final Observer<? super T> actual;
@@ -253,7 +253,7 @@ public final class PublishSubject<T> extends Subject<T> {
          * @param actual the actual subscriber
          * @param parent the parent PublishProcessor
          */
-        public PublishDisposable(Observer<? super T> actual, PublishSubject<T> parent) {
+        PublishDisposable(Observer<? super T> actual, PublishSubject<T> parent) {
             this.actual = actual;
             this.parent = parent;
         }

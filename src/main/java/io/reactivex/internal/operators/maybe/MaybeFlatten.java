@@ -46,7 +46,7 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
-        /** */
+
         private static final long serialVersionUID = 4375739915521278546L;
 
         final MaybeObserver<? super R> actual;
@@ -55,7 +55,7 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
         Disposable d;
 
-        public FlatMapMaybeObserver(MaybeObserver<? super R> actual,
+        FlatMapMaybeObserver(MaybeObserver<? super R> actual,
                 Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;

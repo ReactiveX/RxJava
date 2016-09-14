@@ -46,7 +46,7 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
     static final class ConcatMaybeObserver<T>
     extends AtomicInteger
     implements MaybeObserver<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 3520831347801429610L;
 
         final Subscriber<? super T> actual;
@@ -63,7 +63,7 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
 
         long produced;
 
-        public ConcatMaybeObserver(Subscriber<? super T> actual, MaybeSource<? extends T>[] sources) {
+        ConcatMaybeObserver(Subscriber<? super T> actual, MaybeSource<? extends T>[] sources) {
             this.actual = actual;
             this.sources = sources;
             this.requested = new AtomicLong();

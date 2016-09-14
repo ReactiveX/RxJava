@@ -63,7 +63,7 @@ public class RangePerf {
         rangeAsync.subscribe(lo);
 
         if (times == 1) {
-            while (lo.latch.getCount() != 0);
+            while (lo.latch.getCount() != 0) { }
         } else {
             lo.latch.await();
         }
@@ -76,7 +76,7 @@ public class RangePerf {
         rangeAsyncPipeline.subscribe(lo);
 
         if (times == 1) {
-            while (lo.latch.getCount() != 0);
+            while (lo.latch.getCount() != 0) { }
         } else {
             lo.latch.await();
         }

@@ -35,7 +35,7 @@ public final class FlowableTakeLast<T> extends AbstractFlowableWithUpstream<T, T
     }
 
     static final class TakeLastSubscriber<T> extends ArrayDeque<T> implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 7240042530241604978L;
         final Subscriber<? super T> actual;
         final int count;
@@ -48,7 +48,7 @@ public final class FlowableTakeLast<T> extends AbstractFlowableWithUpstream<T, T
 
         final AtomicInteger wip = new AtomicInteger();
 
-        public TakeLastSubscriber(Subscriber<? super T> actual, int count) {
+        TakeLastSubscriber(Subscriber<? super T> actual, int count) {
             this.actual = actual;
             this.count = count;
         }

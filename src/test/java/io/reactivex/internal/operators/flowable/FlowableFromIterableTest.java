@@ -64,7 +64,7 @@ public class FlowableFromIterableTest {
             public Iterator<String> iterator() {
                 return new Iterator<String>() {
 
-                    int i = 0;
+                    int i;
 
                     @Override
                     public boolean hasNext() {
@@ -194,7 +194,7 @@ public class FlowableFromIterableTest {
             @Override
             public void onNext(Integer t) {
                 latch.countDown();
-                request(Long.MAX_VALUE-1);
+                request(Long.MAX_VALUE - 1);
             }});
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
@@ -249,8 +249,8 @@ public class FlowableFromIterableTest {
                         if (count > 1) {
                             called.set(true);
                             return false;
-                        } else
-                            return true;
+                        }
+                        return true;
                     }
 
                     @Override
@@ -286,8 +286,8 @@ public class FlowableFromIterableTest {
                         if (count > 1) {
                             called.set(true);
                             return false;
-                        } else
-                            return true;
+                        }
+                        return true;
                     }
 
                     @Override

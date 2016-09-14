@@ -79,7 +79,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
 
         volatile boolean done;
 
-        public TimeoutTimedOtherSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker,
+        TimeoutTimedOtherSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker,
                 ObservableSource<? extends T> other) {
             this.actual = actual;
             this.timeout = timeout;
@@ -209,7 +209,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
 
         volatile boolean done;
 
-        public TimeoutTimedSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        TimeoutTimedSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
             this.timeout = timeout;
             this.unit = unit;

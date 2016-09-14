@@ -18,7 +18,7 @@ package io.reactivex.annotations;
  */
 public enum BackpressureKind {
     /**
-     * The backpressure-related requests pass through this operator without change
+     * The backpressure-related requests pass through this operator without change.
      */
     PASS_THROUGH,
     /**

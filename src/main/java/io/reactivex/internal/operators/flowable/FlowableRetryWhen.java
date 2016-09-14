@@ -64,10 +64,10 @@ public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, 
 
     static final class RetryWhenSubscriber<T> extends WhenSourceSubscriber<T, Throwable> {
 
-        /** */
+
         private static final long serialVersionUID = -2680129890138081029L;
 
-        public RetryWhenSubscriber(Subscriber<? super T> actual, FlowableProcessor<Throwable> processor,
+        RetryWhenSubscriber(Subscriber<? super T> actual, FlowableProcessor<Throwable> processor,
                 Subscription receiver) {
             super(actual, processor, receiver);
         }

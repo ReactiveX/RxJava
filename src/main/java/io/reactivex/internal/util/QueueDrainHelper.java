@@ -438,7 +438,7 @@ public final class QueueDrainHelper {
      * <p>
      * Post-completion backpressure handles the case when a source produces values based on
      * requests when it is active but more values are available even after its completion.
-     * In this case, the onCompleted() can't just emit the contents of the queue but has to
+     * In this case, the onComplete() can't just emit the contents of the queue but has to
      * coordinate with the requested amounts. This requires two distinct modes: active and
      * completed. In active mode, requests flow through and the queue is not accessed but
      * in completed mode, requests no-longer reach the upstream but help in draining the queue.

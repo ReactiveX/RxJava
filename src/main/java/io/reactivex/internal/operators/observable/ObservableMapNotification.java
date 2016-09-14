@@ -40,10 +40,10 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
 
     @Override
     public void subscribeActual(Observer<? super ObservableSource<? extends R>> t) {
-        source.subscribe(new MapNotificationSubscriber<T, R>(t, onNextMapper, onErrorMapper, onCompleteSupplier));
+        source.subscribe(new MapNotificationObserver<T, R>(t, onNextMapper, onErrorMapper, onCompleteSupplier));
     }
 
-    static final class MapNotificationSubscriber<T, R>
+    static final class MapNotificationObserver<T, R>
     implements Observer<T>, Disposable {
         final Observer<? super ObservableSource<? extends R>> actual;
         final Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
@@ -52,7 +52,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
 
         Disposable s;
 
-        public MapNotificationSubscriber(Observer<? super ObservableSource<? extends R>> actual,
+        MapNotificationObserver(Observer<? super ObservableSource<? extends R>> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
                 Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
                         Callable<? extends ObservableSource<? extends R>> onCompleteSupplier) {

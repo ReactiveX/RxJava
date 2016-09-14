@@ -55,7 +55,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
     static final class GeneratorSubscription<T, S>
     extends AtomicLong
     implements Emitter<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 7565982551505011832L;
 
         final Subscriber<? super T> actual;
@@ -68,7 +68,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
 
         boolean terminate;
 
-        public GeneratorSubscription(Subscriber<? super T> actual,
+        GeneratorSubscription(Subscriber<? super T> actual,
                 BiFunction<S, ? super Emitter<T>, S> generator,
                 Consumer<? super S> disposeState, S initialState) {
             this.actual = actual;

@@ -60,7 +60,7 @@ public class OperatorFlatMapPerf {
             }
         }).subscribe(latchedObserver);
         if (input.size == 1) {
-            while (latchedObserver.latch.getCount() != 0);
+            while (latchedObserver.latch.getCount() != 0) { }
         } else {
             latchedObserver.latch.await();
         }

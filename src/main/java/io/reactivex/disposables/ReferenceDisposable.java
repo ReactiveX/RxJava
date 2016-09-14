@@ -24,7 +24,7 @@ import io.reactivex.internal.functions.ObjectHelper;
  * @param <T> the type contained
  */
 abstract class ReferenceDisposable<T> extends AtomicReference<T> implements Disposable {
-    /** */
+
     private static final long serialVersionUID = 6537757548749041217L;
 
     ReferenceDisposable(T value) {

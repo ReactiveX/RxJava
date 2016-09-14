@@ -47,7 +47,7 @@ public class ObservableMaterializeTest {
         }
 
         assertFalse(observer.onError);
-        assertTrue(observer.onCompleted);
+        assertTrue(observer.onComplete);
         assertEquals(3, observer.notifications.size());
 
         assertTrue(observer.notifications.get(0).isOnNext());
@@ -75,7 +75,7 @@ public class ObservableMaterializeTest {
         }
 
         assertFalse(observer.onError);
-        assertTrue(observer.onCompleted);
+        assertTrue(observer.onComplete);
         assertEquals(4, observer.notifications.size());
         assertTrue(observer.notifications.get(0).isOnNext());
         assertEquals("one", observer.notifications.get(0).getValue());
@@ -116,13 +116,13 @@ public class ObservableMaterializeTest {
 
     private static class TestLocalObserver extends DefaultObserver<Notification<String>> {
 
-        boolean onCompleted = false;
-        boolean onError = false;
+        boolean onComplete;
+        boolean onError;
         List<Notification<String>> notifications = new Vector<Notification<String>>();
 
         @Override
         public void onComplete() {
-            this.onCompleted = true;
+            this.onComplete = true;
         }
 
         @Override

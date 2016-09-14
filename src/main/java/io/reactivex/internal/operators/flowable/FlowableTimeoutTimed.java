@@ -82,7 +82,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
 
         volatile boolean done;
 
-        public TimeoutTimedOtherSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker,
+        TimeoutTimedOtherSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker,
                 Publisher<? extends T> other) {
             this.actual = actual;
             this.timeout = timeout;
@@ -211,7 +211,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
 
         volatile boolean done;
 
-        public TimeoutTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        TimeoutTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
             this.timeout = timeout;
             this.unit = unit;

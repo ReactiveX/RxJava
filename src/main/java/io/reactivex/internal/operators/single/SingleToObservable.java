@@ -41,7 +41,7 @@ public final class SingleToObservable<T> extends Observable<T> {
 
         Disposable d;
 
-        public SingleToObservableObserver(Observer<? super T> actual) {
+        SingleToObservableObserver(Observer<? super T> actual) {
             this.actual = actual;
         }
 

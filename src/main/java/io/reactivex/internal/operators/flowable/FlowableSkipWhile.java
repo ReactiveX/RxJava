@@ -36,7 +36,7 @@ public final class FlowableSkipWhile<T> extends AbstractFlowableWithUpstream<T, 
         final Predicate<? super T> predicate;
         Subscription s;
         boolean notSkipping;
-        public SkipWhileSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
+        SkipWhileSubscriber(Subscriber<? super T> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

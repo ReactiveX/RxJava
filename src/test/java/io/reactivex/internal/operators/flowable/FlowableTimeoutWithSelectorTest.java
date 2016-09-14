@@ -335,7 +335,7 @@ public class FlowableTimeoutWithSelectorTest {
                 source.timeout(timeoutFunc, Flowable.just(3)).subscribe(ts);
                 source.onNext(1); // start timeout
                 try {
-                    if(!enteredTimeoutOne.await(30, TimeUnit.SECONDS)) {
+                    if (!enteredTimeoutOne.await(30, TimeUnit.SECONDS)) {
                         latchTimeout.set(true);
                     }
                 } catch (InterruptedException e) {
@@ -343,7 +343,7 @@ public class FlowableTimeoutWithSelectorTest {
                 }
                 source.onNext(2); // disable timeout
                 try {
-                    if(!timeoutEmittedOne.await(30, TimeUnit.SECONDS)) {
+                    if (!timeoutEmittedOne.await(30, TimeUnit.SECONDS)) {
                         latchTimeout.set(true);
                     }
                 } catch (InterruptedException e) {
@@ -354,7 +354,7 @@ public class FlowableTimeoutWithSelectorTest {
 
         }).start();
 
-        if(!observerCompleted.await(30, TimeUnit.SECONDS)) {
+        if (!observerCompleted.await(30, TimeUnit.SECONDS)) {
             latchTimeout.set(true);
         }
 

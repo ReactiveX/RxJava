@@ -23,7 +23,7 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class LambdaObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
-    /** */
+
     private static final long serialVersionUID = -7251123623727029452L;
     final Consumer<? super T> onNext;
     final Consumer<? super Throwable> onError;

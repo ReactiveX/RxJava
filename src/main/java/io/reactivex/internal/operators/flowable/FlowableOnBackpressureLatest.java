@@ -32,7 +32,7 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
     }
 
     static final class BackpressureLatestSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
-        /** */
+
         private static final long serialVersionUID = 163080509307634843L;
 
         final Subscriber<? super T> actual;
@@ -48,7 +48,7 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
 
         final AtomicReference<T> current = new AtomicReference<T>();
 
-        public BackpressureLatestSubscriber(Subscriber<? super T> actual) {
+        BackpressureLatestSubscriber(Subscriber<? super T> actual) {
             this.actual = actual;
         }
 

@@ -22,7 +22,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class SubscriberResourceWrapper<T> extends AtomicReference<Disposable> implements Subscriber<T>, Disposable, Subscription {
-    /** */
+
     private static final long serialVersionUID = -8612022020200669122L;
 
     final Subscriber<? super T> actual;
