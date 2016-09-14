@@ -15,12 +15,13 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Allows lifting operators into a chain of Publishers.
+ * Allows lifting operators into a chain of Observables.
  *
- * <p>By having a concrete Publisher as lift, operator fusing can now identify
+ * <p>By having a concrete ObservableSource as lift, operator fusing can now identify
  * both the source and the operation inside it via casting, unlike the lambda version of this.
  *
  * @param <T> the upstream value type
@@ -45,28 +46,22 @@ public final class ObservableLift<R, T> extends AbstractObservableWithUpstream<T
 
     @Override
     public void subscribeActual(Observer<? super R> s) {
+        Observer<? super T> observer;
         try {
-            if (s == null) {
-                throw new NullPointerException("Operator " + operator + " received a null Subscriber");
-            }
-            Observer<? super T> st = operator.apply(s);
-
-            if (st == null) {
-                throw new NullPointerException("Operator " + operator + " returned a null Subscriber");
-            }
-
-            source.subscribe(st);
+            observer = ObjectHelper.requireNonNull(operator.apply(s), "Operator " + operator + " returned a null Observer");
         } catch (NullPointerException e) { // NOPMD
             throw e;
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            // can't call onError because no way to know if a Subscription has been set or not
-            // can't call onSubscribe because the call might have set a Subscription already
+            // can't call onError because no way to know if a Disposable has been set or not
+            // can't call onSubscribe because the call might have set a Disposable already
             RxJavaPlugins.onError(e);
 
             NullPointerException npe = new NullPointerException("Actually not, but can't throw other exceptions due to RS");
             npe.initCause(e);
             throw npe;
         }
+
+        source.subscribe(observer);
     }
 }

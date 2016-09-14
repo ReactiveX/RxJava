@@ -20,20 +20,19 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.subscribers.flowable.BlockingSubscriber;
-import io.reactivex.internal.subscribers.observable.*;
+import io.reactivex.internal.observers.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Utility methods to consume a Publisher in a blocking manner with callbacks or Subscriber.
+ * Utility methods to consume an Observable in a blocking manner with callbacks or Observer.
  */
 public enum ObservableBlockingSubscribe {
     ;
 
     /**
-     * Subscribes to the source and calls the Subscriber methods on the current thread.
+     * Subscribes to the source and calls the Observer methods on the current thread.
      * <p>
      * @param o the source publisher
      * The call to dispose() is composed through.
@@ -62,7 +61,7 @@ public enum ObservableBlockingSubscribe {
                 if (bs.isDisposed()) {
                     break;
                 }
-                if (o == BlockingSubscriber.TERMINATED) {
+                if (o == BlockingObserver.TERMINATED) {
                     break;
                 }
                 if (NotificationLite.acceptFull(v, subscriber)) {

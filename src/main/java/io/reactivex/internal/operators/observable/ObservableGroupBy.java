@@ -44,10 +44,10 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super GroupedObservable<K, V>> t) {
-        source.subscribe(new GroupBySubscriber<T, K, V>(t, keySelector, valueSelector, bufferSize, delayError));
+        source.subscribe(new GroupByObserver<T, K, V>(t, keySelector, valueSelector, bufferSize, delayError));
     }
 
-    public static final class GroupBySubscriber<T, K, V> extends AtomicInteger implements Observer<T>, Disposable {
+    public static final class GroupByObserver<T, K, V> extends AtomicInteger implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -3688291656102519502L;
 
@@ -64,7 +64,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         final AtomicBoolean cancelled = new AtomicBoolean();
 
-        public GroupBySubscriber(Observer<? super GroupedObservable<K, V>> actual, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
+        public GroupByObserver(Observer<? super GroupedObservable<K, V>> actual, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.keySelector = keySelector;
             this.valueSelector = valueSelector;
@@ -183,7 +183,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         final State<T, K> state;
 
-        public static <T, K> GroupedUnicast<K, T> createWith(K key, int bufferSize, GroupBySubscriber<?, K, T> parent, boolean delayError) {
+        public static <T, K> GroupedUnicast<K, T> createWith(K key, int bufferSize, GroupByObserver<?, K, T> parent, boolean delayError) {
             State<T, K> state = new State<T, K>(bufferSize, parent, key, delayError);
             return new GroupedUnicast<K, T>(key, state);
         }
@@ -217,7 +217,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         final K key;
         final SpscLinkedArrayQueue<T> queue;
-        final GroupBySubscriber<?, K, T> parent;
+        final GroupByObserver<?, K, T> parent;
         final boolean delayError;
 
         volatile boolean done;
@@ -227,7 +227,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         final AtomicReference<Observer<? super T>> actual = new AtomicReference<Observer<? super T>>();
 
-        State(int bufferSize, GroupBySubscriber<?, K, T> parent, K key, boolean delayError) {
+        State(int bufferSize, GroupByObserver<?, K, T> parent, K key, boolean delayError) {
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
             this.parent = parent;
             this.key = key;
@@ -254,7 +254,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
                 s.onSubscribe(this);
                 drain();
             } else {
-                EmptyDisposable.error(new IllegalStateException("Only one Subscriber allowed!"), s);
+                EmptyDisposable.error(new IllegalStateException("Only one Observer allowed!"), s);
             }
         }
 

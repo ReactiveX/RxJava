@@ -17,7 +17,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
-import io.reactivex.internal.subscribers.observable.DeferredScalarDisposable;
+import io.reactivex.internal.observers.DeferredScalarDisposable;
 
 /**
  * Wraps a MaybeSource and exposes it as a Flowable, relaying signals in a backpressure-aware manner

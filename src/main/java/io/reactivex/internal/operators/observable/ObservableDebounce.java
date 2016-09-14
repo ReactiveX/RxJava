@@ -33,10 +33,10 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new DebounceSubscriber<T, U>(new SerializedObserver<T>(t), debounceSelector));
+        source.subscribe(new DebounceObserver<T, U>(new SerializedObserver<T>(t), debounceSelector));
     }
 
-    static final class DebounceSubscriber<T, U>
+    static final class DebounceObserver<T, U>
     implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Function<? super T, ? extends ObservableSource<U>> debounceSelector;
@@ -49,7 +49,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
         boolean done;
 
-        DebounceSubscriber(Observer<? super T> actual,
+        DebounceObserver(Observer<? super T> actual,
                 Function<? super T, ? extends ObservableSource<U>> debounceSelector) {
             this.actual = actual;
             this.debounceSelector = debounceSelector;
@@ -94,7 +94,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
                 return;
             }
 
-            DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<T, U>(this, idx, t);
+            DebounceInnerObserver<T, U> dis = new DebounceInnerObserver<T, U>(this, idx, t);
 
             if (debouncer.compareAndSet(d, dis)) {
                 p.subscribe(dis);
@@ -116,7 +116,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
             Disposable d = debouncer.get();
             if (d != DisposableHelper.DISPOSED) {
                 @SuppressWarnings("unchecked")
-                DebounceInnerSubscriber<T, U> dis = (DebounceInnerSubscriber<T, U>)d;
+                DebounceInnerObserver<T, U> dis = (DebounceInnerObserver<T, U>)d;
                 dis.emit();
                 DisposableHelper.dispose(debouncer);
                 actual.onComplete();
@@ -140,8 +140,8 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
             }
         }
 
-        static final class DebounceInnerSubscriber<T, U> extends DisposableObserver<U> {
-            final DebounceSubscriber<T, U> parent;
+        static final class DebounceInnerObserver<T, U> extends DisposableObserver<U> {
+            final DebounceObserver<T, U> parent;
             final long index;
             final T value;
 
@@ -149,7 +149,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
 
             final AtomicBoolean once = new AtomicBoolean();
 
-            DebounceInnerSubscriber(DebounceSubscriber<T, U> parent, long index, T value) {
+            DebounceInnerObserver(DebounceObserver<T, U> parent, long index, T value) {
                 this.parent = parent;
                 this.index = index;
                 this.value = value;

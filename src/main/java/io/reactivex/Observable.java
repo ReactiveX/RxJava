@@ -16,7 +16,7 @@ package io.reactivex;
 import java.util.*;
 import java.util.concurrent.*;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
 
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
@@ -24,12 +24,12 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.observers.*;
 import io.reactivex.internal.operators.completable.CompletableFromObservable;
 import io.reactivex.internal.operators.flowable.FlowableFromObservable;
 import io.reactivex.internal.operators.maybe.MaybeFromObservable;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.operators.single.SingleFromObservable;
-import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.observables.*;
 import io.reactivex.observers.*;
@@ -9939,7 +9939,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @Override
     public final void subscribe(Observer<? super T> observer) {
-        ObjectHelper.requireNonNull(observer, "s is null");
+        ObjectHelper.requireNonNull(observer, "observer is null");
         try {
             observer = RxJavaPlugins.onSubscribe(this, observer);
 

@@ -46,10 +46,10 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
             return;
         }
 
-        source.subscribe(new SwitchMapSubscriber<T, R>(t, mapper, bufferSize, delayErrors));
+        source.subscribe(new SwitchMapObserver<T, R>(t, mapper, bufferSize, delayErrors));
     }
 
-    static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements Observer<T>, Disposable {
+    static final class SwitchMapObserver<T, R> extends AtomicInteger implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -3491074160481096299L;
         final Observer<? super R> actual;
@@ -66,17 +66,17 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         Disposable s;
 
-        final AtomicReference<SwitchMapInnerSubscriber<T, R>> active = new AtomicReference<SwitchMapInnerSubscriber<T, R>>();
+        final AtomicReference<SwitchMapInnerObserver<T, R>> active = new AtomicReference<SwitchMapInnerObserver<T, R>>();
 
-        static final SwitchMapInnerSubscriber<Object, Object> CANCELLED;
+        static final SwitchMapInnerObserver<Object, Object> CANCELLED;
         static {
-            CANCELLED = new SwitchMapInnerSubscriber<Object, Object>(null, -1L, 1);
+            CANCELLED = new SwitchMapInnerObserver<Object, Object>(null, -1L, 1);
             CANCELLED.cancel();
         }
 
         volatile long unique;
 
-        SwitchMapSubscriber(Observer<? super R> actual,
+        SwitchMapObserver(Observer<? super R> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
                         boolean delayErrors) {
             this.actual = actual;
@@ -99,7 +99,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
             long c = unique + 1;
             unique = c;
 
-            SwitchMapInnerSubscriber<T, R> inner = active.get();
+            SwitchMapInnerObserver<T, R> inner = active.get();
             if (inner != null) {
                 inner.cancel();
             }
@@ -120,7 +120,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                 return;
             }
 
-            SwitchMapInnerSubscriber<T, R> nextInner = new SwitchMapInnerSubscriber<T, R>(this, c, bufferSize);
+            SwitchMapInnerObserver<T, R> nextInner = new SwitchMapInnerObserver<T, R>(this, c, bufferSize);
 
             for (;;) {
                 inner = active.get();
@@ -172,9 +172,9 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         @SuppressWarnings("unchecked")
         void disposeInner() {
-            SwitchMapInnerSubscriber<T, R> a = active.get();
+            SwitchMapInnerObserver<T, R> a = active.get();
             if (a != CANCELLED) {
-                a = active.getAndSet((SwitchMapInnerSubscriber<T, R>)CANCELLED);
+                a = active.getAndSet((SwitchMapInnerObserver<T, R>)CANCELLED);
                 if (a != CANCELLED && a != null) {
                     a.cancel();
                 }
@@ -221,7 +221,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                     }
                 }
 
-                SwitchMapInnerSubscriber<T, R> inner = active.get();
+                SwitchMapInnerObserver<T, R> inner = active.get();
 
                 if (inner != null) {
                     SpscArrayQueue<R> q = inner.queue;
@@ -294,7 +294,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
             }
         }
 
-        void innerError(SwitchMapInnerSubscriber<T, R> inner, Throwable ex) {
+        void innerError(SwitchMapInnerObserver<T, R> inner, Throwable ex) {
             if (inner.index == unique && errors.addThrowable(ex)) {
                 if (!delayErrors) {
                     s.dispose();
@@ -307,16 +307,16 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         }
     }
 
-    static final class SwitchMapInnerSubscriber<T, R> extends AtomicReference<Disposable> implements Observer<R> {
+    static final class SwitchMapInnerObserver<T, R> extends AtomicReference<Disposable> implements Observer<R> {
 
         private static final long serialVersionUID = 3837284832786408377L;
-        final SwitchMapSubscriber<T, R> parent;
+        final SwitchMapObserver<T, R> parent;
         final long index;
         final SpscArrayQueue<R> queue;
 
         volatile boolean done;
 
-        SwitchMapInnerSubscriber(SwitchMapSubscriber<T, R> parent, long index, int bufferSize) {
+        SwitchMapInnerObserver(SwitchMapObserver<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
             this.index = index;
             this.queue = new SpscArrayQueue<R>(bufferSize);

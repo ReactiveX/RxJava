@@ -27,7 +27,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.subscribers.flowable.ForEachWhileSubscriber;
+import io.reactivex.internal.subscribers.ForEachWhileSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;

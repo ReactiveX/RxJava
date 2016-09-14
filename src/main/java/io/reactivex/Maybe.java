@@ -22,7 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
-import io.reactivex.internal.observers.BlockingObserver;
+import io.reactivex.internal.observers.BlockingMultiObserver;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.*;
 import io.reactivex.internal.util.*;
@@ -1888,7 +1888,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingGet() {
-        BlockingObserver<T> observer = new BlockingObserver<T>();
+        BlockingMultiObserver<T> observer = new BlockingMultiObserver<T>();
         subscribe(observer);
         return observer.blockingGet();
     }
@@ -1906,7 +1906,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingGet(T defaultValue) {
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
-        BlockingObserver<T> observer = new BlockingObserver<T>();
+        BlockingMultiObserver<T> observer = new BlockingMultiObserver<T>();
         subscribe(observer);
         return observer.blockingGet(defaultValue);
     }
@@ -2770,7 +2770,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Converts this Maybe into an Completable instance composing cancellation
+     * Converts this Maybe into a Completable instance composing cancellation
      * through and dropping a success value if emitted.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>

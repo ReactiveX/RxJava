@@ -31,11 +31,11 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
         SequentialDisposable sd = new SequentialDisposable();
         s.onSubscribe(sd);
 
-        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sd, source);
+        RepeatObserver<T> rs = new RepeatObserver<T>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sd, source);
         rs.subscribeNext();
     }
 
-    static final class RepeatSubscriber<T> extends AtomicInteger implements Observer<T> {
+    static final class RepeatObserver<T> extends AtomicInteger implements Observer<T> {
 
         private static final long serialVersionUID = -7098360935104053232L;
 
@@ -43,7 +43,7 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
         final SequentialDisposable sd;
         final ObservableSource<? extends T> source;
         long remaining;
-        RepeatSubscriber(Observer<? super T> actual, long count, SequentialDisposable sd, ObservableSource<? extends T> source) {
+        RepeatObserver(Observer<? super T> actual, long count, SequentialDisposable sd, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sd = sd;
             this.source = source;

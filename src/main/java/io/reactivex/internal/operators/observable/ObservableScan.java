@@ -28,10 +28,10 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new ScanSubscriber<T>(t, accumulator));
+        source.subscribe(new ScanObserver<T>(t, accumulator));
     }
 
-    static final class ScanSubscriber<T> implements Observer<T>, Disposable {
+    static final class ScanObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final BiFunction<T, T, T> accumulator;
 
@@ -39,7 +39,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
         T value;
 
-        ScanSubscriber(Observer<? super T> actual, BiFunction<T, T, T> accumulator) {
+        ScanObserver(Observer<? super T> actual, BiFunction<T, T, T> accumulator) {
             this.actual = actual;
             this.accumulator = accumulator;
         }

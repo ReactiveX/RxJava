@@ -26,8 +26,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.subscribers.observable.QueueDrainObserver;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.subjects.UnicastSubject;
@@ -61,22 +61,22 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         if (timespan == timeskip) {
             if (maxSize == Long.MAX_VALUE) {
-                source.subscribe(new WindowExactUnboundedSubscriber<T>(
+                source.subscribe(new WindowExactUnboundedObserver<T>(
                         actual,
                         timespan, unit, scheduler, bufferSize));
                 return;
             }
-            source.subscribe(new WindowExactBoundedSubscriber<T>(
+            source.subscribe(new WindowExactBoundedObserver<T>(
                         actual,
                         timespan, unit, scheduler,
                         bufferSize, maxSize, restartTimerOnMaxSize));
             return;
         }
-        source.subscribe(new WindowSkipSubscriber<T>(actual,
+        source.subscribe(new WindowSkipObserver<T>(actual,
                 timespan, timeskip, unit, scheduler.createWorker(), bufferSize));
     }
 
-    static final class WindowExactUnboundedSubscriber<T>
+    static final class WindowExactUnboundedObserver<T>
             extends QueueDrainObserver<T, Object, Observable<T>>
             implements Observer<T>, Disposable, Runnable {
         final long timespan;
@@ -96,7 +96,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         volatile boolean terminated;
 
-        WindowExactUnboundedSubscriber(Observer<? super Observable<T>> actual, long timespan, TimeUnit unit,
+        WindowExactUnboundedObserver(Observer<? super Observable<T>> actual, long timespan, TimeUnit unit,
                 Scheduler scheduler, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.timespan = timespan;
@@ -273,7 +273,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         }
     }
 
-    static final class WindowExactBoundedSubscriber<T>
+    static final class WindowExactBoundedObserver<T>
     extends QueueDrainObserver<T, Object, Observable<T>>
     implements Disposable {
         final long timespan;
@@ -299,7 +299,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        WindowExactBoundedSubscriber(
+        WindowExactBoundedObserver(
                 Observer<? super Observable<T>> actual,
                 long timespan, TimeUnit unit, Scheduler scheduler,
                 int bufferSize, long maxSize, boolean restartTimerOnMaxSize) {
@@ -533,15 +533,15 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         static final class ConsumerIndexHolder implements Runnable {
             final long index;
-            final WindowExactBoundedSubscriber<?> parent;
-            ConsumerIndexHolder(long index, WindowExactBoundedSubscriber<?> parent) {
+            final WindowExactBoundedObserver<?> parent;
+            ConsumerIndexHolder(long index, WindowExactBoundedObserver<?> parent) {
                 this.index = index;
                 this.parent = parent;
             }
 
             @Override
             public void run() {
-                WindowExactBoundedSubscriber<?> p = parent;
+                WindowExactBoundedObserver<?> p = parent;
                 if (p.selfCancel) {
                     throw new CancelledKeyException();
                 }
@@ -559,7 +559,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         }
     }
 
-    static final class WindowSkipSubscriber<T>
+    static final class WindowSkipObserver<T>
     extends QueueDrainObserver<T, Object, Observable<T>>
     implements Disposable, Runnable {
         final long timespan;
@@ -574,7 +574,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         volatile boolean terminated;
 
-        WindowSkipSubscriber(Observer<? super Observable<T>> actual,
+        WindowSkipObserver(Observer<? super Observable<T>> actual,
                 long timespan, long timeskip, TimeUnit unit,
                 Worker worker, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());

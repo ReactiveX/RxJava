@@ -29,10 +29,10 @@ public final class ObservableTakeLast<T> extends AbstractObservableWithUpstream<
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new TakeLastSubscriber<T>(t, count));
+        source.subscribe(new TakeLastObserver<T>(t, count));
     }
 
-    static final class TakeLastSubscriber<T> extends ArrayDeque<T> implements Observer<T>, Disposable {
+    static final class TakeLastObserver<T> extends ArrayDeque<T> implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = 7240042530241604978L;
         final Observer<? super T> actual;
@@ -42,7 +42,7 @@ public final class ObservableTakeLast<T> extends AbstractObservableWithUpstream<
 
         volatile boolean cancelled;
 
-        TakeLastSubscriber(Observer<? super T> actual, int count) {
+        TakeLastObserver(Observer<? super T> actual, int count) {
             this.actual = actual;
             this.count = count;
         }

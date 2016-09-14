@@ -14,7 +14,8 @@ package io.reactivex.internal.operators.flowable;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscribers.flowable.SubscriptionLambdaSubscriber;
+import io.reactivex.internal.subscribers.SubscriptionLambdaSubscriber;
+
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 

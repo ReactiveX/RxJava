@@ -25,16 +25,16 @@ public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T
 
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new SkipSubscriber<T>(s, n));
+        source.subscribe(new SkipObserver<T>(s, n));
     }
 
-    static final class SkipSubscriber<T> implements Observer<T>, Disposable {
+    static final class SkipObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         long remaining;
 
         Disposable d;
 
-        SkipSubscriber(Observer<? super T> actual, long n) {
+        SkipObserver(Observer<? super T> actual, long n) {
             this.actual = actual;
             this.remaining = n;
         }

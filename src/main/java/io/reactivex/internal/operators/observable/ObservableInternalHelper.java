@@ -21,7 +21,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observables.ConnectableObservable;
 
 /**
- * Helper utility class to support Flowable with inner classes.
+ * Helper utility class to support Observable with inner classes.
  */
 public enum ObservableInternalHelper {
     ;
@@ -304,7 +304,7 @@ public enum ObservableInternalHelper {
 
         @Override
         public ObservableSource<? extends R> apply(List<ObservableSource<? extends T>> list) {
-            return Observable.zipIterable(list, zipper, false, Flowable.bufferSize());
+            return Observable.zipIterable(list, zipper, false, Observable.bufferSize());
         }
     }
 

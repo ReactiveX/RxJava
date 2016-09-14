@@ -37,12 +37,12 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new DebounceTimedSubscriber<T>(
+        source.subscribe(new DebounceTimedObserver<T>(
                 new SerializedObserver<T>(t),
                 timeout, unit, scheduler.createWorker()));
     }
 
-    static final class DebounceTimedSubscriber<T>
+    static final class DebounceTimedObserver<T>
     implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final long timeout;
@@ -57,7 +57,7 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
 
         boolean done;
 
-        DebounceTimedSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        DebounceTimedObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
             this.timeout = timeout;
             this.unit = unit;
@@ -150,11 +150,11 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
 
         final T value;
         final long idx;
-        final DebounceTimedSubscriber<T> parent;
+        final DebounceTimedObserver<T> parent;
 
         final AtomicBoolean once = new AtomicBoolean();
 
-        DebounceEmitter(T value, long idx, DebounceTimedSubscriber<T> parent) {
+        DebounceEmitter(T value, long idx, DebounceTimedObserver<T> parent) {
             this.value = value;
             this.idx = idx;
             this.parent = parent;

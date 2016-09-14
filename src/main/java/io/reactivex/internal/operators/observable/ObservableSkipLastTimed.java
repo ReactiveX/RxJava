@@ -40,10 +40,10 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new SkipLastTimedSubscriber<T>(t, time, unit, scheduler, bufferSize, delayError));
+        source.subscribe(new SkipLastTimedObserver<T>(t, time, unit, scheduler, bufferSize, delayError));
     }
 
-    static final class SkipLastTimedSubscriber<T> extends AtomicInteger implements Observer<T>, Disposable {
+    static final class SkipLastTimedObserver<T> extends AtomicInteger implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -5677354903406201275L;
         final Observer<? super T> actual;
@@ -60,7 +60,7 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
         volatile boolean done;
         Throwable error;
 
-        SkipLastTimedSubscriber(Observer<? super T> actual, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
+        SkipLastTimedObserver(Observer<? super T> actual, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
             this.actual = actual;
             this.time = time;
             this.unit = unit;

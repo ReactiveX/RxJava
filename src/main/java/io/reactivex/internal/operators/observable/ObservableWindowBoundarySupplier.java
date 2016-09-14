@@ -21,8 +21,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -42,10 +42,10 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
 
     @Override
     public void subscribeActual(Observer<? super Observable<T>> t) {
-        source.subscribe(new WindowBoundaryMainSubscriber<T, B>(new SerializedObserver<Observable<T>>(t), other, bufferSize));
+        source.subscribe(new WindowBoundaryMainObserver<T, B>(new SerializedObserver<Observable<T>>(t), other, bufferSize));
     }
 
-    static final class WindowBoundaryMainSubscriber<T, B>
+    static final class WindowBoundaryMainObserver<T, B>
     extends QueueDrainObserver<T, Object, Observable<T>>
     implements Disposable {
 
@@ -62,7 +62,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
 
         final AtomicLong windows = new AtomicLong();
 
-        WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual, Callable<? extends ObservableSource<B>> other,
+        WindowBoundaryMainObserver(Observer<? super Observable<T>> actual, Callable<? extends ObservableSource<B>> other,
                 int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.other = other;
@@ -105,7 +105,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
 
                 a.onNext(w);
 
-                WindowBoundaryInnerSubscriber<T, B> inner = new WindowBoundaryInnerSubscriber<T, B>(this);
+                WindowBoundaryInnerObserver<T, B> inner = new WindowBoundaryInnerObserver<T, B>(this);
 
                 if (boundary.compareAndSet(null, inner)) {
                     windows.getAndIncrement();
@@ -254,7 +254,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
 
                         a.onNext(w);
 
-                        WindowBoundaryInnerSubscriber<T, B> b = new WindowBoundaryInnerSubscriber<T, B>(this);
+                        WindowBoundaryInnerObserver<T, B> b = new WindowBoundaryInnerObserver<T, B>(this);
 
                         if (boundary.compareAndSet(boundary.get(), b)) {
                             p.subscribe(b);
@@ -286,12 +286,12 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
         }
     }
 
-    static final class WindowBoundaryInnerSubscriber<T, B> extends DisposableObserver<B> {
-        final WindowBoundaryMainSubscriber<T, B> parent;
+    static final class WindowBoundaryInnerObserver<T, B> extends DisposableObserver<B> {
+        final WindowBoundaryMainObserver<T, B> parent;
 
         boolean done;
 
-        WindowBoundaryInnerSubscriber(WindowBoundaryMainSubscriber<T, B> parent) {
+        WindowBoundaryInnerObserver(WindowBoundaryMainObserver<T, B> parent) {
             this.parent = parent;
         }
 

@@ -24,8 +24,8 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -46,13 +46,13 @@ extends AbstractObservableWithUpstream<T, U> {
 
     @Override
     protected void subscribeActual(Observer<? super U> t) {
-        source.subscribe(new BufferBoundarySubscriber<T, U, Open, Close>(
+        source.subscribe(new BufferBoundaryObserver<T, U, Open, Close>(
                 new SerializedObserver<U>(t),
                 bufferOpen, bufferClose, bufferSupplier
                 ));
     }
 
-    static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, Open, Close>
+    static final class BufferBoundaryObserver<T, U extends Collection<? super T>, Open, Close>
     extends QueueDrainObserver<T, U, U> implements Disposable {
         final ObservableSource<? extends Open> bufferOpen;
         final Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
@@ -65,7 +65,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         final AtomicInteger windows = new AtomicInteger();
 
-        BufferBoundarySubscriber(Observer<? super U> actual,
+        BufferBoundaryObserver(Observer<? super U> actual,
                 ObservableSource<? extends Open> bufferOpen,
                 Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose,
                         Callable<U> bufferSupplier) {
@@ -81,7 +81,7 @@ extends AbstractObservableWithUpstream<T, U> {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
 
-                BufferOpenSubscriber<T, U, Open, Close> bos = new BufferOpenSubscriber<T, U, Open, Close>(this);
+                BufferOpenObserver<T, U, Open, Close> bos = new BufferOpenObserver<T, U, Open, Close>(this);
                 resources.add(bos);
 
                 actual.onSubscribe(this);
@@ -197,7 +197,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 buffers.add(b);
             }
 
-            BufferCloseSubscriber<T, U, Open, Close> bcs = new BufferCloseSubscriber<T, U, Open, Close>(b, this);
+            BufferCloseObserver<T, U, Open, Close> bcs = new BufferCloseObserver<T, U, Open, Close>(b, this);
             resources.add(bcs);
 
             windows.getAndIncrement();
@@ -232,13 +232,13 @@ extends AbstractObservableWithUpstream<T, U> {
         }
     }
 
-    static final class BufferOpenSubscriber<T, U extends Collection<? super T>, Open, Close>
+    static final class BufferOpenObserver<T, U extends Collection<? super T>, Open, Close>
     extends DisposableObserver<Open> {
-        final BufferBoundarySubscriber<T, U, Open, Close> parent;
+        final BufferBoundaryObserver<T, U, Open, Close> parent;
 
         boolean done;
 
-        BufferOpenSubscriber(BufferBoundarySubscriber<T, U, Open, Close> parent) {
+        BufferOpenObserver(BufferBoundaryObserver<T, U, Open, Close> parent) {
             this.parent = parent;
         }
         @Override
@@ -269,12 +269,12 @@ extends AbstractObservableWithUpstream<T, U> {
         }
     }
 
-    static final class BufferCloseSubscriber<T, U extends Collection<? super T>, Open, Close>
+    static final class BufferCloseObserver<T, U extends Collection<? super T>, Open, Close>
     extends DisposableObserver<Close> {
-        final BufferBoundarySubscriber<T, U, Open, Close> parent;
+        final BufferBoundaryObserver<T, U, Open, Close> parent;
         final U value;
         boolean done;
-        BufferCloseSubscriber(U value, BufferBoundarySubscriber<T, U, Open, Close> parent) {
+        BufferCloseObserver(U value, BufferBoundaryObserver<T, U, Open, Close> parent) {
             this.parent = parent;
             this.value = value;
         }

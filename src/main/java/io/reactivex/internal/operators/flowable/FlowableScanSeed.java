@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.queue.SpscArrayQueue;
-import io.reactivex.internal.subscribers.flowable.QueueDrainSubscriber;
+import io.reactivex.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 

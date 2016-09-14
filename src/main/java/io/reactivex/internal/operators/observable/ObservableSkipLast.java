@@ -29,10 +29,10 @@ public final class ObservableSkipLast<T> extends AbstractObservableWithUpstream<
 
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new SkipLastSubscriber<T>(s, skip));
+        source.subscribe(new SkipLastObserver<T>(s, skip));
     }
 
-    static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements Observer<T>, Disposable {
+    static final class SkipLastObserver<T> extends ArrayDeque<T> implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -3807491841935125653L;
         final Observer<? super T> actual;
@@ -40,7 +40,7 @@ public final class ObservableSkipLast<T> extends AbstractObservableWithUpstream<
 
         Disposable s;
 
-        SkipLastSubscriber(Observer<? super T> actual, int skip) {
+        SkipLastObserver(Observer<? super T> actual, int skip) {
             super(skip);
             this.actual = actual;
             this.skip = skip;

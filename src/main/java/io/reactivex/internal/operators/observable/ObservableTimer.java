@@ -32,7 +32,7 @@ public final class ObservableTimer extends Observable<Long> {
 
     @Override
     public void subscribeActual(Observer<? super Long> s) {
-        IntervalOnceSubscriber ios = new IntervalOnceSubscriber(s);
+        IntervalOnceObserver ios = new IntervalOnceObserver(s);
         s.onSubscribe(ios);
 
         Disposable d = scheduler.scheduleDirect(ios, delay, unit);
@@ -40,14 +40,14 @@ public final class ObservableTimer extends Observable<Long> {
         ios.setResource(d);
     }
 
-    static final class IntervalOnceSubscriber extends AtomicReference<Disposable>
+    static final class IntervalOnceObserver extends AtomicReference<Disposable>
     implements Disposable, Runnable {
 
         private static final long serialVersionUID = -2809475196591179431L;
 
         final Observer<? super Long> actual;
 
-        IntervalOnceSubscriber(Observer<? super Long> actual) {
+        IntervalOnceObserver(Observer<? super Long> actual) {
             this.actual = actual;
         }
 

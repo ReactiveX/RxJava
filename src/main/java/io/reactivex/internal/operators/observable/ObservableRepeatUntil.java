@@ -33,11 +33,11 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
         SequentialDisposable sd = new SequentialDisposable();
         s.onSubscribe(sd);
 
-        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, until, sd, source);
+        RepeatUntilObserver<T> rs = new RepeatUntilObserver<T>(s, until, sd, source);
         rs.subscribeNext();
     }
 
-    static final class RepeatSubscriber<T> extends AtomicInteger implements Observer<T> {
+    static final class RepeatUntilObserver<T> extends AtomicInteger implements Observer<T> {
 
         private static final long serialVersionUID = -7098360935104053232L;
 
@@ -45,7 +45,7 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
         final SequentialDisposable sd;
         final ObservableSource<? extends T> source;
         final BooleanSupplier stop;
-        RepeatSubscriber(Observer<? super T> actual, BooleanSupplier until, SequentialDisposable sd, ObservableSource<? extends T> source) {
+        RepeatUntilObserver(Observer<? super T> actual, BooleanSupplier until, SequentialDisposable sd, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sd = sd;
             this.source = source;

@@ -340,7 +340,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 cancelled = true;
                 if (getAndIncrement() == 0) {
                     s.cancel();
-                    unsubscribe();
+                    disposeAll();
                 }
             }
         }
@@ -467,7 +467,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                                     Exceptions.throwIfFatal(ex);
 
                                     s.cancel();
-                                    unsubscribe();
+                                    disposeAll();
 
                                     child.onError(ex);
                                     return;
@@ -532,7 +532,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         boolean checkTerminate() {
             if (cancelled) {
                 s.cancel();
-                unsubscribe();
+                disposeAll();
                 return true;
             }
             SimpleQueue<Throwable> e = errors.get();
@@ -540,7 +540,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 try {
                     reportError(e);
                 } finally {
-                    unsubscribe();
+                    disposeAll();
                 }
                 return true;
             }
@@ -586,7 +586,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
             }
         }
 
-        void unsubscribe() {
+        void disposeAll() {
             InnerSubscriber<?, ?>[] a = subscribers.get();
             if (a != CANCELLED) {
                 a = subscribers.getAndSet(CANCELLED);

@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
-import io.reactivex.internal.subscribers.flowable.*;
+import io.reactivex.internal.subscribers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T> {

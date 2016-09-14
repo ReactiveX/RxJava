@@ -35,11 +35,11 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
         SequentialDisposable sa = new SequentialDisposable();
         s.onSubscribe(sa);
 
-        RetryBiSubscriber<T> rs = new RetryBiSubscriber<T>(s, predicate, sa, source);
+        RetryBiObserver<T> rs = new RetryBiObserver<T>(s, predicate, sa, source);
         rs.subscribeNext();
     }
 
-    static final class RetryBiSubscriber<T> extends AtomicInteger implements Observer<T> {
+    static final class RetryBiObserver<T> extends AtomicInteger implements Observer<T> {
 
         private static final long serialVersionUID = -7098360935104053232L;
 
@@ -48,7 +48,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
         final ObservableSource<? extends T> source;
         final BiPredicate<? super Integer, ? super Throwable> predicate;
         int retries;
-        RetryBiSubscriber(Observer<? super T> actual,
+        RetryBiObserver(Observer<? super T> actual,
                 BiPredicate<? super Integer, ? super Throwable> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.sa = sa;

@@ -24,17 +24,17 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
 
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new TakeLastOneSubscriber<T>(s));
+        source.subscribe(new TakeLastOneObserver<T>(s));
     }
 
-    static final class TakeLastOneSubscriber<T> implements Observer<T>, Disposable {
+    static final class TakeLastOneObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
 
         Disposable s;
 
         T value;
 
-        TakeLastOneSubscriber(Observer<? super T> actual) {
+        TakeLastOneObserver(Observer<? super T> actual) {
             this.actual = actual;
         }
 

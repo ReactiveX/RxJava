@@ -26,17 +26,17 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new DematerializeSubscriber<T>(t));
+        source.subscribe(new DematerializeObserver<T>(t));
     }
 
-    static final class DematerializeSubscriber<T> implements Observer<Notification<T>>, Disposable {
+    static final class DematerializeObserver<T> implements Observer<Notification<T>>, Disposable {
         final Observer<? super T> actual;
 
         boolean done;
 
         Disposable s;
 
-        DematerializeSubscriber(Observer<? super T> actual) {
+        DematerializeObserver(Observer<? super T> actual) {
             this.actual = actual;
         }
 

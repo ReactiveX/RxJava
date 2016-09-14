@@ -36,7 +36,7 @@ public enum ObservableScalarXMap {
      * @param <R> the output value type
      * @param source the source ObservableSource
      * @param observer the subscriber
-     * @param mapper the function mapping a scalar value into a Publisher
+     * @param mapper the function mapping a scalar value into an ObservableSource
      * @return true if successful, false if the caller should continue with the regular path.
      */
     @SuppressWarnings("unchecked")
@@ -62,7 +62,7 @@ public enum ObservableScalarXMap {
             ObservableSource<? extends R> r;
 
             try {
-                r = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                r = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptyDisposable.error(ex, observer);
@@ -95,14 +95,14 @@ public enum ObservableScalarXMap {
     }
 
     /**
-     * Maps a scalar value into a Publisher and emits its values.
+     * Maps a scalar value into an Observable and emits its values.
      *
      * @param <T> the scalar value type
      * @param <U> the output value type
      * @param value the scalar value to map
      * @param mapper the function that gets the scalar value and should return
-     * a Publisher that gets streamed
-     * @return the new Flowable instance
+     * an ObservableSource that gets streamed
+     * @return the new Observable instance
      */
     public static <T, U> Observable<U> scalarXMap(T value,
             Function<? super T, ? extends ObservableSource<? extends U>> mapper) {
@@ -113,7 +113,7 @@ public enum ObservableScalarXMap {
      * Maps a scalar value to an ObservableSource and subscribes to it.
      *
      * @param <T> the scalar value type
-     * @param <R> the mapped Publisher's element type.
+     * @param <R> the mapped ObservableSource's element type.
      */
     static final class ScalarXMapObservable<T, R> extends Observable<R> {
 
@@ -132,7 +132,7 @@ public enum ObservableScalarXMap {
         public void subscribeActual(Observer<? super R> s) {
             ObservableSource<? extends R> other;
             try {
-                other = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null Publisher");
+                other = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null ObservableSource");
             } catch (Throwable e) {
                 EmptyDisposable.error(e, s);
                 return;

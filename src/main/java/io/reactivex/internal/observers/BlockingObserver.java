@@ -13,170 +13,55 @@
 
 package io.reactivex.internal.observers;
 
-import java.util.concurrent.*;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.*;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.util.NotificationLite;
 
-/**
- * A combined Observer that awaits the success or error signal via a CountDownLatch.
- * @param <T> the value type
- */
-public final class BlockingObserver<T>
-extends CountDownLatch
-implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
+public final class BlockingObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
 
-    T value;
-    Throwable error;
+    private static final long serialVersionUID = -4875965440900746268L;
 
-    Disposable d;
+    public static final Object TERMINATED = new Object();
 
-    volatile boolean cancelled;
+    final Queue<Object> queue;
 
-    public BlockingObserver() {
-        super(1);
-    }
-
-    void dispose() {
-        cancelled = true;
-        Disposable d = this.d;
-        if (d != null) {
-            d.dispose();
-        }
+    public BlockingObserver(Queue<Object> queue) {
+        this.queue = queue;
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
-        this.d = d;
-        if (cancelled) {
-            d.dispose();
-        }
+    public void onSubscribe(Disposable s) {
+        DisposableHelper.setOnce(this, s);
     }
 
     @Override
-    public void onSuccess(T value) {
-        this.value = value;
-        countDown();
+    public void onNext(T t) {
+        queue.offer(NotificationLite.next(t));
     }
 
     @Override
-    public void onError(Throwable e) {
-        error = e;
-        countDown();
+    public void onError(Throwable t) {
+        queue.offer(NotificationLite.error(t));
     }
 
     @Override
     public void onComplete() {
-        countDown();
+        queue.offer(NotificationLite.complete());
     }
 
-    /**
-     * Block until the latch is counted down then rethrow any exception received (wrapped if checked)
-     * or return the received value (null if none).
-     * @return the value received or null if no value received
-     */
-    public T blockingGet() {
-        if (getCount() != 0) {
-            try {
-                await();
-            } catch (InterruptedException ex) {
-                dispose();
-                throw ExceptionHelper.wrapOrThrow(ex);
-            }
+    @Override
+    public void dispose() {
+        if (DisposableHelper.dispose(this)) {
+            queue.offer(TERMINATED);
         }
-        Throwable ex = error;
-        if (ex != null) {
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
-        return value;
     }
 
-    /**
-     * Block until the latch is counted down then rethrow any exception received (wrapped if checked)
-     * or return the received value (the defaultValue if none).
-     * @param defaultValue the default value to return if no value was received
-     * @return the value received or defaultValue if no value received
-     */
-    public T blockingGet(T defaultValue) {
-        if (getCount() != 0) {
-            try {
-                await();
-            } catch (InterruptedException ex) {
-                dispose();
-                throw ExceptionHelper.wrapOrThrow(ex);
-            }
-        }
-        Throwable ex = error;
-        if (ex != null) {
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
-        T v = value;
-        return v != null ? v : defaultValue;
-    }
-
-    /**
-     * Block until the latch is counted down and return the error received or null if no
-     * error happened.
-     * @return the error received or null
-     */
-    public Throwable blockingGetError() {
-        if (getCount() != 0) {
-            try {
-                await();
-            } catch (InterruptedException ex) {
-                dispose();
-                return ex;
-            }
-        }
-        return error;
-    }
-
-    /**
-     * Block until the latch is counted down and return the error received or
-     * when the wait is interrupted or times out, null otherwise.
-     * @param timeout the timeout value
-     * @param unit the time unit
-     * @return the error received or null
-     */
-    public Throwable blockingGetError(long timeout, TimeUnit unit) {
-        if (getCount() != 0) {
-            try {
-                if (!await(timeout, unit)) {
-                    dispose();
-                    throw ExceptionHelper.wrapOrThrow(new TimeoutException());
-                }
-            } catch (InterruptedException ex) {
-                dispose();
-                throw ExceptionHelper.wrapOrThrow(ex);
-            }
-        }
-        return error;
-    }
-
-    /**
-     * Block until the observer terminates and return true; return false if
-     * the wait times out.
-     * @param timeout the timeout value
-     * @param unit the time unit
-     * @return true if the observer terminated in time, false otherwise
-     */
-    public boolean blockingAwait(long timeout, TimeUnit unit) {
-        if (getCount() != 0) {
-            try {
-                if (!await(timeout, unit)) {
-                    dispose();
-                    return false;
-                }
-            } catch (InterruptedException ex) {
-                dispose();
-                throw ExceptionHelper.wrapOrThrow(ex);
-            }
-        }
-        Throwable ex = error;
-        if (ex != null) {
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
-        return true;
+    @Override
+    public boolean isDisposed() {
+        return get() == DisposableHelper.DISPOSED;
     }
 }

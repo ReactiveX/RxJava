@@ -38,16 +38,16 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
     @Override
     protected void subscribeActual(Observer<? super U> t) {
         if (skip == count) {
-            BufferExactSubscriber<T, U> bes = new BufferExactSubscriber<T, U>(t, count, bufferSupplier);
+            BufferExactObserver<T, U> bes = new BufferExactObserver<T, U>(t, count, bufferSupplier);
             if (bes.createBuffer()) {
                 source.subscribe(bes);
             }
         } else {
-            source.subscribe(new BufferSkipSubscriber<T, U>(t, count, skip, bufferSupplier));
+            source.subscribe(new BufferSkipObserver<T, U>(t, count, skip, bufferSupplier));
         }
     }
 
-    static final class BufferExactSubscriber<T, U extends Collection<? super T>> implements Observer<T>, Disposable {
+    static final class BufferExactObserver<T, U extends Collection<? super T>> implements Observer<T>, Disposable {
         final Observer<? super U> actual;
         final int count;
         final Callable<U> bufferSupplier;
@@ -57,7 +57,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
 
         Disposable s;
 
-        BufferExactSubscriber(Observer<? super U> actual, int count, Callable<U> bufferSupplier) {
+        BufferExactObserver(Observer<? super U> actual, int count, Callable<U> bufferSupplier) {
             this.actual = actual;
             this.count = count;
             this.bufferSupplier = bufferSupplier;
@@ -146,7 +146,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         }
     }
 
-    static final class BufferSkipSubscriber<T, U extends Collection<? super T>>
+    static final class BufferSkipObserver<T, U extends Collection<? super T>>
     extends AtomicBoolean implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -8223395059921494546L;
@@ -161,7 +161,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
 
         long index;
 
-        BufferSkipSubscriber(Observer<? super U> actual, int count, int skip, Callable<U> bufferSupplier) {
+        BufferSkipObserver(Observer<? super U> actual, int count, int skip, Callable<U> bufferSupplier) {
             this.actual = actual;
             this.count = count;
             this.skip = skip;

@@ -76,7 +76,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         private static final long serialVersionUID = 8567835998786448817L;
         final Observer<? super R> actual;
         final Function<? super Object[], ? extends R> combiner;
-        final CombinerSubscriber<T, R>[] subscribers;
+        final CombinerObserver<T, R>[] observers;
         final T[] latest;
         final SpscLinkedArrayQueue<Object> queue;
         final boolean delayError;
@@ -98,15 +98,15 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             this.combiner = combiner;
             this.delayError = delayError;
             this.latest = (T[])new Object[count];
-            this.subscribers = new CombinerSubscriber[count];
+            this.observers = new CombinerObserver[count];
             this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
         }
 
         public void subscribe(ObservableSource<? extends T>[] sources) {
-            Observer<T>[] as = subscribers;
+            Observer<T>[] as = observers;
             int len = as.length;
             for (int i = 0; i < len; i++) {
-                as[i] = new CombinerSubscriber<T, R>(this, i);
+                as[i] = new CombinerObserver<T, R>(this, i);
             }
             lazySet(0); // release array contents
             actual.onSubscribe(this);
@@ -136,7 +136,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
         void cancel(SpscLinkedArrayQueue<?> q) {
             clear(q);
-            for (CombinerSubscriber<T, R> s : subscribers) {
+            for (CombinerObserver<T, R> s : observers) {
                 s.dispose();
             }
         }
@@ -149,7 +149,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         }
 
         void combine(T value, int index) {
-            CombinerSubscriber<T, R> cs = subscribers[index];
+            CombinerObserver<T, R> cs = observers[index];
 
             int a;
             int c;
@@ -212,7 +212,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
                     boolean d = done;
                     @SuppressWarnings("unchecked")
-                    CombinerSubscriber<T, R> cs = (CombinerSubscriber<T, R>)q.poll();
+                    CombinerObserver<T, R> cs = (CombinerObserver<T, R>)q.poll();
                     boolean empty = cs == null;
 
                     if (checkTerminated(d, empty, a, q, delayError)) {
@@ -312,7 +312,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         }
     }
 
-    static final class CombinerSubscriber<T, R> implements Observer<T>, Disposable {
+    static final class CombinerObserver<T, R> implements Observer<T>, Disposable {
         final LatestCoordinator<T, R> parent;
         final int index;
 
@@ -320,7 +320,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
-        CombinerSubscriber(LatestCoordinator<T, R> parent, int index) {
+        CombinerObserver(LatestCoordinator<T, R> parent, int index) {
             this.parent = parent;
             this.index = index;
         }

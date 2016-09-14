@@ -27,10 +27,10 @@ public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Bo
 
     @Override
     protected void subscribeActual(Observer<? super Boolean> t) {
-        source.subscribe(new AnySubscriber<T>(t, predicate));
+        source.subscribe(new AnyObserver<T>(t, predicate));
     }
 
-    static final class AnySubscriber<T> implements Observer<T>, Disposable {
+    static final class AnyObserver<T> implements Observer<T>, Disposable {
 
         final Observer<? super Boolean> actual;
         final Predicate<? super T> predicate;
@@ -39,7 +39,7 @@ public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Bo
 
         boolean done;
 
-        AnySubscriber(Observer<? super Boolean> actual, Predicate<? super T> predicate) {
+        AnyObserver(Observer<? super Boolean> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

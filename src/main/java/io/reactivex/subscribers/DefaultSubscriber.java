@@ -18,7 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 /**
- * Abstract base implementation of an Subscriber with support for requesting via
+ * Abstract base implementation of a Subscriber with support for requesting via
  * {@link #request(long)}, cancelling via
  * via {@link #cancel()} (both synchronously) and calls {@link #onStart()}
  * when the subscription happens.

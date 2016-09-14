@@ -16,7 +16,7 @@ package io.reactivex.internal.fuseable;
 import org.reactivestreams.Subscriber;
 
 /**
- * An Subscriber with an additional onNextIf(T) method that
+ * A Subscriber with an additional onNextIf(T) method that
  * tells the caller the specified value has been accepted or
  * not.
  *

@@ -33,7 +33,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
 
     final ConnectableObservable<? extends T> source;
 
-    volatile CompositeDisposable baseSubscription = new CompositeDisposable();
+    volatile CompositeDisposable baseDisposable = new CompositeDisposable();
 
     final AtomicInteger subscriptionCount = new AtomicInteger();
 
@@ -63,7 +63,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
 
             try {
                 // need to use this overload of connect to ensure that
-                // baseSubscription is set in the case that source is a
+                // baseDisposable is set in the case that source is a
                 // synchronous Observable
                 source.connect(onSubscribe(subscriber, writeLocked));
             } finally {
@@ -78,7 +78,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
         } else {
             try {
                 // ready to subscribe to source so do it
-                doSubscribe(subscriber, baseSubscription);
+                doSubscribe(subscriber, baseDisposable);
             } finally {
                 // release the read lock
                 lock.unlock();
@@ -93,9 +93,9 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
             @Override
             public void accept(Disposable subscription) {
                 try {
-                    baseSubscription.add(subscription);
+                    baseDisposable.add(subscription);
                     // ready to subscribe to source so do it
-                    doSubscribe(observer, baseSubscription);
+                    doSubscribe(observer, baseDisposable);
                 } finally {
                     // release the write lock
                     lock.unlock();
@@ -106,10 +106,10 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
     }
 
     void doSubscribe(final Observer<? super T> observer, final CompositeDisposable currentBase) {
-        // handle unsubscribing from the base subscription
+        // handle disposing from the base CompositeDisposable
         Disposable d = disconnect(currentBase);
 
-        ConnectionSubscriber s = new ConnectionSubscriber(observer, currentBase, d);
+        ConnectionObserver s = new ConnectionObserver(observer, currentBase, d);
         observer.onSubscribe(s);
 
         source.subscribe(s);
@@ -121,12 +121,12 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
             public void run() {
                 lock.lock();
                 try {
-                    if (baseSubscription == current) {
+                    if (baseDisposable == current) {
                         if (subscriptionCount.decrementAndGet() == 0) {
-                            baseSubscription.dispose();
-                            // need a new baseSubscription because once
-                            // unsubscribed stays that way
-                            baseSubscription = new CompositeDisposable();
+                            baseDisposable.dispose();
+                            // need a new baseDisposable because once
+                            // disposed stays that way
+                            baseDisposable = new CompositeDisposable();
                         }
                     }
                 } finally {
@@ -136,7 +136,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
         });
     }
 
-    final class ConnectionSubscriber
+    final class ConnectionObserver
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable {
 
@@ -146,7 +146,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
         final CompositeDisposable currentBase;
         final Disposable resource;
 
-        ConnectionSubscriber(Observer<? super T> subscriber,
+        ConnectionObserver(Observer<? super T> subscriber,
                 CompositeDisposable currentBase, Disposable resource) {
             this.subscriber = subscriber;
             this.currentBase = currentBase;
@@ -187,13 +187,13 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
         }
 
         void cleanup() {
-            // on error or completion we need to unsubscribe the base subscription
+            // on error or completion we need to dispose the base CompositeDisposable
             // and set the subscriptionCount to 0
             lock.lock();
             try {
-                if (baseSubscription == currentBase) {
-                    baseSubscription.dispose();
-                    baseSubscription = new CompositeDisposable();
+                if (baseDisposable == currentBase) {
+                    baseDisposable.dispose();
+                    baseDisposable = new CompositeDisposable();
                     subscriptionCount.set(0);
                 }
             } finally {

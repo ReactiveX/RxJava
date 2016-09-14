@@ -22,7 +22,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * A Observer + Future that expects exactly one upstream value and provides it
+ * An Observer + Future that expects exactly one upstream value and provides it
  * via the (blocking) Future API.
  *
  * @param <T> the value type

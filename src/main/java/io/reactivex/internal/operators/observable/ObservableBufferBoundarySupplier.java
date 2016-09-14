@@ -21,8 +21,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -40,10 +40,10 @@ extends AbstractObservableWithUpstream<T, U> {
 
     @Override
     protected void subscribeActual(Observer<? super U> t) {
-        source.subscribe(new BufferBoundarySupplierSubscriber<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundarySupplier));
+        source.subscribe(new BufferBoundarySupplierObserver<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundarySupplier));
     }
 
-    static final class BufferBoundarySupplierSubscriber<T, U extends Collection<? super T>, B>
+    static final class BufferBoundarySupplierObserver<T, U extends Collection<? super T>, B>
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
 
         final Callable<U> bufferSupplier;
@@ -55,7 +55,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         U buffer;
 
-        BufferBoundarySupplierSubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
+        BufferBoundarySupplierObserver(Observer<? super U> actual, Callable<U> bufferSupplier,
                                                 Callable<? extends ObservableSource<B>> boundarySupplier) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -108,7 +108,7 @@ extends AbstractObservableWithUpstream<T, U> {
                     return;
                 }
 
-                BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+                BufferBoundaryObserver<T, U, B> bs = new BufferBoundaryObserver<T, U, B>(this);
                 other.set(bs);
 
                 actual.onSubscribe(this);
@@ -213,7 +213,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 return;
             }
 
-            BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+            BufferBoundaryObserver<T, U, B> bs = new BufferBoundaryObserver<T, U, B>(this);
 
             Disposable o = other.get();
 
@@ -242,13 +242,13 @@ extends AbstractObservableWithUpstream<T, U> {
 
     }
 
-    static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B>
+    static final class BufferBoundaryObserver<T, U extends Collection<? super T>, B>
     extends DisposableObserver<B> {
-        final BufferBoundarySupplierSubscriber<T, U, B> parent;
+        final BufferBoundarySupplierObserver<T, U, B> parent;
 
         boolean once;
 
-        BufferBoundarySubscriber(BufferBoundarySupplierSubscriber<T, U, B> parent) {
+        BufferBoundaryObserver(BufferBoundarySupplierObserver<T, U, B> parent) {
             this.parent = parent;
         }
 

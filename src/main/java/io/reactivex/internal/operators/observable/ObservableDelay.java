@@ -47,10 +47,10 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
 
         Scheduler.Worker w = scheduler.createWorker();
 
-        source.subscribe(new DelaySubscriber<T>(s, delay, unit, w, delayError));
+        source.subscribe(new DelayObserver<T>(s, delay, unit, w, delayError));
     }
 
-    static final class DelaySubscriber<T> implements Observer<T>, Disposable {
+    static final class DelayObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final long delay;
         final TimeUnit unit;
@@ -59,7 +59,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
 
         Disposable s;
 
-        DelaySubscriber(Observer<? super T> actual, long delay, TimeUnit unit, Worker w, boolean delayError) {
+        DelayObserver(Observer<? super T> actual, long delay, TimeUnit unit, Worker w, boolean delayError) {
             super();
             this.actual = actual;
             this.delay = delay;

@@ -36,13 +36,13 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
     @Override
     public void subscribeActual(Observer<? super Observable<T>> t) {
         if (count == skip) {
-            source.subscribe(new WindowExactSubscriber<T>(t, count, capacityHint));
+            source.subscribe(new WindowExactObserver<T>(t, count, capacityHint));
         } else {
-            source.subscribe(new WindowSkipSubscriber<T>(t, count, skip, capacityHint));
+            source.subscribe(new WindowSkipObserver<T>(t, count, skip, capacityHint));
         }
     }
 
-    static final class WindowExactSubscriber<T>
+    static final class WindowExactObserver<T>
     extends AtomicInteger
     implements Observer<T>, Disposable, Runnable {
 
@@ -59,7 +59,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
 
         volatile boolean cancelled;
 
-        WindowExactSubscriber(Observer<? super Observable<T>> actual, long count, int capacityHint) {
+        WindowExactObserver(Observer<? super Observable<T>> actual, long count, int capacityHint) {
             this.actual = actual;
             this.count = count;
             this.capacityHint = capacityHint;
@@ -134,7 +134,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         }
     }
 
-    static final class WindowSkipSubscriber<T> extends AtomicBoolean
+    static final class WindowSkipObserver<T> extends AtomicBoolean
     implements Observer<T>, Disposable, Runnable {
 
         private static final long serialVersionUID = 3366976432059579510L;
@@ -155,7 +155,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
 
         final AtomicInteger wip = new AtomicInteger();
 
-        WindowSkipSubscriber(Observer<? super Observable<T>> actual, long count, long skip, int capacityHint) {
+        WindowSkipObserver(Observer<? super Observable<T>> actual, long count, long skip, int capacityHint) {
             this.actual = actual;
             this.count = count;
             this.skip = skip;

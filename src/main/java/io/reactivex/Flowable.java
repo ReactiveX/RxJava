@@ -30,7 +30,7 @@ import io.reactivex.internal.operators.maybe.MaybeFromPublisher;
 import io.reactivex.internal.operators.observable.ObservableFromPublisher;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
-import io.reactivex.internal.subscribers.flowable.*;
+import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;

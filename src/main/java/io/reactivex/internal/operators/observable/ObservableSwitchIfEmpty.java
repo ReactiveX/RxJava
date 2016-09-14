@@ -26,19 +26,19 @@ public final class ObservableSwitchIfEmpty<T> extends AbstractObservableWithUpst
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        SwitchIfEmptySubscriber<T> parent = new SwitchIfEmptySubscriber<T>(t, other);
+        SwitchIfEmptyObserver<T> parent = new SwitchIfEmptyObserver<T>(t, other);
         t.onSubscribe(parent.arbiter);
         source.subscribe(parent);
     }
 
-    static final class SwitchIfEmptySubscriber<T> implements Observer<T> {
+    static final class SwitchIfEmptyObserver<T> implements Observer<T> {
         final Observer<? super T> actual;
         final ObservableSource<? extends T> other;
         final SequentialDisposable arbiter;
 
         boolean empty;
 
-        SwitchIfEmptySubscriber(Observer<? super T> actual, ObservableSource<? extends T> other) {
+        SwitchIfEmptyObserver(Observer<? super T> actual, ObservableSource<? extends T> other) {
             this.actual = actual;
             this.other = other;
             this.empty = true;

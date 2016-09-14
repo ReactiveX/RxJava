@@ -32,7 +32,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
 
         final ArrayCompositeDisposable frc = new ArrayCompositeDisposable(2);
 
-        final TakeUntilSubscriber<T> tus = new TakeUntilSubscriber<T>(serial, frc);
+        final TakeUntilObserver<T> tus = new TakeUntilObserver<T>(serial, frc);
 
         other.subscribe(new Observer<U>() {
             @Override
@@ -71,7 +71,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
         source.subscribe(tus);
     }
 
-    static final class TakeUntilSubscriber<T> extends AtomicBoolean implements Observer<T>, Disposable {
+    static final class TakeUntilObserver<T> extends AtomicBoolean implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = 3451719290311127173L;
         final Observer<? super T> actual;
@@ -79,7 +79,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
 
         Disposable s;
 
-        TakeUntilSubscriber(Observer<? super T> actual, ArrayCompositeDisposable frc) {
+        TakeUntilObserver(Observer<? super T> actual, ArrayCompositeDisposable frc) {
             this.actual = actual;
             this.frc = frc;
         }

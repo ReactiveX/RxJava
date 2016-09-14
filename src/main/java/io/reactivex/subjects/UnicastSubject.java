@@ -20,8 +20,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.subscribers.observable.BasicIntQueueDisposable;
 
 /**
  * Subject that allows only a single Subscriber to subscribe to it during its lifetime.

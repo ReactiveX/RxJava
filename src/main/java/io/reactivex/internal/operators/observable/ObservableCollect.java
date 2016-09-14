@@ -46,11 +46,11 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
             return;
         }
 
-        source.subscribe(new CollectSubscriber<T, U>(t, u, collector));
+        source.subscribe(new CollectObserver<T, U>(t, u, collector));
 
     }
 
-    static final class CollectSubscriber<T, U> implements Observer<T>, Disposable {
+    static final class CollectObserver<T, U> implements Observer<T>, Disposable {
         final Observer<? super U> actual;
         final BiConsumer<? super U, ? super T> collector;
         final U u;
@@ -59,7 +59,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
 
         boolean done;
 
-        CollectSubscriber(Observer<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
+        CollectObserver(Observer<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
             this.actual = actual;
             this.collector = collector;
             this.u = u;

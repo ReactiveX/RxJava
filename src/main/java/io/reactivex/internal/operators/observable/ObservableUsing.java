@@ -67,12 +67,12 @@ public final class ObservableUsing<T, D> extends Observable<T> {
             return;
         }
 
-        UsingSubscriber<T, D> us = new UsingSubscriber<T, D>(s, resource, disposer, eager);
+        UsingObserver<T, D> us = new UsingObserver<T, D>(s, resource, disposer, eager);
 
         source.subscribe(us);
     }
 
-    static final class UsingSubscriber<T, D> extends AtomicBoolean implements Observer<T>, Disposable {
+    static final class UsingObserver<T, D> extends AtomicBoolean implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = 5904473792286235046L;
 
@@ -83,7 +83,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
 
         Disposable s;
 
-        UsingSubscriber(Observer<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
+        UsingObserver(Observer<? super T> actual, D resource, Consumer<? super D> disposer, boolean eager) {
             this.actual = actual;
             this.resource = resource;
             this.disposer = disposer;

@@ -23,8 +23,8 @@ import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.subscribers.observable.QueueDrainObserver;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.SerializedObserver;
 
@@ -54,7 +54,7 @@ extends AbstractObservableWithUpstream<T, U> {
     @Override
     protected void subscribeActual(Observer<? super U> t) {
         if (timespan == timeskip && maxSize == Integer.MAX_VALUE) {
-            source.subscribe(new BufferExactUnboundedSubscriber<T, U>(
+            source.subscribe(new BufferExactUnboundedObserver<T, U>(
                     new SerializedObserver<U>(t),
                     bufferSupplier, timespan, unit, scheduler));
             return;
@@ -62,7 +62,7 @@ extends AbstractObservableWithUpstream<T, U> {
         Scheduler.Worker w = scheduler.createWorker();
 
         if (timespan == timeskip) {
-            source.subscribe(new BufferExactBoundedSubscriber<T, U>(
+            source.subscribe(new BufferExactBoundedObserver<T, U>(
                     new SerializedObserver<U>(t),
                     bufferSupplier,
                     timespan, unit, maxSize, restartTimerOnMaxSize, w
@@ -71,13 +71,13 @@ extends AbstractObservableWithUpstream<T, U> {
         }
         // Can't use maxSize because what to do if a buffer is full but its
         // timespan hasn't been elapsed?
-        source.subscribe(new BufferSkipBoundedSubscriber<T, U>(
+        source.subscribe(new BufferSkipBoundedObserver<T, U>(
                 new SerializedObserver<U>(t),
                 bufferSupplier, timespan, timeskip, unit, w));
 
     }
 
-    static final class BufferExactUnboundedSubscriber<T, U extends Collection<? super T>>
+    static final class BufferExactUnboundedObserver<T, U extends Collection<? super T>>
     extends QueueDrainObserver<T, U, U> implements Runnable, Disposable {
         final Callable<U> bufferSupplier;
         final long timespan;
@@ -92,7 +92,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        BufferExactUnboundedSubscriber(
+        BufferExactUnboundedObserver(
                 Observer<? super U> actual, Callable<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
             super(actual, new MpscLinkedQueue<U>());
@@ -241,7 +241,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
     }
 
-    static final class BufferSkipBoundedSubscriber<T, U extends Collection<? super T>>
+    static final class BufferSkipBoundedObserver<T, U extends Collection<? super T>>
     extends QueueDrainObserver<T, U, U> implements Runnable, Disposable {
         final Callable<U> bufferSupplier;
         final long timespan;
@@ -253,7 +253,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         Disposable s;
 
-        BufferSkipBoundedSubscriber(Observer<? super U> actual,
+        BufferSkipBoundedObserver(Observer<? super U> actual,
                 Callable<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
             super(actual, new MpscLinkedQueue<U>());
@@ -298,7 +298,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 w.schedule(new Runnable() {
                     @Override
                     public void run() {
-                        synchronized (BufferSkipBoundedSubscriber.this) {
+                        synchronized (BufferSkipBoundedObserver.this) {
                             buffers.remove(b);
                         }
 
@@ -394,7 +394,7 @@ extends AbstractObservableWithUpstream<T, U> {
             w.schedule(new Runnable() {
                 @Override
                 public void run() {
-                    synchronized (BufferSkipBoundedSubscriber.this) {
+                    synchronized (BufferSkipBoundedObserver.this) {
                         buffers.remove(b);
                     }
 
@@ -409,7 +409,7 @@ extends AbstractObservableWithUpstream<T, U> {
         }
     }
 
-    static final class BufferExactBoundedSubscriber<T, U extends Collection<? super T>>
+    static final class BufferExactBoundedObserver<T, U extends Collection<? super T>>
     extends QueueDrainObserver<T, U, U> implements Runnable, Disposable {
         final Callable<U> bufferSupplier;
         final long timespan;
@@ -428,7 +428,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         long consumerIndex;
 
-        BufferExactBoundedSubscriber(
+        BufferExactBoundedObserver(
                 Observer<? super U> actual,
                 Callable<U> bufferSupplier,
                 long timespan, TimeUnit unit, int maxSize,

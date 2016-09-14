@@ -75,7 +75,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     protected void subscribeActual(Subscriber<? super T> t) {
         // we can connect first because we replay everything anyway
         ReplaySubscription<T> rp = new ReplaySubscription<T>(t, state);
-        state.addProducer(rp);
+        state.addChild(rp);
 
         t.onSubscribe(rp);
 
@@ -100,7 +100,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
      * @return true if the cache has Subscribers
      */
     /* public */ boolean hasSubscribers() {
-        return state.producers.length != 0;
+        return state.subscribers.length != 0;
     }
 
     /**
@@ -112,7 +112,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     }
 
     /**
-     * Contains the active child producers and the values to replay.
+     * Contains the active child subscribers and the values to replay.
      *
      * @param <T> the value type of the cached items
      */
@@ -122,8 +122,8 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         /** Holds onto the subscriber connected to source. */
         final AtomicReference<Subscription> connection = new AtomicReference<Subscription>();
         /** Guarded by connection (not this). */
-        volatile ReplaySubscription<?>[] producers;
-        /** The default empty array of producers. */
+        volatile ReplaySubscription<?>[] subscribers;
+        /** The default empty array of subscribers. */
         static final ReplaySubscription<?>[] EMPTY = new ReplaySubscription<?>[0];
 
         /** Set to true after connection. */
@@ -137,31 +137,31 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         CacheState(Flowable<? extends T> source, int capacityHint) {
             super(capacityHint);
             this.source = source;
-            this.producers = EMPTY;
+            this.subscribers = EMPTY;
         }
         /**
-         * Adds a ReplayProducer to the producers array atomically.
+         * Adds a ReplaySubscription to the subscribers array atomically.
          * @param p the target ReplaySubscription wrapping a downstream Subscriber with state
          */
-        public void addProducer(ReplaySubscription<T> p) {
+        public void addChild(ReplaySubscription<T> p) {
             // guarding by connection to save on allocating another object
             // thus there are two distinct locks guarding the value-addition and child come-and-go
             synchronized (connection) {
-                ReplaySubscription<?>[] a = producers;
+                ReplaySubscription<?>[] a = subscribers;
                 int n = a.length;
                 ReplaySubscription<?>[] b = new ReplaySubscription<?>[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = p;
-                producers = b;
+                subscribers = b;
             }
         }
         /**
-         * Removes the ReplayProducer (if present) from the producers array atomically.
+         * Removes the ReplaySubscription (if present) from the subscribers array atomically.
          * @param p the target ReplaySubscription wrapping a downstream Subscriber with state
          */
-        public void removeProducer(ReplaySubscription<T> p) {
+        public void removeChild(ReplaySubscription<T> p) {
             synchronized (connection) {
-                ReplaySubscription<?>[] a = producers;
+                ReplaySubscription<?>[] a = subscribers;
                 int n = a.length;
                 int j = -1;
                 for (int i = 0; i < n; i++) {
@@ -174,13 +174,13 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                     return;
                 }
                 if (n == 1) {
-                    producers = EMPTY;
+                    subscribers = EMPTY;
                     return;
                 }
                 ReplaySubscription<?>[] b = new ReplaySubscription<?>[n - 1];
                 System.arraycopy(a, 0, b, 0, j);
                 System.arraycopy(a, j + 1, b, j, n - j - 1);
-                producers = b;
+                subscribers = b;
             }
         }
 
@@ -231,7 +231,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
          * Signals all known children there is work to do.
          */
         void dispatch() {
-            ReplaySubscription<?>[] a = producers;
+            ReplaySubscription<?>[] a = subscribers;
             for (ReplaySubscription<?> rp : a) {
                 rp.replay();
             }
@@ -312,7 +312,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
             if (r != CANCELLED) {
                 r = getAndSet(CANCELLED);
                 if (r != CANCELLED) {
-                    state.removeProducer(this);
+                    state.removeChild(this);
                 }
             }
         }

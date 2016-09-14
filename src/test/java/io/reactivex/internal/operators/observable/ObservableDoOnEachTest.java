@@ -160,7 +160,7 @@ public class ObservableDoOnEachTest {
         assertEquals(expectedCount, count.get());
     }
 
-    // FIXME crashing ObservableSource can't propagate to a Observer
+    // FIXME crashing ObservableSource can't propagate to an Observer
 //    @Test
 //    public void testFatalError() {
 //        try {

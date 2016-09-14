@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.SequentialDisposable;
-import io.reactivex.internal.subscribers.observable.ToNotificationObserver;
+import io.reactivex.internal.observers.ToNotificationObserver;
 import io.reactivex.subjects.*;
 
 public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T> {
@@ -37,7 +37,7 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
 
         Subject<Notification<Object>> subject = BehaviorSubject.<Notification<Object>>create().toSerialized();
 
-        final RedoSubscriber<T> parent = new RedoSubscriber<T>(s, subject, source);
+        final RedoObserver<T> parent = new RedoObserver<T>(s, subject, source);
 
         s.onSubscribe(parent.arbiter);
 
@@ -62,7 +62,7 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
         parent.handle(Notification.<Object>createOnNext(0));
     }
 
-    static final class RedoSubscriber<T> extends AtomicBoolean implements Observer<T> {
+    static final class RedoObserver<T> extends AtomicBoolean implements Observer<T> {
 
         private static final long serialVersionUID = -1151903143112844287L;
         final Observer<? super T> actual;
@@ -72,7 +72,7 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
 
         final AtomicInteger wip = new AtomicInteger();
 
-        RedoSubscriber(Observer<? super T> actual, Subject<Notification<Object>> subject, ObservableSource<? extends T> source) {
+        RedoObserver(Observer<? super T> actual, Subject<Notification<Object>> subject, ObservableSource<? extends T> source) {
             this.actual = actual;
             this.subject = subject;
             this.source = source;

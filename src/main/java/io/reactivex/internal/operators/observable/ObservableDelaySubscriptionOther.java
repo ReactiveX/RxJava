@@ -38,7 +38,7 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
         final SequentialDisposable serial = new SequentialDisposable();
         child.onSubscribe(serial);
 
-        Observer<U> otherSubscriber = new Observer<U>() {
+        Observer<U> otherObserver = new Observer<U>() {
             boolean done;
             @Override
             public void onSubscribe(Disposable d) {
@@ -91,6 +91,6 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
             }
         };
 
-        other.subscribe(otherSubscriber);
+        other.subscribe(otherObserver);
     }
 }
