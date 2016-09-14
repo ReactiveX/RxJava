@@ -28,14 +28,14 @@ import rx.internal.util.UtilityFunctions;
 public final class OperatorSequenceEqual {
 
     /** NotificationLite doesn't work as zip uses it. */
-    static final Object LOCAL_ONCOMPLETED = new Object();
+    static final Object LOCAL_ON_COMPLETED = new Object();
 
     private OperatorSequenceEqual() {
         throw new IllegalStateException("No instances!");
     }
 
     static <T> Observable<Object> materializeLite(Observable<T> source) {
-        return concat(source, just(LOCAL_ONCOMPLETED));
+        return concat(source, just(LOCAL_ON_COMPLETED));
     }
 
     /**
@@ -65,8 +65,8 @@ public final class OperatorSequenceEqual {
                     @Override
                     @SuppressWarnings("unchecked")
                     public Boolean call(Object t1, Object t2) {
-                        boolean c1 = t1 == LOCAL_ONCOMPLETED;
-                        boolean c2 = t2 == LOCAL_ONCOMPLETED;
+                        boolean c1 = t1 == LOCAL_ON_COMPLETED;
+                        boolean c2 = t2 == LOCAL_ON_COMPLETED;
                         if (c1 && c2) {
                             return true;
                         }

@@ -39,8 +39,8 @@ public final class OperatorDebounceWithSelector<T, U> implements Operator<T, T> 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
-        final SerialSubscription ssub = new SerialSubscription();
-        child.add(ssub);
+        final SerialSubscription serial = new SerialSubscription();
+        child.add(serial);
 
         return new Subscriber<T>(child) {
             final DebounceState<T> state = new DebounceState<T>();
@@ -84,7 +84,7 @@ public final class OperatorDebounceWithSelector<T, U> implements Operator<T, T> 
                         unsubscribe();
                     }
                 };
-                ssub.set(debounceSubscriber);
+                serial.set(debounceSubscriber);
 
                 debouncer.unsafeSubscribe(debounceSubscriber);
 

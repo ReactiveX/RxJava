@@ -43,7 +43,7 @@ public class LinkedArrayList {
     int indexInTail;
     /**
      * Constructor with the capacity hint of each array segment.
-     * @param capacityHint
+     * @param capacityHint the hint used for pre-sizing the internal array
      */
     public LinkedArrayList(int capacityHint) {
         this.capacityHint = capacityHint;

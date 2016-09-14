@@ -76,40 +76,39 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                      * Try adding it to the current subscriber-to-source, add is atomic in respect
                      * to other adds and the termination of the subscriber-to-source.
                      */
-                    if (!r.add(inner)) {
-                        /*
-                         * The current PublishSubscriber has been terminated, try with a newer one.
-                         */
-                        continue;
-                        /*
-                         * Note: although technically correct, concurrent disconnects can cause
-                         * unexpected behavior such as child subscribers never receiving anything
-                         * (unless connected again). An alternative approach, similar to
-                         * PublishSubject would be to immediately terminate such child
-                         * subscribers as well:
-                         *
-                         * Object term = r.terminalEvent;
-                         * if (r.nl.isCompleted(term)) {
-                         *     child.onCompleted();
-                         * } else {
-                         *     child.onError(r.nl.getError(term));
-                         * }
-                         * return;
-                         *
-                         * The original concurrent behavior was non-deterministic in this regard as well.
-                         * Allowing this behavior, however, may introduce another unexpected behavior:
-                         * after disconnecting a previous connection, one might not be able to prepare
-                         * a new connection right after a previous termination by subscribing new child
-                         * subscribers asynchronously before a connect call.
-                         */
+                    if (r.add(inner)) {
+                        // the producer has been registered with the current subscriber-to-source so
+                        // at least it will receive the next terminal event
+                        child.add(inner);
+                        // setting the producer will trigger the first request to be considered by
+                        // the subscriber-to-source.
+                        child.setProducer(inner);
+                        break; // NOPMD
                     }
-                    // the producer has been registered with the current subscriber-to-source so
-                    // at least it will receive the next terminal event
-                    child.add(inner);
-                    // setting the producer will trigger the first request to be considered by
-                    // the subscriber-to-source.
-                    child.setProducer(inner);
-                    break; // NOPMD
+                    /*
+                     * The current PublishSubscriber has been terminated, try with a newer one.
+                     */
+                    /*
+                     * Note: although technically correct, concurrent disconnects can cause
+                     * unexpected behavior such as child subscribers never receiving anything
+                     * (unless connected again). An alternative approach, similar to
+                     * PublishSubject would be to immediately terminate such child
+                     * subscribers as well:
+                     *
+                     * Object term = r.terminalEvent;
+                     * if (r.nl.isCompleted(term)) {
+                     *     child.onCompleted();
+                     * } else {
+                     *     child.onError(r.nl.getError(term));
+                     * }
+                     * return;
+                     *
+                     * The original concurrent behavior was non-deterministic in this regard as well.
+                     * Allowing this behavior, however, may introduce another unexpected behavior:
+                     * after disconnecting a previous connection, one might not be able to prepare
+                     * a new connection right after a previous termination by subscribing new child
+                     * subscribers asynchronously before a connect call.
+                     */
                 }
             }
         };
@@ -171,7 +170,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
 
     @Override
     public void connect(Action1<? super Subscription> connection) {
-        boolean doConnect = false;
+        boolean doConnect;
         PublishSubscriber<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
         for (;;) {

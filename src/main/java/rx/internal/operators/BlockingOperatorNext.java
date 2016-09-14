@@ -53,7 +53,7 @@ public final class BlockingOperatorNext {
 
     }
 
-    // test needs to access the observer.waiting flag non-blockingly.
+    // test needs to access the observer.waiting flag in a non-blocking fashion.
     /* private */static final class NextIterator<T> implements Iterator<T> {
 
         private final NextObserver<T> observer;
@@ -81,11 +81,8 @@ public final class BlockingOperatorNext {
                 // the iterator has reached the end.
                 return false;
             }
-            if (!isNextConsumed) {
-                // next has not been used yet.
-                return true;
-            }
-            return moveToNext();
+            // next has not been used yet.
+            return !isNextConsumed || moveToNext();
         }
 
         @SuppressWarnings("unchecked")

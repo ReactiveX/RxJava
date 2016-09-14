@@ -58,10 +58,7 @@ public final class Timestamped<T> {
             return false;
         }
         Timestamped<?> other = (Timestamped<?>) obj;
-        if (timestampMillis != other.timestampMillis) {
-            return false;
-        }
-        return (value == other.value) || (value != null && value.equals(other.value));
+        return timestampMillis == other.timestampMillis && ((value == other.value) || (value != null && value.equals(other.value)));
     }
 
     @Override

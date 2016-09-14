@@ -38,9 +38,12 @@ public final class ImmediateScheduler extends Scheduler {
         return new InnerImmediateScheduler();
     }
 
-    private class InnerImmediateScheduler extends Scheduler.Worker implements Subscription {
+    final class InnerImmediateScheduler extends Scheduler.Worker implements Subscription {
 
         final BooleanSubscription innerSubscription = new BooleanSubscription();
+
+        InnerImmediateScheduler() {
+        }
 
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {

@@ -235,7 +235,7 @@ public final class RxJavaHooks {
     }
 
     /**
-     * Clears all hooks to be no-operations (and passthroughs)
+     * Clears all hooks to be no-op (and pass-through)
      * and onError hook to signal errors to the caller thread's
      * UncaughtExceptionHandler.
      *
@@ -576,7 +576,7 @@ public final class RxJavaHooks {
     /**
      * Sets the global error consumer action unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter has the effect that
      * errors are routed to the current thread's {@link UncaughtExceptionHandler}.
@@ -592,7 +592,7 @@ public final class RxJavaHooks {
     /**
      * Sets the Completable's onCreate hook function unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -610,7 +610,7 @@ public final class RxJavaHooks {
     /**
      * Sets the Observable onCreate hook function unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -629,7 +629,7 @@ public final class RxJavaHooks {
     /**
      * Sets the Single onCreate hook function unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -648,7 +648,7 @@ public final class RxJavaHooks {
      * Sets the hook function for returning a scheduler when the Schedulers.computation() is called
      * unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -666,7 +666,7 @@ public final class RxJavaHooks {
      * Sets the hook function for returning a scheduler when the Schedulers.io() is called
      * unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -684,7 +684,7 @@ public final class RxJavaHooks {
      * Sets the hook function for returning a scheduler when the Schedulers.newThread() is called
      * unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -702,7 +702,7 @@ public final class RxJavaHooks {
      * Sets the hook function that is called before an action is scheduled, allowing
      * decorating that function, unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -720,7 +720,7 @@ public final class RxJavaHooks {
      * Sets the hook function that is called when a subscriber subscribes to a Completable
      * unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same CompletableOnSubscribe object.
@@ -740,7 +740,7 @@ public final class RxJavaHooks {
      * Sets the hook function that is called when a subscriber subscribes to a Observable
      * unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same OnSubscribe object.
@@ -761,7 +761,7 @@ public final class RxJavaHooks {
      * Sets the hook function that is called when a subscriber subscribes to a Single
      * unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same OnSubscribe object.
@@ -781,7 +781,7 @@ public final class RxJavaHooks {
      * Sets a hook function that is called when the Observable.subscribe() call
      * is about to return a Subscription unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -800,7 +800,7 @@ public final class RxJavaHooks {
      * Sets a hook function that is called when the Single.subscribe() call
      * is about to return a Subscription unless a lockdown is in effect.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -819,7 +819,7 @@ public final class RxJavaHooks {
      * Sets a hook function that is called when the Single.subscribe() call
      * fails with an exception.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -837,7 +837,7 @@ public final class RxJavaHooks {
      * Returns the current Single onSubscribeError hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Throwable, Throwable> getOnSingleSubscribeError() {
@@ -848,7 +848,7 @@ public final class RxJavaHooks {
      * Sets a hook function that is called when the Completable.subscribe() call
      * fails with an exception.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -866,7 +866,7 @@ public final class RxJavaHooks {
      * Returns the current Completable onSubscribeError hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Throwable, Throwable> getOnCompletableSubscribeError() {
@@ -877,7 +877,7 @@ public final class RxJavaHooks {
      * Sets a hook function that is called when the Observable.subscribe() call
      * fails with an exception.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -895,7 +895,7 @@ public final class RxJavaHooks {
      * Returns the current Observable onSubscribeError hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Throwable, Throwable> getOnObservableSubscribeError() {
@@ -906,7 +906,7 @@ public final class RxJavaHooks {
      * Sets a hook function that is called with an operator when an Observable operator built with
      * lift() gets subscribed to.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -925,7 +925,7 @@ public final class RxJavaHooks {
      * Returns the current Observable onLift hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     @SuppressWarnings("rawtypes")
@@ -937,7 +937,7 @@ public final class RxJavaHooks {
      * Sets a hook function that is called with an operator when an Single operator built with
      * lift() gets subscribed to.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -956,7 +956,7 @@ public final class RxJavaHooks {
      * Returns the current Single onLift hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     @SuppressWarnings("rawtypes")
@@ -968,7 +968,7 @@ public final class RxJavaHooks {
      * Sets a hook function that is called with an operator when a Completable operator built with
      * lift() gets subscribed to.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * the hook returns the same object.
@@ -986,7 +986,7 @@ public final class RxJavaHooks {
      * Returns the current Completable onLift hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Completable.Operator, Completable.Operator> getOnCompletableLift() {
@@ -997,7 +997,7 @@ public final class RxJavaHooks {
      * Returns the current computation scheduler hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Scheduler, Scheduler> getOnComputationScheduler() {
@@ -1009,7 +1009,7 @@ public final class RxJavaHooks {
      * set to the default one that signals errors to the current threads
      * UncaughtExceptionHandler.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook action
      */
     public static Action1<Throwable> getOnError() {
@@ -1020,7 +1020,7 @@ public final class RxJavaHooks {
      * Returns the current io scheduler hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Scheduler, Scheduler> getOnIOScheduler() {
@@ -1031,7 +1031,7 @@ public final class RxJavaHooks {
      * Returns the current new thread scheduler hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Scheduler, Scheduler> getOnNewThreadScheduler() {
@@ -1042,7 +1042,7 @@ public final class RxJavaHooks {
      * Returns the current Observable onCreate hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     @SuppressWarnings("rawtypes")
@@ -1054,7 +1054,7 @@ public final class RxJavaHooks {
      * Returns the current schedule action hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Action0, Action0> getOnScheduleAction() {
@@ -1065,7 +1065,7 @@ public final class RxJavaHooks {
      * Returns the current Single onCreate hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     @SuppressWarnings("rawtypes")
@@ -1077,7 +1077,7 @@ public final class RxJavaHooks {
      * Returns the current Completable onCreate hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Completable.OnSubscribe, Completable.OnSubscribe> getOnCompletableCreate() {
@@ -1088,7 +1088,7 @@ public final class RxJavaHooks {
      * Returns the current Completable onStart hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func2<Completable, Completable.OnSubscribe, Completable.OnSubscribe> getOnCompletableStart() {
@@ -1099,7 +1099,7 @@ public final class RxJavaHooks {
      * Returns the current Observable onStart hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     @SuppressWarnings("rawtypes")
@@ -1111,7 +1111,7 @@ public final class RxJavaHooks {
      * Returns the current Single onStart hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     @SuppressWarnings("rawtypes")
@@ -1123,7 +1123,7 @@ public final class RxJavaHooks {
      * Returns the current Observable onReturn hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Subscription, Subscription> getOnObservableReturn() {
@@ -1134,7 +1134,7 @@ public final class RxJavaHooks {
      * Returns the current Single onReturn hook function or null if it is
      * set to the default pass-through.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current hook function
      */
     public static Func1<Subscription, Subscription> getOnSingleReturn() {
@@ -1168,7 +1168,7 @@ public final class RxJavaHooks {
     /**
      * Sets up hooks that capture the current stacktrace when a source or an
      * operator is instantiated, keeping it in a field for debugging purposes
-     * and alters exceptions passign along to hold onto this stacktrace.
+     * and alters exceptions passing along to hold onto this stacktrace.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void enableAssemblyTracking() {
@@ -1202,7 +1202,7 @@ public final class RxJavaHooks {
      * Sets the hook function for returning a ScheduledExecutorService used
      * by the GenericScheduledExecutorService for background tasks.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * <p>
      * Calling with a {@code null} parameter restores the default behavior:
      * create the default with {@link java.util.concurrent.Executors#newScheduledThreadPool(int, java.util.concurrent.ThreadFactory)}.
@@ -1222,7 +1222,7 @@ public final class RxJavaHooks {
      * Returns the current factory for creating ScheduledExecutorServices in
      * GenericScheduledExecutorService utility.
      * <p>
-     * This operation is threadsafe.
+     * This operation is thread-safe.
      * @return the current factory function
      */
     public static Func0<? extends ScheduledExecutorService> getOnGenericScheduledExecutorService() {

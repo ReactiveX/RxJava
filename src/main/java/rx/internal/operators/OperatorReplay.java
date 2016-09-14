@@ -53,7 +53,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
      * @param connectableFactory the factory that returns a ConnectableObservable instance
      * @param selector the function applied on the ConnectableObservable and returns the Observable
      * the downstream will subscribe to.
-     * @return the Observable multicasting over a transformation of a ConnectableObserable
+     * @return the Observable multicasting over a transformation of a ConnectableObservable
      */
     public static <T, U, R> Observable<R> multicastSelector(
             final Func0<? extends ConnectableObservable<U>> connectableFactory,
@@ -256,7 +256,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
 
     @Override
     public void connect(Action1<? super Subscription> connection) {
-        boolean doConnect = false;
+        boolean doConnect;
         ReplaySubscriber<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
         for (;;) {
@@ -795,7 +795,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         }
         /**
          * Convenience method to auto-cast the index object.
-         * @return
+         * @return the associated index object or null
          */
         @SuppressWarnings("unchecked")
         <U> U index() {
@@ -810,12 +810,12 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     interface ReplayBuffer<T> {
         /**
          * Adds a regular value to the buffer.
-         * @param value
+         * @param value the value to buffer
          */
         void next(T value);
         /**
          * Adds a terminal exception to the buffer
-         * @param e
+         * @param e the Throwable to buffer
          */
         void error(Throwable e);
         /**
@@ -827,7 +827,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
          * subscriber inside the output if there
          * is new value and requests available at the
          * same time.
-         * @param output
+         * @param output the producer of the downstream consumer
          */
         void replay(InnerProducer<T> output);
     }
@@ -881,8 +881,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 }
                 int sourceIndex = size;
 
-                Integer destIndexObject = output.index();
-                int destIndex = destIndexObject != null ? destIndexObject : 0;
+                Integer destinationIndexObject = output.index();
+                int destinationIndex = destinationIndexObject != null ? destinationIndexObject : 0;
 
                 Subscriber<? super T> child = output.child;
                 if (child == null) {
@@ -892,8 +892,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 long r = output.get();
                 long e = 0L;
 
-                while (e != r && destIndex < sourceIndex) {
-                    Object o = get(destIndex);
+                while (e != r && destinationIndex < sourceIndex) {
+                    Object o = get(destinationIndex);
                     try {
                         if (nl.accept(child, o)) {
                             return;
@@ -909,11 +909,11 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     if (output.isUnsubscribed()) {
                         return;
                     }
-                    destIndex++;
+                    destinationIndex++;
                     e++;
                 }
                 if (e != 0L) {
-                    output.index = destIndex;
+                    output.index = destinationIndex;
                     if (r != Long.MAX_VALUE) {
                         output.produced(e);
                     }
@@ -974,7 +974,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
 
         /**
          * Add a new node to the linked list.
-         * @param n
+         * @param n the node to add as last
          */
         final void addLast(Node n) {
             tail.set(n);
@@ -1007,7 +1007,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         }
         /**
          * Arranges the given node is the new head from now on.
-         * @param n
+         * @param n the node to set as first
          */
         final void setFirst(Node n) {
             set(n);
@@ -1067,7 +1067,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     output.index = node;
 
                     /*
-                     * Since this is a latecommer, fix its total requested amount
+                     * Since this is a latecomer, fix its total requested amount
                      * as if it got all the values up to the node.index
                      */
                     output.addTotalRequested(node.index);
@@ -1134,8 +1134,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         /**
          * Override this to wrap the NotificationLite object into a
          * container to be used later by truncate.
-         * @param value
-         * @return
+         * @param value the value to transform into the internal representation
+         * @return the internal representation of the value
          */
         Object enterTransform(Object value) {
             return value;
@@ -1143,8 +1143,9 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         /**
          * Override this to unwrap the transformed value into a
          * NotificationLite object.
-         * @param value
-         * @return
+         * @param value the value to transform back to external representation from
+         *              the internal representation
+         * @return the external representation of the value
          */
         Object leaveTransform(Object value) {
             return value;

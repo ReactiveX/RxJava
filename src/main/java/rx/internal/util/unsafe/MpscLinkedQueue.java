@@ -27,7 +27,7 @@ import rx.internal.util.atomic.LinkedQueueNode;
  * layout:
  * <ol>
  * <li>Use inheritance to ensure no false sharing occurs between producer/consumer node reference fields.
- * <li>Use XCHG functionality to the best of the JDK ability (see differences in JDK7/8 impls).
+ * <li>Use XCHG functionality to the best of the JDK ability (see differences in JDK7/8 implementations).
  * </ol>
  * The queue is initialized with a stub node which is set to both the producer and consumer node references. From this
  * point follow the notes on offer/poll.

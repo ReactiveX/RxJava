@@ -294,26 +294,23 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
         @Override
         public void onNext(T t) {
-            if (!isSelected()) {
-                return;
+            if (isSelected()) {
+                subscriber.onNext(t);
             }
-            subscriber.onNext(t);
         }
 
         @Override
         public void onCompleted() {
-            if (!isSelected()) {
-                return;
+            if (isSelected()) {
+                subscriber.onCompleted();
             }
-            subscriber.onCompleted();
         }
 
         @Override
         public void onError(Throwable e) {
-            if (!isSelected()) {
-                return;
+            if (isSelected()) {
+                subscriber.onError(e);
             }
-            subscriber.onError(e);
         }
 
         private boolean isSelected() {

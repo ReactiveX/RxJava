@@ -86,7 +86,7 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
             } else {
                 // we aren't connected, so let's create a new Subject and connect
                 final Subject<? super T, ? extends R> subject = subjectFactory.call();
-                // create new Subscriber that will pass-thru to the subject we just created
+                // create new Subscriber that will pass-through to the subject we just created
                 // we do this since it is also a Subscription whereas the Subject is not
                 subscription = Subscribers.from(subject);
                 final AtomicReference<Subscription> gs = new AtomicReference<Subscription>();

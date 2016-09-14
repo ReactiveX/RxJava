@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Observer;
-import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 import rx.internal.operators.BackpressureUtils;
 import rx.plugins.RxJavaHooks;
@@ -267,16 +266,16 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     /**
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
+     * @since 1.2
      */
-    @Beta
     public boolean hasThrowable() {
         return state.isTerminated() && state.buffer.error() != null;
     }
     /**
      * Check if the Subject has terminated normally.
      * @return true if the subject completed normally via {@code onCompleted}
+     * @since 1.2
      */
-    @Beta
     public boolean hasCompleted() {
         return state.isTerminated() && state.buffer.error() == null;
     }
@@ -284,8 +283,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * Returns the Throwable that terminated the Subject.
      * @return the Throwable that terminated the Subject or {@code null} if the
      * subject hasn't terminated yet or it terminated normally.
+     * @since 1.2
      */
-    @Beta
     public Throwable getThrowable() {
         if (state.isTerminated()) {
             return state.buffer.error();
@@ -295,19 +294,24 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     /**
      * Returns the current number of items (non-terminal events) available for replay.
      * @return the number of items available
+     * @since 1.2
      */
-    @Beta
     public int size() {
         return state.buffer.size();
     }
+
     /**
      * @return true if the Subject holds at least one non-terminal event available for replay
+     * @since 1.2
      */
-    @Beta
     public boolean hasAnyValue() {
         return !state.buffer.isEmpty();
     }
-    @Beta
+
+    /**
+     * @return true if the Subject holds at least one non-terminal event available for replay
+     * @since 1.2
+     */
     public boolean hasValue() {
         return hasAnyValue();
     }
@@ -316,21 +320,20 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * the provided {@code a} array or creates a new array if it has not enough capacity.
      * @param a the array to fill in
      * @return the array {@code a} if it had enough capacity or a new array containing the available values
+     * @since 1.2
      */
-    @Beta
     public T[] getValues(T[] a) {
         return state.buffer.toArray(a);
     }
 
     /**
      * Returns a snapshot of the currently buffered non-terminal events.
-     * <p>The operation is threadsafe.
+     * <p>The operation is thread-safe.
      *
      * @return a snapshot of the currently buffered non-terminal events.
-     * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
+     * @since 1.2
      */
     @SuppressWarnings("unchecked")
-    @Beta
     public Object[] getValues() {
         T[] r = getValues((T[])EMPTY_ARRAY);
         if (r == EMPTY_ARRAY) {
@@ -339,7 +342,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         return r;
     }
 
-    @Beta
+    /**
+     * @return the latest value available
+     * @since 1.2
+     */
     public T getValue() {
         return state.buffer.last();
     }

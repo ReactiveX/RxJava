@@ -38,7 +38,7 @@ enum GenericScheduledExecutorServiceFactory {
 
     /**
      * Creates a ScheduledExecutorService (either the default or given by a hook).
-     * @return the SchuduledExecutorService created.
+     * @return the ScheduledExecutorService created.
      */
     public static ScheduledExecutorService create() {
         Func0<? extends ScheduledExecutorService> f = RxJavaHooks.getOnGenericScheduledExecutorService();

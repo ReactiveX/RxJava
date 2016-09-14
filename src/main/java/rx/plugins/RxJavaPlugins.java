@@ -28,14 +28,14 @@ import rx.annotations.Experimental;
  * property names)</li>
  * <li>default implementation</li>
  * </ol>
- * <p>In addition to the {@code rxjava.plugin.[simple classname].implementation} system properties,
+ * <p>In addition to the {@code rxjava.plugin.[simple class name].implementation} system properties,
  * you can define two system property:<br>
  * <pre><code>
  * rxjava.plugin.[index].class}
  * rxjava.plugin.[index].impl}
  * </code></pre>
  *
- * Where the {@code .class} property contains the simple classname from above and the {@code .impl}
+ * Where the {@code .class} property contains the simple class name from above and the {@code .impl}
  * contains the fully qualified name of the implementation class. The {@code [index]} can be
  * any short string or number of your choosing. For example, you can now define a custom
  * {@code RxJavaErrorHandler} via two system property:
@@ -100,7 +100,7 @@ public class RxJavaPlugins {
      * {@link RxJavaPlugins} class header.
      * <p>
      * Override the default by calling {@link #registerErrorHandler(RxJavaErrorHandler)} or by setting the
-     * property {@code rxjava.plugin.RxJavaErrorHandler.implementation} with the full classname to load.
+     * property {@code rxjava.plugin.RxJavaErrorHandler.implementation} with the full class name to load.
      * @return {@link RxJavaErrorHandler} implementation to use
      */
     public RxJavaErrorHandler getErrorHandler() {
@@ -141,7 +141,7 @@ public class RxJavaPlugins {
      * <p>
      * Override the default by calling {@link #registerObservableExecutionHook(RxJavaObservableExecutionHook)}
      * or by setting the property {@code rxjava.plugin.RxJavaObservableExecutionHook.implementation} with the
-     * full classname to load.
+     * full class name to load.
      *
      * @return {@link RxJavaObservableExecutionHook} implementation to use
      */
@@ -183,7 +183,7 @@ public class RxJavaPlugins {
      * <p>
      * Override the default by calling {@link #registerSingleExecutionHook(RxJavaSingleExecutionHook)}
      * or by setting the property {@code rxjava.plugin.RxJavaSingleExecutionHook.implementation} with the
-     * full classname to load.
+     * full class name to load.
      *
      * @return {@link RxJavaSingleExecutionHook} implementation to use
      */
@@ -225,7 +225,7 @@ public class RxJavaPlugins {
      * <p>
      * Override the default by calling {@link #registerCompletableExecutionHook(RxJavaCompletableExecutionHook)}
      * or by setting the property {@code rxjava.plugin.RxJavaCompletableExecutionHook.implementation} with the
-     * full classname to load.
+     * full class name to load.
      *
      * @return {@link RxJavaCompletableExecutionHook} implementation to use
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
@@ -334,7 +334,7 @@ public class RxJavaPlugins {
      * in the {@link RxJavaPlugins} class header.
      * <p>
      * Override the default by calling {@link #registerSchedulersHook(RxJavaSchedulersHook)} or by setting
-     * the property {@code rxjava.plugin.RxJavaSchedulersHook.implementation} with the full classname to
+     * the property {@code rxjava.plugin.RxJavaSchedulersHook.implementation} with the full class name to
      * load.
      *
      * @return the {@link RxJavaSchedulersHook} implementation in use

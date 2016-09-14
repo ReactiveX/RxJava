@@ -57,7 +57,7 @@ public abstract class RxJavaErrorHandler { // NOPMD
      * <p>
      * Note that primitive types are always rendered as their {@code toString()} value.
      * <p>
-     * If a {@code Throwable} is caught when rendering, this will fallback to the item's classname suffixed by
+     * If a {@code Throwable} is caught when rendering, this will fallback to the item's class name suffixed by
      * {@code ERROR_IN_RENDERING_SUFFIX}.
      *
      * @param item the last emitted item, that caused the exception wrapped in
@@ -87,7 +87,7 @@ public abstract class RxJavaErrorHandler { // NOPMD
      * {@code String} (as large renderings will bloat up the stacktrace). Prefer to try/catch({@code Throwable})
      * all code inside this method implementation.
      * <p>
-     * If a {@code Throwable} is caught when rendering, this will fallback to the item's classname suffixed by
+     * If a {@code Throwable} is caught when rendering, this will fallback to the item's class name suffixed by
      * {@value #ERROR_IN_RENDERING_SUFFIX}.
      *
      * @param item the last emitted item, that caused the exception wrapped in

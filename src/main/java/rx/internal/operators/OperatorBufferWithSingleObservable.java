@@ -82,32 +82,32 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
             Exceptions.throwOrReport(t, child);
             return Subscribers.empty();
         }
-        final BufferingSubscriber bsub = new BufferingSubscriber(new SerializedSubscriber<List<T>>(child));
+        final BufferingSubscriber s = new BufferingSubscriber(new SerializedSubscriber<List<T>>(child));
 
         Subscriber<TClosing> closingSubscriber = new Subscriber<TClosing>() {
 
             @Override
             public void onNext(TClosing t) {
-                bsub.emit();
+                s.emit();
             }
 
             @Override
             public void onError(Throwable e) {
-                bsub.onError(e);
+                s.onError(e);
             }
 
             @Override
             public void onCompleted() {
-                bsub.onCompleted();
+                s.onCompleted();
             }
         };
 
         child.add(closingSubscriber);
-        child.add(bsub);
+        child.add(s);
 
         closing.unsafeSubscribe(closingSubscriber);
 
-        return bsub;
+        return s;
     }
 
     final class BufferingSubscriber extends Subscriber<T> {

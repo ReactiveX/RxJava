@@ -40,33 +40,6 @@ public final class BackpressureUtils {
     private BackpressureUtils() {
         throw new IllegalStateException("No instances!");
     }
-    /**
-     * Adds {@code n} to {@code requested} field and returns the value prior to
-     * addition once the addition is successful (uses CAS semantics). If
-     * overflows then sets {@code requested} field to {@code Long.MAX_VALUE}.
-     *
-     * @param <T> the type of the target object on which the field updater operates
-     *
-     * @param requested
-     *            atomic field updater for a request count
-     * @param object
-     *            contains the field updated by the updater
-     * @param n
-     *            the number of requests to add to the requested count
-     * @return requested value just prior to successful addition
-     * @deprecated Android has issues with reflection-based atomics
-     */
-    @Deprecated
-    public static <T> long getAndAddRequest(AtomicLongFieldUpdater<T> requested, T object, long n) {
-        // add n to field but check for overflow
-        while (true) {
-            long current = requested.get(object);
-            long next = addCap(current, n);
-            if (requested.compareAndSet(object, current, next)) {
-                return current;
-            }
-        }
-    }
 
     /**
      * Adds {@code n} (not validated) to {@code requested} and returns the value prior to addition once the

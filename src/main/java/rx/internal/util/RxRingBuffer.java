@@ -332,7 +332,7 @@ public class RxRingBuffer implements Subscription {
 
     /**
      *
-     * @param o
+     * @param o the value to buffer
      * @throws MissingBackpressureException
      *             if more onNext are sent than have been requested
      */
@@ -388,10 +388,7 @@ public class RxRingBuffer implements Subscription {
 
     public boolean isEmpty() {
         Queue<Object> q = queue;
-        if (q == null) {
-            return true;
-        }
-        return q.isEmpty();
+        return q == null || q.isEmpty();
     }
 
     public Object poll() {

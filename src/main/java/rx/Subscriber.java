@@ -144,7 +144,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
         // if producer is set then we will request from it
         // otherwise we increase the requested count by n
-        Producer producerToRequestFrom = null;
+        Producer producerToRequestFrom;
         synchronized (this) {
             if (producer != null) {
                 producerToRequestFrom = producer;

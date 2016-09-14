@@ -201,7 +201,7 @@ public final class OpenHashSet<T> {
     }
 
     /**
-     * Returns the raw array of values of this set, watch out for null entires.
+     * Returns the raw array of values of this set, watch out for null entries.
      * @return the raw array of values of this set
      */
     public T[] values() {

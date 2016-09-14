@@ -83,15 +83,15 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                 return;
             }
             if (n == Long.MAX_VALUE && compareAndSet(0, Long.MAX_VALUE)) {
-                fastpath();
+                fastPath();
             } else
             if (n > 0 && BackpressureUtils.getAndAddRequest(this, n) == 0L) {
-                slowpath(n);
+                slowPath(n);
             }
 
         }
 
-        void slowpath(long n) {
+        void slowPath(long n) {
             // backpressure is requested
             final Subscriber<? super T> o = this.o;
             final Iterator<? extends T> it = this.it;
@@ -151,7 +151,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
         }
 
-        void fastpath() {
+        void fastPath() {
             // fast-path without backpressure
             final Subscriber<? super T> o = this.o;
             final Iterator<? extends T> it = this.it;

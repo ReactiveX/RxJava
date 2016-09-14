@@ -141,7 +141,7 @@ public final class ExecutorScheduler extends Scheduler {
                     if (mas.isUnsubscribed()) {
                         return;
                     }
-                    // schedule the real action untimed
+                    // schedule the real action non-delayed
                     Subscription s2 = schedule(decorated);
                     mas.set(s2);
                     // unless the worker is unsubscribed, we should get a new ScheduledAction

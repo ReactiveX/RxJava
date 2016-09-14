@@ -272,7 +272,6 @@ public final class IndexedRingBuffer<E> implements Subscription {
         outer: while (section != null) {
             for (int i = 0; i < SIZE; i++, realIndex++) {
                 if (realIndex >= maxIndex) {
-                    section = null;
                     break outer;
                 }
                 // we can use lazySet here because we are nulling things out and not accessing them again
@@ -385,7 +384,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
     /**
      * Returns -1 if nothing, 0 or greater if the index should be used
      *
-     * @return
+     * @return the index or -1 if none
      */
     private synchronized int getIndexFromPreviouslyRemoved() { // NOPMD
         /*
@@ -451,7 +450,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
     }
 
     private int forEach(Func1<? super E, Boolean> action, int startIndex, int endIndex) {
-        int lastIndex = startIndex;
+        int lastIndex;
         int maxIndex = index.get();
         int realIndex = startIndex;
         ElementSection<E> section = elements;
@@ -465,7 +464,6 @@ public final class IndexedRingBuffer<E> implements Subscription {
         outer: while (section != null) {
             for (int i = startIndex; i < SIZE; i++, realIndex++) {
                 if (realIndex >= maxIndex || realIndex >= endIndex) {
-                    section = null;
                     break outer;
                 }
                 E element = section.array.get(i);

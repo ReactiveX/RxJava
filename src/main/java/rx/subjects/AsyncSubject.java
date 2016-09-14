@@ -18,7 +18,6 @@ package rx.subjects;
 import java.util.*;
 
 import rx.Observer;
-import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
@@ -144,8 +143,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * <p>Note that unless {@link #hasCompleted()} or {@link #hasThrowable()} returns true, the value
      * retrieved by {@code getValue()} may get outdated.
      * @return true if and only if the subject has some value but not an error
+     * @since 1.2
      */
-    @Beta
     public boolean hasValue() {
         Object v = lastValue;
         Object o = state.getLatest();
@@ -154,8 +153,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     /**
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
+     * @since 1.2
      */
-    @Beta
     public boolean hasThrowable() {
         Object o = state.getLatest();
         return nl.isError(o);
@@ -163,8 +162,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     /**
      * Check if the Subject has terminated normally.
      * @return true if the subject completed normally via {@code onCompleted()}
+     * @since 1.2
      */
-    @Beta
     public boolean hasCompleted() {
         Object o = state.getLatest();
         return o != null && !nl.isError(o);
@@ -177,8 +176,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * exception or the Subject terminated without receiving any value.
      * @return the current value or {@code null} if the Subject doesn't have a value,
      * has terminated with an exception or has an actual {@code null} as a value.
+     * @since 1.2
      */
-    @Beta
     public T getValue() {
         Object v = lastValue;
         Object o = state.getLatest();
@@ -191,8 +190,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * Returns the Throwable that terminated the Subject.
      * @return the Throwable that terminated the Subject or {@code null} if the
      * subject hasn't terminated yet or it terminated normally.
+     * @since 1.2
      */
-    @Beta
     public Throwable getThrowable() {
         Object o = state.getLatest();
         if (nl.isError(o)) {

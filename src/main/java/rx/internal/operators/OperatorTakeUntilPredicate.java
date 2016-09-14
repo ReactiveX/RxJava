@@ -60,7 +60,7 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
         public void onNext(T t) {
             child.onNext(t);
 
-            boolean stop = false;
+            boolean stop;
             try {
                 stop = stopPredicate.call(t);
             } catch (Throwable e) {

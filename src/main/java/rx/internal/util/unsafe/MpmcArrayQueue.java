@@ -83,9 +83,9 @@ abstract class MpmcArrayQueueConsumerField<E> extends MpmcArrayQueueL2Pad<E> {
  * algorithm uses an array of structs which should offer nice locality properties but is sadly not possible in
  * Java (waiting on Value Types or similar). The alternative explored here utilizes 2 arrays, one for each
  * field of the struct. There is a further alternative in the experimental project which uses iteration phase
- * markers to achieve the same algo and is closer structurally to the original, but sadly does not perform as
+ * markers to achieve the same algorithm and is closer structurally to the original, but sadly does not perform as
  * well as this implementation.<br>
- * Tradeoffs to keep in mind:
+ * Trade-offs to keep in mind:
  * <ol>
  * <li>Padding for false sharing: counter fields and queue fields are all padded as well as either side of
  * both arrays. We are trading memory to avoid false sharing(active and passive).

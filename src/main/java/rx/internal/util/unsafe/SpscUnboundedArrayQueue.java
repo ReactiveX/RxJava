@@ -97,7 +97,7 @@ public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerF
         consumerBuffer = buffer;
         consumerMask = mask;
         producerLookAhead = mask - 1; // we know it's all empty to start with
-        soProducerIndex(0l);
+        soProducerIndex(0L);
     }
 
     @Override

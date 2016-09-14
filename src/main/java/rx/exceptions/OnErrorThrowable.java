@@ -168,14 +168,14 @@ public final class OnErrorThrowable extends RuntimeException {
          *
          * If a specific behavior has been defined in the {@link RxJavaErrorHandler} plugin, some types
          * may also have a specific rendering. Non-primitive types not managed by the plugin are rendered
-         * as the classname of the object.
+         * as the class name of the object.
          * <p>
          * See PR #1401 and Issue #2468 for details.
          *
          * @param value
          *        the item that the Observable was trying to emit at the time of the exception
          * @return a string version of the object if primitive or managed through error plugin,
-         *        otherwise the classname of the object
+         *        otherwise the class name of the object
          */
         static String renderValue(Object value){
             if (value == null) {

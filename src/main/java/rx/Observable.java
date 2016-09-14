@@ -135,9 +135,8 @@ public class Observable<T> {
      * @see SyncOnSubscribe#createStateless(Action1)
      * @see SyncOnSubscribe#createStateless(Action1, Action0)
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
-    @Beta
     public static <S, T> Observable<T> create(SyncOnSubscribe<S, T> syncOnSubscribe) {
         return create((OnSubscribe<T>)syncOnSubscribe);
     }
@@ -200,21 +199,6 @@ public class Observable<T> {
      */
     public interface Operator<R, T> extends Func1<Subscriber<? super R>, Subscriber<? super T>> {
         // cover for generics insanity
-    }
-
-    /**
-     * Passes all emitted values from this Observable to the provided conversion function to be collected and
-     * returned as a single value. Note that it is legal for a conversion function to return an Observable
-     * (enabling chaining).
-     *
-     * @param <R> the output type of the conversion function
-     * @param conversion a function that converts from the source {@code Observable<T>} to an {@code R}
-     * @return an instance of R created by the provided conversion function
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
-     */
-    @Experimental @Deprecated // TODO remove method some time after 1.2.0 release. It was never a stable API.
-    public <R> R extend(Func1<? super OnSubscribe<T>, ? extends R> conversion) {
-        return conversion.call(new OnSubscribeExtend<T>(this));
     }
 
     /**
@@ -342,9 +326,8 @@ public class Observable<T> {
      * @throws NoSuchElementException
      *             if the source observable emits no items
      * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
-    @Beta
     public Single<T> toSingle() {
         return new Single<T>(OnSubscribeSingle.create(this));
     }
@@ -372,7 +355,7 @@ public class Observable<T> {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
      *        with the release number)
      */
-    @Experimental
+    @Beta
     public Completable toCompletable() {
         return Completable.fromObservable(this);
     }
@@ -1461,9 +1444,10 @@ public class Observable<T> {
      * @param <T> the common element base type
      * @param sources the Observable sequence of Observables
      * @return the new Observable with the concatenating behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Experimental
+    @Beta
     public static <T> Observable<T> concatDelayError(Observable<? extends Observable<? extends T>> sources) {
         return sources.concatMapDelayError((Func1)UtilityFunctions.identity());
     }
@@ -1485,8 +1469,9 @@ public class Observable<T> {
      * @param <T> the common element base type
      * @param sources the Iterable sequence of Observables
      * @return the new Observable with the concatenating behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> concatDelayError(Iterable<? extends Observable<? extends T>> sources) {
         return concatDelayError(from(sources));
     }
@@ -1511,8 +1496,9 @@ public class Observable<T> {
      * @param t2
      *            an Observable to be concatenated
      * @return an Observable with the concatenating behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2) {
         return concatDelayError(just(t1, t2));
     }
@@ -1539,8 +1525,9 @@ public class Observable<T> {
      * @param t3
      *            an Observable to be concatenated
      * @return an Observable with the concatenating behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2,Observable<? extends T> t3 ) {
         return concatDelayError(just(t1, t2, t3));
     }
@@ -1569,8 +1556,9 @@ public class Observable<T> {
      * @param t4
      *            an Observable to be concatenated
      * @return an Observable with the concatenating behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
         return concatDelayError(just(t1, t2, t3, t4));
     }
@@ -1601,8 +1589,9 @@ public class Observable<T> {
      * @param t5
      *            an Observable to be concatenated
      * @return an Observable with the concatenating behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
         return concatDelayError(just(t1, t2, t3, t4, t5));
     }
@@ -1635,8 +1624,9 @@ public class Observable<T> {
      * @param t6
      *            an Observable to be concatenated
      * @return an Observable with the concatenating behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
         return concatDelayError(just(t1, t2, t3, t4, t5, t6));
     }
@@ -1671,8 +1661,9 @@ public class Observable<T> {
      * @param t7
      *            an Observable to be concatenated
      * @return an Observable with the concatenating behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
         return concatDelayError(just(t1, t2, t3, t4, t5, t6, t7));
     }
@@ -1709,8 +1700,9 @@ public class Observable<T> {
      * @param t8
      *            an Observable to be concatenated
      * @return an Observable with the concatenating behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
         return concatDelayError(just(t1, t2, t3, t4, t5, t6, t7, t8));
     }
@@ -1749,8 +1741,9 @@ public class Observable<T> {
      * @param t9
      *            an Observable to be concatenated
      * @return an Observable with the concatenating behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> concatDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
         return concatDelayError(just(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
@@ -1989,53 +1982,6 @@ public class Observable<T> {
      * <p>
      * Example:
      * <pre><code>
-     * Observable.&lt;Event&gt;fromAsync(emitter -&gt; {
-     *     Callback listener = new Callback() {
-     *         &#64;Override
-     *         public void onEvent(Event e) {
-     *             emitter.onNext(e);
-     *             if (e.isLast()) {
-     *                 emitter.onCompleted();
-     *             }
-     *         }
-     *
-     *         &#64;Override
-     *         public void onFailure(Exception e) {
-     *             emitter.onError(e);
-     *         }
-     *     };
-     *
-     *     AutoCloseable c = api.someMethod(listener);
-     *
-     *     emitter.setCancellation(c::close);
-     *
-     * }, BackpressureMode.BUFFER);
-     * </code></pre>
-     * <p>
-     * You should call the AsyncEmitter's onNext, onError and onCompleted methods in a serialized fashion. The
-     * rest of its methods are threadsafe.
-     *
-     * @param <T> the element type
-     * @param asyncEmitter the emitter that is called when a Subscriber subscribes to the returned {@code Observable}
-     * @param backpressure the backpressure mode to apply if the downstream Subscriber doesn't request (fast) enough
-     * @return the new Observable instance
-     * @see AsyncEmitter
-     * @see AsyncEmitter.BackpressureMode
-     * @see AsyncEmitter.Cancellable
-     * @deprecated renamed, use {@link #fromEmitter(Action1, rx.AsyncEmitter.BackpressureMode)} instead
-     */
-    @Experimental
-    @Deprecated // will be removed in 1.2.0
-    public static <T> Observable<T> fromAsync(Action1<AsyncEmitter<T>> asyncEmitter, AsyncEmitter.BackpressureMode backpressure) {
-        return fromEmitter(asyncEmitter, backpressure);
-    }
-
-    /**
-     * Provides an API (via a cold Observable) that bridges the reactive world with the callback-style,
-     * generally non-backpressured world.
-     * <p>
-     * Example:
-     * <pre><code>
      * Observable.&lt;Event&gt;fromEmitter(emitter -&gt; {
      *     Callback listener = new Callback() {
      *         &#64;Override
@@ -2060,7 +2006,7 @@ public class Observable<T> {
      * </code></pre>
      * <p>
      * You should call the AsyncEmitter's onNext, onError and onCompleted methods in a serialized fashion. The
-     * rest of its methods are threadsafe.
+     * rest of its methods are thread-safe.
      *
      * @param <T> the element type
      * @param emitter the emitter that is called when a Subscriber subscribes to the returned {@code Observable}
@@ -2098,9 +2044,8 @@ public class Observable<T> {
      *         the type of the item emitted by the Observable
      * @return an Observable whose {@link Observer}s' subscriptions trigger an invocation of the given function
      * @see #defer(Func0)
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
-    @Beta
     public static <T> Observable<T> fromCallable(Callable<? extends T> func) {
         return create(new OnSubscribeFromCallable<T>(func));
     }
@@ -3073,7 +3018,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
         return source.lift(OperatorMerge.<T>instance(true, maxConcurrent));
     }
@@ -3690,7 +3635,7 @@ public class Observable<T> {
      * @Experimental The behavior of this can change at any time.
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T> Observable<T> switchOnNextDelayError(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
         return sequenceOfSequences.lift(OperatorSwitch.<T>instance(true));
     }
@@ -3867,7 +3812,7 @@ public class Observable<T> {
      * @Experimental The behavior of this can change at any time.
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static <T, Resource> Observable<T> using(
             final Func0<Resource> resourceFactory,
             final Func1<? super Resource, ? extends Observable<? extends T>> observableFactory,
@@ -5159,7 +5104,7 @@ public class Observable<T> {
      *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param <R> the type of the inner Observable sources and thus the ouput type
+     * @param <R> the type of the inner Observable sources and thus the output type
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
      *            Observable
@@ -5195,8 +5140,9 @@ public class Observable<T> {
      * @param <R> the result value type
      * @param func the function that maps the items of this Observable into the inner Observables.
      * @return the new Observable instance with the concatenation behavior
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public final <R> Observable<R> concatMapDelayError(Func1<? super T, ? extends Observable<?extends R>> func) {
         if (this instanceof ScalarSynchronousObservable) {
             ScalarSynchronousObservable<T> scalar = (ScalarSynchronousObservable<T>) this;
@@ -5687,8 +5633,9 @@ public class Observable<T> {
      *        to this Observable.
      * @return an Observable that delays the subscription to this Observable
      *         until the other Observable emits an element or completes normally.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public final <U> Observable<T> delaySubscription(Observable<U> other) {
         if (other == null) {
             throw new NullPointerException();
@@ -5833,7 +5780,7 @@ public class Observable<T> {
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
      *        with the release number)
      */
-    @Experimental
+    @Beta
     public final Observable<T> distinctUntilChanged(Func2<? super T, ? super T, Boolean> comparator) {
         return lift(new OperatorDistinctUntilChanged<T, T>(comparator));
     }
@@ -5985,10 +5932,8 @@ public class Observable<T> {
      * @return the source {@code Observable} modified so as to call this Action when appropriate
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators
      *      documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
-     *        with the release number)
+     * @since 1.2
      */
-    @Beta
     public final Observable<T> doOnRequest(final Action1<Long> onRequest) {
         return lift(new OperatorDoOnRequest<T>(onRequest));
     }
@@ -6096,7 +6041,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> concatEager(Observable<? extends T> o1, Observable<? extends T> o2) {
         return concatEager(Arrays.asList(o1, o2));
@@ -6122,7 +6067,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> concatEager(
             Observable<? extends T> o1, Observable<? extends T> o2,
@@ -6152,7 +6097,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> concatEager(
             Observable<? extends T> o1, Observable<? extends T> o2,
@@ -6183,7 +6128,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> concatEager(
             Observable<? extends T> o1, Observable<? extends T> o2,
@@ -6216,7 +6161,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> concatEager(
             Observable<? extends T> o1, Observable<? extends T> o2,
@@ -6250,7 +6195,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> concatEager(
             Observable<? extends T> o1, Observable<? extends T> o2,
@@ -6286,7 +6231,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> concatEager(
             Observable<? extends T> o1, Observable<? extends T> o2,
@@ -6323,7 +6268,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings("unchecked")
     public static <T> Observable<T> concatEager(
             Observable<? extends T> o1, Observable<? extends T> o2,
@@ -6353,7 +6298,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> concatEager(Iterable<? extends Observable<? extends T>> sources) {
         return Observable.from(sources).concatMapEager((Func1)UtilityFunctions.identity());
@@ -6378,7 +6323,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> concatEager(Iterable<? extends Observable<? extends T>> sources, int capacityHint) {
         return Observable.from(sources).concatMapEager((Func1)UtilityFunctions.identity(), capacityHint);
@@ -6402,7 +6347,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> concatEager(Observable<? extends Observable<? extends T>> sources) {
         return sources.concatMapEager((Func1)UtilityFunctions.identity());
@@ -6427,7 +6372,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> concatEager(Observable<? extends Observable<? extends T>> sources, int capacityHint) {
         return sources.concatMapEager((Func1)UtilityFunctions.identity(), capacityHint);
@@ -6453,7 +6398,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public final <R> Observable<R> concatMapEager(Func1<? super T, ? extends Observable<? extends R>> mapper) {
         return concatMapEager(mapper, RxRingBuffer.SIZE);
     }
@@ -6479,7 +6424,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public final <R> Observable<R> concatMapEager(Func1<? super T, ? extends Observable<? extends R>> mapper, int capacityHint) {
         if (capacityHint < 1) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
@@ -6509,7 +6454,7 @@ public class Observable<T> {
      * @return the new Observable instance with the specified concatenation behavior
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public final <R> Observable<R> concatMapEager(Func1<? super T, ? extends Observable<? extends R>> mapper, int capacityHint, int maxConcurrent) {
         if (capacityHint < 1) {
             throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
@@ -6528,7 +6473,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backkpressure applied to it).</dd>
+     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6555,7 +6500,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backkpressure applied to it).</dd>
+     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAtOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6586,7 +6531,7 @@ public class Observable<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Observable} in an unbounded manner
-     *  (i.e., no backkpressure applied to it).</dd>
+     *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code exists} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6823,9 +6768,8 @@ public class Observable<T> {
      *         by the source Observable and merging the results of the Observables obtained from this
      *         transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
-    @Beta
     public final <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func, int maxConcurrent) {
         if (getClass() == ScalarSynchronousObservable.class) {
             return ((ScalarSynchronousObservable<T>)this).scalarFlatMap(func);
@@ -6896,9 +6840,8 @@ public class Observable<T> {
      * @return an Observable that emits the results of merging the Observables returned from applying the
      *         specified functions to the emissions and notifications of the source Observable
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
-    @Beta
     public final <R> Observable<R> flatMap(
             Func1<? super T, ? extends Observable<? extends R>> onNext,
             Func1<? super Throwable, ? extends Observable<? extends R>> onError,
@@ -6964,9 +6907,8 @@ public class Observable<T> {
      * @return an Observable that emits the results of applying a function to a pair of values emitted by the
      *         source Observable and the collection Observable
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
-    @Beta
     public final <U, R> Observable<R> flatMap(final Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
             final Func2<? super T, ? super U, ? extends R> resultSelector, int maxConcurrent) {
         return merge(lift(new OperatorMapPair<T, U, R>(collectionSelector, resultSelector)), maxConcurrent);
@@ -7026,9 +6968,8 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
-    @Beta
     public final <R> Observable<R> flatMapIterable(Func1<? super T, ? extends Iterable<? extends R>> collectionSelector, int maxConcurrent) {
         return OnSubscribeFlattenIterable.createFrom(this, collectionSelector, maxConcurrent);
     }
@@ -7098,10 +7039,9 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
     @SuppressWarnings("cast")
-    @Beta
     public final <U, R> Observable<R> flatMapIterable(Func1<? super T, ? extends Iterable<? extends U>> collectionSelector,
             Func2<? super T, ? super U, ? extends R> resultSelector, int maxConcurrent) {
         return (Observable<R>)flatMap(OperatorMapPair.convertSelector(collectionSelector), resultSelector, maxConcurrent);
@@ -7698,7 +7638,7 @@ public class Observable<T> {
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure,
      *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} opertors <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -7729,7 +7669,7 @@ public class Observable<T> {
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure,
      *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} opertors <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -7764,7 +7704,7 @@ public class Observable<T> {
      *  expectation will lead to {@code MissingBackpressureException}. This is the most common operator where the exception
      *  pops up; look for sources up the chain that don't support backpressure,
      *  such as {@code interval}, {@code timer}, {code PublishSubject} or {@code BehaviorSubject} and apply any
-     *  of the {@code onBackpressureXXX} opertors <strong>before</strong> applying {@code observeOn} itself.</dd>
+     *  of the {@code onBackpressureXXX} operators <strong>before</strong> applying {@code observeOn} itself.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -7916,7 +7856,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public final Observable<T> onBackpressureBuffer(long capacity, Action0 onOverflow, BackpressureOverflow.Strategy overflowStrategy) {
         return lift(new OperatorOnBackpressureBuffer<T>(capacity, onOverflow, overflowStrategy));
     }
@@ -10417,7 +10357,7 @@ public class Observable<T> {
      * @Experimental The behavior of this can change at any time.
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public final <R> Observable<R> switchMapDelayError(Func1<? super T, ? extends Observable<? extends R>> func) {
         return switchOnNextDelayError(map(func));
     }
@@ -11756,7 +11696,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public final Observable<List<T>> toSortedList(int initialCapacity) {
         return lift(new OperatorToObservableSortedList<T>(initialCapacity));
     }
@@ -11784,7 +11724,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public final Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction, int initialCapacity) {
         return lift(new OperatorToObservableSortedList<T>(sortFunction, initialCapacity));
     }

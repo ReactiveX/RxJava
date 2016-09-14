@@ -38,8 +38,8 @@ import rx.plugins.RxJavaHooks;
  *            {@link #onUnsubscribe(Object) onUnsubscribe(S)}.
  * @param <T>
  *            the type of {@code Subscribers} that will be compatible with {@code this}.
+ * @since 1.2
  */
-@Beta
 public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
 
     /* (non-Javadoc)
@@ -359,7 +359,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
                 else if (compareAndSet(requestCount, -2L)) {
                     // the loop is iterating concurrently
                     // need to check if requestCount == -1
-                    // and unsub if so after loop iteration
+                    // and unsubscribe if so after loop iteration
                     return;
                 }
             }
@@ -390,14 +390,14 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
         public void request(long n) {
             if (n > 0 && BackpressureUtils.getAndAddRequest(this, n) == 0L) {
                 if (n == Long.MAX_VALUE) {
-                    fastpath();
+                    fastPath();
                 } else {
                     slowPath(n);
                 }
             }
         }
 
-        private void fastpath() {
+        private void fastPath() {
             final SyncOnSubscribe<S, T> p = parent;
             Subscriber<? super T> a = actualSubscriber;
 

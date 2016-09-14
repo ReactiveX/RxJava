@@ -15,13 +15,15 @@
  */
 package rx;
 
-import rx.annotations.Experimental;
+import rx.annotations.Beta;
 import rx.exceptions.MissingBackpressureException;
 
 /**
  * Generic strategy and default implementations to deal with backpressure buffer overflows.
+ * 
+ * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
  */
-@Experimental
+@Beta
 public final class BackpressureOverflow {
 
     /**
@@ -55,7 +57,7 @@ public final class BackpressureOverflow {
          * drop the item currently causing backpressure.
          *
          * @return true to request drop of the oldest item, false to drop the newest.
-         * @throws MissingBackpressureException
+         * @throws MissingBackpressureException if the strategy should signal MissingBackpressureException
          */
         boolean mayAttemptDrop() throws MissingBackpressureException;
     }

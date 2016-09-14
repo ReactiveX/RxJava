@@ -63,8 +63,8 @@ public final class CachedObservable<T> extends Observable<T> {
     /**
      * Private constructor because state needs to be shared between the Observable body and
      * the onSubscribe function.
-     * @param onSubscribe
-     * @param state
+     * @param onSubscribe the shared OnSubscribe implementation
+     * @param state the cache state object
      */
     private CachedObservable(OnSubscribe<T> onSubscribe, CacheState<T> state) {
         super(onSubscribe);
@@ -81,7 +81,7 @@ public final class CachedObservable<T> extends Observable<T> {
 
     /**
      * Returns true if there are observers subscribed to this observable.
-     * @return
+     * @return true if this CachedObservable has observers
      */
     /* public */ boolean hasObservers() {
         return state.producers.length != 0;
@@ -121,7 +121,7 @@ public final class CachedObservable<T> extends Observable<T> {
         }
         /**
          * Adds a ReplayProducer to the producers array atomically.
-         * @param p
+         * @param p the downstream consumer's associated Producer instance
          */
         public void addProducer(ReplayProducer<T> p) {
             // guarding by connection to save on allocating another object
@@ -137,7 +137,7 @@ public final class CachedObservable<T> extends Observable<T> {
         }
         /**
          * Removes the ReplayProducer (if present) from the producers array atomically.
-         * @param p
+         * @param p the downstream consumer's associated Producer instance
          */
         public void removeProducer(ReplayProducer<T> p) {
             synchronized (connection) {

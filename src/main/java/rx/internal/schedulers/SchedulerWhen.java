@@ -62,7 +62,7 @@ import rx.subscriptions.Subscriptions;
  * thread pool:
  *
  * <pre>
- * Scheduler limitSched = Schedulers.computation().when(workers -> {
+ * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
  * 	// use merge max concurrent to limit the number of concurrent
  * 	// callbacks two at a time
  * 	return Completable.merge(Observable.merge(workers), 2);
@@ -80,7 +80,7 @@ import rx.subscriptions.Subscriptions;
  * to the second.
  *
  * <pre>
- * Scheduler limitSched = Schedulers.computation().when(workers -> {
+ * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
  * 	// use merge max concurrent to limit the number of concurrent
  * 	// Observables two at a time
  * 	return Completable.merge(Observable.merge(workers, 2));
@@ -93,7 +93,7 @@ import rx.subscriptions.Subscriptions;
  * algorithm).
  *
  * <pre>
- * Scheduler slowSched = Schedulers.computation().when(workers -> {
+ * Scheduler slowScheduler = Schedulers.computation().when(workers -> {
  * 	// use concatenate to make each worker happen one at a time.
  * 	return Completable.concat(workers.map(actions -> {
  * 		// delay the starting of the next worker by 1 second.
@@ -193,7 +193,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
 		return worker;
 	}
 
-	private static final Subscription SUBSCRIBED = new Subscription() {
+	static final Subscription SUBSCRIBED = new Subscription() {
 		@Override
 		public void unsubscribe() {
 		}
@@ -204,7 +204,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
 		}
 	};
 
-	private static final Subscription UNSUBSCRIBED = Subscriptions.unsubscribed();
+	static final Subscription UNSUBSCRIBED = Subscriptions.unsubscribed();
 
 	@SuppressWarnings("serial")
 	private static abstract class ScheduledAction extends AtomicReference<Subscription> implements Subscription {
@@ -212,7 +212,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
 			super(SUBSCRIBED);
 		}
 
-		private final void call(Worker actualWorker) {
+		private void call(Worker actualWorker) {
 			Subscription oldState = get();
 			// either SUBSCRIBED or UNSUBSCRIBED
 			if (oldState == UNSUBSCRIBED) {

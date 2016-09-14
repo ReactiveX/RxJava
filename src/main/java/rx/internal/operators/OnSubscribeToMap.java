@@ -94,7 +94,7 @@ public final class OnSubscribeToMap<T, K, V> implements OnSubscribe<Map<K, V>>, 
             return;
         }
         new ToMapSubscriber<T, K, V>(subscriber, map, keySelector, valueSelector)
-            .subscribeTo(source);;
+            .subscribeTo(source);
     }
 
     static final class ToMapSubscriber<T, K, V> extends DeferredScalarSubscriberSafe<T, Map<K,V>> {

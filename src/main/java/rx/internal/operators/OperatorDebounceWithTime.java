@@ -55,10 +55,10 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         final Worker worker = scheduler.createWorker();
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
-        final SerialSubscription ssub = new SerialSubscription();
+        final SerialSubscription serial = new SerialSubscription();
 
         s.add(worker);
-        s.add(ssub);
+        s.add(serial);
 
         return new Subscriber<T>(child) {
             final DebounceState<T> state = new DebounceState<T>();
@@ -73,7 +73,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
             public void onNext(final T t) {
 
                 final int index = state.next(t);
-                ssub.set(worker.schedule(new Action0() {
+                serial.set(worker.schedule(new Action0() {
                     @Override
                     public void call() {
                         state.emit(index, s, self);

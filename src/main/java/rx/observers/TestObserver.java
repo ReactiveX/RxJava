@@ -24,7 +24,7 @@ import rx.exceptions.CompositeException;
 /**
  * Observer usable for unit testing to perform assertions, inspect received events or wrap a mocked Observer.
  * @param <T> the observed value type
- * @deprecated use the {@link TestSubscriber} insteand.
+ * @deprecated use the {@link TestSubscriber} instead.
  */
 @Deprecated
 public class TestObserver<T> implements Observer<T> {

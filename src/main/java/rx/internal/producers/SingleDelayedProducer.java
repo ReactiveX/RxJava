@@ -91,8 +91,8 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
     /**
      * Emits the given value to the child subscriber and completes it
      * and checks for unsubscriptions eagerly.
-     * @param c
-     * @param v
+     * @param c the target Subscriber to emit to
+     * @param v the value to emit
      */
     private static <T> void emit(Subscriber<? super T> c, T v) {
         if (c.isUnsubscribed()) {

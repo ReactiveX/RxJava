@@ -30,7 +30,7 @@ public interface Subscription {
      * Stops the receipt of notifications on the {@link Subscriber} that was registered when this Subscription
      * was received.
      * <p>
-     * This allows unregistering an {@link Subscriber} before it has finished receiving all events (i.e. before
+     * This allows deregistering an {@link Subscriber} before it has finished receiving all events (i.e. before
      * onCompleted is called).
      */
     void unsubscribe();

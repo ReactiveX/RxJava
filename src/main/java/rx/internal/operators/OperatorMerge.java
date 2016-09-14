@@ -81,7 +81,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
     /**
      * Creates a new instance of the operator with the given delayError and maxConcurrency settings.
      * @param <T> the value type
-     * @param delayErrors
+     * @param delayErrors if true, errors are delayed till all sources terminate, if false the first error will
+     *                    be emitted and all sequences unsubscribed
      * @param maxConcurrent the maximum number of concurrent subscriptions or Integer.MAX_VALUE for unlimited
      * @return the Operator instance with the given settings
      */
@@ -335,8 +336,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
          * to both the main source and the inner subscribers,
          * we handle things in a shared manner.
          *
-         * @param subscriber
-         * @param value
+         * @param subscriber the subscriber to one of the inner Observables running
+         * @param value the value that inner Observable produced
          */
         void tryEmit(InnerSubscriber<T> subscriber, T value) {
             boolean success = false;
@@ -382,13 +383,11 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             } catch (MissingBackpressureException ex) {
                 subscriber.unsubscribe();
                 subscriber.onError(ex);
-                return;
             } catch (IllegalStateException ex) {
                 if (!subscriber.isUnsubscribed()) {
                     subscriber.unsubscribe();
                     subscriber.onError(ex);
                 }
-                return;
             }
         }
 
@@ -449,8 +448,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
          * to both the main source and the inner subscribers,
          * we handle things in a shared manner.
          *
-         * @param subscriber
-         * @param value
+         * @param value the scalar value the main Observable emitted through {@code just()}
          */
         void tryEmit(T value) {
             boolean success = false;
@@ -506,7 +504,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             if (!q.offer(nl.next(value))) {
                 unsubscribe();
                 onError(OnErrorThrowable.addValueAsLastCause(new MissingBackpressureException(), value));
-                return;
             }
         }
 
