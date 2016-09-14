@@ -17,7 +17,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.subscribers.observable.BasicFuseableObserver;
+import io.reactivex.internal.observers.BasicFuseableObserver;
 
 public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Function<? super T, ? extends U> function;

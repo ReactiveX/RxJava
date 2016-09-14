@@ -43,8 +43,8 @@ public enum BlockingFlowableNext {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
-                NextObserver<T> nextObserver = new NextObserver<T>();
-                return new NextIterator<T>(items, nextObserver);
+                NextSubscriber<T> nextSubscriber = new NextSubscriber<T>();
+                return new NextIterator<T>(items, nextSubscriber);
             }
         };
 
@@ -53,7 +53,7 @@ public enum BlockingFlowableNext {
     // test needs to access the observer.waiting flag
     static final class NextIterator<T> implements Iterator<T> {
 
-        private final NextObserver<T> observer;
+        private final NextSubscriber<T> observer;
         private final Publisher<? extends T> items;
         private T next;
         private boolean hasNext = true;
@@ -61,7 +61,7 @@ public enum BlockingFlowableNext {
         private Throwable error;
         private boolean started;
 
-        NextIterator(Publisher<? extends T> items, NextObserver<T> observer) {
+        NextIterator(Publisher<? extends T> items, NextSubscriber<T> observer) {
             this.items = items;
             this.observer = observer;
         }
@@ -138,7 +138,7 @@ public enum BlockingFlowableNext {
         }
     }
 
-    static final class NextObserver<T> extends DisposableSubscriber<Notification<T>> {
+    static final class NextSubscriber<T> extends DisposableSubscriber<Notification<T>> {
         private final BlockingQueue<Notification<T>> buf = new ArrayBlockingQueue<Notification<T>>(1);
         final AtomicInteger waiting = new AtomicInteger();
 

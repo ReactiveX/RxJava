@@ -828,7 +828,7 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingAwait() {
-        BlockingObserver<Void> observer = new BlockingObserver<Void>();
+        BlockingMultiObserver<Void> observer = new BlockingMultiObserver<Void>();
         subscribe(observer);
         observer.blockingGet();
     }
@@ -848,7 +848,7 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final boolean blockingAwait(long timeout, TimeUnit unit) {
-        BlockingObserver<Void> observer = new BlockingObserver<Void>();
+        BlockingMultiObserver<Void> observer = new BlockingMultiObserver<Void>();
         subscribe(observer);
         return observer.blockingAwait(timeout, unit);
     }
@@ -865,7 +865,7 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Throwable blockingGet() {
-        BlockingObserver<Void> observer = new BlockingObserver<Void>();
+        BlockingMultiObserver<Void> observer = new BlockingMultiObserver<Void>();
         subscribe(observer);
         return observer.blockingGetError();
     }
@@ -886,7 +886,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Throwable blockingGet(long timeout, TimeUnit unit) {
         ObjectHelper.requireNonNull(unit, "unit is null");
-        BlockingObserver<Void> observer = new BlockingObserver<Void>();
+        BlockingMultiObserver<Void> observer = new BlockingMultiObserver<Void>();
         subscribe(observer);
         return observer.blockingGetError(timeout, unit);
     }

@@ -32,7 +32,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  */
 public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T> {
     final ConnectableFlowable<? extends T> source;
-    volatile CompositeDisposable baseSubscription = new CompositeDisposable();
+    volatile CompositeDisposable baseDisposable = new CompositeDisposable();
     final AtomicInteger subscriptionCount = new AtomicInteger();
 
     /**
@@ -93,13 +93,13 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
         }
 
         void cleanup() {
-            // on error or completion we need to unsubscribe the base subscription
+            // on error or completion we need to dispose the base CompositeDisposable
             // and set the subscriptionCount to 0
             lock.lock();
             try {
-                if (baseSubscription == currentBase) {
-                    baseSubscription.dispose();
-                    baseSubscription = new CompositeDisposable();
+                if (baseDisposable == currentBase) {
+                    baseDisposable.dispose();
+                    baseDisposable = new CompositeDisposable();
                     subscriptionCount.set(0);
                 }
             } finally {
@@ -144,7 +144,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
         } else {
             try {
                 // ready to subscribe to source so do it
-                doSubscribe(subscriber, baseSubscription);
+                doSubscribe(subscriber, baseDisposable);
             } finally {
                 // release the read lock
                 lock.unlock();
@@ -159,9 +159,9 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
             @Override
             public void accept(Disposable subscription) {
                 try {
-                    baseSubscription.add(subscription);
+                    baseDisposable.add(subscription);
                     // ready to subscribe to source so do it
-                    doSubscribe(subscriber, baseSubscription);
+                    doSubscribe(subscriber, baseDisposable);
                 } finally {
                     // release the write lock
                     lock.unlock();
@@ -172,7 +172,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
     }
 
     void doSubscribe(final Subscriber<? super T> subscriber, final CompositeDisposable currentBase) {
-        // handle unsubscribing from the base subscription
+        // handle disposing from the base subscription
         Disposable d = disconnect(currentBase);
 
         ConnectionSubscriber connection = new ConnectionSubscriber(subscriber, currentBase, d);
@@ -187,12 +187,12 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
             public void run() {
                 lock.lock();
                 try {
-                    if (baseSubscription == current) {
+                    if (baseDisposable == current) {
                         if (subscriptionCount.decrementAndGet() == 0) {
-                            baseSubscription.dispose();
-                            // need a new baseSubscription because once
-                            // unsubscribed stays that way
-                            baseSubscription = new CompositeDisposable();
+                            baseDisposable.dispose();
+                            // need a new baseDisposable because once
+                            // disposed stays that way
+                            baseDisposable = new CompositeDisposable();
                         }
                     }
                 } finally {

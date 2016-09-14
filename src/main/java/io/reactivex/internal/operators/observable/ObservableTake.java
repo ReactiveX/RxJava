@@ -26,10 +26,10 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new TakeSubscriber<T>(observer, limit));
+        source.subscribe(new TakeObserver<T>(observer, limit));
     }
 
-    static final class TakeSubscriber<T> implements Observer<T>, Disposable {
+    static final class TakeObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
 
         boolean done;
@@ -37,7 +37,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
         Disposable subscription;
 
         long remaining;
-        TakeSubscriber(Observer<? super T> actual, long limit) {
+        TakeObserver(Observer<? super T> actual, long limit) {
             this.actual = actual;
             this.remaining = limit;
         }

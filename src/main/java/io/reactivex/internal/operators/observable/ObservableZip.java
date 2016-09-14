@@ -76,7 +76,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
         private static final long serialVersionUID = 2983708048395377667L;
         final Observer<? super R> actual;
         final Function<? super Object[], ? extends R> zipper;
-        final ZipSubscriber<T, R>[] subscribers;
+        final ZipObserver<T, R>[] observers;
         final T[] row;
         final boolean delayError;
 
@@ -88,18 +88,18 @@ public final class ObservableZip<T, R> extends Observable<R> {
                 int count, boolean delayError) {
             this.actual = actual;
             this.zipper = zipper;
-            this.subscribers = new ZipSubscriber[count];
+            this.observers = new ZipObserver[count];
             this.row = (T[])new Object[count];
             this.delayError = delayError;
         }
 
         public void subscribe(ObservableSource<? extends T>[] sources, int bufferSize) {
-            ZipSubscriber<T, R>[] s = subscribers;
+            ZipObserver<T, R>[] s = observers;
             int len = s.length;
             for (int i = 0; i < len; i++) {
-                s[i] = new ZipSubscriber<T, R>(this, bufferSize);
+                s[i] = new ZipObserver<T, R>(this, bufferSize);
             }
-            // this makes sure the contents of the subscribers array is visible
+            // this makes sure the contents of the observers array is visible
             this.lazySet(0);
             actual.onSubscribe(this);
             for (int i = 0; i < len; i++) {
@@ -126,7 +126,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
         }
 
         void clear() {
-            for (ZipSubscriber<?, ?> zs : subscribers) {
+            for (ZipObserver<?, ?> zs : observers) {
                 zs.dispose();
                 zs.queue.clear();
             }
@@ -139,7 +139,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
             int missing = 1;
 
-            final ZipSubscriber<T, R>[] zs = subscribers;
+            final ZipObserver<T, R>[] zs = observers;
             final Observer<? super R> a = actual;
             final T[] os = row;
             final boolean delayError = this.delayError;
@@ -149,7 +149,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
                 for (;;) {
                     int i = 0;
                     int emptyCount = 0;
-                    for (ZipSubscriber<T, R> z : zs) {
+                    for (ZipObserver<T, R> z : zs) {
                         if (os[i] == null) {
                             boolean d = z.done;
                             T v = z.queue.poll();
@@ -208,7 +208,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             }
         }
 
-        boolean checkTerminated(boolean d, boolean empty, Observer<? super R> a, boolean delayError, ZipSubscriber<?, ?> source) {
+        boolean checkTerminated(boolean d, boolean empty, Observer<? super R> a, boolean delayError, ZipObserver<?, ?> source) {
             if (cancelled) {
                 clear();
                 return true;
@@ -245,7 +245,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
         }
     }
 
-    static final class ZipSubscriber<T, R> implements Observer<T>, Disposable {
+    static final class ZipObserver<T, R> implements Observer<T>, Disposable {
 
         final ZipCoordinator<T, R> parent;
         final SpscLinkedArrayQueue<T> queue;
@@ -255,7 +255,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
-        ZipSubscriber(ZipCoordinator<T, R> parent, int bufferSize) {
+        ZipObserver(ZipCoordinator<T, R> parent, int bufferSize) {
             this.parent = parent;
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
         }

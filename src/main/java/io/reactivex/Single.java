@@ -1907,7 +1907,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingGet() {
-        BlockingObserver<T> observer = new BlockingObserver<T>();
+        BlockingMultiObserver<T> observer = new BlockingMultiObserver<T>();
         subscribe(observer);
         return observer.blockingGet();
     }

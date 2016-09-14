@@ -24,8 +24,8 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -48,12 +48,12 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
     @Override
     public void subscribeActual(Observer<? super Observable<T>> t) {
-        source.subscribe(new WindowBoundaryMainSubscriber<T, B, V>(
+        source.subscribe(new WindowBoundaryMainObserver<T, B, V>(
                 new SerializedObserver<Observable<T>>(t),
                 open, close, bufferSize));
     }
 
-    static final class WindowBoundaryMainSubscriber<T, B, V>
+    static final class WindowBoundaryMainObserver<T, B, V>
     extends QueueDrainObserver<T, Object, Observable<T>>
     implements Disposable {
         final ObservableSource<B> open;
@@ -69,7 +69,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
         final AtomicLong windows = new AtomicLong();
 
-        WindowBoundaryMainSubscriber(Observer<? super Observable<T>> actual,
+        WindowBoundaryMainObserver(Observer<? super Observable<T>> actual,
                                             ObservableSource<B> open, Function<? super B, ? extends ObservableSource<V>> close, int bufferSize) {
             super(actual, new MpscLinkedQueue<Object>());
             this.open = open;
@@ -91,7 +91,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                     return;
                 }
 
-                OperatorWindowBoundaryOpenSubscriber<T, B> os = new OperatorWindowBoundaryOpenSubscriber<T, B>(this);
+                OperatorWindowBoundaryOpenObserver<T, B> os = new OperatorWindowBoundaryOpenObserver<T, B>(this);
 
                 if (boundary.compareAndSet(null, os)) {
                     windows.getAndIncrement();
@@ -280,7 +280,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                             continue;
                         }
 
-                        OperatorWindowBoundaryCloseSubscriber<T, V> cl = new OperatorWindowBoundaryCloseSubscriber<T, V>(this, w);
+                        OperatorWindowBoundaryCloseObserver<T, V> cl = new OperatorWindowBoundaryCloseObserver<T, V>(this, w);
 
                         if (resources.add(cl)) {
                             windows.getAndIncrement();
@@ -314,7 +314,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
             }
         }
 
-        void close(OperatorWindowBoundaryCloseSubscriber<T, V> w) {
+        void close(OperatorWindowBoundaryCloseObserver<T, V> w) {
             resources.delete(w);
             queue.offer(new WindowOperation<T, Object>(w.w, null));
             if (enter()) {
@@ -332,12 +332,12 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         }
     }
 
-    static final class OperatorWindowBoundaryOpenSubscriber<T, B> extends DisposableObserver<B> {
-        final WindowBoundaryMainSubscriber<T, B, ?> parent;
+    static final class OperatorWindowBoundaryOpenObserver<T, B> extends DisposableObserver<B> {
+        final WindowBoundaryMainObserver<T, B, ?> parent;
 
         boolean done;
 
-        OperatorWindowBoundaryOpenSubscriber(WindowBoundaryMainSubscriber<T, B, ?> parent) {
+        OperatorWindowBoundaryOpenObserver(WindowBoundaryMainObserver<T, B, ?> parent) {
             this.parent = parent;
         }
 
@@ -369,13 +369,13 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         }
     }
 
-    static final class OperatorWindowBoundaryCloseSubscriber<T, V> extends DisposableObserver<V> {
-        final WindowBoundaryMainSubscriber<T, ?, V> parent;
+    static final class OperatorWindowBoundaryCloseObserver<T, V> extends DisposableObserver<V> {
+        final WindowBoundaryMainObserver<T, ?, V> parent;
         final UnicastSubject<T> w;
 
         boolean done;
 
-        OperatorWindowBoundaryCloseSubscriber(WindowBoundaryMainSubscriber<T, ?, V> parent, UnicastSubject<T> w) {
+        OperatorWindowBoundaryCloseObserver(WindowBoundaryMainObserver<T, ?, V> parent, UnicastSubject<T> w) {
             this.parent = parent;
             this.w = w;
         }

@@ -49,13 +49,13 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
         if (delayErrors == ErrorMode.IMMEDIATE) {
             SerializedObserver<U> serial = new SerializedObserver<U>(s);
-            source.subscribe(new SourceSubscriber<T, U>(serial, mapper, bufferSize));
+            source.subscribe(new SourceObserver<T, U>(serial, mapper, bufferSize));
         } else {
             source.subscribe(new ConcatMapDelayErrorObserver<T, U>(s, mapper, bufferSize, delayErrors == ErrorMode.END));
         }
     }
 
-    static final class SourceSubscriber<T, U> extends AtomicInteger implements Observer<T>, Disposable {
+    static final class SourceObserver<T, U> extends AtomicInteger implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = 8828587559905699186L;
         final Observer<? super U> actual;
@@ -76,12 +76,12 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
         int fusionMode;
 
-        SourceSubscriber(Observer<? super U> actual,
+        SourceObserver(Observer<? super U> actual,
                                 Function<? super T, ? extends ObservableSource<? extends U>> mapper, int bufferSize) {
             this.actual = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
-            this.inner = new InnerSubscriber<U>(actual, this);
+            this.inner = new InnerObserver<U>(actual, this);
             this.sa = new SequentialDisposable();
         }
         @Override
@@ -232,11 +232,11 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             }
         }
 
-        static final class InnerSubscriber<U> implements Observer<U> {
+        static final class InnerObserver<U> implements Observer<U> {
             final Observer<? super U> actual;
-            final SourceSubscriber<?, ?> parent;
+            final SourceObserver<?, ?> parent;
 
-            InnerSubscriber(Observer<? super U> actual, SourceSubscriber<?, ?> parent) {
+            InnerObserver(Observer<? super U> actual, SourceObserver<?, ?> parent) {
                 this.actual = actual;
                 this.parent = parent;
             }

@@ -24,17 +24,17 @@ public final class ObservableCount<T> extends AbstractObservableWithUpstream<T, 
 
     @Override
     public void subscribeActual(Observer<? super Long> t) {
-        source.subscribe(new CountSubscriber(t));
+        source.subscribe(new CountObserver(t));
     }
 
-    static final class CountSubscriber implements Observer<Object>, Disposable {
+    static final class CountObserver implements Observer<Object>, Disposable {
         final Observer<? super Long> actual;
 
         Disposable s;
 
         long count;
 
-        CountSubscriber(Observer<? super Long> actual) {
+        CountObserver(Observer<? super Long> actual) {
             this.actual = actual;
         }
 

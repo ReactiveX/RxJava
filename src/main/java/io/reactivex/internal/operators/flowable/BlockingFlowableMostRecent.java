@@ -44,23 +44,23 @@ public enum BlockingFlowableMostRecent {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
-                MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
+                MostRecentSubscriber<T> mostRecentSubscriber = new MostRecentSubscriber<T>(initialValue);
 
                 /**
                  * Subscribe instead of unsafeSubscribe since this is the final subscribe in the chain
                  * since it is for BlockingObservable.
                  */
-                source.subscribe(mostRecentObserver);
+                source.subscribe(mostRecentSubscriber);
 
-                return mostRecentObserver.getIterable();
+                return mostRecentSubscriber.getIterable();
             }
         };
     }
 
-    static final class MostRecentObserver<T> extends DefaultSubscriber<T> {
+    static final class MostRecentSubscriber<T> extends DefaultSubscriber<T> {
         volatile Object value;
 
-        MostRecentObserver(T value) {
+        MostRecentSubscriber(T value) {
             this.value = NotificationLite.next(value);
         }
 

@@ -27,10 +27,10 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
     }
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new ElementAtSubscriber<T>(t, index, defaultValue));
+        source.subscribe(new ElementAtObserver<T>(t, index, defaultValue));
     }
 
-    static final class ElementAtSubscriber<T> implements Observer<T>, Disposable {
+    static final class ElementAtObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final long index;
         final T defaultValue;
@@ -41,7 +41,7 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
 
         boolean done;
 
-        ElementAtSubscriber(Observer<? super T> actual, long index, T defaultValue) {
+        ElementAtObserver(Observer<? super T> actual, long index, T defaultValue) {
             this.actual = actual;
             this.index = index;
             this.defaultValue = defaultValue;

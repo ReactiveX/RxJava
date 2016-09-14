@@ -65,7 +65,7 @@ public final class ObserverFullArbiter<T> extends FullArbiterPad1 implements Dis
         }
     }
 
-    public boolean setSubscription(Disposable s) {
+    public boolean setDisposable(Disposable s) {
         if (cancelled) {
             return false;
         }

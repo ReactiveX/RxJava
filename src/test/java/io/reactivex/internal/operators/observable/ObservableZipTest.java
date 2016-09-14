@@ -69,7 +69,7 @@ public class ObservableZipTest {
         Function<Object[], String> zipr = Functions.toFunction(getConcatStringIntegerIntArrayZipr());
         //Function3<String, Integer, int[], String>
 
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         @SuppressWarnings("rawtypes")
@@ -175,7 +175,7 @@ public class ObservableZipTest {
     public void testAggregatorSimple() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, zipr2).subscribe(observer);
@@ -207,10 +207,10 @@ public class ObservableZipTest {
     @Test
     public void testAggregatorDifferentSizedResultsWithOnComplete() {
         /* create the aggregator which will execute the zip function when all Observables provide values */
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
         Observable.zip(r1, r2, zipr2).subscribe(observer);
 
@@ -237,7 +237,7 @@ public class ObservableZipTest {
     public void testAggregateMultipleTypes() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<Integer> r2 = PublishSubject.create();
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, zipr2).subscribe(observer);
@@ -266,7 +266,7 @@ public class ObservableZipTest {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<Integer> r2 = PublishSubject.create();
         PublishSubject<List<Integer>> r3 = PublishSubject.create();
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, r3, zipr3).subscribe(observer);
@@ -285,7 +285,7 @@ public class ObservableZipTest {
     public void testAggregatorsWithDifferentSizesAndTiming() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, zipr2).subscribe(observer);
@@ -320,7 +320,7 @@ public class ObservableZipTest {
     public void testAggregatorError() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, zipr2).subscribe(observer);
@@ -347,7 +347,7 @@ public class ObservableZipTest {
     public void testAggregatorUnsubscribe() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
         TestObserver<String> ts = new TestObserver<String>(observer);
 
@@ -375,7 +375,7 @@ public class ObservableZipTest {
     public void testAggregatorEarlyCompletion() {
         PublishSubject<String> r1 = PublishSubject.create();
         PublishSubject<String> r2 = PublishSubject.create();
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable.zip(r1, r2, zipr2).subscribe(observer);
@@ -403,7 +403,7 @@ public class ObservableZipTest {
     public void testStart2Types() {
         BiFunction<String, Integer, String> zipr = getConcatStringIntegerZipr();
 
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> w = Observable.zip(Observable.just("one", "two"), Observable.just(2, 3, 4), zipr);
@@ -420,7 +420,7 @@ public class ObservableZipTest {
     public void testStart3Types() {
         Function3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
 
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> w = Observable.zip(Observable.just("one", "two"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }), zipr);

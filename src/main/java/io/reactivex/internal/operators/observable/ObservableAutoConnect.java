@@ -22,21 +22,21 @@ import io.reactivex.observables.ConnectableObservable;
 
 /**
  * Wraps a ConnectableObservable and calls its connect() method once
- * the specified number of Subscribers have subscribed.
+ * the specified number of Observers have subscribed.
  *
  * @param <T> the value type of the chain
  */
 public final class ObservableAutoConnect<T> extends Observable<T> {
     final ConnectableObservable<? extends T> source;
-    final int numberOfSubscribers;
+    final int numberOfObservers;
     final Consumer<? super Disposable> connection;
     final AtomicInteger clients;
 
     public ObservableAutoConnect(ConnectableObservable<? extends T> source,
-            int numberOfSubscribers,
+            int numberOfObservers,
             Consumer<? super Disposable> connection) {
         this.source = source;
-        this.numberOfSubscribers = numberOfSubscribers;
+        this.numberOfObservers = numberOfObservers;
         this.connection = connection;
         this.clients = new AtomicInteger();
     }
@@ -44,7 +44,7 @@ public final class ObservableAutoConnect<T> extends Observable<T> {
     @Override
     public void subscribeActual(Observer<? super T> child) {
         source.subscribe(child);
-        if (clients.incrementAndGet() == numberOfSubscribers) {
+        if (clients.incrementAndGet() == numberOfObservers) {
             source.connect(connection);
         }
     }

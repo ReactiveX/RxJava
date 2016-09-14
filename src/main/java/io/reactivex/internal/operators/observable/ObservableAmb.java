@@ -63,21 +63,21 @@ public final class ObservableAmb<T> extends Observable<T> {
 
     static final class AmbCoordinator<T> implements Disposable {
         final Observer<? super T> actual;
-        final AmbInnerSubscriber<T>[] subscribers;
+        final AmbInnerObserver<T>[] observers;
 
         final AtomicInteger winner = new AtomicInteger();
 
         @SuppressWarnings("unchecked")
         AmbCoordinator(Observer<? super T> actual, int count) {
             this.actual = actual;
-            this.subscribers = new AmbInnerSubscriber[count];
+            this.observers = new AmbInnerObserver[count];
         }
 
         public void subscribe(ObservableSource<? extends T>[] sources) {
-            AmbInnerSubscriber<T>[] as = subscribers;
+            AmbInnerObserver<T>[] as = observers;
             int len = as.length;
             for (int i = 0; i < len; i++) {
-                as[i] = new AmbInnerSubscriber<T>(this, i + 1, actual);
+                as[i] = new AmbInnerObserver<T>(this, i + 1, actual);
             }
             winner.lazySet(0); // release the contents of 'as'
             actual.onSubscribe(this);
@@ -95,7 +95,7 @@ public final class ObservableAmb<T> extends Observable<T> {
             int w = winner.get();
             if (w == 0) {
                 if (winner.compareAndSet(0, index)) {
-                    AmbInnerSubscriber<T>[] a = subscribers;
+                    AmbInnerObserver<T>[] a = observers;
                     int n = a.length;
                     for (int i = 0; i < n; i++) {
                         if (i + 1 != index) {
@@ -114,7 +114,7 @@ public final class ObservableAmb<T> extends Observable<T> {
             if (winner.get() != -1) {
                 winner.lazySet(-1);
 
-                for (AmbInnerSubscriber<T> a : subscribers) {
+                for (AmbInnerObserver<T> a : observers) {
                     a.dispose();
                 }
             }
@@ -126,7 +126,7 @@ public final class ObservableAmb<T> extends Observable<T> {
         }
     }
 
-    static final class AmbInnerSubscriber<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
+    static final class AmbInnerObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -1185974347409665484L;
         final AmbCoordinator<T> parent;
@@ -135,7 +135,7 @@ public final class ObservableAmb<T> extends Observable<T> {
 
         boolean won;
 
-        AmbInnerSubscriber(AmbCoordinator<T> parent, int index, Observer<? super T> actual) {
+        AmbInnerObserver(AmbCoordinator<T> parent, int index, Observer<? super T> actual) {
             this.parent = parent;
             this.index = index;
             this.actual = actual;

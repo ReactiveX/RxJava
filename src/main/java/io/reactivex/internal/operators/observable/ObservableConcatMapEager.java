@@ -24,7 +24,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.subscribers.observable.*;
+import io.reactivex.internal.observers.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -138,7 +138,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         @Override
         public void onNext(T value) {
-            if (sourceMode == QueueSubscription.NONE) {
+            if (sourceMode == QueueDisposable.NONE) {
                 queue.offer(value);
             }
             drain();

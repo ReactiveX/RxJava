@@ -25,7 +25,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.HasUpstreamPublisher;
-import io.reactivex.internal.subscribers.flowable.SubscriberResourceWrapper;
+import io.reactivex.internal.subscribers.SubscriberResourceWrapper;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -130,11 +130,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     /**
      * Creates a replaying ConnectableObservable with an unbounded buffer.
      * @param <T> the value type
-     * @param source the source Flowable to use
+     * @param source the source Publisher to use
      * @return the new ConnectableObservable instance
      */
     @SuppressWarnings("unchecked")
-    public static <T> ConnectableFlowable<T> createFrom(Flowable<? extends T> source) {
+    public static <T> ConnectableFlowable<T> createFrom(Publisher<? extends T> source) {
         return create(source, DEFAULT_UNBOUNDED_FACTORY);
     }
 
@@ -145,7 +145,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param bufferSize the maximum number of elements to hold
      * @return the new ConnectableObservable instance
      */
-    public static <T> ConnectableFlowable<T> create(Flowable<T> source,
+    public static <T> ConnectableFlowable<T> create(Publisher<T> source,
             final int bufferSize) {
         if (bufferSize == Integer.MAX_VALUE) {
             return createFrom(source);
@@ -167,7 +167,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param scheduler the target scheduler providing the current time
      * @return the new ConnectableObservable instance
      */
-    public static <T> ConnectableFlowable<T> create(Flowable<T> source,
+    public static <T> ConnectableFlowable<T> create(Publisher<T> source,
             long maxAge, TimeUnit unit, Scheduler scheduler) {
         return create(source, maxAge, unit, scheduler, Integer.MAX_VALUE);
     }
@@ -182,7 +182,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param bufferSize the maximum number of elements to hold
      * @return the new ConnectableFlowable instance
      */
-    public static <T> ConnectableFlowable<T> create(Flowable<T> source,
+    public static <T> ConnectableFlowable<T> create(Publisher<T> source,
             final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize) {
         return create(source, new Callable<ReplayBuffer<T>>() {
             @Override
@@ -198,7 +198,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @param bufferFactory the factory to instantiate the appropriate buffer when the observable becomes active
      * @return the connectable observable
      */
-    static <T> ConnectableFlowable<T> create(Flowable<T> source,
+    static <T> ConnectableFlowable<T> create(Publisher<T> source,
             final Callable<? extends ReplayBuffer<T>> bufferFactory) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<ReplaySubscriber<T>>();
@@ -234,7 +234,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
                     // create the backpressure-managing producer for this child
                     InnerSubscription<T> inner = new InnerSubscription<T>(r, child);
-                    // we try to add it to the array of producers
+                    // we try to add it to the array of subscribers
                     // if it fails, no worries because we will still have its buffer
                     // so it is going to replay it for us
                     r.add(inner);
@@ -252,7 +252,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         return RxJavaPlugins.onAssembly(new FlowableReplay<T>(onSubscribe, source, curr, bufferFactory));
     }
 
-    private FlowableReplay(Publisher<T> onSubscribe, Flowable<T> source,
+    private FlowableReplay(Publisher<T> onSubscribe, Publisher<T> source,
             final AtomicReference<ReplaySubscriber<T>> current,
             final Callable<? extends ReplayBuffer<T>> bufferFactory) {
         this.onSubscribe = onSubscribe;
@@ -279,7 +279,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         for (;;) {
             // retrieve the current subscriber-to-source instance
             ps = current.get();
-            // if there is none yet or the current has unsubscribed
+            // if there is none yet or the current was disposed
             if (ps == null || ps.isDisposed()) {
 
                 ReplayBuffer<T> buf;
@@ -307,12 +307,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             break; // NOPMD
         }
         /*
-         * Notify the callback that we have a (new) connection which it can unsubscribe
+         * Notify the callback that we have a (new) connection which it can dispose
          * but since ps is unique to a connection, multiple calls to connect() will return the
          * same Subscription and even if there was a connect-disconnect-connect pair, the older
          * references won't disconnect the newer connection.
-         * Synchronous source consumers have the opportunity to disconnect via unsubscribe on the
-         * Subscription as unsafeSubscribe may never return in its own.
+         * Synchronous source consumers have the opportunity to disconnect via dispose on the
+         * Disposable as unsafeSubscribe may never return in its own.
          *
          * Note however, that asynchronously disconnecting a running source might leave
          * child-subscribers without any terminal event; ReplaySubject does not have this
@@ -337,13 +337,13 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         /** Indicates this Subscriber received a terminal event. */
         boolean done;
 
-        /** Indicates an empty array of inner producers. */
+        /** Indicates an empty array of inner subscriptions. */
         static final InnerSubscription[] EMPTY = new InnerSubscription[0];
         /** Indicates a terminated ReplaySubscriber. */
         static final InnerSubscription[] TERMINATED = new InnerSubscription[0];
 
-        /** Tracks the subscribed producers. */
-        final AtomicReference<InnerSubscription[]> producers;
+        /** Tracks the subscribed InnerSubscriptions. */
+        final AtomicReference<InnerSubscription[]> subscribers;
         /**
          * Atomically changed from false to true by connect to make sure the
          * connection is only performed by one thread.
@@ -366,18 +366,18 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         ReplaySubscriber(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
 
-            this.producers = new AtomicReference<InnerSubscription[]>(EMPTY);
+            this.subscribers = new AtomicReference<InnerSubscription[]>(EMPTY);
             this.shouldConnect = new AtomicBoolean();
         }
 
         @Override
         public boolean isDisposed() {
-            return producers.get() == TERMINATED;
+            return subscribers.get() == TERMINATED;
         }
 
         @Override
         public void dispose() {
-            producers.set(TERMINATED);
+            subscribers.set(TERMINATED);
             // unlike OperatorPublish, we can't null out the terminated so
             // late subscribers can still get replay
             // current.compareAndSet(ReplaySubscriber.this, null);
@@ -387,7 +387,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
 
         /**
-         * Atomically try adding a new InnerProducer to this Subscriber or return false if this
+         * Atomically try adding a new InnerSubscription to this Subscriber or return false if this
          * Subscriber was terminated.
          * @param producer the producer to add
          * @return true if succeeded, false otherwise
@@ -399,7 +399,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
                 // get the current producer array
-                InnerSubscription[] c = producers.get();
+                InnerSubscription[] c = subscribers.get();
                 // if this subscriber-to-source reached a terminal state by receiving
                 // an onError or onComplete, just refuse to add the new producer
                 if (c == TERMINATED) {
@@ -410,8 +410,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 InnerSubscription[] u = new InnerSubscription[len + 1];
                 System.arraycopy(c, 0, u, 0, len);
                 u[len] = producer;
-                // try setting the producers array
-                if (producers.compareAndSet(c, u)) {
+                // try setting the subscribers array
+                if (subscribers.compareAndSet(c, u)) {
                     return true;
                 }
                 // if failed, some other operation succeeded (another add, remove or termination)
@@ -420,14 +420,14 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
 
         /**
-         * Atomically removes the given producer from the producers array.
-         * @param producer the producer to remove
+         * Atomically removes the given InnerSubscription from the subscribers array.
+         * @param p the InnerSubscription to remove
          */
-        void remove(InnerSubscription<T> producer) {
+        void remove(InnerSubscription<T> p) {
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
-                // let's read the current producers array
-                InnerSubscription[] c = producers.get();
+                // let's read the current subscribers array
+                InnerSubscription[] c = subscribers.get();
                 // if it is either empty or terminated, there is nothing to remove so we quit
                 if (c == EMPTY || c == TERMINATED) {
                     return;
@@ -437,7 +437,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 int j = -1;
                 int len = c.length;
                 for (int i = 0; i < len; i++) {
-                    if (c[i].equals(producer)) {
+                    if (c[i].equals(p)) {
                         j = i;
                         break;
                     }
@@ -461,7 +461,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                     System.arraycopy(c, j + 1, u, j, len - j - 1);
                 }
                 // try setting this new array as
-                if (producers.compareAndSet(c, u)) {
+                if (subscribers.compareAndSet(c, u)) {
                     return;
                 }
                 // if we failed, it means something else happened
@@ -541,7 +541,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 }
 
                 @SuppressWarnings("unchecked")
-                InnerSubscription<T>[] a = producers.get();
+                InnerSubscription<T>[] a = subscribers.get();
 
                 long ri = maxChildRequested;
                 long maxTotalRequests = ri;
@@ -594,14 +594,14 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          */
         void replay() {
             @SuppressWarnings("unchecked")
-            InnerSubscription<T>[] a = producers.get();
+            InnerSubscription<T>[] a = subscribers.get();
             for (InnerSubscription<T> rp : a) {
                 buffer.replay(rp);
             }
         }
     }
     /**
-     * A Producer and Subscription that manages the request and cancellation state of a
+     * A Subscription that manages the request and cancellation state of a
      * child subscriber in thread-safe manner.
      * @param <T> the value type
      */
@@ -629,7 +629,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         /** Indicates a missed update. Guarded by this. */
         boolean missed;
         /**
-         * Indicates this child has been unsubscribed: the state is swapped in atomically and
+         * Indicates this child has been cancelled: the state is swapped in atomically and
          * will prevent the dispatch() to emit (too many) values to a terminated child subscriber.
          */
         static final long CANCELLED = Long.MIN_VALUE;
@@ -647,12 +647,12 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 return;
             }
             // In general, RxJava doesn't prevent concurrent requests (with each other or with
-            // an unsubscribe) so we need a CAS-loop, but we need to handle
-            // request overflow and unsubscribed/not requested state as well.
+            // a cancel) so we need a CAS-loop, but we need to handle
+            // request overflow and cancelled/not requested state as well.
             for (;;) {
                 // get the current request amount
                 long r = get();
-                // if child called unsubscribe() do nothing
+                // if child called cancel() do nothing
                 if (r == CANCELLED) {
                     return;
                 }
@@ -692,7 +692,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             for (;;) {
                 // get the current request value
                 long r = get();
-                // if the child has unsubscribed, simply return and indicate this
+                // if the child has cancelled, simply return and indicate this
                 if (r == CANCELLED) {
                     return CANCELLED;
                 }
@@ -724,11 +724,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         @Override
         public void dispose() {
             long r = get();
-            // let's see if we are unsubscribed
+            // let's see if we are cancelled
             if (r != CANCELLED) {
                 // if not, swap in the terminal state, this is idempotent
                 // because other methods using CAS won't overwrite this value,
-                // concurrent calls to unsubscribe will atomically swap in the same
+                // concurrent calls to dispose/cancel will atomically swap in the same
                 // terminal value
                 r = getAndSet(CANCELLED);
                 // and only one of them will see a non-terminated value before the swap

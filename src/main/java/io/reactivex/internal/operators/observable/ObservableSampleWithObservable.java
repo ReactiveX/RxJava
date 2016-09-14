@@ -31,10 +31,10 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
     @Override
     public void subscribeActual(Observer<? super T> t) {
         SerializedObserver<T> serial = new SerializedObserver<T>(t);
-        source.subscribe(new SamplePublisherSubscriber<T>(serial, other));
+        source.subscribe(new SampleMainObserver<T>(serial, other));
     }
 
-    static final class SamplePublisherSubscriber<T> extends AtomicReference<T>
+    static final class SampleMainObserver<T> extends AtomicReference<T>
     implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -3517602651313910099L;
@@ -46,7 +46,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
         Disposable s;
 
-        SamplePublisherSubscriber(Observer<? super T> actual, ObservableSource<?> other) {
+        SampleMainObserver(Observer<? super T> actual, ObservableSource<?> other) {
             this.actual = actual;
             this.sampler = other;
         }
@@ -57,7 +57,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
                 this.s = s;
                 actual.onSubscribe(this);
                 if (other.get() == null) {
-                    sampler.subscribe(new SamplerSubscriber<T>(this));
+                    sampler.subscribe(new SamplerObserver<T>(this));
                 }
             }
         }
@@ -118,9 +118,9 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         }
     }
 
-    static final class SamplerSubscriber<T> implements Observer<Object> {
-        final SamplePublisherSubscriber<T> parent;
-        SamplerSubscriber(SamplePublisherSubscriber<T> parent) {
+    static final class SamplerObserver<T> implements Observer<Object> {
+        final SampleMainObserver<T> parent;
+        SamplerObserver(SampleMainObserver<T> parent) {
             this.parent = parent;
 
         }

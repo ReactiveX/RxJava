@@ -27,7 +27,7 @@ import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * A connectable observable which shares an underlying source and dispatches source values to subscribers in a backpressure-aware
+ * A connectable observable which shares an underlying source and dispatches source values to observers in a backpressure-aware
  * manner.
  * @param <T> the value type
  */
@@ -35,7 +35,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
     /** The source observable. */
     final ObservableSource<T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
-    final AtomicReference<PublishSubscriber<T>> current;
+    final AtomicReference<PublishObserver<T>> current;
 
     /** The size of the prefetch buffer. */
     final int bufferSize;
@@ -51,7 +51,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
      */
     public static <T> ConnectableObservable<T> create(ObservableSource<T> source, final int bufferSize) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
-        final AtomicReference<PublishSubscriber<T>> curr = new AtomicReference<PublishSubscriber<T>>();
+        final AtomicReference<PublishObserver<T>> curr = new AtomicReference<PublishObserver<T>>();
         ObservableSource<T> onSubscribe = new ObservableSource<T>() {
             @Override
             public void subscribe(Observer<? super T> child) {
@@ -59,11 +59,11 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
             // we loop to be atomic while the child subscribes
             for (;;) {
                 // get the current subscriber-to-source
-                PublishSubscriber<T> r = curr.get();
-                // if there isn't one or it is unsubscribed
+                PublishObserver<T> r = curr.get();
+                // if there isn't one or it is disposed
                 if (r == null || r.isDisposed()) {
                     // create a new subscriber to source
-                    PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
+                    PublishObserver<T> u = new PublishObserver<T>(curr, bufferSize);
                     // let's try setting it as the current subscriber-to-source
                     if (!curr.compareAndSet(r, u)) {
                         // didn't work, maybe someone else did it or the current subscriber
@@ -75,7 +75,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 }
 
                 // create the backpressure-managing producer for this child
-                InnerProducer<T> inner = new InnerProducer<T>(r, child);
+                InnerDisposable<T> inner = new InnerDisposable<T>(r, child);
                 /*
                  * Try adding it to the current subscriber-to-source, add is atomic in respect
                  * to other adds and the termination of the subscriber-to-source.
@@ -89,14 +89,14 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                     break; // NOPMD
                 }
                 /*
-                 * The current PublishSubscriber has been terminated, try with a newer one.
+                 * The current PublishObserver has been terminated, try with a newer one.
                  */
                 /*
                  * Note: although technically correct, concurrent disconnects can cause
-                 * unexpected behavior such as child subscribers never receiving anything
+                 * unexpected behavior such as child observers never receiving anything
                  * (unless connected again). An alternative approach, similar to
                  * PublishSubject would be to immediately terminate such child
-                 * subscribers as well:
+                 * observers as well:
                  *
                  * Object term = r.terminalEvent;
                  * if (r.nl.isCompleted(term)) {
@@ -110,7 +110,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                  * Allowing this behavior, however, may introduce another unexpected behavior:
                  * after disconnecting a previous connection, one might not be able to prepare
                  * a new connection right after a previous termination by subscribing new child
-                 * subscribers asynchronously before a connect call.
+                 * observers asynchronously before a connect call.
                  */
             }
             }
@@ -150,7 +150,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
     }
 
     private ObservablePublish(ObservableSource<T> onSubscribe, ObservableSource<T> source,
-                              final AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
+                              final AtomicReference<PublishObserver<T>> current, int bufferSize) {
         this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
@@ -170,7 +170,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
     @Override
     public void connect(Consumer<? super Disposable> connection) {
         boolean doConnect;
-        PublishSubscriber<T> ps;
+        PublishObserver<T> ps;
         // we loop because concurrent connect/disconnect and termination may change the state
         for (;;) {
             // retrieve the current subscriber-to-source instance
@@ -178,7 +178,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
             // if there is none yet or the current has been disposed
             if (ps == null || ps.isDisposed()) {
                 // create a new subscriber-to-source
-                PublishSubscriber<T> u = new PublishSubscriber<T>(current, bufferSize);
+                PublishObserver<T> u = new PublishObserver<T>(current, bufferSize);
                 // try setting it as the current subscriber-to-source
                 if (!current.compareAndSet(ps, u)) {
                     // did not work, perhaps a new subscriber arrived
@@ -193,16 +193,16 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
             break; // NOPMD
         }
         /*
-         * Notify the callback that we have a (new) connection which it can unsubscribe
+         * Notify the callback that we have a (new) connection which it can dispose
          * but since ps is unique to a connection, multiple calls to connect() will return the
-         * same Subscription and even if there was a connect-disconnect-connect pair, the older
+         * same Disposable and even if there was a connect-disconnect-connect pair, the older
          * references won't disconnect the newer connection.
-         * Synchronous source consumers have the opportunity to disconnect via unsubscribe on the
-         * Subscription as unsafeSubscribe may never return in its own.
+         * Synchronous source consumers have the opportunity to disconnect via dispose on the
+         * Disposable as subscribe() may never return in its own.
          *
          * Note however, that asynchronously disconnecting a running source might leave
-         * child-subscribers without any terminal event; PublishSubject does not have this
-         * issue because the dispose() was always triggered by the child-subscribers
+         * child observers without any terminal event; PublishSubject does not have this
+         * issue because the dispose() was always triggered by the child observers
          * themselves.
          */
         try {
@@ -217,21 +217,21 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
     }
 
     @SuppressWarnings("rawtypes")
-    static final class PublishSubscriber<T> implements Observer<T>, Disposable {
+    static final class PublishObserver<T> implements Observer<T>, Disposable {
         /** Holds notifications from upstream. */
         final SpscLinkedArrayQueue<Object> queue;
-        /** Holds onto the current connected PublishSubscriber. */
-        final AtomicReference<PublishSubscriber<T>> current;
+        /** Holds onto the current connected PublishObserver. */
+        final AtomicReference<PublishObserver<T>> current;
         /** Contains either an onComplete or an onError token from upstream. */
         volatile Object terminalEvent;
 
-        /** Indicates an empty array of inner producers. */
-        static final InnerProducer[] EMPTY = new InnerProducer[0];
-        /** Indicates a terminated PublishSubscriber. */
-        static final InnerProducer[] TERMINATED = new InnerProducer[0];
+        /** Indicates an empty array of inner observers. */
+        static final InnerDisposable[] EMPTY = new InnerDisposable[0];
+        /** Indicates a terminated PublishObserver. */
+        static final InnerDisposable[] TERMINATED = new InnerDisposable[0];
 
-        /** Tracks the subscribed producers. */
-        final AtomicReference<InnerProducer[]> producers;
+        /** Tracks the subscribed observers. */
+        final AtomicReference<InnerDisposable[]> observers;
         /**
          * Atomically changed from false to true by connect to make sure the
          * connection is only performed by one thread.
@@ -245,20 +245,20 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
 
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
-        PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
+        PublishObserver(AtomicReference<PublishObserver<T>> current, int bufferSize) {
             this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
 
-            this.producers = new AtomicReference<InnerProducer[]>(EMPTY);
+            this.observers = new AtomicReference<InnerDisposable[]>(EMPTY);
             this.current = current;
             this.shouldConnect = new AtomicBoolean();
         }
 
         @Override
         public void dispose() {
-            if (producers.get() != TERMINATED) {
-                InnerProducer[] ps = producers.getAndSet(TERMINATED);
+            if (observers.get() != TERMINATED) {
+                InnerDisposable[] ps = observers.getAndSet(TERMINATED);
                 if (ps != TERMINATED) {
-                    current.compareAndSet(PublishSubscriber.this, null);
+                    current.compareAndSet(PublishObserver.this, null);
 
                     DisposableHelper.dispose(s);
                 }
@@ -267,7 +267,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
 
         @Override
         public boolean isDisposed() {
-            return producers.get() == TERMINATED;
+            return observers.get() == TERMINATED;
         }
 
         @Override
@@ -311,19 +311,19 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         }
 
         /**
-         * Atomically try adding a new InnerProducer to this Subscriber or return false if this
-         * Subscriber was terminated.
+         * Atomically try adding a new InnerDisposable to this Observer or return false if this
+         * Observer was terminated.
          * @param producer the producer to add
          * @return true if succeeded, false otherwise
          */
-        boolean add(InnerProducer<T> producer) {
+        boolean add(InnerDisposable<T> producer) {
             if (producer == null) {
                 throw new NullPointerException();
             }
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
                 // get the current producer array
-                InnerProducer[] c = producers.get();
+                InnerDisposable[] c = observers.get();
                 // if this subscriber-to-source reached a terminal state by receiving
                 // an onError or onComplete, just refuse to add the new producer
                 if (c == TERMINATED) {
@@ -331,11 +331,11 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 }
                 // we perform a copy-on-write logic
                 int len = c.length;
-                InnerProducer[] u = new InnerProducer[len + 1];
+                InnerDisposable[] u = new InnerDisposable[len + 1];
                 System.arraycopy(c, 0, u, 0, len);
                 u[len] = producer;
-                // try setting the producers array
-                if (producers.compareAndSet(c, u)) {
+                // try setting the observers array
+                if (observers.compareAndSet(c, u)) {
                     return true;
                 }
                 // if failed, some other operation succeeded (another add, remove or termination)
@@ -344,20 +344,20 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         }
 
         /**
-         * Atomically removes the given producer from the producers array.
+         * Atomically removes the given producer from the observers array.
          * @param producer the producer to remove
          */
-        void remove(InnerProducer<T> producer) {
+        void remove(InnerDisposable<T> producer) {
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
-                // let's read the current producers array
-                InnerProducer[] c = producers.get();
+                // let's read the current observers array
+                InnerDisposable[] c = observers.get();
                 // if it is either empty or terminated, there is nothing to remove so we quit
                 if (c == EMPTY || c == TERMINATED) {
                     return;
                 }
                 // let's find the supplied producer in the array
-                // although this is O(n), we don't expect too many child subscribers in general
+                // although this is O(n), we don't expect too many child observers in general
                 int j = -1;
                 int len = c.length;
                 for (int i = 0; i < len; i++) {
@@ -371,21 +371,21 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                     return;
                 }
                 // we do copy-on-write logic here
-                InnerProducer[] u;
+                InnerDisposable[] u;
                 // we don't create a new empty array if producer was the single inhabitant
                 // but rather reuse an empty array
                 if (len == 1) {
                     u = EMPTY;
                 } else {
                     // otherwise, create a new array one less in size
-                    u = new InnerProducer[len - 1];
+                    u = new InnerDisposable[len - 1];
                     // copy elements being before the given producer
                     System.arraycopy(c, 0, u, 0, j);
                     // copy elements being after the given producer
                     System.arraycopy(c, j + 1, u, j, len - j - 1);
                 }
                 // try setting this new array as
-                if (producers.compareAndSet(c, u)) {
+                if (observers.compareAndSet(c, u)) {
                     return;
                 }
                 // if we failed, it means something else happened
@@ -408,27 +408,27 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                     // but we also need to have an empty queue
                     if (empty) {
                         // this will prevent OnSubscribe spinning on a terminated but
-                        // not yet unsubscribed PublishSubscriber
+                        // not yet disposed PublishObserver
                         current.compareAndSet(this, null);
                         try {
                             /*
                              * This will swap in a terminated array so add() in OnSubscribe will reject
-                             * child subscribers to associate themselves with a terminated and thus
+                             * child observers to associate themselves with a terminated and thus
                              * never again emitting chain.
                              *
-                             * Since we atomically change the contents of 'producers' only one
+                             * Since we atomically change the contents of 'observers' only one
                              * operation wins at a time. If an add() wins before this getAndSet,
                              * its value will be part of the returned array by getAndSet and thus
                              * will receive the terminal notification. Otherwise, if getAndSet wins,
                              * add() will refuse to add the child producer and will trigger the
                              * creation of subscriber-to-source.
                              */
-                            for (InnerProducer<?> ip : producers.getAndSet(TERMINATED)) {
+                            for (InnerDisposable<?> ip : observers.getAndSet(TERMINATED)) {
                                 ip.child.onComplete();
                             }
                         } finally {
-                            // we explicitly unsubscribe/disconnect from the upstream
-                            // after we sent out the terminal event to child subscribers
+                            // we explicitly dispose/disconnect from the upstream
+                            // after we sent out the terminal event to child observers
                             dispose();
                         }
                         // indicate we reached the terminal state
@@ -437,18 +437,18 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 } else {
                     Throwable t = NotificationLite.getError(term);
                     // this will prevent OnSubscribe spinning on a terminated
-                    // but not yet unsubscribed PublishSubscriber
+                    // but not yet disposed PublishObserver
                     current.compareAndSet(this, null);
                     try {
                         // this will swap in a terminated array so add() in OnSubscribe will reject
-                        // child subscribers to associate themselves with a terminated and thus
+                        // child observers to associate themselves with a terminated and thus
                         // never again emitting chain
-                        for (InnerProducer<?> ip : producers.getAndSet(TERMINATED)) {
+                        for (InnerDisposable<?> ip : observers.getAndSet(TERMINATED)) {
                             ip.child.onError(t);
                         }
                     } finally {
-                        // we explicitly unsubscribe/disconnect from the upstream
-                        // after we sent out the terminal event to child subscribers
+                        // we explicitly dispose/disconnect from the upstream
+                        // after we sent out the terminal event to child observers
                         dispose();
                     }
                     // indicate we reached the terminal state
@@ -460,7 +460,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         }
 
         /**
-         * The common serialization point of events arriving from upstream and child-subscribers
+         * The common serialization point of events arriving from upstream and child observers
          * requesting more.
          */
         void dispatch() {
@@ -515,10 +515,10 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                     // this loop is the only one which can turn a non-empty queue into an empty one
                     // and as such, no need to ask the queue itself again for that.
                     if (!empty) {
-                        // We take a snapshot of the current child-subscribers.
-                        // Concurrent subscribers may miss this iteration, but it is to be expected
+                        // We take a snapshot of the current child observers.
+                        // Concurrent observers may miss this iteration, but it is to be expected
                         @SuppressWarnings("unchecked")
-                        InnerProducer<T>[] ps = producers.get();
+                        InnerDisposable<T>[] ps = observers.get();
 
                         int len = ps.length;
                         // count how many have triggered dispose()
@@ -527,15 +527,15 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                         // Now find the minimum amount each child-subscriber requested
                         // since we can only emit that much to all of them without violating
                         // backpressure constraints
-                        for (InnerProducer<T> ip : ps) {
+                        for (InnerDisposable<T> ip : ps) {
                             if (ip.cancelled) {
                                 disposed++;
                             }
                             // we ignore those with NOT_REQUESTED as if they aren't even there
                         }
 
-                        // it may happen everyone has unsubscribed between here and producers.get()
-                        // or we have no subscribers at all to begin with
+                        // it may happen everyone has disposed between here and observers.get()
+                        // or we have no observers at all to begin with
                         if (len == disposed) {
                             term = terminalEvent;
                             // so let's consume a value from the queue
@@ -545,10 +545,10 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                                 skipFinal = true;
                                 return;
                             }
-                            // and retry emitting to potential new child-subscribers
+                            // and retry emitting to potential new child observers
                             continue;
                         }
-                        // if we get here, it means there are non-unsubscribed child-subscribers
+                        // if we get here, it means there are non-disposed child observers
                         // and we count the number of emitted values because the queue
                         // may contain less than requested
                         for (;;) {
@@ -566,11 +566,11 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                             }
                             // we need to unwrap potential nulls
                             T value = NotificationLite.getValue(v);
-                            // let's emit this value to all child subscribers
-                            for (InnerProducer<T> ip : ps) {
-                                // if ip.get() is negative, the child has either unsubscribed in the
+                            // let's emit this value to all child observers
+                            for (InnerDisposable<T> ip : ps) {
+                                // if ip.get() is negative, the child has either disposed in the
                                 // meantime or hasn't requested anything yet
-                                // this eager behavior will skip unsubscribed children in case
+                                // this eager behavior will skip disposed children in case
                                 // multiple values are available in the queue
                                 if (!ip.cancelled) {
                                     ip.child.onNext(value);
@@ -579,14 +579,14 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                         }
 
                         // if we have requests but not an empty queue after emission
-                        // let's try again to see if more requests/child-subscribers are
+                        // let's try again to see if more requests/child observers are
                         // ready to receive more
                         if (!empty) {
                             continue;
                         }
                     }
 
-                    // we did what we could: either the queue is empty or child subscribers
+                    // we did what we could: either the queue is empty or child observers
                     // haven't requested more (or both), let's try to finish dispatching
                     synchronized (this) {
                         // since missed is changed atomically, if we see it as true
@@ -615,25 +615,25 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         }
     }
     /**
-     * A Producer and Subscription that manages the request and disposed state of a
-     * child subscriber in thread-safe manner.
+     * A Disposable that manages the request and disposed state of a
+     * child Observer in thread-safe manner.
      * @param <T> the value type
      */
-    static final class InnerProducer<T> implements Disposable {
+    static final class InnerDisposable<T> implements Disposable {
         /**
          * The parent subscriber-to-source used to allow removing the child in case of
          * child dispose() call.
          */
-        final PublishSubscriber<T> parent;
+        final PublishObserver<T> parent;
         /** The actual child subscriber. */
         final Observer<? super T> child;
         /**
-         * Indicates this child has been unsubscribed: the state is swapped in atomically and
+         * Indicates this child has been disposed: the state is swapped in atomically and
          * will prevent the dispatch() to emit (too many) values to a terminated child subscriber.
          */
         volatile boolean cancelled;
 
-        InnerProducer(PublishSubscriber<T> parent, Observer<? super T> child) {
+        InnerDisposable(PublishObserver<T> parent, Observer<? super T> child) {
             this.parent = parent;
             this.child = child;
         }

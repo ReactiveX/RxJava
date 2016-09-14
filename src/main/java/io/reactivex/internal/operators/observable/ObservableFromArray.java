@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.subscribers.observable.BasicQueueDisposable;
+import io.reactivex.internal.observers.BasicQueueDisposable;
 
 public final class ObservableFromArray<T> extends Observable<T> {
     final T[] array;

@@ -72,7 +72,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         volatile boolean cancelled;
 
-        final AtomicReference<InnerObserver<?, ?>[]> subscribers;
+        final AtomicReference<InnerObserver<?, ?>[]> observers;
 
         static final InnerObserver<?, ?>[] EMPTY = new InnerObserver<?, ?>[0];
 
@@ -98,7 +98,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             if (maxConcurrency != Integer.MAX_VALUE) {
                 sources = new ArrayDeque<ObservableSource<? extends U>>(maxConcurrency);
             }
-            this.subscribers = new AtomicReference<InnerObserver<?, ?>[]>(EMPTY);
+            this.observers = new AtomicReference<InnerObserver<?, ?>[]>(EMPTY);
         }
 
         @Override
@@ -150,7 +150,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         void addInner(InnerObserver<T, U> inner) {
             for (;;) {
-                InnerObserver<?, ?>[] a = subscribers.get();
+                InnerObserver<?, ?>[] a = observers.get();
                 if (a == CANCELLED) {
                     inner.dispose();
                     return;
@@ -159,7 +159,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 InnerObserver<?, ?>[] b = new InnerObserver[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = inner;
-                if (subscribers.compareAndSet(a, b)) {
+                if (observers.compareAndSet(a, b)) {
                     return;
                 }
             }
@@ -167,7 +167,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         void removeInner(InnerObserver<T, U> inner) {
             for (;;) {
-                InnerObserver<?, ?>[] a = subscribers.get();
+                InnerObserver<?, ?>[] a = observers.get();
                 if (a == CANCELLED || a == EMPTY) {
                     return;
                 }
@@ -190,7 +190,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     System.arraycopy(a, 0, b, 0, j);
                     System.arraycopy(a, j + 1, b, j, n - j - 1);
                 }
-                if (subscribers.compareAndSet(a, b)) {
+                if (observers.compareAndSet(a, b)) {
                     return;
                 }
             }
@@ -302,7 +302,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 cancelled = true;
                 if (getAndIncrement() == 0) {
                     s.dispose();
-                    unsubscribe();
+                    disposeAll();
                 }
             }
         }
@@ -355,7 +355,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
                 boolean d = done;
                 svq = queue;
-                InnerObserver<?, ?>[] inner = subscribers.get();
+                InnerObserver<?, ?>[] inner = observers.get();
                 int n = inner.length;
 
                 if (d && (svq == null || svq.isEmpty()) && n == 0) {
@@ -470,7 +470,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         boolean checkTerminate() {
             if (cancelled) {
                 s.dispose();
-                unsubscribe();
+                disposeAll();
                 return true;
             }
             SimpleQueue<Throwable> e = errors.get();
@@ -478,7 +478,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 try {
                     reportError(e);
                 } finally {
-                    unsubscribe();
+                    disposeAll();
                 }
                 return true;
             }
@@ -524,10 +524,10 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             }
         }
 
-        void unsubscribe() {
-            InnerObserver<?, ?>[] a = subscribers.get();
+        void disposeAll() {
+            InnerObserver<?, ?>[] a = observers.get();
             if (a != CANCELLED) {
-                a = subscribers.getAndSet(CANCELLED);
+                a = observers.getAndSet(CANCELLED);
                 if (a != CANCELLED) {
                     errors.getAndSet(ERRORS_CLOSED);
                     for (InnerObserver<?, ?> inner : a) {

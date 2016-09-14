@@ -34,7 +34,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
 
         final ArrayCompositeDisposable frc = new ArrayCompositeDisposable(2);
 
-        final SkipUntilSubscriber<T> sus = new SkipUntilSubscriber<T>(serial, frc);
+        final SkipUntilObserver<T> sus = new SkipUntilObserver<T>(serial, frc);
 
         other.subscribe(new Observer<U>() {
             Disposable s;
@@ -72,7 +72,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         source.subscribe(sus);
     }
 
-    static final class SkipUntilSubscriber<T> extends AtomicBoolean implements Observer<T>, Disposable {
+    static final class SkipUntilObserver<T> extends AtomicBoolean implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -1113667257122396604L;
         final Observer<? super T> actual;
@@ -83,7 +83,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         volatile boolean notSkipping;
         boolean notSkippingLocal;
 
-        SkipUntilSubscriber(Observer<? super T> actual, ArrayCompositeDisposable frc) {
+        SkipUntilObserver(Observer<? super T> actual, ArrayCompositeDisposable frc) {
             this.actual = actual;
             this.frc = frc;
         }

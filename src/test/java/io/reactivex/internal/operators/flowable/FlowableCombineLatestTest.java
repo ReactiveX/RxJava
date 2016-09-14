@@ -176,7 +176,7 @@ public class FlowableCombineLatestTest {
     public void testCombineLatest2Types() {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
         Flowable<String> w = Flowable.combineLatest(Flowable.just("one", "two"), Flowable.just(2, 3, 4), combineLatestFunction);
@@ -193,7 +193,7 @@ public class FlowableCombineLatestTest {
     public void testCombineLatest3TypesA() {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
         Flowable<String> w = Flowable.combineLatest(Flowable.just("one", "two"), Flowable.just(2), Flowable.just(new int[] { 4, 5, 6 }), combineLatestFunction);
@@ -208,7 +208,7 @@ public class FlowableCombineLatestTest {
     public void testCombineLatest3TypesB() {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
         Flowable<String> w = Flowable.combineLatest(Flowable.just("one"), Flowable.just(2), Flowable.just(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);

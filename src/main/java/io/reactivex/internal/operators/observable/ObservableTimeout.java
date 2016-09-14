@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.subscribers.observable.*;
+import io.reactivex.internal.observers.FullArbiterObserver;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -44,16 +44,16 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
     @Override
     public void subscribeActual(Observer<? super T> t) {
         if (other == null) {
-            source.subscribe(new TimeoutSubscriber<T, U, V>(
+            source.subscribe(new TimeoutObserver<T, U, V>(
                     new SerializedObserver<T>(t),
                     firstTimeoutIndicator, itemTimeoutIndicator));
         } else {
-            source.subscribe(new TimeoutOtherSubscriber<T, U, V>(
+            source.subscribe(new TimeoutOtherObserver<T, U, V>(
                     t, firstTimeoutIndicator, itemTimeoutIndicator, other));
         }
     }
 
-    static final class TimeoutSubscriber<T, U, V>
+    static final class TimeoutObserver<T, U, V>
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable, OnTimeout {
 
@@ -66,7 +66,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
 
         volatile long index;
 
-        TimeoutSubscriber(Observer<? super T> actual,
+        TimeoutObserver(Observer<? super T> actual,
                 ObservableSource<U> firstTimeoutIndicator,
                 Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator) {
             this.actual = actual;
@@ -84,7 +84,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 ObservableSource<U> p = firstTimeoutIndicator;
 
                 if (p != null) {
-                    TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
+                    TimeoutInnerObserver<T, U, V> tis = new TimeoutInnerObserver<T, U, V>(this, 0);
 
                     if (compareAndSet(null, tis)) {
                         a.onSubscribe(this);
@@ -125,7 +125,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 return;
             }
 
-            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, idx);
+            TimeoutInnerObserver<T, U, V> tis = new TimeoutInnerObserver<T, U, V>(this, idx);
 
             if (compareAndSet(d, tis)) {
                 p.subscribe(tis);
@@ -171,13 +171,13 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         void onError(Throwable e);
     }
 
-    static final class TimeoutInnerSubscriber<T, U, V> extends DisposableObserver<Object> {
+    static final class TimeoutInnerObserver<T, U, V> extends DisposableObserver<Object> {
         final OnTimeout parent;
         final long index;
 
         boolean done;
 
-        TimeoutInnerSubscriber(OnTimeout parent, final long index) {
+        TimeoutInnerObserver(OnTimeout parent, final long index) {
             this.parent = parent;
             this.index = index;
         }
@@ -207,7 +207,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         }
     }
 
-    static final class TimeoutOtherSubscriber<T, U, V>
+    static final class TimeoutOtherObserver<T, U, V>
     extends AtomicReference<Disposable>
     implements Observer<T>, Disposable, OnTimeout {
 
@@ -224,7 +224,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
 
         volatile long index;
 
-        TimeoutOtherSubscriber(Observer<? super T> actual,
+        TimeoutOtherObserver(Observer<? super T> actual,
                                       ObservableSource<U> firstTimeoutIndicator,
                                       Function<? super T, ? extends ObservableSource<V>> itemTimeoutIndicator, ObservableSource<? extends T> other) {
             this.actual = actual;
@@ -239,7 +239,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
 
-                if (!arbiter.setSubscription(s)) {
+                if (!arbiter.setDisposable(s)) {
                     return;
                 }
                 Observer<? super T> a = actual;
@@ -247,7 +247,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 ObservableSource<U> p = firstTimeoutIndicator;
 
                 if (p != null) {
-                    TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, 0);
+                    TimeoutInnerObserver<T, U, V> tis = new TimeoutInnerObserver<T, U, V>(this, 0);
 
                     if (compareAndSet(null, tis)) {
                         a.onSubscribe(arbiter);
@@ -291,7 +291,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 return;
             }
 
-            TimeoutInnerSubscriber<T, U, V> tis = new TimeoutInnerSubscriber<T, U, V>(this, idx);
+            TimeoutInnerObserver<T, U, V> tis = new TimeoutInnerObserver<T, U, V>(this, idx);
 
             if (compareAndSet(d, tis)) {
                 p.subscribe(tis);

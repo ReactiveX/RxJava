@@ -20,7 +20,7 @@ import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.subscribers.observable.FullArbiterObserver;
+import io.reactivex.internal.observers.FullArbiterObserver;
 import io.reactivex.observers.SerializedObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -42,17 +42,17 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
     @Override
     public void subscribeActual(Observer<? super T> t) {
         if (other == null) {
-            source.subscribe(new TimeoutTimedSubscriber<T>(
+            source.subscribe(new TimeoutTimedObserver<T>(
                     new SerializedObserver<T>(t), // because errors can race
                     timeout, unit, scheduler.createWorker()));
         } else {
-            source.subscribe(new TimeoutTimedOtherSubscriber<T>(
+            source.subscribe(new TimeoutTimedOtherObserver<T>(
                     t, // the FullArbiter serializes
                     timeout, unit, scheduler.createWorker(), other));
         }
     }
 
-    static final class TimeoutTimedOtherSubscriber<T> implements Observer<T>, Disposable {
+    static final class TimeoutTimedOtherObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final long timeout;
         final TimeUnit unit;
@@ -79,7 +79,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
 
         volatile boolean done;
 
-        TimeoutTimedOtherSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker,
+        TimeoutTimedOtherObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker,
                 ObservableSource<? extends T> other) {
             this.actual = actual;
             this.timeout = timeout;
@@ -93,7 +93,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                if (arbiter.setSubscription(s)) {
+                if (arbiter.setDisposable(s)) {
                     actual.onSubscribe(arbiter);
 
                     scheduleTimeout(0L);
@@ -185,7 +185,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         }
     }
 
-    static final class TimeoutTimedSubscriber<T> implements Observer<T>, Disposable {
+    static final class TimeoutTimedObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final long timeout;
         final TimeUnit unit;
@@ -209,7 +209,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
 
         volatile boolean done;
 
-        TimeoutTimedSubscriber(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
+        TimeoutTimedObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
             this.actual = actual;
             this.timeout = timeout;
             this.unit = unit;

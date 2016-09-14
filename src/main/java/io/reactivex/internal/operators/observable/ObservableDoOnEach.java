@@ -39,10 +39,10 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new DoOnEachSubscriber<T>(t, onNext, onError, onComplete, onAfterTerminate));
+        source.subscribe(new DoOnEachObserver<T>(t, onNext, onError, onComplete, onAfterTerminate));
     }
 
-    static final class DoOnEachSubscriber<T> implements Observer<T>, Disposable {
+    static final class DoOnEachObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
@@ -53,7 +53,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
 
         boolean done;
 
-        DoOnEachSubscriber(
+        DoOnEachObserver(
                 Observer<? super T> actual,
                 Consumer<? super T> onNext,
                 Consumer<? super Throwable> onError,

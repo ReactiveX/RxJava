@@ -28,10 +28,10 @@ public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new TakeWhileSubscriber<T>(t, predicate));
+        source.subscribe(new TakeWhileObserver<T>(t, predicate));
     }
 
-    static final class TakeWhileSubscriber<T> implements Observer<T>, Disposable {
+    static final class TakeWhileObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Predicate<? super T> predicate;
 
@@ -39,7 +39,7 @@ public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream
 
         boolean done;
 
-        TakeWhileSubscriber(Observer<? super T> actual, Predicate<? super T> predicate) {
+        TakeWhileObserver(Observer<? super T> actual, Predicate<? super T> predicate) {
             this.actual = actual;
             this.predicate = predicate;
         }

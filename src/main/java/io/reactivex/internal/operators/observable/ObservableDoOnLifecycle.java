@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.subscribers.observable.SubscriptionLambdaObserver;
+import io.reactivex.internal.observers.DisposableLambdaObserver;
 
 public final class ObservableDoOnLifecycle<T> extends AbstractObservableWithUpstream<T, T> {
     private final Consumer<? super Disposable> onSubscribe;
@@ -30,6 +30,6 @@ public final class ObservableDoOnLifecycle<T> extends AbstractObservableWithUpst
 
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
-        source.subscribe(new SubscriptionLambdaObserver<T>(observer, onSubscribe, onDispose));
+        source.subscribe(new DisposableLambdaObserver<T>(observer, onSubscribe, onDispose));
     }
 }

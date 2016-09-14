@@ -118,17 +118,17 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             return;
         }
 
-        source.subscribe(new DistinctSubscriber<T, K>(t, keySelector, coll));
+        source.subscribe(new DistinctObserver<T, K>(t, keySelector, coll));
     }
 
-    static final class DistinctSubscriber<T, K> implements Observer<T>, Disposable {
+    static final class DistinctObserver<T, K> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final Predicate<? super K> predicate;
         final Function<? super T, K> keySelector;
 
         Disposable s;
 
-        DistinctSubscriber(Observer<? super T> actual, Function<? super T, K> keySelector, Predicate<? super K> predicate) {
+        DistinctObserver(Observer<? super T> actual, Function<? super T, K> keySelector, Predicate<? super K> predicate) {
             this.actual = actual;
             this.keySelector = keySelector;
             this.predicate = predicate;

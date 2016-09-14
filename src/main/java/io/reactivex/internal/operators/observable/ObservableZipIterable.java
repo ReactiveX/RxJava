@@ -67,10 +67,10 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
             return;
         }
 
-        source.subscribe(new ZipIterableSubscriber<T, U, V>(t, it, zipper));
+        source.subscribe(new ZipIterableObserver<T, U, V>(t, it, zipper));
     }
 
-    static final class ZipIterableSubscriber<T, U, V> implements Observer<T>, Disposable {
+    static final class ZipIterableObserver<T, U, V> implements Observer<T>, Disposable {
         final Observer<? super V> actual;
         final Iterator<U> iterator;
         final BiFunction<? super T, ? super U, ? extends V> zipper;
@@ -79,7 +79,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
 
         boolean done;
 
-        ZipIterableSubscriber(Observer<? super V> actual, Iterator<U> iterator,
+        ZipIterableObserver(Observer<? super V> actual, Iterator<U> iterator,
                 BiFunction<? super T, ? super U, ? extends V> zipper) {
             this.actual = actual;
             this.iterator = iterator;

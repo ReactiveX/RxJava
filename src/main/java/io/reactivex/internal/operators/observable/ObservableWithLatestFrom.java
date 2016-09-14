@@ -36,7 +36,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
     @Override
     public void subscribeActual(Observer<? super R> t) {
         final SerializedObserver<R> serial = new SerializedObserver<R>(t);
-        final WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<T, U, R>(serial, combiner);
+        final WithLatestFromObserver<T, U, R> wlf = new WithLatestFromObserver<T, U, R>(serial, combiner);
 
         other.subscribe(new Observer<U>() {
             @Override
@@ -63,7 +63,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         source.subscribe(wlf);
     }
 
-    static final class WithLatestFromSubscriber<T, U, R> extends AtomicReference<U> implements Observer<T>, Disposable {
+    static final class WithLatestFromObserver<T, U, R> extends AtomicReference<U> implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -312246233408980075L;
 
@@ -74,7 +74,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
 
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
 
-        WithLatestFromSubscriber(Observer<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
+        WithLatestFromObserver(Observer<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
             this.actual = actual;
             this.combiner = combiner;
         }

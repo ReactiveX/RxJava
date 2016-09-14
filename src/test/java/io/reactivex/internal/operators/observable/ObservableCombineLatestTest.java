@@ -174,7 +174,7 @@ public class ObservableCombineLatestTest {
     public void testCombineLatest2Types() {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> w = Observable.combineLatest(Observable.just("one", "two"), Observable.just(2, 3, 4), combineLatestFunction);
@@ -191,7 +191,7 @@ public class ObservableCombineLatestTest {
     public void testCombineLatest3TypesA() {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> w = Observable.combineLatest(Observable.just("one", "two"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }), combineLatestFunction);
@@ -206,7 +206,7 @@ public class ObservableCombineLatestTest {
     public void testCombineLatest3TypesB() {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
-        /* define a Observer to receive aggregated events */
+        /* define an Observer to receive aggregated events */
         Observer<String> observer = TestHelper.mockObserver();
 
         Observable<String> w = Observable.combineLatest(Observable.just("one"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);

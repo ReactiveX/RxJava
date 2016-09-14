@@ -17,7 +17,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.subscribers.flowable.*;
+import io.reactivex.internal.subscribers.*;
 
 public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> {
     final Predicate<? super T> predicate;

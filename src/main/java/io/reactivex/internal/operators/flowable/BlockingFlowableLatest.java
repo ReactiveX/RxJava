@@ -44,15 +44,15 @@ public enum BlockingFlowableLatest {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
-                LatestObserverIterator<T> lio = new LatestObserverIterator<T>();
+                LatestSubscriberIterator<T> lio = new LatestSubscriberIterator<T>();
                 Flowable.<T>fromPublisher(source).materialize().subscribe(lio);
                 return lio;
             }
         };
     }
 
-    /** Observer of source, iterator for output. */
-    static final class LatestObserverIterator<T> extends DisposableSubscriber<Notification<T>> implements Iterator<T> {
+    /** Subscriber of source, iterator for output. */
+    static final class LatestSubscriberIterator<T> extends DisposableSubscriber<Notification<T>> implements Iterator<T> {
         final Semaphore notify = new Semaphore(0);
         // observer's notification
         final AtomicReference<Notification<T>> value = new AtomicReference<Notification<T>>();

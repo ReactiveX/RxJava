@@ -37,9 +37,9 @@ public class ObserverFullArbiterTest {
 
         Disposable bs = Disposables.empty();
 
-        assertFalse(fa.setSubscription(bs));
+        assertFalse(fa.setDisposable(bs));
 
-        assertFalse(fa.setSubscription(null));
+        assertFalse(fa.setDisposable(null));
     }
 
     @Test

@@ -62,7 +62,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
             for (;;) {
                 // get the current subscriber-to-source
                 PublishSubscriber<T> r = curr.get();
-                // if there isn't one or it is unsubscribed
+                // if there isn't one or it is cancelled/disposed
                 if (r == null || r.isDisposed()) {
                     // create a new subscriber to source
                     PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
@@ -77,7 +77,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 }
 
                 // create the backpressure-managing producer for this child
-                InnerProducer<T> inner = new InnerProducer<T>(r, child);
+                InnerSubscriber<T> inner = new InnerSubscriber<T>(r, child);
                 /*
                  * Try adding it to the current subscriber-to-source, add is atomic in respect
                  * to other adds and the termination of the subscriber-to-source.
@@ -164,16 +164,16 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
             break; // NOPMD
         }
         /*
-         * Notify the callback that we have a (new) connection which it can unsubscribe
+         * Notify the callback that we have a (new) connection which it can dispose
          * but since ps is unique to a connection, multiple calls to connect() will return the
          * same Subscription and even if there was a connect-disconnect-connect pair, the older
          * references won't disconnect the newer connection.
-         * Synchronous source consumers have the opportunity to disconnect via unsubscribe on the
-         * Subscription as unsafeSubscribe may never return in its own.
+         * Synchronous source consumers have the opportunity to disconnect via dispose on the
+         * Disposable as subscribe() may never return on its own.
          *
          * Note however, that asynchronously disconnecting a running source might leave
-         * child-subscribers without any terminal event; PublishSubject does not have this
-         * issue because the cancellation was always triggered by the child-subscribers
+         * child subscribers without any terminal event; PublishSubject does not have this
+         * issue because the cancellation was always triggered by the child subscribers
          * themselves.
          */
         try {
@@ -198,13 +198,13 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         /** Contains either an onComplete or an onError token from upstream. */
         volatile Object terminalEvent;
 
-        /** Indicates an empty array of inner producers. */
-        static final InnerProducer[] EMPTY = new InnerProducer[0];
+        /** Indicates an empty array of inner subscribers. */
+        static final InnerSubscriber[] EMPTY = new InnerSubscriber[0];
         /** Indicates a terminated PublishSubscriber. */
-        static final InnerProducer[] TERMINATED = new InnerProducer[0];
+        static final InnerSubscriber[] TERMINATED = new InnerSubscriber[0];
 
-        /** Tracks the subscribed producers. */
-        final AtomicReference<InnerProducer[]> producers;
+        /** Tracks the subscribed InnerSubscribers. */
+        final AtomicReference<InnerSubscriber[]> subscribers;
         /**
          * Atomically changed from false to true by connect to make sure the
          * connection is only performed by one thread.
@@ -221,7 +221,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
             this.queue = new SpscArrayQueue<Object>(bufferSize);
 
-            this.producers = new AtomicReference<InnerProducer[]>(EMPTY);
+            this.subscribers = new AtomicReference<InnerSubscriber[]>(EMPTY);
             this.current = current;
             this.shouldConnect = new AtomicBoolean();
             this.bufferSize = bufferSize;
@@ -229,8 +229,8 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
 
         @Override
         public void dispose() {
-            if (producers.get() != TERMINATED) {
-                InnerProducer[] ps = producers.getAndSet(TERMINATED);
+            if (subscribers.get() != TERMINATED) {
+                InnerSubscriber[] ps = subscribers.getAndSet(TERMINATED);
                 if (ps != TERMINATED) {
                     current.compareAndSet(PublishSubscriber.this, null);
                     SubscriptionHelper.cancel(s);
@@ -240,7 +240,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
 
         @Override
         public boolean isDisposed() {
-            return producers.get() == TERMINATED;
+            return subscribers.get() == TERMINATED;
         }
 
         @Override
@@ -286,19 +286,19 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         }
 
         /**
-         * Atomically try adding a new InnerProducer to this Subscriber or return false if this
+         * Atomically try adding a new InnerSubscriber to this Subscriber or return false if this
          * Subscriber was terminated.
          * @param producer the producer to add
          * @return true if succeeded, false otherwise
          */
-        boolean add(InnerProducer<T> producer) {
+        boolean add(InnerSubscriber<T> producer) {
             if (producer == null) {
                 throw new NullPointerException();
             }
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
                 // get the current producer array
-                InnerProducer[] c = producers.get();
+                InnerSubscriber[] c = subscribers.get();
                 // if this subscriber-to-source reached a terminal state by receiving
                 // an onError or onComplete, just refuse to add the new producer
                 if (c == TERMINATED) {
@@ -306,11 +306,11 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 }
                 // we perform a copy-on-write logic
                 int len = c.length;
-                InnerProducer[] u = new InnerProducer[len + 1];
+                InnerSubscriber[] u = new InnerSubscriber[len + 1];
                 System.arraycopy(c, 0, u, 0, len);
                 u[len] = producer;
-                // try setting the producers array
-                if (producers.compareAndSet(c, u)) {
+                // try setting the subscribers array
+                if (subscribers.compareAndSet(c, u)) {
                     return true;
                 }
                 // if failed, some other operation succeeded (another add, remove or termination)
@@ -319,14 +319,14 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         }
 
         /**
-         * Atomically removes the given producer from the producers array.
+         * Atomically removes the given InnerSubscriber from the subscribers array.
          * @param producer the producer to remove
          */
-        void remove(InnerProducer<T> producer) {
+        void remove(InnerSubscriber<T> producer) {
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
-                // let's read the current producers array
-                InnerProducer[] c = producers.get();
+                // let's read the current subscribers array
+                InnerSubscriber[] c = subscribers.get();
                 // if it is either empty or terminated, there is nothing to remove so we quit
                 if (c == EMPTY || c == TERMINATED) {
                     return;
@@ -346,21 +346,21 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                     return;
                 }
                 // we do copy-on-write logic here
-                InnerProducer[] u;
+                InnerSubscriber[] u;
                 // we don't create a new empty array if producer was the single inhabitant
                 // but rather reuse an empty array
                 if (len == 1) {
                     u = EMPTY;
                 } else {
                     // otherwise, create a new array one less in size
-                    u = new InnerProducer[len - 1];
+                    u = new InnerSubscriber[len - 1];
                     // copy elements being before the given producer
                     System.arraycopy(c, 0, u, 0, j);
                     // copy elements being after the given producer
                     System.arraycopy(c, j + 1, u, j, len - j - 1);
                 }
                 // try setting this new array as
-                if (producers.compareAndSet(c, u)) {
+                if (subscribers.compareAndSet(c, u)) {
                     return;
                 }
                 // if we failed, it means something else happened
@@ -383,7 +383,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                     // but we also need to have an empty queue
                     if (empty) {
                         // this will prevent OnSubscribe spinning on a terminated but
-                        // not yet unsubscribed PublishSubscriber
+                        // not yet cancelled PublishSubscriber
                         current.compareAndSet(this, null);
                         try {
                             /*
@@ -391,18 +391,18 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                              * child subscribers to associate themselves with a terminated and thus
                              * never again emitting chain.
                              *
-                             * Since we atomically change the contents of 'producers' only one
+                             * Since we atomically change the contents of 'subscribers' only one
                              * operation wins at a time. If an add() wins before this getAndSet,
                              * its value will be part of the returned array by getAndSet and thus
                              * will receive the terminal notification. Otherwise, if getAndSet wins,
                              * add() will refuse to add the child producer and will trigger the
                              * creation of subscriber-to-source.
                              */
-                            for (InnerProducer<?> ip : producers.getAndSet(TERMINATED)) {
+                            for (InnerSubscriber<?> ip : subscribers.getAndSet(TERMINATED)) {
                                 ip.child.onComplete();
                             }
                         } finally {
-                            // we explicitly unsubscribe/disconnect from the upstream
+                            // we explicitly dispose/disconnect from the upstream
                             // after we sent out the terminal event to child subscribers
                             dispose();
                         }
@@ -412,17 +412,17 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 } else {
                     Throwable t = NotificationLite.getError(term);
                     // this will prevent OnSubscribe spinning on a terminated
-                    // but not yet unsubscribed PublishSubscriber
+                    // but not yet cancelled PublishSubscriber
                     current.compareAndSet(this, null);
                     try {
                         // this will swap in a terminated array so add() in OnSubscribe will reject
                         // child subscribers to associate themselves with a terminated and thus
                         // never again emitting chain
-                        for (InnerProducer<?> ip : producers.getAndSet(TERMINATED)) {
+                        for (InnerSubscriber<?> ip : subscribers.getAndSet(TERMINATED)) {
                             ip.child.onError(t);
                         }
                     } finally {
-                        // we explicitly unsubscribe/disconnect from the upstream
+                        // we explicitly dispose/disconnect from the upstream
                         // after we sent out the terminal event to child subscribers
                         dispose();
                     }
@@ -435,7 +435,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         }
 
         /**
-         * The common serialization point of events arriving from upstream and child-subscribers
+         * The common serialization point of events arriving from upstream and child subscribers
          * requesting more.
          */
         void dispatch() {
@@ -490,10 +490,10 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                     // this loop is the only one which can turn a non-empty queue into an empty one
                     // and as such, no need to ask the queue itself again for that.
                     if (!empty) {
-                        // We take a snapshot of the current child-subscribers.
+                        // We take a snapshot of the current child subscribers.
                         // Concurrent subscribers may miss this iteration, but it is to be expected
                         @SuppressWarnings("unchecked")
-                        InnerProducer<T>[] ps = producers.get();
+                        InnerSubscriber<T>[] ps = subscribers.get();
 
                         int len = ps.length;
                         // Let's assume everyone requested the maximum value.
@@ -504,7 +504,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                         // Now find the minimum amount each child-subscriber requested
                         // since we can only emit that much to all of them without violating
                         // backpressure constraints
-                        for (InnerProducer<T> ip : ps) {
+                        for (InnerSubscriber<T> ip : ps) {
                             long r = ip.get();
                             // if there is one child subscriber that hasn't requested yet
                             // we can't emit anything to anyone
@@ -512,13 +512,13 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                                 maxRequested = Math.min(maxRequested, r);
                             } else
                             // cancellation is indicated by a special value
-                            if (r == InnerProducer.CANCELLED) {
+                            if (r == InnerSubscriber.CANCELLED) {
                                 cancelled++;
                             }
                             // we ignore those with NOT_REQUESTED as if they aren't even there
                         }
 
-                        // it may happen everyone has unsubscribed between here and producers.get()
+                        // it may happen everyone has cancelled between here and subscribers.get()
                         // or we have no subscribers at all to begin with
                         if (len == cancelled) {
                             term = terminalEvent;
@@ -531,10 +531,10 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                             }
                             // otherwise, just ask for a new value
                             s.get().request(1);
-                            // and retry emitting to potential new child-subscribers
+                            // and retry emitting to potential new child subscribers
                             continue;
                         }
-                        // if we get here, it means there are non-unsubscribed child-subscribers
+                        // if we get here, it means there are non-cancelled child subscribers
                         // and we count the number of emitted values because the queue
                         // may contain less than requested
                         int d = 0;
@@ -554,10 +554,10 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                             // we need to unwrap potential nulls
                             T value = NotificationLite.getValue(v);
                             // let's emit this value to all child subscribers
-                            for (InnerProducer<T> ip : ps) {
-                                // if ip.get() is negative, the child has either unsubscribed in the
+                            for (InnerSubscriber<T> ip : ps) {
+                                // if ip.get() is negative, the child has either cancelled in the
                                 // meantime or hasn't requested anything yet
-                                // this eager behavior will skip unsubscribed children in case
+                                // this eager behavior will skip cancelled children in case
                                 // multiple values are available in the queue
                                 if (ip.get() > 0L) {
                                     ip.child.onNext(value);
@@ -574,7 +574,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                             s.get().request(d);
                         }
                         // if we have requests but not an empty queue after emission
-                        // let's try again to see if more requests/child-subscribers are
+                        // let's try again to see if more requests/child subscribers are
                         // ready to receive more
                         if (maxRequested != 0L && !empty) {
                             continue;
@@ -610,11 +610,11 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         }
     }
     /**
-     * A Producer and Subscription that manages the request and cancellation state of a
+     * A Subscription that manages the request and cancellation state of a
      * child subscriber in thread-safe manner.
      * @param <T> the value type
      */
-    static final class InnerProducer<T> extends AtomicLong implements Subscription, Disposable {
+    static final class InnerSubscriber<T> extends AtomicLong implements Subscription, Disposable {
 
         private static final long serialVersionUID = -4453897557930727610L;
         /**
@@ -625,12 +625,12 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         /** The actual child subscriber. */
         final Subscriber<? super T> child;
         /**
-         * Indicates this child has been unsubscribed: the state is swapped in atomically and
+         * Indicates this child has been cancelled: the state is swapped in atomically and
          * will prevent the dispatch() to emit (too many) values to a terminated child subscriber.
          */
         static final long CANCELLED = Long.MIN_VALUE;
 
-        InnerProducer(PublishSubscriber<T> parent, Subscriber<? super T> child) {
+        InnerSubscriber(PublishSubscriber<T> parent, Subscriber<? super T> child) {
             this.parent = parent;
             this.child = child;
         }
@@ -642,12 +642,12 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 return;
             }
             // In general, RxJava doesn't prevent concurrent requests (with each other or with
-            // an unsubscribe) so we need a CAS-loop, but we need to handle
-            // request overflow and unsubscribed/not requested state as well.
+            // a cancel) so we need a CAS-loop, but we need to handle
+            // request overflow and cancelled/not requested state as well.
             for (;;) {
                 // get the current request amount
                 long r = get();
-                // if child called unsubscribe() do nothing
+                // if child called cancel() do nothing
                 if (r == CANCELLED) {
                     return;
                 }
@@ -699,7 +699,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 if (r == 0L) {
                     throw new IllegalStateException("Produced without request");
                 }
-                // if the child has unsubscribed, simply return and indicate this
+                // if the child has cancelled, simply return and indicate this
                 if (r == CANCELLED) {
                     return CANCELLED;
                 }
@@ -730,11 +730,11 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         @Override
         public void dispose() {
             long r = get();
-            // let's see if we are unsubscribed
+            // let's see if we are cancelled
             if (r != CANCELLED) {
                 // if not, swap in the terminal state, this is idempotent
                 // because other methods using CAS won't overwrite this value,
-                // concurrent calls to unsubscribe will atomically swap in the same
+                // concurrent calls to cancel will atomically swap in the same
                 // terminal value
                 r = getAndSet(CANCELLED);
                 // and only one of them will see a non-terminated value before the swap

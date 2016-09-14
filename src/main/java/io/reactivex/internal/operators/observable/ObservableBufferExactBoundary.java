@@ -20,8 +20,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.subscribers.observable.*;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.observers.*;
 
@@ -38,10 +38,10 @@ extends AbstractObservableWithUpstream<T, U> {
 
     @Override
     protected void subscribeActual(Observer<? super U> t) {
-        source.subscribe(new BufferExactBoundarySubscriber<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundary));
+        source.subscribe(new BufferExactBoundaryObserver<T, U, B>(new SerializedObserver<U>(t), bufferSupplier, boundary));
     }
 
-    static final class BufferExactBoundarySubscriber<T, U extends Collection<? super T>, B>
+    static final class BufferExactBoundaryObserver<T, U extends Collection<? super T>, B>
     extends QueueDrainObserver<T, U, U> implements Observer<T>, Disposable {
 
         final Callable<U> bufferSupplier;
@@ -53,7 +53,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         U buffer;
 
-        BufferExactBoundarySubscriber(Observer<? super U> actual, Callable<U> bufferSupplier,
+        BufferExactBoundaryObserver(Observer<? super U> actual, Callable<U> bufferSupplier,
                                              ObservableSource<B> boundary) {
             super(actual, new MpscLinkedQueue<U>());
             this.bufferSupplier = bufferSupplier;
@@ -85,7 +85,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 }
                 buffer = b;
 
-                BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
+                BufferBoundaryObserver<T, U, B> bs = new BufferBoundaryObserver<T, U, B>(this);
                 other = bs;
 
                 actual.onSubscribe(this);
@@ -186,11 +186,11 @@ extends AbstractObservableWithUpstream<T, U> {
 
     }
 
-    static final class BufferBoundarySubscriber<T, U extends Collection<? super T>, B>
+    static final class BufferBoundaryObserver<T, U extends Collection<? super T>, B>
     extends DisposableObserver<B> {
-        final BufferExactBoundarySubscriber<T, U, B> parent;
+        final BufferExactBoundaryObserver<T, U, B> parent;
 
-        BufferBoundarySubscriber(BufferExactBoundarySubscriber<T, U, B> parent) {
+        BufferBoundaryObserver(BufferExactBoundaryObserver<T, U, B> parent) {
             this.parent = parent;
         }
 

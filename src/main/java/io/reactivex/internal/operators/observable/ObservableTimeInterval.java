@@ -32,10 +32,10 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
 
     @Override
     public void subscribeActual(Observer<? super Timed<T>> t) {
-        source.subscribe(new TimeIntervalSubscriber<T>(t, unit, scheduler));
+        source.subscribe(new TimeIntervalObserver<T>(t, unit, scheduler));
     }
 
-    static final class TimeIntervalSubscriber<T> implements Observer<T>, Disposable {
+    static final class TimeIntervalObserver<T> implements Observer<T>, Disposable {
         final Observer<? super Timed<T>> actual;
         final TimeUnit unit;
         final Scheduler scheduler;
@@ -44,7 +44,7 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
 
         Disposable s;
 
-        TimeIntervalSubscriber(Observer<? super Timed<T>> actual, TimeUnit unit, Scheduler scheduler) {
+        TimeIntervalObserver(Observer<? super Timed<T>> actual, TimeUnit unit, Scheduler scheduler) {
             this.actual = actual;
             this.scheduler = scheduler;
             this.unit = unit;

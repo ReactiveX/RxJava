@@ -29,10 +29,10 @@ public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T,
     }
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new SingleElementSubscriber<T>(t, defaultValue));
+        source.subscribe(new SingleElementObserver<T>(t, defaultValue));
     }
 
-    static final class SingleElementSubscriber<T> implements Observer<T>, Disposable {
+    static final class SingleElementObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final T defaultValue;
 
@@ -42,7 +42,7 @@ public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T,
 
         boolean done;
 
-        SingleElementSubscriber(Observer<? super T> actual, T defaultValue) {
+        SingleElementObserver(Observer<? super T> actual, T defaultValue) {
             this.actual = actual;
             this.defaultValue = defaultValue;
         }

@@ -51,7 +51,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
         final ArrayCompositeDisposable resources;
         final ObservableSource<? extends T> first;
         final ObservableSource<? extends T> second;
-        final EqualSubscriber<T>[] subscribers;
+        final EqualObserver<T>[] observers;
 
         volatile boolean cancelled;
 
@@ -67,19 +67,19 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
             this.second = second;
             this.comparer = comparer;
             @SuppressWarnings("unchecked")
-            EqualSubscriber<T>[] as = new EqualSubscriber[2];
-            this.subscribers = as;
-            as[0] = new EqualSubscriber<T>(this, 0, bufferSize);
-            as[1] = new EqualSubscriber<T>(this, 1, bufferSize);
+            EqualObserver<T>[] as = new EqualObserver[2];
+            this.observers = as;
+            as[0] = new EqualObserver<T>(this, 0, bufferSize);
+            as[1] = new EqualObserver<T>(this, 1, bufferSize);
             this.resources = new ArrayCompositeDisposable(2);
         }
 
-        boolean setSubscription(Disposable s, int index) {
+        boolean setDisposable(Disposable s, int index) {
             return resources.setResource(index, s);
         }
 
         void subscribe() {
-            EqualSubscriber<T>[] as = subscribers;
+            EqualObserver<T>[] as = observers;
             first.subscribe(as[0]);
             second.subscribe(as[1]);
         }
@@ -91,7 +91,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                 resources.dispose();
 
                 if (getAndIncrement() == 0) {
-                    EqualSubscriber<T>[] as = subscribers;
+                    EqualObserver<T>[] as = observers;
                     as[0].queue.clear();
                     as[1].queue.clear();
                 }
@@ -115,11 +115,11 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
             }
 
             int missed = 1;
-            EqualSubscriber<T>[] as = subscribers;
+            EqualObserver<T>[] as = observers;
 
-            final EqualSubscriber<T> s1 = as[0];
+            final EqualObserver<T> s1 = as[0];
             final SpscLinkedArrayQueue<T> q1 = s1.queue;
-            final EqualSubscriber<T> s2 = as[1];
+            final EqualObserver<T> s2 = as[1];
             final SpscLinkedArrayQueue<T> q2 = s2.queue;
 
             for (;;) {
@@ -215,7 +215,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
         }
     }
 
-    static final class EqualSubscriber<T> implements Observer<T> {
+    static final class EqualObserver<T> implements Observer<T> {
         final EqualCoordinator<T> parent;
         final SpscLinkedArrayQueue<T> queue;
         final int index;
@@ -223,7 +223,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
         volatile boolean done;
         Throwable error;
 
-        EqualSubscriber(EqualCoordinator<T> parent, int index, int bufferSize) {
+        EqualObserver(EqualCoordinator<T> parent, int index, int bufferSize) {
             this.parent = parent;
             this.index = index;
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
@@ -231,7 +231,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
 
         @Override
         public void onSubscribe(Disposable s) {
-            parent.setSubscription(s, index);
+            parent.setDisposable(s, index);
         }
 
         @Override

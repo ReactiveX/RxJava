@@ -104,7 +104,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         final Function<? super Object[], R> combiner;
 
-        final WithLatestInnerSubscriber[] subscribers;
+        final WithLatestInnerObserver[] observers;
 
         final AtomicReferenceArray<Object> values;
 
@@ -117,24 +117,24 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         WithLatestFromObserver(Observer<? super R> actual, Function<? super Object[], R> combiner, int n) {
             this.actual = actual;
             this.combiner = combiner;
-            WithLatestInnerSubscriber[] s = new WithLatestInnerSubscriber[n];
+            WithLatestInnerObserver[] s = new WithLatestInnerObserver[n];
             for (int i = 0; i < n; i++) {
-                s[i] = new WithLatestInnerSubscriber(this, i);
+                s[i] = new WithLatestInnerObserver(this, i);
             }
-            this.subscribers = s;
+            this.observers = s;
             this.values = new AtomicReferenceArray<Object>(n);
             this.d = new AtomicReference<Disposable>();
             this.error = new AtomicThrowable();
         }
 
         void subscribe(ObservableSource<?>[] others, int n) {
-            WithLatestInnerSubscriber[] subscribers = this.subscribers;
+            WithLatestInnerObserver[] observers = this.observers;
             AtomicReference<Disposable> s = this.d;
             for (int i = 0; i < n; i++) {
                 if (DisposableHelper.isDisposed(s.get()) || done) {
                     return;
                 }
-                others[i].subscribe(subscribers[i]);
+                others[i].subscribe(observers[i]);
             }
         }
 
@@ -204,7 +204,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         @Override
         public void dispose() {
             DisposableHelper.dispose(d);
-            for (Disposable s : subscribers) {
+            for (Disposable s : observers) {
                 s.dispose();
             }
         }
@@ -229,16 +229,16 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
 
         void cancelAllBut(int index) {
-            WithLatestInnerSubscriber[] subscribers = this.subscribers;
-            for (int i = 0; i < subscribers.length; i++) {
+            WithLatestInnerObserver[] observers = this.observers;
+            for (int i = 0; i < observers.length; i++) {
                 if (i != index) {
-                    subscribers[i].dispose();
+                    observers[i].dispose();
                 }
             }
         }
     }
 
-    static final class WithLatestInnerSubscriber
+    static final class WithLatestInnerObserver
     extends AtomicReference<Disposable>
     implements Observer<Object>, Disposable {
 
@@ -250,7 +250,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         boolean hasValue;
 
-        WithLatestInnerSubscriber(WithLatestFromObserver<?, ?> parent, int index) {
+        WithLatestInnerObserver(WithLatestFromObserver<?, ?> parent, int index) {
             this.parent = parent;
             this.index = index;
         }
