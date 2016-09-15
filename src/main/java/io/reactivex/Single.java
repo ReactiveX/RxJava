@@ -348,7 +348,7 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Calls a Callable for each individual SingleObserver to return the actual Single source to
-     * be subscribe to.
+     * be subscribed to.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
