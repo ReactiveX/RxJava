@@ -461,7 +461,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Calls a Callable for each individual MaybeObserver to return the actual MaybeSource source to
-     * be subscribe to.
+     * be subscribed to.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
