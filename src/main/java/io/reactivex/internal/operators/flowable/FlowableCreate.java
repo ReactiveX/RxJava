@@ -107,7 +107,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 return;
             }
             if (t == null) {
-                onError(new NullPointerException("t is null"));
+                onError(new NullPointerException("Emitter got a null value. Null values are generally not allowed in 2.x operators and sources."));
                 return;
             }
             if (get() == 0 && compareAndSet(0, 1)) {
@@ -134,7 +134,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 return;
             }
             if (t == null) {
-                t = new NullPointerException("t is null");
+                t = new NullPointerException("Emitter got a null throwable. Null values are generally not allowed in 2.x operators and sources.");
             }
             if (error.addThrowable(t)) {
                 done = true;
