@@ -16,7 +16,6 @@
 package rx.internal.operators;
 
 import rx.*;
-import rx.CompletableSubscriber;
 import rx.exceptions.AssemblyStackTraceException;
 
 /**

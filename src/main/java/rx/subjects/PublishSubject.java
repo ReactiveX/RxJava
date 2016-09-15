@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Observer;
-import rx.annotations.Beta;
 import rx.exceptions.*;
 import rx.internal.operators.BackpressureUtils;
 
@@ -92,16 +91,16 @@ public final class PublishSubject<T> extends Subject<T, T> {
     /**
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
+     * @since 1.2
      */
-    @Beta
     public boolean hasThrowable() {
         return state.get() == PublishSubjectState.TERMINATED && state.error != null;
     }
     /**
      * Check if the Subject has terminated normally.
      * @return true if the subject completed normally via {@code onCompleted}
+     * @since 1.2
      */
-    @Beta
     public boolean hasCompleted() {
         return state.get() == PublishSubjectState.TERMINATED && state.error == null;
     }
@@ -109,8 +108,8 @@ public final class PublishSubject<T> extends Subject<T, T> {
      * Returns the Throwable that terminated the Subject.
      * @return the Throwable that terminated the Subject or {@code null} if the
      * subject hasn't terminated yet or it terminated normally.
+     * @since 1.2
      */
-    @Beta
     public Throwable getThrowable() {
         if (state.get() == PublishSubjectState.TERMINATED) {
             return state.error;

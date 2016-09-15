@@ -30,7 +30,8 @@ import rx.subscriptions.*;
 import static rx.internal.util.PlatformDependent.ANDROID_API_VERSION_IS_NOT_ANDROID;
 
 /**
- * @warn class description missing
+ * Represents a Scheduler.Worker that runs on its own unique and single-threaded ScheduledExecutorService
+ * created via Executors.
  */
 public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     private final ScheduledExecutorService executor;
@@ -132,7 +133,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      * <p>{@code public} visibility reason: called from other package(s) within RxJava.
      * If the method returns false, the {@link #registerExecutor(ScheduledThreadPoolExecutor)} may
      * be called to enable the backup option of purging the executors.
-     * @param executor the executor to call setRemoveOnCaneclPolicy if available.
+     * @param executor the executor to call setRemoveOnCancelPolicy if available.
      * @return true if the policy was successfully enabled
      */
     public static boolean tryEnableCancelPolicy(ScheduledExecutorService executor) {

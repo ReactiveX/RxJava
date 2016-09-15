@@ -66,7 +66,7 @@ public final class Notification<T> {
      * Creates and returns a {@code Notification} of variety {@code Kind.OnCompleted}.
      *
      * @param <T> the actual value type held by the Notification
-     * @param type
+     * @param type the type token to help with type inference of {@code <T>}
      * @deprecated this method does the same as {@link #createOnCompleted()} and does not use the passed in type hence it's useless.
      * @return an {@code OnCompleted} variety of {@code Notification}
      */
@@ -217,14 +217,7 @@ public final class Notification<T> {
         }
 
         Notification<?> notification = (Notification<?>) obj;
-        if (notification.getKind() != getKind()) {
-            return false;
-        }
+        return notification.getKind() == getKind() && (value == notification.value || (value != null && value.equals(notification.value))) && (throwable == notification.throwable || (throwable != null && throwable.equals(notification.throwable)));
 
-        if (!(value == notification.value || (value != null && value.equals(notification.value)))) {
-            return false;
-        }
-
-        return (throwable == notification.throwable || (throwable != null && throwable.equals(notification.throwable)));
     }
 }

@@ -16,7 +16,6 @@
 package rx.observables;
 
 import rx.*;
-import rx.annotations.Beta;
 import rx.functions.*;
 import rx.internal.operators.*;
 
@@ -86,9 +85,8 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      *
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the first Subscriber subscribes
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
-    @Beta
     public Observable<T> autoConnect() {
         return autoConnect(1);
     }
@@ -101,9 +99,8 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      *                            an immediate connection.
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the specified number of Subscribers subscribe to it
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
-    @Beta
     public Observable<T> autoConnect(int numberOfSubscribers) {
         return autoConnect(numberOfSubscribers, Actions.empty());
     }
@@ -121,9 +118,8 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the specified number of Subscribers subscribe to it and calls the
      *         specified callback with the Subscription associated with the established connection
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.2
      */
-    @Beta
     public Observable<T> autoConnect(int numberOfSubscribers, Action1<? super Subscription> connection) {
         if (numberOfSubscribers <= 0) {
             this.connect(connection);

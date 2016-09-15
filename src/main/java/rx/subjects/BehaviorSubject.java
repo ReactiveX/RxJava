@@ -20,7 +20,6 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 import rx.Observer;
-import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
@@ -178,8 +177,8 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * <p>Note that unless {@link #hasCompleted()} or {@link #hasThrowable()} returns true, the value
      * retrieved by {@code getValue()} may get outdated.
      * @return true if and only if the subject has some value and hasn't terminated yet.
+     * @since 1.2
      */
-    @Beta
     public boolean hasValue() {
         Object o = state.getLatest();
         return nl.isNext(o);
@@ -187,8 +186,8 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     /**
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
+     * @since 1.2
      */
-    @Beta
     public boolean hasThrowable() {
         Object o = state.getLatest();
         return nl.isError(o);
@@ -196,8 +195,8 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     /**
      * Check if the Subject has terminated normally.
      * @return true if the subject completed normally via {@code onCompleted()}
+     * @since 1.2
      */
-    @Beta
     public boolean hasCompleted() {
         Object o = state.getLatest();
         return nl.isCompleted(o);
@@ -210,8 +209,8 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * exception or the Subject terminated (with or without receiving any value).
      * @return the current value or {@code null} if the Subject doesn't have a value,
      * has terminated or has an actual {@code null} as a valid value.
+     * @since 1.2
      */
-    @Beta
     public T getValue() {
         Object o = state.getLatest();
         if (nl.isNext(o)) {
@@ -223,8 +222,8 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * Returns the Throwable that terminated the Subject.
      * @return the Throwable that terminated the Subject or {@code null} if the
      * subject hasn't terminated yet or it terminated normally.
+     * @since 1.2
      */
-    @Beta
     public Throwable getThrowable() {
         Object o = state.getLatest();
         if (nl.isError(o)) {
@@ -237,8 +236,8 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * the provided {@code a} array or creates a new array if it has not enough capacity.
      * @param a the array to fill in
      * @return the array {@code a} if it had enough capacity or a new array containing the available values
+     * @since 1.2
      */
-    @Beta
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] a) {
         Object o = state.getLatest();
@@ -259,13 +258,13 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     /**
      * Returns a snapshot of the currently buffered non-terminal events.
-     * <p>The operation is threadsafe.
+     * <p>The operation is thread-safe.
      *
      * @return a snapshot of the currently buffered non-terminal events.
      * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
+     * @since 1.2
      */
     @SuppressWarnings("unchecked")
-    @Beta
     public Object[] getValues() {
         T[] r = getValues((T[])EMPTY_ARRAY);
         if (r == EMPTY_ARRAY) {

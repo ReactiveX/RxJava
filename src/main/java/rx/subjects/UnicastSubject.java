@@ -197,7 +197,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                 error = e;
                 done = true;
                 if (!caughtUp) {
-                    boolean stillReplay = false;
+                    boolean stillReplay;
                     synchronized (this) {
                         stillReplay = !caughtUp;
                     }
@@ -217,7 +217,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
 
                 done = true;
                 if (!caughtUp) {
-                    boolean stillReplay = false;
+                    boolean stillReplay;
                     synchronized (this) {
                         stillReplay = !caughtUp;
                     }
@@ -246,7 +246,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         /**
          * Tries to set the given subscriber if not already set, sending an
          * IllegalStateException to the subscriber otherwise.
-         * @param subscriber
+         * @param subscriber the incoming Subscriber instance, not null
          */
         @Override
         public void call(Subscriber<? super T> subscriber) {
@@ -349,10 +349,10 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         /**
          * Checks if one of the terminal conditions have been met: child unsubscribed,
          * an error happened or the source terminated and the queue is empty
-         * @param done
-         * @param empty
-         * @param s
-         * @return
+         * @param done indicates the source has called onCompleted
+         * @param empty indicates if there are no more source values in the queue
+         * @param s the target Subscriber to emit events to
+         * @return true if this Subject reached a terminal state and the drain loop should quit
          */
         boolean checkTerminated(boolean done, boolean empty, Subscriber<? super T> s) {
             if (s.isUnsubscribed()) {

@@ -322,7 +322,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                 }
                 tick();
             }
-        };
+        }
     }
 
 }

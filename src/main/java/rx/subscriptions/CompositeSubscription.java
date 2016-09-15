@@ -120,7 +120,7 @@ public final class CompositeSubscription implements Subscription {
      */
     public void remove(final Subscription s) {
         if (!unsubscribed) {
-            boolean unsubscribe = false;
+            boolean unsubscribe;
             synchronized (this) {
                 if (unsubscribed || subscriptions == null) {
                     return;
@@ -141,7 +141,7 @@ public final class CompositeSubscription implements Subscription {
      */
     public void clear() {
         if (!unsubscribed) {
-            Collection<Subscription> unsubscribe = null;
+            Collection<Subscription> unsubscribe;
             synchronized (this) {
                 if (unsubscribed || subscriptions == null) {
                     return;
@@ -162,7 +162,7 @@ public final class CompositeSubscription implements Subscription {
     @Override
     public void unsubscribe() {
         if (!unsubscribed) {
-            Collection<Subscription> unsubscribe = null;
+            Collection<Subscription> unsubscribe;
             synchronized (this) {
                 if (unsubscribed) {
                     return;

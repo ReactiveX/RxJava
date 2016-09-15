@@ -84,7 +84,7 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         final ProducerArbiter pa = new ProducerArbiter();
 
-        final SerialSubscription ssub = new SerialSubscription();
+        final SerialSubscription serial = new SerialSubscription();
 
         Subscriber<T> parent = new Subscriber<T>() {
 
@@ -130,7 +130,7 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
                             pa.setProducer(producer);
                         }
                     };
-                    ssub.set(next);
+                    serial.set(next);
 
                     long p = produced;
                     if (p != 0L) {
@@ -160,9 +160,9 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
             }
 
         };
-        ssub.set(parent);
+        serial.set(parent);
 
-        child.add(ssub);
+        child.add(serial);
         child.setProducer(pa);
 
         return parent;

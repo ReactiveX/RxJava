@@ -48,7 +48,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
     final Func1<? super T, ? extends V> valueSelector;
     final int bufferSize;
     final boolean delayError;
-    final Func1<Action1<K>, Map<K, Object>> mapFactory; //nullable
+    final Func1<Action1<K>, Map<K, Object>> mapFactory;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public OperatorGroupBy(Func1<? super T, ? extends K> keySelector) {

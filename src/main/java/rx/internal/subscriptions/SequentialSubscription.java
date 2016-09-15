@@ -64,7 +64,7 @@ public final class SequentialSubscription extends AtomicReference<Subscription> 
      * the previous value or unsubscribes the next value if this container is unsubscribed.
      * <p>(Remark: named as such because set() is final).
      * @param next the next Subscription to contain, may be null
-     * @return true if the update succeded, false if the container was unsubscribed
+     * @return true if the update succeeded, false if the container was unsubscribed
      */
     public boolean update(Subscription next) {
         for (;;) {
@@ -91,7 +91,7 @@ public final class SequentialSubscription extends AtomicReference<Subscription> 
      * does not unsubscribe the previous value or unsubscribes the next value if this
      * container is unsubscribed.
      * @param next the next Subscription to contain, may be null
-     * @return true if the update succeded, false if the container was unsubscribed
+     * @return true if the update succeeded, false if the container was unsubscribed
      */
     public boolean replace(Subscription next) {
         for (;;) {
@@ -117,7 +117,7 @@ public final class SequentialSubscription extends AtomicReference<Subscription> 
      * Unlike {@link #update(Subscription)}, this doesn't retry if the replace failed
      * because a concurrent operation changed the underlying contained object.
      * @param next the next Subscription to contain, may be null
-     * @return true if the update succeded, false if the container was unsubscribed
+     * @return true if the update succeeded, false if the container was unsubscribed
      */
     public boolean updateWeak(Subscription next) {
         Subscription current = get();
@@ -147,7 +147,7 @@ public final class SequentialSubscription extends AtomicReference<Subscription> 
      * Unlike {@link #replace(Subscription)}, this doesn't retry if the replace failed
      * because a concurrent operation changed the underlying contained object.
      * @param next the next Subscription to contain, may be null
-     * @return true if the update succeded, false if the container was unsubscribed
+     * @return true if the update succeeded, false if the container was unsubscribed
      */
     public boolean replaceWeak(Subscription next) {
         Subscription current = get();

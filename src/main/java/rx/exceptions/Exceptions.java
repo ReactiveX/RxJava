@@ -19,7 +19,7 @@ import java.util.*;
 
 import rx.Observer;
 import rx.SingleSubscriber;
-import rx.annotations.Experimental;
+import rx.annotations.Beta;
 
 /**
  * Utility class with methods to wrap checked exceptions and
@@ -184,7 +184,7 @@ public final class Exceptions {
      * @param value the value that caused the exception
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static void throwOrReport(Throwable t, Observer<?> o, Object value) {
         Exceptions.throwIfFatal(t);
         o.onError(OnErrorThrowable.addValueAsLastCause(t, value));
@@ -198,7 +198,7 @@ public final class Exceptions {
      * @param value the value that caused the exception
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static void throwOrReport(Throwable t, SingleSubscriber<?> o, Object value) {
         Exceptions.throwIfFatal(t);
         o.onError(OnErrorThrowable.addValueAsLastCause(t, value));
@@ -210,7 +210,7 @@ public final class Exceptions {
      * @param o the observer to report to
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
-    @Experimental
+    @Beta
     public static void throwOrReport(Throwable t, Observer<?> o) {
         Exceptions.throwIfFatal(t);
         o.onError(t);
@@ -223,7 +223,7 @@ public final class Exceptions {
      * @param subscriber the subscriber to report to.
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number).
      */
-    @Experimental
+    @Beta
     public static void throwOrReport(Throwable throwable, SingleSubscriber<?> subscriber) {
         Exceptions.throwIfFatal(throwable);
         subscriber.onError(throwable);

@@ -20,13 +20,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.annotations.Experimental;
+import rx.annotations.*;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.util.*;
 import rx.observers.*;
-import rx.plugins.*;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.*;
 
@@ -34,28 +34,13 @@ import rx.subscriptions.*;
  * Represents a deferred computation without any value but only indication for completion or exception.
  *
  * The class follows a similar event pattern as Reactive-Streams: onSubscribe (onError|onComplete)?
+ * 
+ * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
  */
-@Experimental
+@Beta
 public class Completable {
     /** The actual subscription action. */
     private final OnSubscribe onSubscribe;
-
-    /**
-     * @deprecated Use {@link OnSubscribe} instead.
-     */
-    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
-    public interface CompletableOnSubscribe extends Action1<CompletableSubscriber> {
-
-    }
-
-    private static OnSubscribe fromOldOnSubscribe(final CompletableOnSubscribe onSubscribe) {
-        return new OnSubscribe() {
-            @Override
-            public void call(final rx.CompletableSubscriber s) {
-                onSubscribe.call(toOldSubscriber(s));
-            }
-        };
-    }
 
     /**
      * Callback used for building deferred computations that takes a CompletableSubscriber.
@@ -65,100 +50,10 @@ public class Completable {
     }
 
     /**
-     * @deprecated Use {@link Operator} instead.
-     */
-    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
-    public interface CompletableOperator extends Func1<CompletableSubscriber, CompletableSubscriber> {
-
-    }
-
-    private static Operator fromOldOperator(final CompletableOperator operator) {
-        requireNonNull(operator);
-        return new Operator() {
-            @Override
-            public rx.CompletableSubscriber call(final rx.CompletableSubscriber subscriber) {
-                return fromOldSubscriber(operator.call(toOldSubscriber(subscriber)));
-            }
-        };
-    }
-
-    /**
      * Convenience interface and callback used by the lift operator that given a child CompletableSubscriber,
      * return a parent CompletableSubscriber that does any kind of lifecycle-related transformations.
      */
     public interface Operator extends Func1<rx.CompletableSubscriber, rx.CompletableSubscriber> {
-
-    }
-
-    /**
-     * @deprecated Use {@link rx.CompletableSubscriber} instead.
-     */
-    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
-    public interface CompletableSubscriber {
-        /**
-         * Called once the deferred computation completes normally.
-         */
-        void onCompleted();
-
-        /**
-         * Called once if the deferred computation 'throws' an exception.
-         * @param e the exception, not null.
-         */
-        void onError(Throwable e);
-
-        /**
-         * Called once by the Completable to set a Subscription on this instance which
-         * then can be used to cancel the subscription at any time.
-         * @param d the Subscription instance to call dispose on for cancellation, not null
-         */
-        void onSubscribe(Subscription d);
-    }
-
-    static rx.CompletableSubscriber fromOldSubscriber(final CompletableSubscriber subscriber) {
-        requireNonNull(subscriber);
-        return new rx.CompletableSubscriber() {
-            @Override
-            public void onCompleted() {
-                subscriber.onCompleted();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                subscriber.onError(e);
-            }
-
-            @Override
-            public void onSubscribe(Subscription d) {
-                subscriber.onSubscribe(d);
-            }
-        };
-    }
-
-    static CompletableSubscriber toOldSubscriber(final rx.CompletableSubscriber subscriber) {
-        requireNonNull(subscriber);
-        return new CompletableSubscriber() {
-            @Override
-            public void onCompleted() {
-                subscriber.onCompleted();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                subscriber.onError(e);
-            }
-
-            @Override
-            public void onSubscribe(Subscription d) {
-                subscriber.onSubscribe(d);
-            }
-        };
-    }
-
-    /**
-     * @deprecated Use {@link Transformer} instead.
-     */
-    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
-    public interface CompletableTransformer extends Transformer {
 
     }
 
@@ -454,17 +349,6 @@ public class Completable {
             throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
         }
         return create(new CompletableOnSubscribeConcat(sources, prefetch));
-    }
-
-    /**
-     * Constructs a Completable instance by wrapping the given old onSubscribe callback.
-     * @param onSubscribe the old CompletableOnSubscribe instance to wrap
-     * @return a Completable instance
-     * @deprecated Use {@link #create(OnSubscribe)}.
-     */
-    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
-    public static Completable create(CompletableOnSubscribe onSubscribe) {
-        return create(fromOldOnSubscribe(onSubscribe));
     }
 
     /**
@@ -1118,14 +1002,6 @@ public class Completable {
     }
 
     /**
-     * @deprecated Use {@link #Completable(OnSubscribe)}.
-     */
-    @Deprecated // TODO Remove constructor after 1.2.0 release. It was never a stable API. Provided only for migration.
-    protected Completable(CompletableOnSubscribe onSubscribe) {
-        this(fromOldOnSubscribe(onSubscribe));
-    }
-
-    /**
      * Constructs a Completable instance with the given onSubscribe callback without calling the onCreate
      * hook.
      * @param onSubscribe the callback that will receive CompletableSubscribers when they subscribe,
@@ -1134,19 +1010,6 @@ public class Completable {
      */
     protected Completable(OnSubscribe onSubscribe, boolean useHook) {
         this.onSubscribe = useHook ? RxJavaHooks.onCreate(onSubscribe) : onSubscribe;
-    }
-
-    /**
-     * Constructs a Completable instance with the given onSubscribe callback without calling the onCreate
-     * hook.
-     * @param onSubscribe the callback that will receive CompletableSubscribers when they subscribe,
-     * not null (not verified)
-     * @param useHook if false, RxJavaHooks.onCreate won't be called
-     * @deprecated Use {@link #Completable(OnSubscribe, boolean)}.
-     */
-    @Deprecated // TODO Remove constructor after 1.2.0 release. It was never a stable API. Provided only for migration.
-    protected Completable(CompletableOnSubscribe onSubscribe, boolean useHook) {
-        this(fromOldOnSubscribe(onSubscribe), useHook);
     }
 
     /**
@@ -1423,17 +1286,6 @@ public class Completable {
     }
 
     /**
-     * Returns a Completable which calls the given onComplete callback if this Completable completes.
-     * @param onComplete the callback to call when this emits an onComplete event
-     * @return the new Completable instance
-     * @throws NullPointerException if onComplete is null
-     * @deprecated Use {@link #doOnCompleted(Action0)} instead.
-     */
-    @Deprecated public final Completable doOnComplete(Action0 onComplete) {
-        return doOnCompleted(onComplete);
-    }
-
-    /**
      * Returns a Completable which calls the given onCompleted callback if this Completable completes.
      * @param onCompleted the callback to call when this emits an onComplete event
      * @return the new Completable instance
@@ -1600,34 +1452,6 @@ public class Completable {
     }
 
     /**
-     * Returns a completable that first runs this Completable
-     * and then the other completable.
-     * <p>
-     * This is an alias for {@link #concatWith(Completable)}.
-     * @param other the other Completable, not null
-     * @return the new Completable instance
-     * @throws NullPointerException if other is null
-     * @deprecated Use {@link #andThen(rx.Completable)} instead.
-     */
-    @Deprecated
-    public final Completable endWith(Completable other) {
-        return andThen(other);
-    }
-
-    /**
-     * Returns an Observable that first runs this Completable instance and
-     * resumes with the given next Observable.
-     * @param <T> the value type of the next Observable
-     * @param next the next Observable to continue
-     * @return the new Observable instance
-     * @deprecated Use {@link #andThen(rx.Observable)} instead.
-     */
-    @Deprecated
-    public final <T> Observable<T> endWith(Observable<T> next) {
-        return andThen(next);
-    }
-
-    /**
      * Returns a Completable instance that calls the given onAfterComplete callback after this
      * Completable completes normally.
      * @param onAfterComplete the callback to call after this Completable emits an onComplete event.
@@ -1728,18 +1552,6 @@ public class Completable {
         }
         Exceptions.propagate(new TimeoutException());
         return null;
-    }
-
-    /**
-     * Lifts a CompletableSubscriber transformation into the chain of Completables.
-     * @param onLift the lifting function that transforms the child subscriber with a parent subscriber.
-     * @return the new Completable instance
-     * @throws NullPointerException if onLift is null
-     * @deprecated Use {@link #lift(Operator)}.
-     */
-    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
-    public final Completable lift(CompletableOperator onLift) {
-        return lift(fromOldOperator(onLift));
     }
 
     /**
@@ -2200,20 +2012,9 @@ public class Completable {
         return mad;
     }
 
-    private static void deliverUncaughtException(Throwable e) {
+    static void deliverUncaughtException(Throwable e) {
         Thread thread = Thread.currentThread();
         thread.getUncaughtExceptionHandler().uncaughtException(thread, e);
-    }
-
-    /**
-     * Subscribes the given CompletableSubscriber to this Completable instance.
-     * @param s the CompletableSubscriber, not null
-     * @throws NullPointerException if s is null
-     * @deprecated Use {@link #unsafeSubscribe(rx.CompletableSubscriber)}.
-     */
-    @Deprecated // TODO Remove interface after 1.2.0 release. It was never a stable API. Provided only for migration.
-    public final void unsafeSubscribe(CompletableSubscriber s) {
-        unsafeSubscribe(fromOldSubscriber(s));
     }
 
     /**
@@ -2268,7 +2069,7 @@ public class Completable {
      * @param callOnStart if true, the Subscriber.onStart will be called
      * @throws NullPointerException if s is null
      */
-    private final <T> void unsafeSubscribe(final Subscriber<T> s, boolean callOnStart) {
+    private <T> void unsafeSubscribe(final Subscriber<T> s, boolean callOnStart) {
         requireNonNull(s);
         try {
             if (callOnStart) {

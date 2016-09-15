@@ -90,7 +90,7 @@ public final class SubscriptionList implements Subscription {
 
     public void remove(final Subscription s) {
         if (!unsubscribed) {
-            boolean unsubscribe = false;
+            boolean unsubscribe;
             synchronized (this) {
                 List<Subscription> subs = subscriptions;
                 if (unsubscribed || subs == null) {

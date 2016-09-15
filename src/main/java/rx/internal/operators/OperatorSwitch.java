@@ -76,7 +76,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
 
     static final class SwitchSubscriber<T> extends Subscriber<Observable<? extends T>> {
         final Subscriber<? super T> child;
-        final SerialSubscription ssub;
+        final SerialSubscription serial;
         final boolean delayError;
         final AtomicLong index;
         final SpscLinkedArrayQueue<Object> queue;
@@ -100,7 +100,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
 
         SwitchSubscriber(Subscriber<? super T> child, boolean delayError) {
             this.child = child;
-            this.ssub = new SerialSubscription();
+            this.serial = new SerialSubscription();
             this.delayError = delayError;
             this.index = new AtomicLong();
             this.queue = new SpscLinkedArrayQueue<Object>(RxRingBuffer.SIZE);
@@ -108,7 +108,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         }
 
         void init() {
-            child.add(ssub);
+            child.add(serial);
             child.add(Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
@@ -139,7 +139,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         public void onNext(Observable<? extends T> t) {
             long id = index.incrementAndGet();
 
-            Subscription s = ssub.get();
+            Subscription s = serial.get();
             if (s != null) {
                 s.unsubscribe();
             }
@@ -152,7 +152,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                 innerActive = true;
                 producer = null;
             }
-            ssub.set(inner);
+            serial.set(inner);
 
             t.unsafeSubscribe(inner);
         }

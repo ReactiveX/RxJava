@@ -21,7 +21,7 @@ import rx.*;
 import rx.Observable.OnSubscribe;
 
 /**
- * Emit ints from start to end inclusive.
+ * Emit integers from start to end inclusive.
  */
 public final class OnSubscribeRange implements OnSubscribe<Integer> {
 
@@ -60,12 +60,12 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
             }
             if (requestedAmount == Long.MAX_VALUE && compareAndSet(0L, Long.MAX_VALUE)) {
                 // fast-path without backpressure
-                fastpath();
+                fastPath();
             } else if (requestedAmount > 0L) {
                 long c = BackpressureUtils.getAndAddRequest(this, requestedAmount);
                 if (c == 0L) {
                     // backpressure is requested
-                    slowpath(requestedAmount);
+                    slowPath(requestedAmount);
                 }
             }
         }
@@ -73,7 +73,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         /**
          * Emits as many values as requested or remaining from the range, whichever is smaller.
          */
-        void slowpath(long requestedAmount) {
+        void slowPath(long requestedAmount) {
             long emitted = 0L;
             long endIndex = endOfRange + 1L;
             long index = currentIndex;
@@ -118,7 +118,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         /**
          * Emits all remaining values without decrementing the requested amount.
          */
-        void fastpath() {
+        void fastPath() {
             final long endIndex = this.endOfRange + 1L;
             final Subscriber<? super Integer> childSubscriber = this.childSubscriber;
             for (long index = currentIndex; index != endIndex; index++) {

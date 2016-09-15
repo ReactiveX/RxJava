@@ -315,10 +315,10 @@ public final class SpscLinkedArrayQueue<T> implements Queue<T> {
     }
 
     /**
-     * Offer two elements at the same time.
+     * Atomically offer two elements.
      * <p>Don't use the regular offer() with this at all!
-     * @param first
-     * @param second
+     * @param first the first value
+     * @param second the second value
      * @return always true
      */
     public boolean offer(T first, T second) {

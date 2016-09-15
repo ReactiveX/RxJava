@@ -194,15 +194,14 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
                         boolean b;
 
                         try {
-                            Iterable<? extends R> iter = mapper.call(nl.getValue(v));
+                            Iterable<? extends R> iterable = mapper.call(nl.getValue(v));
 
-                            it = iter.iterator();
+                            it = iterable.iterator();
 
                             b = it.hasNext();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
 
-                            it = null;
                             onError(ex);
 
                             continue;
@@ -316,7 +315,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
     }
 
     /**
-     * A custom flattener that works from a scalar value and computes the iterable
+     * A custom flattening operator that works from a scalar value and computes the iterable
      * during subscription time.
      *
      * @param <T> the scalar's value type
@@ -334,14 +333,14 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
 
         @Override
         public void call(Subscriber<? super R> t) {
-            Iterator<? extends R> itor;
+            Iterator<? extends R> iterator;
             boolean b;
             try {
                 Iterable<? extends R> it = mapper.call(value);
 
-                itor = it.iterator();
+                iterator = it.iterator();
 
-                b = itor.hasNext();
+                b = iterator.hasNext();
             } catch (Throwable ex) {
                 Exceptions.throwOrReport(ex, t, value);
                 return;
@@ -352,7 +351,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
                 return;
             }
 
-            t.setProducer(new OnSubscribeFromIterable.IterableProducer<R>(t, itor));
+            t.setProducer(new OnSubscribeFromIterable.IterableProducer<R>(t, iterator));
         }
     }
 }

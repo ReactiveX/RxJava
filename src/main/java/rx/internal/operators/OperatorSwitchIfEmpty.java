@@ -35,11 +35,11 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
 
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> child) {
-        final SerialSubscription ssub = new SerialSubscription();
+        final SerialSubscription serial = new SerialSubscription();
         ProducerArbiter arbiter = new ProducerArbiter();
-        final ParentSubscriber<T> parent = new ParentSubscriber<T>(child, ssub, arbiter, alternate);
-        ssub.set(parent);
-        child.add(ssub);
+        final ParentSubscriber<T> parent = new ParentSubscriber<T>(child, serial, arbiter, alternate);
+        serial.set(parent);
+        child.add(serial);
         child.setProducer(arbiter);
         return parent;
     }
@@ -48,13 +48,13 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
 
         private boolean empty = true;
         private final Subscriber<? super T> child;
-        private final SerialSubscription ssub;
+        private final SerialSubscription serial;
         private final ProducerArbiter arbiter;
         private final Observable<? extends T> alternate;
 
-        ParentSubscriber(Subscriber<? super T> child, final SerialSubscription ssub, ProducerArbiter arbiter, Observable<? extends T> alternate) {
+        ParentSubscriber(Subscriber<? super T> child, final SerialSubscription serial, ProducerArbiter arbiter, Observable<? extends T> alternate) {
             this.child = child;
-            this.ssub = ssub;
+            this.serial = serial;
             this.arbiter = arbiter;
             this.alternate = alternate;
         }
@@ -75,7 +75,7 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
 
         private void subscribeToAlternate() {
             AlternateSubscriber<T> as = new AlternateSubscriber<T>(child, arbiter);
-            ssub.set(as);
+            serial.set(as);
             alternate.unsafeSubscribe(as);
         }
 

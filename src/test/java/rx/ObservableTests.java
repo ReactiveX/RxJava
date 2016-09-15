@@ -1107,22 +1107,6 @@ public class ObservableTests {
         .forEach(null);
     }
 
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testExtend() {
-        final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
-        final Object value = new Object();
-        Observable.just(value).extend(new Func1<OnSubscribe<Object>,Object>(){
-            @Override
-            public Object call(OnSubscribe<Object> onSubscribe) {
-                onSubscribe.call(subscriber);
-                subscriber.assertNoErrors();
-                subscriber.assertCompleted();
-                subscriber.assertValue(value);
-                return subscriber.getOnNextEvents().get(0);
-            }});
-    }
-
     @Test
     public void nullOnSubscribe() {
         Observable<Integer> source = Observable.create((OnSubscribe<Integer>)null);

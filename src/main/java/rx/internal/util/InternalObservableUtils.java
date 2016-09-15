@@ -38,7 +38,7 @@ public enum InternalObservableUtils {
     public static final PlusOneLongFunc2 LONG_COUNTER = new PlusOneLongFunc2();
 
     /**
-     * A bifunction comparing two objects via null-safe equals.
+     * A two-argument function comparing two objects via null-safe equals.
      */
     public static final ObjectEqualsFunc2 OBJECT_EQUALS = new ObjectEqualsFunc2();
     /**
@@ -142,7 +142,7 @@ public enum InternalObservableUtils {
      * @param notificationHandler the handler to notify with nulls
      * @return the Func1 instance
      */
-    public static final Func1<Observable<? extends Notification<?>>, Observable<?>> createRepeatDematerializer(Func1<? super Observable<? extends Void>, ? extends Observable<?>> notificationHandler) {
+    public static Func1<Observable<? extends Notification<?>>, Observable<?>> createRepeatDematerializer(Func1<? super Observable<? extends Void>, ? extends Observable<?>> notificationHandler) {
         return new RepeatNotificationDematerializer(notificationHandler);
     }
 
@@ -158,7 +158,7 @@ public enum InternalObservableUtils {
         public Observable<?> call(Observable<? extends Notification<?>> notifications) {
             return notificationHandler.call(notifications.map(RETURNS_VOID));
         }
-    };
+    }
 
     static final class ReturnsVoidFunc1 implements Func1<Object, Void> {
         @Override
@@ -207,7 +207,7 @@ public enum InternalObservableUtils {
      * @param notificationHandler the handler to notify with Throwables
      * @return the Func1 instance
      */
-    public static final Func1<Observable<? extends Notification<?>>, Observable<?>> createRetryDematerializer(Func1<? super Observable<? extends Throwable>, ? extends Observable<?>> notificationHandler) {
+    public static Func1<Observable<? extends Notification<?>>, Observable<?>> createRetryDematerializer(Func1<? super Observable<? extends Throwable>, ? extends Observable<?>> notificationHandler) {
         return new RetryNotificationDematerializer(notificationHandler);
     }
 
@@ -244,7 +244,7 @@ public enum InternalObservableUtils {
     static final class ReplaySupplierNoParams<T> implements Func0<ConnectableObservable<T>> {
         private final Observable<T> source;
 
-        private ReplaySupplierNoParams(Observable<T> source) {
+        ReplaySupplierNoParams(Observable<T> source) {
             this.source = source;
         }
 
@@ -269,7 +269,7 @@ public enum InternalObservableUtils {
         private final Observable<T> source;
         private final int bufferSize;
 
-        private ReplaySupplierBuffer(Observable<T> source, int bufferSize) {
+        ReplaySupplierBuffer(Observable<T> source, int bufferSize) {
             this.source = source;
             this.bufferSize = bufferSize;
         }
@@ -302,7 +302,7 @@ public enum InternalObservableUtils {
         private final long time;
         private final Scheduler scheduler;
 
-        private ReplaySupplierBufferTime(Observable<T> source, long time, TimeUnit unit, Scheduler scheduler) {
+        ReplaySupplierBufferTime(Observable<T> source, long time, TimeUnit unit, Scheduler scheduler) {
             this.unit = unit;
             this.source = source;
             this.time = time;
@@ -340,8 +340,8 @@ public enum InternalObservableUtils {
         private final int bufferSize;
         private final Observable<T> source;
 
-        private ReplaySupplierTime(Observable<T> source, int bufferSize, long time, TimeUnit unit,
-                Scheduler scheduler) {
+        ReplaySupplierTime(Observable<T> source, int bufferSize, long time, TimeUnit unit,
+                           Scheduler scheduler) {
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;

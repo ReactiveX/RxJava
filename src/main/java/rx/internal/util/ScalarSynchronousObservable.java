@@ -39,7 +39,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
 
     /**
      * Indicates that the Producer used by this Observable should be fully
-     * threadsafe. It is possible, but unlikely that multiple concurrent
+     * thread-safe. It is possible, but unlikely that multiple concurrent
      * requests will arrive to just().
      */
     static final boolean STRONG_MODE;
@@ -240,7 +240,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
 
     /**
      * This is the weak version of SingleProducer that uses plain fields
-     * to avoid reentrancy and as such is not threadsafe for concurrent
+     * to avoid re-entrant invocation and as such is not thread-safe for concurrent
      * request() calls.
      *
      * @param <T> the value type

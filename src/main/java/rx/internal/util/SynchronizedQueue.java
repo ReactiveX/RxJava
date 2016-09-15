@@ -140,10 +140,7 @@ public class SynchronizedQueue<T> implements Queue<T>, Cloneable {
 
     @Override
     public synchronized boolean offer(T e) { // NOPMD
-        if (size > -1 && list.size() + 1 > size) {
-            return false;
-        }
-        return list.offer(e);
+        return !(size > -1 && list.size() + 1 > size) && list.offer(e);
     }
 
     @Override

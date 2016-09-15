@@ -67,32 +67,32 @@ public final class OperatorBufferWithStartEndObservable<T, TOpening, TClosing> i
     @Override
     public Subscriber<? super T> call(final Subscriber<? super List<T>> child) {
 
-        final BufferingSubscriber bsub = new BufferingSubscriber(new SerializedSubscriber<List<T>>(child));
+        final BufferingSubscriber s = new BufferingSubscriber(new SerializedSubscriber<List<T>>(child));
 
         Subscriber<TOpening> openSubscriber = new Subscriber<TOpening>() {
 
             @Override
             public void onNext(TOpening t) {
-                bsub.startBuffer(t);
+                s.startBuffer(t);
             }
 
             @Override
             public void onError(Throwable e) {
-                bsub.onError(e);
+                s.onError(e);
             }
 
             @Override
             public void onCompleted() {
-                bsub.onCompleted();
+                s.onCompleted();
             }
 
         };
         child.add(openSubscriber);
-        child.add(bsub);
+        child.add(s);
 
         bufferOpening.unsafeSubscribe(openSubscriber);
 
-        return bsub;
+        return s;
     }
     final class BufferingSubscriber extends Subscriber<T> {
         final Subscriber<? super List<T>> child;

@@ -73,19 +73,19 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
         SerializedSubscriber<List<T>> serialized = new SerializedSubscriber<List<T>>(child);
 
         if (timespan == timeshift) {
-            ExactSubscriber bsub = new ExactSubscriber(serialized, inner);
-            bsub.add(inner);
-            child.add(bsub);
-            bsub.scheduleExact();
-            return bsub;
+            ExactSubscriber parent = new ExactSubscriber(serialized, inner);
+            parent.add(inner);
+            child.add(parent);
+            parent.scheduleExact();
+            return parent;
         }
 
-        InexactSubscriber bsub = new InexactSubscriber(serialized, inner);
-        bsub.add(inner);
-        child.add(bsub);
-        bsub.startNewChunk();
-        bsub.scheduleChunk();
-        return bsub;
+        InexactSubscriber parent = new InexactSubscriber(serialized, inner);
+        parent.add(inner);
+        child.add(parent);
+        parent.startNewChunk();
+        parent.scheduleChunk();
+        return parent;
     }
     /** Subscriber when the buffer chunking time and length differ. */
     final class InexactSubscriber extends Subscriber<T> {

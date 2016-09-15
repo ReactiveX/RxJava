@@ -70,7 +70,7 @@ public abstract class Scheduler {
     /**
      * Sequential Scheduler for executing actions on a single thread or event loop.
      * <p>
-     * Unsubscribing the {@link Worker} unschedules all outstanding work and allows resources cleanup.
+     * Unsubscribing the {@link Worker} cancels all outstanding work and allows resources cleanup.
      */
     public abstract static class Worker implements Subscription {
 
@@ -79,24 +79,24 @@ public abstract class Scheduler {
          *
          * @param action
          *            Action to schedule
-         * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
+         * @return a subscription to be able to prevent or cancel the execution of the action
          */
         public abstract Subscription schedule(Action0 action);
 
         /**
          * Schedules an Action for execution at some point in the future.
          * <p>
-         * Note to implementors: non-positive {@code delayTime} should be regarded as undelayed schedule, i.e.,
+         * Note to implementors: non-positive {@code delayTime} should be regarded as non-delayed schedule, i.e.,
          * as if the {@link #schedule(rx.functions.Action0)} was called.
          *
          * @param action
          *            the Action to schedule
          * @param delayTime
-         *            time to wait before executing the action; non-positive values indicate an undelayed
+         *            time to wait before executing the action; non-positive values indicate an non-delayed
          *            schedule
          * @param unit
          *            the time unit of {@code delayTime}
-         * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
+         * @return a subscription to be able to prevent or cancel the execution of the action
          */
         public abstract Subscription schedule(final Action0 action, final long delayTime, final TimeUnit unit);
 
@@ -106,19 +106,19 @@ public abstract class Scheduler {
          * concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
          * <p>
          * Note to implementors: non-positive {@code initialTime} and {@code period} should be regarded as
-         * undelayed scheduling of the first and any subsequent executions.
+         * non-delayed scheduling of the first and any subsequent executions.
          *
          * @param action
          *            the Action to execute periodically
          * @param initialDelay
          *            time to wait before executing the action for the first time; non-positive values indicate
-         *            an undelayed schedule
+         *            an non-delayed schedule
          * @param period
          *            the time interval to wait each time in between executing the action; non-positive values
          *            indicate no delay between repeated schedules
          * @param unit
          *            the time unit of {@code period}
-         * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
+         * @return a subscription to be able to prevent or cancel the execution of the action
          */
         public Subscription schedulePeriodically(final Action0 action, long initialDelay, long period, TimeUnit unit) {
             final long periodInNanos = unit.toNanos(period);
@@ -211,7 +211,7 @@ public abstract class Scheduler {
      * size thread pool:
      *
      * <pre>
-     * Scheduler limitSched = Schedulers.computation().when(workers -> {
+     * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
      * 	// use merge max concurrent to limit the number of concurrent
      * 	// callbacks two at a time
      * 	return Completable.merge(Observable.merge(workers), 2);
@@ -229,7 +229,7 @@ public abstract class Scheduler {
      * subscription to the second.
      *
      * <pre>
-     * Scheduler limitSched = Schedulers.computation().when(workers -> {
+     * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
      * 	// use merge max concurrent to limit the number of concurrent
      * 	// Observables two at a time
      * 	return Completable.merge(Observable.merge(workers, 2));
@@ -242,7 +242,7 @@ public abstract class Scheduler {
      * bucket algorithm).
      *
      * <pre>
-     * Scheduler slowSched = Schedulers.computation().when(workers -> {
+     * Scheduler slowScheduler = Schedulers.computation().when(workers -> {
      * 	// use concatenate to make each worker happen one at a time.
      * 	return Completable.concat(workers.map(actions -> {
      * 		// delay the starting of the next worker by 1 second.

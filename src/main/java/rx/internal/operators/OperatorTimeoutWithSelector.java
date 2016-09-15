@@ -44,7 +44,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                     final TimeoutSubscriber<T> timeoutSubscriber,
                     final Long seqId, Scheduler.Worker inner) {
                 if (firstTimeoutSelector != null) {
-                    Observable<U> o = null;
+                    Observable<U> o;
                     try {
                         o = firstTimeoutSelector.call();
                     } catch (Throwable t) {
@@ -79,7 +79,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
             public Subscription call(
                     final TimeoutSubscriber<T> timeoutSubscriber,
                     final Long seqId, T value, Scheduler.Worker inner) {
-                Observable<V> o = null;
+                Observable<V> o;
                 try {
                     o = timeoutSelector.call(value);
                 } catch (Throwable t) {

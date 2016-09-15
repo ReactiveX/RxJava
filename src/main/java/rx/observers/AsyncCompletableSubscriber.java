@@ -26,7 +26,7 @@ import rx.plugins.RxJavaHooks;
  * An abstract base class for CompletableSubscriber implementations that want to expose an unsubscription
  * capability.
  * <p>
- * Calling {@link #unsubscribe()} and {@link #isUnsubscribed()} is threadsafe and can happen at any time, even
+ * Calling {@link #unsubscribe()} and {@link #isUnsubscribed()} is thread-safe and can happen at any time, even
  * before or during an active {@link rx.Completable#subscribe(CompletableSubscriber)} call.
  * <p>
  * Override the {@link #onStart()} method to execute custom logic on the very first successful onSubscribe call.

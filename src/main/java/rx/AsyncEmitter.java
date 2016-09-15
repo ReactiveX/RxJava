@@ -25,7 +25,7 @@ import rx.annotations.Experimental;
  * <p>
  * The onNext, onError and onCompleted methods should be called
  * in a sequential manner, just like the Observer's methods. The
- * other methods are threadsafe.
+ * other methods are thread-safe.
  *
  * @param <T> the value type to emit
  * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
@@ -48,7 +48,7 @@ public interface AsyncEmitter<T> extends Observer<T> {
     void setCancellation(Cancellable c);
     /**
      * The current outstanding request amount.
-     * <p>This method it threadsafe.
+     * <p>This method it thread-safe.
      * @return the current outstanding request amount
      */
     long requested();
@@ -81,7 +81,7 @@ public interface AsyncEmitter<T> extends Observer<T> {
          */
         ERROR,
         /**
-         * Buffers (unbounded) all onNext calls until the dowsntream can consume them.
+         * Buffers (unbounded) all onNext calls until the downstream can consume them.
          */
         BUFFER,
         /**

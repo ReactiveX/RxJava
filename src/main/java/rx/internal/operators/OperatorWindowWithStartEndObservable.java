@@ -47,10 +47,10 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
 
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
-        CompositeSubscription csub = new CompositeSubscription();
-        child.add(csub);
+        CompositeSubscription composite = new CompositeSubscription();
+        child.add(composite);
 
-        final SourceSubscriber sub = new SourceSubscriber(child, csub);
+        final SourceSubscriber sub = new SourceSubscriber(child, composite);
 
         Subscriber<U> open = new Subscriber<U>() {
 
@@ -75,8 +75,8 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
             }
         };
 
-        csub.add(sub);
-        csub.add(open);
+        composite.add(sub);
+        composite.add(open);
 
         windowOpenings.unsafeSubscribe(open);
 
@@ -95,17 +95,17 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
     }
     final class SourceSubscriber extends Subscriber<T> {
         final Subscriber<? super Observable<T>> child;
-        final CompositeSubscription csub;
+        final CompositeSubscription composite;
         final Object guard;
         /** Guarded by guard. */
         final List<SerializedSubject<T>> chunks;
         /** Guarded by guard. */
         boolean done;
-        public SourceSubscriber(Subscriber<? super Observable<T>> child, CompositeSubscription csub) {
+        public SourceSubscriber(Subscriber<? super Observable<T>> child, CompositeSubscription composite) {
             this.child = new SerializedSubscriber<Observable<T>>(child);
             this.guard = new Object();
             this.chunks = new LinkedList<SerializedSubject<T>>();
-            this.csub = csub;
+            this.composite = composite;
         }
 
         @Override
@@ -144,7 +144,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
                 }
                 child.onError(e);
             } finally {
-                csub.unsubscribe();
+                composite.unsubscribe();
             }
         }
 
@@ -165,7 +165,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
                 }
                 child.onCompleted();
             } finally {
-                csub.unsubscribe();
+                composite.unsubscribe();
             }
         }
 
@@ -204,12 +204,12 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
                     if (once) {
                         once = false;
                         endWindow(s);
-                        csub.remove(this);
+                        composite.remove(this);
                     }
                 }
 
             };
-            csub.add(v);
+            composite.add(v);
 
             end.unsafeSubscribe(v);
         }

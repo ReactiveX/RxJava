@@ -33,10 +33,10 @@ public final class EventLoopsScheduler extends Scheduler implements SchedulerLif
     static final int MAX_THREADS;
     static {
         int maxThreads = Integer.getInteger(KEY_MAX_THREADS, 0);
-        int ncpu = Runtime.getRuntime().availableProcessors();
+        int cpuCount = Runtime.getRuntime().availableProcessors();
         int max;
-        if (maxThreads <= 0 || maxThreads > ncpu) {
-            max = ncpu;
+        if (maxThreads <= 0 || maxThreads > cpuCount) {
+            max = cpuCount;
         } else {
             max = maxThreads;
         }

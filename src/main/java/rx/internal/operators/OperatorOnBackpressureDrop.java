@@ -104,7 +104,6 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
                             onDrop.call(t);
                         } catch (Throwable e) {
                             Exceptions.throwOrReport(e, this, t);
-                            return;
                         }
                     }
                 }

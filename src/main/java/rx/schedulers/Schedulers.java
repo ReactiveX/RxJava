@@ -176,7 +176,7 @@ public final class Schedulers {
 
     /**
      * Starts those standard Schedulers which support the SchedulerLifecycle interface.
-     * <p>The operation is idempotent and threadsafe.
+     * <p>The operation is idempotent and thread-safe.
      */
     public static void start() {
         Schedulers s = getInstance();
@@ -193,7 +193,7 @@ public final class Schedulers {
     }
     /**
      * Shuts down those standard Schedulers which support the SchedulerLifecycle interface.
-     * <p>The operation is idempotent and threadsafe.
+     * <p>The operation is idempotent and thread-safe.
      */
     public static void shutdown() {
         Schedulers s = getInstance();

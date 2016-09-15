@@ -69,7 +69,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
         /** Guarded by guard. */
         List<Object> queue;
 
-        final SerialSubscription ssub;
+        final SerialSubscription serial;
 
         final Func0<? extends Observable<? extends U>> otherFactory;
 
@@ -77,9 +77,9 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
                 Func0<? extends Observable<? extends U>> otherFactory) {
             this.child = new SerializedSubscriber<Observable<T>>(child);
             this.guard = new Object();
-            this.ssub = new SerialSubscription();
+            this.serial = new SerialSubscription();
             this.otherFactory = otherFactory;
-            this.add(ssub);
+            this.add(serial);
         }
 
         @Override
@@ -175,7 +175,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
             }
 
             BoundarySubscriber<T, U> bs = new BoundarySubscriber<T, U>(this);
-            ssub.set(bs);
+            serial.set(bs);
             other.unsafeSubscribe(bs);
         }
         void emitValue(T t) {

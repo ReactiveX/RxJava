@@ -44,11 +44,11 @@ public final class OnSubscribeOnAssembly<T> implements OnSubscribe<T> {
     }
 
     static String createStacktrace() {
-        StackTraceElement[] stes = Thread.currentThread().getStackTrace();
+        StackTraceElement[] stacktraceElements = Thread.currentThread().getStackTrace();
 
         StringBuilder sb = new StringBuilder("Assembly trace:");
 
-        for (StackTraceElement e : stes) {
+        for (StackTraceElement e : stacktraceElements) {
             String row = e.toString();
             if (!fullStackTrace) {
                 if (e.getLineNumber() <= 1) {
