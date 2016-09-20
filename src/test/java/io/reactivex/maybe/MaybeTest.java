@@ -1702,6 +1702,30 @@ public class MaybeTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void ambIterable2SignalsSuccessWithOverlap() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+                .test();
+
+        ts.assertEmpty();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onNext(2);
+        pp1.onNext(1);
+        pp2.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        ts.assertResult(2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void ambIterable1SignalsError() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
@@ -1742,6 +1766,29 @@ public class MaybeTest {
         assertFalse(pp2.hasSubscribers());
 
         ts.assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambIterable2SignalsErrorWithOverlap() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+                .test();
+
+        ts.assertEmpty();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onError(new TestException("2"));
+        pp1.onError(new TestException("1"));
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        ts.assertFailureAndMessage(TestException.class, "2");
     }
 
     @SuppressWarnings("unchecked")
