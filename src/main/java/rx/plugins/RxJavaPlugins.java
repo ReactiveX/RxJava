@@ -18,6 +18,7 @@ package rx.plugins;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import rx.annotations.Experimental;
+import rx.functions.Action1;
 
 /**
  * Registry for plugin implementations that allows global override and handles the retrieval of correct
@@ -102,7 +103,9 @@ public class RxJavaPlugins {
      * Override the default by calling {@link #registerErrorHandler(RxJavaErrorHandler)} or by setting the
      * property {@code rxjava.plugin.RxJavaErrorHandler.implementation} with the full class name to load.
      * @return {@link RxJavaErrorHandler} implementation to use
+     * @deprecated use {@link RxJavaHooks#getOnError()} instead.
      */
+    @Deprecated
     public RxJavaErrorHandler getErrorHandler() {
         if (errorHandler.get() == null) {
             // check for an implementation from System.getProperty first
@@ -128,7 +131,9 @@ public class RxJavaPlugins {
      * @throws IllegalStateException
      *             if called more than once or after the default was initialized (if usage occurs before trying
      *             to register)
+     * @deprecated use {@link RxJavaHooks#setOnError(Action1)} instead.
      */
+    @Deprecated
     public void registerErrorHandler(RxJavaErrorHandler impl) {
         if (!errorHandler.compareAndSet(null, impl)) {
             throw new IllegalStateException("Another strategy was already registered: " + errorHandler.get());
