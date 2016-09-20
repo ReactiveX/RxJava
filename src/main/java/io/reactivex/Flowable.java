@@ -8877,14 +8877,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code last} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a Flowable that emits the last item from the source Publisher or notifies Subscribers of an
+     * @return a Single that emits the last item from the source Publisher or notifies Subscribers of an
      *         error
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> last() {
-        return takeLast(1).single();
+    public final Single<T> last() {
+        return RxJavaPlugins.onAssembly(new FlowableLastSingle<T>(this, null));
     }
 
     /**
@@ -8902,14 +8902,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param defaultItem
      *            the default item to emit if the source Publisher is empty
-     * @return a Flowable that emits only the last item emitted by the source Publisher, or a default item
+     * @return a Single that emits only the last item emitted by the source Publisher, or a default item
      *         if the source Publisher is empty
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> last(T defaultItem) {
-        return takeLast(1).single(defaultItem);
+    public final Single<T> last(T defaultItem) {
+        ObjectHelper.requireNonNull(defaultItem, "defaultItem");
+        return RxJavaPlugins.onAssembly(new FlowableLastSingle<T>(this, defaultItem));
     }
 
     /**
@@ -9937,7 +9938,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
-        return scan(seed, reducer).last();
+        return scan(seed, reducer).takeLast(1).single(); // TODO
     }
 
     /**
@@ -9987,7 +9988,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
-        return scanWith(seedSupplier, reducer).last();
+        return scanWith(seedSupplier, reducer).takeLast(1).single();
     }
 
     /**

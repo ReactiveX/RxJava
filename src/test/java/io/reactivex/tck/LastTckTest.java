@@ -24,7 +24,7 @@ public class LastTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.range(1, 10).last()
+                Flowable.range(1, 10).last().hide().toFlowable()
             );
     }
 
