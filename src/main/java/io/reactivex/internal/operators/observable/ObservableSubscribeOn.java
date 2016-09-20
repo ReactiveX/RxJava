@@ -22,7 +22,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 public final class ObservableSubscribeOn<T> extends AbstractObservableWithUpstream<T, T> {
     final Scheduler scheduler;
 
-    public ObservableSubscribeOn(Observable<T> source, Scheduler scheduler) {
+    public ObservableSubscribeOn(ObservableSource<T> source, Scheduler scheduler) {
         super(source);
         this.scheduler = scheduler;
     }
