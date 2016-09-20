@@ -7659,8 +7659,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> last() {
-        return takeLast(1).single();
+    public final Single<T> last() {
+        return RxJavaPlugins.onAssembly(new ObservableLastSingle<T>(this, null));
     }
 
     /**
@@ -7680,8 +7680,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> last(T defaultItem) {
-        return takeLast(1).single(defaultItem);
+    public final Single<T> last(T defaultItem) {
+        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
+        return RxJavaPlugins.onAssembly(new ObservableLastSingle<T>(this, defaultItem));
     }
 
     /**
@@ -8202,7 +8203,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> reduce(BiFunction<T, T, T> reducer) {
-        return scan(reducer).last();
+        return scan(reducer).takeLast(1).single();
     }
 
     /**
@@ -8248,7 +8249,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
-        return scan(seed, reducer).last();
+        return scan(seed, reducer).takeLast(1).single();
     }
 
     /**
@@ -8294,7 +8295,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
-        return scanWith(seedSupplier, reducer).last();
+        return scanWith(seedSupplier, reducer).takeLast(1).single();
     }
 
     /**

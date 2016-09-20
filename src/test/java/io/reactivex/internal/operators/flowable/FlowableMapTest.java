@@ -215,7 +215,7 @@ public class FlowableMapTest {
                 return i;
             }
 
-        }).blockingSingle();
+        }).blockingGet();
     }
 
     /**
@@ -246,7 +246,7 @@ public class FlowableMapTest {
                 return i / 0;
             }
 
-        }).blockingSingle();
+        }).blockingGet();
     }
 
     // FIXME RS subscribers can't throw
