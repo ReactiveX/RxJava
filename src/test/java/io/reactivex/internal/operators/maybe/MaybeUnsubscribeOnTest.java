@@ -47,6 +47,12 @@ public class MaybeUnsubscribeOnTest {
 
         assertTrue(cdl.await(5, TimeUnit.SECONDS));
 
+        int times = 10;
+
+        while (times-- > 0 && pp.hasSubscribers()) {
+            Thread.sleep(100);
+        }
+
         assertFalse(pp.hasSubscribers());
 
         assertNotEquals(Thread.currentThread().getName(), name[0]);
