@@ -158,11 +158,13 @@ public class InternalWrongNaming {
 
     @Test
     public void flowableNoObserver() throws Exception {
-        checkInternalOperatorNaming("Flowable", "Observer", 
+        checkInternalOperatorNaming("Flowable", "Observer",
                 "FlowableFromObservable",
                 "FlowableLastSingle",
                 "FlowableAnySingle",
-                "FlowableAllSingle"
+                "FlowableAllSingle",
+                "FlowableToListSingle",
+                "FlowableCollectSingle"
         );
     }
 }

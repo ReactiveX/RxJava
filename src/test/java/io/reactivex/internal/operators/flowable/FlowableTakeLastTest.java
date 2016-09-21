@@ -154,7 +154,7 @@ public class FlowableTakeLastTest {
                     }
                 })
                 .toList()
-                .blockingSingle().size());
+                .blockingGet().size());
     }
 
     @Test

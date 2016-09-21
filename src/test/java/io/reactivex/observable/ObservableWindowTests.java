@@ -34,7 +34,7 @@ public class ObservableWindowTests {
             .map(new Function<Observable<Integer>, Observable<List<Integer>>>() {
                 @Override
                 public Observable<List<Integer>> apply(Observable<Integer> xs) {
-                    return xs.toList();
+                    return xs.toList().toObservable();
                 }
             })
         )

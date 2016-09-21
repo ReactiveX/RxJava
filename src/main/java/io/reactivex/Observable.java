@@ -5411,8 +5411,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Collects items emitted by the source ObservableSource into a single mutable data structure and returns an
-     * ObservableSource that emits this structure.
+     * Collects items emitted by the source ObservableSource into a single mutable data structure and returns
+     * a Single that emits this structure.
      * <p>
      * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.png" alt="">
      * <p>
@@ -5428,20 +5428,20 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param collector
      *           a function that accepts the {@code state} and an emitted item, and modifies {@code state}
      *           accordingly
-     * @return an Observable that emits the result of collecting the values emitted by the source ObservableSource
+     * @return a Single that emits the result of collecting the values emitted by the source ObservableSource
      *         into a single mutable data structure
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Observable<U> collect(Callable<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Single<U> collect(Callable<? extends U> initialValueSupplier, BiConsumer<? super U, ? super T> collector) {
         ObjectHelper.requireNonNull(initialValueSupplier, "initialValueSupplier is null");
         ObjectHelper.requireNonNull(collector, "collector is null");
-        return RxJavaPlugins.onAssembly(new ObservableCollect<T, U>(this, initialValueSupplier, collector));
+        return RxJavaPlugins.onAssembly(new ObservableCollectSingle<T, U>(this, initialValueSupplier, collector));
     }
 
     /**
-     * Collects items emitted by the source ObservableSource into a single mutable data structure and returns an
-     * ObservableSource that emits this structure.
+     * Collects items emitted by the source ObservableSource into a single mutable data structure and returns
+     * a Single that emits this structure.
      * <p>
      * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.png" alt="">
      * <p>
@@ -5457,12 +5457,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param collector
      *           a function that accepts the {@code state} and an emitted item, and modifies {@code state}
      *           accordingly
-     * @return an Observable that emits the result of collecting the values emitted by the source ObservableSource
+     * @return a Single that emits the result of collecting the values emitted by the source ObservableSource
      *         into a single mutable data structure
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Observable<U> collectInto(final U initialValue, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Single<U> collectInto(final U initialValue, BiConsumer<? super U, ? super T> collector) {
         ObjectHelper.requireNonNull(initialValue, "initialValue is null");
         return collect(Functions.justCallable(initialValue), collector);
     }
@@ -9682,7 +9682,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> sorted() {
-        return toSortedList().flatMapIterable(Functions.<List<T>>identity());
+        return toList().toObservable().map(Functions.listSorter(Functions.<T>naturalComparator())).flatMapIterable(Functions.<List<T>>identity());
     }
 
     /**
@@ -9704,7 +9704,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> sorted(Comparator<? super T> sortFunction) {
-        return toSortedList(sortFunction).flatMapIterable(Functions.<List<T>>identity());
+        return toList().toObservable().map(Functions.listSorter(sortFunction)).flatMapIterable(Functions.<List<T>>identity());
     }
 
     /**
@@ -11280,7 +11280,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits a single item, a list composed of all the items emitted by the source
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
      * ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
@@ -11298,17 +11298,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code toList} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an Observable that emits a single item: a List containing all of the items emitted by the source
+     * @return a Single that emits a single item: a List containing all of the items emitted by the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toList() {
+    public final Single<List<T>> toList() {
         return toList(16);
     }
 
     /**
-     * Returns an Observable that emits a single item, a list composed of all the items emitted by the source
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
      * ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
@@ -11328,18 +11328,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param capacityHint
      *         the number of elements expected from the current Observable
-     * @return an Observable that emits a single item: a List containing all of the items emitted by the source
+     * @return a Single that emits a single item: a List containing all of the items emitted by the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toList(final int capacityHint) {
+    public final Single<List<T>> toList(final int capacityHint) {
         ObjectHelper.verifyPositive(capacityHint, "capacityHint");
-        return RxJavaPlugins.onAssembly(new ObservableToList<T, List<T>>(this, capacityHint));
+        return RxJavaPlugins.onAssembly(new ObservableToListSingle<T, List<T>>(this, capacityHint));
     }
 
     /**
-     * Returns an Observable that emits a single item, a list composed of all the items emitted by the source
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
      * ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
@@ -11360,18 +11360,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <U> the subclass of a collection of Ts
      * @param collectionSupplier
      *               the Callable returning the collection (for each individual Observer) to be filled in
-     * @return an Observable that emits a single item: a List containing all of the items emitted by the source
+     * @return a Single that emits a single item: a List containing all of the items emitted by the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U extends Collection<? super T>> Observable<U> toList(Callable<U> collectionSupplier) {
+    public final <U extends Collection<? super T>> Single<U> toList(Callable<U> collectionSupplier) {
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
-        return RxJavaPlugins.onAssembly(new ObservableToList<T, U>(this, collectionSupplier));
+        return RxJavaPlugins.onAssembly(new ObservableToListSingle<T, U>(this, collectionSupplier));
     }
 
     /**
-     * Returns an Observable that emits a single HashMap containing all items emitted by the source ObservableSource,
+     * Returns a Single that emits a single HashMap containing all items emitted by the source ObservableSource,
      * mapped by the keys returned by a specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
@@ -11385,17 +11385,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <K> the key type of the Map
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the HashMap
-     * @return an Observable that emits a single item: a HashMap containing the mapped items from the source
+     * @return a Single that emits a single item: a HashMap containing the mapped items from the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K> Observable<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
+    public final <K> Single<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
         return collect(HashMapSupplier.<K, T>asCallable(), Functions.toMapKeySelector(keySelector));
     }
 
     /**
-     * Returns an Observable that emits a single HashMap containing values corresponding to items emitted by the
+     * Returns a Single that emits a single HashMap containing values corresponding to items emitted by the
      * source ObservableSource, mapped by the keys returned by a specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
@@ -11413,12 +11413,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the function that extracts the key from a source item to be used in the HashMap
      * @param valueSelector
      *            the function that extracts the value from a source item to be used in the HashMap
-     * @return an Observable that emits a single item: a HashMap containing the mapped items from the source
+     * @return a Single that emits a single item: a HashMap containing the mapped items from the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Observable<Map<K, V>> toMap(
+    public final <K, V> Single<Map<K, V>> toMap(
             final Function<? super T, ? extends K> keySelector,
             final Function<? super T, ? extends V> valueSelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
@@ -11427,7 +11427,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits a single Map, returned by a specified {@code mapFactory} function, that
+     * Returns a Single that emits a single Map, returned by a specified {@code mapFactory} function, that
      * contains keys and values extracted from the items emitted by the source ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
@@ -11444,12 +11444,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the function that extracts the value from the source items to be used as value in the Map
      * @param mapSupplier
      *            the function that returns a Map instance to be used
-     * @return an Observable that emits a single item: a Map that contains the mapped items emitted by the
+     * @return a Single that emits a single item: a Map that contains the mapped items emitted by the
      *         source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Observable<Map<K, V>> toMap(
+    public final <K, V> Single<Map<K, V>> toMap(
             final Function<? super T, ? extends K> keySelector,
             final Function<? super T, ? extends V> valueSelector,
             Callable<? extends Map<K, V>> mapSupplier) {
@@ -11457,7 +11457,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits a single HashMap that contains an ArrayList of items emitted by the
+     * Returns a Single that emits a single HashMap that contains an ArrayList of items emitted by the
      * source ObservableSource keyed by a specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
@@ -11469,12 +11469,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <K> the key type of the Map
      * @param keySelector
      *            the function that extracts the key from the source items to be used as key in the HashMap
-     * @return an Observable that emits a single item: a HashMap that contains an ArrayList of items mapped from
+     * @return a Single that emits a single item: a HashMap that contains an ArrayList of items mapped from
      *         the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K> Observable<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
+    public final <K> Single<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
         @SuppressWarnings({ "rawtypes", "unchecked" })
         Function<? super T, ? extends T> valueSelector = (Function)Functions.identity();
         Callable<Map<K, Collection<T>>> mapSupplier = HashMapSupplier.asCallable();
@@ -11483,7 +11483,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits a single HashMap that contains an ArrayList of values extracted by a
+     * Returns a Single that emits a single HashMap that contains an ArrayList of values extracted by a
      * specified {@code valueSelector} function from items emitted by the source ObservableSource, keyed by a
      * specified {@code keySelector} function.
      * <p>
@@ -11499,19 +11499,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the function that extracts a key from the source items to be used as key in the HashMap
      * @param valueSelector
      *            the function that extracts a value from the source items to be used as value in the HashMap
-     * @return an Observable that emits a single item: a HashMap that contains an ArrayList of items mapped from
+     * @return a Single that emits a single item: a HashMap that contains an ArrayList of items mapped from
      *         the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
+    public final <K, V> Single<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
         Callable<Map<K, Collection<V>>> mapSupplier = HashMapSupplier.asCallable();
         Function<K, List<V>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
     }
 
     /**
-     * Returns an Observable that emits a single Map, returned by a specified {@code mapFactory} function, that
+     * Returns a Single that emits a single Map, returned by a specified {@code mapFactory} function, that
      * contains a custom collection of values, extracted by a specified {@code valueSelector} function from
      * items emitted by the source ObservableSource, and keyed by the {@code keySelector} function.
      * <p>
@@ -11531,12 +11531,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the function that returns a Map instance to be used
      * @param collectionFactory
      *            the function that returns a Collection instance for a particular key to be used in the Map
-     * @return an Observable that emits a single item: a Map that contains the collection of mapped items from
+     * @return a Single that emits a single item: a Map that contains the collection of mapped items from
      *         the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(
+    public final <K, V> Single<Map<K, Collection<V>>> toMultimap(
             final Function<? super T, ? extends K> keySelector,
             final Function<? super T, ? extends V> valueSelector,
             final Callable<? extends Map<K, Collection<V>>> mapSupplier,
@@ -11549,7 +11549,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits a single Map, returned by a specified {@code mapFactory} function, that
+     * Returns a Single that emits a single Map, returned by a specified {@code mapFactory} function, that
      * contains an ArrayList of values, extracted by a specified {@code valueSelector} function from items
      * emitted by the source ObservableSource and keyed by the {@code keySelector} function.
      * <p>
@@ -11567,12 +11567,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the function that extracts a value from the source items to be used as the value in the Map
      * @param mapSupplier
      *            the function that returns a Map instance to be used
-     * @return an Observable that emits a single item: a Map that contains a list items mapped from the source
+     * @return a Single that emits a single item: a Map that contains a list items mapped from the source
      *         ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(
+    public final <K, V> Single<Map<K, Collection<V>>> toMultimap(
             Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector,
             Callable<Map<K, Collection<V>>> mapSupplier
@@ -11664,7 +11664,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits a list that contains the items emitted by the source ObservableSource, in a
+     * Returns a Single that emits a list that contains the items emitted by the source ObservableSource, in a
      * sorted order. Each item emitted by the ObservableSource must implement {@link Comparable} with respect to all
      * other items in the sequence.
      * <p>
@@ -11677,17 +11677,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @throws ClassCastException
      *             if any item emitted by the ObservableSource does not implement {@link Comparable} with respect to
      *             all other items emitted by the ObservableSource
-     * @return an Observable that emits a list that contains the items emitted by the source ObservableSource in
+     * @return a Single that emits a list that contains the items emitted by the source ObservableSource in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toSortedList() {
+    public final Single<List<T>> toSortedList() {
         return toSortedList(Functions.naturalOrder());
     }
 
     /**
-     * Returns an Observable that emits a list that contains the items emitted by the source ObservableSource, in a
+     * Returns a Single that emits a list that contains the items emitted by the source ObservableSource, in a
      * sorted order based on a specified comparison function.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
@@ -11699,18 +11699,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param comparator
      *            a function that compares two items emitted by the source ObservableSource and returns an Integer
      *            that indicates their sort order
-     * @return an Observable that emits a list that contains the items emitted by the source ObservableSource in
+     * @return a Single that emits a list that contains the items emitted by the source ObservableSource in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toSortedList(final Comparator<? super T> comparator) {
+    public final Single<List<T>> toSortedList(final Comparator<? super T> comparator) {
         ObjectHelper.requireNonNull(comparator, "comparator is null");
         return toList().map(Functions.listSorter(comparator));
     }
 
     /**
-     * Returns an Observable that emits a list that contains the items emitted by the source ObservableSource, in a
+     * Returns a Single that emits a list that contains the items emitted by the source ObservableSource, in a
      * sorted order based on a specified comparison function.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
@@ -11724,19 +11724,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            that indicates their sort order
      * @param capacityHint
      *             the initial capacity of the ArrayList used to accumulate items before sorting
-     * @return an Observable that emits a list that contains the items emitted by the source ObservableSource in
+     * @return a Single that emits a list that contains the items emitted by the source ObservableSource in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toSortedList(final Comparator<? super T> comparator, int capacityHint) {
+    public final Single<List<T>> toSortedList(final Comparator<? super T> comparator, int capacityHint) {
         ObjectHelper.requireNonNull(comparator, "comparator is null");
         return toList(capacityHint).map(Functions.listSorter(comparator));
     }
 
     /**
-     * Returns an Observable that emits a list that contains the items emitted by the source ObservableSource, in a
+     * Returns a Single that emits a list that contains the items emitted by the source ObservableSource, in a
      * sorted order. Each item emitted by the ObservableSource must implement {@link Comparable} with respect to all
      * other items in the sequence.
      * <p>
@@ -11748,7 +11748,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param capacityHint
      *             the initial capacity of the ArrayList used to accumulate items before sorting
-     * @return an Observable that emits a list that contains the items emitted by the source ObservableSource in
+     * @return a Single that emits a list that contains the items emitted by the source ObservableSource in
      *         sorted order
      * @throws ClassCastException
      *             if any item emitted by the ObservableSource does not implement {@link Comparable} with respect to
@@ -11757,7 +11757,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<List<T>> toSortedList(int capacityHint) {
+    public final Single<List<T>> toSortedList(int capacityHint) {
         return toSortedList(Functions.<T>naturalOrder(), capacityHint);
     }
 

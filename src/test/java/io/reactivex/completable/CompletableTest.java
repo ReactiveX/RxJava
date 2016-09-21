@@ -1593,7 +1593,11 @@ public class CompletableTest {
 
         Assert.assertFalse("Already done", done.get());
 
-        Thread.sleep(200);
+        int timeout = 10;
+
+        while (timeout-- > 0 && !done.get()) {
+            Thread.sleep(100);
+        }
 
         Assert.assertTrue("Not done", done.get());
 

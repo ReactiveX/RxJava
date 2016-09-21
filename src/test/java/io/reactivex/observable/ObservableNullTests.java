@@ -1008,7 +1008,7 @@ public class ObservableNullTests {
         }, new BiConsumer<Object, Integer>() {
             @Override
             public void accept(Object a, Integer b) { }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2422,7 +2422,7 @@ public class ObservableNullTests {
             public Collection<Integer> call() {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2457,7 +2457,7 @@ public class ObservableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2492,7 +2492,7 @@ public class ObservableNullTests {
             public Map<Object, Object> call() {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2522,7 +2522,7 @@ public class ObservableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2557,7 +2557,7 @@ public class ObservableNullTests {
             public Map<Object, Collection<Object>> call() {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2602,7 +2602,7 @@ public class ObservableNullTests {
             public Collection<Integer> apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)

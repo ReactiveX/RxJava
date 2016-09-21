@@ -903,7 +903,7 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
         onNext(value);
         onComplete();
     }
-    
+
     /**
      * An observer that ignores all events and does not report errors.
      */

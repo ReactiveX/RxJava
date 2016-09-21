@@ -37,7 +37,7 @@ public class ObservableWindowWithSizeTest {
         Observable.concat(observables.map(new Function<Observable<T>, Observable<List<T>>>() {
             @Override
             public Observable<List<T>> apply(Observable<T> xs) {
-                return xs.toList();
+                return xs.toList().toObservable();
             }
         }))
                 .blockingForEach(new Consumer<List<T>>() {

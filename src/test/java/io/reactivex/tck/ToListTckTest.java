@@ -26,7 +26,7 @@ public class ToListTckTest extends BaseTck<List<Integer>> {
     @Override
     public Publisher<List<Integer>> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.range(1, 1000).toList()
+                Flowable.range(1, 1000).toList().toFlowable()
             );
     }
 

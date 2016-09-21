@@ -27,10 +27,12 @@ import io.reactivex.functions.Function;
 
 public class FlowableToMapTest {
     Subscriber<Object> objectObserver;
+    SingleObserver<Object> singleObserver;
 
     @Before
     public void before() {
         objectObserver = TestHelper.mockSubscriber();
+        singleObserver = TestHelper.mockSingleObserver();
     }
 
     Function<String, Integer> lengthFunc = new Function<String, Integer>() {
@@ -47,10 +49,10 @@ public class FlowableToMapTest {
     };
 
     @Test
-    public void testToMap() {
+    public void testToMapFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc);
+        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc).toFlowable();
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "a");
@@ -66,10 +68,10 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithValueSelector() {
+    public void testToMapWithValueSelectorFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
-        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
+        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate).toFlowable();
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "aa");
@@ -85,7 +87,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithError() {
+    public void testToMapWithErrorFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
@@ -97,7 +99,7 @@ public class FlowableToMapTest {
                 return t1.length();
             }
         };
-        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFuncErr);
+        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFuncErr).toFlowable();
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "a");
@@ -114,7 +116,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorInValueSelector() {
+    public void testToMapWithErrorInValueSelectorFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Function<String, String> duplicateErr = new Function<String, String>() {
@@ -127,7 +129,7 @@ public class FlowableToMapTest {
             }
         };
 
-        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr);
+        Flowable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr).toFlowable();
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "aa");
@@ -144,7 +146,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithFactory() {
+    public void testToMapWithFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
@@ -173,7 +175,7 @@ public class FlowableToMapTest {
             public String apply(String v) {
                 return v;
             }
-        }, mapFactory);
+        }, mapFactory).toFlowable();
 
         Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
         expected.put(2, "bb");
@@ -188,7 +190,7 @@ public class FlowableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorThrowingFactory() {
+    public void testToMapWithErrorThrowingFactoryFlowable() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
 
         Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
@@ -209,7 +211,7 @@ public class FlowableToMapTest {
             public String apply(String v) {
                 return v;
             }
-        }, mapFactory);
+        }, mapFactory).toFlowable();
 
         Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
         expected.put(2, "bb");
@@ -221,6 +223,178 @@ public class FlowableToMapTest {
         verify(objectObserver, never()).onNext(expected);
         verify(objectObserver, never()).onComplete();
         verify(objectObserver, times(1)).onError(any(Throwable.class));
+    }
+
+
+    @Test
+    public void testToMap() {
+        Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
+
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc);
+
+        Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "a");
+        expected.put(2, "bb");
+        expected.put(3, "ccc");
+        expected.put(4, "dddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onError(any(Throwable.class));
+        verify(singleObserver, times(1)).onSuccess(expected);
+    }
+
+    @Test
+    public void testToMapWithValueSelector() {
+        Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
+
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
+
+        Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "aa");
+        expected.put(2, "bbbb");
+        expected.put(3, "cccccc");
+        expected.put(4, "dddddddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onError(any(Throwable.class));
+        verify(singleObserver, times(1)).onSuccess(expected);
+    }
+
+    @Test
+    public void testToMapWithError() {
+        Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
+
+        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
+            @Override
+            public Integer apply(String t1) {
+                if ("bb".equals(t1)) {
+                    throw new RuntimeException("Forced Failure");
+                }
+                return t1.length();
+            }
+        };
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFuncErr);
+
+        Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "a");
+        expected.put(2, "bb");
+        expected.put(3, "ccc");
+        expected.put(4, "dddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onSuccess(expected);
+        verify(singleObserver, times(1)).onError(any(Throwable.class));
+
+    }
+
+    @Test
+    public void testToMapWithErrorInValueSelector() {
+        Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
+
+        Function<String, String> duplicateErr = new Function<String, String>() {
+            @Override
+            public String apply(String t1) {
+                if ("bb".equals(t1)) {
+                    throw new RuntimeException("Forced failure");
+                }
+                return t1 + t1;
+            }
+        };
+
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr);
+
+        Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "aa");
+        expected.put(2, "bbbb");
+        expected.put(3, "cccccc");
+        expected.put(4, "dddddddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onSuccess(expected);
+        verify(singleObserver, times(1)).onError(any(Throwable.class));
+
+    }
+
+    @Test
+    public void testToMapWithFactory() {
+        Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
+
+        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+            @Override
+            public Map<Integer, String> call() {
+                return new LinkedHashMap<Integer, String>() {
+
+                    private static final long serialVersionUID = -3296811238780863394L;
+
+                    @Override
+                    protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
+                        return size() > 3;
+                    }
+                };
+            }
+        };
+
+        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+            @Override
+            public Integer apply(String t1) {
+                return t1.length();
+            }
+        };
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+            @Override
+            public String apply(String v) {
+                return v;
+            }
+        }, mapFactory);
+
+        Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
+        expected.put(2, "bb");
+        expected.put(3, "ccc");
+        expected.put(4, "dddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onError(any(Throwable.class));
+        verify(singleObserver, times(1)).onSuccess(expected);
+    }
+
+    @Test
+    public void testToMapWithErrorThrowingFactory() {
+        Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");
+
+        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+            @Override
+            public Map<Integer, String> call() {
+                throw new RuntimeException("Forced failure");
+            }
+        };
+
+        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+            @Override
+            public Integer apply(String t1) {
+                return t1.length();
+            }
+        };
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+            @Override
+            public String apply(String v) {
+                return v;
+            }
+        }, mapFactory);
+
+        Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
+        expected.put(2, "bb");
+        expected.put(3, "ccc");
+        expected.put(4, "dddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onSuccess(expected);
+        verify(singleObserver, times(1)).onError(any(Throwable.class));
     }
 
 }

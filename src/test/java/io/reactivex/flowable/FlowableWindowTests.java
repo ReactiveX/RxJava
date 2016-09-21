@@ -34,7 +34,7 @@ public class FlowableWindowTests {
             .map(new Function<Flowable<Integer>, Flowable<List<Integer>>>() {
                 @Override
                 public Flowable<List<Integer>> apply(Flowable<Integer> xs) {
-                    return xs.toList();
+                    return xs.toList().toFlowable();
                 }
             })
         )

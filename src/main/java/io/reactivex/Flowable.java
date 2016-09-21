@@ -4000,7 +4000,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T, R> Flowable<R> zip(Publisher<? extends Publisher<? extends T>> sources,
             final Function<? super Object[], ? extends R> zipper) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
-        return fromPublisher(sources).toList().flatMap(FlowableInternalHelper.<T, R>zipIterable(zipper));
+        return fromPublisher(sources).toList().flatMapPublisher(FlowableInternalHelper.<T, R>zipIterable(zipper));
     }
 
     /**
@@ -4848,7 +4848,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     // ***************************************************************************************************
 
     /**
-     * Returns a Flowable that emits a Boolean that indicates whether all of the items emitted by the source
+     * Returns a Single that emits a Boolean that indicates whether all of the items emitted by the source
      * Publisher satisfy a condition.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/all.png" alt="">
@@ -4901,7 +4901,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits {@code true} if any item emitted by the source Publisher satisfies a
+     * Returns a Single that emits {@code true} if any item emitted by the source Publisher satisfies a
      * specified condition, otherwise {@code false}. <em>Note:</em> this always emits {@code false} if the
      * source Publisher is empty.
      * <p>
@@ -6192,8 +6192,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Collects items emitted by the source Publisher into a single mutable data structure and returns an
-     * Publisher that emits this structure.
+     * Collects items emitted by the source Publisher into a single mutable data structure and returns
+     * a Single that emits this structure.
      * <p>
      * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.png" alt="">
      * <p>
@@ -6212,21 +6212,21 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param collector
      *           a function that accepts the {@code state} and an emitted item, and modifies {@code state}
      *           accordingly
-     * @return a Flowable that emits the result of collecting the values emitted by the source Publisher
+     * @return a Single that emits the result of collecting the values emitted by the source Publisher
      *         into a single mutable data structure
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Flowable<U> collect(Callable<? extends U> initialItemSupplier, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Single<U> collect(Callable<? extends U> initialItemSupplier, BiConsumer<? super U, ? super T> collector) {
         ObjectHelper.requireNonNull(initialItemSupplier, "initialItemSupplier is null");
         ObjectHelper.requireNonNull(collector, "collector is null");
-        return RxJavaPlugins.onAssembly(new FlowableCollect<T, U>(this, initialItemSupplier, collector));
+        return RxJavaPlugins.onAssembly(new FlowableCollectSingle<T, U>(this, initialItemSupplier, collector));
     }
 
     /**
-     * Collects items emitted by the source Publisher into a single mutable data structure and returns an
-     * Publisher that emits this structure.
+     * Collects items emitted by the source Publisher into a single mutable data structure and returns
+     * a Single that emits this structure.
      * <p>
      * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.png" alt="">
      * <p>
@@ -6245,13 +6245,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param collector
      *           a function that accepts the {@code state} and an emitted item, and modifies {@code state}
      *           accordingly
-     * @return a Flowable that emits the result of collecting the values emitted by the source Publisher
+     * @return a Single that emits the result of collecting the values emitted by the source Publisher
      *         into a single mutable data structure
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U> Flowable<U> collectInto(final U initialItem, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Single<U> collectInto(final U initialItem, BiConsumer<? super U, ? super T> collector) {
         ObjectHelper.requireNonNull(initialItem, "initialItem is null");
         return collect(Functions.justCallable(initialItem), collector);
     }
@@ -6640,7 +6640,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a Boolean that indicates whether the source Publisher emitted a
+     * Returns a Single that emits a Boolean that indicates whether the source Publisher emitted a
      * specified item.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/contains.png" alt="">
@@ -8795,7 +8795,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits {@code true} if the source Publisher is empty, otherwise {@code false}.
+     * Returns a Single that emits {@code true} if the source Publisher is empty, otherwise {@code false}.
      * <p>
      * In Rx.Net this is negated as the {@code any} Subscriber but we renamed this in RxJava to better match Java
      * naming idioms.
@@ -8865,7 +8865,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
 
     /**
-     * Returns a Flowable that emits the last item emitted by the source Publisher or notifies Subscribers of
+     * Returns a Single that emits the last item emitted by the source Publisher or notifies Subscribers of
      * a {@code NoSuchElementException} if the source Publisher is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.png" alt="">
@@ -8888,7 +8888,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits only the last item emitted by the source Publisher, or a default item
+     * Returns a Single that emits only the last item emitted by the source Publisher, or a default item
      * if the source Publisher completes without emitting any items.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrDefault.png" alt="">
@@ -9855,7 +9855,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that applies a specified accumulator function to the first item emitted by a source
+     * Returns a Single that applies a specified accumulator function to the first item emitted by a source
      * Publisher, then feeds the result of that function along with the second item emitted by the source
      * Publisher into the same function, and so on until all items have been emitted by the source Publisher,
      * and emits the final result from the final call to your function as its sole item.
@@ -9887,7 +9887,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> reduce(BiFunction<T, T, T> reducer) {
         ObjectHelper.requireNonNull(reducer, "reducer is null");
-//        return RxJavaPlugins.onAssembly(new FlowableReduce<T>(this, reducer));
         return RxJavaPlugins.onAssembly(new SingleReduceFlowable<T>(this, reducer));
     }
 
@@ -11593,7 +11592,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> sorted() {
-        return toSortedList().flatMapIterable(Functions.<List<T>>identity());
+        return toList().toFlowable().map(Functions.listSorter(Functions.<T>naturalComparator())).flatMapIterable(Functions.<List<T>>identity());
     }
 
     /**
@@ -11619,7 +11618,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> sorted(Comparator<? super T> sortFunction) {
-        return toSortedList(sortFunction).flatMapIterable(Functions.<List<T>>identity());
+        return toList().toFlowable().map(Functions.listSorter(sortFunction)).flatMapIterable(Functions.<List<T>>identity());
     }
 
     /**
@@ -13453,7 +13452,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a single item, a list composed of all the items emitted by the source
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
      * Publisher.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
@@ -13474,18 +13473,18 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code toList} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a Flowable that emits a single item: a List containing all of the items emitted by the source
+     * @return a Single that emits a single item: a List containing all of the items emitted by the source
      *         Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<List<T>> toList() {
-        return RxJavaPlugins.onAssembly(new FlowableToList<T, List<T>>(this));
+    public final Single<List<T>> toList() {
+        return RxJavaPlugins.onAssembly(new FlowableToListSingle<T, List<T>>(this));
     }
 
     /**
-     * Returns a Flowable that emits a single item, a list composed of all the items emitted by the source
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
      * Publisher.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
@@ -13514,9 +13513,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<List<T>> toList(final int capacityHint) {
+    public final Single<List<T>> toList(final int capacityHint) {
         ObjectHelper.verifyPositive(capacityHint, "capacityHint");
-        return RxJavaPlugins.onAssembly(new FlowableToList<T, List<T>>(this, Functions.<T>createArrayList(capacityHint)));
+        return RxJavaPlugins.onAssembly(new FlowableToListSingle<T, List<T>>(this, Functions.<T>createArrayList(capacityHint)));
     }
 
     /**
@@ -13556,7 +13555,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a single HashMap containing all items emitted by the source Publisher,
+     * Returns a Single that emits a single HashMap containing all items emitted by the source Publisher,
      * mapped by the keys returned by a specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
@@ -13573,19 +13572,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <K> the key type of the Map
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the HashMap
-     * @return a Flowable that emits a single item: a HashMap containing the mapped items from the source
+     * @return a Single that emits a single item: a HashMap containing the mapped items from the source
      *         Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K> Flowable<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
+    public final <K> Single<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         return collect(HashMapSupplier.<K, T>asCallable(), Functions.toMapKeySelector(keySelector));
     }
 
     /**
-     * Returns a Flowable that emits a single HashMap containing values corresponding to items emitted by the
+     * Returns a Single that emits a single HashMap containing values corresponding to items emitted by the
      * source Publisher, mapped by the keys returned by a specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
@@ -13606,20 +13605,20 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the function that extracts the key from a source item to be used in the HashMap
      * @param valueSelector
      *            the function that extracts the value from a source item to be used in the HashMap
-     * @return a Flowable that emits a single item: a HashMap containing the mapped items from the source
+     * @return a Single that emits a single item: a HashMap containing the mapped items from the source
      *         Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Flowable<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector) {
+    public final <K, V> Single<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
         return collect(HashMapSupplier.<K, V>asCallable(), Functions.toMapKeyValueSelector(keySelector, valueSelector));
     }
 
     /**
-     * Returns a Flowable that emits a single Map, returned by a specified {@code mapFactory} function, that
+     * Returns a Single that emits a single Map, returned by a specified {@code mapFactory} function, that
      * contains keys and values extracted from the items emitted by the source Publisher.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
@@ -13645,7 +13644,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Flowable<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector,
+    public final <K, V> Single<Map<K, V>> toMap(final Function<? super T, ? extends K> keySelector,
             final Function<? super T, ? extends V> valueSelector,
             final Callable<? extends Map<K, V>> mapSupplier) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
@@ -13654,7 +13653,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a single HashMap that contains an ArrayList of items emitted by the
+     * Returns a Single that emits a single HashMap that contains an ArrayList of items emitted by the
      * source Publisher keyed by a specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
@@ -13668,13 +13667,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <K> the key type of the Map
      * @param keySelector
      *            the function that extracts the key from the source items to be used as key in the HashMap
-     * @return a Flowable that emits a single item: a HashMap that contains an ArrayList of items mapped from
+     * @return a Single that emits a single item: a HashMap that contains an ArrayList of items mapped from
      *         the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K> Flowable<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
+    public final <K> Single<Map<K, Collection<T>>> toMultimap(Function<? super T, ? extends K> keySelector) {
         Function<T, T> valueSelector = Functions.identity();
         Callable<Map<K, Collection<T>>> mapSupplier = HashMapSupplier.asCallable();
         Function<K, List<T>> collectionFactory = ArrayListSupplier.asFunction();
@@ -13682,7 +13681,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a single HashMap that contains an ArrayList of values extracted by a
+     * Returns a Single that emits a single HashMap that contains an ArrayList of values extracted by a
      * specified {@code valueSelector} function from items emitted by the source Publisher, keyed by a
      * specified {@code keySelector} function.
      * <p>
@@ -13701,20 +13700,20 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the function that extracts a key from the source items to be used as key in the HashMap
      * @param valueSelector
      *            the function that extracts a value from the source items to be used as value in the HashMap
-     * @return a Flowable that emits a single item: a HashMap that contains an ArrayList of items mapped from
+     * @return a Single that emits a single item: a HashMap that contains an ArrayList of items mapped from
      *         the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Flowable<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
+    public final <K, V> Single<Map<K, Collection<V>>> toMultimap(Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector) {
         Callable<Map<K, Collection<V>>> mapSupplier = HashMapSupplier.asCallable();
         Function<K, List<V>> collectionFactory = ArrayListSupplier.asFunction();
         return toMultimap(keySelector, valueSelector, mapSupplier, collectionFactory);
     }
 
     /**
-     * Returns a Flowable that emits a single Map, returned by a specified {@code mapFactory} function, that
+     * Returns a Single that emits a single Map, returned by a specified {@code mapFactory} function, that
      * contains a custom collection of values, extracted by a specified {@code valueSelector} function from
      * items emitted by the source Publisher, and keyed by the {@code keySelector} function.
      * <p>
@@ -13737,13 +13736,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the function that returns a Map instance to be used
      * @param collectionFactory
      *            the function that returns a Collection instance for a particular key to be used in the Map
-     * @return a Flowable that emits a single item: a Map that contains the collection of mapped items from
+     * @return a Single that emits a single item: a Map that contains the collection of mapped items from
      *         the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Flowable<Map<K, Collection<V>>> toMultimap(
+    public final <K, V> Single<Map<K, Collection<V>>> toMultimap(
             final Function<? super T, ? extends K> keySelector,
             final Function<? super T, ? extends V> valueSelector,
             final Callable<? extends Map<K, Collection<V>>> mapSupplier,
@@ -13756,7 +13755,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a single Map, returned by a specified {@code mapFactory} function, that
+     * Returns a Single that emits a single Map, returned by a specified {@code mapFactory} function, that
      * contains an ArrayList of values, extracted by a specified {@code valueSelector} function from items
      * emitted by the source Publisher and keyed by the {@code keySelector} function.
      * <p>
@@ -13777,13 +13776,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the function that extracts a value from the source items to be used as the value in the Map
      * @param mapSupplier
      *            the function that returns a Map instance to be used
-     * @return a Flowable that emits a single item: a Map that contains a list items mapped from the source
+     * @return a Single that emits a single item: a Map that contains a list items mapped from the source
      *         Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <K, V> Flowable<Map<K, Collection<V>>> toMultimap(
+    public final <K, V> Single<Map<K, Collection<V>>> toMultimap(
             Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector,
             Callable<Map<K, Collection<V>>> mapSupplier
@@ -13857,7 +13856,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a list that contains the items emitted by the source Publisher, in a
+     * Returns a Single that emits a list that contains the items emitted by the source Publisher, in a
      * sorted order. Each item emitted by the Publisher must implement {@link Comparable} with respect to all
      * other items in the sequence.
      * <p>
@@ -13873,18 +13872,18 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @throws ClassCastException
      *             if any item emitted by the Publisher does not implement {@link Comparable} with respect to
      *             all other items emitted by the Publisher
-     * @return a Flowable that emits a list that contains the items emitted by the source Publisher in
+     * @return a Single that emits a list that contains the items emitted by the source Publisher in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<List<T>> toSortedList() {
+    public final Single<List<T>> toSortedList() {
         return toSortedList(Functions.naturalComparator());
     }
 
     /**
-     * Returns a Flowable that emits a list that contains the items emitted by the source Publisher, in a
+     * Returns a Single that emits a list that contains the items emitted by the source Publisher, in a
      * sorted order based on a specified comparison function.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
@@ -13899,19 +13898,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param comparator
      *            a function that compares two items emitted by the source Publisher and returns an Integer
      *            that indicates their sort order
-     * @return a Flowable that emits a list that contains the items emitted by the source Publisher in
+     * @return a Single that emits a list that contains the items emitted by the source Publisher in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<List<T>> toSortedList(final Comparator<? super T> comparator) {
+    public final Single<List<T>> toSortedList(final Comparator<? super T> comparator) {
         ObjectHelper.requireNonNull(comparator, "comparator is null");
         return toList().map(Functions.listSorter(comparator));
     }
 
     /**
-     * Returns a Flowable that emits a list that contains the items emitted by the source Publisher, in a
+     * Returns a Single that emits a list that contains the items emitted by the source Publisher, in a
      * sorted order based on a specified comparison function.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
@@ -13928,14 +13927,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            that indicates their sort order
      * @param capacityHint
      *             the initial capacity of the ArrayList used to accumulate items before sorting
-     * @return a Flowable that emits a list that contains the items emitted by the source Publisher in
+     * @return a Single that emits a list that contains the items emitted by the source Publisher in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<List<T>> toSortedList(final Comparator<? super T> comparator, int capacityHint) {
+    public final Single<List<T>> toSortedList(final Comparator<? super T> comparator, int capacityHint) {
         ObjectHelper.requireNonNull(comparator, "comparator is null");
         return toList(capacityHint).map(Functions.listSorter(comparator));
     }
@@ -13966,7 +13965,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<List<T>> toSortedList(int capacityHint) {
+    public final Single<List<T>> toSortedList(int capacityHint) {
         return toSortedList(Functions.naturalComparator(), capacityHint);
     }
 

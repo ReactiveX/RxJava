@@ -179,7 +179,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
 
                 @Override
                 public void run() {
-                    List<Long> values = replay.toList().blockingLast();
+                    List<Long> values = replay.toList().blockingGet();
                     listOfListsOfValues.add(values);
                     System.out.println("Finished thread: " + count);
                 }

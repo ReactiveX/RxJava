@@ -22,16 +22,16 @@ import java.util.concurrent.*;
 import org.junit.*;
 import org.mockito.Mockito;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 
 public class ObservableToListTest {
 
     @Test
-    public void testList() {
+    public void testListObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> observable = w.toList();
+        Observable<List<String>> observable = w.toList().toObservable();
 
         Observer<List<String>> observer = TestHelper.mockObserver();
         observable.subscribe(observer);
@@ -41,9 +41,9 @@ public class ObservableToListTest {
     }
 
     @Test
-    public void testListViaObservable() {
+    public void testListViaObservableObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> observable = w.toList();
+        Observable<List<String>> observable = w.toList().toObservable();
 
         Observer<List<String>> observer = TestHelper.mockObserver();
         observable.subscribe(observer);
@@ -53,9 +53,9 @@ public class ObservableToListTest {
     }
 
     @Test
-    public void testListMultipleSubscribers() {
+    public void testListMultipleSubscribersObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> observable = w.toList();
+        Observable<List<String>> observable = w.toList().toObservable();
 
         Observer<List<String>> o1 = TestHelper.mockObserver();
         observable.subscribe(o1);
@@ -76,9 +76,9 @@ public class ObservableToListTest {
 
     @Test
     @Ignore("Null values are not allowed")
-    public void testListWithNullValue() {
+    public void testListWithNullValueObservable() {
         Observable<String> w = Observable.fromIterable(Arrays.asList("one", null, "three"));
-        Observable<List<String>> observable = w.toList();
+        Observable<List<String>> observable = w.toList().toObservable();
 
         Observer<List<String>> observer = TestHelper.mockObserver();
         observable.subscribe(observer);
@@ -88,9 +88,80 @@ public class ObservableToListTest {
     }
 
     @Test
+    public void testListWithBlockingFirstObservable() {
+        Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three"));
+        List<String> actual = o.toList().toObservable().blockingFirst();
+        Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void capacityHintObservable() {
+        Observable.range(1, 10)
+        .toList(4)
+        .toObservable()
+        .test()
+        .assertResult(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    }
+
+    @Test
+    public void testList() {
+        Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
+        Single<List<String>> observable = w.toList();
+
+        SingleObserver<List<String>> observer = TestHelper.mockSingleObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onSuccess(Arrays.asList("one", "two", "three"));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testListViaObservable() {
+        Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
+        Single<List<String>> observable = w.toList();
+
+        SingleObserver<List<String>> observer = TestHelper.mockSingleObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onSuccess(Arrays.asList("one", "two", "three"));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testListMultipleSubscribers() {
+        Observable<String> w = Observable.fromIterable(Arrays.asList("one", "two", "three"));
+        Single<List<String>> observable = w.toList();
+
+        SingleObserver<List<String>> o1 = TestHelper.mockSingleObserver();
+        observable.subscribe(o1);
+
+        SingleObserver<List<String>> o2 = TestHelper.mockSingleObserver();
+        observable.subscribe(o2);
+
+        List<String> expected = Arrays.asList("one", "two", "three");
+
+        verify(o1, times(1)).onSuccess(expected);
+        verify(o1, Mockito.never()).onError(any(Throwable.class));
+
+        verify(o2, times(1)).onSuccess(expected);
+        verify(o2, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    @Ignore("Null values are not allowed")
+    public void testListWithNullValue() {
+        Observable<String> w = Observable.fromIterable(Arrays.asList("one", null, "three"));
+        Single<List<String>> observable = w.toList();
+
+        SingleObserver<List<String>> observer = TestHelper.mockSingleObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onSuccess(Arrays.asList("one", null, "three"));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    @Test
     public void testListWithBlockingFirst() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", "two", "three"));
-        List<String> actual = o.toList().blockingFirst();
+        List<String> actual = o.toList().blockingGet();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 
