@@ -21,9 +21,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class SingleSubscribeOnTest {
 
@@ -33,7 +33,7 @@ public class SingleSubscribeOnTest {
         try {
             TestScheduler scheduler = new TestScheduler();
 
-            TestSubscriber<Integer> ts = Single.just(1)
+            TestObserver<Integer> ts = Single.just(1)
             .subscribeOn(scheduler)
             .test();
 

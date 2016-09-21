@@ -29,9 +29,9 @@ import io.reactivex.internal.operators.maybe.MaybeFromCompletable;
 import io.reactivex.internal.operators.observable.ObservableDelaySubscriptionOther;
 import io.reactivex.internal.operators.single.SingleDelayWithCompletable;
 import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * Represents a deferred computation without any value but only indication for completion or exception.
@@ -1804,41 +1804,41 @@ public abstract class Completable implements CompletableSource {
     // -------------------------------------------------------------------------
 
     /**
-     * Creates a TestSubscriber and subscribes
+     * Creates a TestObserver and subscribes
      * it to this Completable.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return the new TestSubscriber instance
+     * @return the new TestObserver instance
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final TestSubscriber<Void> test() {
-        TestSubscriber<Void> ts = new TestSubscriber<Void>();
-        subscribe(new SubscriberCompletableObserver<Void>(ts));
+    public final TestObserver<Void> test() {
+        TestObserver<Void> ts = new TestObserver<Void>();
+        subscribe(ts);
         return ts;
     }
 
     /**
-     * Creates a TestSubscriber optionally in cancelled state, then subscribes it to this Completable.
-     * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
+     * Creates a TestObserver optionally in cancelled state, then subscribes it to this Completable.
+     * @param cancelled if true, the TestObserver will be cancelled before subscribing to this
      * Completable.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return the new TestSubscriber instance
+     * @return the new TestObserver instance
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final TestSubscriber<Void> test(boolean cancelled) {
-        TestSubscriber<Void> ts = new TestSubscriber<Void>();
+    public final TestObserver<Void> test(boolean cancelled) {
+        TestObserver<Void> ts = new TestObserver<Void>();
 
         if (cancelled) {
             ts.cancel();
         }
-        subscribe(new SubscriberCompletableObserver<Void>(ts));
+        subscribe(ts);
         return ts;
     }
 }

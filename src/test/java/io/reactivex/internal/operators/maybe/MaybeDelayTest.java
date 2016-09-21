@@ -22,9 +22,9 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class MaybeDelayTest {
 
@@ -66,7 +66,7 @@ public class MaybeDelayTest {
     public void disposeDuringDelay() {
         TestScheduler scheduler = new TestScheduler();
 
-        TestSubscriber<Integer> ts = Maybe.just(1).delay(100, TimeUnit.MILLISECONDS, scheduler)
+        TestObserver<Integer> ts = Maybe.just(1).delay(100, TimeUnit.MILLISECONDS, scheduler)
         .test();
 
         ts.cancel();
@@ -80,7 +80,7 @@ public class MaybeDelayTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.toMaybe().delay(100, TimeUnit.MILLISECONDS).test();
+        TestObserver<Integer> ts = pp.toMaybe().delay(100, TimeUnit.MILLISECONDS).test();
 
         assertTrue(pp.hasSubscribers());
 

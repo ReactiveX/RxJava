@@ -21,9 +21,9 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class MaybeDelaySubscriptionTest {
 
@@ -31,7 +31,7 @@ public class MaybeDelaySubscriptionTest {
     public void normal() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.just(1).delaySubscription(pp)
+        TestObserver<Integer> ts = Maybe.just(1).delaySubscription(pp)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -65,7 +65,7 @@ public class MaybeDelaySubscriptionTest {
     public void timedTestScheduler() {
         TestScheduler scheduler = new TestScheduler();
 
-        TestSubscriber<Integer> ts = Maybe.just(1)
+        TestObserver<Integer> ts = Maybe.just(1)
         .delaySubscription(100, TimeUnit.MILLISECONDS, scheduler)
         .test();
 

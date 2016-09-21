@@ -17,9 +17,9 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class SingleCacheTest {
 
@@ -29,7 +29,7 @@ public class SingleCacheTest {
 
         Single<Integer> cached = pp.toSingle().cache();
 
-        TestSubscriber<Integer> ts = cached.test(true);
+        TestObserver<Integer> ts = cached.test(true);
 
         pp.onNext(1);
         pp.onComplete();
@@ -46,7 +46,7 @@ public class SingleCacheTest {
 
             final Single<Integer> cached = pp.toSingle().cache();
 
-            final TestSubscriber<Integer> ts1 = cached.test();
+            final TestObserver<Integer> ts1 = cached.test();
 
             Runnable r1 = new Runnable() {
                 @Override

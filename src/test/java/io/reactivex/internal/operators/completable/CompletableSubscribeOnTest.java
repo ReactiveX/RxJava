@@ -21,9 +21,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class CompletableSubscribeOnTest {
 
@@ -33,7 +33,7 @@ public class CompletableSubscribeOnTest {
         try {
             TestScheduler scheduler = new TestScheduler();
 
-            TestSubscriber<Void> ts = Completable.complete()
+            TestObserver<Void> ts = Completable.complete()
             .subscribeOn(scheduler)
             .test();
 

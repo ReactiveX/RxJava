@@ -18,8 +18,8 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class MaybeOfTypeTest {
 
@@ -32,7 +32,7 @@ public class MaybeOfTypeTest {
 
     @Test
     public void normalDowncast() {
-        TestSubscriber<Number> ts = Maybe.just(1)
+        TestObserver<Number> ts = Maybe.just(1)
         .ofType(Number.class)
         .test();
         // don't make this fluent, target type required!
@@ -41,7 +41,7 @@ public class MaybeOfTypeTest {
 
     @Test
     public void notInstance() {
-        TestSubscriber<String> ts = Maybe.just(1)
+        TestObserver<String> ts = Maybe.just(1)
         .ofType(String.class)
         .test();
         // don't make this fluent, target type required!
@@ -50,7 +50,7 @@ public class MaybeOfTypeTest {
 
     @Test
     public void error() {
-        TestSubscriber<Number> ts = Maybe.<Integer>error(new TestException())
+        TestObserver<Number> ts = Maybe.<Integer>error(new TestException())
         .ofType(Number.class)
         .test();
         // don't make this fluent, target type required!
@@ -59,7 +59,7 @@ public class MaybeOfTypeTest {
 
     @Test
     public void errorNotInstance() {
-        TestSubscriber<String> ts = Maybe.<Integer>error(new TestException())
+        TestObserver<String> ts = Maybe.<Integer>error(new TestException())
         .ofType(String.class)
         .test();
         // don't make this fluent, target type required!

@@ -21,8 +21,8 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class MaybeContainsTest {
 
@@ -50,7 +50,7 @@ public class MaybeContainsTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Boolean> ts = pp.toMaybe().contains(1).test();
+        TestObserver<Boolean> ts = pp.toMaybe().contains(1).test();
 
         assertTrue(pp.hasSubscribers());
 

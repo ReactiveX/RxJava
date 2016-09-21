@@ -30,7 +30,7 @@ public class AllTckTest extends BaseTck<Boolean> {
                     public boolean test(Integer e) throws Exception {
                         return e < 800;
                     }
-                })
+                }).toFlowable()
             );
     }
 

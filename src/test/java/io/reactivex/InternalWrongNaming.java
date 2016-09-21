@@ -160,7 +160,9 @@ public class InternalWrongNaming {
     public void flowableNoObserver() throws Exception {
         checkInternalOperatorNaming("Flowable", "Observer", 
                 "FlowableFromObservable",
-                "FlowableLastSingle"
+                "FlowableLastSingle",
+                "FlowableAnySingle",
+                "FlowableAllSingle"
         );
     }
 }

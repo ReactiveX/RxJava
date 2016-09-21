@@ -22,6 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -73,7 +74,7 @@ public class MaybeCacheTest {
 
         assertNotNull(((MaybeCache<Integer>)source).source.get());
 
-        TestSubscriber<Integer> ts = source.test();
+        TestObserver<Integer> ts = source.test();
 
         assertNull(((MaybeCache<Integer>)source).source.get());
 
@@ -103,7 +104,7 @@ public class MaybeCacheTest {
 
         assertNotNull(((MaybeCache<Integer>)source).source.get());
 
-        TestSubscriber<Integer> ts = source.test();
+        TestObserver<Integer> ts = source.test();
 
         assertNull(((MaybeCache<Integer>)source).source.get());
 
@@ -132,7 +133,7 @@ public class MaybeCacheTest {
 
         assertNotNull(((MaybeCache<Integer>)source).source.get());
 
-        TestSubscriber<Integer> ts = source.test();
+        TestObserver<Integer> ts = source.test();
 
         assertNull(((MaybeCache<Integer>)source).source.get());
 
@@ -246,8 +247,8 @@ public class MaybeCacheTest {
 
             final Maybe<Integer> source = pp.toMaybe().cache();
 
-            final TestSubscriber<Integer> ts1 = source.test();
-            final TestSubscriber<Integer> ts2 = source.test();
+            final TestObserver<Integer> ts1 = source.test();
+            final TestObserver<Integer> ts2 = source.test();
 
             Runnable r1 = new Runnable() {
                 @Override

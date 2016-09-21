@@ -13,20 +13,17 @@
 
 package io.reactivex.internal.operators.completable;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.*;
 
-import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subscribers.TestSubscriber;
 import org.junit.Test;
 
 import io.reactivex.Completable;
 import io.reactivex.functions.Action;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.*;
+import io.reactivex.subjects.PublishSubject;
 
 public class CompletableTimeoutTest {
 
@@ -66,7 +63,7 @@ public class CompletableTimeoutTest {
         final PublishSubject<String> subject = PublishSubject.create();
         final TestScheduler scheduler = new TestScheduler();
 
-        final TestSubscriber<Void> observer = subject.toCompletable()
+        final TestObserver<Void> observer = subject.toCompletable()
                 .timeout(100, TimeUnit.MILLISECONDS, scheduler)
                 .test();
 
