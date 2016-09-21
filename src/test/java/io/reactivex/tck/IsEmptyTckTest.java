@@ -24,7 +24,7 @@ public class IsEmptyTckTest extends BaseTck<Boolean> {
     @Override
     public Publisher<Boolean> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.range(1, 10).isEmpty()
+                Flowable.range(1, 10).isEmpty().toFlowable()
             );
     }
 

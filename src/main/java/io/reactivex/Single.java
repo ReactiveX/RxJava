@@ -15,7 +15,7 @@ package io.reactivex;
 
 import java.util.concurrent.*;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
 
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
@@ -30,9 +30,9 @@ import io.reactivex.internal.operators.maybe.*;
 import io.reactivex.internal.operators.observable.ObservableConcatMap;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.util.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.TestSubscriber;
 
 /**
  * The Single class implements the Reactive Pattern for a single value response.
@@ -2806,42 +2806,42 @@ public abstract class Single<T> implements SingleSource<T> {
     // Fluent test support, super handy and reduces test preparation boilerplate
     // -------------------------------------------------------------------------
     /**
-     * Creates a TestSubscriber and subscribes
+     * Creates a TestObserver and subscribes
      * it to this Single.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return the new TestSubscriber instance
+     * @return the new TestObserver instance
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final TestSubscriber<T> test() {
-        TestSubscriber<T> ts = new TestSubscriber<T>();
-        toFlowable().subscribe(ts);
+    public final TestObserver<T> test() {
+        TestObserver<T> ts = new TestObserver<T>();
+        subscribe(ts);
         return ts;
     }
 
     /**
-     * Creates a TestSubscriber optionally in cancelled state, then subscribes it to this Single.
+     * Creates a TestObserver optionally in cancelled state, then subscribes it to this Single.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param cancelled if true, the TestSubscriber will be cancelled before subscribing to this
+     * @param cancelled if true, the TestObserver will be cancelled before subscribing to this
      * Single.
-     * @return the new TestSubscriber instance
+     * @return the new TestObserver instance
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final TestSubscriber<T> test(boolean cancelled) {
-        TestSubscriber<T> ts = new TestSubscriber<T>();
+    public final TestObserver<T> test(boolean cancelled) {
+        TestObserver<T> ts = new TestObserver<T>();
 
         if (cancelled) {
             ts.cancel();
         }
 
-        toFlowable().subscribe(ts);
+        subscribe(ts);
         return ts;
     }
 }

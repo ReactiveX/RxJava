@@ -101,7 +101,8 @@ public class JavadocWording {
                     int idx = m.javadoc.indexOf("Observer", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("ObservableSource")
-                                && !m.signature.contains("Observable")) {
+                                && !m.signature.contains("Observable")
+                                && !m.signature.contains("TestObserver")) {
 
                             if (idx < 5 || !m.javadoc.substring(idx - 5, idx + 8).equals("MaybeObserver")) {
                                 e.append("java.lang.RuntimeException: Maybe doc mentions Observer but not using Observable\r\n at io.reactivex.")
@@ -483,7 +484,8 @@ public class JavadocWording {
                     int idx = m.javadoc.indexOf("Observer", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("ObservableSource")
-                                && !m.signature.contains("Observable")) {
+                                && !m.signature.contains("Observable")
+                                && !m.signature.contains("TestObserver")) {
 
                             if (idx < 6 || !m.javadoc.substring(idx - 6, idx + 8).equals("SingleObserver")) {
                                 e.append("java.lang.RuntimeException: Single doc mentions Observer but not using Observable\r\n at io.reactivex.")
@@ -656,7 +658,8 @@ public class JavadocWording {
                     int idx = m.javadoc.indexOf("Observer", jdx);
                     if (idx >= 0) {
                         if (!m.signature.contains("ObservableSource")
-                                && !m.signature.contains("Observable")) {
+                                && !m.signature.contains("Observable")
+                                && !m.signature.contains("TestObserver")) {
 
                             if (idx < 11 || !m.javadoc.substring(idx - 11, idx + 8).equals("CompletableObserver")) {
                                 e.append("java.lang.RuntimeException: Maybe doc mentions Observer but not using Observable\r\n at io.reactivex.")

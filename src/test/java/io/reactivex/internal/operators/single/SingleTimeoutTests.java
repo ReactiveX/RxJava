@@ -13,15 +13,15 @@
 
 package io.reactivex.internal.operators.single;
 
-import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subscribers.TestSubscriber;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.subjects.PublishSubject;
 
 public class SingleTimeoutTests {
 
@@ -30,7 +30,7 @@ public class SingleTimeoutTests {
         final PublishSubject<String> subject = PublishSubject.create();
         final TestScheduler scheduler = new TestScheduler();
 
-        final TestSubscriber<String> observer = subject.toSingle()
+        final TestObserver<String> observer = subject.toSingle()
                 .timeout(100, TimeUnit.MILLISECONDS, scheduler)
                 .test();
 

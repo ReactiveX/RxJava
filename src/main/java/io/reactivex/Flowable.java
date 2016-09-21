@@ -4862,15 +4862,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param predicate
      *            a function that evaluates an item and returns a Boolean
-     * @return a Flowable that emits {@code true} if all items emitted by the source Publisher satisfy the
+     * @return a Single that emits {@code true} if all items emitted by the source Publisher satisfy the
      *         predicate; otherwise, {@code false}
      * @see <a href="http://reactivex.io/documentation/operators/all.html">ReactiveX operators documentation: All</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<Boolean> all(Predicate<? super T> predicate) {
+    public final Single<Boolean> all(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return RxJavaPlugins.onAssembly(new FlowableAll<T>(this, predicate));
+        return RxJavaPlugins.onAssembly(new FlowableAllSingle<T>(this, predicate));
     }
 
     /**
@@ -4919,15 +4919,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param predicate
      *            the condition to test items emitted by the source Publisher
-     * @return a Flowable that emits a Boolean that indicates whether any item emitted by the source
+     * @return a Single that emits a Boolean that indicates whether any item emitted by the source
      *         Publisher satisfies the {@code predicate}
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<Boolean> any(Predicate<? super T> predicate) {
+    public final Single<Boolean> any(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return RxJavaPlugins.onAssembly(new FlowableAny<T>(this, predicate));
+        return RxJavaPlugins.onAssembly(new FlowableAnySingle<T>(this, predicate));
     }
 
     /**
@@ -6660,7 +6660,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<Boolean> contains(final Object item) {
+    public final Single<Boolean> contains(final Object item) {
         ObjectHelper.requireNonNull(item, "item is null");
         return any(Functions.equalsWith(item));
     }
@@ -8814,7 +8814,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<Boolean> isEmpty() {
+    public final Single<Boolean> isEmpty() {
         return all(Functions.alwaysFalse());
     }
 

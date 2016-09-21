@@ -4260,14 +4260,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param predicate
      *            a function that evaluates an item and returns a Boolean
-     * @return an Observable that emits {@code true} if all items emitted by the source ObservableSource satisfy the
+     * @return a Single that emits {@code true} if all items emitted by the source ObservableSource satisfy the
      *         predicate; otherwise, {@code false}
      * @see <a href="http://reactivex.io/documentation/operators/all.html">ReactiveX operators documentation: All</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Boolean> all(Predicate<? super T> predicate) {
+    public final Single<Boolean> all(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return RxJavaPlugins.onAssembly(new ObservableAll<T>(this, predicate));
+        return RxJavaPlugins.onAssembly(new ObservableAllSingle<T>(this, predicate));
     }
 
     /**
@@ -4309,14 +4309,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param predicate
      *            the condition to test items emitted by the source ObservableSource
-     * @return an Observable that emits a Boolean that indicates whether any item emitted by the source
+     * @return a Single that emits a Boolean that indicates whether any item emitted by the source
      *         ObservableSource satisfies the {@code predicate}
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Boolean> any(Predicate<? super T> predicate) {
+    public final Single<Boolean> any(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return RxJavaPlugins.onAssembly(new ObservableAny<T>(this, predicate));
+        return RxJavaPlugins.onAssembly(new ObservableAnySingle<T>(this, predicate));
     }
 
     /**
@@ -5798,12 +5798,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param element
      *            the item to search for in the emissions from the source ObservableSource
-     * @return an Observable that emits {@code true} if the specified item is emitted by the source ObservableSource,
+     * @return a Single that emits {@code true} if the specified item is emitted by the source ObservableSource,
      *         or {@code false} if the source ObservableSource completes without emitting that item
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Boolean> contains(final Object element) {
+    public final Single<Boolean> contains(final Object element) {
         ObjectHelper.requireNonNull(element, "element is null");
         return any(Functions.equalsWith(element));
     }
@@ -7594,11 +7594,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code isEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an Observable that emits a Boolean
+     * @return a Single that emits a Boolean
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Boolean> isEmpty() {
+    public final Single<Boolean> isEmpty() {
         return all(Functions.alwaysFalse());
     }
 

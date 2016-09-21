@@ -28,12 +28,12 @@ public class ObservableIgnoreElementsTest {
 
     @Test
     public void testWithEmpty() {
-        assertTrue(Observable.empty().ignoreElements().isEmpty().blockingSingle());
+        assertTrue(Observable.empty().ignoreElements().isEmpty().blockingGet());
     }
 
     @Test
     public void testWithNonEmpty() {
-        assertTrue(Observable.just(1, 2, 3).ignoreElements().isEmpty().blockingSingle());
+        assertTrue(Observable.just(1, 2, 3).ignoreElements().isEmpty().blockingGet());
     }
 
     @Test

@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.Notification;
+import io.reactivex.*;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
@@ -29,14 +29,14 @@ import io.reactivex.internal.util.ExceptionHelper;
 /**
  * An Observer that records events and allows making assertions about them.
  *
- * <p>You can override the onSubscribe, onNext, onError, onComplete and
+ * <p>You can override the onSubscribe, onNext, onError, onComplete, onSuccess and
  * cancel methods but not the others (this is by design).
  *
  * <p>The TestObserver implements Disposable for convenience where dispose calls cancel.
  *
  * @param <T> the value type
  */
-public class TestObserver<T> implements Observer<T>, Disposable {
+public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, CompletableObserver {
     /** The actual observer to forward events to. */
     private final Observer<? super T> actual;
     /** The latch that indicates an onError or onComplete has been called. */
@@ -898,6 +898,12 @@ public class TestObserver<T> implements Observer<T>, Disposable {
                 .assertNotComplete();
     }
 
+    @Override
+    public void onSuccess(T value) {
+        onNext(value);
+        onComplete();
+    }
+    
     /**
      * An observer that ignores all events and does not report errors.
      */

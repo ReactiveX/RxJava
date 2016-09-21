@@ -28,12 +28,12 @@ public class FlowableIgnoreElementsTest {
 
     @Test
     public void testWithEmpty() {
-        assertTrue(Flowable.empty().ignoreElements().isEmpty().blockingSingle());
+        assertTrue(Flowable.empty().ignoreElements().isEmpty().blockingGet());
     }
 
     @Test
     public void testWithNonEmpty() {
-        assertTrue(Flowable.just(1, 2, 3).ignoreElements().isEmpty().blockingSingle());
+        assertTrue(Flowable.just(1, 2, 3).ignoreElements().isEmpty().blockingGet());
     }
 
     @Test

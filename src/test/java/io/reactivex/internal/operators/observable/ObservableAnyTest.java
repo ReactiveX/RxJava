@@ -27,14 +27,14 @@ import io.reactivex.observers.TestObserver;
 public class ObservableAnyTest {
 
     @Test
-    public void testAnyWithTwoItems() {
+    public void testAnyWithTwoItemsObservable() {
         Observable<Integer> w = Observable.just(1, 2);
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
             }
-        });
+        }).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -47,9 +47,9 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithTwoItems() {
+    public void testIsEmptyWithTwoItemsObservable() {
         Observable<Integer> w = Observable.just(1, 2);
-        Observable<Boolean> observable = w.isEmpty();
+        Observable<Boolean> observable = w.isEmpty().toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -62,14 +62,14 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithOneItem() {
+    public void testAnyWithOneItemObservable() {
         Observable<Integer> w = Observable.just(1);
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
             }
-        });
+        }).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -82,9 +82,9 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithOneItem() {
+    public void testIsEmptyWithOneItemObservable() {
         Observable<Integer> w = Observable.just(1);
-        Observable<Boolean> observable = w.isEmpty();
+        Observable<Boolean> observable = w.isEmpty().toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -97,14 +97,14 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithEmpty() {
+    public void testAnyWithEmptyObservable() {
         Observable<Integer> w = Observable.empty();
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
             }
-        });
+        }).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -117,9 +117,9 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testIsEmptyWithEmpty() {
+    public void testIsEmptyWithEmptyObservable() {
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = w.isEmpty();
+        Observable<Boolean> observable = w.isEmpty().toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -132,14 +132,14 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithPredicate1() {
+    public void testAnyWithPredicate1Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
                 return t1 < 2;
             }
-        });
+        }).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -152,14 +152,14 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testExists1() {
+    public void testExists1Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
                 return t1 < 2;
             }
-        });
+        }).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -172,14 +172,14 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithPredicate2() {
+    public void testAnyWithPredicate2Observable() {
         Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
                 return t1 < 1;
             }
-        });
+        }).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -192,7 +192,7 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testAnyWithEmptyAndPredicate() {
+    public void testAnyWithEmptyAndPredicateObservable() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
         Observable<Boolean> observable = w.any(new Predicate<Integer>() {
@@ -200,7 +200,7 @@ public class ObservableAnyTest {
             public boolean test(Integer t) {
                 return true;
             }
-        });
+        }).toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -213,21 +213,242 @@ public class ObservableAnyTest {
     }
 
     @Test
-    public void testWithFollowingFirst() {
+    public void testWithFollowingFirstObservable() {
         Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
         Observable<Boolean> anyEven = o.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer i) {
                 return i % 2 == 0;
             }
-        });
+        }).toObservable();
 
         assertTrue(anyEven.blockingFirst());
     }
     @Test(timeout = 5000)
+    public void testIssue1935NoUnsubscribeDownstreamObservable() {
+        Observable<Integer> source = Observable.just(1).isEmpty().toObservable()
+            .flatMap(new Function<Boolean, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Boolean t1) {
+                    return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
+                }
+            });
+
+        assertEquals((Object)2, source.blockingFirst());
+    }
+
+    @Test
+    public void testPredicateThrowsExceptionAndValueInCauseMessageObservable() {
+        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        final IllegalArgumentException ex = new IllegalArgumentException();
+
+        Observable.just("Boo!").any(new Predicate<String>() {
+            @Override
+            public boolean test(String v) {
+                throw ex;
+            }
+        }).subscribe(ts);
+
+        ts.assertTerminated();
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(ex);
+        // FIXME value as last cause?
+//        assertTrue(ex.getCause().getMessage().contains("Boo!"));
+    }
+
+    @Test
+    public void testAnyWithTwoItems() {
+        Observable<Integer> w = Observable.just(1, 2);
+        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        });
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        observable.subscribe(observer);
+
+        verify(observer, never()).onSuccess(false);
+        verify(observer, times(1)).onSuccess(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testIsEmptyWithTwoItems() {
+        Observable<Integer> w = Observable.just(1, 2);
+        Single<Boolean> observable = w.isEmpty();
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        observable.subscribe(observer);
+
+        verify(observer, never()).onSuccess(true);
+        verify(observer, times(1)).onSuccess(false);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testAnyWithOneItem() {
+        Observable<Integer> w = Observable.just(1);
+        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        });
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        observable.subscribe(observer);
+
+        verify(observer, never()).onSuccess(false);
+        verify(observer, times(1)).onSuccess(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testIsEmptyWithOneItem() {
+        Observable<Integer> w = Observable.just(1);
+        Single<Boolean> observable = w.isEmpty();
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        observable.subscribe(observer);
+
+        verify(observer, never()).onSuccess(true);
+        verify(observer, times(1)).onSuccess(false);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testAnyWithEmpty() {
+        Observable<Integer> w = Observable.empty();
+        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) {
+                return true;
+            }
+        });
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        observable.subscribe(observer);
+
+        verify(observer, times(1)).onSuccess(false);
+        verify(observer, never()).onSuccess(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testIsEmptyWithEmpty() {
+        Observable<Integer> w = Observable.empty();
+        Single<Boolean> observable = w.isEmpty();
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        observable.subscribe(observer);
+
+        verify(observer, times(1)).onSuccess(true);
+        verify(observer, never()).onSuccess(false);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testAnyWithPredicate1() {
+        Observable<Integer> w = Observable.just(1, 2, 3);
+        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                return t1 < 2;
+            }
+        });
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        observable.subscribe(observer);
+
+        verify(observer, never()).onSuccess(false);
+        verify(observer, times(1)).onSuccess(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testExists1() {
+        Observable<Integer> w = Observable.just(1, 2, 3);
+        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                return t1 < 2;
+            }
+        });
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        observable.subscribe(observer);
+
+        verify(observer, never()).onSuccess(false);
+        verify(observer, times(1)).onSuccess(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testAnyWithPredicate2() {
+        Observable<Integer> w = Observable.just(1, 2, 3);
+        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t1) {
+                return t1 < 1;
+            }
+        });
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        observable.subscribe(observer);
+
+        verify(observer, times(1)).onSuccess(false);
+        verify(observer, never()).onSuccess(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testAnyWithEmptyAndPredicate() {
+        // If the source is empty, always output false.
+        Observable<Integer> w = Observable.empty();
+        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer t) {
+                return true;
+            }
+        });
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        observable.subscribe(observer);
+
+        verify(observer, times(1)).onSuccess(false);
+        verify(observer, never()).onSuccess(true);
+        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testWithFollowingFirst() {
+        Observable<Integer> o = Observable.fromArray(1, 3, 5, 6);
+        Single<Boolean> anyEven = o.any(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer i) {
+                return i % 2 == 0;
+            }
+        });
+
+        assertTrue(anyEven.blockingGet());
+    }
+    @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1).isEmpty()
-            .flatMap(new Function<Boolean, Observable<Integer>>() {
+            .flatMapObservable(new Function<Boolean, Observable<Integer>>() {
                 @Override
                 public Observable<Integer> apply(Boolean t1) {
                     return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);

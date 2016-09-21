@@ -20,8 +20,8 @@ import java.util.NoSuchElementException;
 import org.junit.Test;
 
 import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class SingleAmbTest {
     @Test
@@ -29,7 +29,7 @@ public class SingleAmbTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp1.toSingle().ambWith(pp2.toSingle()).test();
+        TestObserver<Integer> ts = pp1.toSingle().ambWith(pp2.toSingle()).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -49,7 +49,7 @@ public class SingleAmbTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp1.toSingle().ambWith(pp2.toSingle()).test();
+        TestObserver<Integer> ts = pp1.toSingle().ambWith(pp2.toSingle()).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());

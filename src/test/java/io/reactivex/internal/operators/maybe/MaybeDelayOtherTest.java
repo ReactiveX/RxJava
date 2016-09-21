@@ -21,8 +21,8 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class MaybeDelayOtherTest {
 
@@ -30,7 +30,7 @@ public class MaybeDelayOtherTest {
     public void justWithOnNext() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.just(1)
+        TestObserver<Integer> ts = Maybe.just(1)
         .delay(pp).test();
 
         ts.assertEmpty();
@@ -48,7 +48,7 @@ public class MaybeDelayOtherTest {
     public void justWithOnComplete() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.just(1)
+        TestObserver<Integer> ts = Maybe.just(1)
         .delay(pp).test();
 
         ts.assertEmpty();
@@ -67,7 +67,7 @@ public class MaybeDelayOtherTest {
     public void justWithOnError() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.just(1)
+        TestObserver<Integer> ts = Maybe.just(1)
         .delay(pp).test();
 
         ts.assertEmpty();
@@ -85,7 +85,7 @@ public class MaybeDelayOtherTest {
     public void emptyWithOnNext() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.<Integer>empty()
+        TestObserver<Integer> ts = Maybe.<Integer>empty()
         .delay(pp).test();
 
         ts.assertEmpty();
@@ -104,7 +104,7 @@ public class MaybeDelayOtherTest {
     public void emptyWithOnComplete() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.<Integer>empty()
+        TestObserver<Integer> ts = Maybe.<Integer>empty()
         .delay(pp).test();
 
         ts.assertEmpty();
@@ -122,7 +122,7 @@ public class MaybeDelayOtherTest {
     public void emptyWithOnError() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.<Integer>empty()
+        TestObserver<Integer> ts = Maybe.<Integer>empty()
         .delay(pp).test();
 
         ts.assertEmpty();
@@ -140,7 +140,7 @@ public class MaybeDelayOtherTest {
     public void errorWithOnNext() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.<Integer>error(new TestException("Main"))
+        TestObserver<Integer> ts = Maybe.<Integer>error(new TestException("Main"))
         .delay(pp).test();
 
         ts.assertEmpty();
@@ -158,7 +158,7 @@ public class MaybeDelayOtherTest {
     public void errorWithOnComplete() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.<Integer>error(new TestException("Main"))
+        TestObserver<Integer> ts = Maybe.<Integer>error(new TestException("Main"))
         .delay(pp).test();
 
         ts.assertEmpty();
@@ -176,7 +176,7 @@ public class MaybeDelayOtherTest {
     public void errorWithOnError() {
         PublishProcessor<Object> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.<Integer>error(new TestException("Main"))
+        TestObserver<Integer> ts = Maybe.<Integer>error(new TestException("Main"))
         .delay(pp).test();
 
         ts.assertEmpty();

@@ -13,10 +13,11 @@
 
 package io.reactivex.internal.operators.single;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -24,10 +25,10 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class SingleUsingTest {
 
@@ -101,7 +102,7 @@ public class SingleUsingTest {
 
     @Test
     public void eagerMapperThrowsDisposerThrows() {
-        TestSubscriber<Integer> ts = Single.using(Functions.justCallable(Disposables.empty()), mapperThrows, disposerThrows)
+        TestObserver<Integer> ts = Single.using(Functions.justCallable(Disposables.empty()), mapperThrows, disposerThrows)
         .test()
         .assertFailure(CompositeException.class);
 
@@ -182,7 +183,7 @@ public class SingleUsingTest {
 
     @Test
     public void errorAndDisposerThrowsEager() {
-        TestSubscriber<Integer> ts = Single.using(Functions.justCallable(Disposables.empty()),
+        TestObserver<Integer> ts = Single.using(Functions.justCallable(Disposables.empty()),
         new Function<Disposable, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Disposable v) throws Exception {
@@ -224,7 +225,7 @@ public class SingleUsingTest {
 
             Disposable d = Disposables.empty();
 
-            final TestSubscriber<Integer> ts = Single.using(Functions.justCallable(d), new Function<Disposable, SingleSource<Integer>>() {
+            final TestObserver<Integer> ts = Single.using(Functions.justCallable(d), new Function<Disposable, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Disposable v) throws Exception {
                     return pp.toSingle();
@@ -299,7 +300,7 @@ public class SingleUsingTest {
 
             Disposable d = Disposables.empty();
 
-            final TestSubscriber<Integer> ts = Single.using(Functions.justCallable(d), new Function<Disposable, SingleSource<Integer>>() {
+            final TestObserver<Integer> ts = Single.using(Functions.justCallable(d), new Function<Disposable, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Disposable v) throws Exception {
                     return pp.toSingle();

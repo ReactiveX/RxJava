@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import io.reactivex.Single;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -54,9 +55,9 @@ public class SingleCacheTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         Single<Integer> cache = ps.toSingle().cache();
 
-        TestSubscriber<Integer> ts1 = cache.test();
+        TestObserver<Integer> ts1 = cache.test();
 
-        TestSubscriber<Integer> ts2 = cache.test();
+        TestObserver<Integer> ts2 = cache.test();
 
         ps.onNext(1);
         ps.onComplete();
@@ -70,9 +71,9 @@ public class SingleCacheTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         Single<Integer> cache = ps.toSingle().cache();
 
-        TestSubscriber<Integer> ts1 = cache.test();
+        TestObserver<Integer> ts1 = cache.test();
 
-        TestSubscriber<Integer> ts2 = cache.test();
+        TestObserver<Integer> ts2 = cache.test();
 
         ts1.cancel();
 

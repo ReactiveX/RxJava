@@ -21,8 +21,8 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class MaybeCountTest {
 
@@ -45,7 +45,7 @@ public class MaybeCountTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Long> ts = pp.toMaybe().count().test();
+        TestObserver<Long> ts = pp.toMaybe().count().test();
 
         assertTrue(pp.hasSubscribers());
 

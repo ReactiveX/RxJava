@@ -755,8 +755,8 @@ public class ObservableTest {
     }
 
     @Test
-    public void testContains() {
-        Observable<Boolean> o = Observable.just("a", "b", "c").contains("b"); // FIXME nulls not allowed, changed to "c"
+    public void testContainsObservable() {
+        Observable<Boolean> o = Observable.just("a", "b", "c").contains("b").toObservable();
 
         Observer<Boolean> observer = TestHelper.mockObserver();
 
@@ -770,8 +770,8 @@ public class ObservableTest {
     }
 
     @Test
-    public void testContainsWithInexistence() {
-        Observable<Boolean> o = Observable.just("a", "b").contains("c"); // FIXME null values are not allowed, removed
+    public void testContainsWithInexistenceObservable() {
+        Observable<Boolean> o = Observable.just("a", "b").contains("c").toObservable();
 
         Observer<Object> observer = TestHelper.mockObserver();
 
@@ -786,8 +786,8 @@ public class ObservableTest {
 
     @Test
     @Ignore("null values are not allowed")
-    public void testContainsWithNull() {
-        Observable<Boolean> o = Observable.just("a", "b", null).contains(null);
+    public void testContainsWithNullObservable() {
+        Observable<Boolean> o = Observable.just("a", "b", null).contains(null).toObservable();
 
         Observer<Object> observer = TestHelper.mockObserver();
 
@@ -801,8 +801,8 @@ public class ObservableTest {
     }
 
     @Test
-    public void testContainsWithEmptyObservable() {
-        Observable<Boolean> o = Observable.<String> empty().contains("a");
+    public void testContainsWithEmptyObservableObservable() {
+        Observable<Boolean> o = Observable.<String> empty().contains("a").toObservable();
 
         Observer<Object> observer = TestHelper.mockObserver();
 
@@ -813,6 +813,63 @@ public class ObservableTest {
         verify(observer, never()).onError(
                 org.mockito.Matchers.any(Throwable.class));
         verify(observer, times(1)).onComplete();
+    }
+
+    @Test
+    public void testContains() {
+        Single<Boolean> o = Observable.just("a", "b", "c").contains("b"); // FIXME nulls not allowed, changed to "c"
+
+        SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
+
+        o.subscribe(observer);
+
+        verify(observer, times(1)).onSuccess(true);
+        verify(observer, never()).onSuccess(false);
+        verify(observer, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testContainsWithInexistence() {
+        Single<Boolean> o = Observable.just("a", "b").contains("c"); // FIXME null values are not allowed, removed
+
+        SingleObserver<Object> observer = TestHelper.mockSingleObserver();
+
+        o.subscribe(observer);
+
+        verify(observer, times(1)).onSuccess(false);
+        verify(observer, never()).onSuccess(true);
+        verify(observer, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    @Ignore("null values are not allowed")
+    public void testContainsWithNull() {
+        Single<Boolean> o = Observable.just("a", "b", null).contains(null);
+
+        SingleObserver<Object> observer = TestHelper.mockSingleObserver();
+
+        o.subscribe(observer);
+
+        verify(observer, times(1)).onSuccess(true);
+        verify(observer, never()).onSuccess(false);
+        verify(observer, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
+    }
+
+    @Test
+    public void testContainsWithEmptyObservable() {
+        Single<Boolean> o = Observable.<String> empty().contains("a");
+
+        SingleObserver<Object> observer = TestHelper.mockSingleObserver();
+
+        o.subscribe(observer);
+
+        verify(observer, times(1)).onSuccess(false);
+        verify(observer, never()).onSuccess(true);
+        verify(observer, never()).onError(
+                org.mockito.Matchers.any(Throwable.class));
     }
 
     @Test

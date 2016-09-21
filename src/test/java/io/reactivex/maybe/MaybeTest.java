@@ -33,6 +33,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.operators.flowable.FlowableZipTest.ArgsToString;
 import io.reactivex.internal.operators.maybe.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -88,7 +89,7 @@ public class MaybeTest {
     public void fromFlowableDisposeComposesThrough() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.toMaybe().test();
+        TestObserver<Integer> ts = pp.toMaybe().test();
 
         assertTrue(pp.hasSubscribers());
 
@@ -145,7 +146,7 @@ public class MaybeTest {
     public void fromObservableDisposeComposesThrough() {
         PublishSubject<Integer> pp = PublishSubject.create();
 
-        TestSubscriber<Integer> ts = pp.toMaybe().test(false);
+        TestObserver<Integer> ts = pp.toMaybe().test(false);
 
         assertTrue(pp.hasObservers());
 
@@ -514,7 +515,7 @@ public class MaybeTest {
 
     @Test
     public void cast() {
-        TestSubscriber<Number> ts = Maybe.just(1).cast(Number.class).test();
+        TestObserver<Number> ts = Maybe.just(1).cast(Number.class).test();
         // don'n inline this due to the generic type
         ts.assertResult((Number)1);
     }
@@ -542,7 +543,7 @@ public class MaybeTest {
         })
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertOf(TestHelper.subscriberSingleNot("1: " + main))
+        .assertOf(TestHelper.observerSingleNot("1: " + main))
         ;
     }
 
@@ -578,7 +579,7 @@ public class MaybeTest {
         .subscribeOn(Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
-        .assertOf(TestHelper.subscriberSingleNot(main))
+        .assertOf(TestHelper.observerSingleNot(main))
         ;
     }
 
@@ -827,7 +828,7 @@ public class MaybeTest {
         try {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestSubscriber<Integer> ts = pp.toMaybe().doOnDispose(new Action() {
+            TestObserver<Integer> ts = pp.toMaybe().doOnDispose(new Action() {
                 @Override
                 public void run() throws Exception {
                     throw new TestException();
@@ -1526,7 +1527,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
         .test();
 
         ts.assertEmpty();
@@ -1549,7 +1550,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
         .test();
 
         ts.assertEmpty();
@@ -1572,7 +1573,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
         .test();
 
         ts.assertEmpty();
@@ -1594,7 +1595,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
         .test();
 
         ts.assertEmpty();
@@ -1616,7 +1617,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
         .test();
 
         ts.assertEmpty();
@@ -1638,7 +1639,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
         .test();
 
         ts.assertEmpty();
@@ -1660,7 +1661,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
         .test();
 
         ts.assertEmpty();
@@ -1683,7 +1684,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
         .test();
 
         ts.assertEmpty();
@@ -1706,7 +1707,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
                 .test();
 
         ts.assertEmpty();
@@ -1730,7 +1731,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
         .test();
 
         ts.assertEmpty();
@@ -1752,7 +1753,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
         .test();
 
         ts.assertEmpty();
@@ -1774,7 +1775,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
                 .test();
 
         ts.assertEmpty();
@@ -1797,7 +1798,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
         .test();
 
         ts.assertEmpty();
@@ -1819,7 +1820,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
         .test();
 
         ts.assertEmpty();
@@ -2298,7 +2299,7 @@ public class MaybeTest {
 
     @Test
     public void doOnEventErrorThrows() {
-        TestSubscriber<Integer> ts = Maybe.<Integer>error(new TestException("Outer"))
+        TestObserver<Integer> ts = Maybe.<Integer>error(new TestException("Outer"))
         .doOnEvent(new BiConsumer<Integer, Throwable>() {
             @Override
             public void accept(Integer v, Throwable e) throws Exception {
@@ -2867,7 +2868,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp1.toMaybe().ambWith(pp2.toMaybe())
+        TestObserver<Integer> ts = pp1.toMaybe().ambWith(pp2.toMaybe())
         .test();
 
         ts.assertEmpty();
@@ -2889,7 +2890,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp1.toMaybe().ambWith(pp2.toMaybe())
+        TestObserver<Integer> ts = pp1.toMaybe().ambWith(pp2.toMaybe())
         .test();
 
         ts.assertEmpty();
