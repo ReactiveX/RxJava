@@ -23,16 +23,16 @@ import java.util.concurrent.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 
 public class ObservableToSortedListTest {
 
     @Test
-    public void testSortedList() {
+    public void testSortedListObservable() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
-        Observable<List<Integer>> observable = w.toSortedList();
+        Observable<List<Integer>> observable = w.toSortedList().toObservable();
 
         Observer<List<Integer>> observer = TestHelper.mockObserver();
         observable.subscribe(observer);
@@ -42,7 +42,7 @@ public class ObservableToSortedListTest {
     }
 
     @Test
-    public void testSortedListWithCustomFunction() {
+    public void testSortedListWithCustomFunctionFlowable() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Observable<List<Integer>> observable = w.toSortedList(new Comparator<Integer>() {
 
@@ -51,7 +51,7 @@ public class ObservableToSortedListTest {
                 return t2 - t1;
             }
 
-        });
+        }).toObservable();
 
         Observer<List<Integer>> observer = TestHelper.mockObserver();
         observable.subscribe(observer);
@@ -61,9 +61,9 @@ public class ObservableToSortedListTest {
     }
 
     @Test
-    public void testWithFollowingFirst() {
+    public void testWithFollowingFirstObservable() {
         Observable<Integer> o = Observable.just(1, 3, 2, 5, 4);
-        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().blockingFirst());
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().toObservable().blockingFirst());
     }
 
     static void await(CyclicBarrier cb) {
@@ -93,6 +93,63 @@ public class ObservableToSortedListTest {
         })
         .test()
         .assertResult(5, 4, 3, 2, 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void toSortedListCapacityObservable() {
+        Observable.just(5, 1, 2, 4, 3).toSortedList(4).toObservable()
+        .test()
+        .assertResult(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void toSortedListComparatorCapacityObservable() {
+        Observable.just(5, 1, 2, 4, 3).toSortedList(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                return b - a;
+            }
+        }, 4).toObservable()
+        .test()
+        .assertResult(Arrays.asList(5, 4, 3, 2, 1));
+    }
+
+
+    @Test
+    public void testSortedList() {
+        Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
+        Single<List<Integer>> observable = w.toSortedList();
+
+        SingleObserver<List<Integer>> observer = TestHelper.mockSingleObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onSuccess(Arrays.asList(1, 2, 3, 4, 5));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testSortedListWithCustomFunction() {
+        Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
+        Single<List<Integer>> observable = w.toSortedList(new Comparator<Integer>() {
+
+            @Override
+            public int compare(Integer t1, Integer t2) {
+                return t2 - t1;
+            }
+
+        });
+
+        SingleObserver<List<Integer>> observer = TestHelper.mockSingleObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onSuccess(Arrays.asList(5, 4, 3, 2, 1));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testWithFollowingFirst() {
+        Observable<Integer> o = Observable.just(1, 3, 2, 5, 4);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().blockingGet());
     }
 
     @SuppressWarnings("unchecked")

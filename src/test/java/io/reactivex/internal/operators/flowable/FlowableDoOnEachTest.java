@@ -126,7 +126,7 @@ public class FlowableDoOnEachTest {
                         }
                     })
                     .toList()
-                    .doOnNext(new Consumer<List<Boolean>>() {
+                    .doOnSuccess(new Consumer<List<Boolean>>() {
                         @Override
                         public void accept(List<Boolean> booleans) {
                             count.incrementAndGet();
@@ -152,7 +152,7 @@ public class FlowableDoOnEachTest {
                         }
                     })
                     .toList()
-                    .doOnNext(new Consumer<List<Boolean>>() {
+                    .doOnSuccess(new Consumer<List<Boolean>>() {
                         @Override
                         public void accept(List<Boolean> booleans) {
                             count.incrementAndGet();

@@ -152,7 +152,7 @@ public class ObservableTakeLastTest {
                     }
                 })
                 .toList()
-                .blockingSingle().size());
+                .blockingGet().size());
     }
 
     @Test

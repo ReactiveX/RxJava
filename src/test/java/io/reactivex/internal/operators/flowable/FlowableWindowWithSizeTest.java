@@ -38,7 +38,7 @@ public class FlowableWindowWithSizeTest {
         Flowable.concat(observables.map(new Function<Flowable<T>, Flowable<List<T>>>() {
             @Override
             public Flowable<List<T>> apply(Flowable<T> xs) {
-                return xs.toList();
+                return xs.toList().toFlowable();
             }
         }))
                 .blockingForEach(new Consumer<List<T>>() {
@@ -297,7 +297,7 @@ public class FlowableWindowWithSizeTest {
         .map(new Function<Flowable<Integer>, Flowable<List<Integer>>>() {
             @Override
             public Flowable<List<Integer>> apply(Flowable<Integer> t) {
-                return t.toList();
+                return t.toList().toFlowable();
             }
         })
         .concatMap(new Function<Flowable<List<Integer>>, Publisher<List<Integer>>>() {

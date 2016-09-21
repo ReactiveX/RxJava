@@ -30,7 +30,7 @@ public class ObservableConcatTests {
         Observable<String> o1 = Observable.just("one", "two");
         Observable<String> o2 = Observable.just("three", "four");
 
-        List<String> values = Observable.concat(o1, o2).toList().blockingSingle();
+        List<String> values = Observable.concat(o1, o2).toList().blockingGet();
 
         assertEquals("one", values.get(0));
         assertEquals("two", values.get(1));
@@ -46,7 +46,7 @@ public class ObservableConcatTests {
 
         Observable<Observable<String>> os = Observable.just(o1, o2, o3);
 
-        List<String> values = Observable.concat(os).toList().blockingSingle();
+        List<String> values = Observable.concat(os).toList().blockingGet();
 
         assertEquals("one", values.get(0));
         assertEquals("two", values.get(1));
@@ -65,7 +65,7 @@ public class ObservableConcatTests {
         @SuppressWarnings("unchecked")
         Iterable<Observable<String>> is = Arrays.asList(o1, o2, o3);
 
-        List<String> values = Observable.concat(Observable.fromIterable(is)).toList().blockingSingle();
+        List<String> values = Observable.concat(Observable.fromIterable(is)).toList().blockingGet();
 
         assertEquals("one", values.get(0));
         assertEquals("two", values.get(1));
@@ -87,7 +87,7 @@ public class ObservableConcatTests {
 
         Observable<Observable<Media>> os = Observable.just(o1, o2);
 
-        List<Media> values = Observable.concat(os).toList().blockingSingle();
+        List<Media> values = Observable.concat(os).toList().blockingGet();
 
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));
@@ -109,7 +109,7 @@ public class ObservableConcatTests {
 
         Observable<Observable<Media>> os = Observable.just(o1, o2);
 
-        List<Media> values = Observable.concat(os).toList().blockingSingle();
+        List<Media> values = Observable.concat(os).toList().blockingGet();
 
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));
@@ -129,7 +129,7 @@ public class ObservableConcatTests {
         Observable<Movie> o1 = Observable.just(horrorMovie1, movie);
         Observable<Media> o2 = Observable.just(media, horrorMovie2);
 
-        List<Media> values = Observable.concat(o1, o2).toList().blockingSingle();
+        List<Media> values = Observable.concat(o1, o2).toList().blockingGet();
 
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));
@@ -157,7 +157,7 @@ public class ObservableConcatTests {
 
         Observable<Media> o2 = Observable.just(media, horrorMovie2);
 
-        List<Media> values = Observable.concat(o1, o2).toList().blockingSingle();
+        List<Media> values = Observable.concat(o1, o2).toList().blockingGet();
 
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));

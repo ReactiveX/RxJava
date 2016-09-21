@@ -121,7 +121,7 @@ public abstract class AbstractSchedulerTests {
 
         });
 
-        List<String> strings = m.toList().blockingLast();
+        List<String> strings = m.toList().blockingGet();
 
         assertEquals(4, strings.size());
         // because flatMap does a merge there is no guarantee of order

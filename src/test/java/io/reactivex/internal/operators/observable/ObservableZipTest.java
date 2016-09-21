@@ -1122,7 +1122,7 @@ public class ObservableZipTest {
         for (int i = 0; i < 1026; i++) {
             expected.add(i * 3);
         }
-        assertEquals(expected, zip2.toList().blockingSingle());
+        assertEquals(expected, zip2.toList().blockingGet());
     }
 
     @Test(timeout = 10000)

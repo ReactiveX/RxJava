@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -33,9 +33,9 @@ import io.reactivex.subscribers.TestSubscriber;
 public class FlowableToSortedListTest {
 
     @Test
-    public void testSortedList() {
+    public void testSortedListFlowable() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
-        Flowable<List<Integer>> observable = w.toSortedList();
+        Flowable<List<Integer>> observable = w.toSortedList().toFlowable();
 
         Subscriber<List<Integer>> observer = TestHelper.mockSubscriber();
         observable.subscribe(observer);
@@ -45,7 +45,7 @@ public class FlowableToSortedListTest {
     }
 
     @Test
-    public void testSortedListWithCustomFunction() {
+    public void testSortedListWithCustomFunctionFlowable() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
         Flowable<List<Integer>> observable = w.toSortedList(new Comparator<Integer>() {
 
@@ -54,7 +54,7 @@ public class FlowableToSortedListTest {
                 return t2 - t1;
             }
 
-        });
+        }).toFlowable();
 
         Subscriber<List<Integer>> observer = TestHelper.mockSubscriber();
         observable.subscribe(observer);
@@ -64,13 +64,13 @@ public class FlowableToSortedListTest {
     }
 
     @Test
-    public void testWithFollowingFirst() {
+    public void testWithFollowingFirstFlowable() {
         Flowable<Integer> o = Flowable.just(1, 3, 2, 5, 4);
-        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().blockingFirst());
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().toFlowable().blockingFirst());
     }
     @Test
-    public void testBackpressureHonored() {
-        Flowable<List<Integer>> w = Flowable.just(1, 3, 2, 5, 4).toSortedList();
+    public void testBackpressureHonoredFlowable() {
+        Flowable<List<Integer>> w = Flowable.just(1, 3, 2, 5, 4).toSortedList().toFlowable();
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
 
         w.subscribe(ts);
@@ -91,9 +91,10 @@ public class FlowableToSortedListTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
+
     @Test(timeout = 2000)
     @Ignore("PublishSubject no longer emits without requests so this test fails due to the race of onComplete and request")
-    public void testAsyncRequested() {
+    public void testAsyncRequestedFlowable() {
         Scheduler.Worker w = Schedulers.newThread().createWorker();
         try {
             for (int i = 0; i < 1000; i++) {
@@ -101,7 +102,7 @@ public class FlowableToSortedListTest {
                     System.out.println("testAsyncRequested -> " + i);
                 }
                 PublishProcessor<Integer> source = PublishProcessor.create();
-                Flowable<List<Integer>> sorted = source.toSortedList();
+                Flowable<List<Integer>> sorted = source.toSortedList().toFlowable();
 
                 final CyclicBarrier cb = new CyclicBarrier(2);
                 final TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0L);
@@ -125,15 +126,6 @@ public class FlowableToSortedListTest {
             w.dispose();
         }
     }
-    static void await(CyclicBarrier cb) {
-        try {
-            cb.await();
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        } catch (BrokenBarrierException ex) {
-            ex.printStackTrace();
-        }
-    }
 
     @Test
     public void sorted() {
@@ -152,6 +144,130 @@ public class FlowableToSortedListTest {
         })
         .test()
         .assertResult(5, 4, 3, 2, 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void toSortedListCapacityFlowable() {
+        Flowable.just(5, 1, 2, 4, 3).toSortedList(4).toFlowable()
+        .test()
+        .assertResult(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void toSortedListComparatorCapacityFlowable() {
+        Flowable.just(5, 1, 2, 4, 3).toSortedList(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                return b - a;
+            }
+        }, 4).toFlowable()
+        .test()
+        .assertResult(Arrays.asList(5, 4, 3, 2, 1));
+    }
+
+    @Test
+    public void testSortedList() {
+        Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
+        Single<List<Integer>> observable = w.toSortedList();
+
+        SingleObserver<List<Integer>> observer = TestHelper.mockSingleObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onSuccess(Arrays.asList(1, 2, 3, 4, 5));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testSortedListWithCustomFunction() {
+        Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
+        Single<List<Integer>> observable = w.toSortedList(new Comparator<Integer>() {
+
+            @Override
+            public int compare(Integer t1, Integer t2) {
+                return t2 - t1;
+            }
+
+        });
+
+        SingleObserver<List<Integer>> observer = TestHelper.mockSingleObserver();
+        observable.subscribe(observer);
+        verify(observer, times(1)).onSuccess(Arrays.asList(5, 4, 3, 2, 1));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testWithFollowingFirst() {
+        Flowable<Integer> o = Flowable.just(1, 3, 2, 5, 4);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().blockingGet());
+    }
+    @Test
+    @Ignore("Single doesn't do backpressure")
+    public void testBackpressureHonored() {
+        Single<List<Integer>> w = Flowable.just(1, 3, 2, 5, 4).toSortedList();
+        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+
+        w.subscribe(ts);
+
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotComplete();
+
+//        ts.request(1);
+
+        ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertNoErrors();
+        ts.assertComplete();
+
+//        ts.request(1);
+
+        ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertNoErrors();
+        ts.assertComplete();
+    }
+
+    @Test(timeout = 2000)
+    @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
+    public void testAsyncRequested() {
+        Scheduler.Worker w = Schedulers.newThread().createWorker();
+        try {
+            for (int i = 0; i < 1000; i++) {
+                if (i % 50 == 0) {
+                    System.out.println("testAsyncRequested -> " + i);
+                }
+                PublishProcessor<Integer> source = PublishProcessor.create();
+                Single<List<Integer>> sorted = source.toSortedList();
+
+                final CyclicBarrier cb = new CyclicBarrier(2);
+                final TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+                sorted.subscribe(ts);
+                w.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        await(cb);
+//                        ts.request(1);
+                    }
+                });
+                source.onNext(1);
+                await(cb);
+                source.onComplete();
+                ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+                ts.assertTerminated();
+                ts.assertNoErrors();
+                ts.assertValue(Arrays.asList(1));
+            }
+        } finally {
+            w.dispose();
+        }
+    }
+    static void await(CyclicBarrier cb) {
+        try {
+            cb.await();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        } catch (BrokenBarrierException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @SuppressWarnings("unchecked")

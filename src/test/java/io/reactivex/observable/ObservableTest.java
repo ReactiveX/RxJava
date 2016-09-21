@@ -989,7 +989,7 @@ public class ObservableTest {
                         }
                     })
                     .toList()
-                    .doOnNext(new Consumer<List<Boolean>>() {
+                    .doOnSuccess(new Consumer<List<Boolean>>() {
                         @Override
                         public void accept(List<Boolean> booleans) {
                             count.incrementAndGet();
@@ -1102,7 +1102,7 @@ public class ObservableTest {
             public Observable<Integer> apply(Integer v) {
                 return Observable.range(v, 2);
             }
-        }).toList().blockingFirst();
+        }).toList().blockingGet();
 
         Assert.assertEquals(Arrays.asList(1, 2, 2, 3, 3, 4, 4, 5, 5, 6), list);
     }

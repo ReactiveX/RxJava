@@ -33,7 +33,7 @@ public class CollectTckTest extends BaseTck<List<Integer>> {
                     public void accept(List<Integer> a, Integer b) throws Exception {
                         a.add(b);
                     }
-                })
+                }).toFlowable()
             );
     }
 

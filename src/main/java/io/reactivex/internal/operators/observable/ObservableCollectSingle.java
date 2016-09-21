@@ -12,45 +12,63 @@
  */
 package io.reactivex.internal.operators.observable;
 
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Predicate;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.functions.BiConsumer;
+import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.FuseToObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableAllSingle<T> extends Single<Boolean> implements FuseToObservable<Boolean> {
+public final class ObservableCollectSingle<T, U> extends Single<U> implements FuseToObservable<U> {
+
     final ObservableSource<T> source;
 
-    final Predicate<? super T> predicate;
-    public ObservableAllSingle(ObservableSource<T> source, Predicate<? super T> predicate) {
+    final Callable<? extends U> initialSupplier;
+    final BiConsumer<? super U, ? super T> collector;
+
+    public ObservableCollectSingle(ObservableSource<T> source,
+            Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
         this.source = source;
-        this.predicate = predicate;
+        this.initialSupplier = initialSupplier;
+        this.collector = collector;
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Boolean> t) {
-        source.subscribe(new AllObserver<T>(t, predicate));
+    protected void subscribeActual(SingleObserver<? super U> t) {
+        U u;
+        try {
+            u = ObjectHelper.requireNonNull(initialSupplier.call(), "The initialSupplier returned a null value");
+        } catch (Throwable e) {
+            EmptyDisposable.error(e, t);
+            return;
+        }
+
+        source.subscribe(new CollectObserver<T, U>(t, u, collector));
     }
 
     @Override
-    public Observable<Boolean> fuseToObservable() {
-        return RxJavaPlugins.onAssembly(new ObservableAll<T>(source, predicate));
+    public Observable<U> fuseToObservable() {
+        return RxJavaPlugins.onAssembly(new ObservableCollect<T, U>(source, initialSupplier, collector));
     }
 
-    static final class AllObserver<T> implements Observer<T>, Disposable {
-        final SingleObserver<? super Boolean> actual;
-        final Predicate<? super T> predicate;
+    static final class CollectObserver<T, U> implements Observer<T>, Disposable {
+        final SingleObserver<? super U> actual;
+        final BiConsumer<? super U, ? super T> collector;
+        final U u;
 
         Disposable s;
 
         boolean done;
 
-        AllObserver(SingleObserver<? super Boolean> actual, Predicate<? super T> predicate) {
+        CollectObserver(SingleObserver<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
             this.actual = actual;
-            this.predicate = predicate;
+            this.collector = collector;
+            this.u = u;
         }
+
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
@@ -59,24 +77,28 @@ public final class ObservableAllSingle<T> extends Single<Boolean> implements Fus
             }
         }
 
+
+        @Override
+        public void dispose() {
+            s.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return s.isDisposed();
+        }
+
+
         @Override
         public void onNext(T t) {
             if (done) {
                 return;
             }
-            boolean b;
             try {
-                b = predicate.test(t);
+                collector.accept(u, t);
             } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
                 s.dispose();
                 onError(e);
-                return;
-            }
-            if (!b) {
-                done = true;
-                s.dispose();
-                actual.onSuccess(false);
             }
         }
 
@@ -96,17 +118,7 @@ public final class ObservableAllSingle<T> extends Single<Boolean> implements Fus
                 return;
             }
             done = true;
-            actual.onSuccess(true);
-        }
-
-        @Override
-        public void dispose() {
-            s.dispose();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return s.isDisposed();
+            actual.onSuccess(u);
         }
     }
 }

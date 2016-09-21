@@ -253,6 +253,32 @@ public class FlowableScanTest {
      */
     @Test
     public void testSeedFactory() {
+        Single<List<Integer>> o = Flowable.range(1, 10)
+                .collect(new Callable<List<Integer>>() {
+
+                    @Override
+                    public List<Integer> call() {
+                        return new ArrayList<Integer>();
+                    }
+
+                }, new BiConsumer<List<Integer>, Integer>() {
+
+                    @Override
+                    public void accept(List<Integer> list, Integer t2) {
+                        list.add(t2);
+                    }
+
+                });
+
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingGet());
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingGet());
+    }
+
+    /**
+     * This uses the public API collect which uses scan under the covers.
+     */
+    @Test
+    public void testSeedFactoryFlowable() {
         Flowable<List<Integer>> o = Flowable.range(1, 10)
                 .collect(new Callable<List<Integer>>() {
 
@@ -268,7 +294,7 @@ public class FlowableScanTest {
                         list.add(t2);
                     }
 
-                }).takeLast(1);
+                }).toFlowable().takeLast(1);
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingSingle());
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.blockingSingle());

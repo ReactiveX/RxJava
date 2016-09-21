@@ -22,9 +22,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableAnySingle<T> extends Single<Boolean> implements FuseToObservable<Boolean> {
     final ObservableSource<T> source;
-    
+
     final Predicate<? super T> predicate;
-    
+
     public ObservableAnySingle(ObservableSource<T> source, Predicate<? super T> predicate) {
         this.source = source;
         this.predicate = predicate;
@@ -34,7 +34,7 @@ public final class ObservableAnySingle<T> extends Single<Boolean> implements Fus
     protected void subscribeActual(SingleObserver<? super Boolean> t) {
         source.subscribe(new AnyObserver<T>(t, predicate));
     }
-    
+
     @Override
     public Observable<Boolean> fuseToObservable() {
         return RxJavaPlugins.onAssembly(new ObservableAny<T>(source, predicate));

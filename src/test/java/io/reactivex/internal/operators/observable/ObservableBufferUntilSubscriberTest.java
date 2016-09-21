@@ -61,7 +61,7 @@ public class ObservableBufferUntilSubscriberTest {
                         }
                     })
                     .toList()
-                    .doOnNext(new Consumer<List<Object>>() {
+                    .doOnSuccess(new Consumer<List<Object>>() {
                         @Override
                         public void accept(List<Object> integers) {
                                 counter.incrementAndGet();

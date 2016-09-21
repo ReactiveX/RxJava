@@ -24,9 +24,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseToFlowable<Boolean> {
     final Publisher<T> source;
-    
+
     final Predicate<? super T> predicate;
-    
+
     public FlowableAnySingle(Publisher<T> source, Predicate<? super T> predicate) {
         this.source = source;
         this.predicate = predicate;
@@ -36,7 +36,7 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
     protected void subscribeActual(SingleObserver<? super Boolean> s) {
         source.subscribe(new AnySubscriber<T>(s, predicate));
     }
-    
+
     @Override
     public Flowable<Boolean> fuseToFlowable() {
         return RxJavaPlugins.onAssembly(new FlowableAny<T>(source, predicate));
@@ -45,7 +45,7 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
     static final class AnySubscriber<T> implements Subscriber<T>, Disposable {
 
         final SingleObserver<? super Boolean> actual;
-        
+
         final Predicate<? super T> predicate;
 
         Subscription s;
@@ -111,7 +111,7 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
             s.cancel();
             s = SubscriptionHelper.CANCELLED;
         }
-        
+
         @Override
         public boolean isDisposed() {
             return s == SubscriptionHelper.CANCELLED;

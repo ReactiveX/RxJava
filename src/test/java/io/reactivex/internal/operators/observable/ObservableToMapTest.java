@@ -21,17 +21,19 @@ import java.util.concurrent.Callable;
 
 import org.junit.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 import io.reactivex.functions.Function;
 
 public class ObservableToMapTest {
     Observer<Object> objectObserver;
+    SingleObserver<Object> singleObserver;
 
     @Before
     public void before() {
         objectObserver = TestHelper.mockObserver();
+        singleObserver = TestHelper.mockSingleObserver();
     }
 
     Function<String, Integer> lengthFunc = new Function<String, Integer>() {
@@ -48,10 +50,10 @@ public class ObservableToMapTest {
     };
 
     @Test
-    public void testToMap() {
+    public void testToMapObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc);
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc).toObservable();
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "a");
@@ -67,10 +69,10 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithValueSelector() {
+    public void testToMapWithValueSelectorObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate).toObservable();
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "aa");
@@ -86,7 +88,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithError() {
+    public void testToMapWithErrorObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
@@ -98,7 +100,7 @@ public class ObservableToMapTest {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFuncErr);
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFuncErr).toObservable();
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "a");
@@ -115,7 +117,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorInValueSelector() {
+    public void testToMapWithErrorInValueSelectorObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Function<String, String> duplicateErr = new Function<String, String>() {
@@ -128,7 +130,7 @@ public class ObservableToMapTest {
             }
         };
 
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr);
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr).toObservable();
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "aa");
@@ -145,7 +147,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithFactory() {
+    public void testToMapWithFactoryObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
@@ -174,7 +176,7 @@ public class ObservableToMapTest {
             public String apply(String v) {
                 return v;
             }
-        }, mapFactory);
+        }, mapFactory).toObservable();
 
         Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
         expected.put(2, "bb");
@@ -189,7 +191,7 @@ public class ObservableToMapTest {
     }
 
     @Test
-    public void testToMapWithErrorThrowingFactory() {
+    public void testToMapWithErrorThrowingFactoryObservable() {
         Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
@@ -210,7 +212,7 @@ public class ObservableToMapTest {
             public String apply(String v) {
                 return v;
             }
-        }, mapFactory);
+        }, mapFactory).toObservable();
 
         Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
         expected.put(2, "bb");
@@ -222,6 +224,178 @@ public class ObservableToMapTest {
         verify(objectObserver, never()).onNext(expected);
         verify(objectObserver, never()).onComplete();
         verify(objectObserver, times(1)).onError(any(Throwable.class));
+    }
+
+
+    @Test
+    public void testToMap() {
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
+
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc);
+
+        Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "a");
+        expected.put(2, "bb");
+        expected.put(3, "ccc");
+        expected.put(4, "dddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onError(any(Throwable.class));
+        verify(singleObserver, times(1)).onSuccess(expected);
+    }
+
+    @Test
+    public void testToMapWithValueSelector() {
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
+
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
+
+        Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "aa");
+        expected.put(2, "bbbb");
+        expected.put(3, "cccccc");
+        expected.put(4, "dddddddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onError(any(Throwable.class));
+        verify(singleObserver, times(1)).onSuccess(expected);
+    }
+
+    @Test
+    public void testToMapWithError() {
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
+
+        Function<String, Integer> lengthFuncErr = new Function<String, Integer>() {
+            @Override
+            public Integer apply(String t1) {
+                if ("bb".equals(t1)) {
+                    throw new RuntimeException("Forced Failure");
+                }
+                return t1.length();
+            }
+        };
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFuncErr);
+
+        Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "a");
+        expected.put(2, "bb");
+        expected.put(3, "ccc");
+        expected.put(4, "dddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onSuccess(expected);
+        verify(singleObserver, times(1)).onError(any(Throwable.class));
+
+    }
+
+    @Test
+    public void testToMapWithErrorInValueSelector() {
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
+
+        Function<String, String> duplicateErr = new Function<String, String>() {
+            @Override
+            public String apply(String t1) {
+                if ("bb".equals(t1)) {
+                    throw new RuntimeException("Forced failure");
+                }
+                return t1 + t1;
+            }
+        };
+
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr);
+
+        Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "aa");
+        expected.put(2, "bbbb");
+        expected.put(3, "cccccc");
+        expected.put(4, "dddddddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onSuccess(expected);
+        verify(singleObserver, times(1)).onError(any(Throwable.class));
+
+    }
+
+    @Test
+    public void testToMapWithFactory() {
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
+
+        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+            @Override
+            public Map<Integer, String> call() {
+                return new LinkedHashMap<Integer, String>() {
+
+                    private static final long serialVersionUID = -3296811238780863394L;
+
+                    @Override
+                    protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
+                        return size() > 3;
+                    }
+                };
+            }
+        };
+
+        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+            @Override
+            public Integer apply(String t1) {
+                return t1.length();
+            }
+        };
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+            @Override
+            public String apply(String v) {
+                return v;
+            }
+        }, mapFactory);
+
+        Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
+        expected.put(2, "bb");
+        expected.put(3, "ccc");
+        expected.put(4, "dddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onError(any(Throwable.class));
+        verify(singleObserver, times(1)).onSuccess(expected);
+    }
+
+    @Test
+    public void testToMapWithErrorThrowingFactory() {
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
+
+        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+            @Override
+            public Map<Integer, String> call() {
+                throw new RuntimeException("Forced failure");
+            }
+        };
+
+        Function<String, Integer> lengthFunc = new Function<String, Integer>() {
+            @Override
+            public Integer apply(String t1) {
+                return t1.length();
+            }
+        };
+        Single<Map<Integer, String>> mapped = source.toMap(lengthFunc, new Function<String, String>() {
+            @Override
+            public String apply(String v) {
+                return v;
+            }
+        }, mapFactory);
+
+        Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
+        expected.put(2, "bb");
+        expected.put(3, "ccc");
+        expected.put(4, "dddd");
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onSuccess(expected);
+        verify(singleObserver, times(1)).onError(any(Throwable.class));
     }
 
 }

@@ -918,7 +918,7 @@ public class FlowableNullTests {
         }, new BiConsumer<Object, Integer>() {
             @Override
             public void accept(Object a, Integer b) { }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2386,7 +2386,7 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2421,7 +2421,7 @@ public class FlowableNullTests {
             public Map<Object, Object> call() {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2451,7 +2451,7 @@ public class FlowableNullTests {
             public Object apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2486,7 +2486,7 @@ public class FlowableNullTests {
             public Map<Object, Collection<Object>> call() {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -2531,7 +2531,7 @@ public class FlowableNullTests {
             public Collection<Integer> apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
