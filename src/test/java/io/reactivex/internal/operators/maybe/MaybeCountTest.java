@@ -45,7 +45,7 @@ public class MaybeCountTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Long> ts = pp.toMaybe().count().test();
+        TestObserver<Long> ts = pp.singleElement().count().test();
 
         assertTrue(pp.hasSubscribers());
 
@@ -58,7 +58,7 @@ public class MaybeCountTest {
     public void isDisposed() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestHelper.checkDisposed(pp.toMaybe().count());
+        TestHelper.checkDisposed(pp.singleElement().count());
     }
 
     @Test

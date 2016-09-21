@@ -17,45 +17,64 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.fuseable.FuseToFlowable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
-/**
- * Consumes the source Publisher and emits its last item or the defaultItem
- * if empty.
- * 
- * @param <T> the value type
- */
-public final class FlowableLastSingle<T> extends Single<T> {
+public final class FlowableCountSingle<T> extends Single<Long> implements FuseToFlowable<Long> {
 
     final Publisher<T> source;
 
-    final T defaultItem;
-
-    public FlowableLastSingle(Publisher<T> source, T defaultItem) {
+    public FlowableCountSingle(Publisher<T> source) {
         this.source = source;
-        this.defaultItem = defaultItem;
     }
-
-    // TODO fuse back to Flowable
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new LastSubscriber<T>(observer, defaultItem));
+    protected void subscribeActual(SingleObserver<? super Long> s) {
+        source.subscribe(new CountSubscriber(s));
     }
 
-    static final class LastSubscriber<T> implements Subscriber<T>, Disposable {
+    @Override
+    public Flowable<Long> fuseToFlowable() {
+        return RxJavaPlugins.onAssembly(new FlowableCount<T>(source));
+    }
 
-        final SingleObserver<? super T> actual;
+    static final class CountSubscriber implements Subscriber<Object>, Disposable {
 
-        final T defaultItem;
+        final SingleObserver<? super Long> actual;
 
         Subscription s;
 
-        T item;
+        long count;
 
-        public LastSubscriber(SingleObserver<? super T> actual, T defaultItem) {
+        CountSubscriber(SingleObserver<? super Long> actual) {
             this.actual = actual;
-            this.defaultItem = defaultItem;
+        }
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
+                s.request(Long.MAX_VALUE);
+            }
+        }
+
+        @Override
+        public void onNext(Object t) {
+            count++;
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            s = SubscriptionHelper.CANCELLED;
+            actual.onError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            s = SubscriptionHelper.CANCELLED;
+            actual.onSuccess(count);
         }
 
         @Override
@@ -67,41 +86,6 @@ public final class FlowableLastSingle<T> extends Single<T> {
         @Override
         public boolean isDisposed() {
             return s == SubscriptionHelper.CANCELLED;
-        }
-
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-
-                actual.onSubscribe(this);
-
-                s.request(Long.MAX_VALUE);
-            }
-        }
-
-        @Override
-        public void onNext(T t) {
-            item = t;
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            s = SubscriptionHelper.CANCELLED;
-            item = null;
-            actual.onError(t);
-        }
-
-        @Override
-        public void onComplete() {
-            s = SubscriptionHelper.CANCELLED;
-            T v = item;
-            if (v != null) {
-                item = null;
-                actual.onSuccess(v);
-            } else {
-                actual.onSuccess(defaultItem);
-            }
         }
     }
 }

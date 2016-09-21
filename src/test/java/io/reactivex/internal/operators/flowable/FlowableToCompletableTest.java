@@ -30,7 +30,7 @@ public class FlowableToCompletableTest {
     @Test
     public void testJustSingleItemObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
-        Completable cmp = Flowable.just("Hello World!").toCompletable();
+        Completable cmp = Flowable.just("Hello World!").ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
 
         subscriber.assertNoValues();
@@ -42,7 +42,7 @@ public class FlowableToCompletableTest {
     public void testErrorObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
         IllegalArgumentException error = new IllegalArgumentException("Error");
-        Completable cmp = Flowable.<String>error(error).toCompletable();
+        Completable cmp = Flowable.<String>error(error).ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
 
         subscriber.assertError(error);
@@ -52,7 +52,7 @@ public class FlowableToCompletableTest {
     @Test
     public void testJustTwoEmissionsObservableThrowsError() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
-        Completable cmp = Flowable.just("First", "Second").toCompletable();
+        Completable cmp = Flowable.just("First", "Second").ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
 
         subscriber.assertNoErrors();
@@ -62,7 +62,7 @@ public class FlowableToCompletableTest {
     @Test
     public void testEmptyObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
-        Completable cmp = Flowable.<String>empty().toCompletable();
+        Completable cmp = Flowable.<String>empty().ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
 
         subscriber.assertNoErrors();
@@ -73,7 +73,7 @@ public class FlowableToCompletableTest {
     @Test
     public void testNeverObservable() {
         TestSubscriber<String> subscriber = TestSubscriber.create();
-        Completable cmp = Flowable.<String>never().toCompletable();
+        Completable cmp = Flowable.<String>never().ignoreElements();
         cmp.<String>toFlowable().subscribe(subscriber);
 
         subscriber.assertNotTerminated();
@@ -89,7 +89,7 @@ public class FlowableToCompletableTest {
             @Override
             public void run() {
                 unsubscribed.set(true);
-            }}).toCompletable();
+            }}).ignoreElements();
 
         cmp.<String>toFlowable().subscribe(subscriber);
 

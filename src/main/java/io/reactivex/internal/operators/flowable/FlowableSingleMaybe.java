@@ -15,36 +15,43 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.fuseable.FuseToFlowable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> {
+public final class FlowableSingleMaybe<T> extends Maybe<T> implements FuseToFlowable<T> {
 
-    final T defaultValue;
+    final Publisher<T> source;
 
-    public FlowableSingle(Publisher<T> source, T defaultValue) {
-        super(source);
-        this.defaultValue = defaultValue;
+    public FlowableSingleMaybe(Publisher<T> source) {
+        this.source = source;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new SingleElementSubscriber<T>(s, defaultValue));
+    protected void subscribeActual(MaybeObserver<? super T> s) {
+        source.subscribe(new SingleElementSubscriber<T>(s));
     }
 
-    static final class SingleElementSubscriber<T> extends DeferredScalarSubscription<T>
-    implements Subscriber<T> {
+    @Override
+    public Flowable<T> fuseToFlowable() {
+        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(source, null));
+    }
 
-        private static final long serialVersionUID = -5526049321428043809L;
+    static final class SingleElementSubscriber<T>
+    implements Subscriber<T>, Disposable {
 
-        final T defaultValue;
+        final MaybeObserver<? super T> actual;
 
         Subscription s;
 
         boolean done;
 
-        SingleElementSubscriber(Subscriber<? super T> actual, T defaultValue) {
-            super(actual);
-            this.defaultValue = defaultValue;
+        T value;
+
+        SingleElementSubscriber(MaybeObserver<? super T> actual) {
+            this.actual = actual;
         }
 
         @Override
@@ -64,6 +71,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
             if (value != null) {
                 done = true;
                 s.cancel();
+                s = SubscriptionHelper.CANCELLED;
                 actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
                 return;
             }
@@ -76,6 +84,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
                 return;
             }
             done = true;
+            s = SubscriptionHelper.CANCELLED;
             actual.onError(t);
         }
 
@@ -85,22 +94,25 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
                 return;
             }
             done = true;
+            s = SubscriptionHelper.CANCELLED;
             T v = value;
             value = null;
             if (v == null) {
-                v = defaultValue;
-            }
-            if (v == null) {
                 actual.onComplete();
             } else {
-                complete(v);
+                actual.onSuccess(v);
             }
         }
 
         @Override
-        public void cancel() {
-            super.cancel();
+        public void dispose() {
             s.cancel();
+            s = SubscriptionHelper.CANCELLED;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return s == SubscriptionHelper.CANCELLED;
         }
     }
 }

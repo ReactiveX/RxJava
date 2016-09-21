@@ -29,7 +29,7 @@ public class SingleAmbTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = pp1.toSingle().ambWith(pp2.toSingle()).test();
+        TestObserver<Integer> ts = pp1.single(-99).ambWith(pp2.single(-99)).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -49,7 +49,7 @@ public class SingleAmbTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = pp1.toSingle().ambWith(pp2.toSingle()).test();
+        TestObserver<Integer> ts = pp1.single(-99).ambWith(pp2.single(-99)).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());

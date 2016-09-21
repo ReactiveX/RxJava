@@ -45,7 +45,7 @@ public class MaybeTest {
     public void fromFlowableEmpty() {
 
         Flowable.empty()
-        .toMaybe()
+        .singleElement()
         .test()
         .assertResult();
     }
@@ -54,7 +54,7 @@ public class MaybeTest {
     public void fromFlowableJust() {
 
         Flowable.just(1)
-        .toMaybe()
+        .singleElement()
         .test()
         .assertResult(1);
     }
@@ -63,7 +63,7 @@ public class MaybeTest {
     public void fromFlowableError() {
 
         Flowable.error(new TestException())
-        .toMaybe()
+        .singleElement()
         .test()
         .assertFailure(TestException.class);
     }
@@ -71,7 +71,7 @@ public class MaybeTest {
     @Test
     public void fromFlowableValueAndError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .toMaybe()
+        .singleElement()
         .test()
         .assertFailure(TestException.class);
     }
@@ -80,16 +80,16 @@ public class MaybeTest {
     public void fromFlowableMany() {
 
         Flowable.range(1, 2)
-        .toMaybe()
+        .singleElement()
         .test()
-        .assertFailure(IndexOutOfBoundsException.class);
+        .assertFailure(IllegalArgumentException.class);
     }
 
     @Test
     public void fromFlowableDisposeComposesThrough() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Integer> ts = pp.toMaybe().test();
+        TestObserver<Integer> ts = pp.singleElement().test();
 
         assertTrue(pp.hasSubscribers());
 
@@ -128,7 +128,7 @@ public class MaybeTest {
     @Test
     public void fromObservableValueAndError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .toMaybe()
+        .singleElement()
         .test()
         .assertFailure(TestException.class);
     }
@@ -332,7 +332,7 @@ public class MaybeTest {
 
     @Test
     public void flowableMaybeFlowable() {
-        Flowable.just(1).toMaybe().toFlowable().test().assertResult(1);
+        Flowable.just(1).singleElement().toFlowable().test().assertResult(1);
     }
 
     @Test
@@ -828,7 +828,7 @@ public class MaybeTest {
         try {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestObserver<Integer> ts = pp.toMaybe().doOnDispose(new Action() {
+            TestObserver<Integer> ts = pp.singleElement().doOnDispose(new Action() {
                 @Override
                 public void run() throws Exception {
                     throw new TestException();
@@ -1238,7 +1238,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.concat(pp1.toMaybe(), pp2.toMaybe())
+        TestSubscriber<Integer> ts = Maybe.concat(pp1.singleElement(), pp2.singleElement())
         .test(0L);
 
         assertTrue(pp1.hasSubscribers());
@@ -1374,7 +1374,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.concat(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestSubscriber<Integer> ts = Maybe.concat(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
         .test(0L);
 
         assertTrue(pp1.hasSubscribers());
@@ -1527,7 +1527,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.singleElement(), pp2.singleElement())
         .test();
 
         ts.assertEmpty();
@@ -1550,7 +1550,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.singleElement(), pp2.singleElement())
         .test();
 
         ts.assertEmpty();
@@ -1573,7 +1573,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.singleElement(), pp2.singleElement())
         .test();
 
         ts.assertEmpty();
@@ -1595,7 +1595,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.singleElement(), pp2.singleElement())
         .test();
 
         ts.assertEmpty();
@@ -1617,7 +1617,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.singleElement(), pp2.singleElement())
         .test();
 
         ts.assertEmpty();
@@ -1639,7 +1639,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.ambArray(pp1.toMaybe(), pp2.toMaybe())
+        TestObserver<Integer> ts = Maybe.ambArray(pp1.singleElement(), pp2.singleElement())
         .test();
 
         ts.assertEmpty();
@@ -1661,7 +1661,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
         .test();
 
         ts.assertEmpty();
@@ -1684,7 +1684,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
         .test();
 
         ts.assertEmpty();
@@ -1707,7 +1707,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
                 .test();
 
         ts.assertEmpty();
@@ -1731,7 +1731,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
         .test();
 
         ts.assertEmpty();
@@ -1753,7 +1753,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
         .test();
 
         ts.assertEmpty();
@@ -1775,7 +1775,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
                 .test();
 
         ts.assertEmpty();
@@ -1798,7 +1798,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
         .test();
 
         ts.assertEmpty();
@@ -1820,7 +1820,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.toMaybe(), pp2.toMaybe()))
+        TestObserver<Integer> ts = Maybe.amb(Arrays.asList(pp1.singleElement(), pp2.singleElement()))
         .test();
 
         ts.assertEmpty();
@@ -1976,7 +1976,7 @@ public class MaybeTest {
 
             TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
 
-            Maybe.mergeArray(pp1.toMaybe(), pp2.toMaybe()).subscribe(ts);
+            Maybe.mergeArray(pp1.singleElement(), pp2.singleElement()).subscribe(ts);
 
             ts.assertSubscribed()
             .assertOf(SubscriberFusion.<Integer>assertFuseable())
@@ -2027,7 +2027,7 @@ public class MaybeTest {
         final PublishProcessor<Integer> pp1 = PublishProcessor.create();
         final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.merge(Flowable.just(pp1.toMaybe(), pp2.toMaybe()), 1).test(0L);
+        TestSubscriber<Integer> ts = Maybe.merge(Flowable.just(pp1.singleElement(), pp2.singleElement()), 1).test(0L);
 
         assertTrue(pp1.hasSubscribers());
         assertFalse(pp2.hasSubscribers());
@@ -2374,7 +2374,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.concatArrayEager(pp1.toMaybe(), pp2.toMaybe()).test();
+        TestSubscriber<Integer> ts = Maybe.concatArrayEager(pp1.singleElement(), pp2.singleElement()).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -2397,7 +2397,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.concatEager(Arrays.asList(pp1.toMaybe(), pp2.toMaybe())).test();
+        TestSubscriber<Integer> ts = Maybe.concatEager(Arrays.asList(pp1.singleElement(), pp2.singleElement())).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -2419,7 +2419,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = Maybe.concatEager(Flowable.just(pp1.toMaybe(), pp2.toMaybe())).test();
+        TestSubscriber<Integer> ts = Maybe.concatEager(Flowable.just(pp1.singleElement(), pp2.singleElement())).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -2868,7 +2868,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = pp1.toMaybe().ambWith(pp2.toMaybe())
+        TestObserver<Integer> ts = pp1.singleElement().ambWith(pp2.singleElement())
         .test();
 
         ts.assertEmpty();
@@ -2890,7 +2890,7 @@ public class MaybeTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> ts = pp1.toMaybe().ambWith(pp2.toMaybe())
+        TestObserver<Integer> ts = pp1.singleElement().ambWith(pp2.singleElement())
         .test();
 
         ts.assertEmpty();
@@ -2939,7 +2939,7 @@ public class MaybeTest {
 
         long before = usedMemoryNow();
 
-        Maybe<Object> source = Flowable.just((Object)new Object[10000000]).toMaybe();
+        Maybe<Object> source = Flowable.just((Object)new Object[10000000]).singleElement();
 
         long middle = usedMemoryNow();
 

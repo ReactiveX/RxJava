@@ -365,7 +365,7 @@ public class ReplayProcessorTest {
             String v = "" + i;
             src.onNext(v);
             System.out.printf("Turn: %d%n", i);
-            src.first()
+            src.firstElement().toFlowable()
                 .flatMap(new Function<String, Flowable<String>>() {
 
                     @Override

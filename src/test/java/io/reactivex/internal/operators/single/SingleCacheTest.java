@@ -27,7 +27,7 @@ public class SingleCacheTest {
     public void cancelImmediately() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Single<Integer> cached = pp.toSingle().cache();
+        Single<Integer> cached = pp.single(-99).cache();
 
         TestObserver<Integer> ts = cached.test(true);
 
@@ -44,7 +44,7 @@ public class SingleCacheTest {
         for (int i = 0; i < 500; i++) {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final Single<Integer> cached = pp.toSingle().cache();
+            final Single<Integer> cached = pp.single(-99).cache();
 
             final TestObserver<Integer> ts1 = cached.test();
 
@@ -70,7 +70,7 @@ public class SingleCacheTest {
     public void doubleDispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final Single<Integer> cached = pp.toSingle().cache();
+        final Single<Integer> cached = pp.single(-99).cache();
 
         SingleObserver<Integer> doubleDisposer = new SingleObserver<Integer>() {
 

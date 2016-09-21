@@ -3159,7 +3159,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
-        return toFlowable().retry(predicate).toMaybe();
+        return toFlowable().retry(predicate).singleElement();
     }
 
     /**
@@ -3199,7 +3199,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> retry(long times, Predicate<? super Throwable> predicate) {
-        return toFlowable().retry(times, predicate).toMaybe();
+        return toFlowable().retry(times, predicate).singleElement();
     }
 
     /**
@@ -3283,7 +3283,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> retryWhen(
             final Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler) {
-        return toFlowable().retryWhen(handler).toMaybe();
+        return toFlowable().retryWhen(handler).singleElement();
     }
 
     /**

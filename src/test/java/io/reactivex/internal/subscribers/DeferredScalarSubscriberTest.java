@@ -134,7 +134,7 @@ public class DeferredScalarSubscriberTest {
     public void emptySource() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
-        Flowable.just(1).ignoreElements().subscribe(ds); // we need a producer from upstream
+        Flowable.just(1).ignoreElements().<Integer>toFlowable().subscribe(ds); // we need a producer from upstream
 
         ts.assertNoValues();
 

@@ -15,39 +15,48 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.fuseable.FuseToFlowable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, T> {
-    final long index;
+public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFlowable<T> {
+
+    final Publisher<T> source;
+
     final T defaultValue;
-    public FlowableElementAt(Publisher<T> source, long index, T defaultValue) {
-        super(source);
-        this.index = index;
+
+    public FlowableSingleSingle(Publisher<T> source, T defaultValue) {
+        this.source = source;
         this.defaultValue = defaultValue;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ElementAtSubscriber<T>(s, index, defaultValue));
+    protected void subscribeActual(SingleObserver<? super T> s) {
+        source.subscribe(new SingleElementSubscriber<T>(s, defaultValue));
     }
 
-    static final class ElementAtSubscriber<T> extends DeferredScalarSubscription<T> implements Subscriber<T> {
+    @Override
+    public Flowable<T> fuseToFlowable() {
+        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(source, defaultValue));
+    }
 
-        private static final long serialVersionUID = 4066607327284737757L;
+    static final class SingleElementSubscriber<T>
+    implements Subscriber<T>, Disposable {
 
-        final long index;
+        final SingleObserver<? super T> actual;
+
         final T defaultValue;
 
         Subscription s;
 
-        long count;
-
         boolean done;
 
-        ElementAtSubscriber(Subscriber<? super T> actual, long index, T defaultValue) {
-            super(actual);
-            this.index = index;
+        T value;
+
+        SingleElementSubscriber(SingleObserver<? super T> actual, T defaultValue) {
+            this.actual = actual;
             this.defaultValue = defaultValue;
         }
 
@@ -65,43 +74,50 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
             if (done) {
                 return;
             }
-            long c = count;
-            if (c == index) {
+            if (value != null) {
                 done = true;
                 s.cancel();
-                complete(t);
+                s = SubscriptionHelper.CANCELLED;
+                actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
                 return;
             }
-            count = c + 1;
+            value = t;
         }
 
         @Override
         public void onError(Throwable t) {
             if (done) {
-                RxJavaPlugins.onError(t);
                 return;
             }
             done = true;
+            s = SubscriptionHelper.CANCELLED;
             actual.onError(t);
         }
 
         @Override
         public void onComplete() {
-            if (index <= count && !done) {
-                done = true;
-                T v = defaultValue;
-                if (v == null) {
-                    actual.onComplete();
-                } else {
-                    complete(v);
-                }
+            if (done) {
+                return;
             }
+            done = true;
+            s = SubscriptionHelper.CANCELLED;
+            T v = value;
+            value = null;
+            if (v == null) {
+                v = defaultValue;
+            }
+            actual.onSuccess(v);
         }
 
         @Override
-        public void cancel() {
-            super.cancel();
+        public void dispose() {
             s.cancel();
+            s = SubscriptionHelper.CANCELLED;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return s == SubscriptionHelper.CANCELLED;
         }
     }
 }

@@ -80,7 +80,7 @@ public class MaybeOfTypeTest {
     public void isDisposed() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestHelper.checkDisposed(pp.toMaybe().ofType(Object.class));
+        TestHelper.checkDisposed(pp.singleElement().ofType(Object.class));
     }
 
     @Test

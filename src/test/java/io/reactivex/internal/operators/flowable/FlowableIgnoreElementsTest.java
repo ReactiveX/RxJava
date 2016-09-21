@@ -22,22 +22,23 @@ import org.junit.Test;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.observers.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableIgnoreElementsTest {
 
     @Test
-    public void testWithEmpty() {
-        assertTrue(Flowable.empty().ignoreElements().isEmpty().blockingGet());
+    public void testWithEmptyFlowable() {
+        assertTrue(Flowable.empty().ignoreElements().toFlowable().isEmpty().blockingGet());
     }
 
     @Test
-    public void testWithNonEmpty() {
-        assertTrue(Flowable.just(1, 2, 3).ignoreElements().isEmpty().blockingGet());
+    public void testWithNonEmptyFlowable() {
+        assertTrue(Flowable.just(1, 2, 3).ignoreElements().toFlowable().isEmpty().blockingGet());
     }
 
     @Test
-    public void testUpstreamIsProcessedButIgnored() {
+    public void testUpstreamIsProcessedButIgnoredFlowable() {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         long count = Flowable.range(1, num)
@@ -48,14 +49,129 @@ public class FlowableIgnoreElementsTest {
                     }
                 })
                 .ignoreElements()
-                .count().blockingSingle();
+                .toFlowable()
+                .count().blockingGet();
         assertEquals(num, upstreamCount.get());
         assertEquals(0, count);
     }
 
     @Test
-    public void testCompletedOk() {
+    public void testCompletedOkFlowable() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        Flowable.range(1, 10).ignoreElements().toFlowable().subscribe(ts);
+        ts.assertNoErrors();
+        ts.assertNoValues();
+        ts.assertTerminated();
+        // FIXME no longer testable
+//        ts.assertUnsubscribed();
+    }
+
+    @Test
+    public void testErrorReceivedFlowable() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestException ex = new TestException("boo");
+        Flowable.error(ex).ignoreElements().toFlowable().subscribe(ts);
+        ts.assertNoValues();
+        ts.assertTerminated();
+        // FIXME no longer testable
+//        ts.assertUnsubscribed();
+        ts.assertError(TestException.class);
+        ts.assertErrorMessage("boo");
+    }
+
+    @Test
+    public void testUnsubscribesFromUpstreamFlowable() {
+        final AtomicBoolean unsub = new AtomicBoolean();
+        Flowable.range(1, 10).doOnCancel(new Action() {
+            @Override
+            public void run() {
+                unsub.set(true);
+            }})
+            .subscribe();
+        assertTrue(unsub.get());
+    }
+
+    @Test(timeout = 10000)
+    public void testDoesNotHangAndProcessesAllUsingBackpressureFlowable() {
+        final AtomicInteger upstreamCount = new AtomicInteger();
+        final AtomicInteger count = new AtomicInteger(0);
+        int num = 10;
+        Flowable.range(1, num)
+        //
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer t) {
+                        upstreamCount.incrementAndGet();
+                    }
+                })
+                //
+                .ignoreElements()
+                .<Integer>toFlowable()
+                //
+                .doOnNext(new Consumer<Integer>() {
+
+                    @Override
+                    public void accept(Integer t) {
+                        upstreamCount.incrementAndGet();
+                    }
+                })
+                //
+                .subscribe(new DefaultSubscriber<Integer>() {
+
+                    @Override
+                    public void onStart() {
+                        request(1);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        count.incrementAndGet();
+                    }
+                });
+        assertEquals(num, upstreamCount.get());
+        assertEquals(0, count.get());
+    }
+
+
+    @Test
+    public void testWithEmpty() {
+        assertNull(Flowable.empty().ignoreElements().blockingGet());
+    }
+
+    @Test
+    public void testWithNonEmpty() {
+        assertNull(Flowable.just(1, 2, 3).ignoreElements().blockingGet());
+    }
+
+    @Test
+    public void testUpstreamIsProcessedButIgnored() {
+        final int num = 10;
+        final AtomicInteger upstreamCount = new AtomicInteger();
+        Object count = Flowable.range(1, num)
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer t) {
+                        upstreamCount.incrementAndGet();
+                    }
+                })
+                .ignoreElements()
+                .blockingGet();
+        assertEquals(num, upstreamCount.get());
+        assertNull(count);
+    }
+
+    @Test
+    public void testCompletedOk() {
+        TestObserver<Object> ts = new TestObserver<Object>();
         Flowable.range(1, 10).ignoreElements().subscribe(ts);
         ts.assertNoErrors();
         ts.assertNoValues();
@@ -66,7 +182,7 @@ public class FlowableIgnoreElementsTest {
 
     @Test
     public void testErrorReceived() {
-        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        TestObserver<Object> ts = new TestObserver<Object>();
         TestException ex = new TestException("boo");
         Flowable.error(ex).ignoreElements().subscribe(ts);
         ts.assertNoValues();
@@ -105,33 +221,13 @@ public class FlowableIgnoreElementsTest {
                 //
                 .ignoreElements()
                 //
-                .doOnNext(new Consumer<Integer>() {
-
-                    @Override
-                    public void accept(Integer t) {
-                        upstreamCount.incrementAndGet();
-                    }
-                })
-                //
-                .subscribe(new DefaultSubscriber<Integer>() {
-
-                    @Override
-                    public void onStart() {
-                        request(1);
-                    }
-
+                .subscribe(new ResourceCompletableObserver() {
                     @Override
                     public void onComplete() {
-
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                    }
-
-                    @Override
-                    public void onNext(Integer t) {
-                        count.incrementAndGet();
                     }
                 });
         assertEquals(num, upstreamCount.get());

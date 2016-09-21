@@ -301,7 +301,7 @@ public class PublishProcessorTest {
             InOrder inOrder = inOrder(o);
             String v = "" + i;
             System.out.printf("Turn: %d%n", i);
-            src.first()
+            src.firstElement().toFlowable()
                 .flatMap(new Function<String, Flowable<String>>() {
 
                     @Override

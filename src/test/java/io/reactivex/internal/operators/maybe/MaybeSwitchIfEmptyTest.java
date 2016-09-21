@@ -68,7 +68,7 @@ public class MaybeSwitchIfEmptyTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Integer> ts = pp.toMaybe().switchIfEmpty(Maybe.just(2)).test();
+        TestObserver<Integer> ts = pp.singleElement().switchIfEmpty(Maybe.just(2)).test();
 
         assertTrue(pp.hasSubscribers());
 
@@ -82,7 +82,7 @@ public class MaybeSwitchIfEmptyTest {
     public void isDisposed() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestHelper.checkDisposed(pp.toMaybe().switchIfEmpty(Maybe.just(2)));
+        TestHelper.checkDisposed(pp.singleElement().switchIfEmpty(Maybe.just(2)));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class MaybeSwitchIfEmptyTest {
         for (int i = 0; i < 500; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final TestObserver<Integer> ts = pp.toMaybe().switchIfEmpty(Maybe.just(2)).test();
+            final TestObserver<Integer> ts = pp.singleElement().switchIfEmpty(Maybe.just(2)).test();
 
             Runnable r1 = new Runnable() {
                 @Override

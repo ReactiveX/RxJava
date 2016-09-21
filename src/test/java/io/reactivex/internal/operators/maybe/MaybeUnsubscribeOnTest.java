@@ -40,7 +40,7 @@ public class MaybeUnsubscribeOnTest {
                 cdl.countDown();
             }
         })
-        .toMaybe()
+        .singleElement()
         .unsubscribeOn(Schedulers.single())
         .test(true)
         ;

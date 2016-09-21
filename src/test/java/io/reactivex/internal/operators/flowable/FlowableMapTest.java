@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 import java.util.*;
 
@@ -206,16 +207,16 @@ public class FlowableMapTest {
     /**
      * While mapping over range(1,0).last() we expect NoSuchElementException since the sequence is empty.
      */
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testErrorPassesThruMap() {
-        Flowable.range(1, 0).last().map(new Function<Integer, Integer>() {
+        assertNull(Flowable.range(1, 0).lastElement().map(new Function<Integer, Integer>() {
 
             @Override
             public Integer apply(Integer i) {
                 return i;
             }
 
-        }).blockingGet();
+        }).blockingGet());
     }
 
     /**
@@ -239,7 +240,7 @@ public class FlowableMapTest {
      */
     @Test(expected = ArithmeticException.class)
     public void testMapWithErrorInFunc() {
-        Flowable.range(1, 1).last().map(new Function<Integer, Integer>() {
+        Flowable.range(1, 1).lastElement().map(new Function<Integer, Integer>() {
 
             @Override
             public Integer apply(Integer i) {

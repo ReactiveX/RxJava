@@ -97,6 +97,14 @@ public enum TestHelper {
     }
 
     /**
+     * Mocks an CompletableObserver.
+     * @return the mocked observer
+     */
+    public static CompletableObserver mockCompletableObserver() {
+        return mock(CompletableObserver.class);
+    }
+
+    /**
      * Validates that the given class, when forcefully instantiated throws
      * an IllegalArgumentException("No instances!") exception.
      * @param clazz the class to test, not null
@@ -958,7 +966,7 @@ public enum TestHelper {
         TestSubscriber<U> ts = new TestSubscriber<U>();
 
         try {
-            new MaybeToFlowable<U>(composer.apply(pp.toMaybe())).subscribe(ts);
+            new MaybeToFlowable<U>(composer.apply(pp.singleElement())).subscribe(ts);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -982,7 +990,7 @@ public enum TestHelper {
         TestSubscriber<U> ts = new TestSubscriber<U>();
 
         try {
-            new SingleToFlowable<U>(composer.apply(pp.toMaybe())).subscribe(ts);
+            new SingleToFlowable<U>(composer.apply(pp.singleElement())).subscribe(ts);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }

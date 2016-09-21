@@ -164,7 +164,14 @@ public class InternalWrongNaming {
                 "FlowableAnySingle",
                 "FlowableAllSingle",
                 "FlowableToListSingle",
-                "FlowableCollectSingle"
+                "FlowableCollectSingle",
+                "FlowableCountSingle",
+                "FlowableElementAtMaybe",
+                "FlowableElementAtSingle",
+                "FlowableSingleSingle",
+                "FlowableSingleMaybe",
+                "FlowableLastMaybe",
+                "FlowableIgnoreElementsCompletable"
         );
     }
 }

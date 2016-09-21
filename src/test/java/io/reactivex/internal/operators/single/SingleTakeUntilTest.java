@@ -28,7 +28,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp)
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp)
         .test();
 
         source.onNext(1);
@@ -42,7 +42,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp.toSingle())
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp.single(-99))
         .test();
 
         source.onNext(1);
@@ -57,7 +57,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp.toCompletable())
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp.ignoreElements())
         .test();
 
         source.onNext(1);
@@ -71,7 +71,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp)
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp)
         .test();
 
         source.onError(new TestException());
@@ -84,7 +84,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp.toSingle())
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp.single(-99))
         .test();
 
         source.onError(new TestException());
@@ -97,7 +97,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp.toCompletable())
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp.ignoreElements())
         .test();
 
         source.onError(new TestException());
@@ -110,7 +110,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp)
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp)
         .test();
 
         pp.onNext(1);
@@ -123,7 +123,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp.toSingle())
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp.single(-99))
         .test();
 
         pp.onNext(1);
@@ -137,7 +137,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp.toCompletable())
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp.ignoreElements())
         .test();
 
         pp.onNext(1);
@@ -151,7 +151,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp)
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp)
         .test();
 
         pp.onComplete();
@@ -164,7 +164,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp.toCompletable())
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp.ignoreElements())
         .test();
 
         pp.onComplete();
@@ -177,7 +177,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp)
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp)
         .test();
 
         pp.onError(new TestException());
@@ -190,7 +190,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp.toSingle())
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp.single(-99))
         .test();
 
         pp.onError(new TestException());
@@ -203,7 +203,7 @@ public class SingleTakeUntilTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        TestObserver<Integer> ts = source.toSingle().takeUntil(pp.toCompletable())
+        TestObserver<Integer> ts = source.single(-99).takeUntil(pp.ignoreElements())
         .test();
 
         pp.onError(new TestException());
