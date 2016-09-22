@@ -53,7 +53,7 @@ public final class FlowableLastSingle<T> extends Single<T> {
 
         T item;
 
-        public LastSubscriber(SingleObserver<? super T> actual, T defaultItem) {
+        LastSubscriber(SingleObserver<? super T> actual, T defaultItem) {
             this.actual = actual;
             this.defaultItem = defaultItem;
         }

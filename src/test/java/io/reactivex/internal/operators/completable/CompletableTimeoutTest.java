@@ -63,7 +63,7 @@ public class CompletableTimeoutTest {
         final PublishSubject<String> subject = PublishSubject.create();
         final TestScheduler scheduler = new TestScheduler();
 
-        final TestObserver<Void> observer = subject.toCompletable()
+        final TestObserver<Void> observer = subject.ignoreElements()
                 .timeout(100, TimeUnit.MILLISECONDS, scheduler)
                 .test();
 

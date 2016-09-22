@@ -16,33 +16,39 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.FuseToObservable;
+import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T, T> {
-
-    final T defaultValue;
-
-    public ObservableSingle(ObservableSource<T> source, T defaultValue) {
-        super(source);
-        this.defaultValue = defaultValue;
+public final class ObservableElementAtMaybe<T> extends Maybe<T> implements FuseToObservable<T> {
+    final ObservableSource<T> source;
+    final long index;
+    public ObservableElementAtMaybe(ObservableSource<T> source, long index) {
+        this.source = source;
+        this.index = index;
     }
     @Override
-    public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new SingleElementObserver<T>(t, defaultValue));
+    public void subscribeActual(MaybeObserver<? super T> t) {
+        source.subscribe(new ElementAtObserver<T>(t, index));
     }
 
-    static final class SingleElementObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
-        final T defaultValue;
+    @Override
+    public Observable<T> fuseToObservable() {
+        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(source, index, null));
+    }
+
+    static final class ElementAtObserver<T> implements Observer<T>, Disposable {
+        final MaybeObserver<? super T> actual;
+        final long index;
 
         Disposable s;
 
-        T value;
+        long count;
 
         boolean done;
 
-        SingleElementObserver(Observer<? super T> actual, T defaultValue) {
+        ElementAtObserver(MaybeObserver<? super T> actual, long index) {
             this.actual = actual;
-            this.defaultValue = defaultValue;
+            this.index = index;
         }
 
         @Override
@@ -70,13 +76,14 @@ public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T,
             if (done) {
                 return;
             }
-            if (value != null) {
+            long c = count;
+            if (c == index) {
                 done = true;
                 s.dispose();
-                actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
+                actual.onSuccess(t);
                 return;
             }
-            value = t;
+            count = c + 1;
         }
 
         @Override
@@ -90,19 +97,10 @@ public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T,
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
+            if (index <= count && !done) {
+                done = true;
+                actual.onComplete();
             }
-            done = true;
-            T v = value;
-            value = null;
-            if (v == null) {
-                v = defaultValue;
-            }
-            if (v != null) {
-                actual.onNext(v);
-            }
-            actual.onComplete();
         }
     }
 }

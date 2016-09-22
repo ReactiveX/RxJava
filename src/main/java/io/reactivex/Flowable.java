@@ -26,7 +26,6 @@ import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.ScalarCallable;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.observable.ObservableFromPublisher;
-import io.reactivex.internal.operators.single.SingleReduceFlowable;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.util.*;
@@ -9847,7 +9846,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that applies a specified accumulator function to the first item emitted by a source
+     * Returns a Maybe that applies a specified accumulator function to the first item emitted by a source
      * Publisher, then feeds the result of that function along with the second item emitted by the source
      * Publisher into the same function, and so on until all items have been emitted by the source Publisher,
      * and emits the final result from the final call to your function as its sole item.
@@ -9870,16 +9869,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param reducer
      *            an accumulator function to be invoked on each item emitted by the source Publisher, whose
      *            result will be used in the next accumulator call
-     * @return a Single that emits a single item that is the result of accumulating the items emitted by
+     * @return a Maybe that emits a single item that is the result of accumulating the items emitted by
      *         the source Flowable
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> reduce(BiFunction<T, T, T> reducer) {
+    public final Maybe<T> reduce(BiFunction<T, T, T> reducer) {
         ObjectHelper.requireNonNull(reducer, "reducer is null");
-        return RxJavaPlugins.onAssembly(new SingleReduceFlowable<T>(this, reducer));
+        return RxJavaPlugins.onAssembly(new FlowableReduceMaybe<T>(this, reducer));
     }
 
     /**

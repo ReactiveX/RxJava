@@ -97,7 +97,7 @@ public class SingleSubscribeTest {
     public void biConsumerDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        Disposable d = ps.toSingle().subscribe(new BiConsumer<Object, Object>() {
+        Disposable d = ps.single(-99).subscribe(new BiConsumer<Object, Object>() {
             @Override
             public void accept(Object t1, Object t2) throws Exception {
 
@@ -117,7 +117,7 @@ public class SingleSubscribeTest {
     public void consumerDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        Disposable d = ps.toSingle().subscribe(Functions.<Integer>emptyConsumer());
+        Disposable d = ps.single(-99).subscribe(Functions.<Integer>emptyConsumer());
 
         assertFalse(d.isDisposed());
 
@@ -213,7 +213,7 @@ public class SingleSubscribeTest {
     public void methodTestNoCancel() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        ps.toSingle().test(false);
+        ps.single(-99).test(false);
 
         assertTrue(ps.hasObservers());
     }

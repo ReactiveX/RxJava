@@ -243,7 +243,8 @@ public class BehaviorSubjectTest {
             String v = "" + i;
             src.onNext(v);
             System.out.printf("Turn: %d%n", i);
-            src.first()
+            src.firstElement()
+                .toObservable()
                 .flatMap(new Function<String, Observable<String>>() {
 
                     @Override

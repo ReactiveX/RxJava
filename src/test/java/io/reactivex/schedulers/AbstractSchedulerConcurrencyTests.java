@@ -79,7 +79,12 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         latch.await(1000, TimeUnit.MILLISECONDS);
 
         System.out.println("----------- it thinks it is finished ------------------ ");
-        Thread.sleep(100);
+
+        int timeout = 10;
+
+        while (timeout-- > 0 && countGenerated.get() != 2) {
+            Thread.sleep(100);
+        }
 
         assertEquals(2, countGenerated.get());
     }

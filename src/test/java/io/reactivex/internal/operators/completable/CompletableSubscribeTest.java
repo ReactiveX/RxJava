@@ -35,7 +35,7 @@ public class CompletableSubscribeTest {
     public void methodTestNoCancel() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        ps.toCompletable().test(false);
+        ps.ignoreElements().test(false);
 
         assertTrue(ps.hasObservers());
     }

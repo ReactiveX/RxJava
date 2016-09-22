@@ -3546,7 +3546,7 @@ public class CompletableTest {
     @Test
     public void subscribeReportsUnsubscribedOnError() {
         PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.toCompletable();
+        Completable completable = stringSubject.ignoreElements();
 
         Disposable completableSubscription = completable.subscribe();
 
@@ -3558,7 +3558,7 @@ public class CompletableTest {
     @Test
     public void subscribeActionReportsUnsubscribed() {
         PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.toCompletable();
+        Completable completable = stringSubject.ignoreElements();
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
@@ -3575,7 +3575,7 @@ public class CompletableTest {
     @Test
     public void subscribeActionReportsUnsubscribedAfter() {
         PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.toCompletable();
+        Completable completable = stringSubject.ignoreElements();
 
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(new Action() {
@@ -3597,7 +3597,7 @@ public class CompletableTest {
     @Test
     public void subscribeActionReportsUnsubscribedOnError() {
         PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.toCompletable();
+        Completable completable = stringSubject.ignoreElements();
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
@@ -3613,7 +3613,7 @@ public class CompletableTest {
     @Test
     public void subscribeAction2ReportsUnsubscribed() {
         PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.toCompletable();
+        Completable completable = stringSubject.ignoreElements();
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
@@ -3635,7 +3635,7 @@ public class CompletableTest {
     @Test
     public void subscribeAction2ReportsUnsubscribedOnError() {
         PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.toCompletable();
+        Completable completable = stringSubject.ignoreElements();
 
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
@@ -4072,7 +4072,7 @@ public class CompletableTest {
     @Test
     public void subscribeReportsUnsubscribed() {
         PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.toCompletable();
+        Completable completable = stringSubject.ignoreElements();
 
         Disposable completableSubscription = completable.subscribe();
 
@@ -4250,7 +4250,7 @@ public class CompletableTest {
     @Test
     public void subscribeAction2ReportsUnsubscribedAfter() {
         PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.toCompletable();
+        Completable completable = stringSubject.ignoreElements();
 
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(new Action() {
@@ -4272,7 +4272,7 @@ public class CompletableTest {
     @Test
     public void subscribeAction2ReportsUnsubscribedOnErrorAfter() {
         PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.toCompletable();
+        Completable completable = stringSubject.ignoreElements();
 
         final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(Functions.EMPTY_ACTION,

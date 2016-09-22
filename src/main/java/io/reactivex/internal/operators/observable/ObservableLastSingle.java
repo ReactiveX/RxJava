@@ -53,7 +53,7 @@ public final class ObservableLastSingle<T> extends Single<T> {
 
         T item;
 
-        public LastObserver(SingleObserver<? super T> actual, T defaultItem) {
+        LastObserver(SingleObserver<? super T> actual, T defaultItem) {
             this.actual = actual;
             this.defaultItem = defaultItem;
         }

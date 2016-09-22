@@ -27,17 +27,17 @@ import io.reactivex.observers.TestObserver;
 public class ObservableIgnoreElementsTest {
 
     @Test
-    public void testWithEmpty() {
-        assertTrue(Observable.empty().ignoreElements().isEmpty().blockingGet());
+    public void testWithEmptyObservable() {
+        assertTrue(Observable.empty().ignoreElements().toObservable().isEmpty().blockingGet());
     }
 
     @Test
-    public void testWithNonEmpty() {
-        assertTrue(Observable.just(1, 2, 3).ignoreElements().isEmpty().blockingGet());
+    public void testWithNonEmptyObservable() {
+        assertTrue(Observable.just(1, 2, 3).ignoreElements().toObservable().isEmpty().blockingGet());
     }
 
     @Test
-    public void testUpstreamIsProcessedButIgnored() {
+    public void testUpstreamIsProcessedButIgnoredObservable() {
         final int num = 10;
         final AtomicInteger upstreamCount = new AtomicInteger();
         long count = Observable.range(1, num)
@@ -48,9 +48,73 @@ public class ObservableIgnoreElementsTest {
                     }
                 })
                 .ignoreElements()
-                .count().blockingSingle();
+                .toObservable()
+                .count().blockingGet();
         assertEquals(num, upstreamCount.get());
         assertEquals(0, count);
+    }
+
+    @Test
+    public void testCompletedOkObservable() {
+        TestObserver<Object> ts = new TestObserver<Object>();
+        Observable.range(1, 10).ignoreElements().toObservable().subscribe(ts);
+        ts.assertNoErrors();
+        ts.assertNoValues();
+        ts.assertTerminated();
+        // FIXME no longer testable
+//        ts.assertUnsubscribed();
+    }
+
+    @Test
+    public void testErrorReceivedObservable() {
+        TestObserver<Object> ts = new TestObserver<Object>();
+        TestException ex = new TestException("boo");
+        Observable.error(ex).ignoreElements().toObservable().subscribe(ts);
+        ts.assertNoValues();
+        ts.assertTerminated();
+        // FIXME no longer testable
+//        ts.assertUnsubscribed();
+        ts.assertError(TestException.class);
+        ts.assertErrorMessage("boo");
+    }
+
+    @Test
+    public void testUnsubscribesFromUpstreamObservable() {
+        final AtomicBoolean unsub = new AtomicBoolean();
+        Observable.range(1, 10).doOnDispose(new Action() {
+            @Override
+            public void run() {
+                unsub.set(true);
+            }})
+            .subscribe();
+        assertTrue(unsub.get());
+    }
+
+    @Test
+    public void testWithEmpty() {
+        assertNull(Observable.empty().ignoreElements().blockingGet());
+    }
+
+    @Test
+    public void testWithNonEmpty() {
+        assertNull(Observable.just(1, 2, 3).ignoreElements().blockingGet());
+    }
+
+    @Test
+    public void testUpstreamIsProcessedButIgnored() {
+        final int num = 10;
+        final AtomicInteger upstreamCount = new AtomicInteger();
+        Object count = Observable.range(1, num)
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer t) {
+                        upstreamCount.incrementAndGet();
+                    }
+                })
+                .ignoreElements()
+                .blockingGet();
+        assertEquals(num, upstreamCount.get());
+        assertNull(count);
     }
 
     @Test

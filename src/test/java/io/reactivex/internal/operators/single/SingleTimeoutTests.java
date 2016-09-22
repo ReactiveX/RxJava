@@ -30,7 +30,7 @@ public class SingleTimeoutTests {
         final PublishSubject<String> subject = PublishSubject.create();
         final TestScheduler scheduler = new TestScheduler();
 
-        final TestObserver<String> observer = subject.toSingle()
+        final TestObserver<String> observer = subject.single("")
                 .timeout(100, TimeUnit.MILLISECONDS, scheduler)
                 .test();
 
