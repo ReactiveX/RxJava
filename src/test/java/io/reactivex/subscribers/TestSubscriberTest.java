@@ -30,6 +30,7 @@ import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.*;
@@ -347,6 +348,27 @@ public class TestSubscriberTest {
     }
 
     @Test
+    public void testMultipleErrors4() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(EmptySubscription.INSTANCE);
+        ts.onError(new TestException());
+        ts.onError(new TestException());
+        try {
+            ts.assertError(Functions.<Throwable>alwaysTrue());
+        } catch (AssertionError ex) {
+            Throwable e = ex.getCause();
+            if (!(e instanceof CompositeException)) {
+                fail("Multiple Error present but the reported error doesn't have a composite cause!");
+            }
+            CompositeException ce = (CompositeException)e;
+            assertEquals(2, ce.size());
+            // expected
+            return;
+        }
+        fail("Multiple Error present but no assertion error!");
+    }
+
+    @Test
     public void testDifferentError() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.onError(new TestException());
@@ -378,11 +400,43 @@ public class TestSubscriberTest {
         ts.onError(new RuntimeException());
         try {
             ts.assertError(TestException.class);
+        }
+        catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Different Error present but no assertion error!");
+    }
+
+    @Test
+    public void testDifferentError4() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onError(new RuntimeException());
+        try {
+            ts.assertError(Functions.<Throwable>alwaysFalse());
         } catch (AssertionError ex) {
             // expected
             return;
         }
         fail("Different Error present but no assertion error!");
+    }
+
+    @Test
+    public void testErrorInPredicate() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onError(new RuntimeException());
+        try {
+            ts.assertError(new Predicate<Throwable>() {
+                @Override
+                public boolean test(Throwable throwable) throws Exception {
+                    throw new TestException();
+                }
+            });
+        } catch (TestException ex) {
+            // expected
+            return;
+        }
+        fail("Error in predicate but not thrown!");
     }
 
     @Test
@@ -402,6 +456,18 @@ public class TestSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         try {
             ts.assertError(new TestException());
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("No present but no assertion error!");
+    }
+
+    @Test
+    public void testNoError3() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        try {
+            ts.assertError(Functions.<Throwable>alwaysTrue());
         } catch (AssertionError ex) {
             // expected
             return;
@@ -718,6 +784,13 @@ public class TestSubscriberTest {
         }
 
         try {
+            ts.assertError(Functions.<Throwable>alwaysTrue());
+            throw new RuntimeException("Should have thrown");
+        } catch (AssertionError ex) {
+            // expected
+        }
+
+        try {
             ts.assertSubscribed();
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
@@ -747,6 +820,15 @@ public class TestSubscriberTest {
 
         ts.assertErrorMessage("Forced failure");
 
+        ts.assertError(Functions.<Throwable>alwaysTrue());
+
+        ts.assertError(new Predicate<Throwable>() {
+            @Override
+            public boolean test(Throwable t) {
+                return t.getMessage() != null && t.getMessage().contains("Forced");
+            }
+        });
+
         try {
             ts.assertErrorMessage("");
             throw new RuntimeException("Should have thrown");
@@ -770,6 +852,13 @@ public class TestSubscriberTest {
 
         try {
             ts.assertNoErrors();
+            throw new RuntimeException("Should have thrown");
+        } catch (AssertionError exc) {
+            // expected
+        }
+
+        try {
+            ts.assertError(Functions.<Throwable>alwaysFalse());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
             // expected
@@ -806,11 +895,15 @@ public class TestSubscriberTest {
 
         ts.assertFailure(TestException.class);
 
+        ts.assertFailure(Functions.<Throwable>alwaysTrue());
+
         ts.assertFailureAndMessage(TestException.class, "Forced failure");
 
         ts.onNext(1);
 
         ts.assertFailure(TestException.class, 1);
+
+        ts.assertFailure(Functions.<Throwable>alwaysTrue(), 1);
 
         ts.assertFailureAndMessage(TestException.class, "Forced failure", 1);
     }
