@@ -29,8 +29,6 @@ public final class SubscriberResourceWrapper<T> extends AtomicReference<Disposab
 
     final AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
 
-    static final Object TERMINATED = new Object();
-
     public SubscriberResourceWrapper(Subscriber<? super T> actual) {
         this.actual = actual;
     }

@@ -98,14 +98,6 @@ implements Runnable, Callable<Object>, Disposable {
         }
     }
 
-    /**
-     * Returns true if this ScheduledRunnable has been scheduled.
-     * @return true if this ScheduledRunnable has been scheduled.
-     */
-    public boolean wasScheduled() {
-        return get(FUTURE_INDEX) != null;
-    }
-
     @Override
     public void dispose() {
         for (;;) {
