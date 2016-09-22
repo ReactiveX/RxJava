@@ -24,8 +24,9 @@ import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.DefaultSubscriber;
 
 public class FlowableConversionTest {
 
@@ -146,7 +147,7 @@ public class FlowableConversionTest {
 
     @Test
     public void testConversionBetweenObservableClasses() {
-        final TestSubscriber<String> subscriber = new TestSubscriber<String>(new DefaultSubscriber<String>() {
+        final TestObserver<String> subscriber = new TestObserver<String>(new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {

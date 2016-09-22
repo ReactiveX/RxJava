@@ -38,7 +38,7 @@ public class FlowableDetachTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
-        Flowable.just(o).count().onTerminateDetach().subscribe(ts);
+        Flowable.just(o).count().toFlowable().onTerminateDetach().subscribe(ts);
 
         ts.assertValue(1L);
         ts.assertComplete();
@@ -95,7 +95,7 @@ public class FlowableDetachTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(0L);
 
-        Flowable.just(o).count().onTerminateDetach().subscribe(ts);
+        Flowable.just(o).count().toFlowable().onTerminateDetach().subscribe(ts);
 
         ts.assertNoValues();
 
@@ -121,7 +121,7 @@ public class FlowableDetachTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(0);
 
-        Flowable.just(o).count().onTerminateDetach().subscribe(ts);
+        Flowable.just(o).count().toFlowable().onTerminateDetach().subscribe(ts);
 
         ts.cancel();
         o = null;

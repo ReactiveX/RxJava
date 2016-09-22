@@ -32,7 +32,7 @@ public class ReduceWithTckTest extends BaseTck<Integer> {
                     public Integer apply(Integer a, Integer b) throws Exception {
                         return a + b;
                     }
-                })
+                }).toFlowable()
             );
     }
 

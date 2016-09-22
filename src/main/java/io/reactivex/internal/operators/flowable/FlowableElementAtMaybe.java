@@ -15,29 +15,37 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.fuseable.FuseToFlowable;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, T> {
+public final class FlowableElementAtMaybe<T> extends Maybe<T> implements FuseToFlowable<T> {
+    final Publisher<T> source;
+
     final long index;
-    final T defaultValue;
-    public FlowableElementAt(Publisher<T> source, long index, T defaultValue) {
-        super(source);
+
+    public FlowableElementAtMaybe(Publisher<T> source, long index) {
+        this.source = source;
         this.index = index;
-        this.defaultValue = defaultValue;
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ElementAtSubscriber<T>(s, index, defaultValue));
+    protected void subscribeActual(MaybeObserver<? super T> s) {
+        source.subscribe(new ElementAtSubscriber<T>(s, index));
     }
 
-    static final class ElementAtSubscriber<T> extends DeferredScalarSubscription<T> implements Subscriber<T> {
+    @Override
+    public Flowable<T> fuseToFlowable() {
+        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(source, index, null));
+    }
 
-        private static final long serialVersionUID = 4066607327284737757L;
+    static final class ElementAtSubscriber<T> implements Subscriber<T>, Disposable {
+
+        final MaybeObserver<? super T> actual;
 
         final long index;
-        final T defaultValue;
 
         Subscription s;
 
@@ -45,10 +53,9 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
 
         boolean done;
 
-        ElementAtSubscriber(Subscriber<? super T> actual, long index, T defaultValue) {
-            super(actual);
+        ElementAtSubscriber(MaybeObserver<? super T> actual, long index) {
+            this.actual = actual;
             this.index = index;
-            this.defaultValue = defaultValue;
         }
 
         @Override
@@ -69,7 +76,8 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
             if (c == index) {
                 done = true;
                 s.cancel();
-                complete(t);
+                s = SubscriptionHelper.CANCELLED;
+                actual.onSuccess(t);
                 return;
             }
             count = c + 1;
@@ -82,26 +90,29 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
                 return;
             }
             done = true;
+            s = SubscriptionHelper.CANCELLED;
             actual.onError(t);
         }
 
         @Override
         public void onComplete() {
+            s = SubscriptionHelper.CANCELLED;
             if (index <= count && !done) {
                 done = true;
-                T v = defaultValue;
-                if (v == null) {
-                    actual.onComplete();
-                } else {
-                    complete(v);
-                }
+                actual.onComplete();
             }
         }
 
         @Override
-        public void cancel() {
-            super.cancel();
+        public void dispose() {
             s.cancel();
+            s = SubscriptionHelper.CANCELLED;
         }
+
+        @Override
+        public boolean isDisposed() {
+            return s == SubscriptionHelper.CANCELLED;
+        }
+
     }
 }

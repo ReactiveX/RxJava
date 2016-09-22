@@ -68,7 +68,7 @@ public class MaybeCacheTest {
     public void onlineSuccess() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Maybe<Integer> source = pp.toMaybe().cache();
+        Maybe<Integer> source = pp.singleElement().cache();
 
         assertFalse(pp.hasSubscribers());
 
@@ -98,7 +98,7 @@ public class MaybeCacheTest {
     public void onlineError() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Maybe<Integer> source = pp.toMaybe().cache();
+        Maybe<Integer> source = pp.singleElement().cache();
 
         assertFalse(pp.hasSubscribers());
 
@@ -127,7 +127,7 @@ public class MaybeCacheTest {
     public void onlineComplete() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Maybe<Integer> source = pp.toMaybe().cache();
+        Maybe<Integer> source = pp.singleElement().cache();
 
         assertFalse(pp.hasSubscribers());
 
@@ -159,7 +159,7 @@ public class MaybeCacheTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Maybe<Integer> source = pp.toMaybe().cache();
+        Maybe<Integer> source = pp.singleElement().cache();
 
         source.subscribe(new Consumer<Integer>() {
             @Override
@@ -183,7 +183,7 @@ public class MaybeCacheTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Maybe<Integer> source = pp.toMaybe().cache();
+        Maybe<Integer> source = pp.singleElement().cache();
 
         source.subscribe(Functions.emptyConsumer(), new Consumer<Object>() {
             @Override
@@ -206,7 +206,7 @@ public class MaybeCacheTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Maybe<Integer> source = pp.toMaybe().cache();
+        Maybe<Integer> source = pp.singleElement().cache();
 
         source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer(), new Action() {
             @Override
@@ -227,7 +227,7 @@ public class MaybeCacheTest {
         for (int i = 0; i < 500; i++) {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final Maybe<Integer> source = pp.toMaybe().cache();
+            final Maybe<Integer> source = pp.singleElement().cache();
 
             Runnable r = new Runnable() {
                 @Override
@@ -245,7 +245,7 @@ public class MaybeCacheTest {
         for (int i = 0; i < 500; i++) {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final Maybe<Integer> source = pp.toMaybe().cache();
+            final Maybe<Integer> source = pp.singleElement().cache();
 
             final TestObserver<Integer> ts1 = source.test();
             final TestObserver<Integer> ts2 = source.test();
@@ -272,7 +272,7 @@ public class MaybeCacheTest {
     public void doubleDispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        final Maybe<Integer> source = pp.toMaybe().cache();
+        final Maybe<Integer> source = pp.singleElement().cache();
 
         final Disposable[] dout = { null };
 

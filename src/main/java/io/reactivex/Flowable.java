@@ -24,11 +24,9 @@ import io.reactivex.flowables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.ScalarCallable;
-import io.reactivex.internal.operators.completable.CompletableFromPublisher;
 import io.reactivex.internal.operators.flowable.*;
-import io.reactivex.internal.operators.maybe.MaybeFromPublisher;
 import io.reactivex.internal.operators.observable.ObservableFromPublisher;
-import io.reactivex.internal.operators.single.*;
+import io.reactivex.internal.operators.single.SingleReduceFlowable;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.util.*;
@@ -5226,7 +5224,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingSingle() {
-        return single().blockingFirst();
+        return singleElement().blockingGet();
     }
 
     /**
@@ -5252,7 +5250,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingSingle(T defaultItem) {
-        return single(defaultItem).blockingFirst();
+        return single(defaultItem).blockingGet();
     }
 
     /**
@@ -6666,7 +6664,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that counts the total number of items emitted by the source Publisher and emits
+     * Returns a Single that counts the total number of items emitted by the source Publisher and emits
      * this count as a 64-bit Long.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
@@ -6678,15 +6676,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code count} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a Flowable that emits a single item: the number of items emitted by the source Publisher as a
+     * @return a Single that emits a single item: the number of items emitted by the source Publisher as a
      *         64-bit Long item
      * @see <a href="http://reactivex.io/documentation/operators/count.html">ReactiveX operators documentation: Count</a>
      * @see #count()
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<Long> count() {
-        return RxJavaPlugins.onAssembly(new FlowableCount<T>(this));
+    public final Single<Long> count() {
+        return RxJavaPlugins.onAssembly(new FlowableCountSingle<T>(this));
     }
 
     /**
@@ -7622,7 +7620,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits the single item at a specified index in a sequence of emissions from a
+     * Returns a Maybe that emits the single item at a specified index in a sequence of emissions from a
      * source Publisher.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.png" alt="">
@@ -7636,21 +7634,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param index
      *            the zero-based index of the item to retrieve
-     * @return a Flowable that emits a single item: the item at the specified position in the sequence of
+     * @return a Maybe that emits a single item: the item at the specified position in the sequence of
      *         those emitted by the source Publisher
-     * @throws IndexOutOfBoundsException
-     *             if {@code index} is greater than or equal to the number of items emitted by the source
-     *             Publisher, or
-     *             if {@code index} is less than 0
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> elementAt(long index) {
+    public final Maybe<T> elementAt(long index) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
-        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(this, index, null));
+        return RxJavaPlugins.onAssembly(new FlowableElementAtMaybe<T>(this, index));
     }
 
     /**
@@ -7678,12 +7672,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> elementAt(long index, T defaultItem) {
+    public final Single<T> elementAt(long index, T defaultItem) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
         ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
-        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(this, index, defaultItem));
+        return RxJavaPlugins.onAssembly(new FlowableElementAtSingle<T>(this, index, defaultItem));
     }
 
     /**
@@ -7713,7 +7707,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits only the very first item emitted by the source Publisher, or notifies
+     * Returns a Maybe that emits only the very first item emitted by the source Publisher, or notifies
      * of an {@code NoSuchElementException} if the source Publisher is empty.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.png" alt="">
@@ -7722,21 +7716,21 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code firstElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a Flowable that emits only the very first item emitted by the source Publisher, or raises an
+     * @return a Maybe that emits only the very first item emitted by the source Publisher, or raises an
      *         {@code NoSuchElementException} if the source Publisher is empty
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @BackpressureSupport(BackpressureKind.SPECIAL) // take may trigger UNBOUNDED_IN
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> first() {
-        return take(1).single();
+    public final Maybe<T> firstElement() {
+        return elementAt(0);
     }
 
     /**
-     * Returns a Flowable that emits only the very first item emitted by the source Publisher, or a default
+     * Returns a Single that emits only the very first item emitted by the source Publisher, or a default
      * item if the source Publisher completes without emitting anything.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrDefault.png" alt="">
@@ -7750,14 +7744,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param defaultItem
      *            the default item to emit if the source Publisher doesn't emit anything
-     * @return a Flowable that emits only the very first item from the source, or a default item if the
+     * @return a Single that emits only the very first item from the source, or a default item if the
      *         source Publisher completes without emitting any items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @BackpressureSupport(BackpressureKind.SPECIAL) // take may trigger UNBOUNDED_IN
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> first(T defaultItem) {
-        return take(1).single(defaultItem);
+    public final Single<T> first(T defaultItem) {
+        return elementAt(0, defaultItem);
     }
 
     /**
@@ -8784,14 +8778,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code ignoreElements} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an empty Publisher that only calls {@code onComplete} or {@code onError}, based on which one is
+     * @return a Completable that only calls {@code onComplete} or {@code onError}, based on which one is
      *         called by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElements</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> ignoreElements() {
-        return RxJavaPlugins.onAssembly(new FlowableIgnoreElements<T>(this));
+    public final Completable ignoreElements() {
+        return RxJavaPlugins.onAssembly(new FlowableIgnoreElementsCompletable<T>(this));
     }
 
     /**
@@ -8865,8 +8859,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
 
     /**
-     * Returns a Single that emits the last item emitted by the source Publisher or notifies Subscribers of
-     * a {@code NoSuchElementException} if the source Publisher is empty.
+     * Returns a Maybe that emits the last item emitted by the source Publisher or completes if the source Publisher is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.png" alt="">
      * <dl>
@@ -8874,17 +8867,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code last} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code lastElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a Single that emits the last item from the source Publisher or notifies Subscribers of an
-     *         error
+     * @return a new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> last() {
-        return RxJavaPlugins.onAssembly(new FlowableLastSingle<T>(this, null));
+    public final Maybe<T> lastElement() {
+        return RxJavaPlugins.onAssembly(new FlowableLastMaybe<T>(this));
     }
 
     /**
@@ -9936,8 +9928,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
-        return scan(seed, reducer).takeLast(1).single(); // TODO
+    public final <R> Single<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
+        return RxJavaPlugins.onAssembly(new FlowableSingleSingle<R>(scan(seed, reducer).takeLast(1), null)); // TODO dedicated operator
     }
 
     /**
@@ -9986,8 +9978,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
-        return scanWith(seedSupplier, reducer).takeLast(1).single();
+    public final <R> Single<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
+        return RxJavaPlugins.onAssembly(new FlowableSingleSingle<R>(scanWith(seedSupplier, reducer).takeLast(1), null)); // TODO dedicated operator
     }
 
     /**
@@ -11169,9 +11161,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits the single item emitted by the source Publisher, if that Publisher
-     * emits only a single item. If the source Publisher emits more than one item or no items, notify of an
-     * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
+     * Returns a Maybe that emits the single item emitted by the source Publisher, if that Publisher
+     * emits only a single item. If the source Publisher emits more than one item, notify of an
+     * {@code IllegalArgumentException}.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.png" alt="">
      * <dl>
@@ -11179,24 +11171,22 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code singleElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a Flowable that emits the single item emitted by the source Publisher
+     * @return a Maybe that emits the single item emitted by the source Publisher
      * @throws IllegalArgumentException
      *             if the source emits more than one item
-     * @throws NoSuchElementException
-     *             if the source emits no items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> single() {
-        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(this, null));
+    public final Maybe<T> singleElement() {
+        return RxJavaPlugins.onAssembly(new FlowableSingleMaybe<T>(this));
     }
 
     /**
-     * Returns a Flowable that emits the single item emitted by the source Publisher, if that Publisher
+     * Returns a Single that emits the single item emitted by the source Publisher, if that Publisher
      * emits only a single item, or a default item if the source Publisher emits no items. If the source
      * Publisher emits more than one item, throw an {@code IllegalArgumentException}.
      * <p>
@@ -11211,17 +11201,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param defaultItem
      *            a default value to emit if the source Publisher emits no item
-     * @return a Flowable that emits the single item emitted by the source Publisher, or a default item if
+     * @return a Single that emits the single item emitted by the source Publisher, or a default item if
      *         the source Publisher is empty
-     * @throws IllegalArgumentException
-     *             if the source Publisher emits more than one item
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> single(T defaultItem) {
+    public final Single<T> single(T defaultItem) {
         ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
-        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(this, defaultItem));
+        return RxJavaPlugins.onAssembly(new FlowableSingleSingle<T>(this, defaultItem));
     }
 
     /**
@@ -12308,7 +12296,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         } else
         if (count == 0) {
-            return ignoreElements();
+            return RxJavaPlugins.onAssembly(new FlowableIgnoreElements<T>(this));
         } else
         if (count == 1) {
             return RxJavaPlugins.onAssembly(new FlowableTakeLastOne<T>(this));
@@ -13424,34 +13412,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Completable that discards all onNext emissions (similar to
-     * {@code ignoreAllElements()}) and calls onComplete when this source Publisher calls
-     * onComplete. Error terminal events are propagated.
-     * <p>
-     * <img width="640" height="295" src=
-     * "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toCompletable.png"
-     * alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator ignores backpressure on the source {@code Publisher} and the returned {@code Completable}
-     *  does not have a notion of backpressure.</dd>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @return a Completable that calls onComplete on it's subscriber when the source Publisher
-     *         calls onComplete
-     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
-     *      Completable</a>
-     * @since 2.0
-     */
-    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable toCompletable() {
-        return RxJavaPlugins.onAssembly(new CompletableFromPublisher<T>(this));
-    }
-
-    /**
      * Returns a Single that emits a single item, a list composed of all the items emitted by the source
      * Publisher.
      * <p>
@@ -13806,53 +13766,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> toObservable() {
         return RxJavaPlugins.onAssembly(new ObservableFromPublisher<T>(this));
-    }
-
-    /**
-     * Returns a Single that emits the single item emitted by the source Publisher, if that Publisher
-     * emits only a single item. If the source Publisher emits more than one item or no items, notify of an
-     * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
-     * <p>
-     * <img width="640" height="295" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toSingle.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator ignores backpressure on the source {@code Publisher} and the returned {@code Single}
-     *  does not have a notion of backpressure.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @return a Single that emits the single item emitted by the source Publisher
-     * @throws IllegalArgumentException
-     *             if the source Publisher emits more than one item
-     * @throws NoSuchElementException
-     *             if the source Publisher emits no items
-     * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
-     * @since 2.0
-     */
-    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> toSingle() {
-        return RxJavaPlugins.onAssembly(new SingleFromPublisher<T>(this));
-    }
-
-    /**
-     * Converts this Flowable into a Maybe and expects this Flowable to have at most one item
-     * or a completion signal; otherwise the resulting Maybe will signal an IndexOutOfBoundsException.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator ignores backpressure on the source {@code Publisher} and the returned {@code Maybe}
-     *  does not have a notion of backpressure.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @return the new Maybe instance
-     * @since 2.0
-     */
-    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> toMaybe() {
-        return RxJavaPlugins.onAssembly(new MaybeFromPublisher<T>(this));
     }
 
     /**

@@ -20,42 +20,35 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 /**
- * Consumes the source Publisher and emits its last item or the defaultItem
- * if empty.
+ * Consumes the source Publisher and emits its last item or completes.
  * 
  * @param <T> the value type
  */
-public final class FlowableLastSingle<T> extends Single<T> {
+public final class FlowableLastMaybe<T> extends Maybe<T> {
 
     final Publisher<T> source;
 
-    final T defaultItem;
-
-    public FlowableLastSingle(Publisher<T> source, T defaultItem) {
+    public FlowableLastMaybe(Publisher<T> source) {
         this.source = source;
-        this.defaultItem = defaultItem;
     }
 
     // TODO fuse back to Flowable
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
-        source.subscribe(new LastSubscriber<T>(observer, defaultItem));
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        source.subscribe(new LastSubscriber<T>(observer));
     }
 
     static final class LastSubscriber<T> implements Subscriber<T>, Disposable {
 
-        final SingleObserver<? super T> actual;
-
-        final T defaultItem;
+        final MaybeObserver<? super T> actual;
 
         Subscription s;
 
         T item;
 
-        public LastSubscriber(SingleObserver<? super T> actual, T defaultItem) {
+        public LastSubscriber(MaybeObserver<? super T> actual) {
             this.actual = actual;
-            this.defaultItem = defaultItem;
         }
 
         @Override
@@ -100,7 +93,7 @@ public final class FlowableLastSingle<T> extends Single<T> {
                 item = null;
                 actual.onSuccess(v);
             } else {
-                actual.onSuccess(defaultItem);
+                actual.onComplete();
             }
         }
     }

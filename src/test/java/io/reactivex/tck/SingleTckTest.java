@@ -24,7 +24,7 @@ public class SingleTckTest extends BaseTck<Integer> {
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.just(1).single()
+                Flowable.just(1).singleElement().toFlowable()
             );
     }
 

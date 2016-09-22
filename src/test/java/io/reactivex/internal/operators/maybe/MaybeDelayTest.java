@@ -80,7 +80,7 @@ public class MaybeDelayTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Integer> ts = pp.toMaybe().delay(100, TimeUnit.MILLISECONDS).test();
+        TestObserver<Integer> ts = pp.singleElement().delay(100, TimeUnit.MILLISECONDS).test();
 
         assertTrue(pp.hasSubscribers());
 
@@ -93,7 +93,7 @@ public class MaybeDelayTest {
     public void isDisposed() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestHelper.checkDisposed(pp.toMaybe().delay(100, TimeUnit.MILLISECONDS));
+        TestHelper.checkDisposed(pp.singleElement().delay(100, TimeUnit.MILLISECONDS));
     }
 
     @Test

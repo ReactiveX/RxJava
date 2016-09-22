@@ -25,7 +25,7 @@ public class CompletableSubscribeTest {
 
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        pp.toCompletable().test(true);
+        pp.ignoreElements().test(true);
 
         assertFalse(pp.hasSubscribers());
     }

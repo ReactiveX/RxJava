@@ -228,7 +228,7 @@ public class SingleUsingTest {
             final TestObserver<Integer> ts = Single.using(Functions.justCallable(d), new Function<Disposable, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Disposable v) throws Exception {
-                    return pp.toSingle();
+                    return pp.single(-99);
                 }
             }, disposer)
             .test();
@@ -303,7 +303,7 @@ public class SingleUsingTest {
             final TestObserver<Integer> ts = Single.using(Functions.justCallable(d), new Function<Disposable, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Disposable v) throws Exception {
-                    return pp.toSingle();
+                    return pp.single(-99);
                 }
             }, disposer)
             .test();

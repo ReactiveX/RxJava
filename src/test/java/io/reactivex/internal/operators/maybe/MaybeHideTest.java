@@ -70,7 +70,7 @@ public class MaybeHideTest {
     public void isDisposed() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestHelper.checkDisposed(pp.toMaybe().hide());
+        TestHelper.checkDisposed(pp.singleElement().hide());
     }
 
     @Test

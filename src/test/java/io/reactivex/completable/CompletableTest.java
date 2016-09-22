@@ -4544,7 +4544,7 @@ public class CompletableTest {
     @Test(timeout = 1000)
     public void subscribeTwoCallbacksDispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
-        Disposable d = pp.toCompletable().subscribe(Functions.EMPTY_ACTION, Functions.emptyConsumer());
+        Disposable d = pp.ignoreElements().subscribe(Functions.EMPTY_ACTION, Functions.emptyConsumer());
 
         assertFalse(d.isDisposed());
         assertTrue(pp.hasSubscribers());

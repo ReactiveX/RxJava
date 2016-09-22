@@ -31,7 +31,7 @@ public class CompletableAwaitTest {
         Thread.currentThread().interrupt();
 
         try {
-            PublishProcessor.create().toCompletable().blockingAwait();
+            PublishProcessor.create().ignoreElements().blockingAwait();
             fail("Should have thrown RuntimeException");
         } catch (RuntimeException ex) {
             if (!(ex.getCause() instanceof InterruptedException)) {
@@ -47,7 +47,7 @@ public class CompletableAwaitTest {
         Thread.currentThread().interrupt();
 
         try {
-            PublishProcessor.create().toCompletable().blockingAwait(1, TimeUnit.SECONDS);
+            PublishProcessor.create().ignoreElements().blockingAwait(1, TimeUnit.SECONDS);
             fail("Should have thrown RuntimeException");
         } catch (RuntimeException ex) {
             if (!(ex.getCause() instanceof InterruptedException)) {
@@ -59,7 +59,7 @@ public class CompletableAwaitTest {
 
     @Test
     public void awaitTimeout() {
-        assertFalse(PublishProcessor.create().toCompletable().blockingAwait(100, TimeUnit.MILLISECONDS));
+        assertFalse(PublishProcessor.create().ignoreElements().blockingAwait(100, TimeUnit.MILLISECONDS));
     }
 
     @Test

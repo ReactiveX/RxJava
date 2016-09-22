@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -22,8 +22,39 @@ import io.reactivex.Flowable;
 public class FlowableElementAtTest {
 
     @Test
+    public void testElementAtFlowable() {
+        assertEquals(2, Flowable.fromArray(1, 2).elementAt(1).toFlowable().blockingSingle()
+                .intValue());
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testElementAtWithMinusIndexFlowable() {
+        Flowable.fromArray(1, 2).elementAt(-1);
+    }
+
+    @Test
+    public void testElementAtWithIndexOutOfBoundsFlowable() {
+        assertEquals(-100, Flowable.fromArray(1, 2).elementAt(2).toFlowable().blockingFirst(-100).intValue());
+    }
+
+    @Test
+    public void testElementAtOrDefaultFlowable() {
+        assertEquals(2, Flowable.fromArray(1, 2).elementAt(1, 0).toFlowable().blockingSingle().intValue());
+    }
+
+    @Test
+    public void testElementAtOrDefaultWithIndexOutOfBoundsFlowable() {
+        assertEquals(0, Flowable.fromArray(1, 2).elementAt(2, 0).toFlowable().blockingSingle().intValue());
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testElementAtOrDefaultWithMinusIndexFlowable() {
+        Flowable.fromArray(1, 2).elementAt(-1, 0);
+    }
+
+    @Test
     public void testElementAt() {
-        assertEquals(2, Flowable.fromArray(1, 2).elementAt(1).blockingSingle()
+        assertEquals(2, Flowable.fromArray(1, 2).elementAt(1).blockingGet()
                 .intValue());
     }
 
@@ -32,19 +63,19 @@ public class FlowableElementAtTest {
         Flowable.fromArray(1, 2).elementAt(-1);
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testElementAtWithIndexOutOfBounds() {
-        Flowable.fromArray(1, 2).elementAt(2).blockingSingle();
+        assertNull(Flowable.fromArray(1, 2).elementAt(2).blockingGet());
     }
 
     @Test
     public void testElementAtOrDefault() {
-        assertEquals(2, Flowable.fromArray(1, 2).elementAt(1, 0).blockingSingle().intValue());
+        assertEquals(2, Flowable.fromArray(1, 2).elementAt(1, 0).blockingGet().intValue());
     }
 
     @Test
     public void testElementAtOrDefaultWithIndexOutOfBounds() {
-        assertEquals(0, Flowable.fromArray(1, 2).elementAt(2, 0).blockingSingle().intValue());
+        assertEquals(0, Flowable.fromArray(1, 2).elementAt(2, 0).blockingGet().intValue());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

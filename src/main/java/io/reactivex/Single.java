@@ -453,7 +453,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> fromFuture(Future<? extends T> future) {
-        return Flowable.<T>fromFuture(future).toSingle();
+        return toSingle(Flowable.<T>fromFuture(future));
     }
 
     /**
@@ -485,7 +485,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
-        return Flowable.<T>fromFuture(future, timeout, unit).toSingle();
+        return toSingle(Flowable.<T>fromFuture(future, timeout, unit));
     }
 
     /**
@@ -519,7 +519,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Single<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
-        return Flowable.<T>fromFuture(future, timeout, unit, scheduler).toSingle();
+        return toSingle(Flowable.<T>fromFuture(future, timeout, unit, scheduler));
     }
 
     /**
@@ -548,7 +548,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Single<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
-        return Flowable.<T>fromFuture(future, scheduler).toSingle();
+        return toSingle(Flowable.<T>fromFuture(future, scheduler));
     }
 
     /**
@@ -978,7 +978,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Single<R> zip(final Iterable<? extends SingleSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return Flowable.zipIterable(SingleInternalHelper.iterableToFlowable(sources), zipper, false, 1).toSingle();
+        return toSingle(Flowable.zipIterable(SingleInternalHelper.iterableToFlowable(sources), zipper, false, 1));
     }
 
     /**
@@ -1418,7 +1418,7 @@ public abstract class Single<T> implements SingleSource<T> {
             sourcePublishers[i] = RxJavaPlugins.onAssembly(new SingleToFlowable<T>(s));
             i++;
         }
-        return Flowable.zipArray(zipper, false, 1, sourcePublishers).toSingle();
+        return toSingle(Flowable.zipArray(zipper, false, 1, sourcePublishers));
     }
 
     /**
@@ -2252,7 +2252,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retry() {
-        return toFlowable().retry().toSingle();
+        return toSingle(toFlowable().retry());
     }
 
     /**
@@ -2268,7 +2268,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retry(long times) {
-        return toFlowable().retry(times).toSingle();
+        return toSingle(toFlowable().retry(times));
     }
 
     /**
@@ -2285,7 +2285,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
-        return toFlowable().retry(predicate).toSingle();
+        return toSingle(toFlowable().retry(predicate));
     }
 
     /**
@@ -2302,7 +2302,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retry(Predicate<? super Throwable> predicate) {
-        return toFlowable().retry(predicate).toSingle();
+        return toSingle(toFlowable().retry(predicate));
     }
 
     /**
@@ -2323,7 +2323,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retryWhen(Function<? super Flowable<? extends Throwable>, ? extends Publisher<Object>> handler) {
-        return toFlowable().retryWhen(handler).toSingle();
+        return toSingle(toFlowable().retryWhen(handler));
     }
 
     /**
@@ -2843,5 +2843,9 @@ public abstract class Single<T> implements SingleSource<T> {
 
         subscribe(ts);
         return ts;
+    }
+
+    private static <T> Single<T> toSingle(Flowable<T> source) {
+        return RxJavaPlugins.onAssembly(new FlowableSingleSingle<T>(source, null));
     }
 }

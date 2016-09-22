@@ -68,7 +68,7 @@ public class MaybeIsEmptyTest {
     public void isDisposed() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestHelper.checkDisposed(pp.toMaybe().isEmpty());
+        TestHelper.checkDisposed(pp.singleElement().isEmpty());
     }
 
     @Test

@@ -50,7 +50,7 @@ public class MaybeContainsTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Boolean> ts = pp.toMaybe().contains(1).test();
+        TestObserver<Boolean> ts = pp.singleElement().contains(1).test();
 
         assertTrue(pp.hasSubscribers());
 
@@ -64,7 +64,7 @@ public class MaybeContainsTest {
     public void isDisposed() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestHelper.checkDisposed(pp.toMaybe().contains(1));
+        TestHelper.checkDisposed(pp.singleElement().contains(1));
     }
 
     @Test

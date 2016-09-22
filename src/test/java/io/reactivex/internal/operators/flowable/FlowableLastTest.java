@@ -13,11 +13,9 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.isA;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-
-import java.util.NoSuchElementException;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -29,33 +27,33 @@ public class FlowableLastTest {
 
     @Test
     public void testLastWithElements() {
-        Single<Integer> last = Flowable.just(1, 2, 3).last();
+        Maybe<Integer> last = Flowable.just(1, 2, 3).lastElement();
         assertEquals(3, last.blockingGet().intValue());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testLastWithNoElements() {
-        Single<?> last = Flowable.empty().last();
-        last.blockingGet();
+        Maybe<?> last = Flowable.empty().lastElement();
+        assertNull(last.blockingGet());
     }
 
     @Test
     public void testLastMultiSubscribe() {
-        Single<Integer> last = Flowable.just(1, 2, 3).last();
+        Maybe<Integer> last = Flowable.just(1, 2, 3).lastElement();
         assertEquals(3, last.blockingGet().intValue());
         assertEquals(3, last.blockingGet().intValue());
     }
 
     @Test
     public void testLastViaObservable() {
-        Flowable.just(1, 2, 3).last();
+        Flowable.just(1, 2, 3).lastElement();
     }
 
     @Test
     public void testLast() {
-        Single<Integer> observable = Flowable.just(1, 2, 3).last();
+        Maybe<Integer> observable = Flowable.just(1, 2, 3).lastElement();
 
-        SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
+        MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -66,9 +64,9 @@ public class FlowableLastTest {
 
     @Test
     public void testLastWithOneElement() {
-        Single<Integer> observable = Flowable.just(1).last();
+        Maybe<Integer> observable = Flowable.just(1).lastElement();
 
-        SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
+        MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -79,20 +77,20 @@ public class FlowableLastTest {
 
     @Test
     public void testLastWithEmpty() {
-        Single<Integer> observable = Flowable.<Integer> empty().last();
+        Maybe<Integer> observable = Flowable.<Integer> empty().lastElement();
 
-        SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
+        MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onError(
-                isA(NoSuchElementException.class));
+        inOrder.verify(observer).onComplete();
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testLastWithPredicate() {
-        Single<Integer> observable = Flowable.just(1, 2, 3, 4, 5, 6)
+        Maybe<Integer> observable = Flowable.just(1, 2, 3, 4, 5, 6)
                 .filter(new Predicate<Integer>() {
 
                     @Override
@@ -100,9 +98,9 @@ public class FlowableLastTest {
                         return t1 % 2 == 0;
                     }
                 })
-                .last();
+                .lastElement();
 
-        SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
+        MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -113,7 +111,7 @@ public class FlowableLastTest {
 
     @Test
     public void testLastWithPredicateAndOneElement() {
-        Single<Integer> observable = Flowable.just(1, 2)
+        Maybe<Integer> observable = Flowable.just(1, 2)
             .filter(
                 new Predicate<Integer>() {
 
@@ -122,9 +120,9 @@ public class FlowableLastTest {
                         return t1 % 2 == 0;
                     }
                 })
-            .last();
+            .lastElement();
 
-        SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
+        MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -135,7 +133,7 @@ public class FlowableLastTest {
 
     @Test
     public void testLastWithPredicateAndEmpty() {
-        Single<Integer> observable = Flowable.just(1)
+        Maybe<Integer> observable = Flowable.just(1)
             .filter(
                 new Predicate<Integer>() {
 
@@ -143,14 +141,14 @@ public class FlowableLastTest {
                     public boolean test(Integer t1) {
                         return t1 % 2 == 0;
                     }
-                }).last();
+                }).lastElement();
 
-        SingleObserver<Integer> observer = TestHelper.mockSingleObserver();
+        MaybeObserver<Integer> observer = TestHelper.mockMaybeObserver();
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onError(
-                isA(NoSuchElementException.class));
+        inOrder.verify(observer).onComplete();
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
         inOrder.verifyNoMoreInteractions();
     }
 

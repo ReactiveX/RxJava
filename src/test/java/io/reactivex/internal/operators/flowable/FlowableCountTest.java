@@ -19,12 +19,22 @@ import io.reactivex.Flowable;
 
 public class FlowableCountTest {
     @Test
+    public void simpleFlowable() {
+        Assert.assertEquals(0, Flowable.empty().count().toFlowable().blockingLast().intValue());
+
+        Assert.assertEquals(1, Flowable.just(1).count().toFlowable().blockingLast().intValue());
+
+        Assert.assertEquals(10, Flowable.range(1, 10).count().toFlowable().blockingLast().intValue());
+
+    }
+
+    @Test
     public void simple() {
-        Assert.assertEquals(0, Flowable.empty().count().blockingLast().intValue());
+        Assert.assertEquals(0, Flowable.empty().count().blockingGet().intValue());
 
-        Assert.assertEquals(1, Flowable.just(1).count().blockingLast().intValue());
+        Assert.assertEquals(1, Flowable.just(1).count().blockingGet().intValue());
 
-        Assert.assertEquals(10, Flowable.range(1, 10).count().blockingLast().intValue());
+        Assert.assertEquals(10, Flowable.range(1, 10).count().blockingGet().intValue());
 
     }
 
