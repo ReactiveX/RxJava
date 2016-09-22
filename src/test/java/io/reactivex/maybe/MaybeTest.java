@@ -3045,4 +3045,83 @@ public class MaybeTest {
             }
         }).test().assertResult(1);
     }
+
+    @Test
+    public void onErrorResumeNextEmpty() {
+        Maybe.empty()
+            .onErrorResumeNext(Maybe.just(1))
+            .test()
+            .assertNoValues()
+            .assertNoErrors()
+            .assertComplete();
+    }
+
+    @Test
+    public void onErrorResumeNextValue() {
+        Maybe.just(1)
+            .onErrorResumeNext(Maybe.<Integer>empty())
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void onErrorResumeNextError() {
+        Maybe.error(new RuntimeException("some error"))
+            .onErrorResumeNext(Maybe.empty())
+            .test()
+            .assertNoValues()
+            .assertNoErrors()
+            .assertComplete();
+    }
+
+    @Test
+    public void valueConcatWithValue() {
+        Maybe.just(1)
+            .concatWith(Maybe.just(2))
+            .test()
+            .assertNoErrors()
+            .assertComplete()
+            .assertValues(1, 2);
+    }
+
+    @Test
+    public void errorConcatWithValue() {
+        Maybe.<Integer>error(new RuntimeException("error"))
+            .concatWith(Maybe.just(2))
+            .test()
+            .assertError(RuntimeException.class)
+            .assertErrorMessage("error")
+            .assertNoValues();
+    }
+
+    @Test
+    public void valueConcatWithError() {
+        Maybe.just(1)
+            .concatWith(Maybe.<Integer>error(new RuntimeException("error")))
+            .test()
+            .assertValue(1)
+            .assertError(RuntimeException.class)
+            .assertErrorMessage("error");
+    }
+
+    @Test
+    public void emptyConcatWithValue() {
+        Maybe.<Integer>empty()
+            .concatWith(Maybe.just(2))
+            .test()
+            .assertNoErrors()
+            .assertComplete()
+            .assertValues(2);
+    }
+
+    @Test
+    public void emptyConcatWithError() {
+        Maybe.<Integer>empty()
+            .concatWith(Maybe.<Integer>error(new RuntimeException("error")))
+            .test()
+            .assertNoValues()
+            .assertError(RuntimeException.class)
+            .assertErrorMessage("error");
+    }
 }
