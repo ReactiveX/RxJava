@@ -22,68 +22,68 @@ import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.Action1;
-import rx.functions.Cancellable;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.atomic.SpscUnboundedAtomicArrayQueue;
 import rx.internal.util.unsafe.*;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 
-public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
+@Deprecated
+public final class OnSubscribeFromAsyncEmitter<T> implements OnSubscribe<T> {
 
-    final Action1<Emitter<T>> Emitter;
+    final Action1<AsyncEmitter<T>> asyncEmitter;
 
-    final Emitter.BackpressureMode backpressure;
+    final AsyncEmitter.BackpressureMode backpressure;
 
-    public OnSubscribeFromEmitter(Action1<Emitter<T>> Emitter, Emitter.BackpressureMode backpressure) {
-        this.Emitter = Emitter;
+    public OnSubscribeFromAsyncEmitter(Action1<AsyncEmitter<T>> asyncEmitter, AsyncEmitter.BackpressureMode backpressure) {
+        this.asyncEmitter = asyncEmitter;
         this.backpressure = backpressure;
     }
 
     @Override
     public void call(Subscriber<? super T> t) {
-        BaseEmitter<T> emitter;
+        BaseAsyncEmitter<T> emitter;
 
         switch (backpressure) {
         case NONE: {
-            emitter = new NoneEmitter<T>(t);
+            emitter = new NoneAsyncEmitter<T>(t);
             break;
         }
         case ERROR: {
-            emitter = new ErrorEmitter<T>(t);
+            emitter = new ErrorAsyncEmitter<T>(t);
             break;
         }
         case DROP: {
-            emitter = new DropEmitter<T>(t);
+            emitter = new DropAsyncEmitter<T>(t);
             break;
         }
         case LATEST: {
-            emitter = new LatestEmitter<T>(t);
+            emitter = new LatestAsyncEmitter<T>(t);
             break;
         }
         default: {
-            emitter = new BufferEmitter<T>(t, RxRingBuffer.SIZE);
+            emitter = new BufferAsyncEmitter<T>(t, RxRingBuffer.SIZE);
             break;
         }
         }
 
         t.add(emitter);
         t.setProducer(emitter);
-        Emitter.call(emitter);
+        asyncEmitter.call(emitter);
 
     }
 
     /**
-     * A Subscription that wraps an Cancellable instance.
+     * A Subscription that wraps an AsyncEmitter.Cancellable instance.
      */
     static final class CancellableSubscription
-    extends AtomicReference<Cancellable>
+    extends AtomicReference<AsyncEmitter.Cancellable>
     implements Subscription {
 
         /** */
         private static final long serialVersionUID = 5718521705281392066L;
 
-        public CancellableSubscription(Cancellable cancellable) {
+        public CancellableSubscription(AsyncEmitter.Cancellable cancellable) {
             super(cancellable);
         }
 
@@ -95,7 +95,7 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
         @Override
         public void unsubscribe() {
             if (get() != null) {
-                Cancellable c = getAndSet(null);
+                AsyncEmitter.Cancellable c = getAndSet(null);
                 if (c != null) {
                     try {
                         c.cancel();
@@ -108,9 +108,9 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
         }
     }
 
-    static abstract class BaseEmitter<T>
+    static abstract class BaseAsyncEmitter<T>
     extends AtomicLong
-    implements Emitter<T>, Producer, Subscription {
+    implements AsyncEmitter<T>, Producer, Subscription {
         /** */
         private static final long serialVersionUID = 7326289992464377023L;
 
@@ -118,7 +118,7 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
 
         final SerialSubscription serial;
 
-        public BaseEmitter(Subscriber<? super T> actual) {
+        public BaseAsyncEmitter(Subscriber<? super T> actual) {
             this.actual = actual;
             this.serial = new SerialSubscription();
         }
@@ -180,7 +180,7 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
         }
 
         @Override
-        public final void setCancellation(Cancellable c) {
+        public final void setCancellation(AsyncEmitter.Cancellable c) {
             setSubscription(new CancellableSubscription(c));
         }
 
@@ -190,12 +190,12 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
         }
     }
 
-    static final class NoneEmitter<T> extends BaseEmitter<T> {
+    static final class NoneAsyncEmitter<T> extends BaseAsyncEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 3776720187248809713L;
 
-        public NoneEmitter(Subscriber<? super T> actual) {
+        public NoneAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
 
@@ -217,12 +217,12 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
 
     }
 
-    static abstract class NoOverflowBaseEmitter<T> extends BaseEmitter<T> {
+    static abstract class NoOverflowBaseAsyncEmitter<T> extends BaseAsyncEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 4127754106204442833L;
 
-        public NoOverflowBaseEmitter(Subscriber<? super T> actual) {
+        public NoOverflowBaseAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
 
@@ -243,12 +243,12 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
         abstract void onOverflow();
     }
 
-    static final class DropEmitter<T> extends NoOverflowBaseEmitter<T> {
+    static final class DropAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 8360058422307496563L;
 
-        public DropEmitter(Subscriber<? super T> actual) {
+        public DropAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
 
@@ -259,14 +259,14 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
 
     }
 
-    static final class ErrorEmitter<T> extends NoOverflowBaseEmitter<T> {
+    static final class ErrorAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 338953216916120960L;
 
         private boolean done;
 
-        public ErrorEmitter(Subscriber<? super T> actual) {
+        public ErrorAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
 
@@ -308,7 +308,7 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
 
     }
 
-    static final class BufferEmitter<T> extends BaseEmitter<T> {
+    static final class BufferAsyncEmitter<T> extends BaseAsyncEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 2427151001689639875L;
@@ -322,7 +322,7 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
 
         final NotificationLite<T> nl;
 
-        public BufferEmitter(Subscriber<? super T> actual, int capacityHint) {
+        public BufferAsyncEmitter(Subscriber<? super T> actual, int capacityHint) {
             super(actual);
             this.queue = UnsafeAccess.isUnsafeAvailable()
                     ? new SpscUnboundedArrayQueue<Object>(capacityHint)
@@ -439,7 +439,7 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
         }
     }
 
-    static final class LatestEmitter<T> extends BaseEmitter<T> {
+    static final class LatestAsyncEmitter<T> extends BaseAsyncEmitter<T> {
 
         /** */
         private static final long serialVersionUID = 4023437720691792495L;
@@ -453,7 +453,7 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
 
         final NotificationLite<T> nl;
 
-        public LatestEmitter(Subscriber<? super T> actual) {
+        public LatestAsyncEmitter(Subscriber<? super T> actual) {
             super(actual);
             this.queue = new AtomicReference<Object>();
             this.wip = new AtomicInteger();

@@ -17,6 +17,7 @@
 package rx;
 
 import rx.annotations.Experimental;
+import rx.functions.Cancellable;
 
 /**
  * Abstraction over a RxJava Subscriber that allows associating
@@ -29,11 +30,9 @@ import rx.annotations.Experimental;
  *
  * @param <T> the value type to emit
  * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
- * @deprecated as of 1.2.1 because Async prefix of this class potentially misleading. Use {@link Emitter} instead.
  */
 @Experimental
-@Deprecated
-public interface AsyncEmitter<T> extends Observer<T> {
+public interface Emitter<T> extends Observer<T> {
 
     /**
      * Sets a Subscription on this emitter; any previous Subscription
@@ -56,24 +55,11 @@ public interface AsyncEmitter<T> extends Observer<T> {
     long requested();
 
     /**
-     * A functional interface that has a single close method
-     * that can throw.
-     */
-    interface Cancellable {
-
-        /**
-         * Cancel the action or free a resource.
-         * @throws Exception on error
-         */
-        void cancel() throws Exception;
-    }
-
-    /**
      * Options to handle backpressure in the emitter.
      */
     enum BackpressureMode {
         /**
-         * No backpressure is applied an the onNext calls pass through the AsyncEmitter;
+         * No backpressure is applied as the onNext calls pass through the Emitter;
          * note that this may cause {@link rx.exceptions.MissingBackpressureException} or {@link IllegalStateException}
          * somewhere downstream.
          */
