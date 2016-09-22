@@ -13,6 +13,7 @@
 
 package io.reactivex.schedulers;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
 import io.reactivex.Scheduler;
@@ -45,15 +46,35 @@ public final class Schedulers {
     static final Scheduler NEW_THREAD;
 
     static {
-        SINGLE = RxJavaPlugins.initSingleScheduler(new SingleScheduler());
+        SINGLE = RxJavaPlugins.initSingleScheduler(new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return new SingleScheduler();
+            }
+        });
 
-        COMPUTATION = RxJavaPlugins.initComputationScheduler(new ComputationScheduler());
+        COMPUTATION = RxJavaPlugins.initComputationScheduler(new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return new ComputationScheduler();
+            }
+        });
 
-        IO = RxJavaPlugins.initIoScheduler(new IoScheduler());
+        IO = RxJavaPlugins.initIoScheduler(new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return new IoScheduler();
+            }
+        });
 
         TRAMPOLINE = TrampolineScheduler.instance();
 
-        NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(NewThreadScheduler.instance());
+        NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return NewThreadScheduler.instance();
+            }
+        });
     }
 
     /** Utility class. */

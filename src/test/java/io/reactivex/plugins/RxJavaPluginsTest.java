@@ -339,58 +339,82 @@ public class RxJavaPluginsTest {
 
     @Test
     public void overrideInitSingleScheduler() {
-        Scheduler s = Schedulers.single(); // make sure the Schedulers is initialized
+        final Scheduler s = Schedulers.single(); // make sure the Schedulers is initialized
+        Callable<Scheduler> c = new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return s;
+            }
+        };
         try {
             RxJavaPlugins.setInitSingleSchedulerHandler(replaceWithImmediate);
 
-            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initSingleScheduler(s));
+            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initSingleScheduler(c));
         } finally {
             RxJavaPlugins.reset();
         }
         // make sure the reset worked
-        assertSame(s, RxJavaPlugins.initSingleScheduler(s));
+        assertSame(s, RxJavaPlugins.initSingleScheduler(c));
     }
 
     @Test
     public void overrideInitComputationScheduler() {
-        Scheduler s = Schedulers.computation(); // make sure the Schedulers is initialized
+        final Scheduler s = Schedulers.computation(); // make sure the Schedulers is initialized
+        Callable<Scheduler> c = new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return s;
+            }
+        };
         try {
             RxJavaPlugins.setInitComputationSchedulerHandler(replaceWithImmediate);
 
-            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initComputationScheduler(s));
+            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initComputationScheduler(c));
         } finally {
             RxJavaPlugins.reset();
         }
         // make sure the reset worked
-        assertSame(s, RxJavaPlugins.initComputationScheduler(s));
+        assertSame(s, RxJavaPlugins.initComputationScheduler(c));
     }
 
     @Test
     public void overrideInitIoScheduler() {
-        Scheduler s = Schedulers.io(); // make sure the Schedulers is initialized
+        final Scheduler s = Schedulers.io(); // make sure the Schedulers is initialized;
+        Callable<Scheduler> c = new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return s;
+            }
+        };
         try {
             RxJavaPlugins.setInitIoSchedulerHandler(replaceWithImmediate);
 
-            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initIoScheduler(s));
+            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initIoScheduler(c));
         } finally {
             RxJavaPlugins.reset();
         }
         // make sure the reset worked
-        assertSame(s, RxJavaPlugins.initIoScheduler(s));
+        assertSame(s, RxJavaPlugins.initIoScheduler(c));
     }
 
     @Test
     public void overrideInitNewThreadScheduler() {
-        Scheduler s = Schedulers.newThread(); // make sure the Schedulers is initialized
+        final Scheduler s = Schedulers.newThread(); // make sure the Schedulers is initialized;
+        Callable<Scheduler> c = new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return s;
+            }
+        };
         try {
             RxJavaPlugins.setInitNewThreadSchedulerHandler(replaceWithImmediate);
 
-            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initNewThreadScheduler(s));
+            assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initNewThreadScheduler(c));
         } finally {
             RxJavaPlugins.reset();
         }
         // make sure the reset worked
-        assertSame(s, RxJavaPlugins.initNewThreadScheduler(s));
+        assertSame(s, RxJavaPlugins.initNewThreadScheduler(c));
     }
 
     @SuppressWarnings("rawtypes")
@@ -1153,8 +1177,13 @@ public class RxJavaPluginsTest {
 
             assertNull(RxJavaPlugins.onSingleScheduler(null));
 
-            Scheduler s = ImmediateThinScheduler.INSTANCE;
-
+            final Scheduler s = ImmediateThinScheduler.INSTANCE;
+            Callable<Scheduler> c = new Callable<Scheduler>() {
+                @Override
+                public Scheduler call() throws Exception {
+                    return s;
+                }
+            };
             assertSame(s, RxJavaPlugins.onComputationScheduler(s));
 
             assertSame(s, RxJavaPlugins.onIoScheduler(s));
@@ -1172,13 +1201,13 @@ public class RxJavaPluginsTest {
 
             assertNull(RxJavaPlugins.initSingleScheduler(null));
 
-            assertSame(s, RxJavaPlugins.initComputationScheduler(s));
+            assertSame(s, RxJavaPlugins.initComputationScheduler(c));
 
-            assertSame(s, RxJavaPlugins.initIoScheduler(s));
+            assertSame(s, RxJavaPlugins.initIoScheduler(c));
 
-            assertSame(s, RxJavaPlugins.initNewThreadScheduler(s));
+            assertSame(s, RxJavaPlugins.initNewThreadScheduler(c));
 
-            assertSame(s, RxJavaPlugins.initSingleScheduler(s));
+            assertSame(s, RxJavaPlugins.initSingleScheduler(c));
 
 
         } finally {
