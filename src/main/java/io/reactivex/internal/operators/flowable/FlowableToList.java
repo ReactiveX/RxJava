@@ -25,11 +25,6 @@ import io.reactivex.internal.util.ArrayListSupplier;
 public final class FlowableToList<T, U extends Collection<? super T>> extends AbstractFlowableWithUpstream<T, U> {
     final Callable<U> collectionSupplier;
 
-    @SuppressWarnings("unchecked")
-    public FlowableToList(Publisher<T> source) {
-        this(source, (Callable<U>)ArrayListSupplier.asCallable());
-    }
-
     public FlowableToList(Publisher<T> source, Callable<U> collectionSupplier) {
         super(source);
         this.collectionSupplier = collectionSupplier;

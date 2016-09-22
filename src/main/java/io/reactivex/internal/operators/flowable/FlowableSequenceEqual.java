@@ -53,8 +53,6 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         final BiPredicate<? super T, ? super T> comparer;
 
-        final int prefetch;
-
         final EqualSubscriber<T> first;
 
         final EqualSubscriber<T> second;
@@ -69,7 +67,6 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         EqualCoordinator(Subscriber<? super Boolean> actual, int prefetch, BiPredicate<? super T, ? super T> comparer) {
             super(actual);
-            this.prefetch = prefetch;
             this.comparer = comparer;
             this.wip = new AtomicInteger();
             this.first = new EqualSubscriber<T>(this, prefetch);

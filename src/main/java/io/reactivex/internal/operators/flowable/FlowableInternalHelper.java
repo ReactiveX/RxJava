@@ -188,14 +188,6 @@ public enum FlowableInternalHelper {
         return new FlatMapIntoIterable<T, U>(mapper);
     }
 
-    enum MapToInt implements Function<Object, Object> {
-        INSTANCE;
-        @Override
-        public Object apply(Object t) throws Exception {
-            return 0;
-        }
-    }
-
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent) {
         return new Callable<ConnectableFlowable<T>>() {
             @Override

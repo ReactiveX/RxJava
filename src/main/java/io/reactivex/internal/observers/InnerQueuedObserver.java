@@ -42,8 +42,6 @@ implements Observer<T>, Disposable {
 
     volatile boolean done;
 
-    long produced;
-
     int fusionMode;
 
     public InnerQueuedObserver(InnerQueuedObserverSupport<T> parent, int prefetch) {
