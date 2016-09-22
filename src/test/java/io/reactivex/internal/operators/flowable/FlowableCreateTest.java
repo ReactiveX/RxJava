@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -213,6 +213,241 @@ public class FlowableCreateTest {
     @Test(expected = IllegalArgumentException.class)
     public void unsafeWithFlowable() {
         Flowable.unsafeCreate(Flowable.just(1));
+    }
+
+    @Test
+    public void createNullValueBuffer() {
+        final Throwable[] error = { null };
+
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        }, FlowableEmitter.BackpressureMode.BUFFER)
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
+
+    @Test
+    public void createNullValueLatest() {
+        final Throwable[] error = { null };
+
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        }, FlowableEmitter.BackpressureMode.LATEST)
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
+
+    @Test
+    public void createNullValueError() {
+        final Throwable[] error = { null };
+
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        }, FlowableEmitter.BackpressureMode.ERROR)
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
+
+    @Test
+    public void createNullValueDrop() {
+        final Throwable[] error = { null };
+
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        }, FlowableEmitter.BackpressureMode.DROP)
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
+
+    @Test
+    public void createNullValueNone() {
+        final Throwable[] error = { null };
+
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        }, FlowableEmitter.BackpressureMode.NONE)
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
+
+    @Test
+    public void createNullValueBufferSerialized() {
+        final Throwable[] error = { null };
+
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        }, FlowableEmitter.BackpressureMode.BUFFER)
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
+
+    @Test
+    public void createNullValueLatestSerialized() {
+        final Throwable[] error = { null };
+
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        }, FlowableEmitter.BackpressureMode.LATEST)
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
+
+    @Test
+    public void createNullValueErrorSerialized() {
+        final Throwable[] error = { null };
+
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        }, FlowableEmitter.BackpressureMode.ERROR)
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
+
+    @Test
+    public void createNullValueDropSerialized() {
+        final Throwable[] error = { null };
+
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        }, FlowableEmitter.BackpressureMode.DROP)
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
+
+    @Test
+    public void createNullValueNoneSerialized() {
+        final Throwable[] error = { null };
+
+        Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        }, FlowableEmitter.BackpressureMode.NONE)
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
     }
 
 }

@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -205,4 +205,50 @@ public class ObservableCreateTest {
         Observable.unsafeCreate(Observable.just(1));
     }
 
+    @Test
+    public void createNullValue() {
+        final Throwable[] error = { null };
+
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
+
+    @Test
+    public void createNullValueSerialized() {
+        final Throwable[] error = { null };
+
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+                e = e.serialize();
+                try {
+                    e.onNext(null);
+                    e.onNext(1);
+                    e.onError(new TestException());
+                    e.onComplete();
+                } catch (Throwable ex) {
+                    error[0] = ex;
+                }
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertNull(error[0]);
+    }
 }
