@@ -20,7 +20,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.ArrayListSupplier;
 
 public final class FlowableToList<T, U extends Collection<? super T>> extends AbstractFlowableWithUpstream<T, U> {
     final Callable<U> collectionSupplier;
