@@ -25,10 +25,10 @@ import rx.functions.*;
 public final class ActionObserver<T> implements Observer<T> {
 
     final Action1<? super T> onNext;
-    final Action1<Throwable> onError;
+    final Action1<? super Throwable> onError;
     final Action0 onCompleted;
 
-    public ActionObserver(Action1<? super T> onNext, Action1<Throwable> onError, Action0 onCompleted) {
+    public ActionObserver(Action1<? super T> onNext, Action1<? super Throwable> onError, Action0 onCompleted) {
         this.onNext = onNext;
         this.onError = onError;
         this.onCompleted = onCompleted;

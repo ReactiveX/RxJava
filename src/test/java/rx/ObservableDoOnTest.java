@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.observers.TestSubscriber;
 
 public class ObservableDoOnTest {
 
@@ -64,6 +65,21 @@ public class ObservableDoOnTest {
 
         assertNotNull(t);
         assertEquals(t, r.get());
+    }
+    
+    @Test
+    public void testDoOnErrorWithActionOfTypeObject() {
+        final AtomicReference<Boolean> r = new AtomicReference<Boolean>();
+        TestSubscriber<String> ts = TestSubscriber.create();
+        Observable.<String> error(new RuntimeException("an error"))
+            .doOnError(new Action1<Object>() {
+
+                @Override
+                public void call(Object v) {
+                    r.set(true);
+                }
+            }).subscribe(ts);
+        assertTrue(r.get());
     }
 
     @Test

@@ -28,9 +28,9 @@ import rx.functions.Action1;
  */
 public class OperatorDoOnRequest<T> implements Operator<T, T> {
 
-    final Action1<Long> request;
+    final Action1<? super Long> request;
 
-    public OperatorDoOnRequest(Action1<Long> request) {
+    public OperatorDoOnRequest(Action1<? super Long> request) {
         this.request = request;
     }
 
