@@ -17,21 +17,24 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
-public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T, T> {
+public final class ObservableSingleSingle<T> extends Single<T> {
+
+    final ObservableSource<T> source;
 
     final T defaultValue;
 
-    public ObservableSingle(ObservableSource<T> source, T defaultValue) {
-        super(source);
+    public ObservableSingleSingle(ObservableSource<T> source, T defaultValue) {
+        this.source = source;
         this.defaultValue = defaultValue;
     }
     @Override
-    public void subscribeActual(Observer<? super T> t) {
+    public void subscribeActual(SingleObserver<? super T> t) {
         source.subscribe(new SingleElementObserver<T>(t, defaultValue));
     }
 
     static final class SingleElementObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final SingleObserver<? super T> actual;
+
         final T defaultValue;
 
         Disposable s;
@@ -40,7 +43,7 @@ public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T,
 
         boolean done;
 
-        SingleElementObserver(Observer<? super T> actual, T defaultValue) {
+        SingleElementObserver(SingleObserver<? super T> actual, T defaultValue) {
             this.actual = actual;
             this.defaultValue = defaultValue;
         }
@@ -99,10 +102,7 @@ public final class ObservableSingle<T> extends AbstractObservableWithUpstream<T,
             if (v == null) {
                 v = defaultValue;
             }
-            if (v != null) {
-                actual.onNext(v);
-            }
-            actual.onComplete();
+            actual.onSuccess(v);
         }
     }
 }

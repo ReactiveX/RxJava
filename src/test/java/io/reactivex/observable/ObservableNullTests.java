@@ -1767,7 +1767,7 @@ public class ObservableNullTests {
             public Integer apply(Integer a, Integer b) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1792,7 +1792,7 @@ public class ObservableNullTests {
             public Integer apply(Integer a, Integer b) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1817,7 +1817,7 @@ public class ObservableNullTests {
             public Object apply(Object a, Integer b) {
                 return 1;
             }
-        }).blockingSubscribe();
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)

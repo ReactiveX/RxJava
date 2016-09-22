@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -142,7 +142,7 @@ public class ObservableTakeLastTest {
     @Test
     public void testIssue1522() {
         // https://github.com/ReactiveX/RxJava/issues/1522
-        assertEquals(0, Observable
+        assertNull(Observable
                 .empty()
                 .count()
                 .filter(new Predicate<Long>() {
@@ -151,8 +151,7 @@ public class ObservableTakeLastTest {
                         return false;
                     }
                 })
-                .toList()
-                .blockingGet().size());
+                .blockingGet());
     }
 
     @Test

@@ -293,6 +293,11 @@ public class FlowableSerializeTest {
                                             // force an error
                                             throw npe;
                                         } else {
+                                            try {
+                                                Thread.sleep(10);
+                                            } catch (InterruptedException ex) {
+                                                // ignored
+                                            }
                                             System.out.println("TestMultiThreadedObservable onNext: " + s);
                                         }
                                         observer.onNext(s);

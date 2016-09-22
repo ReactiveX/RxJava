@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -204,16 +205,16 @@ public class ObservableMapTest {
     /**
      * While mapping over range(1,0).last() we expect NoSuchElementException since the sequence is empty.
      */
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testErrorPassesThruMap() {
-        Observable.range(1, 0).last().map(new Function<Integer, Integer>() {
+        assertNull(Observable.range(1, 0).lastElement().map(new Function<Integer, Integer>() {
 
             @Override
             public Integer apply(Integer i) {
                 return i;
             }
 
-        }).blockingGet();
+        }).blockingGet());
     }
 
     /**
@@ -237,7 +238,7 @@ public class ObservableMapTest {
      */
     @Test(expected = ArithmeticException.class)
     public void testMapWithErrorInFunc() {
-        Observable.range(1, 1).last().map(new Function<Integer, Integer>() {
+        Observable.range(1, 1).lastElement().map(new Function<Integer, Integer>() {
 
             @Override
             public Integer apply(Integer i) {

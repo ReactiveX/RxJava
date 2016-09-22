@@ -37,6 +37,8 @@ import io.reactivex.subjects.*;
 public class ObservableTest {
 
     Observer<Number> w;
+    SingleObserver<Number> wo;
+    MaybeObserver<Number> wm;
 
     private static final Predicate<Integer> IS_EVEN = new Predicate<Integer>() {
         @Override
@@ -48,12 +50,14 @@ public class ObservableTest {
     @Before
     public void before() {
         w = TestHelper.mockObserver();
+        wo = TestHelper.mockSingleObserver();
+        wm = TestHelper.mockMaybeObserver();
     }
 
     @Test
     public void fromArray() {
         String[] items = new String[] { "one", "two", "three" };
-        assertEquals((Long)3L, Observable.fromArray(items).count().blockingSingle());
+        assertEquals((Long)3L, Observable.fromArray(items).count().blockingGet());
         assertEquals("two", Observable.fromArray(items).skip(1).take(1).blockingSingle());
         assertEquals("three", Observable.fromArray(items).takeLast(1).blockingSingle());
     }
@@ -65,7 +69,7 @@ public class ObservableTest {
         items.add("two");
         items.add("three");
 
-        assertEquals((Long)3L, Observable.fromIterable(items).count().blockingSingle());
+        assertEquals((Long)3L, Observable.fromIterable(items).count().blockingGet());
         assertEquals("two", Observable.fromIterable(items).skip(1).take(1).blockingSingle());
         assertEquals("three", Observable.fromIterable(items).takeLast(1).blockingSingle());
     }
@@ -74,7 +78,7 @@ public class ObservableTest {
     public void fromArityArgs3() {
         Observable<String> items = Observable.just("one", "two", "three");
 
-        assertEquals((Long)3L, items.count().blockingSingle());
+        assertEquals((Long)3L, items.count().blockingGet());
         assertEquals("two", items.skip(1).take(1).blockingSingle());
         assertEquals("three", items.takeLast(1).blockingSingle());
     }
@@ -83,7 +87,7 @@ public class ObservableTest {
     public void fromArityArgs1() {
         Observable<String> items = Observable.just("one");
 
-        assertEquals((Long)1L, items.count().blockingSingle());
+        assertEquals((Long)1L, items.count().blockingGet());
         assertEquals("one", items.takeLast(1).blockingSingle());
     }
 
@@ -104,10 +108,10 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCountAFewItems() {
+    public void testCountAFewItemsObservable() {
         Observable<String> o = Observable.just("a", "b", "c", "d");
 
-        o.count().subscribe(w);
+        o.count().toObservable().subscribe(w);
 
         // we should be called only once
         verify(w, times(1)).onNext(anyLong());
@@ -117,14 +121,52 @@ public class ObservableTest {
     }
 
     @Test
-    public void testCountZeroItems() {
+    public void testCountZeroItemsObservable() {
         Observable<String> o = Observable.empty();
-        o.count().subscribe(w);
+        o.count().toObservable().subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyLong());
         verify(w).onNext(0L);
         verify(w, never()).onError(any(Throwable.class));
         verify(w, times(1)).onComplete();
+    }
+
+    @Test
+    public void testCountErrorObservable() {
+        Observable<String> o = Observable.error(new Callable<Throwable>() {
+            @Override
+            public Throwable call() {
+                return new RuntimeException();
+            }
+        });
+
+        o.count().toObservable().subscribe(w);
+        verify(w, never()).onNext(anyInt());
+        verify(w, never()).onComplete();
+        verify(w, times(1)).onError(any(RuntimeException.class));
+    }
+
+
+    @Test
+    public void testCountAFewItems() {
+        Observable<String> o = Observable.just("a", "b", "c", "d");
+
+        o.count().subscribe(wo);
+
+        // we should be called only once
+        verify(wo, times(1)).onSuccess(anyLong());
+        verify(wo).onSuccess(4L);
+        verify(wo, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testCountZeroItems() {
+        Observable<String> o = Observable.empty();
+        o.count().subscribe(wo);
+        // we should be called only once
+        verify(wo, times(1)).onSuccess(anyLong());
+        verify(wo).onSuccess(0L);
+        verify(wo, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -136,10 +178,9 @@ public class ObservableTest {
             }
         });
 
-        o.count().subscribe(w);
-        verify(w, never()).onNext(anyInt());
-        verify(w, never()).onComplete();
-        verify(w, times(1)).onError(any(RuntimeException.class));
+        o.count().subscribe(wo);
+        verify(wo, never()).onSuccess(anyInt());
+        verify(wo, times(1)).onError(any(RuntimeException.class));
     }
 
     @Test
@@ -183,19 +224,19 @@ public class ObservableTest {
     @Test
     public void testFirstOfNone() {
         Observable<Integer> o = Observable.empty();
-        o.first().subscribe(w);
-        verify(w, never()).onNext(anyInt());
-        verify(w, never()).onComplete();
-        verify(w, times(1)).onError(isA(NoSuchElementException.class));
+        o.firstElement().subscribe(wm);
+        verify(wm, never()).onSuccess(anyInt());
+        verify(wm).onComplete();
+        verify(wm, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testFirstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> o = Observable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        o.filter(IS_EVEN).first().subscribe(w);
-        verify(w, never()).onNext(anyInt());
-        verify(w, never()).onComplete();
-        verify(w, times(1)).onError(isA(NoSuchElementException.class));
+        o.filter(IS_EVEN).firstElement().subscribe(wm);
+        verify(wm, never()).onSuccess(anyInt());
+        verify(wm).onComplete();
+        verify(wm, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -207,16 +248,33 @@ public class ObservableTest {
                 return t1 + t2;
             }
         })
+        .subscribe(wm);
+        // we should be called only once
+        verify(wm, times(1)).onSuccess(anyInt());
+        verify(wm).onSuccess(10);
+        verify(wm, never()).onError(any(Throwable.class));
+        verify(wm, never()).onComplete();
+    }
+
+    @Test
+    public void testReduceObservable() {
+        Observable<Integer> o = Observable.just(1, 2, 3, 4);
+        o.reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
+        .toObservable()
         .subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(10);
+        verify(w, never()).onError(any(Throwable.class));
+        verify(w).onComplete();
     }
 
-    /**
-     * A reduce should fail with an NoSuchElementException if done on an empty Observable.
-     */
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testReduceWithEmptyObservable() {
         Observable<Integer> o = Observable.range(1, 0);
         o.reduce(new BiFunction<Integer, Integer, Integer>() {
@@ -225,14 +283,12 @@ public class ObservableTest {
                 return t1 + t2;
             }
         })
-        .blockingForEach(new Consumer<Integer>() {
+        .subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer t1) {
                 // do nothing ... we expect an exception instead
             }
         });
-
-        fail("Expected an exception to be thrown");
     }
 
     /**
@@ -249,7 +305,7 @@ public class ObservableTest {
                 return t1 + t2;
             }
         })
-                .blockingLast();
+        .blockingGet();
 
         assertEquals(1, value);
     }
@@ -263,6 +319,23 @@ public class ObservableTest {
                 return t1 + t2;
             }
         })
+        .subscribe(wo);
+        // we should be called only once
+        verify(wo, times(1)).onSuccess(anyInt());
+        verify(wo).onSuccess(60);
+        verify(wo, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testReduceWithInitialValueObservable() {
+        Observable<Integer> o = Observable.just(1, 2, 3, 4);
+        o.reduce(50, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        })
+        .toObservable()
         .subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
@@ -874,7 +947,19 @@ public class ObservableTest {
 
     @Test
     public void testIgnoreElements() {
-        Observable<Integer> o = Observable.just(1, 2, 3).ignoreElements();
+        Completable o = Observable.just(1, 2, 3).ignoreElements();
+
+        CompletableObserver observer = TestHelper.mockCompletableObserver();
+
+        o.subscribe(observer);
+
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onComplete();
+    }
+
+    @Test
+    public void testIgnoreElementsObservable() {
+        Observable<Integer> o = Observable.just(1, 2, 3).ignoreElements().toObservable();
 
         Observer<Object> observer = TestHelper.mockObserver();
 
@@ -1109,9 +1194,16 @@ public class ObservableTest {
 
     @Test
     public void singleDefault() {
-        Observable.just(1).toSingle(100).test().assertResult(1);
+        Observable.just(1).single(100).test().assertResult(1);
 
-        Observable.empty().toSingle(100).test().assertResult(100);
+        Observable.empty().single(100).test().assertResult(100);
+    }
+
+    @Test
+    public void singleDefaultObservable() {
+        Observable.just(1).single(100).toObservable().test().assertResult(1);
+
+        Observable.empty().single(100).toObservable().test().assertResult(100);
     }
 
     @Test

@@ -36,7 +36,7 @@ public class ObservableDetachTest {
 
         TestObserver<Object> ts = new TestObserver<Object>();
 
-        Observable.just(o).count().onTerminateDetach().subscribe(ts);
+        Observable.just(o).count().toObservable().onTerminateDetach().subscribe(ts);
 
         ts.assertValue(1L);
         ts.assertComplete();
@@ -118,7 +118,7 @@ public class ObservableDetachTest {
 
         WeakReference<Object> wr = new WeakReference<Object>(o);
 
-        TestObserver<Long> ts = Observable.just(o).count().onTerminateDetach().test();
+        TestObserver<Long> ts = Observable.just(o).count().toObservable().onTerminateDetach().test();
 
         o = null;
         ts.cancel();

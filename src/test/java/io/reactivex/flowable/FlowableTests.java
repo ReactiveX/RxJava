@@ -274,7 +274,7 @@ public class FlowableTests {
     /**
      * A reduce should fail with an NoSuchElementException if done on an empty Observable.
      */
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testReduceWithEmptyObservable() {
         Flowable<Integer> observable = Flowable.range(1, 0);
         observable.reduce(new BiFunction<Integer, Integer, Integer>() {
@@ -290,8 +290,6 @@ public class FlowableTests {
                 // do nothing ... we expect an exception instead
             }
         });
-
-        fail("Expected an exception to be thrown");
     }
 
     /**

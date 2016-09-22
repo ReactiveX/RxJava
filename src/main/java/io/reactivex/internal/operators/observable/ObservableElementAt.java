@@ -97,12 +97,10 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
             if (index <= count && !done) {
                 done = true;
                 T v = defaultValue;
-                if (v == null) {
-                    actual.onError(new IndexOutOfBoundsException());
-                } else {
+                if (v != null) {
                     actual.onNext(v);
-                    actual.onComplete();
                 }
+                actual.onComplete();
             }
         }
     }

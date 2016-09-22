@@ -31,7 +31,7 @@ public class ToFlowablePerf {
     @Param({ "1", "1000", "1000000" })
     public int times;
 
-    Single<Integer> flowable;
+    Maybe<Integer> flowable;
 
     Flowable<Integer> flowableInner;
 
@@ -64,12 +64,12 @@ public class ToFlowablePerf {
 
         Observable<Integer> sourceObs = Observable.fromArray(array);
 
-        observable = sourceObs.reduce(second);
+        observable = sourceObs.reduce(second).toObservable();
 
         observableInner = sourceObs.concatMap(new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer v) throws Exception {
-                return Observable.range(1, 50).reduce(second);
+                return Observable.range(1, 50).reduce(second).toObservable();
             }
         });
     }

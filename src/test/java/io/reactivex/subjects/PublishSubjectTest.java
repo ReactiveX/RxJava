@@ -301,7 +301,8 @@ public class PublishSubjectTest {
             InOrder inOrder = inOrder(o);
             String v = "" + i;
             System.out.printf("Turn: %d%n", i);
-            src.first()
+            src.firstElement()
+                .toObservable()
                 .flatMap(new Function<String, Observable<String>>() {
 
                     @Override

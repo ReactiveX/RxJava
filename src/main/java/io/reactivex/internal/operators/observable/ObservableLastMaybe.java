@@ -11,65 +11,62 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.flowable;
-
-import org.reactivestreams.*;
+package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * Consumes the source Publisher and emits its last item or completes.
+ * Consumes the source ObservableSource and emits its last item, the defaultItem
+ * if empty or a NoSuchElementException if even the defaultItem is null.
  * 
  * @param <T> the value type
  */
-public final class FlowableLastMaybe<T> extends Maybe<T> {
+public final class ObservableLastMaybe<T> extends Maybe<T> {
 
-    final Publisher<T> source;
+    final ObservableSource<T> source;
 
-    public FlowableLastMaybe(Publisher<T> source) {
+    public ObservableLastMaybe(ObservableSource<T> source) {
         this.source = source;
     }
 
-    // TODO fuse back to Flowable
+    // TODO fuse back to Observable
 
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new LastSubscriber<T>(observer));
+        source.subscribe(new LastObserver<T>(observer));
     }
 
-    static final class LastSubscriber<T> implements Subscriber<T>, Disposable {
+    static final class LastObserver<T> implements Observer<T>, Disposable {
 
         final MaybeObserver<? super T> actual;
 
-        Subscription s;
+        Disposable s;
 
         T item;
 
-        LastSubscriber(MaybeObserver<? super T> actual) {
+        LastObserver(MaybeObserver<? super T> actual) {
             this.actual = actual;
         }
 
         @Override
         public void dispose() {
-            s.cancel();
-            s = SubscriptionHelper.CANCELLED;
+            s.dispose();
+            s = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return s == SubscriptionHelper.CANCELLED;
+            return s == DisposableHelper.DISPOSED;
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
+        public void onSubscribe(Disposable s) {
+            if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
 
                 actual.onSubscribe(this);
-
-                s.request(Long.MAX_VALUE);
             }
         }
 
@@ -80,14 +77,14 @@ public final class FlowableLastMaybe<T> extends Maybe<T> {
 
         @Override
         public void onError(Throwable t) {
-            s = SubscriptionHelper.CANCELLED;
+            s = DisposableHelper.DISPOSED;
             item = null;
             actual.onError(t);
         }
 
         @Override
         public void onComplete() {
-            s = SubscriptionHelper.CANCELLED;
+            s = DisposableHelper.DISPOSED;
             T v = item;
             if (v != null) {
                 item = null;

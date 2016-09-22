@@ -102,7 +102,7 @@ public class MaybeTest {
     public void fromObservableEmpty() {
 
         Observable.empty()
-        .toMaybe()
+        .singleElement()
         .test()
         .assertResult();
     }
@@ -111,7 +111,7 @@ public class MaybeTest {
     public void fromObservableJust() {
 
         Observable.just(1)
-        .toMaybe()
+        .singleElement()
         .test()
         .assertResult(1);
     }
@@ -120,7 +120,7 @@ public class MaybeTest {
     public void fromObservableError() {
 
         Observable.error(new TestException())
-        .toMaybe()
+        .singleElement()
         .test()
         .assertFailure(TestException.class);
     }
@@ -137,16 +137,16 @@ public class MaybeTest {
     public void fromObservableMany() {
 
         Observable.range(1, 2)
-        .toMaybe()
+        .singleElement()
         .test()
-        .assertFailure(IndexOutOfBoundsException.class);
+        .assertFailure(IllegalArgumentException.class);
     }
 
     @Test
     public void fromObservableDisposeComposesThrough() {
         PublishSubject<Integer> pp = PublishSubject.create();
 
-        TestObserver<Integer> ts = pp.toMaybe().test(false);
+        TestObserver<Integer> ts = pp.singleElement().test(false);
 
         assertTrue(pp.hasObservers());
 
@@ -159,7 +159,7 @@ public class MaybeTest {
     public void fromObservableDisposeComposesThroughImmediatelyCancelled() {
         PublishSubject<Integer> pp = PublishSubject.create();
 
-        pp.toMaybe().test(true);
+        pp.singleElement().test(true);
 
         assertFalse(pp.hasObservers());
     }
@@ -337,7 +337,7 @@ public class MaybeTest {
 
     @Test
     public void obervableMaybeobervable() {
-        Observable.just(1).toMaybe().toObservable().test().assertResult(1);
+        Observable.just(1).singleElement().toObservable().test().assertResult(1);
     }
 
     @Test

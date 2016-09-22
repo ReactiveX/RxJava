@@ -11,9 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.single;
-
-import java.util.NoSuchElementException;
+package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
@@ -23,7 +21,6 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.operators.flowable.FlowableReduce;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -32,15 +29,15 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class SingleReduceFlowable<T>
-extends Single<T>
+public final class FlowableReduceMaybe<T>
+extends Maybe<T>
 implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 
     final Flowable<T> source;
 
     final BiFunction<T, T, T> reducer;
 
-    public SingleReduceFlowable(Flowable<T> source, BiFunction<T, T, T> reducer) {
+    public FlowableReduceMaybe(Flowable<T> source, BiFunction<T, T, T> reducer) {
         this.source = source;
         this.reducer = reducer;
     }
@@ -52,17 +49,16 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 
     @Override
     public Flowable<T> fuseToFlowable() {
-//        return RxJavaPlugins.onAssembly(new SingleToFlowable<T>(this));
         return RxJavaPlugins.onAssembly(new FlowableReduce<T>(source, reducer));
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
         source.subscribe(new ReduceSubscriber<T>(observer, reducer));
     }
 
     static final class ReduceSubscriber<T> implements Subscriber<T>, Disposable {
-        final SingleObserver<? super T> actual;
+        final MaybeObserver<? super T> actual;
 
         final BiFunction<T, T, T> reducer;
 
@@ -72,7 +68,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 
         boolean done;
 
-        ReduceSubscriber(SingleObserver<? super T> actual, BiFunction<T, T, T> reducer) {
+        ReduceSubscriber(MaybeObserver<? super T> actual, BiFunction<T, T, T> reducer) {
             this.actual = actual;
             this.reducer = reducer;
         }
@@ -139,7 +135,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 //                value = null;
                 actual.onSuccess(v);
             } else {
-                actual.onError(new NoSuchElementException());
+                actual.onComplete();
             }
         }
 

@@ -25,11 +25,8 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.ScalarCallable;
 import io.reactivex.internal.observers.*;
-import io.reactivex.internal.operators.completable.CompletableFromObservable;
 import io.reactivex.internal.operators.flowable.FlowableFromObservable;
-import io.reactivex.internal.operators.maybe.MaybeFromObservable;
 import io.reactivex.internal.operators.observable.*;
-import io.reactivex.internal.operators.single.SingleFromObservable;
 import io.reactivex.internal.util.*;
 import io.reactivex.observables.*;
 import io.reactivex.observers.*;
@@ -4570,7 +4567,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingSingle() {
-        return single().blockingFirst();
+        T v = singleElement().blockingGet();
+        if (v == null) {
+            throw new NoSuchElementException();
+        }
+        return v;
     }
 
     /**
@@ -4592,7 +4593,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingSingle(T defaultItem) {
-        return single(defaultItem).blockingFirst();
+        return single(defaultItem).blockingGet();
     }
 
     /**
@@ -5809,7 +5810,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that counts the total number of items emitted by the source ObservableSource and emits
+     * Returns a Single that counts the total number of items emitted by the source ObservableSource and emits
      * this count as a 64-bit Long.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
@@ -5818,14 +5819,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code count} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an Observable that emits a single item: the number of items emitted by the source ObservableSource as a
+     * @return a Single that emits a single item: the number of items emitted by the source ObservableSource as a
      *         64-bit Long item
      * @see <a href="http://reactivex.io/documentation/operators/count.html">ReactiveX operators documentation: Count</a>
      * @see #count()
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<Long> count() {
-        return RxJavaPlugins.onAssembly(new ObservableCount<T>(this));
+    public final Single<Long> count() {
+        return RxJavaPlugins.onAssembly(new ObservableCountSingle<T>(this));
     }
 
     /**
@@ -6602,7 +6603,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits the single item at a specified index in a sequence of emissions from a
+     * Returns a Maybe that emits the single item at a specified index in a sequence of emissions from a
      * source ObservableSource.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.png" alt="">
@@ -6613,24 +6614,22 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param index
      *            the zero-based index of the item to retrieve
-     * @return an Observable that emits a single item: the item at the specified position in the sequence of
+     * @return a Maybe that emits a single item: the item at the specified position in the sequence of
      *         those emitted by the source ObservableSource
      * @throws IndexOutOfBoundsException
-     *             if {@code index} is greater than or equal to the number of items emitted by the source
-     *             ObservableSource, or
      *             if {@code index} is less than 0
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> elementAt(long index) {
+    public final Maybe<T> elementAt(long index) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
-        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(this, index, null));
+        return RxJavaPlugins.onAssembly(new ObservableElementAtMaybe<T>(this, index));
     }
 
     /**
-     * Returns an Observable that emits the item found at a specified index in a sequence of emissions from a
+     * Returns a Single that emits the item found at a specified index in a sequence of emissions from a
      * source ObservableSource, or a default item if that index is out of range.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
@@ -6643,19 +6642,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the zero-based index of the item to retrieve
      * @param defaultItem
      *            the default item
-     * @return an Observable that emits the item at the specified position in the sequence emitted by the source
+     * @return a Single that emits the item at the specified position in the sequence emitted by the source
      *         ObservableSource, or the default item if that index is outside the bounds of the source sequence
      * @throws IndexOutOfBoundsException
      *             if {@code index} is less than 0
      * @see <a href="http://reactivex.io/documentation/operators/elementat.html">ReactiveX operators documentation: ElementAt</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> elementAt(long index, T defaultItem) {
+    public final Single<T> elementAt(long index, T defaultItem) {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
         ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
-        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(this, index, defaultItem));
+        return RxJavaPlugins.onAssembly(new ObservableElementAtSingle<T>(this, index, defaultItem));
     }
 
     /**
@@ -6681,26 +6680,25 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits only the very first item emitted by the source ObservableSource, or notifies
-     * of an {@code NoSuchElementException} if the source ObservableSource is empty.
+     * Returns a Maybe that emits only the very first item emitted by the source ObservableSource, or
+     * completes if the source ObservableSource is empty.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code firstElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an Observable that emits only the very first item emitted by the source ObservableSource, or raises an
-     *         {@code NoSuchElementException} if the source ObservableSource is empty
+     * @return the new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> first() {
-        return take(1).single();
+    public final Maybe<T> firstElement() {
+        return elementAt(0L);
     }
 
     /**
-     * Returns an Observable that emits only the very first item emitted by the source ObservableSource, or a default
+     * Returns a Single that emits only the very first item emitted by the source ObservableSource, or a default
      * item if the source ObservableSource completes without emitting anything.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrDefault.png" alt="">
@@ -6711,13 +6709,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param defaultItem
      *            the default item to emit if the source ObservableSource doesn't emit anything
-     * @return an Observable that emits only the very first item from the source, or a default item if the
-     *         source ObservableSource completes without emitting any items
+     * @return the new Single instance
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> first(T defaultItem) {
-        return take(1).single(defaultItem);
+    public final Single<T> first(T defaultItem) {
+        return elementAt(0L, defaultItem);
     }
 
     /**
@@ -7573,13 +7570,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code ignoreElements} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an empty ObservableSource that only calls {@code onComplete} or {@code onError}, based on which one is
-     *         called by the source ObservableSource
+     * @return the new Completable instance
      * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElements</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> ignoreElements() {
-        return RxJavaPlugins.onAssembly(new ObservableIgnoreElements<T>(this));
+    public final Completable ignoreElements() {
+        return RxJavaPlugins.onAssembly(new ObservableIgnoreElementsCompletable<T>(this));
     }
 
     /**
@@ -7645,22 +7641,22 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits the last item emitted by the source ObservableSource or notifies observers of
-     * a {@code NoSuchElementException} if the source ObservableSource is empty.
+     * Returns a Maybe that emits the last item emitted by the source ObservableSource or
+     * completes if the source is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code last} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code lastElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an Observable that emits the last item from the source ObservableSource or notifies observers of an
+     * @return a Maybe that emits the last item from the source ObservableSource or notifies observers of an
      *         error
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> last() {
-        return RxJavaPlugins.onAssembly(new ObservableLastSingle<T>(this, null));
+    public final Maybe<T> lastElement() {
+        return RxJavaPlugins.onAssembly(new ObservableLastMaybe<T>(this));
     }
 
     /**
@@ -8176,7 +8172,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that applies a specified accumulator function to the first item emitted by a source
+     * Returns a Maybe that applies a specified accumulator function to the first item emitted by a source
      * ObservableSource, then feeds the result of that function along with the second item emitted by the source
      * ObservableSource into the same function, and so on until all items have been emitted by the source ObservableSource,
      * and emits the final result from the final call to your function as its sole item.
@@ -8194,7 +8190,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param reducer
      *            an accumulator function to be invoked on each item emitted by the source ObservableSource, whose
      *            result will be used in the next accumulator call
-     * @return an Observable that emits a single item that is the result of accumulating the items emitted by
+     * @return a Maybe that emits a single item that is the result of accumulating the items emitted by
      *         the source ObservableSource
      * @throws IllegalArgumentException
      *             if the source ObservableSource emits no items
@@ -8202,8 +8198,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> reduce(BiFunction<T, T, T> reducer) {
-        return scan(reducer).takeLast(1).single();
+    public final Maybe<T> reduce(BiFunction<T, T, T> reducer) {
+        return scan(reducer).takeLast(1).singleElement();
     }
 
     /**
@@ -8248,12 +8244,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
-        return scan(seed, reducer).takeLast(1).single();
+    public final <R> Single<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
+        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<R>(scan(seed, reducer).takeLast(1), null));
     }
 
     /**
-     * Returns an Observable that applies a specified accumulator function to the first item emitted by a source
+     * Returns a Single that applies a specified accumulator function to the first item emitted by a source
      * ObservableSource and a specified seed value, then feeds the result of that function along with the second item
      * emitted by an ObservableSource into the same function, and so on until all items have been emitted by the
      * source ObservableSource, emitting the final result from the final call to your function as its sole item.
@@ -8288,14 +8284,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param reducer
      *            an accumulator function to be invoked on each item emitted by the source ObservableSource, the
      *            result of which will be used in the next accumulator call
-     * @return an Observable that emits a single item that is the result of accumulating the output from the
+     * @return a Single that emits a single item that is the result of accumulating the output from the
      *         items emitted by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
-        return scanWith(seedSupplier, reducer).takeLast(1).single();
+    public final <R> Single<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
+        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<R>(scanWith(seedSupplier, reducer).takeLast(1), null));
     }
 
     /**
@@ -9321,7 +9317,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code singleElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @return an Observable that emits the single item emitted by the source ObservableSource
@@ -9332,8 +9328,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> single() {
-        return RxJavaPlugins.onAssembly(new ObservableSingle<T>(this, null));
+    public final Maybe<T> singleElement() {
+        return RxJavaPlugins.onAssembly(new ObservableSingleMaybe<T>(this));
     }
 
     /**
@@ -9356,9 +9352,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> single(T defaultItem) {
+    public final Single<T> single(T defaultItem) {
         ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
-        return RxJavaPlugins.onAssembly(new ObservableSingle<T>(this, defaultItem));
+        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<T>(this, defaultItem));
     }
 
     /**
@@ -10297,7 +10293,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
         } else
         if (count == 0) {
-            return ignoreElements();
+            return RxJavaPlugins.onAssembly(new ObservableIgnoreElements<T>(this));
         } else
         if (count == 1) {
             return RxJavaPlugins.onAssembly(new ObservableTakeLastOne<T>(this));
@@ -11256,30 +11252,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Completable that discards all onNext emissions (similar to
-     * {@code ignoreAllElements()}) and calls onComplete when this source ObservableSource calls
-     * onComplete. Error terminal events are propagated.
-     * <p>
-     * <img width="640" height="295" src=
-     * "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toCompletable.png"
-     * alt="">
-     * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @return a Completable that calls onComplete on it's subscriber when the source ObservableSource
-     *         calls onComplete
-     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
-     *      Completable</a>
-     * @since 2.0
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable toCompletable() {
-        return RxJavaPlugins.onAssembly(new CompletableFromObservable<T>(this));
-    }
-
-    /**
      * Returns a Single that emits a single item, a list composed of all the items emitted by the source
      * ObservableSource.
      * <p>
@@ -11605,62 +11577,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         default:
             return o.onBackpressureBuffer();
         }
-    }
-
-    /**
-     * Converts this Observable into a Maybe and expects this Observable to have at most one item
-     * or a completion signal; otherwise the resulting Maybe will signal an IndexOutOfBoundsException.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @return the new Maybe instance
-     * @since 2.0
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> toMaybe() {
-        return new MaybeFromObservable<T>(this);
-    }
-
-    /**
-     * Returns a Single that emits the single item emitted by the source ObservableSource, if that ObservableSource
-     * emits only a single item. If the source ObservableSource emits more than one item or no items, notify of an
-     * {@code IndexOutOfBoundsException} or {@code NoSuchElementException} respectively.
-     * <p>
-     * <img width="640" height="295" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toSingle.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @return a Single that emits the single item emitted by the source ObservableSource
-     * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
-     * @since 2.0
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> toSingle() {
-        return RxJavaPlugins.onAssembly(new SingleFromObservable<T>(this, null));
-    }
-
-    /**
-     * Returns a Single that emits the single item emitted by the source ObservableSource, if that ObservableSource
-     * emits only a single item or emits the given defaultIfEmpty value if the ObservableSource is empty.
-     * If the source ObservableSource emits more than one item a {@link IndexOutOfBoundsException} is signalled.
-     * <p>
-     * <img width="640" height="295" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toSingle.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @param defaultIfEmpty the value the Single will signal if this Observable is empty
-     * @return a Single that emits the single item emitted by the source ObservableSource
-     * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
-     * @since 2.0
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> toSingle(T defaultIfEmpty) {
-        ObjectHelper.requireNonNull(defaultIfEmpty, "defaultIfEmpty is null");
-        return RxJavaPlugins.onAssembly(new SingleFromObservable<T>(this, defaultIfEmpty));
     }
 
     /**

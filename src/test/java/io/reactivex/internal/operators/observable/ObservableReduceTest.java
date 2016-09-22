@@ -25,10 +25,12 @@ import io.reactivex.functions.*;
 
 public class ObservableReduceTest {
     Observer<Object> observer;
+    SingleObserver<Object> singleObserver;
 
     @Before
     public void before() {
         observer = TestHelper.mockObserver();
+        singleObserver = TestHelper.mockSingleObserver();
     }
 
     BiFunction<Integer, Integer, Integer> sum = new BiFunction<Integer, Integer, Integer>() {
@@ -39,7 +41,7 @@ public class ObservableReduceTest {
     };
 
     @Test
-    public void testAggregateAsIntSum() {
+    public void testAggregateAsIntSumObservable() {
 
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum)
                 .map(new Function<Integer, Integer>() {
@@ -47,7 +49,7 @@ public class ObservableReduceTest {
                     public Integer apply(Integer v) {
                         return v;
                     }
-                });
+                }).toObservable();
 
         result.subscribe(observer);
 
@@ -57,7 +59,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumSourceThrows() {
+    public void testAggregateAsIntSumSourceThrowsObservable() {
         Observable<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
                 .reduce(0, sum).map(new Function<Integer, Integer>() {
@@ -65,7 +67,7 @@ public class ObservableReduceTest {
                     public Integer apply(Integer v) {
                         return v;
                     }
-                });
+                }).toObservable();
 
         result.subscribe(observer);
 
@@ -75,7 +77,7 @@ public class ObservableReduceTest {
     }
 
     @Test
-    public void testAggregateAsIntSumAccumulatorThrows() {
+    public void testAggregateAsIntSumAccumulatorThrowsObservable() {
         BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
@@ -89,13 +91,110 @@ public class ObservableReduceTest {
                     public Integer apply(Integer v) {
                         return v;
                     }
-                });
+                }).toObservable();
 
         result.subscribe(observer);
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onComplete();
         verify(observer, times(1)).onError(any(TestException.class));
+    }
+
+    @Test
+    public void testAggregateAsIntSumResultSelectorThrowsObservable() {
+
+        Function<Integer, Integer> error = new Function<Integer, Integer>() {
+
+            @Override
+            public Integer apply(Integer t1) {
+                throw new TestException();
+            }
+        };
+
+        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
+                .reduce(0, sum).toObservable().map(error);
+
+        result.subscribe(observer);
+
+        verify(observer, never()).onNext(any());
+        verify(observer, never()).onComplete();
+        verify(observer, times(1)).onError(any(TestException.class));
+    }
+
+    @Test
+    public void testBackpressureWithNoInitialValueObservable() throws InterruptedException {
+        Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
+        Observable<Integer> reduced = source.reduce(sum).toObservable();
+
+        Integer r = reduced.blockingFirst();
+        assertEquals(21, r.intValue());
+    }
+
+    @Test
+    public void testBackpressureWithInitialValueObservable() throws InterruptedException {
+        Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
+        Observable<Integer> reduced = source.reduce(0, sum).toObservable();
+
+        Integer r = reduced.blockingFirst();
+        assertEquals(21, r.intValue());
+    }
+
+
+    @Test
+    public void testAggregateAsIntSum() {
+
+        Single<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum)
+                .map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer v) {
+                        return v;
+                    }
+                });
+
+        result.subscribe(singleObserver);
+
+        verify(singleObserver).onSuccess(1 + 2 + 3 + 4 + 5);
+        verify(singleObserver, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testAggregateAsIntSumSourceThrows() {
+        Single<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
+                Observable.<Integer> error(new TestException()))
+                .reduce(0, sum).map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer v) {
+                        return v;
+                    }
+                });
+
+        result.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onSuccess(any());
+        verify(singleObserver, times(1)).onError(any(TestException.class));
+    }
+
+    @Test
+    public void testAggregateAsIntSumAccumulatorThrows() {
+        BiFunction<Integer, Integer, Integer> sumErr = new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) {
+                throw new TestException();
+            }
+        };
+
+        Single<Integer> result = Observable.just(1, 2, 3, 4, 5)
+                .reduce(0, sumErr).map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer v) {
+                        return v;
+                    }
+                });
+
+        result.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onSuccess(any());
+        verify(singleObserver, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -109,34 +208,32 @@ public class ObservableReduceTest {
             }
         };
 
-        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
+        Single<Integer> result = Observable.just(1, 2, 3, 4, 5)
                 .reduce(0, sum).map(error);
 
-        result.subscribe(observer);
+        result.subscribe(singleObserver);
 
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        verify(singleObserver, never()).onSuccess(any());
+        verify(singleObserver, times(1)).onError(any(TestException.class));
     }
 
     @Test
     public void testBackpressureWithNoInitialValue() throws InterruptedException {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Observable<Integer> reduced = source.reduce(sum);
+        Maybe<Integer> reduced = source.reduce(sum);
 
-        Integer r = reduced.blockingFirst();
+        Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());
     }
 
     @Test
     public void testBackpressureWithInitialValue() throws InterruptedException {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Observable<Integer> reduced = source.reduce(0, sum);
+        Single<Integer> reduced = source.reduce(0, sum);
 
-        Integer r = reduced.blockingFirst();
+        Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());
     }
-
 
 
 }

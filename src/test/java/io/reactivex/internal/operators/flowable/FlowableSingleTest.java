@@ -637,7 +637,7 @@ public class FlowableSingleTest {
     public void testIssue1527() throws InterruptedException {
         //https://github.com/ReactiveX/RxJava/pull/1527
         Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
-        Single<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
+        Maybe<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer i1, Integer i2) {
                 return i1 + i2;

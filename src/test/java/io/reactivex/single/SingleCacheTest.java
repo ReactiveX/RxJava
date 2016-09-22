@@ -53,7 +53,7 @@ public class SingleCacheTest {
     @Test
     public void delayed() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        Single<Integer> cache = ps.toSingle().cache();
+        Single<Integer> cache = ps.single(-99).cache();
 
         TestObserver<Integer> ts1 = cache.test();
 
@@ -69,7 +69,7 @@ public class SingleCacheTest {
     @Test
     public void delayedDisposed() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        Single<Integer> cache = ps.toSingle().cache();
+        Single<Integer> cache = ps.single(-99).cache();
 
         TestObserver<Integer> ts1 = cache.test();
 
@@ -87,7 +87,7 @@ public class SingleCacheTest {
     @Test
     public void crossCancel() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        Single<Integer> cache = ps.toSingle().cache();
+        Single<Integer> cache = ps.single(-99).cache();
 
         final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
 
@@ -112,7 +112,7 @@ public class SingleCacheTest {
     @Test
     public void crossCancelOnError() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        Single<Integer> cache = ps.toSingle().cache();
+        Single<Integer> cache = ps.single(-99).cache();
 
         final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
 
