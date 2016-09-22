@@ -107,7 +107,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 return;
             }
             if (t == null) {
-                onError(new NullPointerException("Emitter got a null value. Null values are generally not allowed in 2.x operators and sources."));
+                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
                 return;
             }
             if (get() == 0 && compareAndSet(0, 1)) {
@@ -134,7 +134,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 return;
             }
             if (t == null) {
-                t = new NullPointerException("Emitter got a null throwable. Null values are generally not allowed in 2.x operators and sources.");
+                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
             if (error.addThrowable(t)) {
                 done = true;
@@ -265,6 +265,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
         @Override
         public void onError(Throwable e) {
             if (isCancelled()) {
+                RxJavaPlugins.onError(e);
                 return;
             }
             try {
@@ -337,7 +338,12 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 return;
             }
 
-            actual.onNext(t);
+            if (t != null) {
+                actual.onNext(t);
+            } else {
+                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                return;
+            }
 
             for (;;) {
                 long r = get();
@@ -360,6 +366,11 @@ public final class FlowableCreate<T> extends Flowable<T> {
         @Override
         public final void onNext(T t) {
             if (isCancelled()) {
+                return;
+            }
+
+            if (t == null) {
+                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
                 return;
             }
 
@@ -426,12 +437,29 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         @Override
         public void onNext(T t) {
+            if (done || isCancelled()) {
+                return;
+            }
+
+            if (t == null) {
+                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                return;
+            }
             queue.offer(t);
             drain();
         }
 
         @Override
         public void onError(Throwable e) {
+            if (done || isCancelled()) {
+                RxJavaPlugins.onError(e);
+                return;
+            }
+
+            if (e == null) {
+                e = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+            }
+
             error = e;
             done = true;
             drain();
@@ -552,12 +580,27 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         @Override
         public void onNext(T t) {
+            if (done || isCancelled()) {
+                return;
+            }
+
+            if (t == null) {
+                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                return;
+            }
             queue.set(t);
             drain();
         }
 
         @Override
         public void onError(Throwable e) {
+            if (done || isCancelled()) {
+                RxJavaPlugins.onError(e);
+                return;
+            }
+            if (e == null) {
+                onError(new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources."));
+            }
             error = e;
             done = true;
             drain();

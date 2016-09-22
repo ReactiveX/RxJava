@@ -63,7 +63,7 @@ public final class SingleCreate<T> extends Single<T> {
                 if (d != DisposableHelper.DISPOSED) {
                     try {
                         if (value == null) {
-                            actual.onError(new NullPointerException("Emitter got a null value. Null values are generally not allowed in 2.x operators and sources."));
+                            actual.onError(new NullPointerException("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources."));
                         } else {
                             actual.onSuccess(value);
                         }
@@ -79,7 +79,7 @@ public final class SingleCreate<T> extends Single<T> {
         @Override
         public void onError(Throwable t) {
             if (t == null) {
-                t = new NullPointerException("Emitter got a null throwable. Null values are generally not allowed in 2.x operators and sources.");
+                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
             if (get() != DisposableHelper.DISPOSED) {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);

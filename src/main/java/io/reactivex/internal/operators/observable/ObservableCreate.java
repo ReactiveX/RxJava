@@ -60,7 +60,8 @@ public final class ObservableCreate<T> extends Observable<T> {
         @Override
         public void onNext(T t) {
             if (t == null) {
-                onError(new NullPointerException("Emitter got a null value. Null values are generally not allowed in 2.x operators and sources."));
+                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+                return;
             }
             if (!isDisposed()) {
                 observer.onNext(t);
@@ -70,7 +71,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         @Override
         public void onError(Throwable t) {
             if (t == null) {
-                t = new NullPointerException("Emitter got a null throwable. Null values are generally not allowed in 2.x operators and sources.");
+                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
             if (!isDisposed()) {
                 try {
@@ -151,7 +152,7 @@ public final class ObservableCreate<T> extends Observable<T> {
                 return;
             }
             if (t == null) {
-                onError(new NullPointerException("t is null"));
+                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
                 return;
             }
             if (get() == 0 && compareAndSet(0, 1)) {
@@ -178,7 +179,7 @@ public final class ObservableCreate<T> extends Observable<T> {
                 return;
             }
             if (t == null) {
-                t = new NullPointerException("t is null");
+                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
             if (error.addThrowable(t)) {
                 done = true;

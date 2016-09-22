@@ -74,7 +74,7 @@ public final class CompletableCreate extends Completable {
         @Override
         public void onError(Throwable t) {
             if (t == null) {
-                t = new NullPointerException("Emitter got a null throwable. Null values are generally not allowed in 2.x operators and sources.");
+                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
             if (get() != DisposableHelper.DISPOSED) {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
