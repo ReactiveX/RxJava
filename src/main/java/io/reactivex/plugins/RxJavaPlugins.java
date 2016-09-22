@@ -184,7 +184,7 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler the hook's input value
+     * @param defaultScheduler a {@link Callable} which returns the hook's input value
      * @return the value returned by the hook
      */
     public static Scheduler initComputationScheduler(Callable<Scheduler> defaultScheduler) {
@@ -197,7 +197,7 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler the hook's input value
+     * @param defaultScheduler a {@link Callable} which returns the hook's input value
      * @return the value returned by the hook
      */
     public static Scheduler initIoScheduler(Callable<Scheduler> defaultScheduler) {
@@ -210,7 +210,7 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler the hook's input value
+     * @param defaultScheduler a {@link Callable} which returns the hook's input value
      * @return the value returned by the hook
      */
     public static Scheduler initNewThreadScheduler(Callable<Scheduler> defaultScheduler) {
@@ -223,7 +223,7 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler the hook's input value
+     * @param defaultScheduler a {@link Callable} which returns the hook's input value
      * @return the value returned by the hook
      */
     public static Scheduler initSingleScheduler(Callable<Scheduler> defaultScheduler) {
