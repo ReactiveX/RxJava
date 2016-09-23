@@ -73,7 +73,7 @@ public final class SafeSubscriber<T> implements Subscriber<T>, Subscription {
         }
 
         if (t == null) {
-            Throwable ex = new NullPointerException();
+            Throwable ex = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
             try {
                 s.cancel();
             } catch (Throwable e1) {
@@ -155,7 +155,7 @@ public final class SafeSubscriber<T> implements Subscriber<T>, Subscription {
         }
 
         if (t == null) {
-            t = new NullPointerException();
+            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
 
         try {

@@ -86,7 +86,7 @@ public final class AsyncSubject<T> extends Subject<T> {
     @SuppressWarnings("unchecked")
     void nullOnNext() {
         value = null;
-        Throwable ex = new NullPointerException();
+        Throwable ex = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
         error = ex;
         for (AsyncDisposable<T> as : subscribers.getAndSet(TERMINATED)) {
             as.onError(ex);
@@ -97,7 +97,7 @@ public final class AsyncSubject<T> extends Subject<T> {
     @Override
     public void onError(Throwable t) {
         if (t == null) {
-            t = new NullPointerException();
+            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);

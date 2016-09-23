@@ -45,7 +45,7 @@ public final class MaybeErrorCallable<T> extends Maybe<T> {
         }
 
         if (ex == null) {
-            ex = new NullPointerException();
+            ex = new NullPointerException("Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         }
 
         observer.onError(ex);

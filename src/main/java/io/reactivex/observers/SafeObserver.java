@@ -84,7 +84,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
         }
 
         if (t == null) {
-            Throwable ex = new NullPointerException();
+            Throwable ex = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
             try {
                 s.dispose();
             } catch (Throwable e1) {
@@ -167,7 +167,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
         }
 
         if (t == null) {
-            t = new NullPointerException();
+            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
 
         try {

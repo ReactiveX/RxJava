@@ -268,7 +268,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
         public void onNext(T t) {
             if (t == null) {
                 s.get().dispose();
-                onError(new NullPointerException());
+                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
                 return;
             }
             if (!queue.offer(t)) {

@@ -205,7 +205,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
                 if (b == null) {
                     buffers.clear();
                     s.dispose();
-                    actual.onError(new NullPointerException());
+                    actual.onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
                     return;
                 }
 
