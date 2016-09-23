@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
+import java.util.NoSuchElementException;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
@@ -81,5 +82,57 @@ public class FlowableElementAtTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void testElementAtOrDefaultWithMinusIndex() {
         Flowable.fromArray(1, 2).elementAt(-1, 0);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void elementAtOrErrorNegativeIndex() {
+        Flowable.empty()
+            .elementAtOrError(-1);
+    }
+
+    @Test
+    public void elementAtOrErrorNoElement() {
+        Flowable.empty()
+            .elementAtOrError(0)
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void elementAtOrErrorOneElement() {
+        Flowable.just(1)
+            .elementAtOrError(0)
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void elementAtOrErrorMultipleElements() {
+        Flowable.just(1, 2, 3)
+            .elementAtOrError(1)
+            .test()
+            .assertNoErrors()
+            .assertValue(2);
+    }
+
+    @Test
+    public void elementAtOrErrorInvalidIndex() {
+        Flowable.just(1, 2, 3)
+            .elementAtOrError(3)
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void elementAtOrErrorError() {
+        Flowable.error(new RuntimeException("error"))
+            .elementAtOrError(0)
+            .test()
+            .assertNoValues()
+            .assertErrorMessage("error")
+            .assertError(RuntimeException.class);
     }
 }

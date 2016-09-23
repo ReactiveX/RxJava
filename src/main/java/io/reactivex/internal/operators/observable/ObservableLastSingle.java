@@ -99,10 +99,10 @@ public final class ObservableLastSingle<T> extends Single<T> {
                 actual.onSuccess(v);
             } else {
                 v = defaultItem;
-                if (v == null) {
-                    actual.onError(new NoSuchElementException());
-                } else {
+                if (v != null) {
                     actual.onSuccess(v);
+                } else {
+                    actual.onError(new NoSuchElementException());
                 }
             }
         }

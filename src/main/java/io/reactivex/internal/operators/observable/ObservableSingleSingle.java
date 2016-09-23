@@ -17,6 +17,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
+import java.util.NoSuchElementException;
 
 public final class ObservableSingleSingle<T> extends Single<T> {
 
@@ -28,6 +29,7 @@ public final class ObservableSingleSingle<T> extends Single<T> {
         this.source = source;
         this.defaultValue = defaultValue;
     }
+
     @Override
     public void subscribeActual(SingleObserver<? super T> t) {
         source.subscribe(new SingleElementObserver<T>(t, defaultValue));
@@ -104,7 +106,12 @@ public final class ObservableSingleSingle<T> extends Single<T> {
             if (v == null) {
                 v = defaultValue;
             }
-            actual.onSuccess(v);
+
+            if (v != null) {
+                actual.onSuccess(v);
+            } else {
+                actual.onError(new NoSuchElementException());
+            }
         }
     }
 }

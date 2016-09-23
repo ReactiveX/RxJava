@@ -17,6 +17,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.NoSuchElementException;
+
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -255,5 +257,42 @@ public class FlowableLastTest {
         inOrder.verify(observer, times(1)).onSuccess(2);
 //        inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void lastOrErrorNoElement() {
+        Flowable.empty()
+            .lastOrError()
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void lastOrErrorOneElement() {
+        Flowable.just(1)
+            .lastOrError()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void lastOrErrorMultipleElements() {
+        Flowable.just(1, 2, 3)
+            .lastOrError()
+            .test()
+            .assertNoErrors()
+            .assertValue(3);
+    }
+
+    @Test
+    public void lastOrErrorError() {
+        Flowable.error(new RuntimeException("error"))
+            .lastOrError()
+            .test()
+            .assertNoValues()
+            .assertErrorMessage("error")
+            .assertError(RuntimeException.class);
     }
 }

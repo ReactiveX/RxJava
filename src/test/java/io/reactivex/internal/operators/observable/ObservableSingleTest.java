@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
@@ -483,5 +484,42 @@ public class ObservableSingleTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void singleOrErrorNoElement() {
+        Observable.empty()
+            .singleOrError()
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void singleOrErrorOneElement() {
+        Observable.just(1)
+            .singleOrError()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void singleOrErrorMultipleElements() {
+        Observable.just(1, 2, 3)
+            .singleOrError()
+            .test()
+            .assertNoValues()
+            .assertError(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void singleOrErrorError() {
+        Observable.error(new RuntimeException("error"))
+            .singleOrError()
+            .test()
+            .assertNoValues()
+            .assertErrorMessage("error")
+            .assertError(RuntimeException.class);
     }
 }
