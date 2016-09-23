@@ -462,7 +462,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         public void onNext(T t) {
             if (t == null) {
-                error = new NullPointerException();
+                error = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
                 done = true;
             } else {
                 queue.offer(t);

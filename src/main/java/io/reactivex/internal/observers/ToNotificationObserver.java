@@ -40,7 +40,7 @@ public final class ToNotificationObserver<T> implements Observer<T> {
     public void onNext(T t) {
         if (t == null) {
             s.dispose();
-            onError(new NullPointerException());
+            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
         } else {
             try {
                 consumer.accept(Notification.<Object>createOnNext(t));

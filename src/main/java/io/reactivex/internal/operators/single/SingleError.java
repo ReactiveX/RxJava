@@ -39,7 +39,7 @@ public final class SingleError<T> extends Single<T> {
         }
 
         if (error == null) {
-            error = new NullPointerException();
+            error = new NullPointerException("Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         }
 
         EmptyDisposable.error(error, s);

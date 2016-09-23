@@ -134,7 +134,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         @Override
         public void onNext(T t) {
             if (t == null) {
-                onError(new NullPointerException());
+                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
                 return;
             }
             actual.onNext(t);
@@ -143,7 +143,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         @Override
         public void onError(Throwable t) {
             if (t == null) {
-                t = new NullPointerException();
+                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
             terminate = true;
             actual.onError(t);

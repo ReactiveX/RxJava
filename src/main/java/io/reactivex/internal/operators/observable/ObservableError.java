@@ -34,7 +34,7 @@ public final class ObservableError<T> extends Observable<T> {
             error = t;
         }
         if (error == null) {
-            error = new NullPointerException();
+            error = new NullPointerException("Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         }
         EmptyDisposable.error(error, s);
     }

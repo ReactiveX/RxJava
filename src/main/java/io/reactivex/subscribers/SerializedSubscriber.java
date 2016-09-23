@@ -76,7 +76,7 @@ public final class SerializedSubscriber<T> implements Subscriber<T>, Subscriptio
         }
         if (t == null) {
             subscription.cancel();
-            onError(new NullPointerException());
+            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
             return;
         }
         synchronized (this) {

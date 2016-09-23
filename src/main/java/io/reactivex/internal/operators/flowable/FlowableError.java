@@ -36,7 +36,7 @@ public final class FlowableError<T> extends Flowable<T> {
             error = t;
         }
         if (error == null) {
-            error = new NullPointerException();
+            error = new NullPointerException("Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         }
         EmptySubscription.error(error, s);
     }

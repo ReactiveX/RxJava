@@ -189,7 +189,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             return;
         }
         if (t == null) {
-            onError(new NullPointerException());
+            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
             return;
         }
         for (PublishSubscription<T> s : subscribers.get()) {
@@ -205,7 +205,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             return;
         }
         if (t == null) {
-            t = new NullPointerException();
+            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
         error = t;
 

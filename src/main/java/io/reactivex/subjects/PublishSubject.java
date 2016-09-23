@@ -175,7 +175,7 @@ public final class PublishSubject<T> extends Subject<T> {
             return;
         }
         if (t == null) {
-            onError(new NullPointerException("Subject got a null value. Null values are generally not allowed in 2.x operators and sources."));
+            onError(new NullPointerException("onNext got a null value. Null values are generally not allowed in 2.x operators and sources."));
             return;
         }
         for (PublishDisposable<T> s : subscribers.get()) {
@@ -191,7 +191,7 @@ public final class PublishSubject<T> extends Subject<T> {
             return;
         }
         if (t == null) {
-            t = new NullPointerException();
+            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
         error = t;
 

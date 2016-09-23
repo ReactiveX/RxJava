@@ -259,14 +259,14 @@ public final class RxJavaPlugins {
             } catch (Throwable e) {
                 // Exceptions.throwIfFatal(e); TODO decide
                 if (error == null) {
-                    error = new NullPointerException();
+                    error = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
                 }
                 e.printStackTrace(); // NOPMD
                 uncaught(e);
             }
         } else {
             if (error == null) {
-                error = new NullPointerException();
+                error = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
         }
         error.printStackTrace(); // NOPMD
