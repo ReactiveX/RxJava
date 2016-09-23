@@ -84,10 +84,13 @@ public final class ObservableAnySingle<T> extends Single<Boolean> implements Fus
 
         @Override
         public void onError(Throwable t) {
-            if (!done) {
-                done = true;
-                actual.onError(t);
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
             }
+
+            done = true;
+            actual.onError(t);
         }
 
         @Override

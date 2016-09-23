@@ -89,6 +89,7 @@ public final class ObservableElementAtMaybe<T> extends Maybe<T> implements FuseT
         @Override
         public void onError(Throwable t) {
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             done = true;

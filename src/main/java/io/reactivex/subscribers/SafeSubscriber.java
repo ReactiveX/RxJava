@@ -124,6 +124,7 @@ public final class SafeSubscriber<T> implements Subscriber<T>, Subscription {
     @Override
     public void onError(Throwable t) {
         if (done) {
+            RxJavaPlugins.onError(t);
             return;
         }
         done = true;

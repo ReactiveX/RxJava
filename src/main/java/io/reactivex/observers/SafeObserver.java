@@ -136,6 +136,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
     @Override
     public void onError(Throwable t) {
         if (done) {
+            RxJavaPlugins.onError(t);
             return;
         }
         done = true;

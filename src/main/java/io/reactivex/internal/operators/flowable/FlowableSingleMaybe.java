@@ -81,6 +81,7 @@ public final class FlowableSingleMaybe<T> extends Maybe<T> implements FuseToFlow
         @Override
         public void onError(Throwable t) {
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             done = true;

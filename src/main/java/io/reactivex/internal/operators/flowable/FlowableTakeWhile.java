@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.plugins.RxJavaPlugins;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
@@ -80,6 +81,7 @@ public final class FlowableTakeWhile<T> extends AbstractFlowableWithUpstream<T, 
         @Override
         public void onError(Throwable t) {
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             done = true;

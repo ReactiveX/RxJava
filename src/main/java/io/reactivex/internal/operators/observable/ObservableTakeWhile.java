@@ -18,6 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
@@ -92,6 +93,7 @@ public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream
         @Override
         public void onError(Throwable t) {
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             done = true;

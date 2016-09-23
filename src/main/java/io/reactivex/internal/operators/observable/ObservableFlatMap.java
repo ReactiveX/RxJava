@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.plugins.RxJavaPlugins;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
@@ -277,8 +278,8 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         @Override
         public void onError(Throwable t) {
-            // safeguard against misbehaving sources
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             getErrorQueue().offer(t);
@@ -288,7 +289,6 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         @Override
         public void onComplete() {
-            // safeguard against misbehaving sources
             if (done) {
                 return;
             }

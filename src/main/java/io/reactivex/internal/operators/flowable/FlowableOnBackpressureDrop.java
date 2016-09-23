@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.plugins.RxJavaPlugins;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
@@ -97,6 +98,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
         @Override
         public void onError(Throwable t) {
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             done = true;

@@ -13,6 +13,7 @@
 
 package io.reactivex.subjects;
 
+import io.reactivex.plugins.RxJavaPlugins;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.Observer;
@@ -193,6 +194,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     @Override
     public void onError(Throwable t) {
         if (done || disposed) {
+            RxJavaPlugins.onError(t);
             return;
         }
         if (t == null) {

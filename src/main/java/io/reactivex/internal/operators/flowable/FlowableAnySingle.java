@@ -90,11 +90,14 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
 
         @Override
         public void onError(Throwable t) {
-            if (!done) {
-                done = true;
-                s = SubscriptionHelper.CANCELLED;
-                actual.onError(t);
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
             }
+
+            done = true;
+            s = SubscriptionHelper.CANCELLED;
+            actual.onError(t);
         }
 
         @Override
