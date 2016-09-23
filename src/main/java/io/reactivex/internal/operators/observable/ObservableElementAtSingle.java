@@ -101,8 +101,11 @@ public final class ObservableElementAtSingle<T> extends Single<T> {
         public void onComplete() {
             if (index <= count && !done) {
                 done = true;
-                if (defaultValue != null) {
-                    actual.onSuccess(defaultValue);
+
+                T v = defaultValue;
+
+                if (v != null) {
+                    actual.onSuccess(v);
                 } else {
                     actual.onError(new NoSuchElementException());
                 }

@@ -6664,7 +6664,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrError.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code elementAtOrError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param index
@@ -6750,7 +6750,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrError.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code firstOrError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @return the new Single instance
@@ -9428,7 +9428,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrDefault.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code singleOrError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @return the new Single instance

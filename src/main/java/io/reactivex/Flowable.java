@@ -7690,7 +7690,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an unbounded manner
      *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code elementAtOrError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param index
@@ -7795,11 +7795,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code firstOrError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param defaultItem
-     *            the default item to emit if the source Publisher doesn't emit anything
      * @return the new Single instance
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
@@ -8970,7 +8968,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code last} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code lastOrError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @return the new Single instance
@@ -11301,7 +11299,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
      *  unbounded manner (i.e., without applying backpressure).</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code singleOrError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @return the new Single instance

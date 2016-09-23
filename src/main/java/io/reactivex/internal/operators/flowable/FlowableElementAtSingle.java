@@ -106,8 +106,10 @@ public final class FlowableElementAtSingle<T> extends Single<T> implements FuseT
             if (index <= count && !done) {
                 done = true;
 
-                if (defaultValue != null) {
-                    actual.onSuccess(defaultValue);
+                T v = defaultValue;
+
+                if (v != null) {
+                    actual.onSuccess(v);
                 } else {
                     actual.onError(new NoSuchElementException());
                 }
