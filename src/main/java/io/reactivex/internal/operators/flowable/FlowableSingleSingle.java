@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.NoSuchElementException;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
@@ -107,7 +108,12 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
             if (v == null) {
                 v = defaultValue;
             }
-            actual.onSuccess(v);
+
+            if (v != null) {
+                actual.onSuccess(v);
+            } else {
+                actual.onError(new NoSuchElementException());
+            }
         }
 
         @Override

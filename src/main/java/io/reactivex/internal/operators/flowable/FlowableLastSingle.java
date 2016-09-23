@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.NoSuchElementException;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
@@ -100,7 +101,13 @@ public final class FlowableLastSingle<T> extends Single<T> {
                 item = null;
                 actual.onSuccess(v);
             } else {
-                actual.onSuccess(defaultItem);
+                v = defaultItem;
+
+                if (v != null) {
+                    actual.onSuccess(v);
+                } else {
+                    actual.onError(new NoSuchElementException());
+                }
             }
         }
     }

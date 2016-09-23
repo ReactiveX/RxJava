@@ -16,17 +16,20 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import java.util.NoSuchElementException;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableElementAtSingle<T> extends Single<T> {
     final ObservableSource<T> source;
     final long index;
     final T defaultValue;
+
     public ObservableElementAtSingle(ObservableSource<T> source, long index, T defaultValue) {
         this.source = source;
         this.index = index;
         this.defaultValue = defaultValue;
     }
+
     @Override
     public void subscribeActual(SingleObserver<? super T> t) {
         source.subscribe(new ElementAtObserver<T>(t, index, defaultValue));
@@ -98,7 +101,14 @@ public final class ObservableElementAtSingle<T> extends Single<T> {
         public void onComplete() {
             if (index <= count && !done) {
                 done = true;
-                actual.onSuccess(defaultValue);
+
+                T v = defaultValue;
+
+                if (v != null) {
+                    actual.onSuccess(v);
+                } else {
+                    actual.onError(new NoSuchElementException());
+                }
             }
         }
     }

@@ -17,6 +17,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
+
 import io.reactivex.Observable;
 
 public class ObservableElementAtTest {
@@ -71,5 +73,57 @@ public class ObservableElementAtTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void testElementAtOrDefaultWithMinusIndex() {
         Observable.fromArray(1, 2).elementAt(-1, 0);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void elementAtOrErrorNegativeIndex() {
+        Observable.empty()
+            .elementAtOrError(-1);
+    }
+
+    @Test
+    public void elementAtOrErrorNoElement() {
+        Observable.empty()
+            .elementAtOrError(0)
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void elementAtOrErrorOneElement() {
+        Observable.just(1)
+            .elementAtOrError(0)
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void elementAtOrErrorMultipleElements() {
+        Observable.just(1, 2, 3)
+            .elementAtOrError(1)
+            .test()
+            .assertNoErrors()
+            .assertValue(2);
+    }
+
+    @Test
+    public void elementAtOrErrorInvalidIndex() {
+        Observable.just(1, 2, 3)
+            .elementAtOrError(3)
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void elementAtOrErrorError() {
+        Observable.error(new RuntimeException("error"))
+            .elementAtOrError(0)
+            .test()
+            .assertNoValues()
+            .assertErrorMessage("error")
+            .assertError(RuntimeException.class);
     }
 }

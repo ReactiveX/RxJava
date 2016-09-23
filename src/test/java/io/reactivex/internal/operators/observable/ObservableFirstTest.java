@@ -19,6 +19,8 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import java.util.NoSuchElementException;
+
 import io.reactivex.*;
 import io.reactivex.functions.Predicate;
 
@@ -502,5 +504,42 @@ public class ObservableFirstTest {
         InOrder inOrder = inOrder(wo);
         inOrder.verify(wo, times(1)).onSuccess(2);
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void firstOrErrorNoElement() {
+        Observable.empty()
+            .firstOrError()
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void firstOrErrorOneElement() {
+        Observable.just(1)
+            .firstOrError()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void firstOrErrorMultipleElements() {
+        Observable.just(1, 2, 3)
+            .firstOrError()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void firstOrErrorError() {
+        Observable.error(new RuntimeException("error"))
+            .firstOrError()
+            .test()
+            .assertNoValues()
+            .assertErrorMessage("error")
+            .assertError(RuntimeException.class);
     }
 }

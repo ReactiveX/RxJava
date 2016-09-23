@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.NoSuchElementException;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
@@ -104,7 +105,14 @@ public final class FlowableElementAtSingle<T> extends Single<T> implements FuseT
             s = SubscriptionHelper.CANCELLED;
             if (index <= count && !done) {
                 done = true;
-                actual.onSuccess(defaultValue);
+
+                T v = defaultValue;
+
+                if (v != null) {
+                    actual.onSuccess(v);
+                } else {
+                    actual.onError(new NoSuchElementException());
+                }
             }
         }
 

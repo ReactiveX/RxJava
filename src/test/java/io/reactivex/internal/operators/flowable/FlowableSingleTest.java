@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -646,5 +647,42 @@ public class FlowableSingleTest {
 
         Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());
+    }
+
+    @Test
+    public void singleOrErrorNoElement() {
+        Flowable.empty()
+            .singleOrError()
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void singleOrErrorOneElement() {
+        Flowable.just(1)
+            .singleOrError()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void singleOrErrorMultipleElements() {
+        Flowable.just(1, 2, 3)
+            .singleOrError()
+            .test()
+            .assertNoValues()
+            .assertError(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void singleOrErrorError() {
+        Flowable.error(new RuntimeException("error"))
+            .singleOrError()
+            .test()
+            .assertNoValues()
+            .assertErrorMessage("error")
+            .assertError(RuntimeException.class);
     }
 }

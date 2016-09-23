@@ -20,6 +20,8 @@ import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
+import java.util.NoSuchElementException;
+
 import io.reactivex.*;
 import io.reactivex.functions.Predicate;
 
@@ -505,5 +507,42 @@ public class FlowableFirstTest {
         InOrder inOrder = inOrder(wo);
         inOrder.verify(wo, times(1)).onSuccess(2);
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void firstOrErrorNoElement() {
+        Flowable.empty()
+            .firstOrError()
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void firstOrErrorOneElement() {
+        Flowable.just(1)
+            .firstOrError()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void firstOrErrorMultipleElements() {
+        Flowable.just(1, 2, 3)
+            .firstOrError()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void firstOrErrorError() {
+        Flowable.error(new RuntimeException("error"))
+            .firstOrError()
+            .test()
+            .assertNoValues()
+            .assertErrorMessage("error")
+            .assertError(RuntimeException.class);
     }
 }
