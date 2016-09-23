@@ -12,6 +12,7 @@
  */
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.plugins.RxJavaPlugins;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
@@ -76,10 +77,13 @@ public final class FlowableAny<T> extends AbstractFlowableWithUpstream<T, Boolea
 
         @Override
         public void onError(Throwable t) {
-            if (!done) {
-                done = true;
-                actual.onError(t);
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
             }
+
+            done = true;
+            actual.onError(t);
         }
 
         @Override

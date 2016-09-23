@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.plugins.RxJavaPlugins;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
@@ -309,6 +310,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         public void onError(Throwable t) {
             // safeguard against misbehaving sources
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             getErrorQueue().offer(t);

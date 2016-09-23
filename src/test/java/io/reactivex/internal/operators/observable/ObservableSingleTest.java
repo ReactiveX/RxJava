@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.*;
@@ -20,8 +21,11 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.*;
 import io.reactivex.functions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class ObservableSingleTest {
 
@@ -454,5 +458,30 @@ public class ObservableSingleTest {
 
         Integer r = reduced.blockingGet();
         assertEquals(21, r.intValue());
+    }
+
+    @Test
+    public void singleElementOperatorDoNotSwallowExceptionWhenDone() {
+        final Throwable exception = new RuntimeException("some error");
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+
+        try {
+            RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+                @Override public void accept(final Throwable throwable) throws Exception {
+                    error.set(throwable);
+                }
+            });
+
+            Observable.unsafeCreate(new ObservableSource<Integer>() {
+                @Override public void subscribe(final Observer<? super Integer> observer) {
+                    observer.onComplete();
+                    observer.onError(exception);
+                }
+            }).singleElement().test().assertComplete();
+
+            assertSame(exception, error.get());
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

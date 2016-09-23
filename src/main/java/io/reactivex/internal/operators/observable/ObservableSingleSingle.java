@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableSingleSingle<T> extends Single<T> {
 
@@ -85,6 +86,7 @@ public final class ObservableSingleSingle<T> extends Single<T> {
         @Override
         public void onError(Throwable t) {
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             done = true;

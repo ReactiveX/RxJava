@@ -87,6 +87,7 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
         @Override
         public void onError(Throwable t) {
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             done = true;

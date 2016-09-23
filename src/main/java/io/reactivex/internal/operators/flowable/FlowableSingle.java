@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.plugins.RxJavaPlugins;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.*;
@@ -73,6 +74,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public void onError(Throwable t) {
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             done = true;

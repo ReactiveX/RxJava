@@ -17,6 +17,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Boolean> {
     final Predicate<? super T> predicate;
@@ -75,10 +76,13 @@ public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Bo
 
         @Override
         public void onError(Throwable t) {
-            if (!done) {
-                done = true;
-                actual.onError(t);
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
             }
+
+            done = true;
+            actual.onError(t);
         }
 
         @Override
