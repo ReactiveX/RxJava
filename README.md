@@ -29,7 +29,7 @@ The release plan for 2.x is as [follows](https://github.com/ReactiveX/RxJava/iss
 
   - **25/08/2016: Release Candidate 1: stabilized API and feature set**
   - **05/09/2016: Release Candidate 2: addressing feedback from RC 1**
-  - 23/09/2016: Release Candidate 3: addressing feedback from RC 2
+  - **23/09/2016: Release Candidate 3: addressing feedback from RC 2**
   - 07/10/2016: Release Candidate 4: addressing feedback from RC 3
   - 21/10/2016: Release Candidate 5: addressing feedback from RC 4
   - 29/10/2016: Stable Release: General availability
