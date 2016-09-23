@@ -12342,32 +12342,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits only the very first item emitted by the source Publisher that satisfies
-     * a specified condition.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeFirstN.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
-     *  behavior.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code takeFirst} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param predicate
-     *            the condition any item emitted by the source Publisher has to satisfy
-     * @return a Flowable that emits only the very first item emitted by the source Publisher that satisfies
-     *         the given condition, or that completes without emitting anything if the source Publisher
-     *         completes without emitting a single condition-satisfying item
-     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
-     */
-    @BackpressureSupport(BackpressureKind.SPECIAL) // may trigger UNBOUNDED_IN
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> takeFirst(Predicate<? super T> predicate) {
-        return filter(predicate).take(1);
-    }
-
-    /**
      * Returns a Flowable that emits at most the last {@code count} items emitted by the source Publisher. If the source emits fewer than
      * {@code count} items then all of its items are emitted.
      * <p>

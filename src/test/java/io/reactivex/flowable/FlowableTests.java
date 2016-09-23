@@ -182,9 +182,10 @@ public class FlowableTests {
         verify(wo, times(1)).onError(any(RuntimeException.class));
     }
 
+    @Test
     public void testTakeFirstWithPredicateOfSome() {
         Flowable<Integer> observable = Flowable.just(1, 3, 5, 4, 6, 3);
-        observable.takeFirst(IS_EVEN).subscribe(w);
+        observable.filter(IS_EVEN).take(1).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(4);
         verify(w, times(1)).onComplete();
@@ -194,7 +195,7 @@ public class FlowableTests {
     @Test
     public void testTakeFirstWithPredicateOfNoneMatchingThePredicate() {
         Flowable<Integer> observable = Flowable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        observable.takeFirst(IS_EVEN).subscribe(w);
+        observable.filter(IS_EVEN).take(1).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onComplete();
         verify(w, never()).onError(any(Throwable.class));

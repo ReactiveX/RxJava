@@ -2251,11 +2251,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void takeFirstNull() {
-        just1.takeFirst(null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void takeLastTimedUnitNull() {
         just1.takeLast(1, null, Schedulers.single());
     }

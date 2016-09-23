@@ -186,7 +186,7 @@ public class ObservableTest {
     @Test
     public void testTakeFirstWithPredicateOfSome() {
         Observable<Integer> o = Observable.just(1, 3, 5, 4, 6, 3);
-        o.takeFirst(IS_EVEN).subscribe(w);
+        o.filter(IS_EVEN).take(1).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(4);
         verify(w, times(1)).onComplete();
@@ -196,7 +196,7 @@ public class ObservableTest {
     @Test
     public void testTakeFirstWithPredicateOfNoneMatchingThePredicate() {
         Observable<Integer> o = Observable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        o.takeFirst(IS_EVEN).subscribe(w);
+        o.filter(IS_EVEN).take(1).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onComplete();
         verify(w, never()).onError(any(Throwable.class));

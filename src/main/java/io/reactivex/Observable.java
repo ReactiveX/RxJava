@@ -10334,28 +10334,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits only the very first item emitted by the source ObservableSource that satisfies
-     * a specified condition.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeFirstN.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code takeFirst} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param predicate
-     *            the condition any item emitted by the source ObservableSource has to satisfy
-     * @return an Observable that emits only the very first item emitted by the source ObservableSource that satisfies
-     *         the given condition, or that completes without emitting anything if the source ObservableSource
-     *         completes without emitting a single condition-satisfying item
-     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Observable<T> takeFirst(Predicate<? super T> predicate) {
-        return filter(predicate).take(1);
-    }
-
-    /**
      * Returns an Observable that emits at most the last {@code count} items emitted by the source ObservableSource. If the source emits fewer than
      * {@code count} items then all of its items are emitted.
      * <p>
