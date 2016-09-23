@@ -13,6 +13,10 @@
 
 package io.reactivex.subjects;
 
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import java.util.concurrent.atomic.AtomicBoolean;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import io.reactivex.internal.fuseable.QueueDisposable;
@@ -57,4 +61,52 @@ public class UnicastSubjectTest {
         .assertOf(ObserverFusion.<Integer>assertFuseable())
         .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC))
         .assertResult(1);
-    }}
+    }
+
+    @Test
+    public void onTerminateCalledWhenOnError() {
+        final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
+
+        UnicastSubject<Integer> us = UnicastSubject.create(Observable.bufferSize(), new Runnable() {
+            @Override public void run() {
+                didRunOnTerminate.set(true);
+            }
+        });
+
+        assertEquals(false, didRunOnTerminate.get());
+        us.onError(new RuntimeException("some error"));
+        assertEquals(true, didRunOnTerminate.get());
+    }
+
+    @Test
+    public void onTerminateCalledWhenOnComplete() {
+        final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
+
+        UnicastSubject<Integer> us = UnicastSubject.create(Observable.bufferSize(), new Runnable() {
+            @Override public void run() {
+                didRunOnTerminate.set(true);
+            }
+        });
+
+        assertEquals(false, didRunOnTerminate.get());
+        us.onComplete();
+        assertEquals(true, didRunOnTerminate.get());
+    }
+
+    @Test
+    public void onTerminateCalledWhenCanceled() {
+        final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
+
+        UnicastSubject<Integer> us = UnicastSubject.create(Observable.bufferSize(), new Runnable() {
+            @Override public void run() {
+                didRunOnTerminate.set(true);
+            }
+        });
+
+        final Disposable subscribe = us.subscribe();
+
+        assertEquals(false, didRunOnTerminate.get());
+        subscribe.dispose();
+        assertEquals(true, didRunOnTerminate.get());
+    }
+}

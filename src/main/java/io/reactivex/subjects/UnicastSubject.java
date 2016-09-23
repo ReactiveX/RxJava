@@ -153,6 +153,13 @@ public final class UnicastSubject<T> extends Subject<T> {
         }
     }
 
+    void doTerminate() {
+        Runnable r = onTerminate.get();
+        if (r != null && onTerminate.compareAndSet(r, null)) {
+            r.run();
+        }
+    }
+
     void notifyOnCancelled() {
         Runnable r = onCancelled;
         onCancelled = null;
@@ -184,7 +191,7 @@ public final class UnicastSubject<T> extends Subject<T> {
             return;
         }
         if (t == null) {
-            onError(new NullPointerException());
+            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
             return;
         }
         queue.offer(t);
@@ -198,10 +205,13 @@ public final class UnicastSubject<T> extends Subject<T> {
             return;
         }
         if (t == null) {
-            t = new NullPointerException();
+            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
         error = t;
         done = true;
+
+        doTerminate();
+
         drain();
     }
 
@@ -211,6 +221,9 @@ public final class UnicastSubject<T> extends Subject<T> {
             return;
         }
         done = true;
+
+        doTerminate();
+
         drain();
     }
 
@@ -374,6 +387,9 @@ public final class UnicastSubject<T> extends Subject<T> {
         public void dispose() {
             if (!disposed) {
                 disposed = true;
+
+                doTerminate();
+
                 actual.lazySet(null);
                 if (wip.getAndIncrement() == 0) {
                     clearAndNotify(queue);
