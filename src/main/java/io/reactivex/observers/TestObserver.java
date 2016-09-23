@@ -21,6 +21,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
@@ -424,10 +425,12 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
      *
      * <p>The comparison is performed via Objects.equals(); since most exceptions don't
      * implement equals(), this assertion may fail. Use the {@link #assertError(Class)}
-     * overload to test against the class of an error instead of an instance of an error.
+     * overload to test against the class of an error instead of an instance of an error
+     * or {@link #assertError(Predicate)} to test with different condition.
      * @param error the error to check
      * @return this;
      * @see #assertError(Class)
+     * @see #assertError(Predicate)
      */
     public final TestObserver<T> assertError(Throwable error) {
         int s = errors.size();
@@ -462,6 +465,43 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
             if (errorClass.isInstance(e)) {
                 found = true;
                 break;
+            }
+        }
+
+        if (found) {
+            if (s != 1) {
+                throw fail("Error present but other errors as well");
+            }
+        } else {
+            throw fail("Error not present");
+        }
+        return this;
+    }
+
+    /**
+     * Asserts that this TestObserver received exactly one onError event for which
+     * the provided predicate returns true.
+     * @param errorPredicate
+     *            the predicate that receives the error Throwable
+     *            and should return true for expected errors.
+     * @return this
+     */
+    public final TestObserver<T> assertError(Predicate<Throwable> errorPredicate) {
+        int s = errors.size();
+        if (s == 0) {
+            throw fail("No errors");
+        }
+
+        boolean found = false;
+
+        for (Throwable e : errors) {
+            try {
+                if (errorPredicate.test(e)) {
+                    found = true;
+                    break;
+                }
+            } catch (Exception ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
             }
         }
 
@@ -825,6 +865,7 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
      * @param values the expected values, asserted in order
      * @return this
      * @see #assertFailure(Class, Object...)
+     * @see #assertFailure(Predicate, Object...)
      * @see #assertFailureAndMessage(Class, String, Object...)
      */
     public final TestObserver<T> assertResult(T... values) {
@@ -845,6 +886,22 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
         return assertSubscribed()
                 .assertValues(values)
                 .assertError(error)
+                .assertNotComplete();
+    }
+
+    /**
+     * Assert that the upstream signalled the specified values in order and then failed
+     * with a Throwable for which the provided predicate returns true.
+     * @param errorPredicate
+     *            the predicate that receives the error Throwable
+     *            and should return true for expected errors.
+     * @param values the expected values, asserted in order
+     * @return this
+     */
+    public final TestObserver<T> assertFailure(Predicate<Throwable> errorPredicate, T... values) {
+        return assertSubscribed()
+                .assertValues(values)
+                .assertError(errorPredicate)
                 .assertNotComplete();
     }
 

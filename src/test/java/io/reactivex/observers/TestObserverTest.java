@@ -31,6 +31,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.internal.subscriptions.EmptySubscription;
@@ -333,6 +334,13 @@ public class TestObserverTest {
         }
 
         try {
+            ts.assertError(Functions.<Throwable>alwaysTrue());
+            throw new RuntimeException("Should have thrown");
+        } catch (AssertionError ex) {
+            // expected
+        }
+
+        try {
             ts.assertErrorMessage("");
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
@@ -367,6 +375,15 @@ public class TestObserverTest {
 
         ts.assertError(TestException.class);
 
+        ts.assertError(Functions.<Throwable>alwaysTrue());
+
+        ts.assertError(new Predicate<Throwable>() {
+            @Override
+            public boolean test(Throwable t) throws Exception {
+                return t.getMessage() != null && t.getMessage().contains("Forced");
+            }
+        });
+
         ts.assertErrorMessage("Forced failure");
 
         try {
@@ -385,6 +402,13 @@ public class TestObserverTest {
 
         try {
             ts.assertError(IOException.class);
+            throw new RuntimeException("Should have thrown");
+        } catch (AssertionError exc) {
+            // expected
+        }
+
+        try {
+            ts.assertError(Functions.<Throwable>alwaysFalse());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
             // expected
@@ -428,11 +452,15 @@ public class TestObserverTest {
 
         ts.assertFailure(TestException.class);
 
+        ts.assertFailure(Functions.<Throwable>alwaysTrue());
+
         ts.assertFailureAndMessage(TestException.class, "Forced failure");
 
         ts.onNext(1);
 
         ts.assertFailure(TestException.class, 1);
+
+        ts.assertFailure(Functions.<Throwable>alwaysTrue(), 1);
 
         ts.assertFailureAndMessage(TestException.class, "Forced failure", 1);
     }
@@ -966,11 +994,35 @@ public class TestObserverTest {
             // expected
         }
         try {
+            ts.assertError(Functions.<Throwable>alwaysTrue());
+            throw new RuntimeException("Should have thrown!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+        try {
             ts.assertErrorMessage("");
             throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
             // expected
         }
+    }
+
+    @Test
+    public void testErrorInPredicate() {
+        TestObserver<Object> ts = new TestObserver<Object>();
+        ts.onError(new RuntimeException());
+        try {
+            ts.assertError(new Predicate<Throwable>() {
+                @Override
+                public boolean test(Throwable throwable) throws Exception {
+                    throw new TestException();
+                }
+            });
+        } catch (TestException ex) {
+            // expected
+            return;
+        }
+        fail("Error in predicate but not thrown!");
     }
 
     @Test
