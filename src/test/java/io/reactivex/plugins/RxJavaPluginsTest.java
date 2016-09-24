@@ -430,7 +430,7 @@ public class RxJavaPluginsTest {
         try {
             RxJavaPlugins.initSingleScheduler(null);
             fail("Should have thrown NullPointerException");
-        } catch (NullPointerException iae) {
+        } catch (NullPointerException npe) {
             // expected
         }
 
@@ -438,7 +438,7 @@ public class RxJavaPluginsTest {
         try {
             RxJavaPlugins.initSingleScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
-        } catch (NullPointerException iae) {
+        } catch (NullPointerException npe) {
             // expected
         }
     }
@@ -449,7 +449,7 @@ public class RxJavaPluginsTest {
         try {
             RxJavaPlugins.initComputationScheduler(null);
             fail("Should have thrown NullPointerException");
-        } catch (NullPointerException iae) {
+        } catch (NullPointerException npe) {
             // expected
         }
 
@@ -457,7 +457,7 @@ public class RxJavaPluginsTest {
         try {
             RxJavaPlugins.initComputationScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
-        } catch (NullPointerException iae) {
+        } catch (NullPointerException npe) {
             // expected
         }
     }
@@ -468,7 +468,7 @@ public class RxJavaPluginsTest {
         try {
             RxJavaPlugins.initIoScheduler(null);
             fail("Should have thrown NullPointerException");
-        } catch (NullPointerException iae) {
+        } catch (NullPointerException npe) {
             // expected
         }
 
@@ -476,7 +476,7 @@ public class RxJavaPluginsTest {
         try {
             RxJavaPlugins.initIoScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
-        } catch (NullPointerException iae) {
+        } catch (NullPointerException npe) {
             // expected
         }
     }
@@ -487,14 +487,14 @@ public class RxJavaPluginsTest {
         try {
             RxJavaPlugins.initNewThreadScheduler(null);
             fail("Should have thrown NullPointerException");
-        } catch (NullPointerException iae) {
+        } catch (NullPointerException npe) {
             // expected
         }
         // Fail when Callable result is null
         try {
             RxJavaPlugins.initNewThreadScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
-        } catch (NullPointerException iae) {
+        } catch (NullPointerException npe) {
             // expected
         }
     }
