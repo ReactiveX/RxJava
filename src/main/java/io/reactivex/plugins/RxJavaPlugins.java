@@ -190,7 +190,7 @@ public final class RxJavaPlugins {
      * @throws NullPointerException if the callable parameter or its result are null
      */
     public static Scheduler initComputationScheduler(Callable<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
         Function<Scheduler, Scheduler> f = onInitComputationHandler;
         if (f == null) {
             return call(defaultScheduler);
@@ -205,7 +205,7 @@ public final class RxJavaPlugins {
      * @throws NullPointerException if the callable parameter or its result are null
      */
     public static Scheduler initIoScheduler(Callable<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
         Function<Scheduler, Scheduler> f = onInitIoHandler;
         if (f == null) {
             return call(defaultScheduler);
@@ -220,7 +220,7 @@ public final class RxJavaPlugins {
      * @throws NullPointerException if the callable parameter or its result are null
      */
     public static Scheduler initNewThreadScheduler(Callable<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
         Function<Scheduler, Scheduler> f = onInitNewThreadHandler;
         if (f == null) {
             return call(defaultScheduler);
@@ -235,7 +235,7 @@ public final class RxJavaPlugins {
      * @throws NullPointerException if the callable parameter or its result are null
      */
     public static Scheduler initSingleScheduler(Callable<Scheduler> defaultScheduler) {
-        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
         Function<Scheduler, Scheduler> f = onInitSingleHandler;
         if (f == null) {
             return call(defaultScheduler);
@@ -957,7 +957,7 @@ public final class RxJavaPlugins {
     static <T, R> R apply(Function<T, R> f, Callable<T> t) {
         try {
             T value = t.call();
-            ObjectHelper.requireNonNull(t, "Callable result cannot be null.");
+            ObjectHelper.requireNonNull(t, "Callable result can't be null");
             return f.apply(value);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
@@ -994,7 +994,7 @@ public final class RxJavaPlugins {
     static <T> T call(Callable<T> t) {
         try {
             T result = t.call();
-            ObjectHelper.requireNonNull(result, "Callable result cannot be null.");
+            ObjectHelper.requireNonNull(result, "Callable result can't be null");
             return result;
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
