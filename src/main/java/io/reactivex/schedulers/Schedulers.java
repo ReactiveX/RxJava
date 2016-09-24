@@ -45,25 +45,41 @@ public final class Schedulers {
 
     static final Scheduler NEW_THREAD;
 
+    static final class SingleHolder {
+        static final Scheduler DEFAULT = new SingleScheduler();
+    }
+
+    static final class ComputationHolder {
+        static final Scheduler DEFAULT = new ComputationScheduler();
+    }
+
+    static final class IoHolder {
+        static final Scheduler DEFAULT = new IoScheduler();
+    }
+
+    static final class NewThreadHolder {
+        static final Scheduler DEFAULT = NewThreadScheduler.instance();
+    }
+
     static {
         SINGLE = RxJavaPlugins.initSingleScheduler(new Callable<Scheduler>() {
             @Override
             public Scheduler call() throws Exception {
-                return new SingleScheduler();
+                return SingleHolder.DEFAULT;
             }
         });
 
         COMPUTATION = RxJavaPlugins.initComputationScheduler(new Callable<Scheduler>() {
             @Override
             public Scheduler call() throws Exception {
-                return new ComputationScheduler();
+                return ComputationHolder.DEFAULT;
             }
         });
 
         IO = RxJavaPlugins.initIoScheduler(new Callable<Scheduler>() {
             @Override
             public Scheduler call() throws Exception {
-                return new IoScheduler();
+                return IoHolder.DEFAULT;
             }
         });
 
@@ -72,7 +88,7 @@ public final class Schedulers {
         NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(new Callable<Scheduler>() {
             @Override
             public Scheduler call() throws Exception {
-                return NewThreadScheduler.instance();
+                return NewThreadHolder.DEFAULT;
             }
         });
     }
