@@ -187,6 +187,7 @@ public final class RxJavaPlugins {
      * Calls the associated hook function.
      * @param defaultScheduler a {@link Callable} which returns the hook's input value
      * @return the value returned by the hook
+     * @throws NullPointerException if the callable parameter or its result are null
      */
     public static Scheduler initComputationScheduler(Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
@@ -201,6 +202,7 @@ public final class RxJavaPlugins {
      * Calls the associated hook function.
      * @param defaultScheduler a {@link Callable} which returns the hook's input value
      * @return the value returned by the hook
+     * @throws NullPointerException if the callable parameter or its result are null
      */
     public static Scheduler initIoScheduler(Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
@@ -215,6 +217,7 @@ public final class RxJavaPlugins {
      * Calls the associated hook function.
      * @param defaultScheduler a {@link Callable} which returns the hook's input value
      * @return the value returned by the hook
+     * @throws NullPointerException if the callable parameter or its result are null
      */
     public static Scheduler initNewThreadScheduler(Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
@@ -229,6 +232,7 @@ public final class RxJavaPlugins {
      * Calls the associated hook function.
      * @param defaultScheduler a {@link Callable} which returns the hook's input value
      * @return the value returned by the hook
+     * @throws NullPointerException if the callable parameter or its result are null
      */
     public static Scheduler initSingleScheduler(Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
@@ -942,12 +946,13 @@ public final class RxJavaPlugins {
 
     /**
      * Wraps the call to the function in try-catch and propagates thrown
-     * checked exceptions as RuntimeException.
+     * checked exceptions as RuntimeException. Takes a {@link Callable} to provide the function input value.
      * @param <T> the input type
      * @param <R> the output type
      * @param f the function to call, not null (not verified)
-     * @param t the {@link Callable} parameter value to the function
+     * @param t the {@link Callable} parameter value to the function, not null (not verified). Cannot return null.
      * @return the result of the function call, not null
+     * @throws NullPointerException if the callable returns null
      */
     static <T, R> R apply(Function<T, R> f, Callable<T> t) {
         try {
@@ -982,8 +987,9 @@ public final class RxJavaPlugins {
      * Wraps the call to the callable in try-catch and propagates thrown
      * checked exceptions as RuntimeException.
      * @param <T> the input type
-     * @param t the callable, not null (not verified)
+     * @param t the callable, not null (not verified). Cannot return null.
      * @return the result of the callable call, not null
+     * @throws NullPointerException if the callable returns null
      */
     static <T> T call(Callable<T> t) {
         try {
