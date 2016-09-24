@@ -21,7 +21,7 @@ import rx.*;
 import rx.AsyncEmitter.Cancellable;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
-import rx.internal.operators.OnSubscribeFromEmitter.CancellableSubscription;
+import rx.internal.operators.OnSubscribeFromAsyncEmitter.CancellableSubscription;
 import rx.internal.subscriptions.SequentialSubscription;
 import rx.plugins.RxJavaHooks;
 
