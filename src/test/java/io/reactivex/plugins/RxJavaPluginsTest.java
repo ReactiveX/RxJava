@@ -417,6 +417,13 @@ public class RxJavaPluginsTest {
         assertSame(s, RxJavaPlugins.initNewThreadScheduler(c));
     }
 
+    Callable<Scheduler> nullResultCallable = new Callable<Scheduler>() {
+        @Override
+        public Scheduler call() throws Exception {
+            return null;
+        }
+    };
+
     @Test
     public void overrideInitSingleSchedulerCrashes() {
         // Fail when Callable is null
@@ -424,26 +431,71 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.initSingleScheduler(null);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException iae) {
-            // ignore - expected
-        } finally {
-            RxJavaPlugins.reset();
+            // expected
         }
-
-        // TODO Verify reset.
 
         // Fail when Callable result is null
         try {
-            RxJavaPlugins.initSingleScheduler(new Callable<Scheduler>() {
-                @Override
-                public Scheduler call() throws Exception {
-                    return null;
-                }
-            });
+            RxJavaPlugins.initSingleScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException iae) {
-            // ignore - expected
-        } finally {
-            RxJavaPlugins.reset();
+            // expected
+        }
+    }
+
+    @Test
+    public void overrideInitComputationSchedulerCrashes() {
+        // Fail when Callable is null
+        try {
+            RxJavaPlugins.initComputationScheduler(null);
+            fail("Should have thrown NullPointerException");
+        } catch (NullPointerException iae) {
+            // expected
+        }
+
+        // Fail when Callable result is null
+        try {
+            RxJavaPlugins.initComputationScheduler(nullResultCallable);
+            fail("Should have thrown NullPointerException");
+        } catch (NullPointerException iae) {
+            // expected
+        }
+    }
+
+    @Test
+    public void overrideInitIoSchedulerCrashes() {
+        // Fail when Callable is null
+        try {
+            RxJavaPlugins.initIoScheduler(null);
+            fail("Should have thrown NullPointerException");
+        } catch (NullPointerException iae) {
+            // expected
+        }
+
+        // Fail when Callable result is null
+        try {
+            RxJavaPlugins.initIoScheduler(nullResultCallable);
+            fail("Should have thrown NullPointerException");
+        } catch (NullPointerException iae) {
+            // expected
+        }
+    }
+
+    @Test
+    public void overrideInitNewThreadSchedulerCrashes() {
+        // Fail when Callable is null
+        try {
+            RxJavaPlugins.initNewThreadScheduler(null);
+            fail("Should have thrown NullPointerException");
+        } catch (NullPointerException iae) {
+            // expected
+        }
+        // Fail when Callable result is null
+        try {
+            RxJavaPlugins.initNewThreadScheduler(nullResultCallable);
+            fail("Should have thrown NullPointerException");
+        } catch (NullPointerException iae) {
+            // expected
         }
     }
 
@@ -1222,15 +1274,6 @@ public class RxJavaPluginsTest {
 
             assertSame(s, RxJavaPlugins.onSingleScheduler(s));
 
-
-            assertNull(RxJavaPlugins.initComputationScheduler(null));
-
-            assertNull(RxJavaPlugins.initIoScheduler(null));
-
-            assertNull(RxJavaPlugins.initNewThreadScheduler(null));
-
-            assertNull(RxJavaPlugins.initSingleScheduler(null));
-
             assertSame(s, RxJavaPlugins.initComputationScheduler(c));
 
             assertSame(s, RxJavaPlugins.initIoScheduler(c));
@@ -1238,7 +1281,6 @@ public class RxJavaPluginsTest {
             assertSame(s, RxJavaPlugins.initNewThreadScheduler(c));
 
             assertSame(s, RxJavaPlugins.initSingleScheduler(c));
-
 
         } finally {
             RxJavaPlugins.reset();
