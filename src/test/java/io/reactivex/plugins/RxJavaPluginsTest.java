@@ -431,7 +431,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.initSingleScheduler(null);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
-            // expected
+            assertEquals("Scheduler Callable can't be null", npe.getMessage());
         }
 
         // Fail when Callable result is null
@@ -439,7 +439,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.initSingleScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
-            // expected
+            assertEquals("Callable result can't be null", npe.getMessage());
         }
     }
 
@@ -450,7 +450,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.initComputationScheduler(null);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
-            // expected
+            assertEquals("Scheduler Callable can't be null", npe.getMessage());
         }
 
         // Fail when Callable result is null
@@ -458,7 +458,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.initComputationScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
-            // expected
+            assertEquals("Callable result can't be null", npe.getMessage());
         }
     }
 
@@ -470,6 +470,7 @@ public class RxJavaPluginsTest {
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
             // expected
+            assertEquals("Scheduler Callable can't be null", npe.getMessage());
         }
 
         // Fail when Callable result is null
@@ -477,7 +478,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.initIoScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
-            // expected
+            assertEquals("Callable result can't be null", npe.getMessage());
         }
     }
 
@@ -489,13 +490,14 @@ public class RxJavaPluginsTest {
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
             // expected
+            assertEquals("Scheduler Callable can't be null", npe.getMessage());
         }
         // Fail when Callable result is null
         try {
             RxJavaPlugins.initNewThreadScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
-            // expected
+            assertEquals("Callable result can't be null", npe.getMessage());
         }
     }
 
