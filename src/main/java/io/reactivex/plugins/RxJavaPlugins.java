@@ -15,6 +15,7 @@ package io.reactivex.plugins;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.Callable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
@@ -188,9 +189,10 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     public static Scheduler initComputationScheduler(Callable<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
         Function<Scheduler, Scheduler> f = onInitComputationHandler;
         if (f == null) {
-            return callOrNull(defaultScheduler);
+            return call(defaultScheduler);
         }
         return apply(f, defaultScheduler); // JIT will skip this
     }
@@ -201,9 +203,10 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     public static Scheduler initIoScheduler(Callable<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
         Function<Scheduler, Scheduler> f = onInitIoHandler;
         if (f == null) {
-            return callOrNull(defaultScheduler);
+            return call(defaultScheduler);
         }
         return apply(f, defaultScheduler);
     }
@@ -214,9 +217,10 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     public static Scheduler initNewThreadScheduler(Callable<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
         Function<Scheduler, Scheduler> f = onInitNewThreadHandler;
         if (f == null) {
-            return callOrNull(defaultScheduler);
+            return call(defaultScheduler);
         }
         return apply(f, defaultScheduler);
     }
@@ -227,9 +231,10 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     public static Scheduler initSingleScheduler(Callable<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable cannot be null.");
         Function<Scheduler, Scheduler> f = onInitSingleHandler;
         if (f == null) {
-            return callOrNull(defaultScheduler);
+            return call(defaultScheduler);
         }
         return apply(f, defaultScheduler);
     }
@@ -942,11 +947,13 @@ public final class RxJavaPlugins {
      * @param <R> the output type
      * @param f the function to call, not null (not verified)
      * @param t the {@link Callable} parameter value to the function
-     * @return the result of the function call
+     * @return the result of the function call, not null
      */
     static <T, R> R apply(Function<T, R> f, Callable<T> t) {
         try {
-            return f.apply(t.call());
+            T value = t.call();
+            ObjectHelper.requireNonNull(t, "Callable result cannot be null.");
+            return f.apply(value);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
@@ -975,27 +982,17 @@ public final class RxJavaPlugins {
      * Wraps the call to the callable in try-catch and propagates thrown
      * checked exceptions as RuntimeException.
      * @param <T> the input type
-     * @param <T> the output type
      * @param t the callable, not null (not verified)
-     * @return the result of the callable call
+     * @return the result of the callable call, not null
      */
     static <T> T call(Callable<T> t) {
         try {
-            return t.call();
+            T result = t.call();
+            ObjectHelper.requireNonNull(result, "Callable result cannot be null.");
+            return result;
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
-    }
-
-    /**
-     * Wraps the call to the callable in try-catch and propagates thrown
-     * checked exceptions as RuntimeException.
-     * @param <T> the input and output type
-     * @param t the callable, nullable
-     * @return the callable result if the callable is nonnull, null otherwise.
-     */
-    static <T> T callOrNull(Callable<T> t) {
-        return t == null ? null : call(t);
     }
 
     /** Helper class, no instances. */

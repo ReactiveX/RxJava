@@ -417,6 +417,36 @@ public class RxJavaPluginsTest {
         assertSame(s, RxJavaPlugins.initNewThreadScheduler(c));
     }
 
+    @Test
+    public void overrideInitSingleSchedulerCrashes() {
+        // Fail when Callable is null
+        try {
+            RxJavaPlugins.initSingleScheduler(null);
+            fail("Should have thrown NullPointerException");
+        } catch (NullPointerException iae) {
+            // ignore - expected
+        } finally {
+            RxJavaPlugins.reset();
+        }
+
+        // TODO Verify reset.
+
+        // Fail when Callable result is null
+        try {
+            RxJavaPlugins.initSingleScheduler(new Callable<Scheduler>() {
+                @Override
+                public Scheduler call() throws Exception {
+                    return null;
+                }
+            });
+            fail("Should have thrown NullPointerException");
+        } catch (NullPointerException iae) {
+            // ignore - expected
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
     @SuppressWarnings("rawtypes")
     @Test
     public void observableCreate() {
