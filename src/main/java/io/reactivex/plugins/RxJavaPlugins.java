@@ -994,8 +994,7 @@ public final class RxJavaPlugins {
     static <T> T call(Callable<T> t) {
         try {
             T result = t.call();
-            ObjectHelper.requireNonNull(result, "Callable result can't be null");
-            return result;
+            return ObjectHelper.requireNonNull(result, "Callable result can't be null");
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
