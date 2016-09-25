@@ -1,0 +1,9 @@
+bin
+build
+.classpath
+.pmd
+.project
+.idea
+.gradle
+gradle
+.settings
