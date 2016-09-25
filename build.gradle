@@ -73,6 +73,12 @@ test {
     if (System.getenv('CI') == null) {
         maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     }
+    
+    testLogging  {
+        // showing skipped occasionally should prevent CI timeout due to long running tests
+        events "skipped", "failed" // "started", "passed"
+    //    showStandardStreams = true
+    }
 }
 
 task testng(type: Test) { 
