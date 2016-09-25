@@ -88,7 +88,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      *
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
-     * @param onCancelled the optional callback
+     * @param onCancelled the non null callback
      * @return an UnicastProcessor instance
      */
     public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled) {
@@ -113,7 +113,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * Creates an UnicastProcessor with the given capacity hint and callback
      * for when the Processor is terminated normally or its single Subscriber cancels.
      * @param capacityHint the capacity hint for the internal, unbounded queue
-     * @param onTerminate the callback to run when the Processor is terminated or cancelled, null allowed
+     * @param onTerminate the callback to run when the Processor is terminated or cancelled, null not allowed
      * @since 2.0
      */
     UnicastProcessor(int capacityHint, Runnable onTerminate) {
@@ -274,6 +274,11 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
             return;
         }
 
+        if (t == null) {
+            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+            return;
+        }
+
         if (!queue.offer(t)) {
             onError(new IllegalStateException("The queue is full"));
             return;
@@ -286,6 +291,10 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
         if (done || cancelled) {
             RxJavaPlugins.onError(t);
             return;
+        }
+
+        if (t == null) {
+            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
 
         error = t;
