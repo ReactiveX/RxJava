@@ -13,15 +13,16 @@
 
 package io.reactivex.subjects;
 
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.assertEquals;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Test;
 
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.observers.*;
-import io.reactivex.*;
 
 public class UnicastSubjectTest {
 

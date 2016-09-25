@@ -13,16 +13,16 @@
 
 package io.reactivex.processors;
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Test;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.subscribers.*;
-import io.reactivex.observers.*;
-import io.reactivex.*;
-import io.reactivex.disposables.*;
 
 public class UnicastProcessorTest {
 
