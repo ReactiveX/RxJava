@@ -68,21 +68,45 @@ if (project.hasProperty('release.useLastTag')) {
 }
 
 test {
+    
+    testLogging  {
+        // showing skipped occasionally should prevent CI timeout due to lack of standard output
+        events=['skipped', 'failed'] // "started", "passed"
+        // showStandardStreams = true
+        exceptionFormat="full"
+
+        debug.events = ["skipped", "failed"]
+        debug.exceptionFormat="full"
+
+        info.events = ["failed", "skipped"]
+        info.exceptionFormat="full"
+        
+        warn.events = ["failed", "skipped"]
+        warn.exceptionFormat="full"
+    }
+
     maxHeapSize = "1200m"
 
     if (System.getenv('CI') == null) {
         maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     }
-    
-    testLogging  {
-        // showing skipped occasionally should prevent CI timeout due to long running tests
-        events "skipped", "failed" // "started", "passed"
-    //    showStandardStreams = true
-    }
 }
 
 task testng(type: Test) { 
-     useTestNG() 
+     useTestNG()
+     testLogging  {
+        events=['skipped', 'failed']
+        exceptionFormat="full"
+
+        debug.events = ["skipped", "failed"]
+        debug.exceptionFormat="full"
+
+        info.events = ["failed", "skipped"]
+        info.exceptionFormat="full"
+        
+        warn.events = ["failed", "skipped"]
+        warn.exceptionFormat="full"
+     }
 } 
 
 check.dependsOn testng 
