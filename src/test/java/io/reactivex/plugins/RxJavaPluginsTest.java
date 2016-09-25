@@ -295,7 +295,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.reset();
         }
         // make sure the reset worked
-        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.computation());
+        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.single());
     }
 
     @Test
