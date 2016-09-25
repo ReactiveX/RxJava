@@ -14,9 +14,15 @@
 package io.reactivex.processors;
 
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.subscribers.*;
+import io.reactivex.observers.*;
+import io.reactivex.*;
+import io.reactivex.disposables.*;
 
 public class UnicastProcessorTest {
 
@@ -57,4 +63,91 @@ public class UnicastProcessorTest {
         .assertOf(SubscriberFusion.<Integer>assertFuseable())
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
         .assertResult(1);
-    }}
+    }
+
+    @Test
+    public void onTerminateCalledWhenOnError() {
+        final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
+
+        UnicastProcessor<Integer> us = UnicastProcessor.create(Observable.bufferSize(), new Runnable() {
+            @Override public void run() {
+                didRunOnTerminate.set(true);
+            }
+        });
+
+        assertEquals(false, didRunOnTerminate.get());
+        us.onError(new RuntimeException("some error"));
+        assertEquals(true, didRunOnTerminate.get());
+    }
+
+    @Test
+    public void onTerminateCalledWhenOnComplete() {
+        final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
+
+        UnicastProcessor<Integer> us = UnicastProcessor.create(Observable.bufferSize(), new Runnable() {
+            @Override public void run() {
+                didRunOnTerminate.set(true);
+            }
+        });
+
+        assertEquals(false, didRunOnTerminate.get());
+        us.onComplete();
+        assertEquals(true, didRunOnTerminate.get());
+    }
+
+    @Test
+    public void onTerminateCalledWhenCanceled() {
+        final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
+
+        UnicastProcessor<Integer> us = UnicastProcessor.create(Observable.bufferSize(), new Runnable() {
+            @Override public void run() {
+                didRunOnTerminate.set(true);
+            }
+        });
+
+        final Disposable subscribe = us.subscribe();
+
+        assertEquals(false, didRunOnTerminate.get());
+        subscribe.dispose();
+        assertEquals(true, didRunOnTerminate.get());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void nullOnTerminate() {
+        UnicastProcessor.create(5, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void negativeCapacityHint() {
+        UnicastProcessor.create(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void zeroCapacityHint() {
+        UnicastProcessor.create(0);
+    }
+
+    @Test
+    public void onNextNull() {
+        final UnicastProcessor<Object> up = UnicastProcessor.create();
+
+        up.onNext(null);
+
+        up.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNull() {
+        final UnicastProcessor<Object> up = UnicastProcessor.create();
+
+        up.onError(null);
+
+        up.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+}

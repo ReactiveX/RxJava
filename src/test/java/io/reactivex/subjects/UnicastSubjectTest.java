@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.observers.*;
+import io.reactivex.*;
 
 public class UnicastSubjectTest {
 
@@ -108,5 +109,44 @@ public class UnicastSubjectTest {
         assertEquals(false, didRunOnTerminate.get());
         subscribe.dispose();
         assertEquals(true, didRunOnTerminate.get());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void nullOnTerminate() {
+        UnicastSubject.create(5, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void negativeCapacityHint() {
+        UnicastSubject.create(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void zeroCapacityHint() {
+        UnicastSubject.create(0);
+    }
+
+    @Test
+    public void onNextNull() {
+        final UnicastSubject<Object> up = UnicastSubject.create();
+
+        up.onNext(null);
+
+        up.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNull() {
+        final UnicastSubject<Object> up = UnicastSubject.create();
+
+        up.onError(null);
+
+        up.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 }
