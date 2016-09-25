@@ -787,6 +787,8 @@ public class FlowableDelayTest {
         ts.assertError(TestException.class);
         ts.assertNotComplete();
     }
+
+    @Test
     public void testDelaySupplierSimple() {
         final PublishProcessor<Integer> ps = PublishProcessor.create();
 
