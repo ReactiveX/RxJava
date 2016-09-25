@@ -16,6 +16,7 @@
 
 package io.reactivex.plugins;
 
+import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
@@ -1695,4 +1696,25 @@ public class RxJavaPluginsTest {
         .assertComplete();
     }
 
+    @Test
+    public void onErrorNull() {
+        try {
+            final AtomicReference<Throwable> t = new AtomicReference<Throwable>();
+
+            RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+                @Override
+                public void accept(final Throwable throwable) throws Exception {
+                    t.set(throwable);
+                }
+            });
+
+            RxJavaPlugins.onError(null);
+
+            final Throwable throwable = t.get();
+            assertEquals("onError called with null. Null values are generally not allowed in 2.x operators and sources.", throwable.getMessage());
+            assertTrue(throwable instanceof NullPointerException);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }
