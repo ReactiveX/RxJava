@@ -337,6 +337,13 @@ public class RxJavaPluginsTest {
         assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.newThread());
     }
 
+    Function<Callable<Scheduler>, Scheduler> initReplaceWithImmediate = new Function<Callable<Scheduler>, Scheduler>() {
+        @Override
+        public Scheduler apply(Callable<Scheduler> t) {
+            return ImmediateThinScheduler.INSTANCE;
+        }
+    };
+
     @Test
     public void overrideInitSingleScheduler() {
         final Scheduler s = Schedulers.single(); // make sure the Schedulers is initialized
@@ -347,7 +354,7 @@ public class RxJavaPluginsTest {
             }
         };
         try {
-            RxJavaPlugins.setInitSingleSchedulerHandler(replaceWithImmediate);
+            RxJavaPlugins.setInitSingleSchedulerHandler(initReplaceWithImmediate);
 
             assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initSingleScheduler(c));
         } finally {
@@ -367,7 +374,7 @@ public class RxJavaPluginsTest {
             }
         };
         try {
-            RxJavaPlugins.setInitComputationSchedulerHandler(replaceWithImmediate);
+            RxJavaPlugins.setInitComputationSchedulerHandler(initReplaceWithImmediate);
 
             assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initComputationScheduler(c));
         } finally {
@@ -387,7 +394,7 @@ public class RxJavaPluginsTest {
             }
         };
         try {
-            RxJavaPlugins.setInitIoSchedulerHandler(replaceWithImmediate);
+            RxJavaPlugins.setInitIoSchedulerHandler(initReplaceWithImmediate);
 
             assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initIoScheduler(c));
         } finally {
@@ -407,7 +414,7 @@ public class RxJavaPluginsTest {
             }
         };
         try {
-            RxJavaPlugins.setInitNewThreadSchedulerHandler(replaceWithImmediate);
+            RxJavaPlugins.setInitNewThreadSchedulerHandler(initReplaceWithImmediate);
 
             assertSame(ImmediateThinScheduler.INSTANCE, RxJavaPlugins.initNewThreadScheduler(c));
         } finally {
@@ -439,22 +446,8 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.initSingleScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
-            assertEquals("Callable result can't be null", npe.getMessage());
+            assertEquals("Scheduler Callable result can't be null", npe.getMessage());
         }
-
-        // fail when Callable result is null and initHandler set
-        try {
-            RxJavaPlugins.setInitSingleSchedulerHandler(replaceWithImmediate);
-            RxJavaPlugins.initSingleScheduler(nullResultCallable);
-            fail("Should have thrown NullPointerException");
-        } catch (NullPointerException npe) {
-            assertEquals("Callable result can't be null", npe.getMessage());
-        } finally {
-            RxJavaPlugins.reset();
-        }
-
-        // make sure the reset worked
-        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.single());
     }
 
     @Test
@@ -472,22 +465,8 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.initComputationScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
-            assertEquals("Callable result can't be null", npe.getMessage());
+            assertEquals("Scheduler Callable result can't be null", npe.getMessage());
         }
-
-        // fail when Callable result is null and initHandler set
-        try {
-            RxJavaPlugins.setInitComputationSchedulerHandler(replaceWithImmediate);
-            RxJavaPlugins.initComputationScheduler(nullResultCallable);
-            fail("Should have thrown NullPointerException");
-        } catch (NullPointerException npe) {
-            assertEquals("Callable result can't be null", npe.getMessage());
-        } finally {
-            RxJavaPlugins.reset();
-        }
-
-        // make sure the reset worked
-        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.computation());
     }
 
     @Test
@@ -505,22 +484,8 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.initIoScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
-            assertEquals("Callable result can't be null", npe.getMessage());
+            assertEquals("Scheduler Callable result can't be null", npe.getMessage());
         }
-
-        // fail when Callable result is null and initHandler set
-        try {
-            RxJavaPlugins.setInitIoSchedulerHandler(replaceWithImmediate);
-            RxJavaPlugins.initIoScheduler(nullResultCallable);
-            fail("Should have thrown NullPointerException");
-        } catch (NullPointerException npe) {
-            assertEquals("Callable result can't be null", npe.getMessage());
-        } finally {
-            RxJavaPlugins.reset();
-        }
-
-        // make sure the reset worked
-        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.io());
     }
 
     @Test
@@ -539,16 +504,65 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.initNewThreadScheduler(nullResultCallable);
             fail("Should have thrown NullPointerException");
         } catch (NullPointerException npe) {
-            assertEquals("Callable result can't be null", npe.getMessage());
+            assertEquals("Scheduler Callable result can't be null", npe.getMessage());
+        }
+    }
+
+    Callable<Scheduler> unsafeDefault = new Callable<Scheduler>() {
+        @Override
+        public Scheduler call() throws Exception {
+            throw new AssertionError("Default Scheduler instance should not have been evaluated");
+        }
+    };
+
+    @Test
+    public void testDefaultSingleSchedulerIsInitializedLazily() {
+        // unsafe default Scheduler Callable should not be evaluated
+        try {
+            RxJavaPlugins.setInitSingleSchedulerHandler(initReplaceWithImmediate);
+            RxJavaPlugins.initSingleScheduler(unsafeDefault);
+        } finally {
+            RxJavaPlugins.reset();
         }
 
-        // fail when Callable result is null and initHandler set
+        // make sure the reset worked
+        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.single());
+    }
+
+    @Test
+    public void testDefaultIoSchedulerIsInitializedLazily() {
+        // unsafe default Scheduler Callable should not be evaluated
         try {
-            RxJavaPlugins.setInitNewThreadSchedulerHandler(replaceWithImmediate);
-            RxJavaPlugins.initNewThreadScheduler(nullResultCallable);
-            fail("Should have thrown NullPointerException");
-        } catch (NullPointerException npe) {
-            assertEquals("Callable result can't be null", npe.getMessage());
+            RxJavaPlugins.setInitIoSchedulerHandler(initReplaceWithImmediate);
+            RxJavaPlugins.initIoScheduler(unsafeDefault);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+
+        // make sure the reset worked
+        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.io());
+    }
+
+    @Test
+    public void testDefaultComputationSchedulerIsInitializedLazily() {
+        // unsafe default Scheduler Callable should not be evaluated
+        try {
+            RxJavaPlugins.setInitComputationSchedulerHandler(initReplaceWithImmediate);
+            RxJavaPlugins.initComputationScheduler(unsafeDefault);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+
+        // make sure the reset worked
+        assertNotSame(ImmediateThinScheduler.INSTANCE, Schedulers.computation());
+    }
+
+    @Test
+    public void testDefaultNewThreadSchedulerIsInitializedLazily() {
+        // unsafe default Scheduler Callable should not be evaluated
+        try {
+            RxJavaPlugins.setInitNewThreadSchedulerHandler(initReplaceWithImmediate);
+            RxJavaPlugins.initNewThreadScheduler(unsafeDefault);
         } finally {
             RxJavaPlugins.reset();
         }
