@@ -269,6 +269,11 @@ public class FlowableTakeUntilTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
 
+        until.onNext(5);
+
+        ts.assertComplete();
+        ts.assertNoErrors();
+
         assertFalse("Until still has observers", until.hasSubscribers());
         assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
     }
