@@ -15,7 +15,7 @@
  */
 
 /**
- * Classes supporting the Observable base reactive class: blocking, connectable and grouped
- * flowables.
+ * Classes supporting the Observable base reactive class: connectable and grouped
+ * observables.
  */
 package io.reactivex.observables;

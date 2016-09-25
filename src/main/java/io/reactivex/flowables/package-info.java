@@ -15,7 +15,7 @@
  */
 
 /**
- * Classes supporting the Flowable base reactive class: blocking, connectable and grouped
+ * Classes supporting the Flowable base reactive class: connectable and grouped
  * flowables.
  */
 package io.reactivex.flowables;
