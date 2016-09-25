@@ -252,6 +252,8 @@ public class FlowableTakeUntilTest {
         assertFalse("Until still has observers", until.hasSubscribers());
         assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
     }
+
+    @Test
     public void testBackpressure() {
         PublishProcessor<Integer> until = PublishProcessor.create();
 

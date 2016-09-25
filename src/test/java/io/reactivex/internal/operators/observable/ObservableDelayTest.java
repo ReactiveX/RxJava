@@ -789,6 +789,7 @@ public class ObservableDelayTest {
         ts.assertNotComplete();
     }
 
+    @Test
     public void testDelaySupplierSimple() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 

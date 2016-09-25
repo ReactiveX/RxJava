@@ -182,6 +182,7 @@ public class FlowableTests {
         verify(wo, times(1)).onError(any(RuntimeException.class));
     }
 
+    @Test
     public void testTakeFirstWithPredicateOfSome() {
         Flowable<Integer> observable = Flowable.just(1, 3, 5, 4, 6, 3);
         observable.takeFirst(IS_EVEN).subscribe(w);
