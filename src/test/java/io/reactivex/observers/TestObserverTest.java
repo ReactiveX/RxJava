@@ -178,7 +178,7 @@ public class TestObserverTest {
         to.onNext(1);
 
         try {
-            to.assertValue(null);
+            to.assertValue((Integer) null);
         } catch (AssertionError ex) {
             // this is expected
             return;
@@ -1204,5 +1204,63 @@ public class TestObserverTest {
         .assertFuseable()
         .assertFusionMode(QueueDisposable.ASYNC)
         .assertResult(1);
+    }
+
+    @Test
+    public void assertValuePredicateEmpty() {
+        TestObserver<Object> ts = new TestObserver<Object>();
+
+        Observable.empty().subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("No values");
+        ts.assertValue(new Predicate<Object>() {
+            @Override public boolean test(final Object o) throws Exception {
+                return false;
+            }
+        });
+    }
+
+    @Test
+    public void assertValuePredicateMatch() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        Observable.just(1).subscribe(ts);
+
+        ts.assertValue(new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o == 1;
+            }
+        });
+    }
+
+    @Test
+    public void assertValuePredicateNoMatch() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        Observable.just(1).subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Value not present");
+        ts.assertValue(new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o != 1;
+            }
+        });
+    }
+
+    @Test
+    public void assertValuePredicateMatchButMore() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        Observable.just(1, 2).subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Value present but other values as well");
+        ts.assertValue(new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o == 1;
+            }
+        });
     }
 }
