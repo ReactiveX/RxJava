@@ -593,15 +593,12 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
 
         boolean found = false;
 
-        for (T value : values) {
-            try {
-                if (valuePredicate.test(value)) {
-                    found = true;
-                    break;
-                }
-            } catch (Exception ex) {
-                throw ExceptionHelper.wrapOrThrow(ex);
+        try {
+            if (valuePredicate.test(values.get(0))) {
+                found = true;
             }
+        } catch (Exception ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
 
         if (found) {
