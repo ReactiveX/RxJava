@@ -708,4 +708,27 @@ public class PublishSubjectTest {
         ts.assertResult(1, 2);
     }
 
+    @Test
+    public void onNextNull() {
+        final PublishSubject<Object> s = PublishSubject.create();
+
+        s.onNext(null);
+
+        s.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNull() {
+        final PublishSubject<Object> s = PublishSubject.create();
+
+        s.onError(null);
+
+        s.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
 }

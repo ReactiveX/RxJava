@@ -129,11 +129,11 @@ public class UnicastSubjectTest {
 
     @Test
     public void onNextNull() {
-        final UnicastSubject<Object> up = UnicastSubject.create();
+        final UnicastSubject<Object> s = UnicastSubject.create();
 
-        up.onNext(null);
+        s.onNext(null);
 
-        up.test()
+        s.test()
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
@@ -141,11 +141,11 @@ public class UnicastSubjectTest {
 
     @Test
     public void onErrorNull() {
-        final UnicastSubject<Object> up = UnicastSubject.create();
+        final UnicastSubject<Object> s = UnicastSubject.create();
 
-        up.onError(null);
+        s.onError(null);
 
-        up.test()
+        s.test()
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
