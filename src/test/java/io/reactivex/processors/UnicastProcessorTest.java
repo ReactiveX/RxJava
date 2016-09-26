@@ -129,11 +129,11 @@ public class UnicastProcessorTest {
 
     @Test
     public void onNextNull() {
-        final UnicastProcessor<Object> up = UnicastProcessor.create();
+        final UnicastProcessor<Object> p = UnicastProcessor.create();
 
-        up.onNext(null);
+        p.onNext(null);
 
-        up.test()
+        p.test()
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
@@ -141,11 +141,11 @@ public class UnicastProcessorTest {
 
     @Test
     public void onErrorNull() {
-        final UnicastProcessor<Object> up = UnicastProcessor.create();
+        final UnicastProcessor<Object> p = UnicastProcessor.create();
 
-        up.onError(null);
+        p.onError(null);
 
-        up.test()
+        p.test()
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");

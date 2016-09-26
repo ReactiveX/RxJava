@@ -929,4 +929,27 @@ public class ReplaySubjectTest {
         assertNull(rp.getValues(new Integer[2])[0]);
     }
 
+    @Test
+    public void onNextNull() {
+        final ReplaySubject<Object> s = ReplaySubject.create();
+
+        s.onNext(null);
+
+        s.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNull() {
+        final ReplaySubject<Object> s = ReplaySubject.create();
+
+        s.onError(null);
+
+        s.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
 }

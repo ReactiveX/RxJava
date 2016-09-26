@@ -420,4 +420,27 @@ public class AsyncSubjectTest {
         .assertResult(1);
     }
 
+    @Test
+    public void onNextNull() {
+        final AsyncSubject<Object> s = AsyncSubject.create();
+
+        s.onNext(null);
+
+        s.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNull() {
+        final AsyncSubject<Object> s = AsyncSubject.create();
+
+        s.onError(null);
+
+        s.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
 }

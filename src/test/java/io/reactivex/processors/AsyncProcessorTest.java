@@ -419,4 +419,28 @@ public class AsyncProcessorTest {
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
         .assertResult(1);
     }
+
+    @Test
+    public void onNextNull() {
+        final AsyncProcessor<Object> p = AsyncProcessor.create();
+
+        p.onNext(null);
+
+        p.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNull() {
+        final AsyncProcessor<Object> p = AsyncProcessor.create();
+
+        p.onError(null);
+
+        p.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
 }

@@ -559,4 +559,28 @@ public class BehaviorProcessorTest {
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
     }
+
+    @Test
+    public void onNextNull() {
+        final BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+        p.onNext(null);
+
+        p.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNull() {
+        final BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+        p.onError(null);
+
+        p.test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
 }
