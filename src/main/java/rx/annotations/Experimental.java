@@ -36,6 +36,5 @@ import java.lang.annotation.Target;
         ElementType.METHOD,
         ElementType.TYPE })
 @Documented
-@Experimental
 public @interface Experimental {
 }
