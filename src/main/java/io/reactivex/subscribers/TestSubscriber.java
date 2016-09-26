@@ -21,6 +21,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
+import io.reactivex.observers.BaseTestConsumer;
 
 /**
  * A subscriber that records events and allows making assertions about them.
