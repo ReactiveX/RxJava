@@ -13,6 +13,7 @@
 
 package io.reactivex.schedulers;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
 import io.reactivex.Scheduler;
@@ -44,16 +45,52 @@ public final class Schedulers {
 
     static final Scheduler NEW_THREAD;
 
+    static final class SingleHolder {
+        static final Scheduler DEFAULT = new SingleScheduler();
+    }
+
+    static final class ComputationHolder {
+        static final Scheduler DEFAULT = new ComputationScheduler();
+    }
+
+    static final class IoHolder {
+        static final Scheduler DEFAULT = new IoScheduler();
+    }
+
+    static final class NewThreadHolder {
+        static final Scheduler DEFAULT = NewThreadScheduler.instance();
+    }
+
     static {
-        SINGLE = RxJavaPlugins.initSingleScheduler(new SingleScheduler());
+        SINGLE = RxJavaPlugins.initSingleScheduler(new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return SingleHolder.DEFAULT;
+            }
+        });
 
-        COMPUTATION = RxJavaPlugins.initComputationScheduler(new ComputationScheduler());
+        COMPUTATION = RxJavaPlugins.initComputationScheduler(new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return ComputationHolder.DEFAULT;
+            }
+        });
 
-        IO = RxJavaPlugins.initIoScheduler(new IoScheduler());
+        IO = RxJavaPlugins.initIoScheduler(new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return IoHolder.DEFAULT;
+            }
+        });
 
         TRAMPOLINE = TrampolineScheduler.instance();
 
-        NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(NewThreadScheduler.instance());
+        NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(new Callable<Scheduler>() {
+            @Override
+            public Scheduler call() throws Exception {
+                return NewThreadHolder.DEFAULT;
+            }
+        });
     }
 
     /** Utility class. */

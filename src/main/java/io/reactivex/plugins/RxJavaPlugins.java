@@ -13,7 +13,9 @@
 package io.reactivex.plugins;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.Callable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
@@ -31,13 +33,13 @@ public final class RxJavaPlugins {
 
     static volatile Function<Runnable, Runnable> onScheduleHandler;
 
-    static volatile Function<Scheduler, Scheduler> onInitComputationHandler;
+    static volatile Function<Callable<Scheduler>, Scheduler> onInitComputationHandler;
 
-    static volatile Function<Scheduler, Scheduler> onInitSingleHandler;
+    static volatile Function<Callable<Scheduler>, Scheduler> onInitSingleHandler;
 
-    static volatile Function<Scheduler, Scheduler> onInitIoHandler;
+    static volatile Function<Callable<Scheduler>, Scheduler> onInitIoHandler;
 
-    static volatile Function<Scheduler, Scheduler> onInitNewThreadHandler;
+    static volatile Function<Callable<Scheduler>, Scheduler> onInitNewThreadHandler;
 
     static volatile Function<Scheduler, Scheduler> onComputationHandler;
 
@@ -121,7 +123,7 @@ public final class RxJavaPlugins {
      * Returns the current hook function.
      * @return the hook function, may be null
      */
-    public static Function<Scheduler, Scheduler> getInitComputationSchedulerHandler() {
+    public static Function<Callable<Scheduler>, Scheduler> getInitComputationSchedulerHandler() {
         return onInitComputationHandler;
     }
 
@@ -129,7 +131,7 @@ public final class RxJavaPlugins {
      * Returns the current hook function.
      * @return the hook function, may be null
      */
-    public static Function<Scheduler, Scheduler> getInitIoSchedulerHandler() {
+    public static Function<Callable<Scheduler>, Scheduler> getInitIoSchedulerHandler() {
         return onInitIoHandler;
     }
 
@@ -137,7 +139,7 @@ public final class RxJavaPlugins {
      * Returns the current hook function.
      * @return the hook function, may be null
      */
-    public static Function<Scheduler, Scheduler> getInitNewThreadSchedulerHandler() {
+    public static Function<Callable<Scheduler>, Scheduler> getInitNewThreadSchedulerHandler() {
         return onInitNewThreadHandler;
     }
 
@@ -145,7 +147,7 @@ public final class RxJavaPlugins {
      * Returns the current hook function.
      * @return the hook function, may be null
      */
-    public static Function<Scheduler, Scheduler> getInitSingleSchedulerHandler() {
+    public static Function<Callable<Scheduler>, Scheduler> getInitSingleSchedulerHandler() {
         return onInitSingleHandler;
     }
 
@@ -183,54 +185,62 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler the hook's input value
-     * @return the value returned by the hook
+     * @param defaultScheduler a {@link Callable} which returns the hook's input value
+     * @return the value returned by the hook, not null
+     * @throws NullPointerException if the callable parameter or its result are null
      */
-    public static Scheduler initComputationScheduler(Scheduler defaultScheduler) {
-        Function<Scheduler, Scheduler> f = onInitComputationHandler;
+    public static Scheduler initComputationScheduler(Callable<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
+        Function<Callable<Scheduler>, Scheduler> f = onInitComputationHandler;
         if (f == null) {
-            return defaultScheduler;
+            return callRequireNonNull(defaultScheduler);
         }
-        return apply(f, defaultScheduler); // JIT will skip this
+        return applyRequireNonNull(f, defaultScheduler); // JIT will skip this
     }
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler the hook's input value
-     * @return the value returned by the hook
+     * @param defaultScheduler a {@link Callable} which returns the hook's input value
+     * @return the value returned by the hook, not null
+     * @throws NullPointerException if the callable parameter or its result are null
      */
-    public static Scheduler initIoScheduler(Scheduler defaultScheduler) {
-        Function<Scheduler, Scheduler> f = onInitIoHandler;
+    public static Scheduler initIoScheduler(Callable<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
+        Function<Callable<Scheduler>, Scheduler> f = onInitIoHandler;
         if (f == null) {
-            return defaultScheduler;
+            return callRequireNonNull(defaultScheduler);
         }
-        return apply(f, defaultScheduler);
+        return applyRequireNonNull(f, defaultScheduler);
     }
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler the hook's input value
-     * @return the value returned by the hook
+     * @param defaultScheduler a {@link Callable} which returns the hook's input value
+     * @return the value returned by the hook, not null
+     * @throws NullPointerException if the callable parameter or its result are null
      */
-    public static Scheduler initNewThreadScheduler(Scheduler defaultScheduler) {
-        Function<Scheduler, Scheduler> f = onInitNewThreadHandler;
+    public static Scheduler initNewThreadScheduler(Callable<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
+        Function<Callable<Scheduler>, Scheduler> f = onInitNewThreadHandler;
         if (f == null) {
-            return defaultScheduler;
+            return callRequireNonNull(defaultScheduler);
         }
-        return apply(f, defaultScheduler);
+        return applyRequireNonNull(f, defaultScheduler);
     }
 
     /**
      * Calls the associated hook function.
-     * @param defaultScheduler the hook's input value
-     * @return the value returned by the hook
+     * @param defaultScheduler a {@link Callable} which returns the hook's input value
+     * @return the value returned by the hook, not null
+     * @throws NullPointerException if the callable parameter or its result are null
      */
-    public static Scheduler initSingleScheduler(Scheduler defaultScheduler) {
-        Function<Scheduler, Scheduler> f = onInitSingleHandler;
+    public static Scheduler initSingleScheduler(Callable<Scheduler> defaultScheduler) {
+        ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
+        Function<Callable<Scheduler>, Scheduler> f = onInitSingleHandler;
         if (f == null) {
-            return defaultScheduler;
+            return callRequireNonNull(defaultScheduler);
         }
-        return apply(f, defaultScheduler);
+        return applyRequireNonNull(f, defaultScheduler);
     }
 
     /**
@@ -392,9 +402,9 @@ public final class RxJavaPlugins {
 
     /**
      * Sets the specific hook function.
-     * @param handler the hook function to set, null allowed
+     * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitComputationSchedulerHandler(Function<Scheduler, Scheduler> handler) {
+    public static void setInitComputationSchedulerHandler(Function<Callable<Scheduler>, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -403,9 +413,9 @@ public final class RxJavaPlugins {
 
     /**
      * Sets the specific hook function.
-     * @param handler the hook function to set, null allowed
+     * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitIoSchedulerHandler(Function<Scheduler, Scheduler> handler) {
+    public static void setInitIoSchedulerHandler(Function<Callable<Scheduler>, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -414,9 +424,9 @@ public final class RxJavaPlugins {
 
     /**
      * Sets the specific hook function.
-     * @param handler the hook function to set, null allowed
+     * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitNewThreadSchedulerHandler(Function<Scheduler, Scheduler> handler) {
+    public static void setInitNewThreadSchedulerHandler(Function<Callable<Scheduler>, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -425,9 +435,9 @@ public final class RxJavaPlugins {
 
     /**
      * Sets the specific hook function.
-     * @param handler the hook function to set, null allowed
+     * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitSingleSchedulerHandler(Function<Scheduler, Scheduler> handler) {
+    public static void setInitSingleSchedulerHandler(Function<Callable<Scheduler>, Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -950,6 +960,33 @@ public final class RxJavaPlugins {
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
+    }
+
+    /**
+     * Wraps the call to the Scheduler creation callable in try-catch and propagates thrown
+     * checked exceptions as RuntimeException and enforces that result is not null.
+     * @param s the {@link Callable} which returns a {@link Scheduler}, not null (not verified). Cannot return null
+     * @return the result of the callable call, not null
+     * @throws NullPointerException if the callable parameter returns null
+     */
+    static Scheduler callRequireNonNull(Callable<Scheduler> s) {
+        try {
+            return ObjectHelper.requireNonNull(s.call(), "Scheduler Callable result can't be null");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
+    }
+
+    /**
+     * Wraps the call to the Scheduler creation function in try-catch and propagates thrown
+     * checked exceptions as RuntimeException and enforces that result is not null.
+     * @param f the function to call, not null (not verified). Cannot return null
+     * @param s the parameter value to the function
+     * @return the result of the function call, not null
+     * @throws NullPointerException if the function parameter returns null
+     */
+    static Scheduler applyRequireNonNull(Function<Callable<Scheduler>, Scheduler> f, Callable<Scheduler> s) {
+        return ObjectHelper.requireNonNull(apply(f, s), "Scheduler Callable result can't be null");
     }
 
     /** Helper class, no instances. */
