@@ -21,18 +21,18 @@ import org.reactivestreams.*;
 import io.reactivex.disposables.Disposable;
 
 /**
- * A multi-type asynchronous consumer. 
+ * A multi-type asynchronous consumer.
  */
 public final class PerfAsyncConsumer extends CountDownLatch implements Subscriber<Object>, Observer<Object>,
 SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
 
     final Blackhole bh;
-    
+
     public PerfAsyncConsumer(Blackhole bh) {
         super(1);
         this.bh = bh;
     }
-    
+
     @Override
     public void onSuccess(Object value) {
         bh.consume(value);
@@ -64,14 +64,14 @@ SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
         bh.consume(true);
         countDown();
     }
-    
+
     /**
      * Wait for the terminal signal.
      * @param count if less than 1001, a spin-wait is used
      */
     public void await(int count) {
         if (count <= 1000) {
-            while (getCount() != 0) ;
+            while (getCount() != 0) { }
         } else {
             try {
                 await();

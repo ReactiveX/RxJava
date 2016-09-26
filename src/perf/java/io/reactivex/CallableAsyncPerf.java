@@ -30,53 +30,53 @@ import io.reactivex.schedulers.Schedulers;
 public class CallableAsyncPerf {
 
     Flowable<Integer> subscribeOnFlowable;
-    
+
     Flowable<Integer> observeOnFlowable;
 
     Flowable<Integer> pipelineFlowable;
 
     Observable<Integer> subscribeOnObservable;
-    
+
     Observable<Integer> observeOnObservable;
 
     Observable<Integer> pipelineObservable;
 
     Single<Integer> observeOnSingle;
-    
+
     Single<Integer> subscribeOnSingle;
 
     Single<Integer> pipelineSingle;
 
     Completable observeOnCompletable;
-    
+
     Completable subscribeOnCompletable;
 
     Completable pipelineCompletable;
 
     Maybe<Integer> observeOnMaybe;
-    
+
     Maybe<Integer> subscribeOnMaybe;
-    
+
     Maybe<Integer> pipelineMaybe;
 
     @Setup
     public void setup() {
-        
+
         Scheduler s = Schedulers.single();
-        
+
         Scheduler s2 = new SingleScheduler();
-        
+
         Callable<Integer> c = new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
                 return 1;
             }
         };
-        
+
         subscribeOnFlowable = Flowable.fromCallable(c).subscribeOn(s);
-        
+
         observeOnFlowable = Flowable.fromCallable(c).observeOn(s);
-        
+
         pipelineFlowable = Flowable.fromCallable(c).subscribeOn(s).observeOn(s2);
 
         // ----
@@ -86,11 +86,11 @@ public class CallableAsyncPerf {
         observeOnObservable = Observable.fromCallable(c).observeOn(s);
 
         pipelineObservable = Observable.fromCallable(c).subscribeOn(s).observeOn(s2);
-        
+
         // ----
 
         observeOnSingle = Single.fromCallable(c).observeOn(s);
-        
+
         subscribeOnSingle = Single.fromCallable(c).subscribeOn(s);
 
         pipelineSingle = Single.fromCallable(c).subscribeOn(s).observeOn(s2);
@@ -98,15 +98,15 @@ public class CallableAsyncPerf {
         // ----
 
         observeOnCompletable = Completable.fromCallable(c).observeOn(s);
-        
+
         subscribeOnCompletable = Completable.fromCallable(c).subscribeOn(s);
 
         pipelineCompletable = Completable.fromCallable(c).subscribeOn(s).observeOn(s2);
 
         // ----
-        
+
         observeOnMaybe = Maybe.fromCallable(c).observeOn(s);
-        
+
         subscribeOnMaybe = Maybe.fromCallable(c).subscribeOn(s);
 
         pipelineMaybe = Maybe.fromCallable(c).subscribeOn(s).observeOn(s2);
@@ -116,7 +116,7 @@ public class CallableAsyncPerf {
     public void subscribeOnFlowable(Blackhole bh) {
         subscribeOnFlowable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     }
-    
+
     @Benchmark
     public void observeOnFlowable(Blackhole bh) {
         observeOnFlowable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
@@ -131,7 +131,7 @@ public class CallableAsyncPerf {
     public void subscribeOnObservable(Blackhole bh) {
         subscribeOnObservable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     };
-    
+
     @Benchmark
     public void observeOnObservable(Blackhole bh) {
         observeOnObservable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
@@ -146,7 +146,7 @@ public class CallableAsyncPerf {
     public void observeOnSingle(Blackhole bh) {
         observeOnSingle.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     };
-    
+
     @Benchmark
     public void subscribeOnSingle(Blackhole bh) {
         subscribeOnSingle.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
@@ -161,7 +161,7 @@ public class CallableAsyncPerf {
     public void observeOnCompletable(Blackhole bh) {
         observeOnCompletable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     };
-    
+
     @Benchmark
     public void subscribeOnCompletable(Blackhole bh) {
         subscribeOnCompletable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
@@ -176,12 +176,12 @@ public class CallableAsyncPerf {
     public void observeOnMaybe(Blackhole bh) {
         observeOnMaybe.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     };
-    
+
     @Benchmark
     public void subscribeOnMaybe(Blackhole bh) {
         subscribeOnMaybe.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     };
-    
+
     @Benchmark
     public void pipelineMaybe(Blackhole bh) {
         pipelineMaybe.subscribeWith(new PerfAsyncConsumer(bh)).await(1);

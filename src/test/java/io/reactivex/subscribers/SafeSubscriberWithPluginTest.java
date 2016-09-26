@@ -231,11 +231,11 @@ public class SafeSubscriberWithPluginTest {
             }
         });
 
-        final AtomicInteger errors = new AtomicInteger();
+        final AtomicInteger errorCount = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onError(Throwable e) {
-                errors.incrementAndGet();
+                errorCount.incrementAndGet();
             }
         };
         final RuntimeException ex = new RuntimeException();
@@ -272,7 +272,7 @@ public class SafeSubscriberWithPluginTest {
             }
         });
 
-        final AtomicInteger errors = new AtomicInteger();
+        final AtomicInteger errorCount = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
 
             @Override
@@ -282,7 +282,7 @@ public class SafeSubscriberWithPluginTest {
 
             @Override
             public void onError(Throwable e) {
-                errors.incrementAndGet();
+                errorCount.incrementAndGet();
             }
         };
         SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);

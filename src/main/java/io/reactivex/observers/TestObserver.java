@@ -12,20 +12,14 @@
  */
 package io.reactivex.observers;
 
-import java.util.*;
-import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.*;
 
 /**
  * An Observer that records events and allows making assertions about them.
@@ -37,28 +31,14 @@ import io.reactivex.internal.util.ExceptionHelper;
  *
  * @param <T> the value type
  */
-public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, CompletableObserver {
+public class TestObserver<T>
+extends BaseTestConsumer<T, TestObserver<T>>
+implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, CompletableObserver {
     /** The actual observer to forward events to. */
     private final Observer<? super T> actual;
-    /** The latch that indicates an onError or onComplete has been called. */
-    private final CountDownLatch done;
-    /** The list of values received. */
-    private final List<T> values;
-    /** The list of errors received. */
-    private final List<Throwable> errors;
-    /** The number of completions. */
-    private long completions;
-    /** The last thread seen by the observer. */
-    private Thread lastThread;
 
     /** Holds the current subscription if any. */
     private final AtomicReference<Disposable> subscription = new AtomicReference<Disposable>();
-
-    private boolean checkSubscriptionOnce;
-
-    private int initialFusionMode;
-
-    private int establishedFusionMode;
 
     private QueueDisposable<T> qs;
 
@@ -94,9 +74,6 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
      */
     public TestObserver(Observer<? super T> actual) {
         this.actual = actual;
-        this.values = new ArrayList<T>();
-        this.errors = new ArrayList<Throwable>();
-        this.done = new CountDownLatch(1);
     }
 
     @SuppressWarnings("unchecked")
@@ -252,63 +229,6 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
     }
 
     // state retrieval methods
-
-    /**
-     * Returns the last thread which called the onXXX methods of this TestObserver.
-     * @return the last thread which called the onXXX methods
-     */
-    public final Thread lastThread() {
-        return lastThread;
-    }
-
-    /**
-     * Returns a shared list of received onNext values.
-     * @return a list of received onNext values
-     */
-    public final List<T> values() {
-        return values;
-    }
-
-    /**
-     * Returns a shared list of received onError exceptions.
-     * @return a list of received events onError exceptions
-     */
-    public final List<Throwable> errors() {
-        return errors;
-    }
-
-    /**
-     * Returns the number of times onComplete was called.
-     * @return the number of times onComplete was called
-     */
-    public final long completions() {
-        return completions;
-    }
-
-    /**
-     * Returns true if TestObserver received any onError or onComplete events.
-     * @return true if TestObserver received any onError or onComplete events
-     */
-    public final boolean isTerminated() {
-        return done.getCount() == 0;
-    }
-
-    /**
-     * Returns the number of onNext values received.
-     * @return the number of onNext values received
-     */
-    public final int valueCount() {
-        return values.size();
-    }
-
-    /**
-     * Returns the number of onError exceptions received.
-     * @return the number of onError exceptions received
-     */
-    public final int errorCount() {
-        return errors.size();
-    }
-
     /**
      * Returns true if this TestObserver received a subscription.
      * @return true if this TestObserver received a subscription
@@ -318,402 +238,10 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
     }
 
     /**
-     * Awaits until this TestObserver receives an onError or onComplete events.
-     * @return this
-     * @throws InterruptedException if the current thread is interrupted while waiting
-     * @see #awaitTerminalEvent()
-     */
-    public final TestObserver<T> await() throws InterruptedException {
-        if (done.getCount() == 0) {
-            return this;
-        }
-
-        done.await();
-        return this;
-    }
-
-    /**
-     * Awaits the specified amount of time or until this TestObserver
-     * receives an onError or onComplete events, whichever happens first.
-     * @param time the waiting time
-     * @param unit the time unit of the waiting time
-     * @return true if the TestObserver terminated, false if timeout happened
-     * @throws InterruptedException if the current thread is interrupted while waiting
-     * @see #awaitTerminalEvent(long, TimeUnit)
-     */
-    public final boolean await(long time, TimeUnit unit) throws InterruptedException {
-        return done.getCount() == 0 || done.await(time, unit);
-    }
-
-    // assertion methods
-
-    /**
-     * Fail with the given message and add the sequence of errors as suppressed ones.
-     * <p>Note this is deliberately the only fail method. Most of the times an assertion
-     * would fail but it is possible it was due to an exception somewhere. This construct
-     * will capture those potential errors and report it along with the original failure.
-     *
-     * @param message the message to use
-     */
-    private AssertionError fail(String message) {
-        StringBuilder b = new StringBuilder(64 + message.length());
-        b.append(message);
-
-        b.append(" (")
-        .append("latch = ").append(done.getCount()).append(", ")
-        .append("values = ").append(values.size()).append(", ")
-        .append("errors = ").append(errors.size()).append(", ")
-        .append("completions = ").append(completions)
-        .append(')')
-        ;
-
-        AssertionError ae = new AssertionError(b.toString());
-        CompositeException ce = new CompositeException();
-        for (Throwable e : errors) {
-            ce.suppress(e);
-        }
-        if (!ce.isEmpty()) {
-            ae.initCause(ce);
-        }
-        return ae;
-    }
-
-    /**
-     * Assert that this TestObserver received exactly one onComplete event.
-     * @return this;
-     */
-    public final TestObserver<T> assertComplete() {
-        long c = completions;
-        if (c == 0) {
-            throw fail("Not completed");
-        } else
-        if (c > 1) {
-            throw fail("Multiple completions: " + c);
-        }
-        return this;
-    }
-
-    /**
-     * Assert that this TestObserver has not received any onComplete event.
-     * @return this;
-     */
-    public final TestObserver<T> assertNotComplete() {
-        long c = completions;
-        if (c == 1) {
-            throw fail("Completed!");
-        } else
-        if (c > 1) {
-            throw fail("Multiple completions: " + c);
-        }
-        return this;
-    }
-
-    /**
-     * Assert that this TestObserver has not received any onError event.
-     * @return this;
-     */
-    public final TestObserver<T> assertNoErrors() {
-        int s = errors.size();
-        if (s != 0) {
-            throw fail("Error(s) present: " + errors);
-        }
-        return this;
-    }
-
-    /**
-     * Assert that this TestObserver received exactly the specified onError event value.
-     *
-     * <p>The comparison is performed via Objects.equals(); since most exceptions don't
-     * implement equals(), this assertion may fail. Use the {@link #assertError(Class)}
-     * overload to test against the class of an error instead of an instance of an error
-     * or {@link #assertError(Predicate)} to test with different condition.
-     * @param error the error to check
-     * @return this;
-     * @see #assertError(Class)
-     * @see #assertError(Predicate)
-     */
-    public final TestObserver<T> assertError(Throwable error) {
-        int s = errors.size();
-        if (s == 0) {
-            throw fail("No errors");
-        }
-        if (errors.contains(error)) {
-            if (s != 1) {
-                throw fail("Error present but other errors as well");
-            }
-        } else {
-            throw fail("Error not present");
-        }
-        return this;
-    }
-
-    /**
-     * Asserts that this TestObserver received exactly one onError event which is an
-     * instance of the specified errorClass class.
-     * @param errorClass the error class to expect
-     * @return this;
-     */
-    public final TestObserver<T> assertError(Class<? extends Throwable> errorClass) {
-        int s = errors.size();
-        if (s == 0) {
-            throw fail("No errors");
-        }
-
-        boolean found = false;
-
-        for (Throwable e : errors) {
-            if (errorClass.isInstance(e)) {
-                found = true;
-                break;
-            }
-        }
-
-        if (found) {
-            if (s != 1) {
-                throw fail("Error present but other errors as well");
-            }
-        } else {
-            throw fail("Error not present");
-        }
-        return this;
-    }
-
-    /**
-     * Asserts that this TestObserver received exactly one onError event for which
-     * the provided predicate returns true.
-     * @param errorPredicate
-     *            the predicate that receives the error Throwable
-     *            and should return true for expected errors.
-     * @return this
-     */
-    public final TestObserver<T> assertError(Predicate<Throwable> errorPredicate) {
-        int s = errors.size();
-        if (s == 0) {
-            throw fail("No errors");
-        }
-
-        boolean found = false;
-
-        for (Throwable e : errors) {
-            try {
-                if (errorPredicate.test(e)) {
-                    found = true;
-                    break;
-                }
-            } catch (Exception ex) {
-                throw ExceptionHelper.wrapOrThrow(ex);
-            }
-        }
-
-        if (found) {
-            if (s != 1) {
-                throw fail("Error present but other errors as well");
-            }
-        } else {
-            throw fail("Error not present");
-        }
-        return this;
-    }
-
-    /**
-     * Assert that this TestObserver received exactly one onNext value which is equal to
-     * the given value with respect to Objects.equals.
-     * @param value the value to expect
-     * @return this;
-     */
-    public final TestObserver<T> assertValue(T value) {
-        int s = values.size();
-        if (s != 1) {
-            throw fail("Expected: " + valueAndClass(value) + ", Actual: " + values);
-        }
-        T v = values.get(0);
-        if (!ObjectHelper.equals(value, v)) {
-            throw fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
-        }
-        return this;
-    }
-
-    /**
-     * Asserts that this TestObserver received exactly one onNext value for which
-     * the provided predicate returns true.
-     * @param valuePredicate
-     *            the predicate that receives the onNext value
-     *            and should return true for the expected value.
-     * @return this
-     */
-    public final TestObserver<T> assertValue(Predicate<T> valuePredicate) {
-        int s = values.size();
-        if (s == 0) {
-            throw fail("No values");
-        }
-
-        boolean found = false;
-
-        try {
-            if (valuePredicate.test(values.get(0))) {
-                found = true;
-            }
-        } catch (Exception ex) {
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
-
-        if (found) {
-            if (s != 1) {
-                throw fail("Value present but other values as well");
-            }
-        } else {
-            throw fail("Value not present");
-        }
-        return this;
-    }
-
-    /** Appends the class name to a non-null value. */
-    static String valueAndClass(Object o) {
-        if (o != null) {
-            return o + " (class: " + o.getClass().getSimpleName() + ")";
-        }
-        return "null";
-    }
-
-    /**
-     * Assert that this TestObserver received the specified number onNext events.
-     * @param count the expected number of onNext events
-     * @return this;
-     */
-    public final TestObserver<T> assertValueCount(int count) {
-        int s = values.size();
-        if (s != count) {
-            throw fail("Value counts differ; Expected: " + count + ", Actual: " + s);
-        }
-        return this;
-    }
-
-    /**
-     * Assert that this TestObserver has not received any onNext events.
-     * @return this;
-     */
-    public final TestObserver<T> assertNoValues() {
-        return assertValueCount(0);
-    }
-
-    /**
-     * Assert that the TestObserver received only the specified values in the specified order.
-     * @param values the values expected
-     * @return this;
-     * @see #assertValueSet(Collection)
-     */
-    public final TestObserver<T> assertValues(T... values) {
-        int s = this.values.size();
-        if (s != values.length) {
-            throw fail("Value count differs; Expected: " + values.length + " " + Arrays.toString(values)
-            + ", Actual: " + s + " " + this.values);
-        }
-        for (int i = 0; i < s; i++) {
-            T v = this.values.get(i);
-            T u = values[i];
-            if (!ObjectHelper.equals(u, v)) {
-                throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
-            }
-        }
-        return this;
-    }
-
-    /**
-     * Assert that the TestObserver received only the specified values in any order.
-     * <p>This helps asserting when the order of the values is not guaranteed, i.e., when merging
-     * asynchronous streams.
-     *
-     * @param expected the collection of values expected in any order
-     * @return this;
-     */
-    public final TestObserver<T> assertValueSet(Collection<? extends T> expected) {
-        if (expected.isEmpty()) {
-            assertNoValues();
-            return this;
-        }
-        for (T v : this.values) {
-            if (!expected.contains(v)) {
-                throw fail("Value not in the expected collection: " + valueAndClass(v));
-            }
-        }
-        return this;
-    }
-
-    /**
-     * Assert that the TestObserver received only the specified sequence of values in the same order.
-     * @param sequence the sequence of expected values in order
-     * @return this;
-     */
-    public final TestObserver<T> assertValueSequence(Iterable<? extends T> sequence) {
-        int i = 0;
-        Iterator<T> vit = values.iterator();
-        Iterator<? extends T> it = sequence.iterator();
-        boolean actualNext;
-        boolean expectedNext;
-        for (;;) {
-            actualNext = it.hasNext();
-            expectedNext = vit.hasNext();
-
-            if (!actualNext || !expectedNext) {
-                break;
-            }
-
-            T v = it.next();
-            T u = vit.next();
-
-            if (!ObjectHelper.equals(u, v)) {
-                throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
-            }
-            i++;
-        }
-
-        if (actualNext) {
-            throw fail("More values received than expected (" + i + ")");
-        }
-        if (expectedNext) {
-            throw fail("Fever values received than expected (" + i + ")");
-        }
-        return this;
-    }
-
-    /**
-     * Assert that the TestObserver terminated (i.e., the terminal latch reached zero).
-     * @return this;
-     */
-    public final TestObserver<T> assertTerminated() {
-        if (done.getCount() != 0) {
-            throw fail("Subscriber still running!");
-        }
-        long c = completions;
-        if (c > 1) {
-            throw fail("Terminated with multiple completions: " + c);
-        }
-        int s = errors.size();
-        if (s > 1) {
-            throw fail("Terminated with multiple errors: " + s);
-        }
-
-        if (c != 0 && s != 0) {
-            throw fail("Terminated with multiple completions and errors: " + c);
-        }
-        return this;
-    }
-
-    /**
-     * Assert that the TestObserver has not terminated (i.e., the terminal latch is still non-zero).
-     * @return this;
-     */
-    public final TestObserver<T> assertNotTerminated() {
-        if (done.getCount() == 0) {
-            throw fail("Subscriber terminated!");
-        }
-        return this;
-    }
-
-    /**
      * Assert that the onSubscribe method was called exactly once.
      * @return this;
      */
+    @Override
     public final TestObserver<T> assertSubscribed() {
         if (subscription.get() == null) {
             throw fail("Not subscribed!");
@@ -725,6 +253,7 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
      * Assert that the onSubscribe method hasn't been called at all.
      * @return this;
      */
+    @Override
     public final TestObserver<T> assertNotSubscribed() {
         if (subscription.get() != null) {
             throw fail("Subscribed!");
@@ -736,80 +265,17 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
     }
 
     /**
-     * Waits until the any terminal event has been received by this TestObserver
-     * or returns false if the wait has been interrupted.
-     * @return true if the TestObserver terminated, false if the wait has been interrupted
-     */
-    public final boolean awaitTerminalEvent() {
-        try {
-            await();
-            return true;
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            return false;
-        }
-    }
-
-    /**
-     * Awaits the specified amount of time or until this TestObserver
-     * receives an onError or onComplete events, whichever happens first.
-     * @param duration the waiting time
-     * @param unit the time unit of the waiting time
-     * @return true if the TestObserver terminated, false if timeout or interrupt happened
-     */
-    public final boolean awaitTerminalEvent(long duration, TimeUnit unit) {
-        try {
-            return await(duration, unit);
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            return false;
-        }
-    }
-
-    /**
-     * Assert that there is a single error and it has the given message.
-     * @param message the message expected
+     * Run a check consumer with this TestObserver instance.
+     * @param check the check consumer to run
      * @return this
      */
-    public final TestObserver<T> assertErrorMessage(String message) {
-        int s = errors.size();
-        if (s == 0) {
-            throw fail("No errors");
-        } else
-        if (s == 1) {
-            Throwable e = errors.get(0);
-            String errorMessage = e.getMessage();
-            if (!ObjectHelper.equals(message, errorMessage)) {
-                throw fail("Error message differs; Expected: " + message + ", Actual: " + errorMessage);
-            }
-        } else {
-            throw fail("Multiple errors");
+    public final TestObserver<T> assertOf(Consumer<? super TestObserver<T>> check) {
+        try {
+            check.accept(this);
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
         }
         return this;
-    }
-
-    /**
-     * Returns a list of 3 other lists: the first inner list contains the plain
-     * values received; the second list contains the potential errors
-     * and the final list contains the potential completions as Notifications.
-     *
-     * @return a list of (values, errors, completion-notifications)
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public final List<List<Object>> getEvents() {
-        List<List<Object>> result = new ArrayList<List<Object>>();
-
-        result.add((List)values());
-
-        result.add((List)errors());
-
-        List<Object> completeList = new ArrayList<Object>();
-        for (long i = 0; i < completions; i++) {
-            completeList.add(Notification.createOnComplete());
-        }
-        result.add(completeList);
-
-        return result;
     }
 
     /**
@@ -877,116 +343,6 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
             throw new AssertionError("Upstream is fuseable.");
         }
         return this;
-    }
-
-    /**
-     * Run a check consumer with this TestObserver instance.
-     * @param check the check consumer to run
-     * @return this
-     */
-    public final TestObserver<T> assertOf(Consumer<? super TestObserver<T>> check) {
-        try {
-            check.accept(this);
-        } catch (Throwable ex) {
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
-        return this;
-    }
-
-    /**
-     * Assert that the upstream signalled the specified values in order and
-     * completed normally.
-     * @param values the expected values, asserted in order
-     * @return this
-     * @see #assertFailure(Class, Object...)
-     * @see #assertFailure(Predicate, Object...)
-     * @see #assertFailureAndMessage(Class, String, Object...)
-     */
-    public final TestObserver<T> assertResult(T... values) {
-        return assertSubscribed()
-                .assertValues(values)
-                .assertNoErrors()
-                .assertComplete();
-    }
-
-    /**
-     * Assert that the upstream signalled the specified values in order
-     * and then failed with a specific class or subclass of Throwable.
-     * @param error the expected exception (parent) class
-     * @param values the expected values, asserted in order
-     * @return this
-     */
-    public final TestObserver<T> assertFailure(Class<? extends Throwable> error, T... values) {
-        return assertSubscribed()
-                .assertValues(values)
-                .assertError(error)
-                .assertNotComplete();
-    }
-
-    /**
-     * Assert that the upstream signalled the specified values in order and then failed
-     * with a Throwable for which the provided predicate returns true.
-     * @param errorPredicate
-     *            the predicate that receives the error Throwable
-     *            and should return true for expected errors.
-     * @param values the expected values, asserted in order
-     * @return this
-     */
-    public final TestObserver<T> assertFailure(Predicate<Throwable> errorPredicate, T... values) {
-        return assertSubscribed()
-                .assertValues(values)
-                .assertError(errorPredicate)
-                .assertNotComplete();
-    }
-
-    /**
-     * Assert that the upstream signalled the specified values in order,
-     * then failed with a specific class or subclass of Throwable
-     * and with the given exact error message.
-     * @param error the expected exception (parent) class
-     * @param message the expected failure message
-     * @param values the expected values, asserted in order
-     * @return this
-     */
-    public final TestObserver<T> assertFailureAndMessage(Class<? extends Throwable> error,
-            String message, T... values) {
-        return assertSubscribed()
-                .assertValues(values)
-                .assertError(error)
-                .assertErrorMessage(message)
-                .assertNotComplete();
-    }
-
-    /**
-     * Awaits until the internal latch is counted down.
-     * <p>If the wait times out or gets interrupted, the TestObserver is cancelled.
-     * @param time the waiting time
-     * @param unit the time unit of the waiting time
-     * @return this
-     * @throws RuntimeException wrapping an InterruptedException if the wait is interrupted
-     */
-    public final TestObserver<T> awaitDone(long time, TimeUnit unit) {
-        try {
-            if (!done.await(time, unit)) {
-                cancel();
-            }
-        } catch (InterruptedException ex) {
-            cancel();
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
-        return this;
-    }
-
-
-    /**
-     * Assert that the TestObserver has received a Disposable but no other events.
-     * @return this
-     */
-    public final TestObserver<T> assertEmpty() {
-        return assertSubscribed()
-                .assertNoValues()
-                .assertNoErrors()
-                .assertNotComplete();
     }
 
     @Override

@@ -30,46 +30,46 @@ import io.reactivex.schedulers.Schedulers;
 public class JustAsyncPerf {
 
     Flowable<Integer> subscribeOnFlowable;
-    
+
     Flowable<Integer> observeOnFlowable;
 
     Flowable<Integer> pipelineFlowable;
 
     Observable<Integer> subscribeOnObservable;
-    
+
     Observable<Integer> observeOnObservable;
 
     Observable<Integer> pipelineObservable;
 
     Single<Integer> observeOnSingle;
-    
+
     Single<Integer> subscribeOnSingle;
 
     Single<Integer> pipelineSingle;
 
     Completable observeOnCompletable;
-    
+
     Completable subscribeOnCompletable;
 
     Completable pipelineCompletable;
 
     Maybe<Integer> observeOnMaybe;
-    
+
     Maybe<Integer> subscribeOnMaybe;
-    
+
     Maybe<Integer> pipelineMaybe;
 
     @Setup
     public void setup() {
-        
+
         Scheduler s = Schedulers.single();
-        
+
         Scheduler s2 = new SingleScheduler();
-        
+
         subscribeOnFlowable = Flowable.just(1).subscribeOn(s);
-        
+
         observeOnFlowable = Flowable.just(1).observeOn(s);
-        
+
         pipelineFlowable = Flowable.just(1).subscribeOn(s).observeOn(s2);
 
         // ----
@@ -79,11 +79,11 @@ public class JustAsyncPerf {
         observeOnObservable = Observable.just(1).observeOn(s);
 
         pipelineObservable = Observable.just(1).subscribeOn(s).observeOn(s2);
-        
+
         // ----
 
         observeOnSingle = Single.just(1).observeOn(s);
-        
+
         subscribeOnSingle = Single.just(1).subscribeOn(s);
 
         pipelineSingle = Single.just(1).subscribeOn(s).observeOn(s2);
@@ -91,15 +91,15 @@ public class JustAsyncPerf {
         // ----
 
         observeOnCompletable = Completable.complete().observeOn(s);
-        
+
         subscribeOnCompletable = Completable.complete().subscribeOn(s);
 
         pipelineCompletable = Completable.complete().subscribeOn(s).observeOn(s2);
 
         // ----
-        
+
         observeOnMaybe = Maybe.just(1).observeOn(s);
-        
+
         subscribeOnMaybe = Maybe.just(1).subscribeOn(s);
 
         pipelineMaybe = Maybe.just(1).subscribeOn(s).observeOn(s2);
@@ -109,7 +109,7 @@ public class JustAsyncPerf {
     public void subscribeOnFlowable(Blackhole bh) {
         subscribeOnFlowable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     }
-    
+
     @Benchmark
     public void observeOnFlowable(Blackhole bh) {
         observeOnFlowable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
@@ -124,7 +124,7 @@ public class JustAsyncPerf {
     public void subscribeOnObservable(Blackhole bh) {
         subscribeOnObservable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     };
-    
+
     @Benchmark
     public void observeOnObservable(Blackhole bh) {
         observeOnObservable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
@@ -139,7 +139,7 @@ public class JustAsyncPerf {
     public void observeOnSingle(Blackhole bh) {
         observeOnSingle.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     };
-    
+
     @Benchmark
     public void subscribeOnSingle(Blackhole bh) {
         subscribeOnSingle.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
@@ -154,7 +154,7 @@ public class JustAsyncPerf {
     public void observeOnCompletable(Blackhole bh) {
         observeOnCompletable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     };
-    
+
     @Benchmark
     public void subscribeOnCompletable(Blackhole bh) {
         subscribeOnCompletable.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
@@ -169,12 +169,12 @@ public class JustAsyncPerf {
     public void observeOnMaybe(Blackhole bh) {
         observeOnMaybe.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     };
-    
+
     @Benchmark
     public void subscribeOnMaybe(Blackhole bh) {
         subscribeOnMaybe.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
     };
-    
+
     @Benchmark
     public void pipelineMaybe(Blackhole bh) {
         pipelineMaybe.subscribeWith(new PerfAsyncConsumer(bh)).await(1);
