@@ -1592,4 +1592,61 @@ public class TestSubscriberTest {
         .assertFailure(TestException.class);
     }
 
+    @Test
+    public void assertValuePredicateEmpty() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+
+        Flowable.empty().subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("No values");
+        ts.assertValue(new Predicate<Object>() {
+            @Override public boolean test(final Object o) throws Exception {
+                return false;
+            }
+        });
+    }
+
+    @Test
+    public void assertValuePredicateMatch() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        Flowable.just(1).subscribe(ts);
+
+        ts.assertValue(new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o == 1;
+            }
+        });
+    }
+
+    @Test
+    public void assertValuePredicateNoMatch() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        Flowable.just(1).subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Value not present");
+        ts.assertValue(new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o != 1;
+            }
+        });
+    }
+
+    @Test
+    public void assertValuePredicateMatchButMore() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        Flowable.just(1, 2).subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Value present but other values as well");
+        ts.assertValue(new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o == 1;
+            }
+        });
+    }
 }

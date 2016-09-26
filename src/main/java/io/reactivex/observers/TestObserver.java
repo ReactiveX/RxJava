@@ -533,6 +533,40 @@ public class TestObserver<T> implements Observer<T>, Disposable, MaybeObserver<T
         return this;
     }
 
+    /**
+     * Asserts that this TestObserver received exactly one onNext value for which
+     * the provided predicate returns true.
+     * @param valuePredicate
+     *            the predicate that receives the onNext value
+     *            and should return true for the expected value.
+     * @return this
+     */
+    public final TestObserver<T> assertValue(Predicate<T> valuePredicate) {
+        int s = values.size();
+        if (s == 0) {
+            throw fail("No values");
+        }
+
+        boolean found = false;
+
+        try {
+            if (valuePredicate.test(values.get(0))) {
+                found = true;
+            }
+        } catch (Exception ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
+
+        if (found) {
+            if (s != 1) {
+                throw fail("Value present but other values as well");
+            }
+        } else {
+            throw fail("Value not present");
+        }
+        return this;
+    }
+
     /** Appends the class name to a non-null value. */
     static String valueAndClass(Object o) {
         if (o != null) {
