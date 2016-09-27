@@ -1817,13 +1817,35 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <R> the result value type
      * @param mapper
      *            a function that, when applied to the item emitted by the source Single, returns a SingleSource
-     * @return the Single returned from {@code func} when applied to the item emitted by the source Single
+     * @return the Single returned from {@code mapper} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> flatMap(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleFlatMap<T, R>(this, mapper));
+    }
+
+    /**
+     * Returns a Maybe that is based on applying a specified function to the item emitted by the source Single,
+     * where that function returns a MaybeSource.
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapMaybe.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the result value type
+     * @param mapper
+     *            a function that, when applied to the item emitted by the source Single, returns a MaybeSource
+     * @return the Maybe returned from {@code mapper} when applied to the item emitted by the source Single
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Maybe<R> flatMapMaybe(final Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new SingleFlatMapMaybe<T, R>(this, mapper));
     }
 
     /**
@@ -1853,7 +1875,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Returns a Single that is based on applying a specified function to the item emitted by the source Single,
+     * Returns an Observable that is based on applying a specified function to the item emitted by the source Single,
      * where that function returns a SingleSource.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
@@ -1864,8 +1886,8 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source Single, returns a SingleSource
-     * @return the Single returned from {@code func} when applied to the item emitted by the source Single
+     *            a function that, when applied to the item emitted by the source Single, returns an ObservableSource
+     * @return the Observable returned from {@code func} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
