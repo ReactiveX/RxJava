@@ -800,6 +800,26 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Returns a {@link Maybe} which will subscribe to this Completable and once that is completed then
+     * will subscribe to the {@code next} MaybeSource. An error event from this Completable will be
+     * propagated to the downstream subscriber and will result in skipping the subscription of the
+     * Maybe.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the value type of the next MaybeSource
+     * @param next the Maybe to subscribe after this Completable is completed, not null
+     * @return Maybe that composes this Completable and next
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Maybe<T> andThen(MaybeSource<T> next) {
+        ObjectHelper.requireNonNull(next, "next is null");
+        return RxJavaPlugins.onAssembly(new MaybeDelayWithCompletable<T>(next, this));
+    }
+
+    /**
      * Returns a Completable that first runs this Completable
      * and then the other completable.
      * <p>
