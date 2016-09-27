@@ -28,7 +28,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Maps the success value of the source MaybeSource into a Single.
- * @param <T>
+ * @param <T> the input value type
+ * @param <R> the result value type
  */
 public final class MaybeFlatMapSingle<T, R> extends Single<R> {
 

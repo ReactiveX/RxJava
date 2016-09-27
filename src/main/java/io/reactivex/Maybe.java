@@ -2563,6 +2563,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * @param <R> the result value type
      * @param mapper
      *            a function that, when applied to the item emitted by the source Maybe, returns a
      *            Single
