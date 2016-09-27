@@ -2570,9 +2570,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> flatMapSingle(final Function<? super T, ? extends SingleSource<T>> mapper) {
+    public final <R> Single<R> flatMapSingle(final Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        return RxJavaPlugins.onAssembly(new MaybeFlatMapSingle<T>(this, mapper));
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapSingle<T, R>(this, mapper));
     }
 
     /**

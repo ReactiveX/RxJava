@@ -43,6 +43,21 @@ public class MaybeFlatMapSingleTest {
     }
 
     @Test
+    public void flatMapSingleValueDifferentType() {
+        Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<String>>() {
+            @Override public SingleSource<String> apply(final Integer integer) throws Exception {
+                if (integer == 1) {
+                    return Single.just("2");
+                }
+
+                return Single.just("1");
+            }
+        })
+            .test()
+            .assertResult("2");
+    }
+
+    @Test
     public void flatMapSingleValueNull() {
         Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {

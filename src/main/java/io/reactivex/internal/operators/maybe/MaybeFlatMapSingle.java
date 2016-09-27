@@ -30,33 +30,33 @@ import java.util.concurrent.atomic.AtomicReference;
  * Maps the success value of the source MaybeSource into a Single.
  * @param <T>
  */
-public final class MaybeFlatMapSingle<T> extends Single<T> {
+public final class MaybeFlatMapSingle<T, R> extends Single<R> {
 
     final MaybeSource<T> source;
 
-    final Function<? super T, ? extends SingleSource<T>> mapper;
+    final Function<? super T, ? extends SingleSource<? extends R>> mapper;
 
-    public MaybeFlatMapSingle(MaybeSource<T> source, Function<? super T, ? extends SingleSource<T>> mapper) {
+    public MaybeFlatMapSingle(MaybeSource<T> source, Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         this.source = source;
         this.mapper = mapper;
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> actual) {
-        source.subscribe(new FlatMapMaybeObserver<T>(actual, mapper));
+    protected void subscribeActual(SingleObserver<? super R> actual) {
+        source.subscribe(new FlatMapMaybeObserver<T, R>(actual, mapper));
     }
 
-    static final class FlatMapMaybeObserver<T>
+    static final class FlatMapMaybeObserver<T, R>
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
         private static final long serialVersionUID = 4827726964688405508L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super R> actual;
 
-        final Function<? super T, ? extends SingleSource<T>> mapper;
+        final Function<? super T, ? extends SingleSource<? extends R>> mapper;
 
-        FlatMapMaybeObserver(SingleObserver<? super T> actual, Function<? super T, ? extends SingleSource<T>> mapper) {
+        FlatMapMaybeObserver(SingleObserver<? super R> actual, Function<? super T, ? extends SingleSource<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -80,7 +80,7 @@ public final class MaybeFlatMapSingle<T> extends Single<T> {
 
         @Override
         public void onSuccess(T value) {
-            SingleSource<T> ss;
+            SingleSource<? extends R> ss;
 
             try {
                 ss = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null SingleSource");
@@ -90,7 +90,7 @@ public final class MaybeFlatMapSingle<T> extends Single<T> {
                 return;
             }
 
-            ss.subscribe(new FlatMapSingleObserver<T>(this, actual));
+            ss.subscribe(new FlatMapSingleObserver<R>(this, actual));
         }
 
         @Override
@@ -104,13 +104,13 @@ public final class MaybeFlatMapSingle<T> extends Single<T> {
         }
     }
 
-    static final class FlatMapSingleObserver<T> implements SingleObserver<T> {
+    static final class FlatMapSingleObserver<R> implements SingleObserver<R> {
 
         final AtomicReference<Disposable> parent;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super R> actual;
 
-        FlatMapSingleObserver(AtomicReference<Disposable> parent, SingleObserver<? super T> actual) {
+        FlatMapSingleObserver(AtomicReference<Disposable> parent, SingleObserver<? super R> actual) {
             this.parent = parent;
             this.actual = actual;
         }
@@ -121,7 +121,7 @@ public final class MaybeFlatMapSingle<T> extends Single<T> {
         }
 
         @Override
-        public void onSuccess(final T value) {
+        public void onSuccess(final R value) {
             actual.onSuccess(value);
         }
 
