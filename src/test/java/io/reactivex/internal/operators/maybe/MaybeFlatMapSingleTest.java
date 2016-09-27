@@ -17,6 +17,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
+import java.util.NoSuchElementException;
 import org.junit.Test;
 
 public class MaybeFlatMapSingleTest {
@@ -89,6 +90,6 @@ public class MaybeFlatMapSingleTest {
         })
             .test()
             .assertNoValues()
-            .assertNoErrors();
+            .assertError(NoSuchElementException.class);
     }
 }

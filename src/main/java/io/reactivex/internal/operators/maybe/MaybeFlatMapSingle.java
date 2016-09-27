@@ -23,6 +23,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -41,10 +42,8 @@ public final class MaybeFlatMapSingle<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> s) {
-        FlatMapMaybeObserver<T> parent = new FlatMapMaybeObserver<T>(s, mapper);
-        s.onSubscribe(parent);
-        source.subscribe(parent);
+    protected void subscribeActual(SingleObserver<? super T> actual) {
+        source.subscribe(new FlatMapMaybeObserver<T>(actual, mapper));
     }
 
     static final class FlatMapMaybeObserver<T>
@@ -53,11 +52,11 @@ public final class MaybeFlatMapSingle<T> extends Single<T> {
 
         private static final long serialVersionUID = 4827726964688405508L;
 
-        final SingleObserver actual;
+        final SingleObserver<? super T> actual;
 
         final Function<? super T, ? extends SingleSource<T>> mapper;
 
-        FlatMapMaybeObserver(SingleObserver actual, Function<? super T, ? extends SingleSource<T>> mapper) {
+        FlatMapMaybeObserver(SingleObserver<? super T> actual, Function<? super T, ? extends SingleSource<T>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
         }
@@ -74,7 +73,9 @@ public final class MaybeFlatMapSingle<T> extends Single<T> {
 
         @Override
         public void onSubscribe(Disposable d) {
-            DisposableHelper.replace(this, d);
+            if (DisposableHelper.setOnce(this, d)) {
+                actual.onSubscribe(this);
+            }
         }
 
         @Override
@@ -99,7 +100,7 @@ public final class MaybeFlatMapSingle<T> extends Single<T> {
 
         @Override
         public void onComplete() {
-            // Ignored.
+            actual.onError(new NoSuchElementException());
         }
     }
 

@@ -13,6 +13,7 @@
 
 package io.reactivex;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
 import org.reactivestreams.*;
@@ -2554,6 +2555,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a {@link Single} based on applying a specified function to the item emitted by the
      * source {@link Maybe}, where that function returns a {@link Single}.
+     * When this Maybe completes a {@link NoSuchElementException} will be thrown.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapSingle.png" alt="">
      * <dl>
