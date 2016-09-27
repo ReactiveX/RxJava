@@ -2552,6 +2552,28 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Returns a {@link Single} based on applying a specified function to the item emitted by the
+     * source {@link Maybe}, where that function returns a {@link Single}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMapSingle.png" alt="">
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param mapper
+     *            a function that, when applied to the item emitted by the source Maybe, returns a
+     *            Single
+     * @return the Single returned from {@code mapper} when applied to the item emitted by the source Maybe
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<T> flatMapSingle(final Function<? super T, ? extends SingleSource<T>> mapper) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapSingle<T>(this, mapper));
+    }
+
+    /**
      * Returns a {@link Completable} that completes based on applying a specified function to the item emitted by the
      * source {@link Maybe}, where that function returns a {@link Completable}.
      * <p>
@@ -2564,7 +2586,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @param mapper
      *            a function that, when applied to the item emitted by the source Maybe, returns a
      *            Completable
-     * @return the Completable returned from {@code func} when applied to the item emitted by the source Maybe
+     * @return the Completable returned from {@code mapper} when applied to the item emitted by the source Maybe
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
