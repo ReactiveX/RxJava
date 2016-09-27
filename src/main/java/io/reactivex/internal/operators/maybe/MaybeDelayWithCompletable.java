@@ -11,42 +11,43 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.single;
+package io.reactivex.internal.operators.maybe;
 
-import java.util.concurrent.atomic.AtomicReference;
-
-import io.reactivex.*;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeObserver;
+import io.reactivex.MaybeSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import java.util.concurrent.atomic.AtomicReference;
 
-public final class SingleDelayWithCompletable<T> extends Single<T> {
+public final class MaybeDelayWithCompletable<T> extends Maybe<T> {
 
-    final SingleSource<T> source;
+    final MaybeSource<T> source;
 
     final CompletableSource other;
 
-    public SingleDelayWithCompletable(SingleSource<T> source, CompletableSource other) {
+    public MaybeDelayWithCompletable(MaybeSource<T> source, CompletableSource other) {
         this.source = source;
         this.other = other;
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> subscriber) {
+    protected void subscribeActual(MaybeObserver<? super T> subscriber) {
         other.subscribe(new OtherObserver<T>(subscriber, source));
     }
 
     static final class OtherObserver<T>
     extends AtomicReference<Disposable>
     implements CompletableObserver, Disposable {
+        private static final long serialVersionUID = 703409937383992161L;
 
+        final MaybeObserver<? super T> actual;
 
-        private static final long serialVersionUID = -8565274649390031272L;
+        final MaybeSource<T> source;
 
-        final SingleObserver<? super T> actual;
-
-        final SingleSource<T> source;
-
-        OtherObserver(SingleObserver<? super T> actual, SingleSource<T> source) {
+        OtherObserver(MaybeObserver<? super T> actual, MaybeSource<T> source) {
             this.actual = actual;
             this.source = source;
         }
@@ -80,13 +81,13 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
         }
     }
 
-    static final class DelayWithMainObserver<T> implements SingleObserver<T> {
+    static final class DelayWithMainObserver<T> implements MaybeObserver<T> {
 
         final AtomicReference<Disposable> parent;
 
-        final SingleObserver<? super T> actual;
+        final MaybeObserver<? super T> actual;
 
-        DelayWithMainObserver(AtomicReference<Disposable> parent, SingleObserver<? super T> actual) {
+        DelayWithMainObserver(AtomicReference<Disposable> parent, MaybeObserver<? super T> actual) {
             this.parent = parent;
             this.actual = actual;
         }
@@ -104,6 +105,11 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
         @Override
         public void onError(Throwable e) {
             actual.onError(e);
+        }
+
+        @Override
+        public void onComplete() {
+            actual.onComplete();
         }
     }
 }
