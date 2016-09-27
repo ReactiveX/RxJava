@@ -20,7 +20,7 @@ import org.junit.Test;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 
-public class ObservableFlattenIterable {
+public class ObservableFlattenIterableTest {
 
     @Test
     public void flatMapIterablePrefetch() {
