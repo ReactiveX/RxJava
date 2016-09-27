@@ -26,6 +26,7 @@ import io.reactivex.internal.observers.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.FlowableDelaySubscriptionOther;
 import io.reactivex.internal.operators.maybe.MaybeFromCompletable;
+import io.reactivex.internal.operators.maybe.MaybeDelayWithCompletable;
 import io.reactivex.internal.operators.observable.ObservableDelaySubscriptionOther;
 import io.reactivex.internal.operators.single.SingleDelayWithCompletable;
 import io.reactivex.internal.util.ExceptionHelper;
