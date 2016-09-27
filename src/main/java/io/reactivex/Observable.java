@@ -5736,7 +5736,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<U> concatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        return concatMap(ObservableInternalHelper.flatMapIntoIterable(mapper));
+        return RxJavaPlugins.onAssembly(new ObservableFlattenIterable<T, U>(this, mapper));
     }
 
     /**
@@ -7188,7 +7188,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<U> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        return flatMap(ObservableInternalHelper.flatMapIntoIterable(mapper));
+        return RxJavaPlugins.onAssembly(new ObservableFlattenIterable<T, U>(this, mapper));
     }
 
     /**

@@ -262,7 +262,7 @@ public class ObservableMergeTest {
         // to make sure after o1.onNextBeingSent and o2.onNextBeingSent are hit that the following
         // onNext is invoked.
 
-        int timeout = 10;
+        int timeout = 20;
 
         while (timeout-- > 0 && concurrentCounter.get() != 1) {
             Thread.sleep(100);
