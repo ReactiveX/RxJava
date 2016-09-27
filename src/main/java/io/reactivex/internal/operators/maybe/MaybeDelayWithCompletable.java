@@ -54,7 +54,7 @@ public final class MaybeDelayWithCompletable<T> extends Maybe<T> {
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.set(this, d)) {
+            if (DisposableHelper.setOnce(this, d)) {
 
                 actual.onSubscribe(this);
             }
