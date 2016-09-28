@@ -80,7 +80,6 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         final boolean delayError;
         final AtomicLong index;
         final SpscLinkedArrayQueue<Object> queue;
-        final NotificationLite<T> nl;
 
         boolean emitting;
 
@@ -104,7 +103,6 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
             this.delayError = delayError;
             this.index = new AtomicLong();
             this.queue = new SpscLinkedArrayQueue<Object>(RxRingBuffer.SIZE);
-            this.nl = NotificationLite.instance();
         }
 
         void init() {
@@ -202,7 +200,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                     return;
                 }
 
-                queue.offer(inner, nl.next(value));
+                queue.offer(inner, NotificationLite.next(value));
             }
             drain();
         }
@@ -310,7 +308,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
 
                     @SuppressWarnings("unchecked")
                     InnerSubscriber<T> inner = (InnerSubscriber<T>)localQueue.poll();
-                    T value = nl.getValue(localQueue.poll());
+                    T value = NotificationLite.getValue(localQueue.poll());
 
                     if (localIndex.get() == inner.id) {
                         localChild.onNext(value);

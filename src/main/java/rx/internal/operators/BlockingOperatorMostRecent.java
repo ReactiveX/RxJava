@@ -62,26 +62,25 @@ public final class BlockingOperatorMostRecent {
     }
 
     static final class MostRecentObserver<T> extends Subscriber<T> {
-        final NotificationLite<T> nl = NotificationLite.instance();
         volatile Object value;
 
         MostRecentObserver(T value) {
-            this.value = nl.next(value);
+            this.value = NotificationLite.next(value);
         }
 
         @Override
         public void onCompleted() {
-            value = nl.completed();
+            value = NotificationLite.completed();
         }
 
         @Override
         public void onError(Throwable e) {
-            value = nl.error(e);
+            value = NotificationLite.error(e);
         }
 
         @Override
         public void onNext(T args) {
-            value = nl.next(args);
+            value = NotificationLite.next(args);
         }
 
         /**
@@ -99,7 +98,7 @@ public final class BlockingOperatorMostRecent {
                 @Override
                 public boolean hasNext() {
                     buf = value;
-                    return !nl.isCompleted(buf);
+                    return !NotificationLite.isCompleted(buf);
                 }
 
                 @Override
@@ -109,13 +108,13 @@ public final class BlockingOperatorMostRecent {
                         if (buf == null) {
                             buf = value;
                         }
-                        if (nl.isCompleted(buf)) {
+                        if (NotificationLite.isCompleted(buf)) {
                             throw new NoSuchElementException();
                         }
-                        if (nl.isError(buf)) {
-                            throw Exceptions.propagate(nl.getError(buf));
+                        if (NotificationLite.isError(buf)) {
+                            throw Exceptions.propagate(NotificationLite.getError(buf));
                         }
-                        return nl.getValue(buf);
+                        return NotificationLite.getValue(buf);
                     }
                     finally {
                         buf = null;

@@ -59,7 +59,6 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 public final class AsyncSubject<T> extends Subject<T, T> {
     final SubjectSubscriptionManager<T> state;
     volatile Object lastValue;
-    private final NotificationLite<T> nl = NotificationLite.instance();
 
     /**
      * Creates and returns a new {@code AsyncSubject}.
@@ -72,14 +71,13 @@ public final class AsyncSubject<T> extends Subject<T, T> {
             @Override
             public void call(SubjectObserver<T> o) {
                 Object v = state.getLatest();
-                NotificationLite<T> nl = state.nl;
-                if (v == null || nl.isCompleted(v)) {
+                if (v == null || NotificationLite.isCompleted(v)) {
                     o.onCompleted();
                 } else
-                if (nl.isError(v)) {
-                    o.onError(nl.getError(v));
+                if (NotificationLite.isError(v)) {
+                    o.onError(NotificationLite.getError(v));
                 } else {
-                    o.actual.setProducer(new SingleProducer<T>(o.actual, nl.getValue(v)));
+                    o.actual.setProducer(new SingleProducer<T>(o.actual, NotificationLite.<T>getValue(v)));
                 }
             }
         };
@@ -96,13 +94,13 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         if (state.active) {
             Object last = lastValue;
             if (last == null) {
-                last = nl.completed();
+                last = NotificationLite.completed();
             }
             for (SubjectObserver<T> bo : state.terminate(last)) {
-                if (last == nl.completed()) {
+                if (last == NotificationLite.completed()) {
                     bo.onCompleted();
                 } else {
-                    bo.actual.setProducer(new SingleProducer<T>(bo.actual, nl.getValue(last)));
+                    bo.actual.setProducer(new SingleProducer<T>(bo.actual, NotificationLite.<T>getValue(last)));
                 }
             }
         }
@@ -111,7 +109,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     @Override
     public void onError(final Throwable e) {
         if (state.active) {
-            Object n = nl.error(e);
+            Object n = NotificationLite.error(e);
             List<Throwable> errors = null;
             for (SubjectObserver<T> bo : state.terminate(n)) {
                 try {
@@ -130,7 +128,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
-        lastValue = nl.next(v);
+        lastValue = NotificationLite.next(v);
     }
 
     @Override
@@ -148,7 +146,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     public boolean hasValue() {
         Object v = lastValue;
         Object o = state.getLatest();
-        return !nl.isError(o) && nl.isNext(v);
+        return !NotificationLite.isError(o) && NotificationLite.isNext(v);
     }
     /**
      * Check if the Subject has terminated with an exception.
@@ -157,7 +155,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      */
     public boolean hasThrowable() {
         Object o = state.getLatest();
-        return nl.isError(o);
+        return NotificationLite.isError(o);
     }
     /**
      * Check if the Subject has terminated normally.
@@ -166,7 +164,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      */
     public boolean hasCompleted() {
         Object o = state.getLatest();
-        return o != null && !nl.isError(o);
+        return o != null && !NotificationLite.isError(o);
     }
     /**
      * Returns the current value of the Subject if there is such a value and
@@ -181,8 +179,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     public T getValue() {
         Object v = lastValue;
         Object o = state.getLatest();
-        if (!nl.isError(o) && nl.isNext(v)) {
-            return nl.getValue(v);
+        if (!NotificationLite.isError(o) && NotificationLite.isNext(v)) {
+            return NotificationLite.getValue(v);
         }
         return null;
     }
@@ -194,8 +192,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      */
     public Throwable getThrowable() {
         Object o = state.getLatest();
-        if (nl.isError(o)) {
-            return nl.getError(o);
+        if (NotificationLite.isError(o)) {
+            return NotificationLite.getError(o);
         }
         return null;
     }

@@ -304,8 +304,6 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     static final class ReplaySubscriber<T> extends Subscriber<T> implements Subscription {
         /** Holds notifications from upstream. */
         final ReplayBuffer<T> buffer;
-        /** The notification-lite factory. */
-        final NotificationLite<T> nl;
         /** Contains either an onCompleted or an onError token from upstream. */
         boolean done;
 
@@ -351,8 +349,6 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         @SuppressWarnings("unchecked")
         public ReplaySubscriber(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
-
-            this.nl = NotificationLite.instance();
             this.producers = new OpenHashSet<InnerProducer<T>>();
             this.producersCache = EMPTY;
             this.shouldConnect = new AtomicBoolean();
@@ -840,29 +836,27 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     static final class UnboundedReplayBuffer<T> extends ArrayList<Object> implements ReplayBuffer<T> {
         /** */
         private static final long serialVersionUID = 7063189396499112664L;
-        final NotificationLite<T> nl;
         /** The total number of events in the buffer. */
         volatile int size;
 
         public UnboundedReplayBuffer(int capacityHint) {
             super(capacityHint);
-            nl = NotificationLite.instance();
         }
         @Override
         public void next(T value) {
-            add(nl.next(value));
+            add(NotificationLite.next(value));
             size++;
         }
 
         @Override
         public void error(Throwable e) {
-            add(nl.error(e));
+            add(NotificationLite.error(e));
             size++;
         }
 
         @Override
         public void complete() {
-            add(nl.completed());
+            add(NotificationLite.completed());
             size++;
         }
 
@@ -895,14 +889,14 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 while (e != r && destinationIndex < sourceIndex) {
                     Object o = get(destinationIndex);
                     try {
-                        if (nl.accept(child, o)) {
+                        if (NotificationLite.accept(child, o)) {
                             return;
                         }
                     } catch (Throwable err) {
                         Exceptions.throwIfFatal(err);
                         output.unsubscribe();
-                        if (!nl.isError(o) && !nl.isCompleted(o)) {
-                            child.onError(OnErrorThrowable.addValueAsLastCause(err, nl.getValue(o)));
+                        if (!NotificationLite.isError(o) && !NotificationLite.isCompleted(o)) {
+                            child.onError(OnErrorThrowable.addValueAsLastCause(err, NotificationLite.getValue(o)));
                         }
                         return;
                     }
@@ -957,7 +951,6 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     static class BoundedReplayBuffer<T> extends AtomicReference<Node> implements ReplayBuffer<T> {
         /** */
         private static final long serialVersionUID = 2346567790059478686L;
-        final NotificationLite<T> nl;
 
         Node tail;
         int size;
@@ -966,7 +959,6 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         long index;
 
         public BoundedReplayBuffer() {
-            nl = NotificationLite.instance();
             Node n = new Node(null, 0);
             tail = n;
             set(n);
@@ -1025,7 +1017,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
 
         @Override
         public final void next(T value) {
-            Object o = enterTransform(nl.next(value));
+            Object o = enterTransform(NotificationLite.next(value));
             Node n = new Node(o, ++index);
             addLast(n);
             truncate();
@@ -1033,7 +1025,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
 
         @Override
         public final void error(Throwable e) {
-            Object o = enterTransform(nl.error(e));
+            Object o = enterTransform(NotificationLite.error(e));
             Node n = new Node(o, ++index);
             addLast(n);
             truncateFinal();
@@ -1041,7 +1033,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
 
         @Override
         public final void complete() {
-            Object o = enterTransform(nl.completed());
+            Object o = enterTransform(NotificationLite.completed());
             Node n = new Node(o, ++index);
             addLast(n);
             truncateFinal();
@@ -1090,7 +1082,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     if (v != null) {
                         Object o = leaveTransform(v.value);
                         try {
-                            if (nl.accept(child, o)) {
+                            if (NotificationLite.accept(child, o)) {
                                 output.index = null;
                                 return;
                             }
@@ -1098,8 +1090,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                             output.index = null;
                             Exceptions.throwIfFatal(err);
                             output.unsubscribe();
-                            if (!nl.isError(o) && !nl.isCompleted(o)) {
-                                child.onError(OnErrorThrowable.addValueAsLastCause(err, nl.getValue(o)));
+                            if (!NotificationLite.isError(o) && !NotificationLite.isCompleted(o)) {
+                                child.onError(OnErrorThrowable.addValueAsLastCause(err, NotificationLite.getValue(o)));
                             }
                             return;
                         }
@@ -1171,10 +1163,10 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 if (next != null) {
                     Object o = next.value;
                     Object v = leaveTransform(o);
-                    if (nl.isCompleted(v) || nl.isError(v)) {
+                    if (NotificationLite.isCompleted(v) || NotificationLite.isError(v)) {
                         break;
                     }
-                    output.add(nl.getValue(v));
+                    output.add(NotificationLite.<T>getValue(v));
                     n = next;
                 } else {
                     break;
@@ -1182,10 +1174,10 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             }
         }
         /* test */ boolean hasError() {
-            return tail.value != null && nl.isError(leaveTransform(tail.value));
+            return tail.value != null && NotificationLite.isError(leaveTransform(tail.value));
         }
         /* test */ boolean hasCompleted() {
-            return tail.value != null && nl.isCompleted(leaveTransform(tail.value));
+            return tail.value != null && NotificationLite.isCompleted(leaveTransform(tail.value));
         }
     }
 

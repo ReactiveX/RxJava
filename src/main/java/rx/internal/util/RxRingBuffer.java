@@ -125,8 +125,6 @@ public class RxRingBuffer implements Subscription {
      * } </pre>
      */
 
-    private static final NotificationLite<Object> ON = NotificationLite.instance();
-
     private Queue<Object> queue;
 
     private final int size;
@@ -342,7 +340,7 @@ public class RxRingBuffer implements Subscription {
         synchronized (this) {
             Queue<Object> q = queue;
             if (q != null) {
-                mbe = !q.offer(ON.next(o));
+                mbe = !q.offer(NotificationLite.next(o));
             } else {
                 iae = true;
             }
@@ -359,14 +357,14 @@ public class RxRingBuffer implements Subscription {
     public void onCompleted() {
         // we ignore terminal events if we already have one
         if (terminalState == null) {
-            terminalState = ON.completed();
+            terminalState = NotificationLite.completed();
         }
     }
 
     public void onError(Throwable t) {
         // we ignore terminal events if we already have one
         if (terminalState == null) {
-            terminalState = ON.error(t);
+            terminalState = NotificationLite.error(t);
         }
     }
 
@@ -429,24 +427,24 @@ public class RxRingBuffer implements Subscription {
     }
 
     public boolean isCompleted(Object o) {
-        return ON.isCompleted(o);
+        return NotificationLite.isCompleted(o);
     }
 
     public boolean isError(Object o) {
-        return ON.isError(o);
+        return NotificationLite.isError(o);
     }
 
     public Object getValue(Object o) {
-        return ON.getValue(o);
+        return NotificationLite.getValue(o);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean accept(Object o, Observer child) {
-        return ON.accept(child, o);
+        return NotificationLite.accept(child, o);
     }
 
     public Throwable asError(Object o) {
-        return ON.getError(o);
+        return NotificationLite.getError(o);
     }
 
     @Override

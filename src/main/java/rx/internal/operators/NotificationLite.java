@@ -34,22 +34,9 @@ import rx.Observer;
  * @param <T> the element type
  */
 public final class NotificationLite<T> {
-    @SuppressWarnings("rawtypes")
-    private static final NotificationLite INSTANCE = new NotificationLite();
 
     private NotificationLite() {
         // singleton
-    }
-
-    /**
-     * Gets the {@code NotificationLite} singleton.
-     *
-     * @param <T> the value type
-     * @return the sole {@code NotificationLite} object
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> NotificationLite<T> instance() {
-        return INSTANCE;
     }
 
     private static final Object ON_COMPLETED_SENTINEL = new Serializable() {
@@ -92,7 +79,7 @@ public final class NotificationLite<T> {
      *          the item emitted to {@code onNext}
      * @return the item, or a null token representing the item if the item is {@code null}
      */
-    public Object next(T t) {
+    public static <T> Object next(T t) {
         if (t == null) {
             return ON_NEXT_NULL_SENTINEL;
         } else {
@@ -106,7 +93,7 @@ public final class NotificationLite<T> {
      *
      * @return a completion token
      */
-    public Object completed() {
+    public static Object completed() {
         return ON_COMPLETED_SENTINEL;
     }
 
@@ -119,7 +106,7 @@ public final class NotificationLite<T> {
      *           the {@code Throwable} in the {@code onError} notification
      * @return an object encapsulating the exception
      */
-    public Object error(Throwable e) {
+    public static Object error(Throwable e) {
         return new OnErrorSentinel(e);
     }
 
@@ -137,7 +124,7 @@ public final class NotificationLite<T> {
      *             if the {@link Observer} is null.
      */
     @SuppressWarnings("unchecked")
-    public boolean accept(Observer<? super T> o, Object n) {
+    public static <T> boolean accept(Observer<? super T> o, Object n) {
         if (n == ON_COMPLETED_SENTINEL) {
             o.onCompleted();
             return true;
@@ -163,7 +150,7 @@ public final class NotificationLite<T> {
      *            the lite notification
      * @return {@code true} if {@code n} represents an {@code onCompleted} event; {@code false} otherwise
      */
-    public boolean isCompleted(Object n) {
+    public static boolean isCompleted(Object n) {
         return n == ON_COMPLETED_SENTINEL;
     }
 
@@ -174,7 +161,7 @@ public final class NotificationLite<T> {
      *            the lite notification
      * @return {@code true} if {@code n} represents an {@code onError} event; {@code false} otherwise
      */
-    public boolean isError(Object n) {
+    public static boolean isError(Object n) {
         return n instanceof OnErrorSentinel;
     }
 
@@ -183,7 +170,7 @@ public final class NotificationLite<T> {
      * @param n the lite notification
      * @return {@code true} if {@code n} represents a wrapped {@code null} {@code onNext} event, {@code false} otherwise
      */
-    public boolean isNull(Object n) {
+    public static boolean isNull(Object n) {
         return n == ON_NEXT_NULL_SENTINEL;
     }
 
@@ -192,7 +179,7 @@ public final class NotificationLite<T> {
      * @param n the lite notification
      * @return {@code true} if {@code n} represents an {@code onNext} event, {@code false} otherwise
      */
-    public boolean isNext(Object n) {
+    public static boolean isNext(Object n) {
         return n != null && !isError(n) && !isCompleted(n);
     }
     /**
@@ -207,7 +194,7 @@ public final class NotificationLite<T> {
      * @return the {@link Kind} of lite notification {@code n} is: either {@code Kind.OnCompleted},
      *         {@code Kind.OnError}, or {@code Kind.OnNext}
      */
-    public Kind kind(Object n) {
+    public static Kind kind(Object n) {
         if (n == null) {
             throw new IllegalArgumentException("The lite notification can not be null");
         } else if (n == ON_COMPLETED_SENTINEL) {
@@ -230,7 +217,7 @@ public final class NotificationLite<T> {
      * @return the unwrapped value, which can be null
      */
     @SuppressWarnings("unchecked")
-    public T getValue(Object n) {
+    public static <T> T getValue(Object n) {
         return n == ON_NEXT_NULL_SENTINEL ? null : (T) n;
     }
 
@@ -243,7 +230,7 @@ public final class NotificationLite<T> {
      *            the lite notification (of type {@code Kind.OnError})
      * @return the {@link Throwable} wrapped inside {@code n}
      */
-    public Throwable getError(Object n) {
+    public static Throwable getError(Object n) {
         return ((OnErrorSentinel) n).e;
     }
 }

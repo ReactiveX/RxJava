@@ -41,7 +41,6 @@ public class SerializedObserver<T> implements Observer<T> {
     private volatile boolean terminated;
     /** If not null, it indicates more work. */
     private FastList queue;
-    private final NotificationLite<T> nl = NotificationLite.instance();
 
     static final class FastList {
         Object[] array;
@@ -83,7 +82,7 @@ public class SerializedObserver<T> implements Observer<T> {
                     list = new FastList();
                     queue = list;
                 }
-                list.add(nl.next(t));
+                list.add(NotificationLite.next(t));
                 return;
             }
             emitting = true;
@@ -110,7 +109,7 @@ public class SerializedObserver<T> implements Observer<T> {
                     break;
                 }
                 try {
-                    if (nl.accept(actual, o)) {
+                    if (NotificationLite.accept(actual, o)) {
                         terminated = true;
                         return;
                     }
@@ -145,7 +144,7 @@ public class SerializedObserver<T> implements Observer<T> {
                     list = new FastList();
                     queue = list;
                 }
-                list.add(nl.error(e));
+                list.add(NotificationLite.error(e));
                 return;
             }
             emitting = true;
@@ -169,7 +168,7 @@ public class SerializedObserver<T> implements Observer<T> {
                     list = new FastList();
                     queue = list;
                 }
-                list.add(nl.completed());
+                list.add(NotificationLite.completed());
                 return;
             }
             emitting = true;

@@ -26,30 +26,28 @@ public class NotificationLiteTest {
 
     @Test
     public void testComplete() {
-        NotificationLite<Object> on = NotificationLite.instance();
-        Object n = on.next("Hello");
-        Object c = on.completed();
+        Object n = NotificationLite.next("Hello");
+        Object c = NotificationLite.completed();
 
-        assertTrue(on.isCompleted(c));
-        assertFalse(on.isCompleted(n));
+        assertTrue(NotificationLite.isCompleted(c));
+        assertFalse(NotificationLite.isCompleted(n));
 
-        assertEquals("Hello", on.getValue(n));
+        assertEquals("Hello", NotificationLite.getValue(n));
     }
 
     @Test
     public void testValueKind() {
-        NotificationLite<Object> on = NotificationLite.instance();
 
-        assertTrue(on.isNull(on.next(null)));
-        assertFalse(on.isNull(on.next(1)));
-        assertFalse(on.isNull(on.error(new TestException())));
-        assertFalse(on.isNull(on.completed()));
-        assertFalse(on.isNull(null));
+        assertTrue(NotificationLite.isNull(NotificationLite.next(null)));
+        assertFalse(NotificationLite.isNull(NotificationLite.next(1)));
+        assertFalse(NotificationLite.isNull(NotificationLite.error(new TestException())));
+        assertFalse(NotificationLite.isNull(NotificationLite.completed()));
+        assertFalse(NotificationLite.isNull(null));
 
-        assertTrue(on.isNext(on.next(null)));
-        assertTrue(on.isNext(on.next(1)));
-        assertFalse(on.isNext(on.completed()));
-        assertFalse(on.isNext(null));
-        assertFalse(on.isNext(on.error(new TestException())));
+        assertTrue(NotificationLite.isNext(NotificationLite.next(null)));
+        assertTrue(NotificationLite.isNext(NotificationLite.next(1)));
+        assertFalse(NotificationLite.isNext(NotificationLite.completed()));
+        assertFalse(NotificationLite.isNext(null));
+        assertFalse(NotificationLite.isNext(NotificationLite.error(new TestException())));
     }
 }

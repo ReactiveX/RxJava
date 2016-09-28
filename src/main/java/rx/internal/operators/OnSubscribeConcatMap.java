@@ -137,7 +137,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
 
         @Override
         public void onNext(T t) {
-            if (!queue.offer(NotificationLite.instance().next(t))) {
+            if (!queue.offer(NotificationLite.next(t))) {
                 unsubscribe();
                 onError(new MissingBackpressureException());
             } else {
@@ -256,7 +256,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
                         Observable<? extends R> source;
 
                         try {
-                            source = mapper.call(NotificationLite.<T>instance().getValue(v));
+                            source = mapper.call(NotificationLite.<T>getValue(v));
                         } catch (Throwable mapperError) {
                             Exceptions.throwIfFatal(mapperError);
                             drainError(mapperError);

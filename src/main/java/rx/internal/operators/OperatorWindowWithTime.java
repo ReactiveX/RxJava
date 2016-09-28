@@ -48,8 +48,6 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
     final int size;
     /** Indicate the current subject should complete and a new subject be emitted. */
     static final Object NEXT_SUBJECT = new Object();
-    /** For error and completion indication. */
-    static final NotificationLite<Object> NL = NotificationLite.instance();
 
 
     public OperatorWindowWithTime(long timespan, long timeshift, TimeUnit unit, int size, Scheduler scheduler) {
@@ -187,11 +185,11 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                         return false;
                     }
                 } else
-                if (NL.isError(o)) {
-                    error(NL.getError(o));
+                if (NotificationLite.isError(o)) {
+                    error(NotificationLite.getError(o));
                     break;
                 } else
-                if (NL.isCompleted(o)) {
+                if (NotificationLite.isCompleted(o)) {
                     complete();
                     break;
                 } else {
@@ -244,7 +242,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
             synchronized (guard) {
                 if (emitting) {
                     // drop any queued action and terminate asap
-                    queue = Collections.<Object>singletonList(NL.error(e));
+                    queue = Collections.<Object>singletonList(NotificationLite.error(e));
                     return;
                 }
                 queue = null;
@@ -278,7 +276,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                     if (queue == null) {
                         queue = new ArrayList<Object>();
                     }
-                    queue.add(NL.completed());
+                    queue.add(NotificationLite.completed());
                     return;
                 }
                 localQueue = queue;

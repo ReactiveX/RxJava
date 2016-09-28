@@ -96,10 +96,10 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                      * subscribers as well:
                      *
                      * Object term = r.terminalEvent;
-                     * if (r.nl.isCompleted(term)) {
+                     * if (NotificationLite.isCompleted(term)) {
                      *     child.onCompleted();
                      * } else {
-                     *     child.onError(r.nl.getError(term));
+                     *     child.onError(NotificationLite.getError(term));
                      * }
                      * return;
                      *
@@ -218,8 +218,6 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
     static final class PublishSubscriber<T> extends Subscriber<T> implements Subscription {
         /** Holds notifications from upstream. */
         final Queue<Object> queue;
-        /** The notification-lite factory. */
-        final NotificationLite<T> nl;
         /** Holds onto the current connected PublishSubscriber. */
         final AtomicReference<PublishSubscriber<T>> current;
         /** Contains either an onCompleted or an onError token from upstream. */
@@ -248,7 +246,6 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                     ? new SpscArrayQueue<Object>(RxRingBuffer.SIZE)
                     : new SynchronizedQueue<Object>(RxRingBuffer.SIZE);
 
-            this.nl = NotificationLite.instance();
             this.producers = new AtomicReference<InnerProducer[]>(EMPTY);
             this.current = current;
             this.shouldConnect = new AtomicBoolean();
@@ -277,7 +274,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         public void onNext(T t) {
             // we expect upstream to honor backpressure requests
             // nl is required because JCTools queue doesn't accept nulls.
-            if (!queue.offer(nl.next(t))) {
+            if (!queue.offer(NotificationLite.next(t))) {
                 onError(new MissingBackpressureException());
             } else {
                 // since many things can happen concurrently, we have a common dispatch
@@ -290,7 +287,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             // The observer front is accessed serially as required by spec so
             // no need to CAS in the terminal value
             if (terminalEvent == null) {
-                terminalEvent = nl.error(e);
+                terminalEvent = NotificationLite.error(e);
                 // since many things can happen concurrently, we have a common dispatch
                 // loop to act on the current state serially
                 dispatch();
@@ -301,7 +298,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             // The observer front is accessed serially as required by spec so
             // no need to CAS in the terminal value
             if (terminalEvent == null) {
-                terminalEvent = nl.completed();
+                terminalEvent = NotificationLite.completed();
                 // since many things can happen concurrently, we have a common dispatch loop
                 // to act on the current state serially
                 dispatch();
@@ -402,7 +399,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
             // first of all, check if there is actually a terminal event
             if (term != null) {
                 // is it a completion event (impl. note, this is much cheaper than checking for isError)
-                if (nl.isCompleted(term)) {
+                if (NotificationLite.isCompleted(term)) {
                     // but we also need to have an empty queue
                     if (empty) {
                         // this will prevent OnSubscribe spinning on a terminated but
@@ -433,7 +430,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                         return true;
                     }
                 } else {
-                    Throwable t = nl.getError(term);
+                    Throwable t = NotificationLite.getError(term);
                     // this will prevent OnSubscribe spinning on a terminated
                     // but not yet unsubscribed PublishSubscriber
                     current.compareAndSet(this, null);
@@ -575,7 +572,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                                 break;
                             }
                             // we need to unwrap potential nulls
-                            T value = nl.getValue(v);
+                            T value = NotificationLite.getValue(v);
                             // let's emit this value to all child subscribers
                             for (InnerProducer<T> ip : ps) {
                                 // if ip.get() is negative, the child has either unsubscribed in the

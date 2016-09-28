@@ -493,7 +493,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                 error = new NullPointerException();
                 done = true;
             } else {
-                queue.offer(NotificationLite.instance().next(t));
+                queue.offer(NotificationLite.next(t));
             }
             drain();
         }
@@ -518,7 +518,6 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
             final Queue<Object> q = queue;
             final boolean delayError = this.delayError;
             Subscriber<? super T> a = actual.get();
-            NotificationLite<T> nl = NotificationLite.instance();
             for (;;) {
                 if (a != null) {
                     if (checkTerminated(done, q.isEmpty(), a, delayError)) {
@@ -541,7 +540,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                             break;
                         }
 
-                        a.onNext(nl.getValue(v));
+                        a.onNext(NotificationLite.<T>getValue(v));
 
                         e++;
                     }

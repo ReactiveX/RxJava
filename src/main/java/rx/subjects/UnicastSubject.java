@@ -119,8 +119,6 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         final AtomicReference<Subscriber<? super T>> subscriber;
         /** The queue holding values until the subscriber arrives and catches up. */
         final Queue<Object> queue;
-        /** JCTools queues don't accept nulls. */
-        final NotificationLite<T> nl;
         /** Atomically set to true on terminal condition. */
         final AtomicReference<Action0> terminateOnce;
         /** In case the source emitted an error. */
@@ -141,7 +139,6 @@ public final class UnicastSubject<T> extends Subject<T, T> {
          * the single subscriber unsubscribes.
          */
         public State(int capacityHint, Action0 onTerminated) {
-            this.nl = NotificationLite.instance();
             this.subscriber = new AtomicReference<Subscriber<? super T>>();
             this.terminateOnce = onTerminated != null ? new AtomicReference<Action0>(onTerminated) : null;
 
@@ -171,7 +168,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                      */
                     synchronized (this) {
                         if (!caughtUp) {
-                            queue.offer(nl.next(t));
+                            queue.offer(NotificationLite.next(t));
                             stillReplay = true;
                         }
                     }
@@ -293,7 +290,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                         if (empty) {
                             break;
                         }
-                        T value = nl.getValue(v);
+                        T value = NotificationLite.getValue(v);
                         try {
                             s.onNext(value);
                         } catch (Throwable ex) {
