@@ -24,6 +24,7 @@ import org.reactivestreams.*;
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
@@ -246,5 +247,48 @@ public class FlowableOnBackpressureBufferTest {
 
         ts.request(1);
         ts.assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void fusedNormal() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 10).onBackpressureBuffer().subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+          .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+          .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void fusedError() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.<Integer>error(new TestException()).onBackpressureBuffer().subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+          .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+          .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedPreconsume() throws Exception {
+
+        TestSubscriber<Integer> ts = Flowable.range(1, 1000 * 1000)
+        .onBackpressureBuffer()
+        .observeOn(Schedulers.single())
+        .test(0L);
+
+        ts.assertEmpty();
+
+        Thread.sleep(100);
+
+        ts.request(1000 * 1000);
+
+        ts
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertValueCount(1000 * 1000)
+        .assertNoErrors()
+        .assertComplete();
     }
 }
