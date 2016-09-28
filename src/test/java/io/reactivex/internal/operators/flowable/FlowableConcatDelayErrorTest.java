@@ -245,16 +245,11 @@ public class FlowableConcatDelayErrorTest {
         CompositeException ce = (CompositeException)ts.errors().get(0);
         List<Throwable> cex = ce.getExceptions();
 
-        assertEquals(2, cex.size());
-
-        assertTrue(cex.get(0).toString(), cex.get(0) instanceof CompositeException);
-        assertTrue(cex.get(1).toString(), cex.get(1) instanceof TestException);
-
-        ce = (CompositeException)cex.get(0);
-        cex = ce.getExceptions();
+        assertEquals(3, cex.size());
 
         assertTrue(cex.get(0).toString(), cex.get(0) instanceof TestException);
         assertTrue(cex.get(1).toString(), cex.get(1) instanceof TestException);
+        assertTrue(cex.get(2).toString(), cex.get(2) instanceof TestException);
     }
 
     @SuppressWarnings("unchecked")

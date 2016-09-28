@@ -130,11 +130,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
         ;
 
         AssertionError ae = new AssertionError(b.toString());
-        CompositeException ce = new CompositeException();
-        for (Throwable e : errors) {
-            ce.suppress(e);
-        }
-        if (!ce.isEmpty()) {
+        if (!errors.isEmpty()) {
+            CompositeException ce = new CompositeException(errors);
             ae.initCause(ce);
         }
         return ae;

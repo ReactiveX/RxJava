@@ -130,26 +130,22 @@ public final class SafeSubscriber<T> implements Subscriber<T>, Subscription {
         done = true;
 
         if (s == null) {
-            CompositeException t2 = new CompositeException(t, new NullPointerException("Subscription not set!"));
+            Throwable npe = new NullPointerException("Subscription not set!");
 
             try {
                 actual.onSubscribe(EmptySubscription.INSTANCE);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 // can't call onError because the actual's state may be corrupt at this point
-                t2.suppress(e);
-
-                RxJavaPlugins.onError(t2);
+                RxJavaPlugins.onError(new CompositeException(t, npe, e));
                 return;
             }
             try {
-                actual.onError(t2);
+                actual.onError(new CompositeException(t, npe));
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 // if onError failed, all that's left is to report the error to plugins
-                t2.suppress(e);
-
-                RxJavaPlugins.onError(t2);
+                RxJavaPlugins.onError(new CompositeException(t, npe, e));
             }
             return;
         }

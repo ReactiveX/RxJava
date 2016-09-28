@@ -299,9 +299,8 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         void onError(Throwable e) {
             for (;;) {
                 Throwable curr = error.get();
-                if (curr instanceof CompositeException) {
-                    CompositeException ce = new CompositeException((CompositeException)curr);
-                    ce.suppress(e);
+                if (curr != null) {
+                    CompositeException ce = new CompositeException(curr, e);
                     e = ce;
                 }
                 Throwable next = e;
