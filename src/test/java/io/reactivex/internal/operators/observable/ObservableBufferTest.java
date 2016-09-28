@@ -763,7 +763,7 @@ public class ObservableBufferTest {
         final Observer<Object> o = TestHelper.mockObserver();
 
         final CountDownLatch cdl = new CountDownLatch(1);
-        ResourceObserver<Object> s = new ResourceObserver<Object>() {
+        DisposableObserver<Object> s = new DisposableObserver<Object>() {
             @Override
             public void onNext(Object t) {
                 o.onNext(t);
