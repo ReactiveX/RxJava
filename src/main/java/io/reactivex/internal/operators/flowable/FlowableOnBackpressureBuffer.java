@@ -21,7 +21,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.*;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
 
 public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithUpstream<T, T> {
@@ -44,9 +44,10 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         source.subscribe(new BackpressureBufferSubscriber<T>(s, bufferSize, unbounded, delayError, onOverflow));
     }
 
-    static final class BackpressureBufferSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
+    static final class BackpressureBufferSubscriber<T> extends BasicIntQueueSubscription<T> implements Subscriber<T> {
 
         private static final long serialVersionUID = -2514538129242366402L;
+
         final Subscriber<? super T> actual;
         final SimpleQueue<T> queue;
         final boolean delayError;
@@ -60,6 +61,8 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         Throwable error;
 
         final AtomicLong requested = new AtomicLong();
+
+        boolean outputFused;
 
         BackpressureBufferSubscriber(Subscriber<? super T> actual, int bufferSize,
                 boolean unbounded, boolean delayError, Action onOverflow) {
@@ -101,27 +104,41 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
                 onError(ex);
                 return;
             }
-            drain();
+            if (outputFused) {
+                actual.onNext(null);
+            } else {
+                drain();
+            }
         }
 
         @Override
         public void onError(Throwable t) {
             error = t;
             done = true;
-            drain();
+            if (outputFused) {
+                actual.onError(t);
+            } else {
+                drain();
+            }
         }
 
         @Override
         public void onComplete() {
             done = true;
-            drain();
+            if (outputFused) {
+                actual.onComplete();
+            } else {
+                drain();
+            }
         }
 
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validate(n)) {
-                BackpressureHelper.add(requested, n);
-                drain();
+            if (!outputFused) {
+                if (SubscriptionHelper.validate(n)) {
+                    BackpressureHelper.add(requested, n);
+                    drain();
+                }
             }
         }
 
@@ -129,10 +146,10 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
+                s.cancel();
 
                 if (getAndIncrement() == 0) {
                     queue.clear();
-                    s.cancel();
                 }
             }
         }
@@ -204,7 +221,6 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
 
         boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a) {
             if (cancelled) {
-                s.cancel();
                 queue.clear();
                 return true;
             }
@@ -233,6 +249,30 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
                 }
             }
             return false;
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            if ((mode & ASYNC) != 0) {
+                outputFused = true;
+                return ASYNC;
+            }
+            return NONE;
+        }
+
+        @Override
+        public T poll() throws Exception {
+            return queue.poll();
+        }
+
+        @Override
+        public void clear() {
+            queue.clear();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return queue.isEmpty();
         }
     }
 }
