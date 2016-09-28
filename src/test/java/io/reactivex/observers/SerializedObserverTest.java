@@ -375,7 +375,7 @@ public class SerializedObserverTest {
         AtomicInteger p2 = new AtomicInteger();
 
         o.onSubscribe(Disposables.empty());
-        ResourceObserver<String> as1 = new ResourceObserver<String>() {
+        DisposableObserver<String> as1 = new DisposableObserver<String>() {
             @Override
             public void onNext(String t) {
                 o.onNext(t);
@@ -392,7 +392,7 @@ public class SerializedObserverTest {
             }
         };
 
-        ResourceObserver<String> as2 = new ResourceObserver<String>() {
+        DisposableObserver<String> as2 = new DisposableObserver<String>() {
             @Override
             public void onNext(String t) {
                 o.onNext(t);

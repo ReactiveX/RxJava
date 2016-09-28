@@ -221,7 +221,7 @@ public class FlowableIgnoreElementsTest {
                 //
                 .ignoreElements()
                 //
-                .subscribe(new ResourceCompletableObserver() {
+                .subscribe(new DisposableCompletableObserver() {
                     @Override
                     public void onComplete() {
                     }
