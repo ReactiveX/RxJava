@@ -20,6 +20,7 @@ import io.reactivex.Notification;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.ExceptionHelper;
 
@@ -227,18 +228,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      */
     @SuppressWarnings("unchecked")
     public final U assertError(Throwable error) {
-        int s = errors.size();
-        if (s == 0) {
-            throw fail("No errors");
-        }
-        if (errors.contains(error)) {
-            if (s != 1) {
-                throw fail("Error present but other errors as well");
-            }
-        } else {
-            throw fail("Error not present");
-        }
-        return (U)this;
+        return (U)assertError(Functions.equalsWith(error));
     }
 
     /**
@@ -249,28 +239,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      */
     @SuppressWarnings("unchecked")
     public final U assertError(Class<? extends Throwable> errorClass) {
-        int s = errors.size();
-        if (s == 0) {
-            throw fail("No errors");
-        }
-
-        boolean found = false;
-
-        for (Throwable e : errors) {
-            if (errorClass.isInstance(e)) {
-                found = true;
-                break;
-            }
-        }
-
-        if (found) {
-            if (s != 1) {
-                throw fail("Error present but other errors as well");
-            }
-        } else {
-            throw fail("Error not present");
-        }
-        return (U)this;
+        return (U)assertError((Predicate)Functions.isInstanceOf(errorClass));
     }
 
     /**

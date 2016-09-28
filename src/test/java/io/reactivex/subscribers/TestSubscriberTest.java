@@ -738,10 +738,10 @@ public class TestSubscriberTest {
             // expected
         }
 
-        ts.assertValueSequence(Arrays.asList(1));
+        ts.assertValueSequence(Collections.singletonList(1));
 
         try {
-            ts.assertValueSequence(Arrays.asList(2));
+            ts.assertValueSequence(Collections.singletonList(2));
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
             // expected
@@ -780,7 +780,7 @@ public class TestSubscriberTest {
             ts.assertErrorMessage("");
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
-
+            // expected
         }
 
         try {
@@ -794,14 +794,14 @@ public class TestSubscriberTest {
             ts.assertSubscribed();
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
-
+            // expected
         }
 
         try {
             ts.assertTerminated();
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
-
+            // expected
         }
 
         ts.onSubscribe(new BooleanSubscription());
@@ -833,7 +833,7 @@ public class TestSubscriberTest {
             ts.assertErrorMessage("");
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError exc) {
-
+            // expected
         }
 
         try {
@@ -1113,11 +1113,11 @@ public class TestSubscriberTest {
 
         assertEquals(0, ts.valueCount());
 
-        assertEquals(Arrays.asList(), ts.values());
+        assertEquals(Collections.emptyList(), ts.values());
 
         ts.onNext(1);
 
-        assertEquals(Arrays.asList(1), ts.values());
+        assertEquals(Collections.singletonList(1), ts.values());
 
         ts.cancel();
 
@@ -1126,11 +1126,11 @@ public class TestSubscriberTest {
 
         ts.assertValue(1);
 
-        assertEquals(Arrays.asList(Arrays.asList(1), Collections.emptyList(), Collections.emptyList()), ts.getEvents());
+        assertEquals(Arrays.asList(Collections.singletonList(1), Collections.emptyList(), Collections.emptyList()), ts.getEvents());
 
         ts.onComplete();
 
-        assertEquals(Arrays.asList(Arrays.asList(1), Collections.emptyList(), Collections.singletonList(Notification.createOnComplete())), ts.getEvents());
+        assertEquals(Arrays.asList(Collections.singletonList(1), Collections.emptyList(), Collections.singletonList(Notification.createOnComplete())), ts.getEvents());
     }
 
     @Test
@@ -1338,14 +1338,14 @@ public class TestSubscriberTest {
         ts.onNext(2);
 
         try {
-            ts.assertValueSequence(Arrays.<Integer>asList());
+            ts.assertValueSequence(Collections.<Integer>emptyList());
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
         }
 
         try {
-            ts.assertValueSequence(Arrays.asList(1));
+            ts.assertValueSequence(Collections.singletonList(1));
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
