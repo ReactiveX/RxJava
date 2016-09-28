@@ -507,22 +507,21 @@ public final class BlockingObservable<T> {
      */
     @Beta
     public void subscribe(Observer<? super T> observer) {
-        final NotificationLite<T> nl = NotificationLite.instance();
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
 
         @SuppressWarnings("unchecked")
         Subscription s = ((Observable<T>)o).subscribe(new Subscriber<T>() {
             @Override
             public void onNext(T t) {
-                queue.offer(nl.next(t));
+                queue.offer(NotificationLite.next(t));
             }
             @Override
             public void onError(Throwable e) {
-                queue.offer(nl.error(e));
+                queue.offer(NotificationLite.error(e));
             }
             @Override
             public void onCompleted() {
-                queue.offer(nl.completed());
+                queue.offer(NotificationLite.completed());
             }
         });
 
@@ -532,7 +531,7 @@ public final class BlockingObservable<T> {
                 if (o == null) {
                     o = queue.take();
                 }
-                if (nl.accept(observer, o)) {
+                if (NotificationLite.accept(observer, o)) {
                     return;
                 }
             }
@@ -554,22 +553,21 @@ public final class BlockingObservable<T> {
     @SuppressWarnings("unchecked")
     @Beta
     public void subscribe(Subscriber<? super T> subscriber) {
-        final NotificationLite<T> nl = NotificationLite.instance();
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
         final Producer[] theProducer = { null };
 
         Subscriber<T> s = new Subscriber<T>() {
             @Override
             public void onNext(T t) {
-                queue.offer(nl.next(t));
+                queue.offer(NotificationLite.next(t));
             }
             @Override
             public void onError(Throwable e) {
-                queue.offer(nl.error(e));
+                queue.offer(NotificationLite.error(e));
             }
             @Override
             public void onCompleted() {
-                queue.offer(nl.completed());
+                queue.offer(NotificationLite.completed());
             }
 
             @Override
@@ -612,7 +610,7 @@ public final class BlockingObservable<T> {
                 if (o == SET_PRODUCER) {
                     subscriber.setProducer(theProducer[0]);
                 } else
-                if (nl.accept(subscriber, o)) {
+                if (NotificationLite.accept(subscriber, o)) {
                     return;
                 }
             }

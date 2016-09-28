@@ -90,8 +90,6 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
 
         final AtomicInteger wip;
 
-        final NotificationLite<T> nl;
-
         volatile boolean done;
 
         long produced;
@@ -105,7 +103,6 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
             this.error = new AtomicReference<Throwable>();
             this.wip = new AtomicInteger();
             this.requested = new AtomicLong();
-            this.nl = NotificationLite.instance();
             if (prefetch == Integer.MAX_VALUE) {
                 this.limit = Long.MAX_VALUE;
                 this.queue = new SpscLinkedArrayQueue<Object>(RxRingBuffer.SIZE);
@@ -123,7 +120,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
 
         @Override
         public void onNext(T t) {
-            if (!queue.offer(nl.next(t))) {
+            if (!queue.offer(NotificationLite.next(t))) {
                 unsubscribe();
                 onError(new MissingBackpressureException());
                 return;
@@ -194,7 +191,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
                         boolean b;
 
                         try {
-                            Iterable<? extends R> iterable = mapper.call(nl.getValue(v));
+                            Iterable<? extends R> iterable = mapper.call(NotificationLite.<T>getValue(v));
 
                             it = iterable.iterator();
 

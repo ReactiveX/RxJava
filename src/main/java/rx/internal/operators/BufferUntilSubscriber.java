@@ -71,7 +71,6 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
         boolean emitting;
 
         final ConcurrentLinkedQueue<Object> buffer = new ConcurrentLinkedQueue<Object>();
-        final NotificationLite<T> nl = NotificationLite.instance();
 
         boolean casObserverRef(Observer<? super T>  expected, Observer<? super T>  next) {
             return compareAndSet(expected, next);
@@ -103,11 +102,10 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
                     }
                 }
                 if (win) {
-                    final NotificationLite<T> nl = NotificationLite.instance();
                     while(true) {
                         Object o;
                         while ((o = state.buffer.poll()) != null) {
-                            nl.accept(state.get(), o);
+                            NotificationLite.accept(state.get(), o);
                         }
                         synchronized (state.guard) {
                             if (state.buffer.isEmpty()) {
@@ -145,7 +143,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
         if (forward) {
             Object o;
             while ((o = state.buffer.poll()) != null) {
-                state.nl.accept(state.get(), o);
+                NotificationLite.accept(state.get(), o);
             }
             // Because `emit(Object v)` will be called in sequence,
             // no event will be put into `buffer` after we drain it.
@@ -158,7 +156,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
             state.get().onCompleted();
         }
         else {
-            emit(state.nl.completed());
+            emit(NotificationLite.completed());
         }
     }
 
@@ -168,7 +166,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
             state.get().onError(e);
         }
         else {
-            emit(state.nl.error(e));
+            emit(NotificationLite.error(e));
         }
     }
 
@@ -178,7 +176,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
             state.get().onNext(t);
         }
         else {
-            emit(state.nl.next(t));
+            emit(NotificationLite.next(t));
         }
     }
 

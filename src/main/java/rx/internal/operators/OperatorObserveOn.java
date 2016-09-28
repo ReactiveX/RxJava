@@ -92,7 +92,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
     static final class ObserveOnSubscriber<T> extends Subscriber<T> implements Action0 {
         final Subscriber<? super T> child;
         final Scheduler.Worker recursiveScheduler;
-        final NotificationLite<T> on;
         final boolean delayError;
         final Queue<Object> queue;
         /** The emission threshold that should trigger a replenishing request. */
@@ -120,7 +119,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             this.child = child;
             this.recursiveScheduler = scheduler.createWorker();
             this.delayError = delayError;
-            this.on = NotificationLite.instance();
             int calculatedSize = (bufferSize > 0) ? bufferSize : RxRingBuffer.SIZE;
             // this formula calculates the 75% of the bufferSize, rounded up to the next integer
             this.limit = calculatedSize - (calculatedSize >> 2);
@@ -158,7 +156,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (isUnsubscribed() || finished) {
                 return;
             }
-            if (!queue.offer(on.next(t))) {
+            if (!queue.offer(NotificationLite.next(t))) {
                 onError(new MissingBackpressureException());
                 return;
             }
@@ -202,7 +200,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             // of the constant fields
             final Queue<Object> q = this.queue;
             final Subscriber<? super T> localChild = this.child;
-            final NotificationLite<T> localOn = this.on;
 
             // requested and counter are not included to avoid JIT issues with register spilling
             // and their access is is amortized because they are part of the outer loop which runs
@@ -224,7 +221,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                         break;
                     }
 
-                    localChild.onNext(localOn.getValue(v));
+                    localChild.onNext(NotificationLite.<T>getValue(v));
 
                     currentEmission++;
                     if (currentEmission == limit) {

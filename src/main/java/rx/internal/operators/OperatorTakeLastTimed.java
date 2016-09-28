@@ -74,7 +74,6 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
         final AtomicLong requested;
         final ArrayDeque<Object> queue;
         final ArrayDeque<Long> queueTimes;
-        final NotificationLite<T> nl;
 
         public TakeLastTimedSubscriber(Subscriber<? super T> actual, int count, long ageMillis, Scheduler scheduler) {
             this.actual = actual;
@@ -84,7 +83,6 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
             this.requested = new AtomicLong();
             this.queue = new ArrayDeque<Object>();
             this.queueTimes = new ArrayDeque<Long>();
-            this.nl = NotificationLite.instance();
         }
 
         @Override
@@ -99,7 +97,7 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
 
                 evictOld(now);
 
-                queue.offer(nl.next(t));
+                queue.offer(NotificationLite.next(t));
                 queueTimes.offer(now);
             }
         }
@@ -134,7 +132,7 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
 
         @Override
         public T call(Object t) {
-            return nl.getValue(t);
+            return NotificationLite.getValue(t);
         }
 
         void requestMore(long n) {

@@ -60,14 +60,12 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         final AtomicLong requested;
         final ArrayDeque<Object> queue;
         final int count;
-        final NotificationLite<T> nl;
 
         public TakeLastSubscriber(Subscriber<? super T> actual, int count) {
             this.actual = actual;
             this.count = count;
             this.requested = new AtomicLong();
             this.queue = new ArrayDeque<Object>();
-            this.nl = NotificationLite.instance();
         }
 
         @Override
@@ -75,7 +73,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
             if (queue.size() == count) {
                 queue.poll();
             }
-            queue.offer(nl.next(t));
+            queue.offer(NotificationLite.next(t));
         }
 
         @Override
@@ -91,7 +89,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
 
         @Override
         public T call(Object t) {
-            return nl.getValue(t);
+            return NotificationLite.getValue(t);
         }
 
         void requestMore(long n) {

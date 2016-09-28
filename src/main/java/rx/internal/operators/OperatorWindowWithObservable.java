@@ -35,8 +35,6 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
     final Observable<U> other;
     /** Indicate the current subject should complete and a new subject be emitted. */
     static final Object NEXT_SUBJECT = new Object();
-    /** For error and completion indication. */
-    static final NotificationLite<Object> NL = NotificationLite.instance();
 
     public OperatorWindowWithObservable(final Observable<U> other) {
         this.other = other;
@@ -132,11 +130,11 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
                 if (o == NEXT_SUBJECT) {
                     replaceSubject();
                 } else
-                if (NL.isError(o)) {
-                    error(NL.getError(o));
+                if (NotificationLite.isError(o)) {
+                    error(NotificationLite.getError(o));
                     break;
                 } else
-                if (NL.isCompleted(o)) {
+                if (NotificationLite.isCompleted(o)) {
                     complete();
                     break;
                 } else {
@@ -170,7 +168,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
         public void onError(Throwable e) {
             synchronized (guard) {
                 if (emitting) {
-                    queue = Collections.singletonList(NL.error(e));
+                    queue = Collections.singletonList(NotificationLite.error(e));
                     return;
                 }
                 queue = null;
@@ -187,7 +185,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
                     if (queue == null) {
                         queue = new ArrayList<Object>();
                     }
-                    queue.add(NL.completed());
+                    queue.add(NotificationLite.completed());
                     return;
                 }
                 localQueue = queue;

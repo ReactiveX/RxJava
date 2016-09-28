@@ -159,8 +159,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         /** Due to the emission loop, we need to store errors somewhere if !delayErrors. */
         volatile ConcurrentLinkedQueue<Throwable> errors;
 
-        final NotificationLite<T> nl;
-
         volatile boolean done;
 
         /** Guarded by this. */
@@ -191,7 +189,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             this.child = child;
             this.delayErrors = delayErrors;
             this.maxConcurrent = maxConcurrent;
-            this.nl = NotificationLite.instance();
             this.innerGuard = new Object();
             this.innerSubscribers = EMPTY;
             if (maxConcurrent == Integer.MAX_VALUE) {
@@ -379,7 +376,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 subscriber.queue = q;
             }
             try {
-                q.onNext(nl.next(value));
+                q.onNext(NotificationLite.next(value));
             } catch (MissingBackpressureException ex) {
                 subscriber.unsubscribe();
                 subscriber.onError(ex);
@@ -501,7 +498,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 }
                 this.queue = q;
             }
-            if (!q.offer(nl.next(value))) {
+            if (!q.offer(NotificationLite.next(value))) {
                 unsubscribe();
                 onError(OnErrorThrowable.addValueAsLastCause(new MissingBackpressureException(), value));
             }
@@ -606,7 +603,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                                 if (o == null) {
                                     break;
                                 }
-                                T v = nl.getValue(o);
+                                T v = NotificationLite.getValue(o);
                                 // if child throws, report bounce it back immediately
                                 try {
                                     child.onNext(v);
@@ -723,7 +720,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                                     if (o == null) {
                                         break;
                                     }
-                                    T v = nl.getValue(o);
+                                    T v = NotificationLite.getValue(o);
                                     // if child throws, report bounce it back immediately
                                     try {
                                         child.onNext(v);

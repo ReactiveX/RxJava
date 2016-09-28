@@ -111,7 +111,6 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         private final Subscriber<? super T> child;
         private final AtomicBoolean saturated = new AtomicBoolean(false);
         private final BackpressureDrainManager manager;
-        private final NotificationLite<T> on = NotificationLite.instance();
         private final Action0 onOverflow;
         private final Strategy overflowStrategy;
 
@@ -148,13 +147,13 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
             if (!assertCapacity()) {
                 return;
             }
-            queue.offer(on.next(t));
+            queue.offer(NotificationLite.next(t));
             manager.drain();
         }
 
         @Override
         public boolean accept(Object value) {
-            return on.accept(child, value);
+            return NotificationLite.accept(child, value);
         }
         @Override
         public void complete(Throwable exception) {

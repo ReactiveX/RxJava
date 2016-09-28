@@ -52,7 +52,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(SubjectObserver<T> o) {
-                o.emitFirst(state.getLatest(), state.nl);
+                o.emitFirst(state.getLatest());
             }
 
         };
@@ -77,7 +77,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     void internalOnCompleted() {
         if (state.active) {
-            for (SubjectObserver<T> bo : state.terminate(NotificationLite.instance().completed())) {
+            for (SubjectObserver<T> bo : state.terminate(NotificationLite.completed())) {
                 bo.onCompleted();
             }
         }
@@ -110,7 +110,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     void internalOnError(final Throwable e) {
         if (state.active) {
-            for (SubjectObserver<T> bo : state.terminate(NotificationLite.instance().error(e))) {
+            for (SubjectObserver<T> bo : state.terminate(NotificationLite.error(e))) {
                 bo.onError(e);
             }
         }

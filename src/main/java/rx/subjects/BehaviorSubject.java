@@ -72,7 +72,6 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     /** An empty array to trigger getValues() to return a new array. */
     private static final Object[] EMPTY_ARRAY = new Object[0];
     private final SubjectSubscriptionManager<T> state;
-    private final NotificationLite<T> nl = NotificationLite.instance();
 
     /**
      * Creates a {@link BehaviorSubject} without a default item.
@@ -101,13 +100,13 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     private static <T> BehaviorSubject<T> create(T defaultValue, boolean hasDefault) {
         final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
         if (hasDefault) {
-            state.setLatest(NotificationLite.instance().next(defaultValue));
+            state.setLatest(NotificationLite.next(defaultValue));
         }
         state.onAdded = new Action1<SubjectObserver<T>>() {
 
             @Override
             public void call(SubjectObserver<T> o) {
-                o.emitFirst(state.getLatest(), state.nl);
+                o.emitFirst(state.getLatest());
             }
 
         };
@@ -124,9 +123,9 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     public void onCompleted() {
         Object last = state.getLatest();
         if (last == null || state.active) {
-            Object n = nl.completed();
+            Object n = NotificationLite.completed();
             for (SubjectObserver<T> bo : state.terminate(n)) {
-                bo.emitNext(n, state.nl);
+                bo.emitNext(n);
             }
         }
     }
@@ -135,11 +134,11 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     public void onError(Throwable e) {
         Object last = state.getLatest();
         if (last == null || state.active) {
-            Object n = nl.error(e);
+            Object n = NotificationLite.error(e);
             List<Throwable> errors = null;
             for (SubjectObserver<T> bo : state.terminate(n)) {
                 try {
-                    bo.emitNext(n, state.nl);
+                    bo.emitNext(n);
                 } catch (Throwable e2) {
                     if (errors == null) {
                         errors = new ArrayList<Throwable>();
@@ -156,9 +155,9 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     public void onNext(T v) {
         Object last = state.getLatest();
         if (last == null || state.active) {
-            Object n = nl.next(v);
+            Object n = NotificationLite.next(v);
             for (SubjectObserver<T> bo : state.next(n)) {
-                bo.emitNext(n, state.nl);
+                bo.emitNext(n);
             }
         }
     }
@@ -181,7 +180,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      */
     public boolean hasValue() {
         Object o = state.getLatest();
-        return nl.isNext(o);
+        return NotificationLite.isNext(o);
     }
     /**
      * Check if the Subject has terminated with an exception.
@@ -190,7 +189,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      */
     public boolean hasThrowable() {
         Object o = state.getLatest();
-        return nl.isError(o);
+        return NotificationLite.isError(o);
     }
     /**
      * Check if the Subject has terminated normally.
@@ -199,7 +198,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      */
     public boolean hasCompleted() {
         Object o = state.getLatest();
-        return nl.isCompleted(o);
+        return NotificationLite.isCompleted(o);
     }
     /**
      * Returns the current value of the Subject if there is such a value and
@@ -213,8 +212,8 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      */
     public T getValue() {
         Object o = state.getLatest();
-        if (nl.isNext(o)) {
-            return nl.getValue(o);
+        if (NotificationLite.isNext(o)) {
+            return NotificationLite.getValue(o);
         }
         return null;
     }
@@ -226,8 +225,8 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      */
     public Throwable getThrowable() {
         Object o = state.getLatest();
-        if (nl.isError(o)) {
-            return nl.getError(o);
+        if (NotificationLite.isError(o)) {
+            return NotificationLite.getError(o);
         }
         return null;
     }
@@ -241,11 +240,11 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     @SuppressWarnings("unchecked")
     public T[] getValues(T[] a) {
         Object o = state.getLatest();
-        if (nl.isNext(o)) {
+        if (NotificationLite.isNext(o)) {
             if (a.length == 0) {
                 a = (T[])Array.newInstance(a.getClass().getComponentType(), 1);
             }
-            a[0] = nl.getValue(o);
+            a[0] = NotificationLite.getValue(o);
             if (a.length > 1) {
                 a[1] = null;
             }

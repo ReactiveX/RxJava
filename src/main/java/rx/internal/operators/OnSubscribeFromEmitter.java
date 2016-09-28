@@ -320,20 +320,17 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
 
         final AtomicInteger wip;
 
-        final NotificationLite<T> nl;
-
         public BufferEmitter(Subscriber<? super T> actual, int capacityHint) {
             super(actual);
             this.queue = UnsafeAccess.isUnsafeAvailable()
                     ? new SpscUnboundedArrayQueue<Object>(capacityHint)
                     : new SpscUnboundedAtomicArrayQueue<Object>(capacityHint);
             this.wip = new AtomicInteger();
-            this.nl = NotificationLite.instance();
         }
 
         @Override
         public void onNext(T t) {
-            queue.offer(nl.next(t));
+            queue.offer(NotificationLite.next(t));
             drain();
         }
 
@@ -401,7 +398,7 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
                         break;
                     }
 
-                    a.onNext(nl.getValue(o));
+                    a.onNext(NotificationLite.<T>getValue(o));
 
                     e++;
                 }
@@ -451,18 +448,15 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
 
         final AtomicInteger wip;
 
-        final NotificationLite<T> nl;
-
         public LatestEmitter(Subscriber<? super T> actual) {
             super(actual);
             this.queue = new AtomicReference<Object>();
             this.wip = new AtomicInteger();
-            this.nl = NotificationLite.instance();
         }
 
         @Override
         public void onNext(T t) {
-            queue.set(nl.next(t));
+            queue.set(NotificationLite.next(t));
             drain();
         }
 
@@ -530,7 +524,7 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
                         break;
                     }
 
-                    a.onNext(nl.getValue(o));
+                    a.onNext(NotificationLite.<T>getValue(o));
 
                     e++;
                 }

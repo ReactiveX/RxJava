@@ -102,8 +102,6 @@ public final class CachedObservable<T> extends Observable<T> {
         /** The default empty array of producers. */
         static final ReplayProducer<?>[] EMPTY = new ReplayProducer<?>[0];
 
-        final NotificationLite<T> nl;
-
         /** Set to true after connection. */
         volatile boolean isConnected;
         /**
@@ -116,7 +114,6 @@ public final class CachedObservable<T> extends Observable<T> {
             super(capacityHint);
             this.source = source;
             this.producers = EMPTY;
-            this.nl = NotificationLite.instance();
             this.connection = new SerialSubscription();
         }
         /**
@@ -189,7 +186,7 @@ public final class CachedObservable<T> extends Observable<T> {
         @Override
         public void onNext(T t) {
             if (!sourceDone) {
-                Object o = nl.next(t);
+                Object o = NotificationLite.next(t);
                 add(o);
                 dispatch();
             }
@@ -198,7 +195,7 @@ public final class CachedObservable<T> extends Observable<T> {
         public void onError(Throwable e) {
             if (!sourceDone) {
                 sourceDone = true;
-                Object o = nl.error(e);
+                Object o = NotificationLite.error(e);
                 add(o);
                 connection.unsubscribe();
                 dispatch();
@@ -208,7 +205,7 @@ public final class CachedObservable<T> extends Observable<T> {
         public void onCompleted() {
             if (!sourceDone) {
                 sourceDone = true;
-                Object o = nl.completed();
+                Object o = NotificationLite.completed();
                 add(o);
                 connection.unsubscribe();
                 dispatch();
@@ -347,7 +344,6 @@ public final class CachedObservable<T> extends Observable<T> {
             }
             boolean skipFinal = false;
             try {
-                final NotificationLite<T> nl = state.nl;
                 final Subscriber<? super T> child = this.child;
 
                 for (;;) {
@@ -376,14 +372,14 @@ public final class CachedObservable<T> extends Observable<T> {
                         // eagerly emit any terminal event
                         if (r == 0) {
                             Object o = b[k];
-                            if (nl.isCompleted(o)) {
+                            if (NotificationLite.isCompleted(o)) {
                                 child.onCompleted();
                                 skipFinal = true;
                                 unsubscribe();
                                 return;
                             } else
-                            if (nl.isError(o)) {
-                                child.onError(nl.getError(o));
+                            if (NotificationLite.isError(o)) {
+                                child.onError(NotificationLite.getError(o));
                                 skipFinal = true;
                                 unsubscribe();
                                 return;
@@ -404,7 +400,7 @@ public final class CachedObservable<T> extends Observable<T> {
                                 Object o = b[k];
 
                                 try {
-                                    if (nl.accept(child, o)) {
+                                    if (NotificationLite.accept(child, o)) {
                                         skipFinal = true;
                                         unsubscribe();
                                         return;
@@ -413,8 +409,8 @@ public final class CachedObservable<T> extends Observable<T> {
                                     Exceptions.throwIfFatal(err);
                                     skipFinal = true;
                                     unsubscribe();
-                                    if (!nl.isError(o) && !nl.isCompleted(o)) {
-                                        child.onError(OnErrorThrowable.addValueAsLastCause(err, nl.getValue(o)));
+                                    if (!NotificationLite.isError(o) && !NotificationLite.isCompleted(o)) {
+                                        child.onError(OnErrorThrowable.addValueAsLastCause(err, NotificationLite.getValue(o)));
                                     }
                                     return;
                                 }

@@ -39,8 +39,6 @@ public class OperatorSkipLast<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         return new Subscriber<T>(subscriber) {
 
-            private final NotificationLite<T> on = NotificationLite.instance();
-
             /**
              * Store the last count elements until now.
              */
@@ -66,11 +64,11 @@ public class OperatorSkipLast<T> implements Operator<T, T> {
                     return;
                 }
                 if (deque.size() == count) {
-                    subscriber.onNext(on.getValue(deque.removeFirst()));
+                    subscriber.onNext(NotificationLite.<T>getValue(deque.removeFirst()));
                 } else {
                     request(1);
                 }
-                deque.offerLast(on.next(value));
+                deque.offerLast(NotificationLite.next(value));
             }
 
         };

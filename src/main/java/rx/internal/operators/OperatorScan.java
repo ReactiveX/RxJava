@@ -192,13 +192,13 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                 q = new SpscLinkedAtomicQueue<Object>();  // new SpscUnboundedAtomicArrayQueue<R>(8);
             }
             this.queue = q;
-            q.offer(NotificationLite.instance().next(initialValue));
+            q.offer(NotificationLite.next(initialValue));
             this.requested = new AtomicLong();
         }
 
         @Override
         public void onNext(R t) {
-            queue.offer(NotificationLite.instance().next(t));
+            queue.offer(NotificationLite.next(t));
             emit();
         }
 
@@ -298,7 +298,6 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
         void emitLoop() {
             final Subscriber<? super R> child = this.child;
             final Queue<Object> queue = this.queue;
-            final NotificationLite<R> nl = NotificationLite.instance();
             AtomicLong requested = this.requested;
 
             long r = requested.get();
@@ -319,7 +318,7 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                     if (empty) {
                         break;
                     }
-                    R v = nl.getValue(o);
+                    R v = NotificationLite.getValue(o);
                     try {
                         child.onNext(v);
                     } catch (Throwable ex) {

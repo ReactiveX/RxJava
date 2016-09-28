@@ -202,7 +202,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                 if (value == null) {
                     complete = ++completedCount;
                 } else {
-                    latest[index] = combinerSubscriber.nl.getValue(value);
+                    latest[index] = NotificationLite.getValue(value);
                 }
                 allSourcesFinished = activeCount == sourceCount;
                 // see if either all sources completed
@@ -358,14 +358,12 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
     static final class CombinerSubscriber<T, R> extends Subscriber<T> {
         final LatestCoordinator<T, R> parent;
         final int index;
-        final NotificationLite<T> nl;
 
         boolean done;
 
         public CombinerSubscriber(LatestCoordinator<T, R> parent, int index) {
             this.parent = parent;
             this.index = index;
-            this.nl = NotificationLite.instance();
             request(parent.bufferSize);
         }
 
@@ -374,7 +372,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
             if (done) {
                 return;
             }
-            parent.combine(nl.next(t), index);
+            parent.combine(NotificationLite.next(t), index);
         }
 
         @Override
