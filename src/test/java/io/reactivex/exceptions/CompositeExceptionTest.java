@@ -44,7 +44,7 @@ public class CompositeExceptionTest {
         Throwable e1 = new Throwable("1", rootCause);
         Throwable e2 = new Throwable("2", rootCause);
         Throwable e3 = new Throwable("3", rootCause);
-        CompositeException ce = new CompositeException(Arrays.asList(e1, e2, e3));
+        CompositeException ce = new CompositeException(e1, e2, e3);
 
         System.err.println("----------------------------- print composite stacktrace");
         ce.printStackTrace();
@@ -56,9 +56,25 @@ public class CompositeExceptionTest {
         ce.getCause().printStackTrace();
     }
 
+    @Test
+    public void testEmptyErrors() {
+        try {
+            new CompositeException();
+            fail("CompositeException should fail if errors is empty");
+        } catch(IllegalArgumentException e) {
+            assertEquals("errors is empty", e.getMessage());
+        }
+        try {
+            new CompositeException(new ArrayList<Throwable>());
+            fail("CompositeException should fail if errors is empty");
+        } catch(IllegalArgumentException e) {
+            assertEquals("errors is empty", e.getMessage());
+        }
+    }
+
     @Test(timeout = 1000)
     public void testCompositeExceptionFromParentThenChild() {
-        CompositeException cex = new CompositeException(Arrays.asList(ex1, ex2));
+        CompositeException cex = new CompositeException(ex1, ex2);
 
         System.err.println("----------------------------- print composite stacktrace");
         cex.printStackTrace();
@@ -73,7 +89,7 @@ public class CompositeExceptionTest {
 
     @Test(timeout = 1000)
     public void testCompositeExceptionFromChildThenParent() {
-        CompositeException cex = new CompositeException(Arrays.asList(ex2, ex1));
+        CompositeException cex = new CompositeException(ex2, ex1);
 
         System.err.println("----------------------------- print composite stacktrace");
         cex.printStackTrace();
@@ -88,7 +104,7 @@ public class CompositeExceptionTest {
 
     @Test(timeout = 1000)
     public void testCompositeExceptionFromChildAndComposite() {
-        CompositeException cex = new CompositeException(Arrays.asList(ex1, getNewCompositeExceptionWithEx123()));
+        CompositeException cex = new CompositeException(ex1, getNewCompositeExceptionWithEx123());
 
         System.err.println("----------------------------- print composite stacktrace");
         cex.printStackTrace();
@@ -103,7 +119,7 @@ public class CompositeExceptionTest {
 
     @Test(timeout = 1000)
     public void testCompositeExceptionFromCompositeAndChild() {
-        CompositeException cex = new CompositeException(Arrays.asList(getNewCompositeExceptionWithEx123(), ex1));
+        CompositeException cex = new CompositeException(getNewCompositeExceptionWithEx123(), ex1);
 
         System.err.println("----------------------------- print composite stacktrace");
         cex.printStackTrace();
@@ -184,7 +200,7 @@ public class CompositeExceptionTest {
                 throw new UnsupportedOperationException();
             }
         };
-        CompositeException cex = new CompositeException(Arrays.asList(t, ex1));
+        CompositeException cex = new CompositeException(t, ex1);
 
         System.err.println("----------------------------- print composite stacktrace");
         cex.printStackTrace();
@@ -208,7 +224,7 @@ public class CompositeExceptionTest {
                 return null;
             }
         };
-        CompositeException cex = new CompositeException(Arrays.asList(t, ex1));
+        CompositeException cex = new CompositeException(t, ex1);
 
         System.err.println("----------------------------- print composite stacktrace");
         cex.printStackTrace();
@@ -223,7 +239,7 @@ public class CompositeExceptionTest {
 
     @Test
     public void messageCollection() {
-        CompositeException compositeException = new CompositeException(Arrays.asList(ex1, ex3));
+        CompositeException compositeException = new CompositeException(ex1, ex3);
         assertEquals("2 exceptions occurred. ", compositeException.getMessage());
     }
 
@@ -275,27 +291,6 @@ public class CompositeExceptionTest {
         assertTrue(new CompositeException((Iterable<Throwable>)null).getExceptions().get(0) instanceof NullPointerException);
 
         assertTrue(new CompositeException(null, new TestException()).getExceptions().get(0) instanceof NullPointerException);
-
-        CompositeException ce1 = new CompositeException();
-        ce1.suppress(null);
-
-        assertTrue(ce1.getExceptions().get(0) instanceof NullPointerException);
-    }
-
-    @Test
-    public void isEmpty() {
-        assertTrue(new CompositeException().isEmpty());
-
-        assertFalse(new CompositeException(new TestException()).isEmpty());
-
-        CompositeException ce1 = new CompositeException();
-        ce1.initCause(new TestException());
-
-        assertTrue(ce1.isEmpty());
-
-        ce1.suppress(new TestException());
-
-        assertEquals(1, ce1.size());
     }
 
     @Test
@@ -348,4 +343,17 @@ public class CompositeExceptionTest {
         assertSame(te, new CompositeException(new RuntimeException(te)).getCause().getCause().getCause());
     }
 
+    @Test
+    public void badException() {
+        Throwable e = new BadException();
+        assertSame(e, new CompositeException(e).getCause().getCause());
+        assertSame(e, new CompositeException(new RuntimeException(e)).getCause().getCause().getCause());
+    }
+}
+
+class BadException extends Throwable {
+    @Override
+    public synchronized Throwable getCause() {
+        return this;
+    }
 }

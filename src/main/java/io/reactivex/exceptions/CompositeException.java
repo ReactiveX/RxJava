@@ -41,36 +41,23 @@ public final class CompositeException extends RuntimeException {
     private Throwable cause;
 
     /**
-     * Constructs an empty CompositeException.
-     */
-    public CompositeException() {
-        this.exceptions = new ArrayList<Throwable>();
-        this.message = null;
-    }
-
-    /**
      * Constructs a CompositeException with the given array of Throwables as the
      * list of suppressed exceptions.
      * @param exceptions the Throwables to have as initially suppressed exceptions
+     *
+     * @throws IllegalArgumentException if <code>exceptions</code> is empty.
      */
     public CompositeException(Throwable... exceptions) {
-        this.exceptions = new ArrayList<Throwable>();
-        if (exceptions == null) {
-            this.message = "1 exception occurred. ";
-            this.exceptions.add(new NullPointerException("exceptions is null"));
-        } else {
-            this.message = exceptions.length + " exceptions occurred. ";
-            for (Throwable t : exceptions) {
-                this.exceptions.add(t != null ? t : new NullPointerException("One of the exceptions is null"));
-            }
-        }
+        this(exceptions == null ?
+            Arrays.asList(new NullPointerException("exceptions was null")) : Arrays.asList(exceptions));
     }
-
 
     /**
      * Constructs a CompositeException with the given array of Throwables as the
      * list of suppressed exceptions.
      * @param errors the Throwables to have as initially suppressed exceptions
+     *
+     * @throws IllegalArgumentException if <code>errors</code> is empty.
      */
     public CompositeException(Iterable<? extends Throwable> errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
@@ -83,13 +70,15 @@ public final class CompositeException extends RuntimeException {
                 if (ex != null) {
                     deDupedExceptions.add(ex);
                 } else {
-                    deDupedExceptions.add(new NullPointerException());
+                    deDupedExceptions.add(new NullPointerException("Throwable was null!"));
                 }
             }
         } else {
-            deDupedExceptions.add(new NullPointerException());
+            deDupedExceptions.add(new NullPointerException("errors was null"));
         }
-
+        if (deDupedExceptions.isEmpty()) {
+            throw new IllegalArgumentException("errors is empty");
+        }
         localExceptions.addAll(deDupedExceptions);
         this.exceptions = Collections.unmodifiableList(localExceptions);
         this.message = exceptions.size() + " exceptions occurred. ";
@@ -108,17 +97,6 @@ public final class CompositeException extends RuntimeException {
     public String getMessage() {
         return message;
     }
-
-    /**
-     * Adds a suppressed exception to this composite.
-     * <p>The method is named this way to avoid conflicts with Java 7 environments
-     * and its addSuppressed() method.
-     * @param e the exception to suppress, nulls are converted to NullPointerExceptions
-     */
-    public void suppress(Throwable e) {
-        exceptions.add(e != null ? e : new NullPointerException("null exception"));
-    }
-
 
     @Override
     public synchronized Throwable getCause() { // NOPMD
@@ -266,15 +244,16 @@ public final class CompositeException extends RuntimeException {
     private List<Throwable> getListOfCauses(Throwable ex) {
         List<Throwable> list = new ArrayList<Throwable>();
         Throwable root = ex.getCause();
-        if (root == null) {
+        if (root == null || root == ex) {
             return list;
         } else {
             while (true) {
                 list.add(root);
-                if (root.getCause() == null) {
+                Throwable cause = root.getCause();
+                if (cause == null || cause == root) {
                     return list;
                 } else {
-                    root = root.getCause();
+                    root = cause;
                 }
             }
         }
@@ -289,16 +268,6 @@ public final class CompositeException extends RuntimeException {
     }
 
     /**
-     * Returns true if this CompositeException doesn't have a cause or
-     * any suppressed exceptions.
-     * @return true if this CompositeException doesn't have a cause or
-     * any suppressed exceptions.
-     */
-    public boolean isEmpty() {
-        return exceptions.isEmpty();
-    }
-
-    /**
      * Returns the root cause of {@code e}. If {@code e.getCause()} returns {@code null} or {@code e}, just return {@code e} itself.
      *
      * @param e the {@link Throwable} {@code e}.
@@ -306,15 +275,15 @@ public final class CompositeException extends RuntimeException {
      */
     private Throwable getRootCause(Throwable e) {
         Throwable root = e.getCause();
-        if (root == null /* || cause == root */) { // case might not be possible
+        if (root == null || cause == root) {
             return e;
         }
         while (true) {
             Throwable cause = root.getCause();
-            if (cause == null /* || cause == root */) { // case might not be possible
+            if (cause == null || cause == root) {
                 return root;
             }
-            root = root.getCause();
+            root = cause;
         }
     }
 }

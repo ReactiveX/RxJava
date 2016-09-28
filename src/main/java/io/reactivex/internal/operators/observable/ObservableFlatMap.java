@@ -486,39 +486,42 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         void reportError(SimpleQueue<Throwable> q) {
-            CompositeException composite = null;
+            List<Throwable> composite = null;
             Throwable ex = null;
 
-            Throwable t;
-            int count = 0;
             for (;;) {
+                Throwable t;
                 try {
                     t = q.poll();
                 } catch (Throwable exc) {
                     Exceptions.throwIfFatal(exc);
-                    if (composite == null) {
-                        composite = new CompositeException(exc);
+                    if (ex == null) {
+                        ex = exc;
+                    } else {
+                        if (composite == null) {
+                            composite = new ArrayList<Throwable>();
+                            composite.add(ex);
+                        }
+                        composite.add(exc);
                     }
-                    composite.suppress(exc);
                     break;
                 }
 
                 if (t == null) {
                     break;
                 }
-                if (count == 0) {
+                if (ex == null) {
                     ex = t;
                 } else {
                     if (composite == null) {
-                        composite = new CompositeException(ex);
+                        composite = new ArrayList<Throwable>();
+                        composite.add(ex);
                     }
-                    composite.suppress(t);
+                    composite.add(t);
                 }
-
-                count++;
             }
             if (composite != null) {
-                actual.onError(composite);
+                actual.onError(new CompositeException(composite));
             } else {
                 actual.onError(ex);
             }
