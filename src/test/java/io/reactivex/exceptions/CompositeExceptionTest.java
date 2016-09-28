@@ -61,13 +61,13 @@ public class CompositeExceptionTest {
         try {
             new CompositeException();
             fail("CompositeException should fail if errors is empty");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             assertEquals("errors is empty", e.getMessage());
         }
         try {
             new CompositeException(new ArrayList<Throwable>());
             fail("CompositeException should fail if errors is empty");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             assertEquals("errors is empty", e.getMessage());
         }
     }
@@ -351,7 +351,9 @@ public class CompositeExceptionTest {
     }
 }
 
-class BadException extends Throwable {
+final class BadException extends Throwable {
+    private static final long serialVersionUID = 8999507293896399171L;
+
     @Override
     public synchronized Throwable getCause() {
         return this;

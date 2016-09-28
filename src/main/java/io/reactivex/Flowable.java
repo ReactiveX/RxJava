@@ -8281,7 +8281,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param <U>
-     *            the type of item emitted by the resulting Publisher
+     *            the type of item emitted by the resulting Iterable
      * @param mapper
      *            a function that returns an Iterable sequence of values for when given an item emitted by the
      *            source Publisher
@@ -8310,7 +8310,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param <U>
-     *            the type of item emitted by the resulting Publisher
+     *            the type of item emitted by the resulting Iterable
      * @param mapper
      *            a function that returns an Iterable sequence of values for when given an item emitted by the
      *            source Publisher
@@ -8344,7 +8344,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <U>
      *            the collection element type
      * @param <V>
-     *            the type of item emitted by the resulting Publisher
+     *            the type of item emitted by the resulting Iterable
      * @param mapper
      *            a function that returns an Iterable sequence of values for each item emitted by the source
      *            Publisher
