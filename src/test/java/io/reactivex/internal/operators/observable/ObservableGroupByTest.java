@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -22,7 +21,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
-import org.mockito.Matchers;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
@@ -34,6 +32,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
+import org.mockito.Mockito;
 
 public class ObservableGroupByTest {
 
@@ -1002,8 +1001,8 @@ public class ObservableGroupByTest {
         stream.subscribe(o2);
 
         // check that subscriptions were successful
-        verify(o1, never()).onError(Matchers.<Throwable> any());
-        verify(o2, never()).onError(Matchers.<Throwable> any());
+        verify(o1, never()).onError(Mockito.<Throwable> any());
+        verify(o2, never()).onError(Mockito.<Throwable> any());
     }
 
     private static Function<Long, Boolean> IS_EVEN = new Function<Long, Boolean>() {

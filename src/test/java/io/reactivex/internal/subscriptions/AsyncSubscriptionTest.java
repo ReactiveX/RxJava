@@ -14,7 +14,6 @@
 package io.reactivex.internal.subscriptions;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;

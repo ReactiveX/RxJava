@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.*;
@@ -58,7 +57,7 @@ public class FlowableCombineLatestTest {
 
         verify(w, never()).onNext(anyString());
         verify(w, never()).onComplete();
-        verify(w, times(1)).onError(Matchers.<RuntimeException> any());
+        verify(w, times(1)).onError(Mockito.<RuntimeException> any());
     }
 
     @Test

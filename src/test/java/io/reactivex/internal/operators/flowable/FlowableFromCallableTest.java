@@ -16,7 +16,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.*;
@@ -80,7 +79,7 @@ public class FlowableFromCallableTest {
 
         fromCallableFlowable.subscribe(observer);
 
-        verify(observer, never()).onNext(anyObject());
+        verify(observer, never()).onNext(any());
         verify(observer, never()).onComplete();
         verify(observer).onError(throwable);
     }

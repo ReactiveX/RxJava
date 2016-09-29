@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -70,7 +69,7 @@ public class ObservableMergeDelayErrorTest {
         Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
+        verify(stringObserver, times(1)).onError(any(CompositeException.class));
         verify(stringObserver, never()).onComplete();
         verify(stringObserver, times(1)).onNext("one");
         verify(stringObserver, times(1)).onNext("two");
