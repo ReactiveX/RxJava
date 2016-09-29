@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 import rx.Subscriber;
 import rx.exceptions.*;
-import rx.plugins.RxJavaHooks;
+import rx.plugins.*;
 
 /**
  * {@code SafeSubscriber} is a wrapper around {@code Subscriber} that ensures that the {@code Subscriber}
@@ -146,8 +146,9 @@ public class SafeSubscriber<T> extends Subscriber<T> {
      *
      * @see <a href="https://github.com/ReactiveX/RxJava/issues/630">the report of this bug</a>
      */
+    @SuppressWarnings("deprecation")
     protected void _onError(Throwable e) { // NOPMD
-        RxJavaHooks.onError(e);
+        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
         try {
             actual.onError(e);
         } catch (OnErrorNotImplementedException e2) { // NOPMD
