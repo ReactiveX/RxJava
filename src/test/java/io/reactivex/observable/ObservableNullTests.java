@@ -56,20 +56,22 @@ public class ObservableNullTests {
         Observable.amb((Iterable<Observable<Object>>)null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void ambIterableIteratorNull() {
         Observable.amb(new Iterable<Observable<Object>>() {
             @Override
             public Iterator<Observable<Object>> iterator() {
                 return null;
             }
-        }).blockingLast();
+        }).test().assertError(NullPointerException.class);
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
+    @Test
     public void ambIterableOneIsNull() {
-        Observable.amb(Arrays.asList(Observable.never(), null)).blockingLast();
+        Observable.amb(Arrays.asList(Observable.never(), null))
+                .test()
+                .assertError(NullPointerException.class);
     }
 
     @Test(expected = NullPointerException.class)

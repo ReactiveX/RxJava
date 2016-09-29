@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -36,13 +37,23 @@ public final class ObservableAmb<T> extends Observable<T> {
         int count = 0;
         if (sources == null) {
             sources = new Observable[8];
-            for (ObservableSource<? extends T> p : sourcesIterable) {
-                if (count == sources.length) {
-                    ObservableSource<? extends T>[] b = new ObservableSource[count + (count >> 2)];
-                    System.arraycopy(sources, 0, b, 0, count);
-                    sources = b;
+            try {
+                for (ObservableSource<? extends T> p : sourcesIterable) {
+                    if (p == null) {
+                        EmptyDisposable.error(new NullPointerException("One of the sources is null"), s);
+                        return;
+                    }
+                    if (count == sources.length) {
+                        ObservableSource<? extends T>[] b = new ObservableSource[count + (count >> 2)];
+                        System.arraycopy(sources, 0, b, 0, count);
+                        sources = b;
+                    }
+                    sources[count++] = p;
                 }
-                sources[count++] = p;
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                EmptyDisposable.error(e, s);
+                return;
             }
         } else {
             count = sources.length;
