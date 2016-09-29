@@ -230,9 +230,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * @see #assertError(Class)
      * @see #assertError(Predicate)
      */
-    @SuppressWarnings("unchecked")
     public final U assertError(Throwable error) {
-        return (U)assertError(Functions.equalsWith(error));
+        return assertError(Functions.equalsWith(error));
     }
 
     /**
@@ -241,9 +240,9 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * @param errorClass the error class to expect
      * @return this;
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public final U assertError(Class<? extends Throwable> errorClass) {
-        return (U)assertError((Predicate)Functions.isInstanceOf(errorClass));
+        return assertError((Predicate)Functions.isInstanceOf(errorClass));
     }
 
     /**
