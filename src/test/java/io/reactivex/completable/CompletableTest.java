@@ -4474,6 +4474,37 @@ public class CompletableTest {
     }
 
     @Test(expected = NullPointerException.class)
+    public void fromRunnableNull() {
+        Completable.fromRunnable(null);
+    }
+
+    @Test(timeout = 1000)
+    public void fromRunnableNormal() {
+        final AtomicInteger calls = new AtomicInteger();
+
+        Completable c = Completable.fromRunnable(new Runnable() {
+            @Override
+            public void run() {
+                calls.getAndIncrement();
+            }
+        });
+
+        c.blockingAwait();
+
+        Assert.assertEquals(1, calls.get());
+    }
+
+    @Test(timeout = 1000, expected = TestException.class)
+    public void fromRunnableThrows() {
+        Completable c = Completable.fromRunnable(new Runnable() {
+            @Override
+            public void run() { throw new TestException(); }
+        });
+
+        c.blockingAwait();
+    }
+
+    @Test(expected = NullPointerException.class)
     public void doOnErrorNullValue() {
         Completable.complete().doOnError(null);
     }

@@ -340,6 +340,23 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Returns a Completable instance that runs the given Runnable for each subscriber and
+     * emits either its exception or simply completes.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromRunnable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param run the runnable to run for each subscriber
+     * @return the new Completable instance
+     * @throws NullPointerException if run is null
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Completable fromRunnable(final Runnable run) {
+        ObjectHelper.requireNonNull(run, "run is null");
+        return RxJavaPlugins.onAssembly(new CompletableFromRunnable(run));
+    }
+
+    /**
      * Returns a Completable instance that subscribes to the given Observable, ignores all values and
      * emits only the terminal event.
      * <dl>
