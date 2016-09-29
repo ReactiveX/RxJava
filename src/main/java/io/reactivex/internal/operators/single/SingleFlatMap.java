@@ -39,7 +39,10 @@ public final class SingleFlatMap<T, R> extends Single<R> {
     static final class SingleFlatMapCallback<T, R>
     extends AtomicReference<Disposable>
     implements SingleObserver<T>, Disposable {
+        private static final long serialVersionUID = 3258103020495908596L;
+
         final SingleObserver<? super R> actual;
+
         final Function<? super T, ? extends SingleSource<? extends R>> mapper;
 
         SingleFlatMapCallback(SingleObserver<? super R> actual,
