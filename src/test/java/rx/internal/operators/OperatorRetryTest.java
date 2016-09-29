@@ -230,7 +230,7 @@ public class OperatorRetryTest {
         inOrder.verify(observer, never()).onNext("beginningEveryTime");
         inOrder.verify(observer, never()).onNext("onSuccessOnly");
         inOrder.verify(observer, never()).onCompleted();
-        inOrder.verify(observer, times(1)).onError(any(IllegalStateException.class));
+        inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
