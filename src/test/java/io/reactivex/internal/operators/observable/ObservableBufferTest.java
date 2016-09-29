@@ -52,7 +52,7 @@ public class ObservableBufferTest {
         Observable<List<String>> buffered = source.buffer(3, 3);
         buffered.subscribe(observer);
 
-        Mockito.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        Mockito.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
         Mockito.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         Mockito.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -78,7 +78,7 @@ public class ObservableBufferTest {
         inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three", "four"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.never()).onComplete();
     }
@@ -93,7 +93,7 @@ public class ObservableBufferTest {
         InOrder inOrder = Mockito.inOrder(observer);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -108,7 +108,7 @@ public class ObservableBufferTest {
         InOrder inOrder = Mockito.inOrder(observer);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -140,7 +140,7 @@ public class ObservableBufferTest {
 
         scheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -174,7 +174,7 @@ public class ObservableBufferTest {
 
         scheduler.advanceTimeTo(201, TimeUnit.MILLISECONDS);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -225,7 +225,7 @@ public class ObservableBufferTest {
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
         inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
@@ -269,7 +269,7 @@ public class ObservableBufferTest {
         inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four"));
         inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
+        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
         inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
         inOrder.verify(observer, Mockito.times(1)).onComplete();
     }
