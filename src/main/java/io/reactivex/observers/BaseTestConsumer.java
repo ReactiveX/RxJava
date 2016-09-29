@@ -132,8 +132,12 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
         AssertionError ae = new AssertionError(b.toString());
         if (!errors.isEmpty()) {
-            CompositeException ce = new CompositeException(errors);
-            ae.initCause(ce);
+            if (errors.size() == 1) {
+                ae.initCause(errors.get(0));
+            } else {
+                CompositeException ce = new CompositeException(errors);
+                ae.initCause(ce);
+            }
         }
         return ae;
     }
