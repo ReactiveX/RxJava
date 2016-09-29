@@ -126,4 +126,79 @@ public class SingleFlatMapTest {
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
+
+    @Test(expected = NullPointerException.class)
+    public void flatMapNull() {
+        Single.just(1)
+            .flatMap(null);
+    }
+
+    @Test
+    public void flatMapValue() {
+        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
+            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
+                if (integer == 1) {
+                    return Single.just(2);
+                }
+
+                return Single.just(1);
+            }
+        })
+            .test()
+            .assertResult(2);
+    }
+
+    @Test
+    public void flatMapValueDifferentType() {
+        Single.just(1).flatMap(new Function<Integer, SingleSource<String>>() {
+            @Override public SingleSource<String> apply(final Integer integer) throws Exception {
+                if (integer == 1) {
+                    return Single.just("2");
+                }
+
+                return Single.just("1");
+            }
+        })
+            .test()
+            .assertResult("2");
+    }
+
+    @Test
+    public void flatMapValueNull() {
+        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
+            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
+                return null;
+            }
+        })
+            .test()
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("The single returned by the mapper is null");
+    }
+
+    @Test
+    public void flatMapValueErrorThrown() {
+        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
+            @Override public SingleSource<Integer> apply(final Integer integer) throws Exception {
+                throw new RuntimeException("something went terribly wrong!");
+            }
+        })
+            .test()
+            .assertNoValues()
+            .assertError(RuntimeException.class)
+            .assertErrorMessage("something went terribly wrong!");
+    }
+
+    @Test
+    public void flatMapError() {
+        RuntimeException exception = new RuntimeException("test");
+
+        Single.error(exception).flatMap(new Function<Object, SingleSource<Object>>() {
+            @Override public SingleSource<Object> apply(final Object integer) throws Exception {
+                return Single.just(new Object());
+            }
+        })
+            .test()
+            .assertError(exception);
+    }
 }

@@ -17,7 +17,9 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class SingleFlatMap<T, R> extends Single<R> {
     final SingleSource<? extends T> source;
@@ -30,28 +32,37 @@ public final class SingleFlatMap<T, R> extends Single<R> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super R> subscriber) {
-        SingleFlatMapCallback<T, R> parent = new SingleFlatMapCallback<T, R>(subscriber, mapper);
-        subscriber.onSubscribe(parent.sd);
-        source.subscribe(parent);
+    protected void subscribeActual(SingleObserver<? super R> actual) {
+        source.subscribe(new SingleFlatMapCallback<T, R>(actual, mapper));
     }
 
-    static final class SingleFlatMapCallback<T, R> implements SingleObserver<T> {
+    static final class SingleFlatMapCallback<T, R>
+    extends AtomicReference<Disposable>
+    implements SingleObserver<T>, Disposable {
         final SingleObserver<? super R> actual;
         final Function<? super T, ? extends SingleSource<? extends R>> mapper;
-
-        final SequentialDisposable sd;
 
         SingleFlatMapCallback(SingleObserver<? super R> actual,
                 Function<? super T, ? extends SingleSource<? extends R>> mapper) {
             this.actual = actual;
             this.mapper = mapper;
-            this.sd = new SequentialDisposable();
+        }
+
+        @Override
+        public void dispose() {
+            DisposableHelper.dispose(this);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(get());
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            sd.replace(d);
+            if (DisposableHelper.setOnce(this, d)) {
+                actual.onSubscribe(this);
+            }
         }
 
         @Override
@@ -59,43 +70,46 @@ public final class SingleFlatMap<T, R> extends Single<R> {
             SingleSource<? extends R> o;
 
             try {
-                o = mapper.apply(value);
+                o = ObjectHelper.requireNonNull(mapper.apply(value), "The single returned by the mapper is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
                 return;
             }
 
-            if (o == null) {
-                actual.onError(new NullPointerException("The single returned by the mapper is null"));
-                return;
-            }
-
-            if (sd.isDisposed()) {
-                return;
-            }
-
-            o.subscribe(new SingleObserver<R>() {
-                @Override
-                public void onSubscribe(Disposable d) {
-                    sd.replace(d);
-                }
-
-                @Override
-                public void onSuccess(R value) {
-                    actual.onSuccess(value);
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    actual.onError(e);
-                }
-            });
+            o.subscribe(new FlatMapSingleObserver<R>(this, actual));
         }
 
         @Override
         public void onError(Throwable e) {
             actual.onError(e);
+        }
+
+        static final class FlatMapSingleObserver<R> implements SingleObserver<R> {
+
+            final AtomicReference<Disposable> parent;
+
+            final SingleObserver<? super R> actual;
+
+            FlatMapSingleObserver(AtomicReference<Disposable> parent, SingleObserver<? super R> actual) {
+                this.parent = parent;
+                this.actual = actual;
+            }
+
+            @Override
+            public void onSubscribe(final Disposable d) {
+                DisposableHelper.replace(parent, d);
+            }
+
+            @Override
+            public void onSuccess(final R value) {
+                actual.onSuccess(value);
+            }
+
+            @Override
+            public void onError(final Throwable e) {
+                actual.onError(e);
+            }
         }
     }
 }
