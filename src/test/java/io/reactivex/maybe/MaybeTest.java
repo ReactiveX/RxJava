@@ -2985,7 +2985,7 @@ public class MaybeTest {
 
         System.out.printf(log);
 
-        if (middle < after * 3) {
+        if (before * 1.3 < after) {
             fail("There seems to be a memory leak: " + log);
         }
 
