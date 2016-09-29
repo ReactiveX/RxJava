@@ -17,7 +17,6 @@
 package rx.observables;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -640,7 +639,7 @@ public class SyncOnSubscribeTest {
         }
 
         assertEquals(count, subscribers.size());
-        verify(onUnSubscribe, times(count)).call(Matchers.<Map<Object, Object>>any());
+        verify(onUnSubscribe, times(count)).call(Mockito.<Map<Object, Object>>any());
     }
 
     @Test(timeout = 3000)

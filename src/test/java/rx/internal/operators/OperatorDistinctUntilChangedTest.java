@@ -16,7 +16,6 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 

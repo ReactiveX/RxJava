@@ -16,7 +16,6 @@
 package rx;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -788,8 +787,7 @@ public class ObservableTests {
         verify(observer, times(1)).onNext("abc");
         verify(observer, never()).onNext(false);
         verify(observer, never()).onNext(2L);
-        verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -809,8 +807,7 @@ public class ObservableTests {
         verify(observer, times(1)).onNext(l1);
         verify(observer, times(1)).onNext(l2);
         verify(observer, never()).onNext("123");
-        verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -823,8 +820,7 @@ public class ObservableTests {
         observable.subscribe(observer);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
-        verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -837,8 +833,7 @@ public class ObservableTests {
         observable.subscribe(observer);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -851,8 +846,7 @@ public class ObservableTests {
         observable.subscribe(observer);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
-        verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -865,8 +859,7 @@ public class ObservableTests {
         observable.subscribe(observer);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
