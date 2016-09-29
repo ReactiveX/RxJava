@@ -37,7 +37,7 @@ public class ObservableRangeTest {
         verify(observer, times(1)).onNext(3);
         verify(observer, times(1)).onNext(4);
         verify(observer, never()).onNext(5);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -59,7 +59,7 @@ public class ObservableRangeTest {
         verify(observer, times(1)).onNext(2);
         verify(observer, times(1)).onNext(3);
         verify(observer, never()).onNext(4);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
         assertEquals(3, count.get());
     }

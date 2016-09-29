@@ -15,7 +15,6 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;

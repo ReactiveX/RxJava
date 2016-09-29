@@ -42,7 +42,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -57,7 +57,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onNext(true);
         verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -77,7 +77,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -92,7 +92,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onNext(true);
         verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -112,7 +112,7 @@ public class ObservableAnyTest {
 
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -127,7 +127,7 @@ public class ObservableAnyTest {
 
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -147,7 +147,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -167,7 +167,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -187,7 +187,7 @@ public class ObservableAnyTest {
 
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -208,7 +208,7 @@ public class ObservableAnyTest {
 
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -273,7 +273,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onSuccess(false);
         verify(observer, times(1)).onSuccess(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -287,7 +287,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onSuccess(true);
         verify(observer, times(1)).onSuccess(false);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -306,7 +306,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onSuccess(false);
         verify(observer, times(1)).onSuccess(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -320,7 +320,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onSuccess(true);
         verify(observer, times(1)).onSuccess(false);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -339,7 +339,7 @@ public class ObservableAnyTest {
 
         verify(observer, times(1)).onSuccess(false);
         verify(observer, never()).onSuccess(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -353,7 +353,7 @@ public class ObservableAnyTest {
 
         verify(observer, times(1)).onSuccess(true);
         verify(observer, never()).onSuccess(false);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -372,7 +372,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onSuccess(false);
         verify(observer, times(1)).onSuccess(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -391,7 +391,7 @@ public class ObservableAnyTest {
 
         verify(observer, never()).onSuccess(false);
         verify(observer, times(1)).onSuccess(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -410,7 +410,7 @@ public class ObservableAnyTest {
 
         verify(observer, times(1)).onSuccess(false);
         verify(observer, never()).onSuccess(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -430,7 +430,7 @@ public class ObservableAnyTest {
 
         verify(observer, times(1)).onSuccess(false);
         verify(observer, never()).onSuccess(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test

@@ -14,7 +14,6 @@
 package io.reactivex.observable;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -801,7 +800,7 @@ public class ObservableTest {
         verify(observer, never()).onNext(false);
         verify(observer, never()).onNext(2L);
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -823,7 +822,7 @@ public class ObservableTest {
         verify(observer, times(1)).onNext(l2);
         verify(observer, never()).onNext("123");
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -838,7 +837,7 @@ public class ObservableTest {
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -853,7 +852,7 @@ public class ObservableTest {
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -869,7 +868,7 @@ public class ObservableTest {
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -884,7 +883,7 @@ public class ObservableTest {
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -899,7 +898,7 @@ public class ObservableTest {
         verify(observer, times(1)).onSuccess(true);
         verify(observer, never()).onSuccess(false);
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
     }
 
     @Test
@@ -913,7 +912,7 @@ public class ObservableTest {
         verify(observer, times(1)).onSuccess(false);
         verify(observer, never()).onSuccess(true);
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
     }
 
     @Test
@@ -928,7 +927,7 @@ public class ObservableTest {
         verify(observer, times(1)).onSuccess(true);
         verify(observer, never()).onSuccess(false);
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
     }
 
     @Test
@@ -942,7 +941,7 @@ public class ObservableTest {
         verify(observer, times(1)).onSuccess(false);
         verify(observer, never()).onSuccess(true);
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
     }
 
     @Test

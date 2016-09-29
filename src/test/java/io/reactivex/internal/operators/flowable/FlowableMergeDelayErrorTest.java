@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Method;
@@ -73,7 +72,7 @@ public class FlowableMergeDelayErrorTest {
         Flowable<String> m = Flowable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
+        verify(stringObserver, times(1)).onError(any(CompositeException.class));
         verify(stringObserver, never()).onComplete();
         verify(stringObserver, times(1)).onNext("one");
         verify(stringObserver, times(1)).onNext("two");

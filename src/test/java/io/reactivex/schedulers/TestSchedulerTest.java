@@ -14,7 +14,6 @@
 package io.reactivex.schedulers;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;

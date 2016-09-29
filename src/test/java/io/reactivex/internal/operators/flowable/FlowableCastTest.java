@@ -36,7 +36,7 @@ public class FlowableCastTest {
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(1);
         verify(observer, never()).onError(
-                org.mockito.Matchers.any(Throwable.class));
+                any(Throwable.class));
         verify(observer, times(1)).onComplete();
     }
 
@@ -50,7 +50,7 @@ public class FlowableCastTest {
         observable.subscribe(observer);
 
         verify(observer, times(1)).onError(
-                org.mockito.Matchers.any(ClassCastException.class));
+                any(ClassCastException.class));
     }
 
     @Test
