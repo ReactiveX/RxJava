@@ -453,7 +453,7 @@ public class SyncOnSubscribeTest {
         Observable.create(os).take(1).subscribe(ts);
 
         verify(o, never()).onError(any(Throwable.class));
-        verify(onUnSubscribe, times(1)).call(any(Integer.class));
+        verify(onUnSubscribe, times(1)).call(null);
     }
 
     @Test
