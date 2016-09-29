@@ -17,7 +17,6 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -91,17 +90,6 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
     // Convenience and state-aware methods
     // -----------------------------------
 
-    /**
-     * Emits the value to the actual subscriber if {@link #done} is false.
-     * @param value the value to signal
-     */
-    protected final void next(R value) {
-        if (done) {
-            return;
-        }
-        actual.onNext(value);
-    }
-
     @Override
     public void onError(Throwable t) {
         if (done) {
@@ -129,16 +117,6 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
         }
         done = true;
         actual.onComplete();
-    }
-
-    /**
-     * Checks if the value is null and if so, throws a NullPointerException.
-     * @param value the value to check
-     * @param message the message to indicate the source of the value
-     * @return the value if not null
-     */
-    protected final <V> V nullCheck(V value, String message) {
-        return ObjectHelper.requireNonNull(value, message);
     }
 
     /**
