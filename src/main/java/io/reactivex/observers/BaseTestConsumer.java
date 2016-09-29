@@ -240,9 +240,9 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * @param errorClass the error class to expect
      * @return this;
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked", "rawtypes", "cast" })
     public final U assertError(Class<? extends Throwable> errorClass) {
-        return assertError((Predicate)Functions.isInstanceOf(errorClass));
+        return (U)assertError((Predicate)Functions.isInstanceOf(errorClass));
     }
 
     /**
