@@ -31,7 +31,6 @@ import rx.Scheduler.Worker;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.OnSubscribeRange;
-import rx.internal.producers.SingleProducer;
 import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -429,13 +428,13 @@ public class RxJavaHooksTest {
     @Test
     public void singleStart() {
         try {
-            RxJavaHooks.setOnSingleStart(new Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe>() {
+            RxJavaHooks.setOnSingleStart(new Func2<Single, Single.OnSubscribe, Single.OnSubscribe>() {
                 @Override
-                public Observable.OnSubscribe call(Single o, Observable.OnSubscribe t) {
-                    return new Observable.OnSubscribe<Object>() {
+                public Single.OnSubscribe call(Single o, Single.OnSubscribe t) {
+                    return new Single.OnSubscribe<Object>() {
                         @Override
-                        public void call(Subscriber<? super Object> t) {
-                            t.setProducer(new SingleProducer<Integer>(t, 10));
+                        public void call(SingleSubscriber<? super Object> t) {
+                            t.onSuccess(10);
                         }
                     };
                 }
@@ -792,7 +791,7 @@ public class RxJavaHooksTest {
 
             assertNull(RxJavaHooks.onSingleStart(Single.just(1), null));
 
-            assertSame(oos, RxJavaHooks.onSingleStart(Single.just(1), oos));
+            assertSame(sos, RxJavaHooks.onSingleStart(Single.just(1), sos));
 
             assertNull(RxJavaHooks.onCompletableStart(Completable.never(), null));
 

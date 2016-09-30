@@ -15,13 +15,9 @@
  */
 package rx.internal.util;
 
-import rx.Scheduler;
+import rx.*;
 import rx.Scheduler.Worker;
-import rx.Single;
-import rx.SingleSubscriber;
-import rx.Subscriber;
-import rx.functions.Action0;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.internal.schedulers.EventLoopsScheduler;
 
 public final class ScalarSynchronousSingle<T> extends Single<T> {
@@ -133,24 +129,19 @@ public final class ScalarSynchronousSingle<T> extends Single<T> {
                 if (o instanceof ScalarSynchronousSingle) {
                     child.onSuccess(((ScalarSynchronousSingle<? extends R>) o).value);
                 } else {
-                    Subscriber<R> subscriber = new Subscriber<R>() {
-                        @Override
-                        public void onCompleted() {
-                            // deliberately ignored
-                        }
-
+                    SingleSubscriber<R> subscriber = new SingleSubscriber<R>() {
                         @Override
                         public void onError(Throwable e) {
                             child.onError(e);
                         }
 
                         @Override
-                        public void onNext(R r) {
+                        public void onSuccess(R r) {
                             child.onSuccess(r);
                         }
                     };
                     child.add(subscriber);
-                    o.unsafeSubscribe(subscriber);
+                    o.subscribe(subscriber);
                 }
             }
         });

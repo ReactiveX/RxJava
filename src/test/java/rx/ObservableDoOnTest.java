@@ -66,7 +66,7 @@ public class ObservableDoOnTest {
         assertNotNull(t);
         assertEquals(t, r.get());
     }
-    
+
     @Test
     public void testDoOnErrorWithActionOfTypeObject() {
         final AtomicReference<Boolean> r = new AtomicReference<Boolean>();

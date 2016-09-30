@@ -28,6 +28,7 @@ import rx.plugins.RxJavaHooks;
 /**
  * Allows push-based emission of terminal events to a CompletableSubscriber.
  */
+@SuppressWarnings("deprecation")
 public final class CompletableFromEmitter implements Completable.OnSubscribe {
 
     final Action1<CompletableEmitter> producer;

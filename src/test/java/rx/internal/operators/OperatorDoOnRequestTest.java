@@ -141,7 +141,7 @@ public class OperatorDoOnRequestTest {
             Assert.assertEquals(Arrays.asList(0L, 1L), requested);
         }
     }
-    
+
     @Test
     public void canCallDoOnRequestWithActionOfTypeObject() {
         final AtomicReference<Boolean> r = new AtomicReference<Boolean>();

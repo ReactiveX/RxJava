@@ -75,6 +75,7 @@ public final class NotificationLite<T> {
      * Creates a lite {@code onNext} notification for the value passed in without doing any allocation. Can
      * be unwrapped and sent with the {@link #accept} method.
      *
+     * @param <T> the value type to convert
      * @param t
      *          the item emitted to {@code onNext}
      * @return the item, or a null token representing the item if the item is {@code null}
@@ -113,6 +114,7 @@ public final class NotificationLite<T> {
     /**
      * Unwraps the lite notification and calls the appropriate method on the {@link Observer}.
      *
+     * @param <T> the value type to accept
      * @param o
      *            the {@link Observer} to call {@code onNext}, {@code onCompleted}, or {@code onError}.
      * @param n
@@ -212,6 +214,7 @@ public final class NotificationLite<T> {
      * this an {@code OnComplete} or {@code OnError} notification type. For performance reasons, this method
      * does not check for this, so you are expected to prevent such a mishap.
      *
+     * @param <T> the value type to convert
      * @param n
      *            the lite notification (of type {@code Kind.OnNext})
      * @return the unwrapped value, which can be null

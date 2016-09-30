@@ -20,7 +20,6 @@ import rx.annotations.*;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
-import rx.internal.producers.SingleDelayedProducer;
 import rx.internal.util.*;
 import rx.observers.*;
 import rx.plugins.RxJavaHooks;
@@ -51,7 +50,7 @@ import rx.subscriptions.Subscriptions;
  */
 public class Single<T> {
 
-    final Observable.OnSubscribe<T> onSubscribe;
+    final OnSubscribe<T> onSubscribe;
 
     /**
      * Creates a Single with a Function to execute when it is subscribed to (executed).
@@ -60,40 +59,25 @@ public class Single<T> {
      * unless you specifically have a need for inheritance.
      *
      * @param f
-     *            {@code OnExecute} to be executed when {@code execute(SingleSubscriber)} or
+     *            {@code f} to be executed when {@code execute(SingleSubscriber)} or
      *            {@code subscribe(Subscriber)} is called
      */
     protected Single(OnSubscribe<T> f) {
-        final OnSubscribe<T> g = RxJavaHooks.onCreate(f);
-        // bridge between OnSubscribe (which all Operators and Observables use) and OnExecute (for Single)
-        this.onSubscribe = new Observable.OnSubscribe<T>() {
-
-            @Override
-            public void call(final Subscriber<? super T> child) {
-                final SingleDelayedProducer<T> producer = new SingleDelayedProducer<T>(child);
-                child.setProducer(producer);
-                SingleSubscriber<T> ss = new SingleSubscriber<T>() {
-
-                    @Override
-                    public void onSuccess(T value) {
-                        producer.setValue(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable error) {
-                        child.onError(error);
-                    }
-
-                };
-                child.add(ss);
-                g.call(ss);
-            }
-
-        };
+        this.onSubscribe = RxJavaHooks.onCreate(f);
     }
 
-    private Single(final Observable.OnSubscribe<T> f) {
-        this.onSubscribe = RxJavaHooks.onCreate(f);
+    /**
+     * Creates a Single with a Function to execute when it is subscribed to (executed).
+     * <p>
+     * <em>Note:</em> Use {@link #create(OnSubscribe)} to create a Single, instead of this constructor,
+     * unless you specifically have a need for inheritance.
+     *
+     * @param f
+     *            {@code f} to be executed when {@code execute(SingleSubscriber)} or
+     *            {@code subscribe(Subscriber)} is called
+     */
+    protected Single(final Observable.OnSubscribe<T> f) {
+        onSubscribe = RxJavaHooks.onCreate(new SingleFromObservable<T>(f));
     }
 
     /**
@@ -159,28 +143,7 @@ public class Single<T> {
      */
     @Beta
     public final <R> Single<R> lift(final Operator<? extends R, ? super T> lift) {
-        return new Single<R>(new Observable.OnSubscribe<R>() {
-            @Override
-            public void call(Subscriber<? super R> o) {
-                try {
-                    final Subscriber<? super T> st = RxJavaHooks.onSingleLift(lift).call(o);
-                    try {
-                        // new Subscriber created and being subscribed with so 'onStart' it
-                        st.onStart();
-                        onSubscribe.call(st);
-                    } catch (Throwable e) {
-                        // localized capture of errors rather than it skipping all operators
-                        // and ending up in the try/catch of the subscribe method which then
-                        // prevents onErrorResumeNext and other similar approaches to error handling
-                        Exceptions.throwOrReport(e, st);
-                    }
-                } catch (Throwable e) {
-                    // if the lift function failed all we can do is pass the error to the final Subscriber
-                    // as we don't have the operator available to us
-                    Exceptions.throwOrReport(e, o);
-                }
-            }
-        });
+        return create(new SingleLiftObservableOperator<T, R>(this.onSubscribe, lift));
     }
 
     /**
@@ -234,7 +197,7 @@ public class Single<T> {
      */
     private static <T> Observable<T> asObservable(Single<T> t) {
         // is this sufficient, or do I need to keep the outer Single and subscribe to it?
-        return Observable.create(t.onSubscribe);
+        return Observable.create(new SingleToObservable<T>(t.onSubscribe));
     }
 
     /* *********************************************************************************************************
@@ -518,9 +481,8 @@ public class Single<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
-    @SuppressWarnings("cast")
     public static <T> Single<T> from(Future<? extends T> future) {
-        return new Single<T>((Observable.OnSubscribe<T>)OnSubscribeToObservableFuture.toObservableFuture(future));
+        return create(new SingleFromFuture<T>(future, 0, null));
     }
 
     /**
@@ -550,9 +512,11 @@ public class Single<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
-    @SuppressWarnings("cast")
     public static <T> Single<T> from(Future<? extends T> future, long timeout, TimeUnit unit) {
-        return new Single<T>((Observable.OnSubscribe<T>)OnSubscribeToObservableFuture.toObservableFuture(future, timeout, unit));
+        if (unit == null) {
+            throw new NullPointerException("unit is null");
+        }
+        return create(new SingleFromFuture<T>(future, timeout, unit));
     }
 
     /**
@@ -579,9 +543,8 @@ public class Single<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
-    @SuppressWarnings("cast")
     public static <T> Single<T> from(Future<? extends T> future, Scheduler scheduler) {
-        return new Single<T>((Observable.OnSubscribe<T>)OnSubscribeToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
+        return from(future).subscribeOn(scheduler);
     }
 
     /**
@@ -602,22 +565,7 @@ public class Single<T> {
      * @return a {@link Single} whose {@link Observer}s' subscriptions trigger an invocation of the given function.
      */
     public static <T> Single<T> fromCallable(final Callable<? extends T> func) {
-        return create(new OnSubscribe<T>() {
-            @Override
-            public void call(SingleSubscriber<? super T> singleSubscriber) {
-                T value;
-
-                try {
-                    value = func.call();
-                } catch (Throwable t) {
-                    Exceptions.throwIfFatal(t);
-                    singleSubscriber.onError(t);
-                    return;
-                }
-
-                singleSubscriber.onSuccess(value);
-            }
-        });
+        return create(new SingleFromCallable<T>(func));
     }
 
     /**
@@ -1467,9 +1415,10 @@ public class Single<T> {
         if (this instanceof ScalarSynchronousSingle) {
             return ((ScalarSynchronousSingle<T>)this).scalarScheduleOn(scheduler);
         }
-        // Note that since Single emits onSuccess xor onError,
-        // there is no cut-ahead possible like with regular Observable sequences.
-        return lift(new OperatorObserveOn<T>(scheduler, false));
+        if (scheduler == null) {
+            throw new NullPointerException("scheduler is null");
+        }
+        return create(new SingleObserveOn<T>(onSubscribe, scheduler));
     }
 
     /**
@@ -1498,9 +1447,8 @@ public class Single<T> {
      * @return the original Single with appropriately modified behavior
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
-    @SuppressWarnings("cast")
     public final Single<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
-        return lift((Operator<T, T>)OperatorOnErrorResumeNextViaFunction.withSingle(resumeFunction));
+        return create(new SingleOnErrorReturn<T>(onSubscribe, resumeFunction));
     }
 
     /**
@@ -1584,12 +1532,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe() {
-        return subscribe(new Subscriber<T>() {
-
-            @Override
-            public final void onCompleted() {
-                // do nothing
-            }
+        return subscribe(new SingleSubscriber<T>() {
 
             @Override
             public final void onError(Throwable e) {
@@ -1597,7 +1540,7 @@ public class Single<T> {
             }
 
             @Override
-            public final void onNext(T args) {
+            public final void onSuccess(T args) {
                 // do nothing
             }
 
@@ -1625,12 +1568,7 @@ public class Single<T> {
             throw new IllegalArgumentException("onSuccess can not be null");
         }
 
-        return subscribe(new Subscriber<T>() {
-
-            @Override
-            public final void onCompleted() {
-                // do nothing
-            }
+        return subscribe(new SingleSubscriber<T>() {
 
             @Override
             public final void onError(Throwable e) {
@@ -1638,7 +1576,7 @@ public class Single<T> {
             }
 
             @Override
-            public final void onNext(T args) {
+            public final void onSuccess(T args) {
                 onSuccess.call(args);
             }
 
@@ -1672,12 +1610,7 @@ public class Single<T> {
             throw new IllegalArgumentException("onError can not be null");
         }
 
-        return subscribe(new Subscriber<T>() {
-
-            @Override
-            public final void onCompleted() {
-                // do nothing
-            }
+        return subscribe(new SingleSubscriber<T>() {
 
             @Override
             public final void onError(Throwable e) {
@@ -1685,7 +1618,7 @@ public class Single<T> {
             }
 
             @Override
-            public final void onNext(T args) {
+            public final void onSuccess(T args) {
                 onSuccess.call(args);
             }
 
@@ -1708,10 +1641,16 @@ public class Single<T> {
      * @return the subscription that allows unsubscribing
      */
     public final Subscription unsafeSubscribe(Subscriber<? super T> subscriber) {
+        return unsafeSubscribe(subscriber, true);
+    }
+
+    private Subscription unsafeSubscribe(Subscriber<? super T> subscriber, boolean start) {
         try {
-            // new Subscriber so onStart it
-            subscriber.onStart();
-            RxJavaHooks.onSingleStart(this, onSubscribe).call(subscriber);
+            if (start) {
+                // new Subscriber so onStart it
+                subscriber.onStart();
+            }
+            RxJavaHooks.onSingleStart(this, onSubscribe).call(SingleLiftObservableOperator.wrap(subscriber));
             return RxJavaHooks.onSingleReturn(subscriber);
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
@@ -1797,13 +1736,6 @@ public class Single<T> {
         if (subscriber == null) {
             throw new IllegalArgumentException("observer can not be null");
         }
-        if (onSubscribe == null) {
-            throw new IllegalStateException("onSubscribe function can not be null.");
-            /*
-             * the subscribe function can also be overridden but generally that's not the appropriate approach
-             * so I won't mention that in the exception
-             */
-        }
 
         // new Subscriber so onStart it
         subscriber.onStart();
@@ -1815,32 +1747,9 @@ public class Single<T> {
         // if not already wrapped
         if (!(subscriber instanceof SafeSubscriber)) {
             // assign to `observer` so we return the protected version
-            subscriber = new SafeSubscriber<T>(subscriber);
+            return unsafeSubscribe(new SafeSubscriber<T>(subscriber), false);
         }
-
-        // The code below is exactly the same an unsafeSubscribe but not used because it would add a significant depth to already huge call stacks.
-        try {
-            // allow the hook to intercept and/or decorate
-            RxJavaHooks.onSingleStart(this, onSubscribe).call(subscriber);
-            return RxJavaHooks.onSingleReturn(subscriber);
-        } catch (Throwable e) {
-            // special handling for certain Throwable/Error/Exception types
-            Exceptions.throwIfFatal(e);
-            // if an unhandled error occurs executing the onSubscribe we will propagate it
-            try {
-                subscriber.onError(RxJavaHooks.onSingleError(e));
-            } catch (Throwable e2) {
-                Exceptions.throwIfFatal(e2);
-                // if this happens it means the onError itself failed (perhaps an invalid function implementation)
-                // so we are unable to propagate the error correctly and will just throw
-                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                // TODO could the hook be the cause of the error in the on error handling.
-                RxJavaHooks.onSingleError(r);
-                // TODO why aren't we throwing the hook's return value.
-                throw r; // NOPMD
-            }
-            return Subscriptions.empty();
-        }
+        return unsafeSubscribe(subscriber, true);
     }
 
     /**
@@ -1879,27 +1788,29 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe(final SingleSubscriber<? super T> te) {
-        Subscriber<T> s = new Subscriber<T>() {
-
-            @Override
-            public void onCompleted() {
-                // deliberately ignored
+        if (te == null) {
+            throw new IllegalArgumentException("te is null");
+        }
+        try {
+            RxJavaHooks.onSingleStart(this, onSubscribe).call(te);
+            return RxJavaHooks.onSingleReturn(te);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            // if an unhandled error occurs executing the onSubscribe we will propagate it
+            try {
+                te.onError(RxJavaHooks.onSingleError(ex));
+            } catch (Throwable e2) {
+                Exceptions.throwIfFatal(e2);
+                // if this happens it means the onError itself failed (perhaps an invalid function implementation)
+                // so we are unable to propagate the error correctly and will just throw
+                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + ex.getMessage() + "] and then again while trying to pass to onError.", e2);
+                // TODO could the hook be the cause of the error in the on error handling.
+                RxJavaHooks.onSingleError(r);
+                // TODO why aren't we throwing the hook's return value.
+                throw r; // NOPMD
             }
-
-            @Override
-            public void onError(Throwable e) {
-                te.onError(e);
-            }
-
-            @Override
-            public void onNext(T t) {
-                te.onSuccess(t);
-            }
-
-        };
-        te.add(s);
-        subscribe(s);
-        return s;
+            return Subscriptions.empty();
+        }
     }
 
     /**
@@ -1978,59 +1889,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
     public final Single<T> takeUntil(final Completable other) {
-        return lift(new Operator<T, T>() {
-            @Override
-            public Subscriber<? super T> call(Subscriber<? super T> child) {
-                final Subscriber<T> serial = new SerializedSubscriber<T>(child, false);
-
-                final Subscriber<T> main = new Subscriber<T>(serial, false) {
-                    @Override
-                    public void onNext(T t) {
-                        serial.onNext(t);
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        try {
-                            serial.onError(e);
-                        } finally {
-                            serial.unsubscribe();
-                        }
-                    }
-                    @Override
-                    public void onCompleted() {
-                        try {
-                            serial.onCompleted();
-                        } finally {
-                            serial.unsubscribe();
-                        }
-                    }
-                };
-
-                final CompletableSubscriber so = new CompletableSubscriber() {
-                    @Override
-                    public void onCompleted() {
-                        onError(new CancellationException("Stream was canceled before emitting a terminal event."));
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        main.onError(e);
-                    }
-
-                    @Override
-                    public void onSubscribe(Subscription d) {
-                        serial.add(d);
-                    }
-                };
-
-                serial.add(main);
-                child.add(serial);
-
-                other.unsafeSubscribe(so);
-
-                return main;
-            }
-        });
+        return create(new SingleTakeUntilCompletable<T>(onSubscribe, other));
     }
 
     /**
@@ -2054,62 +1913,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
     public final <E> Single<T> takeUntil(final Observable<? extends E> other) {
-        return lift(new Operator<T, T>() {
-            @Override
-            public Subscriber<? super T> call(Subscriber<? super T> child) {
-                final Subscriber<T> serial = new SerializedSubscriber<T>(child, false);
-
-                final Subscriber<T> main = new Subscriber<T>(serial, false) {
-                    @Override
-                    public void onNext(T t) {
-                        serial.onNext(t);
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        try {
-                            serial.onError(e);
-                        } finally {
-                            serial.unsubscribe();
-                        }
-                    }
-                    @Override
-                    public void onCompleted() {
-                        try {
-                            serial.onCompleted();
-                        } finally {
-                            serial.unsubscribe();
-                        }
-                    }
-                };
-
-                final Subscriber<E> so = new Subscriber<E>() {
-
-                    @Override
-                    public void onCompleted() {
-                        onError(new CancellationException("Stream was canceled before emitting a terminal event."));
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        main.onError(e);
-                    }
-
-                    @Override
-                    public void onNext(E e) {
-                        onError(new CancellationException("Stream was canceled before emitting a terminal event."));
-                    }
-                };
-
-                serial.add(main);
-                serial.add(so);
-
-                child.add(serial);
-
-                other.unsafeSubscribe(so);
-
-                return main;
-            }
-        });
+        return create(new SingleTakeUntilObservable<T, E>(onSubscribe, other));
     }
 
     /**
@@ -2131,56 +1935,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
     public final <E> Single<T> takeUntil(final Single<? extends E> other) {
-        return lift(new Operator<T, T>() {
-            @Override
-            public Subscriber<? super T> call(Subscriber<? super T> child) {
-                final Subscriber<T> serial = new SerializedSubscriber<T>(child, false);
-
-                final Subscriber<T> main = new Subscriber<T>(serial, false) {
-                    @Override
-                    public void onNext(T t) {
-                        serial.onNext(t);
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        try {
-                            serial.onError(e);
-                        } finally {
-                            serial.unsubscribe();
-                        }
-                    }
-                    @Override
-                    public void onCompleted() {
-                        try {
-                            serial.onCompleted();
-                        } finally {
-                            serial.unsubscribe();
-                        }
-                    }
-                };
-
-                final SingleSubscriber<E> so = new SingleSubscriber<E>() {
-                    @Override
-                    public void onSuccess(E value) {
-                        onError(new CancellationException("Stream was canceled before emitting a terminal event."));
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        main.onError(e);
-                    }
-                };
-
-                serial.add(main);
-                serial.add(so);
-
-                child.add(serial);
-
-                other.subscribe(so);
-
-                return main;
-            }
-        });
+        return create(new SingleTakeUntilSingle<T, E>(onSubscribe, other));
     }
 
     /**
@@ -2329,7 +2084,7 @@ public class Single<T> {
         if (other == null) {
             other = Single.<T> error(new TimeoutException());
         }
-        return lift(new OperatorTimeout<T>(timeout, timeUnit, asObservable(other), scheduler));
+        return create(new SingleTimeout<T>(onSubscribe, timeout, timeUnit, scheduler, other.onSubscribe));
     }
 
     /**
@@ -2462,17 +2217,8 @@ public class Single<T> {
             throw new IllegalArgumentException("onSuccess is null");
         }
 
-        return Single.create(new SingleDoOnEvent<T>(this, new Action1<T>() {
-            @Override
-            public void call(final T t) {
-                onSuccess.call(t);
-            }
-        }, new Action1<Throwable>() {
-            @Override
-            public void call(final Throwable throwable) {
-                // Do nothing.
-            }
-        }));
+        Action1<Throwable> empty = Actions.empty();
+        return Single.create(new SingleDoOnEvent<T>(this, onSuccess, empty));
     }
 
     /**
@@ -2495,7 +2241,7 @@ public class Single<T> {
      */
     @Beta
     public final Single<T> doOnSubscribe(final Action0 subscribe) {
-        return lift(new OperatorDoOnSubscribe<T>(subscribe));
+        return create(new SingleDoOnSubscribe<T>(onSubscribe, subscribe));
     }
 
     /**
@@ -2520,7 +2266,7 @@ public class Single<T> {
      */
     @Beta
     public final Single<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
-        return lift(new OperatorDelay<T>(delay, unit, scheduler));
+        return create(new SingleDelay<T>(onSubscribe, delay, unit, scheduler));
     }
 
     /**
@@ -2609,7 +2355,7 @@ public class Single<T> {
      */
     @Beta
     public final Single<T> doOnUnsubscribe(final Action0 action) {
-        return lift(new OperatorDoOnUnsubscribe<T>(action));
+        return create(new SingleDoOnUnsubscribe<T>(onSubscribe, action));
     }
 
     /**
