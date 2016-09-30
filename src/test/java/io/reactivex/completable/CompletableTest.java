@@ -2934,11 +2934,11 @@ public class CompletableTest {
         c.blockingAwait();
     }
 
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 1000)
     public void ambArraySingleError() {
-        Completable c = Completable.ambArray(error.completable);
-
-        c.blockingAwait();
+        Completable.ambArray(error.completable)
+                .test()
+                .assertError(TestException.class);
     }
 
     @Test(timeout = 1000)
@@ -3065,11 +3065,11 @@ public class CompletableTest {
         Assert.assertTrue("Not completed", complete.get() instanceof TestException);
     }
 
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 1000)
     public void ambMultipleOneIsNull() {
-        Completable c = Completable.ambArray(null, normal.completable);
-
-        c.blockingAwait();
+        Completable.ambArray(null, normal.completable)
+                .test()
+                .assertError(NullPointerException.class);
     }
 
     @Test(timeout = 1000)
@@ -3084,23 +3084,21 @@ public class CompletableTest {
         Completable.amb((Iterable<Completable>)null);
     }
 
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 1000)
     public void ambIterableIteratorNull() {
-        Completable c = Completable.amb(new Iterable<Completable>() {
+        Completable.amb(new Iterable<Completable>() {
             @Override
             public Iterator<Completable> iterator() {
                 return null;
             }
-        });
-
-        c.blockingAwait();
+        }).test().assertError(NullPointerException.class);
     }
 
-    @Test(timeout = 1000, expected = NullPointerException.class)
+    @Test(timeout = 1000)
     public void ambIterableWithNull() {
-        Completable c = Completable.amb(Arrays.asList(null, normal.completable));
-
-        c.blockingAwait();
+        Completable.amb(Arrays.asList(null, normal.completable))
+            .test()
+            .assertError(NullPointerException.class);
     }
 
     @Test(timeout = 1000)
@@ -3121,44 +3119,42 @@ public class CompletableTest {
         normal.assertSubscriptions(1);
     }
 
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 1000)
     public void ambIterableOneThrows() {
-        Completable c = Completable.amb(Collections.singleton(error.completable));
-
-        c.blockingAwait();
+        Completable.amb(Collections.singleton(error.completable))
+                .test()
+                .assertError(TestException.class);
     }
 
-    @Test(timeout = 1000, expected = TestException.class)
+    @Test(timeout = 1000)
     public void ambIterableManyOneThrows() {
-        Completable c = Completable.amb(Arrays.asList(error.completable, normal.completable));
-
-        c.blockingAwait();
+        Completable.amb(Arrays.asList(error.completable, normal.completable))
+                .test()
+                .assertError(TestException.class);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void ambIterableIterableThrows() {
-        Completable c = Completable.amb(new Iterable<Completable>() {
+        Completable.amb(new Iterable<Completable>() {
             @Override
             public Iterator<Completable> iterator() {
                 throw new TestException();
             }
-        });
-
-        c.blockingAwait();
+        }).test().assertError(TestException.class);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void ambIterableIteratorHasNextThrows() {
-        Completable c = Completable.amb(new IterableIteratorHasNextThrows());
-
-        c.blockingAwait();
+        Completable.amb(new IterableIteratorHasNextThrows())
+                .test()
+                .assertError(TestException.class);
     }
 
-    @Test(expected = TestException.class)
+    @Test
     public void ambIterableIteratorNextThrows() {
-        Completable c = Completable.amb(new IterableIteratorNextThrows());
-
-        c.blockingAwait();
+        Completable.amb(new IterableIteratorNextThrows())
+                .test()
+                .assertError(TestException.class);
     }
 
     @Test(expected = NullPointerException.class)

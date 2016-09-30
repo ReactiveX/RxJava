@@ -15,8 +15,11 @@ package io.reactivex.internal.operators.single;
 
 import static org.junit.Assert.*;
 
-import java.util.NoSuchElementException;
+import java.util.*;
 
+import io.reactivex.Completable;
+import io.reactivex.SingleSource;
+import io.reactivex.exceptions.TestException;
 import org.junit.Test;
 
 import io.reactivex.Single;
@@ -50,6 +53,49 @@ public class SingleAmbTest {
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
         TestObserver<Integer> ts = pp1.single(-99).ambWith(pp2.single(-99)).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onNext(2);
+        pp2.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        ts.assertResult(2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(timeout = 1000)
+    public void ambIterableWithFirstFires() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        List<Single<Integer>> singles = Arrays.asList(pp1.single(-99), pp2.single(-99));
+        TestObserver<Integer> ts = Single.amb(singles).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp1.onNext(1);
+        pp1.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        ts.assertResult(1);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(timeout = 1000)
+    public void ambIterableWithSecondFires() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        List<Single<Integer>> singles = Arrays.asList(pp1.single(-99), pp2.single(-99));
+        TestObserver<Integer> ts = Single.amb(singles).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());

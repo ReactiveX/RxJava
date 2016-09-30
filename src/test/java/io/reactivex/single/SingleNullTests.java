@@ -38,20 +38,22 @@ public class SingleNullTests {
         Single.amb((Iterable<Single<Integer>>)null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void ambIterableIteratorNull() {
         Single.amb(new Iterable<Single<Object>>() {
             @Override
             public Iterator<Single<Object>> iterator() {
                 return null;
             }
-        }).blockingGet();
+        }).test().assertError(NullPointerException.class);
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
+    @Test
     public void ambIterableOneIsNull() {
-        Single.amb(Arrays.asList(null, just1)).blockingGet();
+        Single.amb(Arrays.asList(null, just1))
+                .test()
+                .assertError(NullPointerException.class);
     }
 
     @Test(expected = NullPointerException.class)
@@ -60,9 +62,11 @@ public class SingleNullTests {
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
+    @Test
     public void ambArrayOneIsNull() {
-        Single.ambArray(null, just1).blockingGet();
+        Single.ambArray(null, just1)
+            .test()
+            .assertError(NullPointerException.class);
     }
 
     @Test(expected = NullPointerException.class)

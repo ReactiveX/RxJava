@@ -73,7 +73,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> amb(final Iterable<? extends SingleSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new SingleAmbIterable<T>(sources));
+        return RxJavaPlugins.onAssembly(new SingleAmb<T>(null, sources));
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class Single<T> implements SingleSource<T> {
         if (sources.length == 1) {
             return wrap((SingleSource<T>)sources[0]);
         }
-        return RxJavaPlugins.onAssembly(new SingleAmbArray<T>(sources));
+        return RxJavaPlugins.onAssembly(new SingleAmb<T>(sources, null));
     }
 
     /**
