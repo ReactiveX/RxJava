@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.exceptions.Exceptions;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
@@ -38,13 +39,23 @@ public final class FlowableAmb<T> extends Flowable<T> {
         int count = 0;
         if (sources == null) {
             sources = new Publisher[8];
-            for (Publisher<? extends T> p : sourcesIterable) {
-                if (count == sources.length) {
-                    Publisher<? extends T>[] b = new Publisher[count + (count >> 2)];
-                    System.arraycopy(sources, 0, b, 0, count);
-                    sources = b;
+            try {
+                for (Publisher<? extends T> p : sourcesIterable) {
+                    if (p == null) {
+                        EmptySubscription.error(new NullPointerException("One of the sources is null"), s);
+                        return;
+                    }
+                    if (count == sources.length) {
+                        Publisher<? extends T>[] b = new Publisher[count + (count >> 2)];
+                        System.arraycopy(sources, 0, b, 0, count);
+                        sources = b;
+                    }
+                    sources[count++] = p;
                 }
-                sources[count++] = p;
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                EmptySubscription.error(e, s);
+                return;
             }
         } else {
             count = sources.length;

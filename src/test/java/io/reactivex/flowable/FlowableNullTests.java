@@ -55,20 +55,22 @@ public class FlowableNullTests {
         Flowable.amb((Iterable<Publisher<Object>>)null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void ambIterableIteratorNull() {
         Flowable.amb(new Iterable<Publisher<Object>>() {
             @Override
             public Iterator<Publisher<Object>> iterator() {
                 return null;
             }
-        }).blockingLast();
+        }).test().assertError(NullPointerException.class);
     }
 
     @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
+    @Test
     public void ambIterableOneIsNull() {
-        Flowable.amb(Arrays.asList(Flowable.never(), null)).blockingLast();
+        Flowable.amb(Arrays.asList(Flowable.never(), null))
+                .test()
+                .assertError(NullPointerException.class);
     }
 
     @Test(expected = NullPointerException.class)
