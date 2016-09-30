@@ -1511,6 +1511,14 @@ public class MaybeTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void ambArrayOneIsNull() {
+        Maybe.ambArray(null, Maybe.just(1))
+                .test()
+                .assertError(NullPointerException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void ambArrayEmpty() {
         assertSame(Maybe.empty(), Maybe.ambArray());
     }
@@ -1834,6 +1842,29 @@ public class MaybeTest {
         assertFalse(pp2.hasSubscribers());
 
         ts.assertResult();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void ambIterableNull() {
+        Maybe.amb((Iterable<Maybe<Integer>>)null);
+    }
+
+    @Test
+    public void ambIterableIteratorNull() {
+        Maybe.amb(new Iterable<Maybe<Object>>() {
+            @Override
+            public Iterator<Maybe<Object>> iterator() {
+                return null;
+            }
+        }).test().assertError(NullPointerException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambIterableOneIsNull() {
+        Maybe.amb(Arrays.asList(null, Maybe.just(1)))
+                .test()
+                .assertError(NullPointerException.class);
     }
 
     @Test

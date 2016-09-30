@@ -17,6 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -24,21 +26,49 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type emitted
  */
-public final class MaybeAmbArray<T> extends Maybe<T> {
+public final class MaybeAmb<T> extends Maybe<T> {
+    private final MaybeSource<? extends T>[] sources;
+    private final Iterable<? extends MaybeSource<? extends T>> sourcesIterable;
 
-    final MaybeSource<? extends T>[] sources;
-
-    public MaybeAmbArray(MaybeSource<? extends T>[] sources) {
+    public MaybeAmb(MaybeSource<? extends T>[] sources, Iterable<? extends MaybeSource<? extends T>> sourcesIterable) {
         this.sources = sources;
+        this.sourcesIterable = sourcesIterable;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void subscribeActual(MaybeObserver<? super T> observer) {
+        MaybeSource<? extends T>[] sources = this.sources;
+        int count = 0;
+        if (sources == null) {
+            sources = new MaybeSource[8];
+            try {
+                for (MaybeSource<? extends T> element : sourcesIterable) {
+                    if (element == null) {
+                        EmptyDisposable.error(new NullPointerException("One of the sources is null"), observer);
+                        return;
+                    }
+                    if (count == sources.length) {
+                        MaybeSource<? extends T>[] b = new MaybeSource[count + (count >> 2)];
+                        System.arraycopy(sources, 0, b, 0, count);
+                        sources = b;
+                    }
+                    sources[count++] = element;
+                }
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                EmptyDisposable.error(e, observer);
+                return;
+            }
+        } else {
+            count = sources.length;
+        }
 
         AmbMaybeObserver<T> parent = new AmbMaybeObserver<T>(observer);
         observer.onSubscribe(parent);
 
-        for (MaybeSource<? extends T> s : sources) {
+        for (int i = 0; i < count; i++) {
+            MaybeSource<? extends T> s = sources[i];
             if (parent.isDisposed()) {
                 return;
             }
@@ -50,6 +80,11 @@ public final class MaybeAmbArray<T> extends Maybe<T> {
 
             s.subscribe(parent);
         }
+
+        if (count == 0) {
+            observer.onComplete();
+        }
+
     }
 
     static final class AmbMaybeObserver<T>

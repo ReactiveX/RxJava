@@ -61,7 +61,7 @@ public abstract class Completable implements CompletableSource {
             return wrap(sources[0]);
         }
 
-        return RxJavaPlugins.onAssembly(new CompletableAmbArray(sources));
+        return RxJavaPlugins.onAssembly(new CompletableAmb(sources, null));
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract class Completable implements CompletableSource {
     public static Completable amb(final Iterable<? extends CompletableSource> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
 
-        return RxJavaPlugins.onAssembly(new CompletableAmbIterable(sources));
+        return RxJavaPlugins.onAssembly(new CompletableAmb(null, sources));
     }
 
     /**

@@ -57,7 +57,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> amb(final Iterable<? extends MaybeSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return RxJavaPlugins.onAssembly(new MaybeAmbIterable<T>(sources));
+        return RxJavaPlugins.onAssembly(new MaybeAmb<T>(null, sources));
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         if (sources.length == 1) {
             return wrap((MaybeSource<T>)sources[0]);
         }
-        return RxJavaPlugins.onAssembly(new MaybeAmbArray<T>(sources));
+        return RxJavaPlugins.onAssembly(new MaybeAmb<T>(sources, null));
     }
 
     /**

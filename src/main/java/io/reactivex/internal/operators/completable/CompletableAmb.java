@@ -17,18 +17,47 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class CompletableAmbArray extends Completable {
+public final class CompletableAmb extends Completable {
+    private final CompletableSource[] sources;
+    private final Iterable<? extends CompletableSource> sourcesIterable;
 
-    final CompletableSource[] sources;
-
-    public CompletableAmbArray(CompletableSource[] sources) {
+    public CompletableAmb(CompletableSource[] sources, Iterable<? extends CompletableSource> sourcesIterable) {
         this.sources = sources;
+        this.sourcesIterable = sourcesIterable;
     }
 
     @Override
     public void subscribeActual(final CompletableObserver s) {
+        CompletableSource[] sources = this.sources;
+        int count = 0;
+        if (sources == null) {
+            sources = new CompletableSource[8];
+            try {
+                for (CompletableSource element : sourcesIterable) {
+                    if (element == null) {
+                        EmptyDisposable.error(new NullPointerException("One of the sources is null"), s);
+                        return;
+                    }
+                    if (count == sources.length) {
+                        CompletableSource[] b = new CompletableSource[count + (count >> 2)];
+                        System.arraycopy(sources, 0, b, 0, count);
+                        sources = b;
+                    }
+                    sources[count++] = element;
+                };
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                EmptyDisposable.error(e, s);
+                return;
+            }
+        } else {
+            count = sources.length;
+        }
+
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
 
@@ -60,7 +89,8 @@ public final class CompletableAmbArray extends Completable {
 
         };
 
-        for (CompletableSource c : sources) {
+        for (int i = 0; i < count; i++) {
+            CompletableSource c = sources[i];
             if (set.isDisposed()) {
                 return;
             }
@@ -80,6 +110,10 @@ public final class CompletableAmbArray extends Completable {
 
             // no need to have separate subscribers because inner is stateless
             c.subscribe(inner);
+        }
+
+        if (count == 0) {
+            s.onComplete();
         }
     }
 }
