@@ -388,7 +388,7 @@ public class MaybeTest {
 
     @Test
     public void compose() {
-        Maybe.just(1).compose(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
+        Maybe.just(1).compose(new MaybeTransformer<Integer, Integer>() {
             @Override
             public MaybeSource<Integer> apply(Maybe<Integer> m) throws Exception {
                 return m.map(new Function<Integer, Integer>() {
