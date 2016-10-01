@@ -1967,13 +1967,12 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param <R> the value type of the Maybe returned by the transformer function
-     * @param transformer
-     *            implements the function that transforms the source Maybe
+     * @param transformer the transformer function, not null
      * @return a Maybe, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Maybe<R> compose(Function<? super Maybe<T>, ? extends MaybeSource<R>> transformer) {
+    public final <R> Maybe<R> compose(MaybeTransformer<T, R> transformer) {
         return wrap(to(transformer));
     }
 
