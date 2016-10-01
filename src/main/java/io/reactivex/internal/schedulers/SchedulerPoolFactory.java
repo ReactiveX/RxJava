@@ -16,14 +16,11 @@
 
 package io.reactivex.internal.schedulers;
 
-import io.reactivex.internal.util.SuppressAnimalSniffer;
-import io.reactivex.plugins.RxJavaPlugins;
-
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Manages the creating of ScheduledExecutorServices and sets up purging.
@@ -67,10 +64,9 @@ public enum SchedulerPoolFactory {
 
                 next.scheduleAtFixedRate(new Runnable() {
                     @Override
-                    @SuppressAnimalSniffer
                     public void run() {
                         try {
-                            for (ScheduledThreadPoolExecutor e : new ArrayList<ScheduledThreadPoolExecutor>(POOLS.keySet())) {  // CHM.keySet returns KeySetView in Java 8+; false positive here
+                            for (ScheduledThreadPoolExecutor e : new ArrayList<ScheduledThreadPoolExecutor>(POOLS.keySet())) {
                                 if (e.isShutdown()) {
                                     POOLS.remove(e);
                                 } else {
