@@ -16,12 +16,14 @@
 
 package io.reactivex.internal.schedulers;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
 import io.reactivex.internal.util.SuppressAnimalSniffer;
 import io.reactivex.plugins.RxJavaPlugins;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Manages the creating of ScheduledExecutorServices and sets up purging.
@@ -46,7 +48,9 @@ public enum SchedulerPoolFactory {
     static final AtomicReference<ScheduledExecutorService> PURGE_THREAD =
             new AtomicReference<ScheduledExecutorService>();
 
-    static final ConcurrentHashMap<ScheduledThreadPoolExecutor, Object> POOLS =
+    // Upcast to the Map interface here to avoid 8.x compatibility issues.
+    // See http://stackoverflow.com/a/32955708/61158
+    static final Map<ScheduledThreadPoolExecutor, Object> POOLS =
             new ConcurrentHashMap<ScheduledThreadPoolExecutor, Object>();
 
     /**
