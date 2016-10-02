@@ -36,7 +36,6 @@ public final class SingleFromCallable<T> implements Single.OnSubscribe<T> {
 
     @Override
     public void call(SingleSubscriber<? super T> t) {
-        // TODO Auto-generated method stub
         T v;
         try {
             v = callable.call();

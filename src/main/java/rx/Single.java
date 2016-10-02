@@ -75,7 +75,10 @@ public class Single<T> {
      * @param f
      *            {@code f} to be executed when {@code execute(SingleSubscriber)} or
      *            {@code subscribe(Subscriber)} is called
+     * @deprecated 1.2.1: Not recommended, use {@link #Single(OnSubscribe)} to avoid wrapping and
+     * conversion between the Observable and Single protocols.
      */
+    @Deprecated
     protected Single(final Observable.OnSubscribe<T> f) {
         onSubscribe = RxJavaHooks.onCreate(new SingleFromObservable<T>(f));
     }
