@@ -540,6 +540,7 @@ public class Completable {
      * @return the new Completable instance
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
+    @SuppressWarnings("deprecation")
     @Experimental
     public static Completable fromEmitter(Action1<CompletableEmitter> producer) {
         return create(new CompletableFromEmitter(producer));

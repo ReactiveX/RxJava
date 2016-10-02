@@ -41,7 +41,7 @@ public class SingleTest {
     private Func1<Single.OnSubscribe, Single.OnSubscribe> onCreate;
 
     @SuppressWarnings("rawtypes")
-    private Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> onStart;
+    private Func2<Single, Single.OnSubscribe, Single.OnSubscribe> onStart;
 
     private Func1<Subscription, Subscription> onReturn;
 
@@ -57,9 +57,9 @@ public class SingleTest {
 
         RxJavaHooks.setOnSingleCreate(onCreate);
 
-        onStart = spy(new Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe>() {
+        onStart = spy(new Func2<Single, Single.OnSubscribe, Single.OnSubscribe>() {
             @Override
-            public Observable.OnSubscribe call(Single t1, Observable.OnSubscribe t2) {
+            public Single.OnSubscribe call(Single t1, Single.OnSubscribe t2) {
                 return t2;
             }
         });
@@ -445,7 +445,7 @@ public class SingleTest {
         });
         single.subscribe(ts);
 
-        verify(onStart, times(1)).call(eq(single), any(Observable.OnSubscribe.class));
+        verify(onStart, times(1)).call(eq(single), any(Single.OnSubscribe.class));
     }
 
     @Test
@@ -458,7 +458,7 @@ public class SingleTest {
         });
         single.unsafeSubscribe(ts);
 
-        verify(onStart, times(1)).call(eq(single), any(Observable.OnSubscribe.class));
+        verify(onStart, times(1)).call(eq(single), any(Single.OnSubscribe.class));
     }
 
     @Test

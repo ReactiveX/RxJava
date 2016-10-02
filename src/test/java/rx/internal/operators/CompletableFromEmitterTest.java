@@ -29,6 +29,7 @@ import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.subscriptions.BooleanSubscription;
 
+@SuppressWarnings("deprecation")
 public class CompletableFromEmitterTest {
 
     @Test

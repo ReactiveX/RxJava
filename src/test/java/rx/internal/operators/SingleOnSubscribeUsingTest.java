@@ -289,7 +289,7 @@ public class SingleOnSubscribeUsingTest {
                 .doOnSuccess(completion);
         observable.subscribe(observer);
 
-        assertEquals(Arrays.asList("disposed", "completed", "unsub"), events);
+        assertEquals(Arrays.asList("disposed", "completed"/*, "unsub"*/), events);
 
     }
 
@@ -314,7 +314,7 @@ public class SingleOnSubscribeUsingTest {
                 .doOnSuccess(completion);
         observable.subscribe(observer);
 
-        assertEquals(Arrays.asList("completed", "unsub", "disposed"), events);
+        assertEquals(Arrays.asList("completed", /* "unsub",*/ "disposed"), events);
 
     }
 
@@ -341,7 +341,7 @@ public class SingleOnSubscribeUsingTest {
                 .doOnError(onError);
         observable.subscribe(observer);
 
-        assertEquals(Arrays.asList("disposed", "error", "unsub"), events);
+        assertEquals(Arrays.asList("disposed", "error"/*, "unsub"*/), events);
 
     }
 
@@ -366,7 +366,7 @@ public class SingleOnSubscribeUsingTest {
                 .doOnError(onError);
         observable.subscribe(observer);
 
-        assertEquals(Arrays.asList("error", "unsub", "disposed"), events);
+        assertEquals(Arrays.asList("error", /* "unsub",*/ "disposed"), events);
     }
 
     private static Action0 createUnsubAction(final List<String> events) {

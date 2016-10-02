@@ -2016,7 +2016,7 @@ public class Observable<T> {
      * @see AsyncEmitter.BackpressureMode
      * @see AsyncEmitter.Cancellable
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
-     * @deprecated since 1.2.1 because Async prefix of AsyncEmitter class is potentially misleading. Use 
+     * @deprecated since 1.2.1 because Async prefix of AsyncEmitter class is potentially misleading. Use
      *            {@link #fromEmitter(Action1, Emitter.BackpressureMode)} instead.
      */
     @Experimental
@@ -2024,7 +2024,7 @@ public class Observable<T> {
     public static <T> Observable<T> fromEmitter(Action1<AsyncEmitter<T>> emitter, AsyncEmitter.BackpressureMode backpressure) {
         return create(new OnSubscribeFromAsyncEmitter<T>(emitter, backpressure));
     }
-    
+
     /**
      * Provides an API (via a cold Observable) that bridges the reactive world with the callback-style,
      * generally non-backpressured world.
@@ -2063,7 +2063,7 @@ public class Observable<T> {
      * @return the new Observable instance
      * @see Emitter
      * @see Emitter.BackpressureMode
-     * @see Emitter.Cancellable
+     * @see rx.functions.Cancellable
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental

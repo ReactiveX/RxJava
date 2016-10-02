@@ -51,7 +51,7 @@ public final class RxJavaHooks {
     static volatile Func2<Observable, Observable.OnSubscribe, Observable.OnSubscribe> onObservableStart;
 
     @SuppressWarnings("rawtypes")
-    static volatile Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> onSingleStart;
+    static volatile Func2<Single, Single.OnSubscribe, Single.OnSubscribe> onSingleStart;
 
     static volatile Func2<Completable, Completable.OnSubscribe, Completable.OnSubscribe> onCompletableStart;
 
@@ -120,10 +120,18 @@ public final class RxJavaHooks {
             }
         };
 
-        onSingleStart = new Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe>() {
+        onSingleStart = new Func2<Single, Single.OnSubscribe, Single.OnSubscribe>() {
             @Override
-            public Observable.OnSubscribe call(Single t1, Observable.OnSubscribe t2) {
-                return RxJavaPlugins.getInstance().getSingleExecutionHook().onSubscribeStart(t1, t2);
+            public Single.OnSubscribe call(Single t1, Single.OnSubscribe t2) {
+
+                RxJavaSingleExecutionHook hook = RxJavaPlugins.getInstance().getSingleExecutionHook();
+
+                if (hook == RxJavaSingleExecutionHookDefault.getInstance()) {
+                    return t2;
+                }
+
+                return new SingleFromObservable(hook.onSubscribeStart(t1,
+                        new SingleToObservable(t2)));
             }
         };
 
@@ -479,8 +487,8 @@ public final class RxJavaHooks {
      * @return the original or alternative action that will be subscribed to
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Observable.OnSubscribe<T> onSingleStart(Single<T> instance, Observable.OnSubscribe<T> onSubscribe) {
-        Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> f = onSingleStart;
+    public static <T> Single.OnSubscribe<T> onSingleStart(Single<T> instance, Single.OnSubscribe<T> onSubscribe) {
+        Func2<Single, Single.OnSubscribe, Single.OnSubscribe> f = onSingleStart;
         if (f != null) {
             return f.call(instance, onSubscribe);
         }
@@ -770,7 +778,7 @@ public final class RxJavaHooks {
      * that gets actually subscribed to.
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnSingleStart(Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> onSingleStart) {
+    public static void setOnSingleStart(Func2<Single, Single.OnSubscribe, Single.OnSubscribe> onSingleStart) {
         if (lockdown) {
             return;
         }
@@ -1115,7 +1123,7 @@ public final class RxJavaHooks {
      * @return the current hook function
      */
     @SuppressWarnings("rawtypes")
-    public static Func2<Single, Observable.OnSubscribe, Observable.OnSubscribe> getOnSingleStart() {
+    public static Func2<Single, Single.OnSubscribe, Single.OnSubscribe> getOnSingleStart() {
         return onSingleStart;
     }
 
