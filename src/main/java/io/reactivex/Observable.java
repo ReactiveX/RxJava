@@ -5488,7 +5488,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> compose(Function<? super Observable<T>, ? extends ObservableSource<R>> composer) {
+    public final <R> Observable<R> compose(ObservableTransformer<T, R> composer) {
         return wrap(to(composer));
     }
 

@@ -90,7 +90,7 @@ public class ObservableCovarianceTest {
                         System.out.println(pv);
                     }
                 })
-                .compose(new Function<Observable<Movie>, Observable<Movie>>() {
+                .compose(new ObservableTransformer<Movie, Movie>() {
                     @Override
                     public Observable<Movie> apply(Observable<Movie> m) {
                         return m.concatWith(Observable.just(new ActionMovie()));
@@ -116,7 +116,7 @@ public class ObservableCovarianceTest {
     @Test
     public void testCovarianceOfCompose() {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
-        Observable<Movie> movie2 = movie.compose(new Function<Observable<HorrorMovie>, Observable<Movie>>() {
+        Observable<Movie> movie2 = movie.compose(new ObservableTransformer<HorrorMovie, Movie>() {
             @Override
             public Observable<Movie> apply(Observable<HorrorMovie> t) {
                 return Observable.just(new Movie());
@@ -128,7 +128,7 @@ public class ObservableCovarianceTest {
     @Test
     public void testCovarianceOfCompose2() {
         Observable<Movie> movie = Observable.<Movie> just(new HorrorMovie());
-        Observable<HorrorMovie> movie2 = movie.compose(new Function<Observable<Movie>, Observable<HorrorMovie>>() {
+        Observable<HorrorMovie> movie2 = movie.compose(new ObservableTransformer<Movie, HorrorMovie>() {
             @Override
             public Observable<HorrorMovie> apply(Observable<Movie> t) {
                 return Observable.just(new HorrorMovie());
@@ -140,7 +140,7 @@ public class ObservableCovarianceTest {
     @Test
     public void testCovarianceOfCompose3() {
         Observable<Movie> movie = Observable.<Movie>just(new HorrorMovie());
-        Observable<HorrorMovie> movie2 = movie.compose(new Function<Observable<Movie>, Observable<HorrorMovie>>() {
+        Observable<HorrorMovie> movie2 = movie.compose(new ObservableTransformer<Movie, HorrorMovie>() {
             @Override
             public Observable<HorrorMovie> apply(Observable<Movie> t) {
                 return Observable.just(new HorrorMovie()).map(new Function<HorrorMovie, HorrorMovie>() {
@@ -158,7 +158,7 @@ public class ObservableCovarianceTest {
     @Test
     public void testCovarianceOfCompose4() {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
-        Observable<HorrorMovie> movie2 = movie.compose(new Function<Observable<HorrorMovie>, Observable<HorrorMovie>>() {
+        Observable<HorrorMovie> movie2 = movie.compose(new ObservableTransformer<HorrorMovie, HorrorMovie>() {
             @Override
             public Observable<HorrorMovie> apply(Observable<HorrorMovie> t1) {
                 return t1.map(new Function<HorrorMovie, HorrorMovie>() {

@@ -1087,7 +1087,7 @@ public class ObservableTest {
     @Test
     public void testCompose() {
         TestObserver<String> ts = new TestObserver<String>();
-        Observable.just(1, 2, 3).compose(new Function<Observable<Integer>, Observable<String>>() {
+        Observable.just(1, 2, 3).compose(new ObservableTransformer<Integer, String>() {
             @Override
             public Observable<String> apply(Observable<Integer> t1) {
                 return t1.map(new Function<Integer, String>() {

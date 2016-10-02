@@ -17,9 +17,6 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
-import io.reactivex.Completable;
-import io.reactivex.SingleSource;
-import io.reactivex.exceptions.TestException;
 import org.junit.Test;
 
 import io.reactivex.Single;
