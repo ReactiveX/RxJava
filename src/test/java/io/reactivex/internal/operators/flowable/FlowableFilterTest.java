@@ -13,20 +13,26 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.*;
 import org.mockito.Mockito;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Predicate;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.*;
+import io.reactivex.subscribers.*;
 
 public class FlowableFilterTest {
 
@@ -208,5 +214,335 @@ public class FlowableFilterTest {
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         ts.assertNoErrors();
         ts.assertComplete();
+    }
+
+    @Test
+    public void conditional() {
+        Flowable.range(1, 5)
+        .filter(Functions.alwaysTrue())
+        .filter(Functions.alwaysTrue())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void conditionalNone() {
+        Flowable.range(1, 5)
+        .filter(Functions.alwaysTrue())
+        .filter(Functions.alwaysFalse())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void conditionalNone2() {
+        Flowable.range(1, 5)
+        .filter(Functions.alwaysFalse())
+        .filter(Functions.alwaysFalse())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void conditionalFusedSync() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 5)
+        .filter(Functions.alwaysTrue())
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void conditionalFusedSync2() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 5)
+        .filter(Functions.alwaysFalse())
+        .filter(Functions.alwaysFalse())
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertResult();
+    }
+
+    @Test
+    public void conditionalFusedAsync() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        up
+        .filter(Functions.alwaysTrue())
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        up.onNext(1);
+        up.onNext(2);
+        up.onNext(3);
+        up.onNext(4);
+        up.onNext(5);
+        up.onComplete();
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void conditionalFusedNoneAsync() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        up
+        .filter(Functions.alwaysTrue())
+        .filter(Functions.alwaysFalse())
+        .subscribe(ts);
+
+        up.onNext(1);
+        up.onNext(2);
+        up.onNext(3);
+        up.onNext(4);
+        up.onNext(5);
+        up.onComplete();
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult();
+    }
+
+    @Test
+    public void conditionalFusedNoneAsync2() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        up
+        .filter(Functions.alwaysFalse())
+        .filter(Functions.alwaysFalse())
+        .subscribe(ts);
+
+        up.onNext(1);
+        up.onNext(2);
+        up.onNext(3);
+        up.onNext(4);
+        up.onNext(5);
+        up.onComplete();
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult();
+    }
+
+    @Test
+    public void sourceIgnoresCancelConditional() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Integer>() {
+                @Override
+                public void subscribe(Subscriber<? super Integer> s) {
+                    ConditionalSubscriber<? super Integer> cs = (ConditionalSubscriber<? super Integer>)s;
+                    cs.onSubscribe(new BooleanSubscription());
+                    cs.tryOnNext(1);
+                    cs.tryOnNext(2);
+                    cs.onError(new IOException());
+                    cs.onComplete();
+                }
+            })
+            .filter(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    return true;
+                }
+            })
+            .filter(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void mapCrashesBeforeFilter() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Integer>() {
+                @Override
+                public void subscribe(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            })
+            .map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .filter(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    return true;
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void syncFused() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 5)
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void syncNoneFused() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 5)
+        .filter(Functions.alwaysFalse())
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertResult();
+    }
+
+    @Test
+    public void syncNoneFused2() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 5)
+        .filter(Functions.alwaysFalse())
+        .filter(Functions.alwaysFalse())
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertResult();
+    }
+
+    @Test
+    public void sourceIgnoresCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Integer>() {
+                @Override
+                public void subscribe(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            })
+            .filter(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void sourceIgnoresCancel2() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Integer>() {
+                @Override
+                public void subscribe(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            })
+            .filter(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .filter(Functions.alwaysTrue())
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void sourceIgnoresCancelConditional2() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Integer>() {
+                @Override
+                public void subscribe(Subscriber<? super Integer> s) {
+                    ConditionalSubscriber<? super Integer> cs = (ConditionalSubscriber<? super Integer>)s;
+                    cs.onSubscribe(new BooleanSubscription());
+                    cs.tryOnNext(1);
+                    cs.tryOnNext(2);
+                    cs.onError(new IOException());
+                    cs.onComplete();
+                }
+            })
+            .filter(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .filter(Functions.alwaysTrue())
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

@@ -29,7 +29,7 @@ public class FlowableDoOnRequestTest {
     @Test
     public void testUnsubscribeHappensAgainstParent() {
         final AtomicBoolean unsubscribed = new AtomicBoolean(false);
-        Flowable.just(1)
+        Flowable.just(1).concatWith(Flowable.<Integer>never())
         //
                 .doOnCancel(new Action() {
                     @Override
@@ -45,7 +45,7 @@ public class FlowableDoOnRequestTest {
                     }
                 })
                 //
-                .subscribe();
+                .subscribe().dispose();
         assertTrue(unsubscribed.get());
     }
 

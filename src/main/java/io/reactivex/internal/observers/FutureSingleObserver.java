@@ -110,33 +110,28 @@ implements SingleObserver<T>, Future<T>, Disposable {
 
     @Override
     public void onSuccess(T t) {
-        if (value != null) {
-            s.get().dispose();
-            onError(new IndexOutOfBoundsException("More than one element received"));
+        Disposable a = s.get();
+        if (a == DisposableHelper.DISPOSED) {
             return;
         }
         value = t;
+        s.compareAndSet(a, this);
         countDown();
     }
 
     @Override
     public void onError(Throwable t) {
-        if (error == null) {
-            error = t;
-
-            for (;;) {
-                Disposable a = s.get();
-                if (a == this || a == DisposableHelper.DISPOSED) {
-                    RxJavaPlugins.onError(t);
-                    return;
-                }
-                if (s.compareAndSet(a, this)) {
-                    countDown();
-                    return;
-                }
+        for (;;) {
+            Disposable a = s.get();
+            if (a == DisposableHelper.DISPOSED) {
+                RxJavaPlugins.onError(t);
+                return;
             }
-        } else {
-            RxJavaPlugins.onError(t);
+            error = t;
+            if (s.compareAndSet(a, this)) {
+                countDown();
+                return;
+            }
         }
     }
 

@@ -11,20 +11,24 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.maybe;
+package io.reactivex.internal.schedulers;
 
-import io.reactivex.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-/**
- * Doesn't signal any event other than onSubscribe.
- */
-public final class MaybeNever extends Maybe<Object> {
+import io.reactivex.internal.functions.Functions;
 
-    public static final MaybeNever INSTANCE = new MaybeNever();
+public class RxThreadFactoryTest {
 
-    @Override
-    protected void subscribeActual(MaybeObserver<? super Object> observer) {
-        observer.onSubscribe(EmptyDisposable.NEVER);
+    @Test
+    public void normal() {
+        RxThreadFactory tf = new RxThreadFactory("Test", 1);
+
+        assertEquals("RxThreadFactory[Test]", tf.toString());
+
+        Thread t = tf.newThread(Functions.EMPTY_RUNNABLE);
+
+        assertTrue(t.isDaemon());
+        assertEquals(1, t.getPriority());
     }
 }

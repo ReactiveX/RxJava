@@ -131,7 +131,8 @@ public class ObservableSerializeTest {
             // verify(s, times(1)).unsubscribe();
 
             // we can have concurrency ...
-            assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
+            int n = onSubscribe.maxConcurrentThreads.get();
+            assertTrue("" + n, n > 1);
             // ... but the onNext execution should be single threaded
             assertEquals(1, busyobserver.maxConcurrentThreads.get());
         }

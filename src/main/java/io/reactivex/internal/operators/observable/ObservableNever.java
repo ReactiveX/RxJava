@@ -24,6 +24,6 @@ public final class ObservableNever extends Observable<Object> {
 
     @Override
     protected void subscribeActual(Observer<? super Object> o) {
-        o.onSubscribe(EmptyDisposable.INSTANCE);
+        o.onSubscribe(EmptyDisposable.NEVER);
     }
 }

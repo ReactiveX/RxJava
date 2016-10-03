@@ -15,12 +15,15 @@ package io.reactivex.internal.operators.single;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Test;
 
-import io.reactivex.Single;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class SingleDoOnTest {
 
@@ -82,4 +85,69 @@ public class SingleDoOnTest {
         assertEquals(1, event[0]);
     }
 
+    @Test
+    public void doOnSubscribeNormal() {
+        final int[] count = { 0 };
+
+        Single.just(1).doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) throws Exception {
+                count[0]++;
+            }
+        })
+        .test()
+        .assertResult(1);
+
+        assertEquals(1, count[0]);
+    }
+
+    @Test
+    public void doOnSubscribeError() {
+        final int[] count = { 0 };
+
+        Single.error(new TestException()).doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) throws Exception {
+                count[0]++;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+
+        assertEquals(1, count[0]);
+    }
+
+    @Test
+    public void doOnSubscribeJustCrash() {
+
+        Single.just(1).doOnSubscribe(new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void doOnSubscribeErrorCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Single.error(new TestException("Outer")).doOnSubscribe(new Consumer<Disposable>() {
+                @Override
+                public void accept(Disposable s) throws Exception {
+                    throw new TestException("Inner");
+                }
+            })
+            .test()
+            .assertFailureAndMessage(TestException.class, "Inner");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Outer");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+
+    }
 }

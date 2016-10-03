@@ -274,7 +274,7 @@ public class FlowableTests {
     /**
      * A reduce should fail with an NoSuchElementException if done on an empty Observable.
      */
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void testReduceWithEmptyObservable() {
         Flowable<Integer> observable = Flowable.range(1, 0);
         observable.reduce(new BiFunction<Integer, Integer, Integer>() {

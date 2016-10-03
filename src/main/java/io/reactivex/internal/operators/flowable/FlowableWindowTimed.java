@@ -24,7 +24,7 @@ import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.QueueDrainSubscriber;
@@ -733,7 +733,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     return;
                 }
             } else {
-                queue.offer(NotificationLite.next(t));
+                queue.offer(t);
                 if (!enter()) {
                     return;
                 }
@@ -797,6 +797,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             }
         }
 
+        @SuppressWarnings("unchecked")
         void drainLoop() {
             final SimpleQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
@@ -854,7 +855,6 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     }
 
                     if (sw) {
-                        @SuppressWarnings("unchecked")
                         SubjectWork<T> work = (SubjectWork<T>)v;
 
                         if (work.open) {
@@ -889,10 +889,10 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                             }
                             continue;
                         }
-                    }
-
-                    for (UnicastProcessor<T> w : ws) {
-                        w.onNext(NotificationLite.<T>getValue(v));
+                    } else {
+                        for (UnicastProcessor<T> w : ws) {
+                            w.onNext((T)v);
+                        }
                     }
                 }
 

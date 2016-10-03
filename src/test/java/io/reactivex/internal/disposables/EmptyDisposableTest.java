@@ -34,7 +34,8 @@ public class EmptyDisposableTest {
 
     @Test
     public void checkEnum() {
-        assertEquals(1, EmptyDisposable.values().length);
+        assertEquals(2, EmptyDisposable.values().length);
         assertNotNull(EmptyDisposable.valueOf("INSTANCE"));
+        assertNotNull(EmptyDisposable.valueOf("NEVER"));
     }
 }

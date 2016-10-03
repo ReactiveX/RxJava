@@ -24,7 +24,7 @@ public final class CompletableNever extends Completable {
 
     @Override
     protected void subscribeActual(CompletableObserver s) {
-        s.onSubscribe(EmptyDisposable.INSTANCE);
+        s.onSubscribe(EmptyDisposable.NEVER);
     }
 
 }

@@ -20,10 +20,12 @@ import java.util.*;
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 public class FlowableBlockingTest {
@@ -214,4 +216,51 @@ public class FlowableBlockingTest {
         assertEquals(2, Flowable.just(1, 2).blockingLast(3).intValue());
     }
 
+    @Test
+    public void firstFgnoredCancelAndOnNext() {
+        Flowable<Integer> source = Flowable.fromPublisher(new Publisher<Integer>() {
+            @Override
+            public void subscribe(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+            }
+        });
+
+        assertEquals(1, source.blockingFirst().intValue());
+    }
+
+    @Test
+    public void firstIgnoredCancelAndOnError() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+        try {
+            Flowable<Integer> source = Flowable.fromPublisher(new Publisher<Integer>() {
+                @Override
+                public void subscribe(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onError(new TestException());
+                }
+            });
+
+            assertEquals(1, source.blockingFirst().intValue());
+
+            TestHelper.assertError(list, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test(expected = TestException.class)
+    public void firstOnError() {
+        Flowable<Integer> source = Flowable.fromPublisher(new Publisher<Integer>() {
+            @Override
+            public void subscribe(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                s.onError(new TestException());
+            }
+        });
+
+        source.blockingFirst();
+    }
 }

@@ -14,14 +14,20 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+
 import org.junit.*;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableReduceTest {
     Subscriber<Object> observer;
@@ -44,13 +50,13 @@ public class FlowableReduceTest {
     @Test
     public void testAggregateAsIntSumFlowable() {
 
-        Flowable<Integer> result = Flowable.just(1, 2, 3, 4, 5).reduce(0, sum)
+        Flowable<Integer> result = Flowable.just(1, 2, 3, 4, 5).reduce(0, sum).toFlowable()
                 .map(new Function<Integer, Integer>() {
                     @Override
                     public Integer apply(Integer v) {
                         return v;
                     }
-                }).toFlowable();
+                });
 
         result.subscribe(observer);
 
@@ -63,12 +69,12 @@ public class FlowableReduceTest {
     public void testAggregateAsIntSumSourceThrowsFlowable() {
         Flowable<Integer> result = Flowable.concat(Flowable.just(1, 2, 3, 4, 5),
                 Flowable.<Integer> error(new TestException()))
-                .reduce(0, sum).map(new Function<Integer, Integer>() {
+                .reduce(0, sum).toFlowable().map(new Function<Integer, Integer>() {
                     @Override
                     public Integer apply(Integer v) {
                         return v;
                     }
-                }).toFlowable();
+                });
 
         result.subscribe(observer);
 
@@ -87,12 +93,12 @@ public class FlowableReduceTest {
         };
 
         Flowable<Integer> result = Flowable.just(1, 2, 3, 4, 5)
-                .reduce(0, sumErr).map(new Function<Integer, Integer>() {
+                .reduce(0, sumErr).toFlowable().map(new Function<Integer, Integer>() {
                     @Override
                     public Integer apply(Integer v) {
                         return v;
                     }
-                }).toFlowable();
+                });
 
         result.subscribe(observer);
 
@@ -227,5 +233,56 @@ public class FlowableReduceTest {
         assertEquals(21, r.intValue());
     }
 
+    @Test
+    public void reducerCrashSuppressOnError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
 
+        try {
+            Flowable.<Integer>fromPublisher(new Publisher<Integer>() {
+                @Override
+                public void subscribe(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(1);
+                    s.onError(new TestException("Source"));
+                    s.onComplete();
+                }
+            })
+            .reduce(new BiFunction<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer a, Integer b) throws Exception {
+                    throw new TestException("Reducer");
+                }
+            })
+            .toFlowable()
+            .test()
+            .assertFailureAndMessage(TestException.class, "Reducer");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Source");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+
+    }
+
+    @Test
+    public void cancel() {
+
+        TestSubscriber<Integer> ts = Flowable.just(1)
+        .concatWith(Flowable.<Integer>never())
+        .reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }).toFlowable()
+        .test();
+
+        ts.assertEmpty();
+
+        ts.cancel();
+
+        ts.assertEmpty();
+
+    }
 }

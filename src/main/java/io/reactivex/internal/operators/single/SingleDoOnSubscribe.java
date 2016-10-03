@@ -20,6 +20,11 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
+/**
+ * Calls a callback when the upstream calls onSubscribe with a disposable.
+ *
+ * @param <T> the value type
+ */
 public final class SingleDoOnSubscribe<T> extends Single<T> {
 
     final SingleSource<T> source;
@@ -33,42 +38,53 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
+        source.subscribe(new DoOnSubscribeSingleObserver<T>(s, onSubscribe));
+    }
 
-        source.subscribe(new SingleObserver<T>() {
-            boolean done;
-            @Override
-            public void onSubscribe(Disposable d) {
-                try {
-                    onSubscribe.accept(d);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    done = true;
-                    d.dispose();
-                    EmptyDisposable.error(ex, s);
-                    return;
-                }
+    static final class DoOnSubscribeSingleObserver<T> implements SingleObserver<T> {
 
-                s.onSubscribe(d);
+        final SingleObserver<? super T> actual;
+
+        final Consumer<? super Disposable> onSubscribe;
+
+        boolean done;
+
+        DoOnSubscribeSingleObserver(SingleObserver<? super T> actual, Consumer<? super Disposable> onSubscribe) {
+            this.actual = actual;
+            this.onSubscribe = onSubscribe;
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            try {
+                onSubscribe.accept(d);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                done = true;
+                d.dispose();
+                EmptyDisposable.error(ex, actual);
+                return;
             }
 
-            @Override
-            public void onSuccess(T value) {
-                if (done) {
-                    return;
-                }
-                s.onSuccess(value);
-            }
+            actual.onSubscribe(d);
+        }
 
-            @Override
-            public void onError(Throwable e) {
-                if (done) {
-                    RxJavaPlugins.onError(e);
-                    return;
-                }
-                s.onError(e);
+        @Override
+        public void onSuccess(T value) {
+            if (done) {
+                return;
             }
+            actual.onSuccess(value);
+        }
 
-        });
+        @Override
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaPlugins.onError(e);
+                return;
+            }
+            actual.onError(e);
+        }
     }
 
 }

@@ -82,12 +82,14 @@ public class FlowableIgnoreElementsTest {
     @Test
     public void testUnsubscribesFromUpstreamFlowable() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Flowable.range(1, 10).doOnCancel(new Action() {
+        Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
+        .doOnCancel(new Action() {
             @Override
             public void run() {
                 unsub.set(true);
             }})
-            .subscribe();
+            .subscribe().dispose();
+
         assertTrue(unsub.get());
     }
 
@@ -196,12 +198,14 @@ public class FlowableIgnoreElementsTest {
     @Test
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Flowable.range(1, 10).doOnCancel(new Action() {
+        Flowable.range(1, 10).concatWith(Flowable.<Integer>never())
+        .doOnCancel(new Action() {
             @Override
             public void run() {
                 unsub.set(true);
             }})
-            .subscribe();
+            .subscribe().dispose();
+
         assertTrue(unsub.get());
     }
 
