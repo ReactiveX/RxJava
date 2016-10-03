@@ -45,33 +45,14 @@ final Scheduler scheduler;
 
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
-
-// FIXME add macro-optimization
-//        if (PublisherSubscribeOnValue.scalarScheduleOn(source, s, scheduler)) {
-//            return;
-//        }
-
-        Worker worker;
-
-        try {
-            worker = scheduler.createWorker();
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            EmptySubscription.error(e, s);
-            return;
-        }
-
-        if (worker == null) {
-            EmptySubscription.error(new NullPointerException("The scheduler returned a null Function"), s);
-            return;
-        }
+        Worker worker = scheduler.createWorker();
 
         if (s instanceof ConditionalSubscriber) {
-            ConditionalSubscriber<? super T> cs = (ConditionalSubscriber<? super T>) s;
-            source.subscribe(new PublisherObserveOnConditionalSubscriber<T>(cs, worker, delayError, prefetch));
-            return;
+            source.subscribe(new PublisherObserveOnConditionalSubscriber<T>(
+                    (ConditionalSubscriber<? super T>) s, worker, delayError, prefetch));
+        } else {
+            source.subscribe(new PublisherObserveOnSubscriber<T>(s, worker, delayError, prefetch));
         }
-        source.subscribe(new PublisherObserveOnSubscriber<T>(s, worker, delayError, prefetch));
     }
 
     abstract static class BaseObserveOnSubscriber<T>
@@ -113,20 +94,7 @@ final Scheduler scheduler;
             this.delayError = delayError;
             this.prefetch = prefetch;
             this.requested = new AtomicLong();
-
-            if (prefetch != Integer.MAX_VALUE) {
-                this.limit = prefetch - (prefetch >> 2);
-            } else {
-                this.limit = Integer.MAX_VALUE;
-            }
-        }
-
-        final void initialRequest() {
-            if (prefetch == Integer.MAX_VALUE) {
-                s.request(Long.MAX_VALUE);
-            } else {
-                s.request(prefetch);
-            }
+            this.limit = prefetch - (prefetch >> 2);
         }
 
         @Override
@@ -206,7 +174,7 @@ final Scheduler scheduler;
 
         final boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a) {
             if (cancelled) {
-                queue.clear();
+                clear();
                 return true;
             }
             if (d) {
@@ -223,7 +191,7 @@ final Scheduler scheduler;
                 } else {
                     Throwable e = error;
                     if (e != null) {
-                        queue.clear();
+                        clear();
                         doError(a, e);
                         return true;
                     } else
@@ -314,7 +282,7 @@ final Scheduler scheduler;
 
                         actual.onSubscribe(this);
 
-                        initialRequest();
+                        s.request(prefetch);
 
                         return;
                     }
@@ -324,7 +292,7 @@ final Scheduler scheduler;
 
                 actual.onSubscribe(this);
 
-                initialRequest();
+                s.request(prefetch);
             }
         }
 
@@ -370,17 +338,7 @@ final Scheduler scheduler;
                         return;
                     }
 
-                    boolean empty;
-
-                    try {
-                        empty = q.isEmpty();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        doError(a, ex);
-                        return;
-                    }
-
-                    if (empty) {
+                    if (q.isEmpty()) {
                         doComplete(a);
                         return;
                     }
@@ -450,24 +408,8 @@ final Scheduler scheduler;
                     }
                 }
 
-                if (e == r) {
-                    boolean d = done;
-                    boolean empty;
-                    try {
-                        empty = q.isEmpty();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-
-                        s.cancel();
-                        q.clear();
-
-                        doError(a, ex);
-                        return;
-                    }
-
-                    if (checkTerminated(d, empty, a)) {
-                        return;
-                    }
+                if (e == r && checkTerminated(done, q.isEmpty(), a)) {
+                    return;
                 }
 
                 int w = get();
@@ -574,7 +516,7 @@ final Scheduler scheduler;
 
                         actual.onSubscribe(this);
 
-                        initialRequest();
+                        s.request(prefetch);
 
                         return;
                     }
@@ -584,7 +526,7 @@ final Scheduler scheduler;
 
                 actual.onSubscribe(this);
 
-                initialRequest();
+                s.request(prefetch);
             }
         }
 
@@ -629,17 +571,7 @@ final Scheduler scheduler;
                         return;
                     }
 
-                    boolean empty;
-
-                    try {
-                        empty = q.isEmpty();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        doError(a, ex);
-                        return;
-                    }
-
-                    if (empty) {
+                    if (q.isEmpty()) {
                         doComplete(a);
                         return;
                     }
@@ -708,24 +640,8 @@ final Scheduler scheduler;
                     }
                 }
 
-                if (emitted == r) {
-                    boolean d = done;
-                    boolean empty;
-                    try {
-                        empty = q.isEmpty();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-
-                        s.cancel();
-                        q.clear();
-
-                        doError(a, ex);
-                        return;
-                    }
-
-                    if (checkTerminated(d, empty, a)) {
-                        return;
-                    }
+                if (emitted == r && checkTerminated(done, q.isEmpty(), a)) {
+                    return;
                 }
 
                 int w = get();

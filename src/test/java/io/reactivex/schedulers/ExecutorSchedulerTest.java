@@ -13,27 +13,22 @@
 
 package io.reactivex.schedulers;
 
-import io.reactivex.Scheduler;
+import static org.junit.Assert.*;
+
+import java.lang.management.*;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.*;
+
+import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.schedulers.RxThreadFactory;
-import io.reactivex.internal.schedulers.SchedulerPoolFactory;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import io.reactivex.internal.schedulers.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -300,4 +295,155 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 //
 //        assertFalse(w.tasks.hasSubscriptions());
 //    }
+
+    @Test
+    public void plainExecutor() throws Exception {
+        Scheduler s = Schedulers.from(new Executor() {
+            @Override
+            public void execute(Runnable r) {
+                r.run();
+            }
+        });
+
+        final CountDownLatch cdl = new CountDownLatch(5);
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        };
+
+        s.scheduleDirect(r);
+
+        s.scheduleDirect(r, 50, TimeUnit.MILLISECONDS);
+
+        Disposable d = s.schedulePeriodicallyDirect(r, 10, 10, TimeUnit.MILLISECONDS);
+
+        try {
+            assertTrue(cdl.await(5, TimeUnit.SECONDS));
+        } finally {
+            d.dispose();
+        }
+
+        assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void rejectingExecutor() {
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        exec.shutdown();
+
+        Scheduler s = Schedulers.from(exec);
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            assertSame(EmptyDisposable.INSTANCE, s.scheduleDirect(Functions.EMPTY_RUNNABLE));
+
+            assertSame(EmptyDisposable.INSTANCE, s.scheduleDirect(Functions.EMPTY_RUNNABLE, 10, TimeUnit.MILLISECONDS));
+
+            assertSame(EmptyDisposable.INSTANCE, s.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 10, 10, TimeUnit.MILLISECONDS));
+
+            TestHelper.assertError(errors, 0, RejectedExecutionException.class);
+            TestHelper.assertError(errors, 1, RejectedExecutionException.class);
+            TestHelper.assertError(errors, 2, RejectedExecutionException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void rejectingExecutorWorker() {
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        exec.shutdown();
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Worker s = Schedulers.from(exec).createWorker();
+            assertSame(EmptyDisposable.INSTANCE, s.schedule(Functions.EMPTY_RUNNABLE));
+
+            s = Schedulers.from(exec).createWorker();
+            assertSame(EmptyDisposable.INSTANCE, s.schedule(Functions.EMPTY_RUNNABLE, 10, TimeUnit.MILLISECONDS));
+
+            s = Schedulers.from(exec).createWorker();
+            assertSame(EmptyDisposable.INSTANCE, s.schedulePeriodically(Functions.EMPTY_RUNNABLE, 10, 10, TimeUnit.MILLISECONDS));
+
+            TestHelper.assertError(errors, 0, RejectedExecutionException.class);
+            TestHelper.assertError(errors, 1, RejectedExecutionException.class);
+            TestHelper.assertError(errors, 2, RejectedExecutionException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void reuseScheduledExecutor() throws Exception {
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+
+        try {
+            Scheduler s = Schedulers.from(exec);
+
+            final CountDownLatch cdl = new CountDownLatch(8);
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    cdl.countDown();
+                }
+            };
+
+            s.scheduleDirect(r);
+
+            s.scheduleDirect(r, 10, TimeUnit.MILLISECONDS);
+
+            Disposable d = s.schedulePeriodicallyDirect(r, 10, 10, TimeUnit.MILLISECONDS);
+
+            try {
+                assertTrue(cdl.await(5, TimeUnit.SECONDS));
+            } finally {
+                d.dispose();
+            }
+        } finally {
+            exec.shutdown();
+        }
+    }
+
+    @Test
+    public void reuseScheduledExecutorAsWorker() throws Exception {
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+
+        Worker s = Schedulers.from(exec).createWorker();
+
+        assertFalse(s.isDisposed());
+        try {
+
+            final CountDownLatch cdl = new CountDownLatch(8);
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    cdl.countDown();
+                }
+            };
+
+            s.schedule(r);
+
+            s.schedule(r, 10, TimeUnit.MILLISECONDS);
+
+            Disposable d = s.schedulePeriodically(r, 10, 10, TimeUnit.MILLISECONDS);
+
+            try {
+                assertTrue(cdl.await(5, TimeUnit.SECONDS));
+            } finally {
+                d.dispose();
+            }
+        } finally {
+            s.dispose();
+            exec.shutdown();
+        }
+
+        assertTrue(s.isDisposed());
+    }
 }

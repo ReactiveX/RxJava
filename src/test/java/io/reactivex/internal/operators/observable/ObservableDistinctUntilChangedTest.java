@@ -13,15 +13,23 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+
+import java.io.IOException;
+import java.util.List;
 
 import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.UnicastSubject;
 
 public class ObservableDistinctUntilChangedTest {
 
@@ -167,4 +175,77 @@ public class ObservableDistinctUntilChangedTest {
         ts.assertNotComplete();
         ts.assertError(TestException.class);
     }
+
+    @Test
+    public void fused() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+
+        Observable.just(1, 2, 2, 3, 3, 4, 5)
+        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer a, Integer b) throws Exception {
+                return a.equals(b);
+            }
+        })
+        .subscribe(to);
+
+        to.assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.SYNC))
+        .assertResult(1, 2, 3, 4, 5)
+        ;
+    }
+
+    @Test
+    public void fusedAsync() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+
+        UnicastSubject<Integer> up = UnicastSubject.create();
+
+        up
+        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer a, Integer b) throws Exception {
+                return a.equals(b);
+            }
+        })
+        .subscribe(to);
+
+        TestHelper.emit(up, 1, 2, 2, 3, 3, 4, 5);
+
+        to.assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC))
+        .assertResult(1, 2, 3, 4, 5)
+        ;
+    }
+
+    @Test
+    public void ignoreCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Observable.wrap(new ObservableSource<Integer>() {
+                @Override
+                public void subscribe(Observer<? super Integer> s) {
+                    s.onSubscribe(Disposables.empty());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onNext(3);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            })
+            .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                @Override
+                public boolean test(Integer a, Integer b) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .test()
+            .assertFailure(TestException.class, 1);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+   }
 }

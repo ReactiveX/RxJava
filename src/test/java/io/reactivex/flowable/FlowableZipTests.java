@@ -45,9 +45,11 @@ public class FlowableZipTests {
                                 @Override
                                 public HashMap<String, String> apply(HashMap<String, String> accum,
                                         Event perInstanceEvent) {
+                                    synchronized (accum) {
                                             accum.put("instance", ge.getKey());
-                                            return accum;
-                                        }
+                                    }
+                                    return accum;
+                                }
                             });
                     }
                 })
@@ -55,7 +57,9 @@ public class FlowableZipTests {
                 .blockingForEach(new Consumer<HashMap<String, String>>() {
                     @Override
                     public void accept(HashMap<String, String> v) {
-                        System.out.println(v);
+                        synchronized (v) {
+                            System.out.println(v);
+                        }
                     }
                 });
 

@@ -44,9 +44,11 @@ public class ObservableZipTests {
                                 @Override
                                 public HashMap<String, String> apply(HashMap<String, String> accum,
                                         Event perInstanceEvent) {
-                                            accum.put("instance", ge.getKey());
-                                            return accum;
-                                        }
+                                    synchronized (accum) {
+                                        accum.put("instance", ge.getKey());
+                                    }
+                                    return accum;
+                                }
                             });
                     }
                 })
@@ -54,7 +56,9 @@ public class ObservableZipTests {
                 .blockingForEach(new Consumer<Object>() {
                     @Override
                     public void accept(Object pv) {
-                        System.out.println(pv);
+                        synchronized (pv) {
+                            System.out.println(pv);
+                        }
                     }
                 });
 

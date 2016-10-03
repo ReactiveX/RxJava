@@ -25,8 +25,12 @@ import io.reactivex.functions.Function;
 /**
  * Helper utility class to support Single with inner classes.
  */
-public enum SingleInternalHelper {
-    ;
+public final class SingleInternalHelper {
+
+    /** Utility class. */
+    private SingleInternalHelper() {
+        throw new IllegalStateException("No instances!");
+    }
 
     enum NoSuchElementCallable implements Callable<NoSuchElementException> {
         INSTANCE;

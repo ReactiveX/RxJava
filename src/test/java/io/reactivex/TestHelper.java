@@ -14,7 +14,8 @@
 package io.reactivex;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -37,6 +38,7 @@ import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.subjects.Subject;
 import io.reactivex.subscribers.TestSubscriber;
 
 /**
@@ -1200,5 +1202,31 @@ public enum TestHelper {
         for (int i = 0; i < classes.length; i += 2) {
             assertError(list, i, (Class<Throwable>)classes[i], (String)classes[i + 1]);
         }
+    }
+
+    /**
+     * Emit the given values and complete the Processor.
+     * @param <T> the value type
+     * @param p the target processor
+     * @param values the values to emit
+     */
+    public static <T> void emit(Processor<T, ?> p, T... values) {
+        for (T v : values) {
+            p.onNext(v);
+        }
+        p.onComplete();
+    }
+
+    /**
+     * Emit the given values and complete the Subject.
+     * @param <T> the value type
+     * @param p the target subject
+     * @param values the values to emit
+     */
+    public static <T> void emit(Subject<T> p, T... values) {
+        for (T v : values) {
+            p.onNext(v);
+        }
+        p.onComplete();
     }
 }

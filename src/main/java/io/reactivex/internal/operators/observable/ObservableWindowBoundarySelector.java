@@ -155,24 +155,10 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
             actual.onComplete();
         }
 
-
-
-        void complete() {
-            if (windows.decrementAndGet() == 0) {
-                s.dispose();
-                resources.dispose();
-            }
-
-            actual.onComplete();
-        }
-
         void error(Throwable t) {
-            if (windows.decrementAndGet() == 0) {
-                s.dispose();
-                resources.dispose();
-            }
-
-            actual.onError(t);
+            s.dispose();
+            resources.dispose();
+            onError(t);
         }
 
         @Override

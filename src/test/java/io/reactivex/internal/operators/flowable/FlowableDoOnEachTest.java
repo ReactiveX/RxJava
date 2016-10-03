@@ -14,18 +14,25 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.UnicastProcessor;
+import io.reactivex.subscribers.*;
 
 public class FlowableDoOnEachTest {
 
@@ -194,7 +201,7 @@ public class FlowableDoOnEachTest {
     }
 
     @Test
-    public void testOnErrorThrows() {
+    public void onErrorThrows() {
         TestSubscriber<Object> ts = TestSubscriber.create();
 
         Flowable.error(new TestException())
@@ -215,5 +222,499 @@ public class FlowableDoOnEachTest {
         assertEquals(2, exceptions.size());
         Assert.assertTrue(exceptions.get(0) instanceof TestException);
         Assert.assertTrue(exceptions.get(1) instanceof TestException);
+    }
+
+    @Test
+    public void ignoreCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Object>() {
+                @Override
+                public void subscribe(Subscriber<? super Object> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            })
+            .doOnNext(new Consumer<Object>() {
+                @Override
+                public void accept(Object e) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onErrorAfterCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Object>() {
+                @Override
+                public void subscribe(Subscriber<? super Object> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onError(new TestException());
+                }
+            })
+            .doAfterTerminate(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new IOException();
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onCompleteAfterCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Object>() {
+                @Override
+                public void subscribe(Subscriber<? super Object> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onComplete();
+                }
+            })
+            .doAfterTerminate(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new IOException();
+                }
+            })
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onCompleteCrash() {
+        Flowable.fromPublisher(new Publisher<Object>() {
+            @Override
+            public void subscribe(Subscriber<? super Object> s) {
+                s.onSubscribe(new BooleanSubscription());
+                s.onComplete();
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                throw new IOException();
+            }
+        })
+        .test()
+        .assertFailure(IOException.class);
+    }
+
+    @Test
+    public void ignoreCancelConditional() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Object>() {
+                @Override
+                public void subscribe(Subscriber<? super Object> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            })
+            .doOnNext(new Consumer<Object>() {
+                @Override
+                public void accept(Object e) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .filter(Functions.alwaysTrue())
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void ignoreCancelConditional2() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Object>() {
+                @Override
+                public void subscribe(Subscriber<? super Object> s) {
+                    ConditionalSubscriber<? super Object> cs = (ConditionalSubscriber<? super Object>)s;
+                    cs.onSubscribe(new BooleanSubscription());
+                    cs.tryOnNext(1);
+                    cs.tryOnNext(2);
+                    cs.onError(new IOException());
+                    cs.onComplete();
+                }
+            })
+            .doOnNext(new Consumer<Object>() {
+                @Override
+                public void accept(Object e) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .filter(Functions.alwaysTrue())
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onErrorAfterCrashConditional() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Object>() {
+                @Override
+                public void subscribe(Subscriber<? super Object> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onError(new TestException());
+                }
+            })
+            .doAfterTerminate(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new IOException();
+                }
+            })
+            .filter(Functions.alwaysTrue())
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onCompleteAfter() {
+        final int[] call = { 0 };
+        Flowable.just(1)
+        .doAfterTerminate(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[0]++;
+            }
+        })
+        .test()
+        .assertResult(1);
+
+        assertEquals(1, call[0]);
+    }
+
+    @Test
+    public void onCompleteAfterCrashConditional() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Object>() {
+                @Override
+                public void subscribe(Subscriber<? super Object> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onComplete();
+                }
+            })
+            .doAfterTerminate(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new IOException();
+                }
+            })
+            .filter(Functions.alwaysTrue())
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onCompleteCrashConditional() {
+        Flowable.fromPublisher(new Publisher<Object>() {
+            @Override
+            public void subscribe(Subscriber<? super Object> s) {
+                s.onSubscribe(new BooleanSubscription());
+                s.onComplete();
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                throw new IOException();
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .test()
+        .assertFailure(IOException.class);
+    }
+
+    @Test
+    public void onErrorOnErrorCrashConditional() {
+        TestSubscriber<Object> ts = Flowable.error(new TestException("Outer"))
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                throw new TestException("Inner");
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+
+        TestHelper.assertError(errors, 0, TestException.class, "Outer");
+        TestHelper.assertError(errors, 1, TestException.class, "Inner");
+    }
+
+    @Test
+    public void fused() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0, 0 };
+
+        Flowable.range(1, 5)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                call[0]++;
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[1]++;
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, call[0]);
+        assertEquals(1, call[1]);
+    }
+
+    @Test
+    public void fusedOnErrorCrash() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0 };
+
+        Flowable.range(1, 5)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[0]++;
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertFailure(TestException.class);
+
+        assertEquals(0, call[0]);
+    }
+
+    @Test
+    public void fusedConditional() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0, 0 };
+
+        Flowable.range(1, 5)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                call[0]++;
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[1]++;
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, call[0]);
+        assertEquals(1, call[1]);
+    }
+
+    @Test
+    public void fusedOnErrorCrashConditional() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0 };
+
+        Flowable.range(1, 5)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[0]++;
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertFailure(TestException.class);
+
+        assertEquals(0, call[0]);
+    }
+
+    @Test
+    public void fusedAsync() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0, 0 };
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        up
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                call[0]++;
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[1]++;
+            }
+        })
+        .subscribe(ts);
+
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, call[0]);
+        assertEquals(1, call[1]);
+    }
+
+    @Test
+    public void fusedAsyncConditional() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0, 0 };
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        up
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                call[0]++;
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[1]++;
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, call[0]);
+        assertEquals(1, call[1]);
+    }
+
+    @Test
+    public void fusedAsyncConditional2() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0, 0 };
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        up.hide()
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                call[0]++;
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[1]++;
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.NONE))
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, call[0]);
+        assertEquals(1, call[1]);
     }
 }

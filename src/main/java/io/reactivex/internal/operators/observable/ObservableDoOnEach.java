@@ -114,7 +114,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 onError.accept(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                t = new CompositeException(e, t);
+                t = new CompositeException(t, e);
             }
             actual.onError(t);
 
@@ -131,7 +131,6 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
             if (done) {
                 return;
             }
-            done = true;
             try {
                 onComplete.run();
             } catch (Throwable e) {
@@ -140,6 +139,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 return;
             }
 
+            done = true;
             actual.onComplete();
 
             try {

@@ -219,7 +219,7 @@ public final class MaybeFlatMapIterableObservable<T, R> extends Observable<R> {
 
             if (iter != null) {
                 R v = ObjectHelper.requireNonNull(iter.next(), "The iterator returned a null value");
-                if (iter.hasNext()) {
+                if (!iter.hasNext()) {
                     it = null;
                 }
                 return v;

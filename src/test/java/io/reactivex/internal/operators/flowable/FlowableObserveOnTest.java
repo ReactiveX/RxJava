@@ -14,23 +14,25 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
@@ -964,4 +966,176 @@ public class FlowableObserveOnTest {
         .assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
+    @Test
+    public void conditionalConsumer() {
+        Flowable.range(1, 5)
+        .observeOn(Schedulers.single())
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void take() {
+        Flowable.range(1, 5)
+        .observeOn(Schedulers.single())
+        .take(3)
+        .take(3)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3);
+    }
+
+    @Test
+    public void cancelCleanup() {
+        TestSubscriber<Integer> ts = Flowable.range(1, 5)
+        .observeOn(Schedulers.single())
+        .test(0L);
+
+        ts.cancel();
+    }
+
+    @Test
+    public void conditionalConsumerFused() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 5)
+        .observeOn(Schedulers.single())
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .subscribe(ts);
+
+        ts
+        .assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void conditionalConsumerFusedReject() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.SYNC);
+
+        Flowable.range(1, 5)
+        .observeOn(Schedulers.single())
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .subscribe(ts);
+
+        ts
+        .assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.NONE))
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void requestOne() throws Exception {
+        TestSubscriber<Integer> ts = Flowable.range(1, 5)
+        .observeOn(Schedulers.single())
+        .test(1);
+
+        Thread.sleep(100);
+
+        ts.assertSubscribed().assertValue(1).assertNoErrors().assertNotComplete();
+    }
+
+    @Test
+    public void requestOneConditional() throws Exception {
+        TestSubscriber<Integer> ts = Flowable.range(1, 5)
+        .observeOn(Schedulers.single())
+        .filter(Functions.alwaysTrue())
+        .test(1);
+
+        Thread.sleep(100);
+
+        ts.assertSubscribed().assertValue(1).assertNoErrors().assertNotComplete();
+    }
+
+    @Test
+    public void conditionalConsumerFusedAsync() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        up
+        .observeOn(Schedulers.single())
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .subscribe(ts);
+
+        up.onNext(1);
+        up.onNext(2);
+        up.onNext(3);
+        up.onNext(4);
+        up.onNext(5);
+        up.onComplete();
+
+        ts
+        .assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void conditionalConsumerHidden() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 5).hide()
+        .observeOn(Schedulers.single())
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .subscribe(ts);
+
+        ts
+        .assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void conditionalConsumerBarrier() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 5)
+        .map(Functions.<Integer>identity())
+        .observeOn(Schedulers.single())
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .subscribe(ts);
+
+        ts
+        .assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(2, 4);
+    }
 }

@@ -36,14 +36,6 @@ public final class ObservableLift<R, T> extends AbstractObservableWithUpstream<T
         this.operator = operator;
     }
 
-    /**
-     * Returns the operator of this lift publisher.
-     * @return the operator of this lift publisher
-     */
-    public ObservableOperator<? extends R, ? super T> operator() {
-        return operator;
-    }
-
     @Override
     public void subscribeActual(Observer<? super R> s) {
         Observer<? super T> observer;

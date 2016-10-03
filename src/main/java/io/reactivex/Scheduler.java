@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -163,7 +163,10 @@ public abstract class Scheduler {
 
         PeriodicDirectTask periodicTask = new PeriodicDirectTask(decoratedRun, w);
 
-        w.schedulePeriodically(periodicTask, initialDelay, period, unit);
+        Disposable d = w.schedulePeriodically(periodicTask, initialDelay, period, unit);
+        if (d == EmptyDisposable.INSTANCE) {
+            return d;
+        }
 
         return periodicTask;
     }
@@ -235,8 +238,13 @@ public abstract class Scheduler {
             final long firstNowNanoseconds = now(TimeUnit.NANOSECONDS);
             final long firstStartInNanoseconds = firstNowNanoseconds + unit.toNanos(initialDelay);
 
-            first.replace(schedule(new PeriodicTask(firstStartInNanoseconds, decoratedRun, firstNowNanoseconds, sd,
-                    periodInNanoseconds), initialDelay, unit));
+            Disposable d = schedule(new PeriodicTask(firstStartInNanoseconds, decoratedRun, firstNowNanoseconds, sd,
+                    periodInNanoseconds), initialDelay, unit);
+
+            if (d == EmptyDisposable.INSTANCE) {
+                return d;
+            }
+            first.replace(d);
 
             return sd;
         }

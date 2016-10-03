@@ -27,7 +27,9 @@ import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.schedulers.TrampolineScheduler;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.subscribers.DefaultSubscriber;
 
@@ -499,4 +501,60 @@ public abstract class AbstractSchedulerTests {
 
     }
 
+    @Test
+    public void scheduleDirect() throws Exception {
+        Scheduler s = getScheduler();
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+
+        s.scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        });
+
+        assertTrue(cdl.await(5, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void scheduleDirectDelayed() throws Exception {
+        Scheduler s = getScheduler();
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+
+        s.scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        }, 50, TimeUnit.MILLISECONDS);
+
+        assertTrue(cdl.await(5, TimeUnit.SECONDS));
+    }
+
+    @Test(timeout = 7000)
+    public void scheduleDirectPeriodic() throws Exception {
+        Scheduler s = getScheduler();
+        if (s instanceof TrampolineScheduler) {
+            // can't properly stop a trampolined periodic task
+            return;
+        }
+
+        final CountDownLatch cdl = new CountDownLatch(5);
+
+        Disposable d = s.schedulePeriodicallyDirect(new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        }, 10, 10, TimeUnit.MILLISECONDS);
+
+        try {
+            assertTrue(cdl.await(5, TimeUnit.SECONDS));
+        } finally {
+            d.dispose();
+        }
+        assertTrue(d.isDisposed());
+    }
 }
