@@ -63,32 +63,6 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         return wip.get() == 0 && wip.compareAndSet(0, 1);
     }
 
-    protected final void fastPathEmit(U value, boolean delayError) {
-        final Subscriber<? super V> s = actual;
-        final SimpleQueue<U> q = queue;
-
-        if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
-            long r = requested.get();
-            if (r != 0L) {
-                if (accept(s, value)) {
-                    if (r != Long.MAX_VALUE) {
-                        produced(1);
-                    }
-                }
-                if (leave(-1) == 0) {
-                    return;
-                }
-            }
-            q.offer(value);
-        } else {
-            q.offer(value);
-            if (!enter()) {
-                return;
-            }
-        }
-        QueueDrainHelper.drainLoop(q, s, delayError, this);
-    }
-
     protected final void fastPathEmitMax(U value, boolean delayError, Disposable dispose) {
         final Subscriber<? super V> s = actual;
         final SimpleQueue<U> q = queue;
@@ -150,39 +124,6 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
             }
         }
         QueueDrainHelper.drainMaxLoop(q, s, delayError, dispose, this);
-    }
-
-    /**
-     * Makes sure the fast-path emits in order.
-     * @param value the value to emit or queue up
-     * @param delayError if true, errors are delayed until the source has terminated
-     */
-    protected final void fastPathOrderedEmit(U value, boolean delayError) {
-        final Subscriber<? super V> s = actual;
-        final SimpleQueue<U> q = queue;
-
-        if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
-            if (q.isEmpty()) {
-                long r = requested.get();
-                if (r != 0L) {
-                    if (accept(s, value)) {
-                        if (r != Long.MAX_VALUE) {
-                            produced(1);
-                        }
-                    }
-                    if (leave(-1) == 0) {
-                        return;
-                    }
-                }
-            }
-            q.offer(value);
-        } else {
-            q.offer(value);
-            if (!enter()) {
-                return;
-            }
-        }
-        QueueDrainHelper.drainLoop(q, s, delayError, this);
     }
 
     @Override

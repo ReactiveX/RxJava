@@ -68,8 +68,12 @@ public class FlowableTakeLastOneTest {
                 unsubscribed.set(true);
             }
         };
-        Flowable.just(1).doOnCancel(unsubscribeAction)
-                .takeLast(1).subscribe();
+
+        Flowable.just(1).concatWith(Flowable.<Integer>never())
+        .doOnCancel(unsubscribeAction)
+        .takeLast(1)
+        .subscribe().dispose();
+
         assertTrue(unsubscribed.get());
     }
 

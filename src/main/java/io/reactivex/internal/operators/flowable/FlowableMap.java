@@ -115,10 +115,6 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
                 return false;
             }
 
-            if (sourceMode != NONE) {
-                return actual.tryOnNext(null);
-            }
-
             U v;
 
             try {

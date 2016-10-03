@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.subscribers;
 
+import io.reactivex.plugins.RxJavaPlugins;
+
 /**
  * Blocks until the upstream signals its first value or completes.
  *
@@ -33,6 +35,8 @@ public final class BlockingFirstSubscriber<T> extends BlockingBaseSubscriber<T> 
     public void onError(Throwable t) {
         if (value == null) {
             error = t;
+        } else {
+            RxJavaPlugins.onError(t);
         }
         countDown();
     }

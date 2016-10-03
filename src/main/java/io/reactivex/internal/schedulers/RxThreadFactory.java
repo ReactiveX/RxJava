@@ -28,7 +28,7 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
 
     final int priority;
 
-    static volatile boolean CREATE_TRACE;
+//    static volatile boolean CREATE_TRACE;
 
     public RxThreadFactory(String prefix) {
         this(prefix, Thread.NORM_PRIORITY);
@@ -43,25 +43,26 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
     public Thread newThread(Runnable r) {
         StringBuilder nameBuilder = new StringBuilder(prefix).append('-').append(incrementAndGet());
 
-        if (CREATE_TRACE) {
-            nameBuilder.append("\r\n");
-            for (StackTraceElement se :Thread.currentThread().getStackTrace()) {
-                String s = se.toString();
-                if (s.contains("sun.reflect.")) {
-                    continue;
-                }
-                if (s.contains("junit.runners.")) {
-                    continue;
-                }
-                if (s.contains("org.gradle.internal.")) {
-                    continue;
-                }
-                if (s.contains("java.util.concurrent.ThreadPoolExecutor")) {
-                    continue;
-                }
-                nameBuilder.append(s).append("\r\n");
-            }
-        }
+//        if (CREATE_TRACE) {
+//            nameBuilder.append("\r\n");
+//            for (StackTraceElement se :Thread.currentThread().getStackTrace()) {
+//                String s = se.toString();
+//                if (s.contains("sun.reflect.")) {
+//                    continue;
+//                }
+//                if (s.contains("junit.runners.")) {
+//                    continue;
+//                }
+//                if (s.contains("org.gradle.internal.")) {
+//                    continue;
+//                }
+//                if (s.contains("java.util.concurrent.ThreadPoolExecutor")) {
+//                    continue;
+//                }
+//                nameBuilder.append(s).append("\r\n");
+//            }
+//        }
+
         Thread t = new Thread(r, nameBuilder.toString());
         t.setPriority(priority);
         t.setDaemon(true);

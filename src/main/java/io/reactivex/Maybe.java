@@ -23,6 +23,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.observers.BlockingMultiObserver;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.*;
@@ -2866,9 +2867,13 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * @return the new Flowable instance
      */
+    @SuppressWarnings("unchecked")
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> toFlowable() {
+        if (this instanceof FuseToFlowable) {
+            return ((FuseToFlowable<T>)this).fuseToFlowable();
+        }
         return RxJavaPlugins.onAssembly(new MaybeToFlowable<T>(this));
     }
 
@@ -2881,8 +2886,12 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * @return the new Observable instance
      */
+    @SuppressWarnings("unchecked")
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> toObservable() {
+        if (this instanceof FuseToObservable) {
+            return ((FuseToObservable<T>)this).fuseToObservable();
+        }
         return RxJavaPlugins.onAssembly(new MaybeToObservable<T>(this));
     }
 

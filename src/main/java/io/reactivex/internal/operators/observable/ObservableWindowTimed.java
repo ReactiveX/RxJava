@@ -623,7 +623,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                     return;
                 }
             } else {
-                queue.offer(NotificationLite.next(t));
+                queue.offer(t);
                 if (!enter()) {
                     return;
                 }
@@ -680,6 +680,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             }
         }
 
+        @SuppressWarnings("unchecked")
         void drainLoop() {
             final SimpleQueue<Object> q = queue;
             final Observer<? super Observable<T>> a = actual;
@@ -738,7 +739,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                     }
 
                     if (sw) {
-                        @SuppressWarnings("unchecked")
                         SubjectWork<T> work = (SubjectWork<T>)v;
 
                         if (work.open) {
@@ -764,10 +764,10 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                             }
                             continue;
                         }
-                    }
-
-                    for (UnicastSubject<T> w : ws) {
-                        w.onNext(NotificationLite.<T>getValue(v));
+                    } else {
+                        for (UnicastSubject<T> w : ws) {
+                            w.onNext((T)v);
+                        }
                     }
                 }
 

@@ -30,7 +30,11 @@ public enum EmptyDisposable implements QueueDisposable<Object> {
      * don't use it in tests and then signal onNext with it;
      * use Disposables.empty() instead.
      */
-    INSTANCE
+    INSTANCE,
+    /**
+     * An empty disposable that returns false for isDisposed.
+     */
+    NEVER
     ;
 
     @Override
@@ -40,7 +44,7 @@ public enum EmptyDisposable implements QueueDisposable<Object> {
 
     @Override
     public boolean isDisposed() {
-        return true;
+        return this == INSTANCE;
     }
 
     public static void complete(Observer<?> s) {

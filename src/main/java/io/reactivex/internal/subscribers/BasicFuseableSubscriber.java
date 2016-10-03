@@ -90,17 +90,6 @@ public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, Qu
     // Convenience and state-aware methods
     // -----------------------------------
 
-    /**
-     * Emits the value to the actual subscriber if {@link #done} is false.
-     * @param value the value to signal
-     */
-    protected final void next(R value) {
-        if (done) {
-            return;
-        }
-        actual.onNext(value);
-    }
-
     @Override
     public void onError(Throwable t) {
         if (done) {

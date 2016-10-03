@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -48,6 +48,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
                 onSubscribe.accept(this);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
+                s.cancel();
                 onError(ex);
             }
         }
@@ -55,34 +56,42 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription> imp
 
     @Override
     public void onNext(T t) {
-        try {
-            onNext.accept(t);
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            onError(e);
+        if (!isDisposed()) {
+            try {
+                onNext.accept(t);
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                get().cancel();
+                onError(e);
+            }
         }
     }
 
     @Override
     public void onError(Throwable t) {
-        cancel();
-        try {
-            onError.accept(t);
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            RxJavaPlugins.onError(e);
+        if (get() != SubscriptionHelper.CANCELLED) {
+            lazySet(SubscriptionHelper.CANCELLED);
+            try {
+                onError.accept(t);
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                RxJavaPlugins.onError(new CompositeException(t, e));
+            }
+        } else {
             RxJavaPlugins.onError(t);
         }
     }
 
     @Override
     public void onComplete() {
-        cancel();
-        try {
-            onComplete.run();
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            RxJavaPlugins.onError(e);
+        if (get() != SubscriptionHelper.CANCELLED) {
+            lazySet(SubscriptionHelper.CANCELLED);
+            try {
+                onComplete.run();
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                RxJavaPlugins.onError(e);
+            }
         }
     }
 

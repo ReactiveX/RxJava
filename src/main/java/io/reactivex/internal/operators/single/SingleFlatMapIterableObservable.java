@@ -81,6 +81,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
         @Override
         public void onSuccess(T value) {
+            Observer<? super R> a = actual;
             Iterator<? extends R> iter;
             boolean has;
             try {
@@ -94,12 +95,53 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
             }
 
             if (!has) {
-                actual.onComplete();
+                a.onComplete();
                 return;
             }
 
-            this.it = iter;
-            drain();
+            if (outputFused) {
+                it = iter;
+                a.onNext(null);
+                a.onComplete();
+            } else {
+                for (;;) {
+                    if (cancelled) {
+                        return;
+                    }
+
+                    R v;
+
+                    try {
+                        v = iter.next();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        a.onError(ex);
+                        return;
+                    }
+
+                    a.onNext(v);
+
+                    if (cancelled) {
+                        return;
+                    }
+
+
+                    boolean b;
+
+                    try {
+                        b = iter.hasNext();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        a.onError(ex);
+                        return;
+                    }
+
+                    if (!b) {
+                        a.onComplete();
+                        return;
+                    }
+                }
+            }
         }
 
         @Override
@@ -118,75 +160,6 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
         @Override
         public boolean isDisposed() {
             return cancelled;
-        }
-
-        void drain() {
-            if (getAndIncrement() != 0) {
-                return;
-            }
-
-            Observer<? super R> a = actual;
-            Iterator<? extends R> iter = this.it;
-
-            if (outputFused && iter != null) {
-                a.onNext(null);
-                a.onComplete();
-                return;
-            }
-
-            int missed = 1;
-
-            for (;;) {
-
-                if (iter != null) {
-                    for (;;) {
-                        if (cancelled) {
-                            return;
-                        }
-
-                        R v;
-
-                        try {
-                            v = iter.next();
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            a.onError(ex);
-                            return;
-                        }
-
-                        a.onNext(v);
-
-                        if (cancelled) {
-                            return;
-                        }
-
-
-                        boolean b;
-
-                        try {
-                            b = iter.hasNext();
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            a.onError(ex);
-                            return;
-                        }
-
-                        if (!b) {
-                            a.onComplete();
-                            return;
-                        }
-                    }
-                }
-
-                missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-
-                if (iter == null) {
-                    iter = it;
-                }
-            }
         }
 
         @Override
@@ -214,7 +187,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
             if (iter != null) {
                 R v = ObjectHelper.requireNonNull(iter.next(), "The iterator returned a null value");
-                if (iter.hasNext()) {
+                if (!iter.hasNext()) {
                     it = null;
                 }
                 return v;

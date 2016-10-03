@@ -705,6 +705,9 @@ public enum TestHelper {
         assertEquals("Didn't report disposed after?", true, b[1]);
     }
 
+    /**
+     * Consumer for all base reactive types.
+     */
     enum NoOpConsumer implements Subscriber<Object>, Observer<Object>, MaybeObserver<Object>, SingleObserver<Object>, CompletableObserver {
         INSTANCE;
 
@@ -847,6 +850,7 @@ public enum TestHelper {
             RxJavaPlugins.reset();
         }
     }
+
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
@@ -881,6 +885,115 @@ public enum TestHelper {
             };
 
             SingleSource<R> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First disposed?", false, b[0]);
+            assertEquals("Second not disposed?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param <R> the output value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T, R> void checkDoubleOnSubscribeFlowable(Function<Flowable<T>, ? extends Publisher<R>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Flowable<T> source = new Flowable<T>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
+                    try {
+                        BooleanSubscription d1 = new BooleanSubscription();
+
+                        subscriber.onSubscribe(d1);
+
+                        BooleanSubscription d2 = new BooleanSubscription();
+
+                        subscriber.onSubscribe(d2);
+
+                        b[0] = d1.isCancelled();
+                        b[1] = d2.isCancelled();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            Publisher<R> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First disposed?", false, b[0]);
+            assertEquals("Second not disposed?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param <R> the output value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T, R> void checkDoubleOnSubscribeObservable(Function<Observable<T>, ? extends ObservableSource<R>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Observable<T> source = new Observable<T>() {
+                @Override
+                protected void subscribeActual(Observer<? super T> observer) {
+                    try {
+                        Disposable d1 = Disposables.empty();
+
+                        observer.onSubscribe(d1);
+
+                        Disposable d2 = Disposables.empty();
+
+                        observer.onSubscribe(d2);
+
+                        b[0] = d1.isDisposed();
+                        b[1] = d2.isDisposed();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            ObservableSource<R> out = transform.apply(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 

@@ -27,6 +27,7 @@ import io.reactivex.Flowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
@@ -281,4 +282,85 @@ public class FlowableWindowWithTimeTest {
         .assertResult(1);
     }
 
+    @Test
+    public void timeskipJustOverlap() {
+        Flowable.just(1)
+        .window(2, 1, TimeUnit.MINUTES, Schedulers.single())
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void timeskipJustSkip() {
+        Flowable.just(1)
+        .window(1, 2, TimeUnit.MINUTES, Schedulers.single())
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void timeskipSkipping() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test();
+
+        pp.onNext(1);
+        pp.onNext(2);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        pp.onNext(3);
+        pp.onNext(4);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        pp.onNext(5);
+        pp.onNext(6);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        pp.onNext(7);
+        pp.onComplete();
+
+        ts.assertResult(1, 2, 5, 6);
+    }
+
+    @Test
+    public void timeskipOverlapping() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test();
+
+        pp.onNext(1);
+        pp.onNext(2);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        pp.onNext(3);
+        pp.onNext(4);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        pp.onNext(5);
+        pp.onNext(6);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        pp.onNext(7);
+        pp.onComplete();
+
+        ts.assertResult(1, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7);
+    }
 }

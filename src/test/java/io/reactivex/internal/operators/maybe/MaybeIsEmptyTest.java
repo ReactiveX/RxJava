@@ -54,6 +54,34 @@ public class MaybeIsEmptyTest {
         .toMaybe() instanceof MaybeIsEmpty);
     }
 
+
+    @Test
+    public void normalToMaybe() {
+        Maybe.just(1)
+        .isEmpty()
+        .toMaybe()
+        .test()
+        .assertResult(false);
+    }
+
+    @Test
+    public void emptyToMaybe() {
+        Maybe.empty()
+        .isEmpty()
+        .toMaybe()
+        .test()
+        .assertResult(true);
+    }
+
+    @Test
+    public void errorToMaybe() {
+        Maybe.error(new TestException())
+        .isEmpty()
+        .toMaybe()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
     @Test
     public void dispose() {
         TestHelper.checkDisposedMaybeToSingle(new Function<Maybe<Object>, SingleSource<Boolean>>() {
@@ -77,6 +105,33 @@ public class MaybeIsEmptyTest {
             @Override
             public Single<Boolean> apply(Maybe<Object> f) throws Exception {
                 return f.isEmpty();
+            }
+        });
+    }
+
+    @Test
+    public void disposeToMaybe() {
+        TestHelper.checkDisposedMaybe(new Function<Maybe<Object>, Maybe<Boolean>>() {
+            @Override
+            public Maybe<Boolean> apply(Maybe<Object> m) throws Exception {
+                return m.isEmpty().toMaybe();
+            }
+        });
+    }
+
+    @Test
+    public void isDisposedToMaybe() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestHelper.checkDisposed(pp.singleElement().isEmpty().toMaybe());
+    }
+
+    @Test
+    public void doubleOnSubscribeToMaybe() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, Maybe<Boolean>>() {
+            @Override
+            public Maybe<Boolean> apply(Maybe<Object> f) throws Exception {
+                return f.isEmpty().toMaybe();
             }
         });
     }

@@ -13,20 +13,25 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.junit.*;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableMapTest {
 
@@ -404,4 +409,267 @@ public class FlowableMapTest {
 
         ts.assertError(TestException.class);
     }
+
+    @Test
+    public void mapFilter() {
+        Flowable.range(1, 2)
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                return v + 1;
+            }
+        })
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return true;
+            }
+        })
+        .test()
+        .assertResult(2, 3);
+    }
+
+    @Test
+    public void mapFilterMapperCrash() {
+        Flowable.range(1, 2)
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return true;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void mapFilterHidden() {
+        Flowable.range(1, 2).hide()
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                return v + 1;
+            }
+        })
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return true;
+            }
+        })
+        .test()
+        .assertResult(2, 3);
+    }
+
+    @Test
+    public void mapFilterFused() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 2)
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                return v + 1;
+            }
+        })
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return true;
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertResult(2, 3);
+    }
+
+    @Test
+    public void mapFilterFusedHidden() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 2).hide()
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                return v + 1;
+            }
+        })
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return true;
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.NONE))
+        .assertResult(2, 3);
+    }
+
+    @Test
+    public void sourceIgnoresCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Integer>() {
+                @Override
+                public void subscribe(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            })
+            .map(new Function<Integer, Object>() {
+                @Override
+                public Object apply(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void mapFilterMapperCrashFused() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 2).hide()
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return true;
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.NONE))
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void sourceIgnoresCancelFilter() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Integer>() {
+                @Override
+                public void subscribe(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            })
+            .map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .filter(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    return true;
+                }
+            })
+           .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void mapFilterFused2() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        up
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                return v + 1;
+            }
+        })
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return true;
+            }
+        })
+        .subscribe(ts);
+
+        up.onNext(1);
+        up.onNext(2);
+        up.onComplete();
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult(2, 3);
+    }
+
+    @Test
+    public void sourceIgnoresCancelConditional() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Flowable.fromPublisher(new Publisher<Integer>() {
+                @Override
+                public void subscribe(Subscriber<? super Integer> s) {
+                    ConditionalSubscriber<? super Integer> cs = (ConditionalSubscriber<? super Integer>)s;
+                    cs.onSubscribe(new BooleanSubscription());
+                    cs.tryOnNext(1);
+                    cs.tryOnNext(2);
+                    cs.onError(new IOException());
+                    cs.onComplete();
+                }
+            })
+            .map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .filter(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    return true;
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
 }
