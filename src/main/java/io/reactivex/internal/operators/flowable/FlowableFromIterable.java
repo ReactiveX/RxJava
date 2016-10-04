@@ -261,28 +261,6 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
                 r = get();
                 if (e == r) {
-
-                    if (cancelled) {
-                        return;
-                    }
-
-                    boolean b;
-
-                    try {
-                        b = it.hasNext();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        a.onError(ex);
-                        return;
-                    }
-
-                    if (!b) {
-                        if (!cancelled) {
-                            a.onComplete();
-                        }
-                        return;
-                    }
-
                     r = addAndGet(-e);
                     if (r == 0L) {
                         return;
@@ -423,28 +401,6 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
                 r = get();
                 if (e == r) {
-
-                    if (cancelled) {
-                        return;
-                    }
-
-                    boolean hasNext;
-
-                    try {
-                        hasNext = it.hasNext();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        a.onError(ex);
-                        return;
-                    }
-
-                    if (!hasNext) {
-                        if (!cancelled) {
-                            a.onComplete();
-                        }
-                        return;
-                    }
-
                     r = addAndGet(-e);
                     if (r == 0L) {
                         return;

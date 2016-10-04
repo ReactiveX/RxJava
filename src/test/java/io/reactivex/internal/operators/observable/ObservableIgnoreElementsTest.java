@@ -19,10 +19,11 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
-import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservableIgnoreElementsTest {
 
@@ -151,5 +152,21 @@ public class ObservableIgnoreElementsTest {
             }})
             .subscribe();
         assertTrue(unsub.get());
+    }
+
+    @Test
+    public void cancel() {
+
+        PublishSubject<Integer> pp = PublishSubject.create();
+
+        TestObserver<Integer> ts = pp.ignoreElements().<Integer>toObservable().test();
+
+        assertTrue(pp.hasObservers());
+
+        ts.cancel();
+
+        assertFalse(pp.hasObservers());
+
+        TestHelper.checkDisposed(pp.ignoreElements().<Integer>toObservable());
     }
 }

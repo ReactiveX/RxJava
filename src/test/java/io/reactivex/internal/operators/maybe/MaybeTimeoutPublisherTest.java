@@ -15,69 +15,25 @@ package io.reactivex.internal.operators.maybe;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
+import java.util.concurrent.*;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
-public class MaybeTakeUntilTest {
+public class MaybeTimeoutPublisherTest {
 
     @Test
-    public void normalPublisher() {
-        Maybe.just(1).takeUntil(Flowable.never())
-        .test()
-        .assertResult(1);
-    }
-
-    @Test
-    public void normalMaybe() {
-        Maybe.just(1).takeUntil(Maybe.never())
-        .test()
-        .assertResult(1);
-    }
-
-    @Test
-    public void untilFirstPublisher() {
-        Maybe.just(1).takeUntil(Flowable.just("one"))
-        .test()
-        .assertResult();
-    }
-
-    @Test
-    public void untilFirstMaybe() {
-        Maybe.just(1).takeUntil(Maybe.just("one"))
-        .test()
-        .assertResult();
-    }
-
-    @Test
-    public void disposed() {
-        TestHelper.checkDisposed(PublishProcessor.create().singleElement().takeUntil(Maybe.never()));
-    }
-
-    @Test
-    public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
-            @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
-                return m.takeUntil(Maybe.never());
-            }
-        });
-    }
-
-    @Test
-    public void mainErrors() {
+    public void mainError() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -91,11 +47,11 @@ public class MaybeTakeUntilTest {
     }
 
     @Test
-    public void otherErrors() {
+    public void otherError() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -109,11 +65,49 @@ public class MaybeTakeUntilTest {
     }
 
     @Test
-    public void mainCompletes() {
+    public void fallbackError() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2, Maybe.<Integer>error(new TestException())).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onNext(1);
+        pp2.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fallbackComplete() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2, Maybe.<Integer>empty()).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onNext(1);
+        pp2.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        to.assertResult();
+    }
+
+    @Test
+    public void mainComplete() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -127,11 +121,11 @@ public class MaybeTakeUntilTest {
     }
 
     @Test
-    public void otherCompletes() {
+    public void otherComplete() {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -141,48 +135,56 @@ public class MaybeTakeUntilTest {
         assertFalse(pp1.hasSubscribers());
         assertFalse(pp2.hasSubscribers());
 
-        to.assertResult();
+        to.assertFailure(TimeoutException.class);
+    }
+
+    @Test
+    public void dispose() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestHelper.checkDisposed(pp1.singleElement().timeout(pp2));
+    }
+
+    @Test
+    public void dispose2() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestHelper.checkDisposed(pp1.singleElement().timeout(pp2, Maybe.just(1)));
     }
 
     @Test
     public void onErrorRace() {
         for (int i = 0; i < 500; i++) {
-            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
-            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
-
-            TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
-
-            final TestException ex1 = new TestException();
-            final TestException ex2 = new TestException();
-
-            List<Throwable> errors = TestHelper.trackPluginErrors();
+            TestHelper.trackPluginErrors();
             try {
+                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+                final PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+                TestObserver<Integer> to = pp1.singleElement().timeout(pp2).test();
+
+                final TestException ex = new TestException();
 
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        pp1.onError(ex1);
+                        pp1.onError(ex);
                     }
                 };
                 Runnable r2 = new Runnable() {
                     @Override
                     public void run() {
-                        pp2.onError(ex2);
+                        pp2.onError(ex);
                     }
                 };
 
                 TestHelper.race(r1, r2, Schedulers.single());
 
                 to.assertFailure(TestException.class);
-
-                if (!errors.isEmpty()) {
-                    TestHelper.assertError(errors, 0, TestException.class);
-                }
-
             } finally {
                 RxJavaPlugins.reset();
             }
-
         }
     }
 
@@ -192,7 +194,7 @@ public class MaybeTakeUntilTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+            TestObserver<Integer> to = pp1.singleElement().timeout(pp2).test();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -209,7 +211,13 @@ public class MaybeTakeUntilTest {
 
             TestHelper.race(r1, r2, Schedulers.single());
 
-            to.assertResult();
+            to.assertSubscribed().assertNoValues();
+
+            if (to.errorCount() != 0) {
+                to.assertError(TimeoutException.class).assertNotComplete();
+            } else {
+                to.assertNoErrors().assertComplete();
+            }
         }
     }
 }

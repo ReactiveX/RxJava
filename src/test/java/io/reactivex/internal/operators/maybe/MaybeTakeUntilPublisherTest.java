@@ -27,39 +27,11 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
-public class MaybeTakeUntilTest {
-
-    @Test
-    public void normalPublisher() {
-        Maybe.just(1).takeUntil(Flowable.never())
-        .test()
-        .assertResult(1);
-    }
-
-    @Test
-    public void normalMaybe() {
-        Maybe.just(1).takeUntil(Maybe.never())
-        .test()
-        .assertResult(1);
-    }
-
-    @Test
-    public void untilFirstPublisher() {
-        Maybe.just(1).takeUntil(Flowable.just("one"))
-        .test()
-        .assertResult();
-    }
-
-    @Test
-    public void untilFirstMaybe() {
-        Maybe.just(1).takeUntil(Maybe.just("one"))
-        .test()
-        .assertResult();
-    }
+public class MaybeTakeUntilPublisherTest {
 
     @Test
     public void disposed() {
-        TestHelper.checkDisposed(PublishProcessor.create().singleElement().takeUntil(Maybe.never()));
+        TestHelper.checkDisposed(PublishProcessor.create().singleElement().takeUntil(Flowable.never()));
     }
 
     @Test
@@ -67,7 +39,7 @@ public class MaybeTakeUntilTest {
         TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
             @Override
             public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
-                return m.takeUntil(Maybe.never());
+                return m.takeUntil(Flowable.never());
             }
         });
     }
@@ -77,7 +49,7 @@ public class MaybeTakeUntilTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -95,7 +67,7 @@ public class MaybeTakeUntilTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -113,7 +85,7 @@ public class MaybeTakeUntilTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -131,7 +103,7 @@ public class MaybeTakeUntilTest {
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
         PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+        TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2).test();
 
         assertTrue(pp1.hasSubscribers());
         assertTrue(pp2.hasSubscribers());
@@ -150,7 +122,7 @@ public class MaybeTakeUntilTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+            TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2).test();
 
             final TestException ex1 = new TestException();
             final TestException ex2 = new TestException();
@@ -192,7 +164,7 @@ public class MaybeTakeUntilTest {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-            TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2.singleElement()).test();
+            TestObserver<Integer> to = pp1.singleElement().takeUntil(pp2).test();
 
             Runnable r1 = new Runnable() {
                 @Override

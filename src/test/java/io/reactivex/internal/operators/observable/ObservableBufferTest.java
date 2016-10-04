@@ -13,7 +13,8 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -28,8 +29,9 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableBufferTest {
@@ -838,4 +840,368 @@ public class ObservableBufferTest {
         .assertResult(set(1, 2), set(2, 3), set(4));
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows() {
+        Observable.just(1)
+        .buffer(1, TimeUnit.SECONDS, Integer.MAX_VALUE, Schedulers.single(), new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        }, false)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows2() {
+        Observable.just(1)
+        .buffer(1, TimeUnit.SECONDS, 10, Schedulers.single(), new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        }, false)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows3() {
+        Observable.just(1)
+        .buffer(2, 1, TimeUnit.SECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows4() {
+        Observable.<Integer>never()
+        .buffer(1, TimeUnit.MILLISECONDS, Integer.MAX_VALUE, Schedulers.single(), new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    throw new TestException();
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        }, false)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows5() {
+        Observable.<Integer>never()
+        .buffer(1, TimeUnit.MILLISECONDS, 10, Schedulers.single(), new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    throw new TestException();
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        }, false)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows6() {
+        Observable.<Integer>never()
+        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    throw new TestException();
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierReturnsNull() {
+        Observable.<Integer>never()
+        .buffer(1, TimeUnit.MILLISECONDS, Integer.MAX_VALUE, Schedulers.single(), new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        }, false)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierReturnsNull2() {
+        Observable.<Integer>never()
+        .buffer(1, TimeUnit.MILLISECONDS, 10, Schedulers.single(), new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        }, false)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierReturnsNull3() {
+        Observable.<Integer>never()
+        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBufferSupplierThrows() {
+        Observable.never()
+        .buffer(Functions.justCallable(Observable.never()), new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBoundarySupplierThrows() {
+        Observable.never()
+        .buffer(new Callable<ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> call() throws Exception {
+                throw new TestException();
+            }
+        }, new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBufferSupplierThrows2() {
+        Observable.never()
+        .buffer(Functions.justCallable(Observable.timer(1, TimeUnit.MILLISECONDS)), new Callable<Collection<Object>>() {
+            int count;
+            @Override
+            public Collection<Object> call() throws Exception {
+                if (count++ == 1) {
+                    throw new TestException();
+                } else {
+                    return new ArrayList<Object>();
+                }
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBufferSupplierReturnsNull() {
+        Observable.never()
+        .buffer(Functions.justCallable(Observable.timer(1, TimeUnit.MILLISECONDS)), new Callable<Collection<Object>>() {
+            int count;
+            @Override
+            public Collection<Object> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                } else {
+                    return new ArrayList<Object>();
+                }
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBoundarySupplierThrows2() {
+        Observable.never()
+        .buffer(new Callable<ObservableSource<Long>>() {
+            int count;
+            @Override
+            public ObservableSource<Long> call() throws Exception {
+                if (count++ == 1) {
+                    throw new TestException();
+                }
+                return Observable.timer(1, TimeUnit.MILLISECONDS);
+            }
+        }, new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void boundaryCancel() {
+        PublishSubject<Object> pp = PublishSubject.create();
+
+        TestObserver<Collection<Object>> ts = pp
+        .buffer(Functions.justCallable(Observable.never()), new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasObservers());
+
+        ts.dispose();
+
+        assertFalse(pp.hasObservers());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBoundarySupplierReturnsNull() {
+        Observable.never()
+        .buffer(new Callable<ObservableSource<Long>>() {
+            int count;
+            @Override
+            public ObservableSource<Long> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                }
+                return Observable.timer(1, TimeUnit.MILLISECONDS);
+            }
+        }, new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBoundarySupplierReturnsNull2() {
+        Observable.never()
+        .buffer(new Callable<ObservableSource<Long>>() {
+            int count;
+            @Override
+            public ObservableSource<Long> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                }
+                return Observable.empty();
+            }
+        }, new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void boundaryMainError() {
+        PublishSubject<Object> pp = PublishSubject.create();
+
+        TestObserver<Collection<Object>> ts = pp
+        .buffer(Functions.justCallable(Observable.never()), new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void boundaryBoundaryError() {
+        PublishSubject<Object> pp = PublishSubject.create();
+
+        TestObserver<Collection<Object>> ts = pp
+        .buffer(Functions.justCallable(Observable.error(new TestException())), new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+    }
 }

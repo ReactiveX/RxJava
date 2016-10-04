@@ -42,43 +42,37 @@ public final class MaybeFromFuture<T> extends Maybe<T> {
     protected void subscribeActual(MaybeObserver<? super T> observer) {
         Disposable d = Disposables.empty();
         observer.onSubscribe(d);
-        if (d.isDisposed()) {
-            return;
-        }
-
-        T v;
-        try {
-            if (timeout <= 0L) {
-                v = future.get();
-            } else {
-                v = future.get(timeout, unit);
-            }
-        } catch (InterruptedException ex) {
-            if (d.isDisposed()) {
+        if (!d.isDisposed()) {
+            T v;
+            try {
+                if (timeout <= 0L) {
+                    v = future.get();
+                } else {
+                    v = future.get(timeout, unit);
+                }
+            } catch (InterruptedException ex) {
+                if (!d.isDisposed()) {
+                    observer.onError(ex);
+                }
+                return;
+            } catch (ExecutionException ex) {
+                if (!d.isDisposed()) {
+                    observer.onError(ex.getCause());
+                }
+                return;
+            } catch (TimeoutException ex) {
+                if (!d.isDisposed()) {
+                    observer.onError(ex);
+                }
                 return;
             }
-            observer.onError(ex);
-            return;
-        } catch (ExecutionException ex) {
-            if (d.isDisposed()) {
-                return;
+            if (!d.isDisposed()) {
+                if (v == null) {
+                    observer.onComplete();
+                } else {
+                    observer.onSuccess(v);
+                }
             }
-            observer.onError(ex.getCause());
-            return;
-        } catch (TimeoutException ex) {
-            if (d.isDisposed()) {
-                return;
-            }
-            observer.onError(ex);
-            return;
-        }
-        if (d.isDisposed()) {
-            return;
-        }
-        if (v == null) {
-            observer.onComplete();
-        } else {
-            observer.onSuccess(v);
         }
     }
 }

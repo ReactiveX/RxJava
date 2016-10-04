@@ -23,7 +23,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -126,7 +126,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             } else {
                 cancelled = true;
                 s.cancel();
-                a.onError(new IllegalStateException("Could not deliver first window due to lack of requests."));
+                a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests."));
                 return;
             }
 
@@ -281,7 +281,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                                 queue.clear();
                                 s.cancel();
                                 dispose();
-                                a.onError(new IllegalStateException("Could not deliver first window due to lack of requests."));
+                                a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests."));
                                 return;
                             }
                         } else {
@@ -374,7 +374,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             } else {
                 cancelled = true;
                 s.cancel();
-                a.onError(new IllegalStateException("Could not deliver initial window due to lack of requests."));
+                a.onError(new MissingBackpressureException("Could not deliver initial window due to lack of requests."));
                 return;
             }
 
@@ -436,7 +436,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         window = null;
                         s.cancel();
                         dispose();
-                        actual.onError(new IllegalStateException("Could not deliver window due to lack of requests"));
+                        actual.onError(new MissingBackpressureException("Could not deliver window due to lack of requests"));
                         return;
                     }
                 } else {
@@ -572,7 +572,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                                 queue.clear();
                                 s.cancel();
                                 dispose();
-                                a.onError(new IllegalStateException("Could not deliver first window due to lack of requests."));
+                                a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests."));
                                 return;
                             }
                         }
@@ -613,7 +613,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                             window = null;
                             s.cancel();
                             dispose();
-                            actual.onError(new IllegalStateException("Could not deliver window due to lack of requests"));
+                            actual.onError(new MissingBackpressureException("Could not deliver window due to lack of requests"));
                             return;
                         }
                     } else {
@@ -719,7 +719,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
             } else {
                 s.cancel();
-                actual.onError(new IllegalStateException("Could not emit the first window due to lack of requests"));
+                actual.onError(new MissingBackpressureException("Could not emit the first window due to lack of requests"));
             }
         }
 
@@ -878,7 +878,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                                     }
                                 }, timespan, unit);
                             } else {
-                                a.onError(new IllegalStateException("Can't emit window due to lack of requests"));
+                                a.onError(new MissingBackpressureException("Can't emit window due to lack of requests"));
                                 continue;
                             }
                         } else {

@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -27,6 +28,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -1316,4 +1318,206 @@ public class FlowableBufferTest {
         .assertResult(Arrays.asList(1, 2, 3, 4, 5));
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBufferSupplierThrows() {
+        Flowable.never()
+        .buffer(Functions.justCallable(Flowable.never()), new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBoundarySupplierThrows() {
+        Flowable.never()
+        .buffer(new Callable<Publisher<Object>>() {
+            @Override
+            public Publisher<Object> call() throws Exception {
+                throw new TestException();
+            }
+        }, new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBufferSupplierThrows2() {
+        Flowable.never()
+        .buffer(Functions.justCallable(Flowable.timer(1, TimeUnit.MILLISECONDS)), new Callable<Collection<Object>>() {
+            int count;
+            @Override
+            public Collection<Object> call() throws Exception {
+                if (count++ == 1) {
+                    throw new TestException();
+                } else {
+                    return new ArrayList<Object>();
+                }
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBufferSupplierReturnsNull() {
+        Flowable.never()
+        .buffer(Functions.justCallable(Flowable.timer(1, TimeUnit.MILLISECONDS)), new Callable<Collection<Object>>() {
+            int count;
+            @Override
+            public Collection<Object> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                } else {
+                    return new ArrayList<Object>();
+                }
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBoundarySupplierThrows2() {
+        Flowable.never()
+        .buffer(new Callable<Publisher<Long>>() {
+            int count;
+            @Override
+            public Publisher<Long> call() throws Exception {
+                if (count++ == 1) {
+                    throw new TestException();
+                }
+                return Flowable.timer(1, TimeUnit.MILLISECONDS);
+            }
+        }, new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void boundaryCancel() {
+        PublishProcessor<Object> pp = PublishProcessor.create();
+
+        TestSubscriber<Collection<Object>> ts = pp
+        .buffer(Functions.justCallable(Flowable.never()), new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test();
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.dispose();
+
+        assertFalse(pp.hasSubscribers());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBoundarySupplierReturnsNull() {
+        Flowable.never()
+        .buffer(new Callable<Publisher<Long>>() {
+            int count;
+            @Override
+            public Publisher<Long> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                }
+                return Flowable.timer(1, TimeUnit.MILLISECONDS);
+            }
+        }, new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void boundaryBoundarySupplierReturnsNull2() {
+        Flowable.never()
+        .buffer(new Callable<Publisher<Long>>() {
+            int count;
+            @Override
+            public Publisher<Long> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                }
+                return Flowable.empty();
+            }
+        }, new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void boundaryMainError() {
+        PublishProcessor<Object> pp = PublishProcessor.create();
+
+        TestSubscriber<Collection<Object>> ts = pp
+        .buffer(Functions.justCallable(Flowable.never()), new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void boundaryBoundaryError() {
+        PublishProcessor<Object> pp = PublishProcessor.create();
+
+        TestSubscriber<Collection<Object>> ts = pp
+        .buffer(Functions.justCallable(Flowable.error(new TestException())), new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return new ArrayList<Object>();
+            }
+        })
+        .test();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+    }
 }

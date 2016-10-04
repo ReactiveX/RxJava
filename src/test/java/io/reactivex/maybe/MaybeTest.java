@@ -478,6 +478,16 @@ public class MaybeTest {
         }).test().assertResult();
     }
 
+    @Test
+    public void filterEmpty() {
+        Maybe.<Integer>empty().filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v == 1;
+            }
+        }).test().assertResult();
+    }
+
     @Test(expected = NullPointerException.class)
     public void singleFilterNull() {
         Single.just(1).filter(null);
@@ -565,6 +575,21 @@ public class MaybeTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult()
         ;
+    }
+
+    @Test
+    public void observeOnDispose2() {
+        TestHelper.checkDisposed(Maybe.empty().observeOn(Schedulers.single()));
+    }
+
+    @Test
+    public void observeOnDoubleSubscribe() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
+                return m.observeOn(Schedulers.single());
+            }
+        });
     }
 
     @Test
@@ -1135,6 +1160,32 @@ public class MaybeTest {
     public void ignoreElementComplete() {
         Maybe.empty()
         .ignoreElement()
+        .test()
+        .assertResult();
+    }
+    @Test
+    public void ignoreElementSuccessMaybe() {
+        Maybe.just(1)
+        .ignoreElement()
+        .toMaybe()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void ignoreElementErrorMaybe() {
+        Maybe.error(new TestException())
+        .ignoreElement()
+        .toMaybe()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void ignoreElementCompleteMaybe() {
+        Maybe.empty()
+        .ignoreElement()
+        .toMaybe()
         .test()
         .assertResult();
     }

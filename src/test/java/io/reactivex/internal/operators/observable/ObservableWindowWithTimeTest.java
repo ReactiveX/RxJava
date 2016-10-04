@@ -25,6 +25,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
@@ -361,5 +362,50 @@ public class ObservableWindowWithTimeTest {
         pp.onComplete();
 
         ts.assertResult(1, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7);
+    }
+
+    @Test
+    public void exactOnError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishSubject<Integer> pp = PublishSubject.create();
+
+        TestObserver<Integer> ts = pp.window(1, 1, TimeUnit.SECONDS, scheduler)
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void overlappingOnError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishSubject<Integer> pp = PublishSubject.create();
+
+        TestObserver<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void skipOnError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishSubject<Integer> pp = PublishSubject.create();
+
+        TestObserver<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
     }
 }

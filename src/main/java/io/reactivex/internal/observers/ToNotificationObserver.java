@@ -15,7 +15,7 @@ package io.reactivex.internal.observers;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -58,7 +58,7 @@ public final class ToNotificationObserver<T> implements Observer<T> {
             consumer.accept(Notification.<Object>createOnError(t));
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            RxJavaPlugins.onError(ex);
+            RxJavaPlugins.onError(new CompositeException(t, ex));
         }
     }
 

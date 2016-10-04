@@ -23,6 +23,7 @@ import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.util.QueueDrainHelper;
@@ -201,19 +202,12 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = bufferSupplier.call();
+                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 selfCancel = true;
                 dispose();
                 actual.onError(e);
-                return;
-            }
-
-            if (next == null) {
-                selfCancel = true;
-                dispose();
-                actual.onError(new NullPointerException("buffer supplied is null"));
                 return;
             }
 
@@ -371,7 +365,7 @@ extends AbstractObservableWithUpstream<T, U> {
             final U b; // NOPMD
 
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
@@ -379,11 +373,6 @@ extends AbstractObservableWithUpstream<T, U> {
                 return;
             }
 
-            if (b == null) {
-                dispose();
-                actual.onError(new NullPointerException("The supplied buffer is null"));
-                return;
-            }
             synchronized (this) {
                 if (cancelled) {
                     return;
@@ -584,17 +573,11 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = bufferSupplier.call();
+                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
-                return;
-            }
-
-            if (next == null) {
-                dispose();
-                actual.onError(new NullPointerException("The buffer supplied is null"));
                 return;
             }
 

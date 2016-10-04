@@ -22,11 +22,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.util.CrashingIterable;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
@@ -559,5 +563,305 @@ public class FlowableFromIterableTest {
         to.assertValues(1, 2, 2, 3, 3, 4, 4, 5);
         to.assertNoErrors();
         to.assertComplete();
+    }
+
+    @Test
+    public void fusedAPICalls() {
+        Flowable.fromIterable(Arrays.asList(1, 2, 3))
+        .subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onSubscribe(Subscription s) {
+                @SuppressWarnings("unchecked")
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+
+                assertFalse(qs.isEmpty());
+
+                try {
+                    assertEquals(1, qs.poll().intValue());
+                } catch (Exception ex) {
+                    throw new AssertionError(ex);
+                }
+
+                assertFalse(qs.isEmpty());
+
+                qs.clear();
+
+                List<Throwable> errors = TestHelper.trackPluginErrors();
+                try {
+                    qs.request(-99);
+
+                    TestHelper.assertError(errors, 0, IllegalArgumentException.class, "n > 0 required but it was -99");
+                } finally {
+                    RxJavaPlugins.reset();
+                }
+            }
+
+            @Override
+            public void onNext(Integer t) {
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+    }
+
+    @Test
+    public void normalConditional() {
+        Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5))
+        .filter(Functions.alwaysTrue())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void normalConditionalBackpressured() {
+        Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5))
+        .filter(Functions.alwaysTrue())
+        .test(5L)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void normalConditionalBackpressured2() {
+        Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5))
+        .filter(Functions.alwaysTrue())
+        .test(4L)
+        .assertSubscribed()
+        .assertValues(1, 2, 3, 4)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void emptyConditional() {
+        Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5))
+        .filter(Functions.alwaysFalse())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void nullConditional() {
+        Flowable.fromIterable(Arrays.asList(1, null, 3, 4, 5))
+        .filter(Functions.alwaysTrue())
+        .test()
+        .assertFailure(NullPointerException.class, 1);
+    }
+
+    @Test
+    public void nullConditionalBackpressured() {
+        Flowable.fromIterable(Arrays.asList(1, null, 3, 4, 5))
+        .filter(Functions.alwaysTrue())
+        .test(5L)
+        .assertFailure(NullPointerException.class, 1);
+    }
+
+    @Test
+    public void normalConditionalCrash() {
+        Flowable.fromIterable(new CrashingIterable(100, 2, 100))
+        .filter(Functions.alwaysTrue())
+        .test()
+        .assertFailure(TestException.class, 0);
+    }
+
+    @Test
+    public void normalConditionalCrash2() {
+        Flowable.fromIterable(new CrashingIterable(100, 100, 2))
+        .filter(Functions.alwaysTrue())
+        .test()
+        .assertFailure(TestException.class, 0);
+    }
+
+    @Test
+    public void normalConditionalCrashBackpressured() {
+        Flowable.fromIterable(new CrashingIterable(100, 2, 100))
+        .filter(Functions.alwaysTrue())
+        .test(5L)
+        .assertFailure(TestException.class, 0);
+    }
+
+    @Test
+    public void normalConditionalCrashBackpressured2() {
+        Flowable.fromIterable(new CrashingIterable(100, 100, 2))
+        .filter(Functions.alwaysTrue())
+        .test(5L)
+        .assertFailure(TestException.class, 0);
+    }
+
+    @Test
+    public void normalConditionalLong() {
+        Flowable.fromIterable(new CrashingIterable(100, 10 * 1000 * 1000, 10 * 1000 * 1000))
+        .filter(Functions.alwaysTrue())
+        .take(1000 * 1000)
+        .test()
+        .assertSubscribed()
+        .assertValueCount(1000 * 1000)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void normalConditionalLong2() {
+        Flowable.fromIterable(new CrashingIterable(100, 10 * 1000 * 1000, 10 * 1000 * 1000))
+        .filter(Functions.alwaysTrue())
+        .rebatchRequests(128)
+        .take(1000 * 1000)
+        .test()
+        .assertSubscribed()
+        .assertValueCount(1000 * 1000)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void requestRaceConditional() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
+            .filter(Functions.alwaysTrue())
+            .subscribe(ts);
+
+            TestHelper.race(r, r, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void requestRaceConditional2() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
+            .filter(Functions.alwaysFalse())
+            .subscribe(ts);
+
+            TestHelper.race(r, r, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void requestCancelConditionalRace() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
+            .filter(Functions.alwaysTrue())
+            .subscribe(ts);
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void requestCancelConditionalRace2() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(Long.MAX_VALUE);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
+            .filter(Functions.alwaysTrue())
+            .subscribe(ts);
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void requestCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
+            .subscribe(ts);
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void requestCancelRace2() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(Long.MAX_VALUE);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
+            .subscribe(ts);
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
     }
 }
