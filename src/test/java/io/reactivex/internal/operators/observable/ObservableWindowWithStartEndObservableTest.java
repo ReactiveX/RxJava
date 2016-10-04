@@ -24,7 +24,9 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
@@ -256,5 +258,90 @@ public class ObservableWindowWithStartEndObservableTest {
         assertTrue(open.hasObservers());
         // FIXME subject has subscribers because of the open window
         assertTrue(close.hasObservers());
+    }
+
+    @Test
+    public void boundarySelectorNormal() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> start = PublishSubject.create();
+        final PublishSubject<Integer> end = PublishSubject.create();
+
+        TestObserver<Integer> to = source.window(start, new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return end;
+            }
+        })
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test();
+
+        start.onNext(0);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+        source.onNext(4);
+
+        start.onNext(1);
+
+        source.onNext(5);
+        source.onNext(6);
+
+        end.onNext(1);
+
+        start.onNext(2);
+
+        TestHelper.emit(source, 7, 8);
+
+        to.assertResult(1, 2, 3, 4, 5, 5, 6, 6, 7, 8);
+    }
+
+    @Test
+    public void startError() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> start = PublishSubject.create();
+        final PublishSubject<Integer> end = PublishSubject.create();
+
+        TestObserver<Integer> to = source.window(start, new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return end;
+            }
+        })
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test();
+
+        start.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+
+        assertFalse("Source has observers!", source.hasObservers());
+        assertFalse("Start has observers!", start.hasObservers());
+        assertFalse("End has observers!", end.hasObservers());
+    }
+
+    @Test
+    public void endError() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> start = PublishSubject.create();
+        final PublishSubject<Integer> end = PublishSubject.create();
+
+        TestObserver<Integer> to = source.window(start, new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return end;
+            }
+        })
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test();
+
+        start.onNext(1);
+        end.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+
+        assertFalse("Source has observers!", source.hasObservers());
+        assertFalse("Start has observers!", start.hasObservers());
+        assertFalse("End has observers!", end.hasObservers());
     }
 }

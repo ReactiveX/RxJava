@@ -24,7 +24,7 @@ import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -243,5 +243,32 @@ public class SchedulerTest {
     @Test
     public void schedulersUtility() {
         TestHelper.checkUtilityClass(Schedulers.class);
+    }
+
+    @Test
+    public void defaultSchedulePeriodicallyDirectRejects() {
+        Scheduler s = new Scheduler() {
+            @Override
+            public Worker createWorker() {
+                return new Worker() {
+                    @Override
+                    public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
+                        return EmptyDisposable.INSTANCE;
+                    }
+
+                    @Override
+                    public void dispose() {
+
+                    }
+
+                    @Override
+                    public boolean isDisposed() {
+                        return false;
+                    }
+                };
+            }
+        };
+
+        assertSame(EmptyDisposable.INSTANCE, s.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 1, 1, TimeUnit.MILLISECONDS));
     }
 }

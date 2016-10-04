@@ -27,8 +27,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Utility classes to work with scalar-sourced XMap operators (where X == { flat, concat, switch }).
  */
-public enum FlowableScalarXMap {
-    ;
+public final class FlowableScalarXMap {
+
+    /** Utility class. */
+    private FlowableScalarXMap() {
+        throw new IllegalStateException("No instances!");
+    }
 
     /**
      * Tries to subscribe to a possibly Callable source's mapped Publisher.

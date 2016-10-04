@@ -179,35 +179,7 @@ public final class ExecutorScheduler extends Scheduler {
                 }
             } else {
                 final Disposable d = HELPER.scheduleDirect(sr, delay, unit);
-                sr.setFuture(new Future<Object>() {
-                    @Override
-                    public boolean cancel(boolean mayInterruptIfRunning) {
-                        d.dispose();
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isCancelled() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isDone() {
-                        return false;
-                    }
-
-                    @Override
-                    public Object get() throws InterruptedException, ExecutionException {
-                        return null;
-                    }
-
-                    @Override
-                    public Object get(long timeout, TimeUnit unit)
-                            throws InterruptedException, ExecutionException, TimeoutException {
-                        return null;
-                    }
-
-                });
+                sr.setFuture(new DisposeOnCancel(d));
             }
 
             first.replace(sr);

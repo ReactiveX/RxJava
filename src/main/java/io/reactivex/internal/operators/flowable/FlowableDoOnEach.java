@@ -101,7 +101,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 onError.accept(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(e, t));
+                actual.onError(new CompositeException(t, e));
                 relay = false;
             }
             if (relay) {
@@ -121,7 +121,6 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             if (done) {
                 return;
             }
-            done = true;
             try {
                 onComplete.run();
             } catch (Throwable e) {
@@ -129,6 +128,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 return;
             }
 
+            done = true;
             actual.onComplete();
 
             try {
@@ -211,10 +211,6 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 return false;
             }
 
-            if (sourceMode != NONE) {
-                return actual.tryOnNext(null);
-            }
-
             try {
                 onNext.accept(t);
             } catch (Throwable e) {
@@ -237,7 +233,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 onError.accept(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(e, t));
+                actual.onError(new CompositeException(t, e));
                 relay = false;
             }
             if (relay) {
@@ -257,7 +253,6 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             if (done) {
                 return;
             }
-            done = true;
             try {
                 onComplete.run();
             } catch (Throwable e) {
@@ -265,6 +260,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 return;
             }
 
+            done = true;
             actual.onComplete();
 
             try {

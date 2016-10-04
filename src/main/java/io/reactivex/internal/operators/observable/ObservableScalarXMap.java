@@ -27,8 +27,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Utility classes to work with scalar-sourced XMap operators (where X == { flat, concat, switch }).
  */
-public enum ObservableScalarXMap {
-    ;
+public final class ObservableScalarXMap {
+
+    /** Utility class. */
+    private ObservableScalarXMap() {
+        throw new IllegalStateException("No instances!");
+    }
 
     /**
      * Tries to subscribe to a possibly Callable source's mapped ObservableSource.
@@ -84,7 +88,9 @@ public enum ObservableScalarXMap {
                     EmptyDisposable.complete(observer);
                     return true;
                 }
-                observer.onSubscribe(new ScalarDisposable<R>(observer, u));
+                ScalarDisposable<R> sd = new ScalarDisposable<R>(observer, u);
+                observer.onSubscribe(sd);
+                sd.run();
             } else {
                 r.subscribe(observer);
             }

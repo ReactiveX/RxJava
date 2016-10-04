@@ -14,15 +14,24 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.UnicastSubject;
 
 public class ObservableDoOnEachTest {
 
@@ -189,4 +198,497 @@ public class ObservableDoOnEachTest {
 //            System.out.println("Received exception: " + e);
 //        }
 //    }
+
+    @Test
+    public void onErrorThrows() {
+        TestObserver<Object> ts = TestObserver.create();
+
+        Observable.error(new TestException())
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) {
+                throw new TestException();
+            }
+        }).subscribe(ts);
+
+        ts.assertNoValues();
+        ts.assertNotComplete();
+        ts.assertError(CompositeException.class);
+
+        CompositeException ex = (CompositeException)ts.errors().get(0);
+
+        List<Throwable> exceptions = ex.getExceptions();
+        assertEquals(2, exceptions.size());
+        Assert.assertTrue(exceptions.get(0) instanceof TestException);
+        Assert.assertTrue(exceptions.get(1) instanceof TestException);
+    }
+
+    @Test
+    public void ignoreCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Observable.wrap(new ObservableSource<Object>() {
+                @Override
+                public void subscribe(Observer<? super Object> s) {
+                    s.onSubscribe(Disposables.empty());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            })
+            .doOnNext(new Consumer<Object>() {
+                @Override
+                public void accept(Object e) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onErrorAfterCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Observable.wrap(new ObservableSource<Object>() {
+                @Override
+                public void subscribe(Observer<? super Object> s) {
+                    s.onSubscribe(Disposables.empty());
+                    s.onError(new TestException());
+                }
+            })
+            .doAfterTerminate(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new IOException();
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onCompleteAfterCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Observable.wrap(new ObservableSource<Object>() {
+                @Override
+                public void subscribe(Observer<? super Object> s) {
+                    s.onSubscribe(Disposables.empty());
+                    s.onComplete();
+                }
+            })
+            .doAfterTerminate(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new IOException();
+                }
+            })
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onCompleteCrash() {
+        Observable.wrap(new ObservableSource<Object>() {
+            @Override
+            public void subscribe(Observer<? super Object> s) {
+                s.onSubscribe(Disposables.empty());
+                s.onComplete();
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                throw new IOException();
+            }
+        })
+        .test()
+        .assertFailure(IOException.class);
+    }
+
+    @Test
+    public void ignoreCancelConditional() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Observable.wrap(new ObservableSource<Object>() {
+                @Override
+                public void subscribe(Observer<? super Object> s) {
+                    s.onSubscribe(Disposables.empty());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            })
+            .doOnNext(new Consumer<Object>() {
+                @Override
+                public void accept(Object e) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .filter(Functions.alwaysTrue())
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onErrorAfterCrashConditional() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Observable.wrap(new ObservableSource<Object>() {
+                @Override
+                public void subscribe(Observer<? super Object> s) {
+                    s.onSubscribe(Disposables.empty());
+                    s.onError(new TestException());
+                }
+            })
+            .doAfterTerminate(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new IOException();
+                }
+            })
+            .filter(Functions.alwaysTrue())
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onCompleteAfter() {
+        final int[] call = { 0 };
+        Observable.just(1)
+        .doAfterTerminate(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[0]++;
+            }
+        })
+        .test()
+        .assertResult(1);
+
+        assertEquals(1, call[0]);
+    }
+
+    @Test
+    public void onCompleteAfterCrashConditional() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Observable.wrap(new ObservableSource<Object>() {
+                @Override
+                public void subscribe(Observer<? super Object> s) {
+                    s.onSubscribe(Disposables.empty());
+                    s.onComplete();
+                }
+            })
+            .doAfterTerminate(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new IOException();
+                }
+            })
+            .filter(Functions.alwaysTrue())
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onCompleteCrashConditional() {
+        Observable.wrap(new ObservableSource<Object>() {
+            @Override
+            public void subscribe(Observer<? super Object> s) {
+                s.onSubscribe(Disposables.empty());
+                s.onComplete();
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                throw new IOException();
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .test()
+        .assertFailure(IOException.class);
+    }
+
+    @Test
+    public void onErrorOnErrorCrashConditional() {
+        TestObserver<Object> ts = Observable.error(new TestException("Outer"))
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                throw new TestException("Inner");
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
+
+        TestHelper.assertError(errors, 0, TestException.class, "Outer");
+        TestHelper.assertError(errors, 1, TestException.class, "Inner");
+    }
+
+    @Test
+    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    public void fused() {
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0, 0 };
+
+        Observable.range(1, 5)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                call[0]++;
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[1]++;
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, call[0]);
+        assertEquals(1, call[1]);
+    }
+
+    @Test
+    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    public void fusedOnErrorCrash() {
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0 };
+
+        Observable.range(1, 5)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[0]++;
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertFailure(TestException.class);
+
+        assertEquals(0, call[0]);
+    }
+
+    @Test
+    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    public void fusedConditional() {
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0, 0 };
+
+        Observable.range(1, 5)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                call[0]++;
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[1]++;
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        ts.assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, call[0]);
+        assertEquals(1, call[1]);
+    }
+
+    @Test
+    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    public void fusedOnErrorCrashConditional() {
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0 };
+
+        Observable.range(1, 5)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[0]++;
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        ts.assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertFailure(TestException.class);
+
+        assertEquals(0, call[0]);
+    }
+
+    @Test
+    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    public void fusedAsync() {
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0, 0 };
+
+        UnicastSubject<Integer> up = UnicastSubject.create();
+
+        up
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                call[0]++;
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[1]++;
+            }
+        })
+        .subscribe(ts);
+
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
+
+        ts.assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, call[0]);
+        assertEquals(1, call[1]);
+    }
+
+    @Test
+    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    public void fusedAsyncConditional() {
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0, 0 };
+
+        UnicastSubject<Integer> up = UnicastSubject.create();
+
+        up
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                call[0]++;
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[1]++;
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
+
+        ts.assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, call[0]);
+        assertEquals(1, call[1]);
+    }
+
+    @Test
+    @Ignore("Fusion not supported yet") // TODO decide/implement fusion
+    public void fusedAsyncConditional2() {
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+
+        final int[] call = { 0, 0 };
+
+        UnicastSubject<Integer> up = UnicastSubject.create();
+
+        up.hide()
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                call[0]++;
+            }
+        })
+        .doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                call[1]++;
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        TestHelper.emit(up, 1, 2, 3, 4, 5);
+
+        ts.assertOf(ObserverFusion.<Integer>assertFuseable())
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.NONE))
+        .assertResult(1, 2, 3, 4, 5);
+
+        assertEquals(5, call[0]);
+        assertEquals(1, call[1]);
+    }
 }
