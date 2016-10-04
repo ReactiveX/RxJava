@@ -13,11 +13,17 @@
 
 package io.reactivex.internal.operators.maybe;
 
+import static org.junit.Assert.*;
+
 import java.util.concurrent.*;
 
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
 public class MaybeTimeoutTest {
@@ -140,5 +146,198 @@ public class MaybeTimeoutTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TimeoutException.class);
+    }
+
+    @Test
+    public void mainError() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp1.onError(new TestException());
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void otherError() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onError(new TestException());
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fallbackError() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2.singleElement(), Maybe.<Integer>error(new TestException())).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onNext(1);
+        pp2.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fallbackComplete() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2.singleElement(), Maybe.<Integer>empty()).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onNext(1);
+        pp2.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        to.assertResult();
+    }
+
+    @Test
+    public void mainComplete() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp1.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        to.assertResult();
+    }
+
+    @Test
+    public void otherComplete() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestObserver<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onComplete();
+
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
+
+        to.assertFailure(TimeoutException.class);
+    }
+
+    @Test
+    public void dispose() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestHelper.checkDisposed(pp1.singleElement().timeout(pp2.singleElement()));
+    }
+
+    @Test
+    public void dispose2() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestHelper.checkDisposed(pp1.singleElement().timeout(pp2.singleElement(), Maybe.just(1)));
+    }
+
+    @Test
+    public void onErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            TestHelper.trackPluginErrors();
+            try {
+                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+                final PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+                TestObserver<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).test();
+
+                final TestException ex = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        pp1.onError(ex);
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        pp2.onError(ex);
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                to.assertFailure(TestException.class);
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void onCompleteRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+            TestObserver<Integer> to = pp1.singleElement().timeout(pp2.singleElement()).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp1.onComplete();
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    pp2.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to.assertSubscribed().assertNoValues();
+
+            if (to.errorCount() != 0) {
+                to.assertError(TimeoutException.class).assertNotComplete();
+            } else {
+                to.assertNoErrors().assertComplete();
+            }
+        }
     }
 }

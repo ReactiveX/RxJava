@@ -23,7 +23,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -362,5 +362,137 @@ public class FlowableWindowWithTimeTest {
         pp.onComplete();
 
         ts.assertResult(1, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7);
+    }
+
+    @Test
+    public void exactOnError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(1, 1, TimeUnit.SECONDS, scheduler)
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void overlappingOnError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void skipOnError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test();
+
+        pp.onError(new TestException());
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void exactBackpressure() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(1, 1, TimeUnit.SECONDS, scheduler)
+        .test(0L);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        ts.assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void skipBackpressure() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
+        .test(0L);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        ts.assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void overlapBackpressure() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+        .test(0L);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        ts.assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void exactBackpressure2() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(1, 1, TimeUnit.SECONDS, scheduler)
+        .test(1L);
+
+        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        ts.assertError(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void skipBackpressure2() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
+        .test(1L);
+
+        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        ts.assertError(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void overlapBackpressure2() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+        .test(1L);
+
+        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        ts.assertError(MissingBackpressureException.class);
     }
 }

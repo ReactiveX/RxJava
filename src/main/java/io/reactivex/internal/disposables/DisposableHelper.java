@@ -97,6 +97,11 @@ public enum DisposableHelper implements Disposable {
         }
     }
 
+    /**
+     * Atomically disposes the Disposable in the field if not already disposed.
+     * @param field the target field
+     * @return true if the curren thread managed to dispose the Disposable
+     */
     public static boolean dispose(AtomicReference<Disposable> field) {
         Disposable current = field.get();
         Disposable d = DISPOSED;

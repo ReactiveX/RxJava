@@ -215,4 +215,8 @@ public class ObservableBlockingTest {
         assertEquals(2, Observable.just(1, 2).blockingLast(3).intValue());
     }
 
+    @Test(expected = NoSuchElementException.class)
+    public void blockingSingleEmpty() {
+        Observable.empty().blockingSingle();
+    }
 }

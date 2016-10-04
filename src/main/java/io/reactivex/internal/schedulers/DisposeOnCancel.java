@@ -24,7 +24,7 @@ import io.reactivex.disposables.Disposable;
 final class DisposeOnCancel implements Future<Object> {
     final Disposable d;
 
-    public DisposeOnCancel(Disposable d) {
+    DisposeOnCancel(Disposable d) {
         this.d = d;
     }
 

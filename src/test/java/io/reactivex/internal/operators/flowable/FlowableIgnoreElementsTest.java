@@ -18,11 +18,14 @@ import static org.junit.Assert.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
+import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.observers.*;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.*;
 
 public class FlowableIgnoreElementsTest {
@@ -238,4 +241,86 @@ public class FlowableIgnoreElementsTest {
         assertEquals(0, count.get());
     }
 
+    @Test
+    public void cancel() {
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.ignoreElements().<Integer>toFlowable().test();
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse(pp.hasSubscribers());
+    }
+
+    @Test
+    public void fused() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.just(1).hide().ignoreElements().<Integer>toFlowable()
+        .subscribe(ts);
+
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertResult();
+    }
+
+    @Test
+    public void fusedAPICalls() {
+        Flowable.just(1).hide().ignoreElements().<Integer>toFlowable()
+        .subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onSubscribe(Subscription s) {
+                @SuppressWarnings("unchecked")
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+
+                try {
+                    assertNull(qs.poll());
+                } catch (Exception ex) {
+                    throw new AssertionError(ex);
+                }
+
+                assertTrue(qs.isEmpty());
+
+                qs.clear();
+
+                assertTrue(qs.isEmpty());
+
+                try {
+                    assertNull(qs.poll());
+                } catch (Exception ex) {
+                    throw new AssertionError(ex);
+                }
+
+                try {
+                    qs.offer(1);
+                    fail("Should have thrown!");
+                } catch (UnsupportedOperationException ex) {
+                    // expected
+                }
+
+                try {
+                    qs.offer(1, 2);
+                    fail("Should have thrown!");
+                } catch (UnsupportedOperationException ex) {
+                    // expected
+                }
+            }
+
+            @Override
+            public void onNext(Integer t) {
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+    }
 }

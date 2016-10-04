@@ -2670,13 +2670,13 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code ignoreElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an empty Maybe that only calls {@code onComplete} or {@code onError}, based on which one is
+     * @return an empty Completable that only calls {@code onComplete} or {@code onError}, based on which one is
      *         called by the source Maybe
      * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElements</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> ignoreElement() {
-        return RxJavaPlugins.onAssembly(new MaybeIgnoreElement<T>(this));
+    public final Completable ignoreElement() {
+        return RxJavaPlugins.onAssembly(new MaybeIgnoreElementCompletable<T>(this));
     }
 
     /**
