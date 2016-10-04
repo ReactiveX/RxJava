@@ -8266,7 +8266,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         return flatMap(mapper, combiner, false, maxConcurrency, bufferSize());
     }
 
-
     /**
      * Maps each element of the upstream Flowable into CompletableSources, subscribes to them and
      * waits until the upstream and all CompletableSources complete.
@@ -8306,6 +8305,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable flatMapCompletable(Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors, int maxConcurrency) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapCompletableCompletable<T>(this, mapper, delayErrors, maxConcurrency));
     }
 
@@ -8446,6 +8446,96 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.requireNonNull(resultSelector, "resultSelector is null");
         return flatMap(FlowableInternalHelper.flatMapIntoIterable(mapper), resultSelector, false, bufferSize(), prefetch);
+    }
+
+    /**
+     * Maps each element of the upstream Flowable into MaybeSources, subscribes to them and
+     * waits until the upstream and all MaybeSources complete.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the upstream in an unbounded manner.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the result value type
+     * @param mapper the function that received each source value and transforms them into MaybeSources.
+     * @return the new Flowable instance
+     */
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Flowable<R> flatMapMaybe(Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+        return flatMapMaybe(mapper, false, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Maps each element of the upstream Flowable into MaybeSources, subscribes to them and
+     * waits until the upstream and all MaybeSources complete, optionally delaying all errors.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>If {@code maxConcurrency == Integer.MAX_VALUE} the operator consumes the upstream in an unbounded manner.
+     *  Otherwise the operator expects the upstream to honor backpressure. If the upstream doesn't support backpressure
+     *  the operator behaves as if {@code maxConcurrency == Integer.MAX_VALUE} was used.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the result value type
+     * @param mapper the function that received each source value and transforms them into MaybeSources.
+     * @param delayErrors if true errors from the upstream and inner MaybeSources are delayed until each of them
+     * terminates.
+     * @param maxConcurrency the maximum number of active subscriptions to the MaybeSources.
+     * @return the new Flowable instance
+     */
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Flowable<R> flatMapMaybe(Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapMaybe<T, R>(this, mapper, delayErrors, maxConcurrency));
+    }
+
+    /**
+     * Maps each element of the upstream Flowable into SingleSources, subscribes to them and
+     * waits until the upstream and all SingleSources complete.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the upstream in an unbounded manner.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the result value type
+     * @param mapper the function that received each source value and transforms them into SingleSources.
+     * @return the new Flowable instance
+     */
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Flowable<R> flatMapSingle(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        return flatMapSingle(mapper, false, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Maps each element of the upstream Flowable into SingleSources, subscribes to them and
+     * waits until the upstream and all SingleSources complete, optionally delaying all errors.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>If {@code maxConcurrency == Integer.MAX_VALUE} the operator consumes the upstream in an unbounded manner.
+     *  Otherwise the operator expects the upstream to honor backpressure. If the upstream doesn't support backpressure
+     *  the operator behaves as if {@code maxConcurrency == Integer.MAX_VALUE} was used.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the result value type
+     * @param mapper the function that received each source value and transforms them into SingleSources.
+     * @param delayErrors if true errors from the upstream and inner SingleSources are delayed until each of them
+     * terminates.
+     * @param maxConcurrency the maximum number of active subscriptions to the SingleSources.
+     * @return the new Flowable instance
+     */
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Flowable<R> flatMapSingle(Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapSingle<T, R>(this, mapper, delayErrors, maxConcurrency));
     }
 
     /**

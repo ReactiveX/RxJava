@@ -7281,6 +7281,76 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Maps each element of the upstream Observable into MaybeSources, subscribes to them and
+     * waits until the upstream and all MaybeSources complete.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the result value type
+     * @param mapper the function that received each source value and transforms them into MaybeSources.
+     * @return the new Observable instance
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Observable<R> flatMapMaybe(Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
+        return flatMapMaybe(mapper, false);
+    }
+
+    /**
+     * Maps each element of the upstream Observable into MaybeSources, subscribes to them and
+     * waits until the upstream and all MaybeSources complete, optionally delaying all errors.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the result value type
+     * @param mapper the function that received each source value and transforms them into MaybeSources.
+     * @param delayErrors if true errors from the upstream and inner MaybeSources are delayed until each of them
+     * terminates.
+     * @return the new Observable instance
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Observable<R> flatMapMaybe(Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new ObservableFlatMapMaybe<T, R>(this, mapper, delayErrors));
+    }
+
+    /**
+     * Maps each element of the upstream Observable into SingleSources, subscribes to them and
+     * waits until the upstream and all SingleSources complete.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the result value type
+     * @param mapper the function that received each source value and transforms them into SingleSources.
+     * @return the new Observable instance
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Observable<R> flatMapSingle(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        return flatMapSingle(mapper, false);
+    }
+
+    /**
+     * Maps each element of the upstream Observable into SingleSources, subscribes to them and
+     * waits until the upstream and all SingleSources complete, optionally delaying all errors.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the result value type
+     * @param mapper the function that received each source value and transforms them into SingleSources.
+     * @param delayErrors if true errors from the upstream and inner SingleSources are delayed until each of them
+     * terminates.
+     * @return the new Observable instance
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> Observable<R> flatMapSingle(Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean delayErrors) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new ObservableFlatMapSingle<T, R>(this, mapper, delayErrors));
+    }
+
+    /**
      * Subscribes to the {@link ObservableSource} and receives notifications for each element.
      * <p>
      * Alias to {@link #subscribe(Consumer)}

@@ -174,7 +174,9 @@ public class InternalWrongNaming {
                 "FlowableIgnoreElementsCompletable",
                 "FlowableReduceMaybe",
                 "FlowableFlatMapCompletable",
-                "FlowableFlatMapCompletableCompletable"
+                "FlowableFlatMapCompletableCompletable",
+                "FlowableFlatMapSingle",
+                "FlowableFlatMapMaybe"
         );
     }
 }

@@ -25,6 +25,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.observers.*;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.*;
@@ -46,7 +47,7 @@ public class FlowableFlatMapCompletableTest {
 
     @Test
     public void mapperThrowsFlowable() {
-        PublishSubject<Integer> ps = PublishSubject.create();
+        PublishProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Integer> to = ps
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -57,18 +58,18 @@ public class FlowableFlatMapCompletableTest {
         }).<Integer>toFlowable()
         .test();
 
-        assertTrue(ps.hasObservers());
+        assertTrue(ps.hasSubscribers());
 
         ps.onNext(1);
 
         to.assertFailure(TestException.class);
 
-        assertFalse(ps.hasObservers());
+        assertFalse(ps.hasSubscribers());
     }
 
     @Test
     public void mapperReturnsNullFlowable() {
-        PublishSubject<Integer> ps = PublishSubject.create();
+        PublishProcessor<Integer> ps = PublishProcessor.create();
 
         TestSubscriber<Integer> to = ps
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -79,13 +80,13 @@ public class FlowableFlatMapCompletableTest {
         }).<Integer>toFlowable()
         .test();
 
-        assertTrue(ps.hasObservers());
+        assertTrue(ps.hasSubscribers());
 
         ps.onNext(1);
 
         to.assertFailure(NullPointerException.class);
 
-        assertFalse(ps.hasObservers());
+        assertFalse(ps.hasSubscribers());
     }
 
     @Test
