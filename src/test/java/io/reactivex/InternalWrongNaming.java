@@ -172,7 +172,9 @@ public class InternalWrongNaming {
                 "FlowableSingleMaybe",
                 "FlowableLastMaybe",
                 "FlowableIgnoreElementsCompletable",
-                "FlowableReduceMaybe"
+                "FlowableReduceMaybe",
+                "FlowableFlatMapCompletable",
+                "FlowableFlatMapCompletableCompletable"
         );
     }
 }
