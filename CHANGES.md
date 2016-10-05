@@ -1,5 +1,26 @@
 # RxJava Releases #
 
+### Version 1.2.1 - October 5, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.1%7C))
+
+#### API enhancements
+
+  - [Pull 4555](https://github.com/ReactiveX/RxJava/pull/4555): enhance generics of `doOnError` and `doOnRequest`
+  - [Pull 4580](https://github.com/ReactiveX/RxJava/pull/4580): rename `AsyncEmitter` to `Emitter`
+
+#### Performance enhancements
+
+  - [Pull 4621](https://github.com/ReactiveX/RxJava/pull/4621): `NotificationLite` - reduce allocations
+  - [Pull 4648](https://github.com/ReactiveX/RxJava/pull/4648): rework `Single` internals to reduce overhead and stack depth
+
+#### Deprecations
+
+  - [Pull 4580](https://github.com/ReactiveX/RxJava/pull/4580): `CompletableEmitter.setCancellation` will change its type in 1.2.2.
+  - [Pull 4648](https://github.com/ReactiveX/RxJava/pull/4648): Deprecate `Single(Observable.OnSubscribe)` constructor
+
+#### Bugfixes
+
+  - [Pull 4641](https://github.com/ReactiveX/RxJava/pull/4641): `SafeSubscriber` not to call `RxJavaHooks` before delivering the error
+
 ### Version 1.2.0 - September 17, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.0%7C))
 
 This is a minor release that is functionally equivalent to 1.1.10 minus the removal of some deprecated experimental APIs.

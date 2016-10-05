@@ -1087,18 +1087,18 @@ public class RxJavaHooksTest {
     public void noCallToHooksOnPlainError() {
 
         final boolean[] called = { false };
-        
+
         RxJavaHooks.setOnError(new Action1<Throwable>() {
             @Override
             public void call(Throwable t) {
                 called[0] = true;
             }
         });
-        
+
         try {
             Observable.error(new TestException())
             .subscribe(new TestSubscriber<Object>());
-            
+
             assertFalse(called[0]);
         } finally {
             RxJavaHooks.reset();
