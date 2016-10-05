@@ -120,6 +120,13 @@ jacocoTestReport {
         xml.enabled = true
         html.enabled = true
     }
+    
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['io/reactivex/tck/**'])
+        })
+    }
 }
 
 build.dependsOn jacocoTestReport
