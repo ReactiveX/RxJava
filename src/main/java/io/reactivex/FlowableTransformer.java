@@ -22,5 +22,5 @@ import org.reactivestreams.Publisher;
  * @param <Downstream> the downstream value type
  */
 public interface FlowableTransformer<Upstream, Downstream> {
-    Publisher<? extends Downstream> apply(Flowable<Upstream> flowable);
+    Publisher<? extends Downstream> apply(Flowable<Upstream> flowable) throws Exception;
 }

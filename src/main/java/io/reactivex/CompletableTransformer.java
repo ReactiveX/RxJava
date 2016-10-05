@@ -18,5 +18,5 @@ package io.reactivex;
  * Completable fluently.
  */
 public interface CompletableTransformer {
-    CompletableSource apply(Completable completable);
+    CompletableSource apply(Completable completable) throws Exception;
 }
