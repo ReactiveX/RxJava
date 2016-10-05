@@ -1,6 +1,8 @@
 #!/bin/bash
 # This script will build the project.
 
+GRADLE_OPTS=-Xmx832m
+
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   echo -e "Build Pull Request #$TRAVIS_PULL_REQUEST => Branch [$TRAVIS_BRANCH]"
   ./gradlew -Prelease.useLastTag=true build
