@@ -63,7 +63,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
 
         Disposable d;
 
-        public FlatMapCompletableMainObserver(Observer<? super T> observer, Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
+        FlatMapCompletableMainObserver(Observer<? super T> observer, Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
             this.actual = observer;
             this.mapper = mapper;
             this.delayErrors = delayErrors;

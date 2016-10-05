@@ -71,7 +71,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
         Subscription s;
 
-        public FlatMapCompletableMainSubscriber(Subscriber<? super T> observer,
+        FlatMapCompletableMainSubscriber(Subscriber<? super T> observer,
                 Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors,
                 int maxConcurrency) {
             this.actual = observer;

@@ -169,12 +169,11 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
 
         void innerSuccess(InnerObserver inner, R value) {
             set.delete(inner);
-            active.decrementAndGet();
             if (get() == 0 && compareAndSet(0, 1)) {
                 if (requested.get() != 0) {
                     actual.onNext(value);
 
-                    boolean d = active.get() == 0;
+                    boolean d = active.decrementAndGet() == 0;
                     SpscLinkedArrayQueue<R> q = queue.get();
 
                     if (d && (q == null || q.isEmpty())) {
@@ -200,6 +199,7 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
             } else {
                 SpscLinkedArrayQueue<R> q = getOrCreateQueue();
                 q.offer(value);
+                active.decrementAndGet();
                 if (getAndIncrement() != 0) {
                     return;
                 }
@@ -222,11 +222,11 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
 
         void innerError(InnerObserver inner, Throwable e) {
             set.delete(inner);
-            active.decrementAndGet();
             if (errors.addThrowable(e)) {
                 if (!delayErrors) {
                     cancel();
                 }
+                active.decrementAndGet();
                 drain();
             } else {
                 RxJavaPlugins.onError(e);

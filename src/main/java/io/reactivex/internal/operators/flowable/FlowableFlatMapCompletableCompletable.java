@@ -80,7 +80,7 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
 
         Subscription s;
 
-        public FlatMapCompletableMainSubscriber(CompletableObserver observer,
+        FlatMapCompletableMainSubscriber(CompletableObserver observer,
                 Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors,
                 int maxConcurrency) {
             this.actual = observer;

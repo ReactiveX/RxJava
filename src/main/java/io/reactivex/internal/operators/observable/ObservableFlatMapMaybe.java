@@ -147,11 +147,10 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
         void innerSuccess(InnerObserver inner, R value) {
             set.delete(inner);
-            active.decrementAndGet();
             if (get() == 0 && compareAndSet(0, 1)) {
                 actual.onNext(value);
 
-                boolean d = active.get() == 0;
+                boolean d = active.decrementAndGet() == 0;
                 SpscLinkedArrayQueue<R> q = queue.get();
 
                 if (d && (q == null || q.isEmpty())) {
@@ -169,6 +168,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
             } else {
                 SpscLinkedArrayQueue<R> q = getOrCreateQueue();
                 q.offer(value);
+                active.decrementAndGet();
                 if (getAndIncrement() != 0) {
                     return;
                 }
@@ -191,11 +191,11 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
         void innerError(InnerObserver inner, Throwable e) {
             set.delete(inner);
-            active.decrementAndGet();
             if (errors.addThrowable(e)) {
                 if (!delayErrors) {
                     dispose();
                 }
+                active.decrementAndGet();
                 drain();
             } else {
                 RxJavaPlugins.onError(e);
@@ -204,10 +204,9 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
         void innerComplete(InnerObserver inner) {
             set.delete(inner);
-            active.decrementAndGet();
 
             if (get() == 0 && compareAndSet(0, 1)) {
-                boolean d = active.get() == 0;
+                boolean d = active.decrementAndGet() == 0;
                 SpscLinkedArrayQueue<R> q = queue.get();
 
                 if (d && (q == null || q.isEmpty())) {
@@ -224,6 +223,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
                 }
                 drainLoop();
             } else {
+                active.decrementAndGet();
                 drain();
             }
         }
