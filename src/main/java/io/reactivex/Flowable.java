@@ -6278,7 +6278,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> compose(FlowableTransformer<T, R> composer) {
-        return fromPublisher(to(composer));
+        try {
+            return fromPublisher(composer.apply(this));
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
     }
 
     /**

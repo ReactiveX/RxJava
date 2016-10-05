@@ -13,14 +13,12 @@
 
 package io.reactivex;
 
-import io.reactivex.functions.Function;
-
 /**
  * Interface to compose Maybes.
  *
  * @param <Upstream> the upstream value type
  * @param <Downstream> the downstream value type
  */
-public interface MaybeTransformer<Upstream, Downstream> extends Function<Maybe<Upstream>, MaybeSource<Downstream>> {
-
+public interface MaybeTransformer<Upstream, Downstream> {
+    MaybeSource<Downstream> apply(Maybe<Upstream> maybe);
 }

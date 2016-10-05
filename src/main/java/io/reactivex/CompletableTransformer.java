@@ -13,12 +13,10 @@
 
 package io.reactivex;
 
-import io.reactivex.functions.Function;
-
 /**
  * Convenience interface and callback used by the compose operator to turn a Completable into another
  * Completable fluently.
  */
-public interface CompletableTransformer extends Function<Completable, CompletableSource> {
-
+public interface CompletableTransformer {
+    CompletableSource apply(Completable completable);
 }

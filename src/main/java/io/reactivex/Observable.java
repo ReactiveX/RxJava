@@ -5489,7 +5489,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> compose(ObservableTransformer<T, R> composer) {
-        return wrap(to(composer));
+        try {
+            return wrap(composer.apply(this));
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
     }
 
 

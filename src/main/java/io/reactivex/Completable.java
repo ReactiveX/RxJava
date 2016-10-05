@@ -942,7 +942,12 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable compose(CompletableTransformer transformer) {
-        return wrap(to(transformer));
+        try {
+            return wrap(transformer.apply(this));
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
     }
 
     /**

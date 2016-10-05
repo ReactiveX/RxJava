@@ -15,14 +15,12 @@ package io.reactivex;
 
 import org.reactivestreams.Publisher;
 
-import io.reactivex.functions.Function;
-
 /**
  * Interface to compose Flowables.
  *
  * @param <Upstream> the upstream value type
  * @param <Downstream> the downstream value type
  */
-public interface FlowableTransformer<Upstream, Downstream> extends Function<Flowable<Upstream>, Publisher<? extends Downstream>> {
-
+public interface FlowableTransformer<Upstream, Downstream> {
+    Publisher<? extends Downstream> apply(Flowable<Upstream> flowable);
 }
