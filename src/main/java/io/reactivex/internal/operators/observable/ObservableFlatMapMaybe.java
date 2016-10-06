@@ -167,7 +167,9 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
                 }
             } else {
                 SpscLinkedArrayQueue<R> q = getOrCreateQueue();
-                q.offer(value);
+                synchronized (q) {
+                    q.offer(value);
+                }
                 active.decrementAndGet();
                 if (getAndIncrement() != 0) {
                     return;

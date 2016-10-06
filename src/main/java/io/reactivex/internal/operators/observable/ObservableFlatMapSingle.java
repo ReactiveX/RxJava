@@ -167,7 +167,9 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
                 }
             } else {
                 SpscLinkedArrayQueue<R> q = getOrCreateQueue();
-                q.offer(value);
+                synchronized (q) {
+                    q.offer(value);
+                }
                 active.decrementAndGet();
                 if (getAndIncrement() != 0) {
                     return;
