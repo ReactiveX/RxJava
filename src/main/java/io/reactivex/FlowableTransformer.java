@@ -23,7 +23,7 @@ import org.reactivestreams.Publisher;
  */
 public interface FlowableTransformer<Upstream, Downstream> {
     /**
-     * Applies a function to the upstream flowable and returns a Publisher with
+     * Applies a function to the upstream Flowable and returns a Publisher with
      * optionally different element type.
      * @param upstream the upstream Flowable instance
      * @return the transformed Publisher instance
