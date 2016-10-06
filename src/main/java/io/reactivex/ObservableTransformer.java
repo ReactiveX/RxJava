@@ -20,5 +20,13 @@ package io.reactivex;
  * @param <Downstream> the downstream value type
  */
 public interface ObservableTransformer<Upstream, Downstream> {
+    /**
+     * Applies a function to the upstream Observable and returns an ObservableSource with
+     * optionally different element type.
+     * @param upstream the upstream Observable instance
+     * @return the transformed ObservableSource instance
+     * @throws Exception in case the transformation throws, checked exceptions will be wrapped
+     * into a RuntimeException
+     */
     ObservableSource<Downstream> apply(Observable<Upstream> upstream) throws Exception;
 }
