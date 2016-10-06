@@ -17,7 +17,6 @@ package rx.internal.operators;
 
 import java.io.Serializable;
 
-import rx.Notification.Kind;
 import rx.Observer;
 
 /**
@@ -28,15 +27,10 @@ import rx.Observer;
  * <p>
  * An object is allocated inside {@link #error(Throwable)} to wrap the {@link Throwable} but this shouldn't
  * affect performance because exceptions should be exceptionally rare.
- * <p>
- * It's implemented as a singleton to maintain some semblance of type safety that is completely non-existent.
- *
- * @param <T> the element type
  */
-public final class NotificationLite<T> {
+public final class NotificationLite {
 
     private NotificationLite() {
-        // singleton
     }
 
     private static final Object ON_COMPLETED_SENTINEL = new Serializable() {
@@ -183,30 +177,6 @@ public final class NotificationLite<T> {
      */
     public static boolean isNext(Object n) {
         return n != null && !isError(n) && !isCompleted(n);
-    }
-    /**
-     * Indicates which variety a particular lite notification is. If you need something more complex than
-     * simply calling the right method on an {@link Observer} then you can use this method to get the
-     * {@link rx.Notification.Kind}.
-     *
-     * @param n
-     *            the lite notification
-     * @throws IllegalArgumentException
-     *             if the notification is null.
-     * @return the {@link Kind} of lite notification {@code n} is: either {@code Kind.OnCompleted},
-     *         {@code Kind.OnError}, or {@code Kind.OnNext}
-     */
-    public static Kind kind(Object n) {
-        if (n == null) {
-            throw new IllegalArgumentException("The lite notification can not be null");
-        } else if (n == ON_COMPLETED_SENTINEL) {
-            return Kind.OnCompleted;
-        } else if (n instanceof OnErrorSentinel) {
-            return Kind.OnError;
-        } else {
-            // value or ON_NEXT_NULL_SENTINEL but either way it's an OnNext
-            return Kind.OnNext;
-        }
     }
 
     /**
