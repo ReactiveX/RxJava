@@ -1473,7 +1473,12 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> compose(SingleTransformer<T, R> transformer) {
-        return wrap(to(transformer));
+        try {
+            return wrap(transformer.apply(this));
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
     }
 
     /**
