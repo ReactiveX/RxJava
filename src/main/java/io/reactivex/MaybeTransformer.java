@@ -20,5 +20,13 @@ package io.reactivex;
  * @param <Downstream> the downstream value type
  */
 public interface MaybeTransformer<Upstream, Downstream> {
-    MaybeSource<Downstream> apply(Maybe<Upstream> maybe) throws Exception;
+    /**
+     * Applies a function to the upstream Maybe and returns a MaybeSource with
+     * optionally different element type.
+     * @param upstream the upstream Maybe instance
+     * @return the transformed MaybeSource instance
+     * @throws Exception in case the transformation throws, checked exceptions will be wrapped
+     * into a RuntimeException
+     */
+    MaybeSource<Downstream> apply(Maybe<Upstream> upstream) throws Exception;
 }

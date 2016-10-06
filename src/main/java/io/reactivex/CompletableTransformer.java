@@ -18,5 +18,12 @@ package io.reactivex;
  * Completable fluently.
  */
 public interface CompletableTransformer {
-    CompletableSource apply(Completable completable) throws Exception;
+    /**
+     * Applies a function to the upstream Completable and returns a CompletableSource.
+     * @param upstream the upstream Completable instance
+     * @return the transformed CompletableSource instance
+     * @throws Exception in case the transformation throws, checked exceptions will be wrapped
+     * into a RuntimeException
+     */
+    CompletableSource apply(Completable upstream) throws Exception;
 }

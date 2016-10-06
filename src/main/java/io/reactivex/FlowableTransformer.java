@@ -22,5 +22,13 @@ import org.reactivestreams.Publisher;
  * @param <Downstream> the downstream value type
  */
 public interface FlowableTransformer<Upstream, Downstream> {
-    Publisher<? extends Downstream> apply(Flowable<Upstream> flowable) throws Exception;
+    /**
+     * Applies a function to the upstream Flowable and returns a Publisher with
+     * optionally different element type.
+     * @param upstream the upstream Flowable instance
+     * @return the transformed Publisher instance
+     * @throws Exception in case the transformation throws, checked exceptions will be wrapped
+     * into a RuntimeException
+     */
+    Publisher<Downstream> apply(Flowable<Upstream> upstream) throws Exception;
 }
