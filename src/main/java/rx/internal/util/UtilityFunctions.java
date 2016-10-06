@@ -50,13 +50,9 @@ public final class UtilityFunctions {
      * @param <T> the input and output value type
      * @return a {@link Func1} that accepts an Object and returns the same Object
      */
+    @SuppressWarnings("unchecked")
     public static <T> Func1<T, T> identity() {
-        return new Func1<T, T>() {
-            @Override
-            public T call(T o) {
-                return o;
-            }
-        };
+        return (Func1<T, T>) Identity.INSTANCE;
     }
 
     enum AlwaysTrue implements Func1<Object, Boolean> {
@@ -74,6 +70,15 @@ public final class UtilityFunctions {
         @Override
         public Boolean call(Object o) {
             return false;
+        }
+    }
+
+    enum Identity implements Func1<Object, Object> {
+        INSTANCE;
+
+        @Override
+        public Object call(Object o) {
+            return o;
         }
     }
 }
