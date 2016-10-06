@@ -191,14 +191,18 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                     }
                 } else {
                     SpscLinkedArrayQueue<R> q = getOrCreateQueue();
-                    q.offer(value);
+                    synchronized (q) {
+                        q.offer(value);
+                    }
                 }
                 if (decrementAndGet() == 0) {
                     return;
                 }
             } else {
                 SpscLinkedArrayQueue<R> q = getOrCreateQueue();
-                q.offer(value);
+                synchronized (q) {
+                    q.offer(value);
+                }
                 active.decrementAndGet();
                 if (getAndIncrement() != 0) {
                     return;
