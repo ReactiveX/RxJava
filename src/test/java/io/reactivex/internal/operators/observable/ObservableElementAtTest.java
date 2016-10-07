@@ -126,4 +126,44 @@ public class ObservableElementAtTest {
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
     }
+
+    @Test
+    public void elementAtIndex0OnEmptySource() {
+        Observable.empty()
+            .elementAt(0)
+            .test()
+            .assertResult();
+    }
+
+    @Test
+    public void elementAtIndex0WithDefaultOnEmptySource() {
+        Observable.empty()
+            .elementAt(0, 5)
+            .test()
+            .assertResult(5);
+    }
+
+    @Test
+    public void elementAtIndex1OnEmptySource() {
+        Observable.empty()
+            .elementAt(1)
+            .test()
+            .assertResult();
+    }
+
+    @Test
+    public void elementAtIndex1WithDefaultOnEmptySource() {
+        Observable.empty()
+            .elementAt(1, 10)
+            .test()
+            .assertResult(10);
+    }
+
+    @Test
+    public void elementAtOrErrorIndex1OnEmptySource() {
+        Observable.empty()
+            .elementAtOrError(1)
+            .test()
+            .assertFailure(NoSuchElementException.class);
+    }
 }

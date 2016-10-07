@@ -99,7 +99,7 @@ public final class ObservableElementAtSingle<T> extends Single<T> {
 
         @Override
         public void onComplete() {
-            if (index <= count && !done) {
+            if (!done) {
                 done = true;
 
                 T v = defaultValue;

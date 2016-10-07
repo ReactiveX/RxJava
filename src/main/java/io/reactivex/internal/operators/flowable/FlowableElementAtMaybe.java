@@ -97,7 +97,7 @@ public final class FlowableElementAtMaybe<T> extends Maybe<T> implements FuseToF
         @Override
         public void onComplete() {
             s = SubscriptionHelper.CANCELLED;
-            if (index <= count && !done) {
+            if (!done) {
                 done = true;
                 actual.onComplete();
             }
