@@ -27,7 +27,7 @@ dependencies {
     compile 'org.reactivestreams:reactive-streams:1.0.0'
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.1.0-RC.2'
+    testCompile 'org.mockito:mockito-core:2.1.0'
 
     perfCompile 'org.openjdk.jmh:jmh-core:1.13'
     perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.13'
