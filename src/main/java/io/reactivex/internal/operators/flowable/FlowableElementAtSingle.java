@@ -103,7 +103,7 @@ public final class FlowableElementAtSingle<T> extends Single<T> implements FuseT
         @Override
         public void onComplete() {
             s = SubscriptionHelper.CANCELLED;
-            if (index <= count && !done) {
+            if (!done) {
                 done = true;
 
                 T v = defaultValue;

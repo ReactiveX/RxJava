@@ -98,7 +98,7 @@ public final class ObservableElementAtMaybe<T> extends Maybe<T> implements FuseT
 
         @Override
         public void onComplete() {
-            if (index <= count && !done) {
+            if (!done) {
                 done = true;
                 actual.onComplete();
             }

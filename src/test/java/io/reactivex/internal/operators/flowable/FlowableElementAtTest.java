@@ -135,4 +135,44 @@ public class FlowableElementAtTest {
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
     }
+
+    @Test
+    public void elementAtIndex0OnEmptySource() {
+        Flowable.empty()
+            .elementAt(0)
+            .test()
+            .assertResult();
+    }
+
+    @Test
+    public void elementAtIndex0WithDefaultOnEmptySource() {
+        Flowable.empty()
+            .elementAt(0, 5)
+            .test()
+            .assertResult(5);
+    }
+
+    @Test
+    public void elementAtIndex1OnEmptySource() {
+        Flowable.empty()
+            .elementAt(1)
+            .test()
+            .assertResult();
+    }
+
+    @Test
+    public void elementAtIndex1WithDefaultOnEmptySource() {
+        Flowable.empty()
+            .elementAt(1, 10)
+            .test()
+            .assertResult(10);
+    }
+
+    @Test
+    public void elementAtOrErrorIndex1OnEmptySource() {
+        Flowable.empty()
+            .elementAtOrError(1)
+            .test()
+            .assertFailure(NoSuchElementException.class);
+    }
 }
