@@ -26,28 +26,34 @@ public final class CompletableFromObservable<T> extends Completable {
 
     @Override
     protected void subscribeActual(final CompletableObserver s) {
-        observable.subscribe(new Observer<T>() {
+        observable.subscribe(new CompletableFromObservableObserver<T>(s));
+    }
 
-            @Override
-            public void onComplete() {
-                s.onComplete();
-            }
+    static final class CompletableFromObservableObserver<T> implements Observer<T> {
+        final CompletableObserver co;
 
-            @Override
-            public void onError(Throwable e) {
-                s.onError(e);
-            }
+        CompletableFromObservableObserver(CompletableObserver co) {
+            this.co = co;
+        }
 
-            @Override
-            public void onNext(T value) {
-                // ignored
-            }
+        @Override
+        public void onSubscribe(Disposable d) {
+            co.onSubscribe(d);
+        }
 
-            @Override
-            public void onSubscribe(Disposable d) {
-                s.onSubscribe(d);
-            }
+        @Override
+        public void onNext(T value) {
+            // Deliberately ignored.
+        }
 
-        });
+        @Override
+        public void onError(Throwable e) {
+            co.onError(e);
+        }
+
+        @Override
+        public void onComplete() {
+            co.onComplete();
+        }
     }
 }

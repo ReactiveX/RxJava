@@ -564,6 +564,42 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Wraps a CompletableSource into a Maybe.
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the target type
+     * @param completableSource the CompletableSource to convert from
+     * @return the new Maybe instance
+     * @throws NullPointerException if completable is null
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Maybe<T> fromCompletable(CompletableSource completableSource) {
+        ObjectHelper.requireNonNull(completableSource, "completableSource is null");
+        return RxJavaPlugins.onAssembly(new MaybeFromCompletable<T>(completableSource));
+    }
+
+    /**
+     * Wraps a SingleSource into a Maybe.
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code fromSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the target type
+     * @param singleSource the SingleSource to convert from
+     * @return the new Maybe instance
+     * @throws NullPointerException if single is null
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Maybe<T> fromSingle(SingleSource singleSource) {
+        ObjectHelper.requireNonNull(singleSource, "singleSource is null");
+        return RxJavaPlugins.onAssembly(new MaybeFromSingle<T>(singleSource));
+    }
+
+    /**
      * Returns a {@link Maybe} that invokes passed function and emits its result for each new MaybeObserver that subscribes
      * while considering {@code null} value from the callable as indication for valueless completion.
      * <p>
