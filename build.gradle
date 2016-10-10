@@ -115,6 +115,13 @@ jacoco {
     toolVersion = '0.7.7.201606060606' // See http://www.eclemma.org/jacoco/.
 }
 
+task GCandMem(dependsOn: 'check') << {
+    System.gc()
+    Thread.sleep(200)
+    print("Memory usage: ")
+    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+}
+
 jacocoTestReport {
     reports {
         xml.enabled = true
@@ -128,6 +135,8 @@ jacocoTestReport {
         })
     }
 }
+
+jacocoTestReport.dependsOn GCandMem
 
 build.dependsOn jacocoTestReport
 
