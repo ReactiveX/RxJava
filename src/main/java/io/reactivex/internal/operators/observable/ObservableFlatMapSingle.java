@@ -195,7 +195,8 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
             set.delete(inner);
             if (errors.addThrowable(e)) {
                 if (!delayErrors) {
-                    dispose();
+                    d.dispose();
+                    set.dispose();
                 }
                 active.decrementAndGet();
                 drain();

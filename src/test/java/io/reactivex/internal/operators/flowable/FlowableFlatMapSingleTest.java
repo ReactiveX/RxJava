@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.junit.Test;
 
@@ -239,5 +239,23 @@ public class FlowableFlatMapSingleTest {
         .take(2)
         .test()
         .assertResult(1, 2);
+    }
+
+    @Test
+    public void middleError() {
+        Flowable.fromArray(new String[]{"1","a","2"}).flatMapSingle(new Function<String, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(final String s) throws NumberFormatException {
+                //return Single.just(Integer.valueOf(s)); //This works
+                return Single.fromCallable(new Callable<Integer>() {
+                    @Override
+                    public Integer call() throws NumberFormatException {
+                        return Integer.valueOf(s);
+                    }
+                });
+            }
+        })
+        .test()
+        .assertFailure(NumberFormatException.class, 1);
     }
 }

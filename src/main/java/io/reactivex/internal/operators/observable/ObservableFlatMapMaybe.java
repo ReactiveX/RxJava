@@ -195,7 +195,8 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
             set.delete(inner);
             if (errors.addThrowable(e)) {
                 if (!delayErrors) {
-                    dispose();
+                    d.dispose();
+                    set.dispose();
                 }
                 active.decrementAndGet();
                 drain();

@@ -228,7 +228,8 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
             set.delete(inner);
             if (errors.addThrowable(e)) {
                 if (!delayErrors) {
-                    cancel();
+                    s.cancel();
+                    set.dispose();
                 }
                 active.decrementAndGet();
                 drain();
