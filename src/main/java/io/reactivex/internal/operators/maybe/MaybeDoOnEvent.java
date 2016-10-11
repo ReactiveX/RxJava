@@ -65,6 +65,8 @@ public final class MaybeDoOnEvent<T> extends AbstractMaybeWithUpstream<T, T> {
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
+                this.d = d;
+
                 actual.onSubscribe(this);
             }
         }

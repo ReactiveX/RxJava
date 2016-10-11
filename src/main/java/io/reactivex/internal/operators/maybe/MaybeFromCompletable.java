@@ -66,7 +66,7 @@ public final class MaybeFromCompletable<T> extends Maybe<T> implements HasUpstre
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
 
-                actual.onSubscribe(d);
+                actual.onSubscribe(this);
             }
         }
 

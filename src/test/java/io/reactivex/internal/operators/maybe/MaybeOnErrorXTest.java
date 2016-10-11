@@ -21,6 +21,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.processors.PublishProcessor;
 
 public class MaybeOnErrorXTest {
 
@@ -125,5 +126,90 @@ public class MaybeOnErrorXTest {
             }
         })
         .test(), TestException.class, IOException.class);
+    }
+
+    @Test
+    public void onErrorReturnSuccess() {
+        Maybe.just(1)
+        .onErrorReturnItem(2)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void onErrorReturnEmpty() {
+        Maybe.<Integer>empty()
+        .onErrorReturnItem(2)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void onErrorReturnDispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().singleElement().onErrorReturnItem(1));
+    }
+
+    @Test
+    public void onErrorReturnDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
+                return v.onErrorReturnItem(1);
+            }
+        });
+    }
+
+    @Test
+    public void onErrorCompleteSuccess() {
+        Maybe.just(1)
+        .onErrorComplete()
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void onErrorCompleteEmpty() {
+        Maybe.<Integer>empty()
+        .onErrorComplete()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void onErrorCompleteDispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().singleElement().onErrorComplete());
+    }
+
+    @Test
+    public void onErrorCompleteDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
+                return v.onErrorComplete();
+            }
+        });
+    }
+
+    @Test
+    public void onErrorNextDispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().singleElement().onErrorResumeNext(Maybe.just(1)));
+    }
+
+    @Test
+    public void onErrorNextDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
+                return v.onErrorResumeNext(Maybe.just(1));
+            }
+        });
+    }
+
+    @Test
+    public void onErrorNextIsAlsoError() {
+        Maybe.error(new TestException("Main"))
+        .onErrorResumeNext(Maybe.error(new TestException("Secondary")))
+        .test()
+        .assertFailureAndMessage(TestException.class, "Secondary");
     }
 }

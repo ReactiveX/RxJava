@@ -347,7 +347,7 @@ public class MaybeTest {
 
     @Test
     public void completableMaybeCompletable() {
-        Completable.complete().toMaybe().toCompletable().test().assertResult();
+        Completable.complete().toMaybe().ignoreElement().test().assertResult();
     }
 
 
@@ -1241,7 +1241,7 @@ public class MaybeTest {
     @Test
     public void emptyToCompletable() {
         Maybe.empty()
-        .toCompletable()
+        .ignoreElement()
         .test()
         .assertResult();
     }
@@ -1249,7 +1249,7 @@ public class MaybeTest {
     @Test
     public void errorToCompletable() {
         Maybe.error(new TestException())
-        .toCompletable()
+        .ignoreElement()
         .test()
         .assertFailure(TestException.class);
     }

@@ -13,12 +13,13 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.Maybe;
-import io.reactivex.Single;
-import io.reactivex.SingleSource;
-import io.reactivex.functions.Function;
 import java.util.NoSuchElementException;
+
 import org.junit.Test;
+
+import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 
 public class MaybeFlatMapSingleTest {
     @Test(expected = NullPointerException.class)
@@ -106,5 +107,43 @@ public class MaybeFlatMapSingleTest {
             .test()
             .assertNoValues()
             .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Maybe.just(1).flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(final Integer integer) throws Exception {
+                return Single.just(2);
+            }
+        }));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Integer>, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Maybe<Integer> m) throws Exception {
+                return m.flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                    @Override
+                    public SingleSource<Integer> apply(final Integer integer) throws Exception {
+                        return Single.just(2);
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void singleErrors() {
+        Maybe.just(1)
+        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                    @Override
+                    public SingleSource<Integer> apply(final Integer integer) throws Exception {
+                        return Single.error(new TestException());
+                    }
+                })
+        .test()
+        .assertFailure(TestException.class);
     }
 }

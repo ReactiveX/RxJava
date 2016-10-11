@@ -66,7 +66,7 @@ public final class MaybeFromSingle<T> extends Maybe<T> implements HasUpstreamSin
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
 
-                actual.onSubscribe(d);
+                actual.onSubscribe(this);
             }
         }
 

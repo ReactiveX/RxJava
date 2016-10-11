@@ -19,7 +19,10 @@ import java.util.concurrent.*;
 
 import org.junit.Test;
 
-import io.reactivex.functions.Action;
+import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
@@ -56,5 +59,85 @@ public class MaybeUnsubscribeOnTest {
         assertFalse(pp.hasSubscribers());
 
         assertNotEquals(Thread.currentThread().getName(), name[0]);
+    }
+
+    @Test
+    public void just() {
+        Maybe.just(1)
+        .unsubscribeOn(Schedulers.single())
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void error() {
+        Maybe.<Integer>error(new TestException())
+        .unsubscribeOn(Schedulers.single())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void empty() {
+        Maybe.empty()
+        .unsubscribeOn(Schedulers.single())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Maybe.just(1)
+        .unsubscribeOn(Schedulers.single()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Maybe<Object> v) throws Exception {
+                return v.unsubscribeOn(Schedulers.single());
+            }
+        });
+    }
+
+    @Test
+    public void disposeRace() {
+        for (int i = 0; i < 500; i++) {
+            PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            final Disposable[] ds = { null };
+            pp.singleElement().unsubscribeOn(Schedulers.computation())
+            .subscribe(new MaybeObserver<Integer>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+                    ds[0] = d;
+                }
+
+                @Override
+                public void onSuccess(Integer value) {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    ds[0].dispose();
+                }
+            };
+
+            TestHelper.race(r, r, Schedulers.single());
+        }
     }
 }

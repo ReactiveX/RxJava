@@ -13,8 +13,13 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.Completable;
-import io.reactivex.Maybe;
+
+import io.reactivex.*;
+import io.reactivex.functions.Function;
+import io.reactivex.internal.fuseable.HasUpstreamCompletableSource;
+import io.reactivex.processors.PublishProcessor;
+
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class MaybeFromCompletableTest {
@@ -35,5 +40,27 @@ public class MaybeFromCompletableTest {
         Maybe.fromCompletable(Completable.error(new UnsupportedOperationException()))
             .test()
             .assertFailure(UnsupportedOperationException.class);
+    }
+
+    @Test
+    public void source() {
+        Completable c = Completable.complete();
+
+        assertSame(c, ((HasUpstreamCompletableSource)Maybe.fromCompletable(c)).source());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Maybe.fromCompletable(PublishProcessor.create().ignoreElements()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(new Function<Completable, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Completable v) throws Exception {
+                return Maybe.fromCompletable(v);
+            }
+        });
     }
 }

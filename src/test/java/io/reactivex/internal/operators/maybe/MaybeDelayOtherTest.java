@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 
@@ -194,5 +195,25 @@ public class MaybeDelayOtherTest {
 
         TestHelper.assertError(list, 0, TestException.class, "Main");
         TestHelper.assertError(list, 1, TestException.class, "Other");
+    }
+
+    @Test
+    public void withCompletableDispose() {
+        TestHelper.checkDisposed(Completable.complete().andThen(Maybe.just(1)));
+    }
+
+    @Test
+    public void withCompletableDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeCompletableToMaybe(new Function<Completable, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Completable c) throws Exception {
+                return c.andThen(Maybe.just(1));
+            }
+        });
+    }
+
+    @Test
+    public void withOtherPublisherDispose() {
+        TestHelper.checkDisposed(Maybe.just(1).delay(Flowable.just(1)));
     }
 }

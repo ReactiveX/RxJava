@@ -82,7 +82,7 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
 
         @Override
         public boolean isDisposed() {
-            return observer1.isDisposed();
+            return DisposableHelper.isDisposed(observer1.get());
         }
 
         @SuppressWarnings("unchecked")
@@ -125,7 +125,7 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
 
     static final class EqualObserver<T>
     extends AtomicReference<Disposable>
-    implements MaybeObserver<T>, Disposable {
+    implements MaybeObserver<T> {
 
 
         private static final long serialVersionUID = -3031974433025990931L;
@@ -138,14 +138,8 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
             this.parent = parent;
         }
 
-        @Override
         public void dispose() {
             DisposableHelper.dispose(this);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return DisposableHelper.isDisposed(get());
         }
 
         @Override

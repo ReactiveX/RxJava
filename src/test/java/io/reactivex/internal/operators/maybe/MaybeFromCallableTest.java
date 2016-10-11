@@ -13,12 +13,18 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.Maybe;
-import java.util.concurrent.Callable;
+import static org.junit.Assert.*;
+
+import java.util.List;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import io.reactivex.*;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.schedulers.Schedulers;
 
 public class MaybeFromCallableTest {
     @Test(expected = NullPointerException.class)
@@ -99,5 +105,59 @@ public class MaybeFromCallableTest {
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void callable() throws Exception {
+        final int[] counter = { 0 };
+
+        Maybe<Integer> m = Maybe.fromCallable(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                counter[0]++;
+                return 0;
+            }
+        });
+
+        assertTrue(m.getClass().toString(), m instanceof Callable);
+
+        assertEquals(0, ((Callable<Void>)m).call());
+
+        assertEquals(1, counter[0]);
+    }
+
+    @Test
+    public void noErrorLoss() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final CountDownLatch cdl1 = new CountDownLatch(1);
+            final CountDownLatch cdl2 = new CountDownLatch(1);
+
+            TestObserver<Integer> to = Maybe.fromCallable(new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    cdl1.countDown();
+                    cdl2.await();
+                    return 1;
+                }
+            }).subscribeOn(Schedulers.single()).test();
+
+            assertTrue(cdl1.await(5, TimeUnit.SECONDS));
+
+            to.cancel();
+
+            cdl2.countDown();
+
+            int timeout = 10;
+
+            while (timeout-- > 0 && errors.isEmpty()) {
+                Thread.sleep(100);
+            }
+
+            TestHelper.assertError(errors, 0, InterruptedException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
