@@ -135,6 +135,46 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
             d = DisposableHelper.DISPOSED;
         }
 
+        void fastPath(Subscriber<? super R> a, Iterator<? extends R> iter) {
+            for (;;) {
+                if (cancelled) {
+                    return;
+                }
+
+                R v;
+
+                try {
+                    v = iter.next();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
+
+                a.onNext(v);
+
+                if (cancelled) {
+                    return;
+                }
+
+
+                boolean b;
+
+                try {
+                    b = iter.hasNext();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
+
+                if (!b) {
+                    a.onComplete();
+                    return;
+                }
+            }
+        }
+
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
@@ -155,47 +195,13 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
 
                 if (iter != null) {
                     long r = requested.get();
-                    long e = 0L;
 
                     if (r == Long.MAX_VALUE) {
-                        for (;;) {
-                            if (cancelled) {
-                                return;
-                            }
-
-                            R v;
-
-                            try {
-                                v = iter.next();
-                            } catch (Throwable ex) {
-                                Exceptions.throwIfFatal(ex);
-                                a.onError(ex);
-                                return;
-                            }
-
-                            a.onNext(v);
-
-                            if (cancelled) {
-                                return;
-                            }
-
-
-                            boolean b;
-
-                            try {
-                                b = iter.hasNext();
-                            } catch (Throwable ex) {
-                                Exceptions.throwIfFatal(ex);
-                                a.onError(ex);
-                                return;
-                            }
-
-                            if (!b) {
-                                a.onComplete();
-                                return;
-                            }
-                        }
+                        fastPath(a, iter);
+                        return;
                     }
+
+                    long e = 0L;
 
                     while (e != r) {
                         if (cancelled) {

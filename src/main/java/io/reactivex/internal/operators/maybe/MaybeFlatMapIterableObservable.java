@@ -21,7 +21,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.observers.BasicIntQueueDisposable;
+import io.reactivex.internal.observers.BasicQueueDisposable;
 
 /**
  * Maps a success value into an Iterable and streams it back as a Flowable.
@@ -47,10 +47,8 @@ public final class MaybeFlatMapIterableObservable<T, R> extends Observable<R> {
     }
 
     static final class FlatMapIterableObserver<T, R>
-    extends BasicIntQueueDisposable<R>
+    extends BasicQueueDisposable<R>
     implements MaybeObserver<T> {
-
-        private static final long serialVersionUID = -8938804753851907758L;
 
         final Observer<? super R> actual;
 
@@ -81,6 +79,8 @@ public final class MaybeFlatMapIterableObservable<T, R> extends Observable<R> {
 
         @Override
         public void onSuccess(T value) {
+            Observer<? super R> a = actual;
+
             Iterator<? extends R> iter;
             boolean has;
             try {
@@ -89,17 +89,60 @@ public final class MaybeFlatMapIterableObservable<T, R> extends Observable<R> {
                 has = iter.hasNext();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
+                a.onError(ex);
                 return;
             }
 
             if (!has) {
-                actual.onComplete();
+                a.onComplete();
                 return;
             }
 
             this.it = iter;
-            drain();
+
+            if (outputFused && iter != null) {
+                a.onNext(null);
+                a.onComplete();
+                return;
+            }
+
+            for (;;) {
+                if (cancelled) {
+                    return;
+                }
+
+                R v;
+
+                try {
+                    v = iter.next();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
+
+                a.onNext(v);
+
+                if (cancelled) {
+                    return;
+                }
+
+
+                boolean b;
+
+                try {
+                    b = iter.hasNext();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
+
+                if (!b) {
+                    a.onComplete();
+                    return;
+                }
+            }
         }
 
         @Override
@@ -123,75 +166,6 @@ public final class MaybeFlatMapIterableObservable<T, R> extends Observable<R> {
         @Override
         public boolean isDisposed() {
             return cancelled;
-        }
-
-        void drain() {
-            if (getAndIncrement() != 0) {
-                return;
-            }
-
-            Observer<? super R> a = actual;
-            Iterator<? extends R> iter = this.it;
-
-            if (outputFused && iter != null) {
-                a.onNext(null);
-                a.onComplete();
-                return;
-            }
-
-            int missed = 1;
-
-            for (;;) {
-
-                if (iter != null) {
-                    for (;;) {
-                        if (cancelled) {
-                            return;
-                        }
-
-                        R v;
-
-                        try {
-                            v = iter.next();
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            a.onError(ex);
-                            return;
-                        }
-
-                        a.onNext(v);
-
-                        if (cancelled) {
-                            return;
-                        }
-
-
-                        boolean b;
-
-                        try {
-                            b = iter.hasNext();
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            a.onError(ex);
-                            return;
-                        }
-
-                        if (!b) {
-                            a.onComplete();
-                            return;
-                        }
-                    }
-                }
-
-                missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-
-                if (iter == null) {
-                    iter = it;
-                }
-            }
         }
 
         @Override

@@ -13,45 +13,27 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import static org.junit.Assert.assertSame;
-
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.fuseable.HasUpstreamSingleSource;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.subjects.PublishSubject;
 
-public class MaybeFromSingleTest {
-    @Test(expected = NullPointerException.class)
-    public void fromSingleNull() {
-        Maybe.fromSingle(null);
-    }
+public class MaybeFilterSingleTest {
 
     @Test
-    public void fromSingle() {
-        Maybe.fromSingle(Single.just(1))
-            .test()
-            .assertResult(1);
-    }
-
-    @Test
-    public void fromSingleThrows() {
-        Maybe.fromSingle(Single.error(new UnsupportedOperationException()))
-            .test()
-            .assertFailure(UnsupportedOperationException.class);
-    }
-
-    @Test
-    public void source() {
-        Single<Integer> c = Single.never();
-
-        assertSame(c, ((HasUpstreamSingleSource<?>)Maybe.fromSingle(c)).source());
+    public void error() {
+        Single.error(new TestException())
+        .filter(Functions.alwaysTrue())
+        .test()
+        .assertFailure(TestException.class);
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.fromSingle(PublishProcessor.create().singleOrError()));
+        TestHelper.checkDisposed(PublishSubject.create().singleOrError().filter(Functions.alwaysTrue()));
     }
 
     @Test
@@ -59,7 +41,7 @@ public class MaybeFromSingleTest {
         TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function<Single<Object>, MaybeSource<Object>>() {
             @Override
             public MaybeSource<Object> apply(Single<Object> v) throws Exception {
-                return Maybe.fromSingle(v);
+                return v.filter(Functions.alwaysTrue());
             }
         });
     }

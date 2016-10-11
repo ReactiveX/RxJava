@@ -594,7 +594,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @throws NullPointerException if single is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Maybe<T> fromSingle(SingleSource singleSource) {
+    public static <T> Maybe<T> fromSingle(SingleSource<T> singleSource) {
         ObjectHelper.requireNonNull(singleSource, "singleSource is null");
         return RxJavaPlugins.onAssembly(new MaybeFromSingle<T>(singleSource));
     }
@@ -2881,20 +2881,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
             Exceptions.throwIfFatal(ex);
             throw ExceptionHelper.wrapOrThrow(ex);
         }
-    }
-
-    /**
-     * Converts this Maybe into a Completable instance composing cancellation
-     * through and dropping a success value if emitted.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @return the new Completable instance
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable toCompletable() {
-        return RxJavaPlugins.onAssembly(new MaybeToCompletable<T>(this));
     }
 
     /**

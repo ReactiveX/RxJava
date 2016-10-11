@@ -19,36 +19,31 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
+import io.reactivex.processors.PublishProcessor;
 
-public class MaybeToCompletableTest {
+public class MaybeToSingleTest {
 
-    @SuppressWarnings("unchecked")
     @Test
     public void source() {
-        Maybe<Integer> source = Maybe.just(1);
+        Maybe<Integer> m = Maybe.just(1);
+        Single<Integer> s = m.toSingle();
 
-        assertSame(source, ((HasUpstreamMaybeSource<Integer>)source.ignoreElement().toMaybe()).source());
+        assertTrue(s.getClass().toString(), s instanceof HasUpstreamMaybeSource);
+
+        assertSame(m, (((HasUpstreamMaybeSource<?>)s).source()));
     }
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Maybe.never().ignoreElement().toMaybe());
+        TestHelper.checkDisposed(PublishProcessor.create().singleElement().toSingle());
     }
 
     @Test
-    public void successToComplete() {
-        Maybe.just(1)
-        .ignoreElement()
-        .test()
-        .assertResult();
-    }
-
-    @Test
-    public void doubleSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybeToCompletable(new Function<Maybe<Object>, CompletableSource>() {
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Object>, SingleSource<Object>>() {
             @Override
-            public CompletableSource apply(Maybe<Object> m) throws Exception {
-                return m.ignoreElement();
+            public SingleSource<Object> apply(Maybe<Object> m) throws Exception {
+                return m.toSingle();
             }
         });
     }

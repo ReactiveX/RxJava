@@ -97,7 +97,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         @Override
         public void dispose() {
             if (getAndSet(0) > 0) {
-                for (Disposable d : observers) {
+                for (ZipMaybeObserver<?> d : observers) {
                     d.dispose();
                 }
             }
@@ -150,7 +150,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
 
     static final class ZipMaybeObserver<T>
     extends AtomicReference<Disposable>
-    implements MaybeObserver<T>, Disposable {
+    implements MaybeObserver<T> {
 
         private static final long serialVersionUID = 3323743579927613702L;
 
@@ -163,14 +163,8 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
             this.index = index;
         }
 
-        @Override
         public void dispose() {
             DisposableHelper.dispose(this);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return DisposableHelper.isDisposed(get());
         }
 
         @Override
