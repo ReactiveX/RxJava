@@ -285,4 +285,11 @@ public class FlowableRangeLongTest {
             assertEquals("count >= 0 required but it was -1", ex.getMessage());
         }
     }
+
+    @Test
+    public void countOne() {
+        Flowable.rangeLong(5495454L, 1L)
+            .test()
+            .assertResult(5495454L);
+    }
 }

@@ -160,4 +160,11 @@ public class ObservableRangeLongTest {
             assertEquals("count >= 0 required but it was -1", ex.getMessage());
         }
     }
+
+    @Test
+    public void countOne() {
+        Observable.rangeLong(5495454L, 1L)
+            .test()
+            .assertResult(5495454L);
+    }
 }
