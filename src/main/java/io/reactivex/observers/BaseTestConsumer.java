@@ -312,26 +312,45 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      */
     @SuppressWarnings("unchecked")
     public final U assertValue(Predicate<T> valuePredicate) {
+        assertValueAt(0, valuePredicate);
+
+        if (values.size() > 1) {
+            throw fail("Value present but other values as well");
+        }
+
+        return (U)this;
+    }
+
+    /**
+     * Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
+     * for the provided predicate returns true.
+     * @param valuePredicate
+     *            the predicate that receives the onNext value
+     *            and should return true for the expected value.
+     * @return this
+     */
+    @SuppressWarnings("unchecked")
+    public final U assertValueAt(int index, Predicate<T> valuePredicate) {
         int s = values.size();
         if (s == 0) {
             throw fail("No values");
         }
 
+        if (index >= values.size()) {
+            throw fail("Invalid index: " + index);
+        }
+
         boolean found = false;
 
         try {
-            if (valuePredicate.test(values.get(0))) {
+            if (valuePredicate.test(values.get(index))) {
                 found = true;
             }
         } catch (Exception ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
 
-        if (found) {
-            if (s != 1) {
-                throw fail("Value present but other values as well");
-            }
-        } else {
+        if (!found) {
             throw fail("Value not present");
         }
         return (U)this;

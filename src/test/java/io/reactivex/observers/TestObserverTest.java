@@ -1263,4 +1263,62 @@ public class TestObserverTest {
             }
         });
     }
+
+    @Test
+    public void assertValueAtPredicateEmpty() {
+        TestObserver<Object> ts = new TestObserver<Object>();
+
+        Observable.empty().subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("No values");
+        ts.assertValueAt(0, new Predicate<Object>() {
+            @Override public boolean test(final Object o) throws Exception {
+                return false;
+            }
+        });
+    }
+
+    @Test
+    public void assertValueAtPredicateMatch() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        Observable.just(1, 2).subscribe(ts);
+
+        ts.assertValueAt(1, new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o == 2;
+            }
+        });
+    }
+
+    @Test
+    public void assertValueAtPredicateNoMatch() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        Observable.just(1, 2, 3).subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Value not present");
+        ts.assertValueAt(2, new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o != 3;
+            }
+        });
+    }
+
+    @Test
+    public void assertValueAtInvalidIndex() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        Observable.just(1, 2).subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
+        ts.assertValueAt(2, new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o == 1;
+            }
+        });
+    }
 }
