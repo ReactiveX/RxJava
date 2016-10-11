@@ -3456,6 +3456,50 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
+     * Returns a Flowable that emits a sequence of Longs within a specified range.
+     * <p>
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/range.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream and signals values on-demand (i.e., when requested).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code rangeLong} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param start
+     *            the value of the first Long in the sequence
+     * @param count
+     *            the number of sequential Longs to generate
+     * @return a Flowable that emits a range of sequential Longs
+     * @throws IllegalArgumentException
+     *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
+     *             {@code Long.MAX_VALUE}
+     * @see <a href="http://reactivex.io/documentation/operators/range.html">ReactiveX operators documentation: Range</a>
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Flowable<Long> rangeLong(long start, long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+
+        if (count == 0) {
+            return empty();
+        }
+
+        if (count == 1) {
+            return just(start);
+        }
+
+        long end = start + (count - 1);
+        if (start > 0 && end < 0) {
+            throw new IllegalArgumentException("Overflow! start + count is bigger than Long.MAX_VALUE");
+        }
+
+        return RxJavaPlugins.onAssembly(new FlowableRangeLong(start, count));
+    }
+
+    /**
      * Returns a Flowable that emits a Boolean value that indicates whether two Publisher sequences are the
      * same by comparing the items emitted by each Publisher pairwise.
      * <p>
