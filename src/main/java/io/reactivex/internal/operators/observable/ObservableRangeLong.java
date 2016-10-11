@@ -60,7 +60,7 @@ public final class ObservableRangeLong extends Observable<Long> {
             Observer<? super Long> actual = this.actual;
             long e = end;
             for (long i = index; i != e && get() == 0; i++) {
-                actual.onNext((long)i);
+                actual.onNext(i);
             }
             if (get() == 0) {
                 lazySet(1);
