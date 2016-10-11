@@ -15,13 +15,16 @@ package io.reactivex.internal.operators.completable;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.concurrent.*;
 
 import org.junit.Test;
 
-import io.reactivex.Completable;
+import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 
@@ -74,4 +77,73 @@ public class CompletableTimeoutTest {
         assertFalse(subject.hasObservers());
     }
 
+    @Test
+    public void otherErrors() {
+        Completable.never()
+        .timeout(1, TimeUnit.MILLISECONDS, Completable.error(new TestException()))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void mainSuccess() {
+        Completable.complete()
+        .timeout(1, TimeUnit.DAYS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult();
+    }
+
+    @Test
+    public void mainError() {
+        Completable.error(new TestException())
+        .timeout(1, TimeUnit.DAYS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void errorTimeoutRace() {
+        for (int i = 0; i < 500; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+
+            try {
+                final TestScheduler scheduler = new TestScheduler();
+
+                final PublishSubject<Integer> ps = PublishSubject.create();
+
+                TestObserver<Void> to = ps.ignoreElements()
+                        .timeout(1, TimeUnit.MILLISECONDS, scheduler, Completable.complete()).test();
+
+                final TestException ex = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps.onError(ex);
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                to.assertTerminated();
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertError(errors, 0, TestException.class);
+                }
+
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
 }

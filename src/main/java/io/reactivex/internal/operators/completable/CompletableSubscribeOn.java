@@ -32,15 +32,10 @@ public final class CompletableSubscribeOn extends Completable {
     @Override
     protected void subscribeActual(final CompletableObserver s) {
 
-        final SubscribeOnObserver parent = new SubscribeOnObserver(s);
+        final SubscribeOnObserver parent = new SubscribeOnObserver(s, source);
         s.onSubscribe(parent);
 
-        Disposable f = scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                source.subscribe(parent);
-            }
-        });
+        Disposable f = scheduler.scheduleDirect(parent);
 
         parent.task.replace(f);
 
@@ -48,7 +43,7 @@ public final class CompletableSubscribeOn extends Completable {
 
     static final class SubscribeOnObserver
     extends AtomicReference<Disposable>
-    implements CompletableObserver, Disposable {
+    implements CompletableObserver, Disposable, Runnable {
 
         private static final long serialVersionUID = 7000911171163930287L;
 
@@ -56,9 +51,17 @@ public final class CompletableSubscribeOn extends Completable {
 
         final SequentialDisposable task;
 
-        SubscribeOnObserver(CompletableObserver actual) {
+        final CompletableSource source;
+
+        SubscribeOnObserver(CompletableObserver actual, CompletableSource source) {
             this.actual = actual;
+            this.source = source;
             this.task = new SequentialDisposable();
+        }
+
+        @Override
+        public void run() {
+            source.subscribe(this);
         }
 
         @Override
@@ -84,7 +87,7 @@ public final class CompletableSubscribeOn extends Completable {
 
         @Override
         public boolean isDisposed() {
-            return DisposableHelper.isDisposed(this);
+            return DisposableHelper.isDisposed(get());
         }
     }
 

@@ -13,9 +13,9 @@
 
 package io.reactivex.internal.operators.completable;
 
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
 import org.junit.Test;
+
+import io.reactivex.*;
 
 public class CompletableFromPublisherTest {
     @Test(expected = NullPointerException.class)
@@ -42,5 +42,10 @@ public class CompletableFromPublisherTest {
         Completable.fromPublisher(Flowable.error(new UnsupportedOperationException()))
             .test()
             .assertFailure(UnsupportedOperationException.class);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Completable.fromPublisher(Flowable.just(1)));
     }
 }

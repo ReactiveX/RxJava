@@ -13,7 +13,9 @@
 
 package io.reactivex.internal.operators.single;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -102,5 +104,182 @@ public class SingleCreateTest {
     @Test(expected = IllegalArgumentException.class)
     public void unsafeCreate() {
         Single.unsafeCreate(Single.just(1));
+    }
+
+    @Test
+    public void createCallbackThrows() {
+        Single.create(new SingleOnSubscribe<Object>() {
+            @Override
+            public void subscribe(SingleEmitter<Object> s) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Single.create(new SingleOnSubscribe<Object>() {
+            @Override
+            public void subscribe(SingleEmitter<Object> s) throws Exception {
+                s.onSuccess(1);
+            }
+        }));
+    }
+
+    @Test
+    public void createNullSuccess() {
+        Single.create(new SingleOnSubscribe<Object>() {
+            @Override
+            public void subscribe(SingleEmitter<Object> s) throws Exception {
+                s.onSuccess(null);
+                s.onSuccess(null);
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void createNullError() {
+        Single.create(new SingleOnSubscribe<Object>() {
+            @Override
+            public void subscribe(SingleEmitter<Object> s) throws Exception {
+                s.onError(null);
+                s.onError(null);
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void createConsumerThrows() {
+        Single.create(new SingleOnSubscribe<Object>() {
+            @Override
+            public void subscribe(SingleEmitter<Object> s) throws Exception {
+                try {
+                    s.onSuccess(1);
+                    fail("Should have thrown");
+                } catch (TestException ex) {
+                    // expected
+                }
+            }
+        })
+        .subscribe(new SingleObserver<Object>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onSuccess(Object value) {
+                throw new TestException();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+        });
+    }
+
+    @Test
+    public void createConsumerThrowsResource() {
+        Single.create(new SingleOnSubscribe<Object>() {
+            @Override
+            public void subscribe(SingleEmitter<Object> s) throws Exception {
+                Disposable d = Disposables.empty();
+                s.setDisposable(d);
+                try {
+                    s.onSuccess(1);
+                    fail("Should have thrown");
+                } catch (TestException ex) {
+                    // expected
+                }
+
+                assertTrue(d.isDisposed());
+            }
+        })
+        .subscribe(new SingleObserver<Object>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onSuccess(Object value) {
+                throw new TestException();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+        });
+    }
+
+    @Test
+    public void createConsumerThrowsOnError() {
+        Single.create(new SingleOnSubscribe<Object>() {
+            @Override
+            public void subscribe(SingleEmitter<Object> s) throws Exception {
+                try {
+                    s.onError(new IOException());
+                    fail("Should have thrown");
+                } catch (TestException ex) {
+                    // expected
+                }
+            }
+        })
+        .subscribe(new SingleObserver<Object>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+            }
+
+            @Override
+            public void onSuccess(Object value) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException();
+            }
+        });
+    }
+
+    @Test
+    public void createConsumerThrowsResourceOnError() {
+        Single.create(new SingleOnSubscribe<Object>() {
+            @Override
+            public void subscribe(SingleEmitter<Object> s) throws Exception {
+                Disposable d = Disposables.empty();
+                s.setDisposable(d);
+                try {
+                    s.onError(new IOException());
+                    fail("Should have thrown");
+                } catch (TestException ex) {
+                    // expected
+                }
+
+                assertTrue(d.isDisposed());
+            }
+        })
+        .subscribe(new SingleObserver<Object>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onSuccess(Object value) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException();
+            }
+        });
     }
 }

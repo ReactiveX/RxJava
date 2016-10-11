@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.operators.single.SingleDelayWithCompletable.DelayWithMainObserver;
+import io.reactivex.internal.observers.ResumeSingleObserver;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -93,7 +93,7 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
                 return;
             }
             done = true;
-            source.subscribe(new DelayWithMainObserver<T>(this, actual));
+            source.subscribe(new ResumeSingleObserver<T>(this, actual));
         }
 
         @Override

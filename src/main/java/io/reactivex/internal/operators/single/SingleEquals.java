@@ -67,6 +67,7 @@ public final class SingleEquals<T> extends Single<Boolean> {
                         return;
                     }
                     if (count.compareAndSet(state, 2)) {
+                        set.dispose();
                         s.onError(e);
                         return;
                     }

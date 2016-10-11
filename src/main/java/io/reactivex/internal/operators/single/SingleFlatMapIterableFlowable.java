@@ -153,43 +153,8 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
                     long e = 0L;
 
                     if (r == Long.MAX_VALUE) {
-                        for (;;) {
-                            if (cancelled) {
-                                return;
-                            }
-
-                            R v;
-
-                            try {
-                                v = iter.next();
-                            } catch (Throwable ex) {
-                                Exceptions.throwIfFatal(ex);
-                                a.onError(ex);
-                                return;
-                            }
-
-                            a.onNext(v);
-
-                            if (cancelled) {
-                                return;
-                            }
-
-
-                            boolean b;
-
-                            try {
-                                b = iter.hasNext();
-                            } catch (Throwable ex) {
-                                Exceptions.throwIfFatal(ex);
-                                a.onError(ex);
-                                return;
-                            }
-
-                            if (!b) {
-                                a.onComplete();
-                                return;
-                            }
-                        }
+                        slowPath(a, iter);
+                        return;
                     }
 
                     while (e != r) {
@@ -243,6 +208,46 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
 
                 if (iter == null) {
                     iter = it;
+                }
+            }
+        }
+
+        void slowPath(Subscriber<? super R> a, Iterator<? extends R> iter) {
+            for (;;) {
+                if (cancelled) {
+                    return;
+                }
+
+                R v;
+
+                try {
+                    v = iter.next();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
+
+                a.onNext(v);
+
+                if (cancelled) {
+                    return;
+                }
+
+
+                boolean b;
+
+                try {
+                    b = iter.hasNext();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    a.onError(ex);
+                    return;
+                }
+
+                if (!b) {
+                    a.onComplete();
+                    return;
                 }
             }
         }

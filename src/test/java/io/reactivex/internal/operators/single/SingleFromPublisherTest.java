@@ -13,14 +13,18 @@
 
 package io.reactivex.internal.operators.single;
 
-import java.util.NoSuchElementException;
-
 import static org.junit.Assert.*;
+
+import java.util.*;
+
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 
 public class SingleFromPublisherTest {
@@ -71,5 +75,35 @@ public class SingleFromPublisherTest {
     @Test
     public void isDisposed() {
         TestHelper.checkDisposed(Single.fromPublisher(Flowable.never()));
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Single.fromPublisher(new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    BooleanSubscription s2 = new BooleanSubscription();
+                    s.onSubscribe(s2);
+                    assertTrue(s2.isCancelled());
+
+                    s.onNext(1);
+                    s.onComplete();
+                    s.onNext(2);
+                    s.onError(new TestException());
+                    s.onComplete();
+                }
+            })
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
+            TestHelper.assertError(errors, 1, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

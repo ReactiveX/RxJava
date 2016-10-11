@@ -31,16 +31,10 @@ public final class SingleSubscribeOn<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
-
-        final SubscribeOnObserver<T> parent = new SubscribeOnObserver<T>(s);
+        final SubscribeOnObserver<T> parent = new SubscribeOnObserver<T>(s, source);
         s.onSubscribe(parent);
 
-        Disposable f = scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                source.subscribe(parent);
-            }
-        });
+        Disposable f = scheduler.scheduleDirect(parent);
 
         parent.task.replace(f);
 
@@ -48,7 +42,7 @@ public final class SingleSubscribeOn<T> extends Single<T> {
 
     static final class SubscribeOnObserver<T>
     extends AtomicReference<Disposable>
-    implements SingleObserver<T>, Disposable {
+    implements SingleObserver<T>, Disposable, Runnable {
 
         private static final long serialVersionUID = 7000911171163930287L;
 
@@ -56,8 +50,11 @@ public final class SingleSubscribeOn<T> extends Single<T> {
 
         final SequentialDisposable task;
 
-        SubscribeOnObserver(SingleObserver<? super T> actual) {
+        final SingleSource<? extends T> source;
+
+        SubscribeOnObserver(SingleObserver<? super T> actual, SingleSource<? extends T> source) {
             this.actual = actual;
+            this.source = source;
             this.task = new SequentialDisposable();
         }
 
@@ -84,7 +81,12 @@ public final class SingleSubscribeOn<T> extends Single<T> {
 
         @Override
         public boolean isDisposed() {
-            return DisposableHelper.isDisposed(this);
+            return DisposableHelper.isDisposed(get());
+        }
+
+        @Override
+        public void run() {
+            source.subscribe(this);
         }
     }
 

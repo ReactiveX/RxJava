@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.observers.ResumeSingleObserver;
 
 public final class SingleDelayWithCompletable<T> extends Single<T> {
 
@@ -66,7 +67,7 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
 
         @Override
         public void onComplete() {
-            source.subscribe(new DelayWithMainObserver<T>(this, actual));
+            source.subscribe(new ResumeSingleObserver<T>(this, actual));
         }
 
         @Override
@@ -77,33 +78,6 @@ public final class SingleDelayWithCompletable<T> extends Single<T> {
         @Override
         public boolean isDisposed() {
             return DisposableHelper.isDisposed(get());
-        }
-    }
-
-    static final class DelayWithMainObserver<T> implements SingleObserver<T> {
-
-        final AtomicReference<Disposable> parent;
-
-        final SingleObserver<? super T> actual;
-
-        DelayWithMainObserver(AtomicReference<Disposable> parent, SingleObserver<? super T> actual) {
-            this.parent = parent;
-            this.actual = actual;
-        }
-
-        @Override
-        public void onSubscribe(Disposable d) {
-            DisposableHelper.replace(parent, d);
-        }
-
-        @Override
-        public void onSuccess(T value) {
-            actual.onSuccess(value);
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            actual.onError(e);
         }
     }
 }

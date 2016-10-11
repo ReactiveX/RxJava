@@ -201,4 +201,26 @@ public class SingleFlatMapTest {
             .test()
             .assertError(exception);
     }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Integer v) throws Exception {
+                return Single.just(2);
+            }
+        }));
+    }
+
+    @Test
+    public void mappedSingleOnError() {
+        Single.just(1).flatMap(new Function<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Integer v) throws Exception {
+                return Single.error(new TestException());
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
 }

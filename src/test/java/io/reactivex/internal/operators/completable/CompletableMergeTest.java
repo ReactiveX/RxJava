@@ -15,9 +15,16 @@ package io.reactivex.internal.operators.completable;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.PublishProcessor;
 
 public class CompletableMergeTest {
     @Test
@@ -30,4 +37,98 @@ public class CompletableMergeTest {
         }
     }
 
+    @Test
+    public void cancelAfterFirst() {
+        final TestObserver<Void> to = new TestObserver<Void>();
+
+        Completable.mergeArray(new Completable() {
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
+                s.onSubscribe(Disposables.empty());
+                s.onComplete();
+                to.cancel();
+            }
+        }, Completable.complete())
+        .subscribe(to);
+
+        to.assertEmpty();
+    }
+
+    @Test
+    public void cancelAfterFirstDelayError() {
+        final TestObserver<Void> to = new TestObserver<Void>();
+
+        Completable.mergeArrayDelayError(new Completable() {
+            @Override
+            protected void subscribeActual(CompletableObserver s) {
+                s.onSubscribe(Disposables.empty());
+                s.onComplete();
+                to.cancel();
+            }
+        }, Completable.complete())
+        .subscribe(to);
+
+        to.assertEmpty();
+    }
+
+    @Test
+    public void onErrorAfterComplete() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final CompletableObserver[] co = { null };
+
+            Completable.mergeArrayDelayError(Completable.complete(), new Completable() {
+                @Override
+                protected void subscribeActual(CompletableObserver s) {
+                    s.onSubscribe(Disposables.empty());
+                    s.onComplete();
+                    co[0] = s;
+                }
+            })
+            .test()
+            .assertResult();
+
+            co[0].onError(new TestException());
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void completeAfterMain() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestObserver<Void> to = Completable.mergeArray(Completable.complete(), pp.ignoreElements())
+        .test();
+
+        pp.onComplete();
+
+        to.assertResult();
+    }
+
+    @Test
+    public void completeAfterMainDelayError() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestObserver<Void> to = Completable.mergeArrayDelayError(Completable.complete(), pp.ignoreElements())
+        .test();
+
+        pp.onComplete();
+
+        to.assertResult();
+    }
+
+    @Test
+    public void errorAfterMainDelayError() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestObserver<Void> to = Completable.mergeArrayDelayError(Completable.complete(), pp.ignoreElements())
+        .test();
+
+        pp.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+    }
 }

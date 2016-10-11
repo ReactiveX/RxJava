@@ -13,21 +13,23 @@
 
 package io.reactivex.internal.operators.single;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import io.reactivex.functions.Consumer;
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 
 public class SingleDelayTest {
     @Test
@@ -129,4 +131,93 @@ public class SingleDelayTest {
         assertNotEquals(Thread.currentThread(), thread.get());
     }
 
+    @Test
+    public void withPublisherDispose() {
+        TestHelper.checkDisposed(PublishSubject.create().singleOrError().delaySubscription(Flowable.just(1)));
+    }
+
+    @Test
+    public void withPublisherError() {
+        Single.just(1)
+        .delaySubscription(Flowable.error(new TestException()))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void withPublisherError2() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Single.just(1)
+            .delaySubscription(new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onError(new TestException());
+                }
+            })
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void withObservableDispose() {
+        TestHelper.checkDisposed(PublishSubject.create().singleOrError().delaySubscription(Observable.just(1)));
+    }
+
+    @Test
+    public void withObservableError() {
+        Single.just(1)
+        .delaySubscription(Observable.error(new TestException()))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void withObservableError2() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            Single.just(1)
+            .delaySubscription(new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> s) {
+                    s.onSubscribe(Disposables.empty());
+                    s.onNext(1);
+                    s.onError(new TestException());
+                }
+            })
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void withSingleErrors() {
+        Single.just(1)
+        .delaySubscription(Single.error(new TestException()))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void withSingleDispose() {
+        TestHelper.checkDisposed(Single.just(1).delaySubscription(Single.just(2)));
+    }
+
+    @Test
+    public void withCompletableDispose() {
+        TestHelper.checkDisposed(Completable.complete().andThen(Single.just(1)));
+    }
 }

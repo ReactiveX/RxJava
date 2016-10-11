@@ -59,20 +59,21 @@ public final class SingleAmb<T> extends Single<T> {
             count = sources.length;
         }
 
-        final AtomicBoolean once = new AtomicBoolean();
         final CompositeDisposable set = new CompositeDisposable();
+
+        AmbSingleObserver<T> shared = new AmbSingleObserver<T>(s, set);
         s.onSubscribe(set);
 
         for (int i = 0; i < count; i++) {
             SingleSource<? extends T> s1 = sources[i];
-            if (once.get()) {
+            if (shared.get()) {
                 return;
             }
 
             if (s1 == null) {
                 set.dispose();
                 Throwable e = new NullPointerException("One of the sources is null");
-                if (once.compareAndSet(false, true)) {
+                if (shared.compareAndSet(false, true)) {
                     s.onError(e);
                 } else {
                     RxJavaPlugins.onError(e);
@@ -80,32 +81,44 @@ public final class SingleAmb<T> extends Single<T> {
                 return;
             }
 
-            s1.subscribe(new SingleObserver<T>() {
+            s1.subscribe(shared);
+        }
+    }
 
-                @Override
-                public void onSubscribe(Disposable d) {
-                    set.add(d);
-                }
+    static final class AmbSingleObserver<T> extends AtomicBoolean implements SingleObserver<T> {
 
-                @Override
-                public void onSuccess(T value) {
-                    if (once.compareAndSet(false, true)) {
-                        set.dispose();
-                        s.onSuccess(value);
-                    }
-                }
+        private static final long serialVersionUID = -1944085461036028108L;
 
-                @Override
-                public void onError(Throwable e) {
-                    if (once.compareAndSet(false, true)) {
-                        set.dispose();
-                        s.onError(e);
-                    } else {
-                        RxJavaPlugins.onError(e);
-                    }
-                }
+        final CompositeDisposable set;
 
-            });
+        final SingleObserver<? super T> s;
+
+        AmbSingleObserver(SingleObserver<? super T> s, CompositeDisposable set) {
+            this.s = s;
+            this.set = set;
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            set.add(d);
+        }
+
+        @Override
+        public void onSuccess(T value) {
+            if (compareAndSet(false, true)) {
+                set.dispose();
+                s.onSuccess(value);
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (compareAndSet(false, true)) {
+                set.dispose();
+                s.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
+            }
         }
     }
 
