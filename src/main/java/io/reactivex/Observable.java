@@ -2993,6 +2993,46 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns an Observable that emits a sequence of Longs within a specified range.
+     * <p>
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/range.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code rangeLong} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param start
+     *            the value of the first Long in the sequence
+     * @param count
+     *            the number of sequential Longs to generate
+     * @return an Observable that emits a range of sequential Longs
+     * @throws IllegalArgumentException
+     *             if {@code count} is less than zero, or if {@code start} + {@code count} &minus; 1 exceeds
+     *             {@code Long.MAX_VALUE}
+     * @see <a href="http://reactivex.io/documentation/operators/range.html">ReactiveX operators documentation: Range</a>
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<Long> rangeLong(long start, long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+
+        if (count == 0) {
+            return empty();
+        }
+
+        if (count == 1) {
+            return just(start);
+        }
+
+        if (start + (count - 1) > Long.MAX_VALUE) {
+            throw new IllegalArgumentException("Long overflow");
+        }
+
+        return RxJavaPlugins.onAssembly(new ObservableRangeLong(start, count));
+    }
+
+    /**
      * Returns an Observable that emits a Boolean value that indicates whether two ObservableSource sequences are the
      * same by comparing the items emitted by each ObservableSource pairwise.
      * <p>
