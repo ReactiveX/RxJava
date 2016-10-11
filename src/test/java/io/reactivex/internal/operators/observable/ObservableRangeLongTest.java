@@ -94,7 +94,7 @@ public class ObservableRangeLongTest {
 
     @Test
     public void testRangeWithOverflow5() {
-        assertFalse(Observable.rangeLong(Integer.MIN_VALUE, 0).blockingIterable().iterator().hasNext());
+        assertFalse(Observable.rangeLong(Long.MIN_VALUE, 0).blockingIterable().iterator().hasNext());
     }
 
     @Test
