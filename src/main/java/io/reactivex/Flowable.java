@@ -3491,8 +3491,9 @@ public abstract class Flowable<T> implements Publisher<T> {
             return just(start);
         }
 
-        if (start + (count - 1) > Long.MAX_VALUE) {
-            throw new IllegalArgumentException("Long overflow");
+        long end = start + (count - 1);
+        if (start > 0 && end < 0) {
+            throw new IllegalArgumentException("Overflow! start + count is bigger than Long.MAX_VALUE");
         }
 
         return RxJavaPlugins.onAssembly(new FlowableRangeLong(start, count));
