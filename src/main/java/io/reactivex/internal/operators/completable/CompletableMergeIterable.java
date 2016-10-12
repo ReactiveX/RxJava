@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.completable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Iterator;
 import java.util.concurrent.atomic.*;
 
