@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -87,15 +88,10 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = onNextMapper.apply(t);
+                p = ObjectHelper.requireNonNull(onNextMapper.apply(t), "The onNext publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
-                return;
-            }
-
-            if (p == null) {
-                actual.onError(new NullPointerException("The onNext publisher returned is null"));
                 return;
             }
 
@@ -107,15 +103,10 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = onErrorMapper.apply(t);
+                p = ObjectHelper.requireNonNull(onErrorMapper.apply(t), "The onError publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
-                return;
-            }
-
-            if (p == null) {
-                actual.onError(new NullPointerException("The onError publisher returned is null"));
                 return;
             }
 
@@ -128,15 +119,10 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = onCompleteSupplier.call();
+                p = ObjectHelper.requireNonNull(onCompleteSupplier.call(), "The onComplete publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
-                return;
-            }
-
-            if (p == null) {
-                actual.onError(new NullPointerException("The onComplete publisher returned is null"));
                 return;
             }
 

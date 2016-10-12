@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.completable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Iterator;
 import java.util.concurrent.atomic.*;
 
@@ -38,15 +39,10 @@ public final class CompletableMergeIterable extends Completable {
         Iterator<? extends CompletableSource> iterator;
 
         try {
-            iterator = sources.iterator();
+            iterator = ObjectHelper.requireNonNull(sources.iterator(), "The source iterator returned is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             s.onError(e);
-            return;
-        }
-
-        if (iterator == null) {
-            s.onError(new NullPointerException("The source iterator returned is null"));
             return;
         }
 

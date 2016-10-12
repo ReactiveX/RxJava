@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.*;
 
 import io.reactivex.*;
@@ -37,7 +38,7 @@ public final class ObservableFromFuture<T> extends Observable<T> {
         if (!d.isDisposed()) {
             T v;
             try {
-                v = unit != null ? future.get(timeout, unit) : future.get();
+                v = ObjectHelper.requireNonNull(unit != null ? future.get(timeout, unit) : future.get(), "Future returned null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 if (!d.isDisposed()) {
@@ -48,12 +49,8 @@ public final class ObservableFromFuture<T> extends Observable<T> {
                 future.cancel(true); // TODO ?? not sure about this
             }
             if (!d.isDisposed()) {
-                if (v != null) {
-                    s.onNext(v);
-                    s.onComplete();
-                } else {
-                    s.onError(new NullPointerException("Future returned null"));
-                }
+                s.onNext(v);
+                s.onComplete();
             }
         }
     }

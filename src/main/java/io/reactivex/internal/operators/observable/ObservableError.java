@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -28,13 +29,10 @@ public final class ObservableError<T> extends Observable<T> {
     public void subscribeActual(Observer<? super T> s) {
         Throwable error;
         try {
-            error = errorSupplier.call();
+            error = ObjectHelper.requireNonNull(errorSupplier.call(), "Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             error = t;
-        }
-        if (error == null) {
-            error = new NullPointerException("Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         }
         EmptyDisposable.error(error, s);
     }

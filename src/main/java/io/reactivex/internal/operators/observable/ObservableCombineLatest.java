@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Arrays;
 import java.util.concurrent.atomic.*;
 
@@ -235,19 +236,12 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
                     R v;
                     try {
-                        v = combiner.apply(array);
+                        v = ObjectHelper.requireNonNull(combiner.apply(array), "The combiner returned a null");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancelled = true;
                         cancel(q);
                         a.onError(ex);
-                        return;
-                    }
-
-                    if (v == null) {
-                        cancelled = true;
-                        cancel(q);
-                        a.onError(new NullPointerException("The combiner returned a null"));
                         return;
                     }
 

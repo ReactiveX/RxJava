@@ -111,17 +111,11 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = bufferSupplier.call();
+                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     dispose();
                     EmptyDisposable.error(e, actual);
-                    return;
-                }
-
-                if (b == null) {
-                    dispose();
-                    EmptyDisposable.error(new NullPointerException("buffer supplied is null"), actual);
                     return;
                 }
 
@@ -267,19 +261,12 @@ extends AbstractObservableWithUpstream<T, U> {
                 final U b; // NOPMD
 
                 try {
-                    b = bufferSupplier.call();
+                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     w.dispose();
                     s.dispose();
                     EmptyDisposable.error(e, actual);
-                    return;
-                }
-
-                if (b == null) {
-                    w.dispose();
-                    s.dispose();
-                    EmptyDisposable.error(new NullPointerException("The supplied buffer is null"), actual);
                     return;
                 }
 
@@ -439,19 +426,12 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = bufferSupplier.call();
+                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     w.dispose();
                     s.dispose();
                     EmptyDisposable.error(e, actual);
-                    return;
-                }
-
-                if (b == null) {
-                    w.dispose();
-                    s.dispose();
-                    EmptyDisposable.error(new NullPointerException("The supplied buffer is null"), actual);
                     return;
                 }
 
@@ -489,21 +469,13 @@ extends AbstractObservableWithUpstream<T, U> {
             fastPathOrderedEmit(b, false, this);
 
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
                 return;
             }
-
-            if (b == null) {
-                dispose();
-                actual.onError(new NullPointerException("The buffer supplied is null"));
-                return;
-            }
-
-
 
             if (restartTimerOnMaxSize) {
                 synchronized (this) {

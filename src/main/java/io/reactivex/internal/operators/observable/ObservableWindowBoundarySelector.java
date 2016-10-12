@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -252,17 +253,11 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                         ObservableSource<V> p;
 
                         try {
-                            p = close.apply(wo.open);
+                            p = ObjectHelper.requireNonNull(close.apply(wo.open), "The ObservableSource supplied is null");
                         } catch (Throwable e) {
                             Exceptions.throwIfFatal(e);
                             cancelled = true;
                             a.onError(e);
-                            continue;
-                        }
-
-                        if (p == null) {
-                            cancelled = true;
-                            a.onError(new NullPointerException("The ObservableSource supplied is null"));
                             continue;
                         }
 

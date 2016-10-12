@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -66,7 +67,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         boolean createBuffer() {
             U b;
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "Empty buffer supplied");
             } catch (Throwable t) {
                 Exceptions.throwIfFatal(t);
                 buffer = null;
@@ -80,16 +81,6 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
             }
 
             buffer = b;
-            if (b == null) {
-                Throwable t = new NullPointerException("Empty buffer supplied");
-                if (s == null) {
-                    EmptyDisposable.error(t, actual);
-                } else {
-                    s.dispose();
-                    actual.onError(t);
-                }
-                return false;
-            }
 
             return true;
         }

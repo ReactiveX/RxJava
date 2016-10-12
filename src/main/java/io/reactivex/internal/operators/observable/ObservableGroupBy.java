@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.*;
@@ -113,17 +114,11 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
             V v;
             try {
-                v = valueSelector.apply(t);
+                v = ObjectHelper.requireNonNull(valueSelector.apply(t), "The value supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();
                 onError(e);
-                return;
-            }
-
-            if (v == null) {
-                s.dispose();
-                onError(new NullPointerException("The value supplied is null"));
                 return;
             }
 

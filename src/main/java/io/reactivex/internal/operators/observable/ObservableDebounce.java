@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
@@ -80,17 +81,11 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
             ObservableSource<U> p;
 
             try {
-                p = debounceSelector.apply(t);
+                p = ObjectHelper.requireNonNull(debounceSelector.apply(t), "The publisher supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
-                return;
-            }
-
-            if (p == null) {
-                dispose();
-                actual.onError(new NullPointerException("The publisher supplied is null"));
                 return;
             }
 

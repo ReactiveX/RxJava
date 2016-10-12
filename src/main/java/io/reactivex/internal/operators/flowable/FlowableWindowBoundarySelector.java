@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -281,16 +282,10 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                         Publisher<V> p;
 
                         try {
-                            p = close.apply(wo.open);
+                            p = ObjectHelper.requireNonNull(close.apply(wo.open), "The publisher supplied is null");
                         } catch (Throwable e) {
                             cancelled = true;
                             a.onError(e);
-                            continue;
-                        }
-
-                        if (p == null) {
-                            cancelled = true;
-                            a.onError(new NullPointerException("The publisher supplied is null"));
                             continue;
                         }
 

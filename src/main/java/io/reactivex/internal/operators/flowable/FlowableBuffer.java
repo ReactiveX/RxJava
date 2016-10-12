@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
@@ -104,7 +105,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
             if (b == null) {
 
                 try {
-                    b = bufferSupplier.call();
+                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null buffer");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
@@ -112,12 +113,6 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
                     return;
                 }
 
-                if (b == null) {
-                    cancel();
-
-                    onError(new NullPointerException("The bufferSupplier returned a null buffer"));
-                    return;
-                }
                 buffer = b;
             }
 
@@ -231,19 +226,12 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
             if (i % skip == 0L) { // FIXME no need for modulo
                 try {
-                    b = bufferSupplier.call();
+                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null buffer");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
 
                     onError(e);
-                    return;
-                }
-
-                if (b == null) {
-                    cancel();
-
-                    onError(new NullPointerException("The bufferSupplier returned a null buffer"));
                     return;
                 }
 
@@ -390,18 +378,11 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
                 C b;
 
                 try {
-                    b = bufferSupplier.call();
+                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null buffer");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
                     onError(e);
-                    return;
-                }
-
-                if (b == null) {
-                    cancel();
-
-                    onError(new NullPointerException("The bufferSupplier returned a null buffer"));
                     return;
                 }
 

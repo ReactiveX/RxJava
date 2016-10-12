@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
@@ -76,7 +77,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             U b;
 
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancelled = true;
@@ -85,30 +86,17 @@ extends AbstractFlowableWithUpstream<T, U> {
                 return;
             }
 
-            if (b == null) {
-                cancelled = true;
-                s.cancel();
-                EmptySubscription.error(new NullPointerException("The buffer supplied is null"), actual);
-                return;
-            }
             buffer = b;
 
             Publisher<B> boundary;
 
             try {
-                boundary = boundarySupplier.call();
+                boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary publisher supplied is null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancelled = true;
                 s.cancel();
                 EmptySubscription.error(ex, actual);
-                return;
-            }
-
-            if (boundary == null) {
-                cancelled = true;
-                s.cancel();
-                EmptySubscription.error(new NullPointerException("The boundary publisher supplied is null"), actual);
                 return;
             }
 
@@ -185,7 +173,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             U next;
 
             try {
-                next = bufferSupplier.call();
+                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -193,28 +181,15 @@ extends AbstractFlowableWithUpstream<T, U> {
                 return;
             }
 
-            if (next == null) {
-                cancel();
-                actual.onError(new NullPointerException("The buffer supplied is null"));
-                return;
-            }
-
             Publisher<B> boundary;
 
             try {
-                boundary = boundarySupplier.call();
+                boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary publisher supplied is null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancelled = true;
                 s.cancel();
                 actual.onError(ex);
-                return;
-            }
-
-            if (boundary == null) {
-                cancelled = true;
-                s.cancel();
-                actual.onError(new NullPointerException("The boundary publisher supplied is null"));
                 return;
             }
 

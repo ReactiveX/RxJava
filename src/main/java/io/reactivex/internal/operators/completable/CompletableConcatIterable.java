@@ -109,15 +109,10 @@ public final class CompletableConcatIterable extends Completable {
                 CompletableSource c;
 
                 try {
-                    c = a.next();
+                    c = ObjectHelper.requireNonNull(a.next(), "The CompletableSource returned is null");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     actual.onError(ex);
-                    return;
-                }
-
-                if (c == null) {
-                    actual.onError(new NullPointerException("The completable returned is null"));
                     return;
                 }
 

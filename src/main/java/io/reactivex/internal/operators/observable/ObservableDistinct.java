@@ -106,15 +106,10 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
     public void subscribeActual(Observer<? super T> t) {
         Predicate<? super K> coll;
         try {
-            coll = predicateSupplier.call();
+            coll = ObjectHelper.requireNonNull(predicateSupplier.call(), "predicateSupplier returned null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
-            return;
-        }
-
-        if (coll == null) {
-            EmptyDisposable.error(new NullPointerException("predicateSupplier returned null"), t);
             return;
         }
 
@@ -158,20 +153,13 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             K key;
 
             try {
-                key = keySelector.apply(t);
+                key = ObjectHelper.requireNonNull(keySelector.apply(t), "Null key supplied");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();
                 actual.onError(e);
                 return;
             }
-
-            if (key == null) {
-                s.dispose();
-                actual.onError(new NullPointerException("Null key supplied"));
-                return;
-            }
-
 
             boolean b;
             try {

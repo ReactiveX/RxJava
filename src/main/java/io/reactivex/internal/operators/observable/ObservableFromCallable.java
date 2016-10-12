@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -33,7 +34,7 @@ public final class ObservableFromCallable<T> extends Observable<T> {
         }
         T value;
         try {
-            value = callable.call();
+            value = ObjectHelper.requireNonNull(callable.call(), "Callable returned null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
@@ -44,11 +45,7 @@ public final class ObservableFromCallable<T> extends Observable<T> {
         if (d.isDisposed()) {
             return;
         }
-        if (value != null) {
-            s.onNext(value);
-            s.onComplete();
-        } else {
-            s.onError(new NullPointerException("Callable returned null"));
-        }
+        s.onNext(value);
+        s.onComplete();
     }
 }

@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -28,17 +29,13 @@ public final class ObservableDefer<T> extends Observable<T> {
     public void subscribeActual(Observer<? super T> s) {
         ObservableSource<? extends T> pub;
         try {
-            pub = supplier.call();
+            pub = ObjectHelper.requireNonNull(supplier.call(), "null publisher supplied");
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             EmptyDisposable.error(t, s);
             return;
         }
 
-        if (pub == null) {
-            EmptyDisposable.error(new NullPointerException("null publisher supplied"), s);
-            return;
-        }
         pub.subscribe(s);
     }
 }
