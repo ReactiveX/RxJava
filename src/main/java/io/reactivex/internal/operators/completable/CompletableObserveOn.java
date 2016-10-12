@@ -13,9 +13,11 @@
 
 package io.reactivex.internal.operators.completable;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.ArrayCompositeDisposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class CompletableObserveOn extends Completable {
 
@@ -29,49 +31,65 @@ public final class CompletableObserveOn extends Completable {
 
     @Override
     protected void subscribeActual(final CompletableObserver s) {
+        source.subscribe(new ObserveOnCompletableObserver(s, scheduler));
+    }
 
-        final ArrayCompositeDisposable ad = new ArrayCompositeDisposable(2);
-        final Scheduler.Worker w = scheduler.createWorker();
-        ad.set(0, w);
+    static final class ObserveOnCompletableObserver
+    extends AtomicReference<Disposable>
+    implements CompletableObserver, Disposable, Runnable {
 
-        s.onSubscribe(ad);
 
-        source.subscribe(new CompletableObserver() {
+        private static final long serialVersionUID = 8571289934935992137L;
 
-            @Override
-            public void onComplete() {
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            s.onComplete();
-                        } finally {
-                            ad.dispose();
-                        }
-                    }
-                });
+        final CompletableObserver actual;
+
+        final Scheduler scheduler;
+
+        Throwable error;
+
+        ObserveOnCompletableObserver(CompletableObserver actual, Scheduler scheduler) {
+            this.actual = actual;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public void dispose() {
+            DisposableHelper.dispose(this);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(get());
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.setOnce(this, d)) {
+                actual.onSubscribe(this);
             }
+        }
 
-            @Override
-            public void onError(final Throwable e) {
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            s.onError(e);
-                        } finally {
-                            ad.dispose();
-                        }
-                    }
-                });
+        @Override
+        public void onError(Throwable e) {
+            this.error = e;
+            DisposableHelper.replace(this, scheduler.scheduleDirect(this));
+        }
+
+        @Override
+        public void onComplete() {
+            DisposableHelper.replace(this, scheduler.scheduleDirect(this));
+        }
+
+        @Override
+        public void run() {
+            Throwable ex = error;
+            if (ex != null) {
+                error = null;
+                actual.onError(ex);
+            } else {
+                actual.onComplete();
             }
-
-            @Override
-            public void onSubscribe(Disposable d) {
-                ad.set(1, d);
-            }
-
-        });
+        }
     }
 
 }

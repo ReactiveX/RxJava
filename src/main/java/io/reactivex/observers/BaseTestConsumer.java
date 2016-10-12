@@ -324,6 +324,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     /**
      * Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
      * for the provided predicate returns true.
+     * @param index the position to assert on
      * @param valuePredicate
      *            the predicate that receives the onNext value
      *            and should return true for the expected value.

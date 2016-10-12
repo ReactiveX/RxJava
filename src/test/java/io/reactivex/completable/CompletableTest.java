@@ -366,8 +366,7 @@ public class CompletableTest {
 
         c.blockingAwait();
 
-        // FIXME this request pattern looks odd because all 10 completions trigger 1 requests
-        Assert.assertEquals(Arrays.asList(5L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), requested);
+        Assert.assertEquals(Arrays.asList(5L, 4L, 4L), requested);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1876,8 +1875,8 @@ public class CompletableTest {
         } catch (CompositeException ex) {
             List<Throwable> a = ex.getExceptions();
             Assert.assertEquals(2, a.size());
-            Assert.assertTrue(a.get(0) instanceof IllegalStateException);
-            Assert.assertTrue(a.get(1) instanceof TestException);
+            Assert.assertTrue(a.get(0) instanceof TestException);
+            Assert.assertTrue(a.get(1) instanceof IllegalStateException);
         }
     }
 
