@@ -13,32 +13,17 @@
 
 package io.reactivex.internal.operators.single;
 
-import static org.junit.Assert.*;
-
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import io.reactivex.observers.TestObserver;
+import io.reactivex.*;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subjects.PublishSubject;
 
-public class SingleTimeoutTests {
+public class SingleTimerTest {
 
     @Test
-    public void shouldUnsubscribeFromUnderlyingSubscriptionOnDispose() {
-        final PublishSubject<String> subject = PublishSubject.create();
-        final TestScheduler scheduler = new TestScheduler();
-
-        final TestObserver<String> observer = subject.single("")
-                .timeout(100, TimeUnit.MILLISECONDS, scheduler)
-                .test();
-
-        assertTrue(subject.hasObservers());
-
-        observer.dispose();
-
-        assertFalse(subject.hasObservers());
+    public void disposed() {
+        TestHelper.checkDisposed(Single.timer(1, TimeUnit.SECONDS, new TestScheduler()));
     }
-
 }

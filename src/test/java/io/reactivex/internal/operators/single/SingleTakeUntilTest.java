@@ -13,13 +13,17 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.List;
 import java.util.concurrent.CancellationException;
 
 import org.junit.Test;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 
 public class SingleTakeUntilTest {
 
@@ -211,4 +215,48 @@ public class SingleTakeUntilTest {
         ts.assertFailure(TestException.class);
     }
 
+    @Test
+    public void withPublisherDispose() {
+        TestHelper.checkDisposed(Single.never().takeUntil(Flowable.never()));
+    }
+
+    @Test
+    public void onErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+
+            try {
+                final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+                final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+
+                TestObserver<Integer> to = ps1.singleOrError().takeUntil(ps2).test();
+
+                final TestException ex = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onError(ex);
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex);
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                to.assertFailure(TestException.class);
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertError(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
 }

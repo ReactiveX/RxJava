@@ -52,7 +52,7 @@ public final class CompletableDoOnEvent extends Completable {
                     onEvent.accept(e);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    e = new CompositeException(ex, e);
+                    e = new CompositeException(e, ex);
                 }
 
                 s.onError(e);

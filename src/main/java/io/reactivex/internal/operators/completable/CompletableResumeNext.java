@@ -37,6 +37,7 @@ public final class CompletableResumeNext extends Completable {
     protected void subscribeActual(final CompletableObserver s) {
 
         final SequentialDisposable sd = new SequentialDisposable();
+        s.onSubscribe(sd);
         source.subscribe(new CompletableObserver() {
 
             @Override

@@ -531,5 +531,15 @@ public class SingleTest {
             }
         }).test().assertResult(5);
     }
+
+    @Test
+    public void to() {
+        assertEquals(1, Single.just(1).to(new Function<Single<Integer>, Integer>() {
+            @Override
+            public Integer apply(Single<Integer> v) throws Exception {
+                return 1;
+            }
+        }).intValue());
+    }
 }
 

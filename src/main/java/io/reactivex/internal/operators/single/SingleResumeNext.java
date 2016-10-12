@@ -13,11 +13,15 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.observers.ResumeSingleObserver;
 
 public final class SingleResumeNext<T> extends Single<T> {
     final SingleSource<? extends T> source;
@@ -32,62 +36,58 @@ public final class SingleResumeNext<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
-
-        final SequentialDisposable sd = new SequentialDisposable();
-        s.onSubscribe(sd);
-
-        source.subscribe(new SingleObserver<T>() {
-
-            @Override
-            public void onSubscribe(Disposable d) {
-                sd.replace(d);
-            }
-
-            @Override
-            public void onSuccess(T value) {
-                s.onSuccess(value);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                SingleSource<? extends T> next;
-
-                try {
-                    next = nextFunction.apply(e);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    s.onError(new CompositeException(ex, e));
-                    return;
-                }
-
-                if (next == null) {
-                    NullPointerException npe = new NullPointerException("The next Single supplied was null");
-                    npe.initCause(e);
-                    s.onError(npe);
-                    return;
-                }
-
-                next.subscribe(new SingleObserver<T>() {
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        sd.replace(d);
-                    }
-
-                    @Override
-                    public void onSuccess(T value) {
-                        s.onSuccess(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-
-                });
-            }
-
-        });
+        source.subscribe(new ResumeMainSingleObserver<T>(s, nextFunction));
     }
 
+    static final class ResumeMainSingleObserver<T> extends AtomicReference<Disposable>
+    implements SingleObserver<T>, Disposable {
+        private static final long serialVersionUID = -5314538511045349925L;
+
+        final SingleObserver<? super T> actual;
+
+        final Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction;
+
+        public ResumeMainSingleObserver(SingleObserver<? super T> actual,
+                Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction) {
+            this.actual = actual;
+            this.nextFunction = nextFunction;
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.setOnce(this, d)) {
+                actual.onSubscribe(this);
+            }
+        }
+
+        @Override
+        public void onSuccess(T value) {
+            actual.onSuccess(value);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            SingleSource<? extends T> source;
+
+            try {
+                source = ObjectHelper.requireNonNull(nextFunction.apply(e), "The nextFunction returned a null SingleSource.");
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                actual.onError(new CompositeException(e, ex));
+                return;
+            }
+
+            source.subscribe(new ResumeSingleObserver<T>(this, actual));
+        }
+
+        @Override
+        public void dispose() {
+            DisposableHelper.dispose(this);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(get());
+        }
+    }
 }

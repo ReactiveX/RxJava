@@ -13,16 +13,18 @@
 
 package io.reactivex.single;
 
+
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static org.junit.Assert.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.SingleOperator;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.schedulers.Schedulers;
@@ -705,14 +707,18 @@ public class SingleNullTests {
         error.onErrorResumeNext((Function<Throwable, Single<Integer>>)null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void onErrorResumeNextFunctionReturnsNull() {
-        error.onErrorResumeNext(new Function<Throwable, Single<Integer>>() {
-            @Override
-            public Single<Integer> apply(Throwable e) {
-                return null;
-            }
-        }).blockingGet();
+        try {
+            error.onErrorResumeNext(new Function<Throwable, Single<Integer>>() {
+                @Override
+                public Single<Integer> apply(Throwable e) {
+                    return null;
+                }
+            }).blockingGet();
+        } catch (CompositeException ex) {
+            assertTrue(ex.toString(), ex.getExceptions().get(1) instanceof NullPointerException);
+        }
     }
 
     @Test(expected = NullPointerException.class)

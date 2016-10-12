@@ -21,9 +21,12 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.PublishSubject;
 
 public class SingleDoOnTest {
 
@@ -149,5 +152,179 @@ public class SingleDoOnTest {
             RxJavaPlugins.reset();
         }
 
+    }
+
+    @Test
+    public void onErrorSuccess() {
+        final int[] call = { 0 };
+
+        Single.just(1)
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable v) throws Exception {
+                call[0]++;
+            }
+        })
+        .test()
+        .assertResult(1);
+
+        assertEquals(0, call[0]);
+    }
+
+    @Test
+    public void onErrorCrashes() {
+        TestObserver<Object> to = Single.error(new TestException("Outer"))
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable v) throws Exception {
+                throw new TestException("Inner");
+            }
+        })
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+
+        TestHelper.assertError(errors, 0, TestException.class, "Outer");
+        TestHelper.assertError(errors, 1, TestException.class, "Inner");
+    }
+
+    @Test
+    public void doOnEventThrowsSuccess() {
+        Single.just(1)
+        .doOnEvent(new BiConsumer<Integer, Throwable>() {
+            @Override
+            public void accept(Integer v, Throwable e) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void doOnEventThrowsError() {
+        TestObserver<Integer> to = Single.<Integer>error(new TestException("Main"))
+        .doOnEvent(new BiConsumer<Integer, Throwable>() {
+            @Override
+            public void accept(Integer v, Throwable e) throws Exception {
+                throw new TestException("Inner");
+            }
+        })
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+
+        TestHelper.assertError(errors, 0, TestException.class, "Main");
+        TestHelper.assertError(errors, 1, TestException.class, "Inner");
+    }
+
+    @Test
+    public void doOnDisposeDispose() {
+        final int[] calls = { 0 };
+        TestHelper.checkDisposed(PublishSubject.create().singleOrError().doOnDispose(new Action() {
+            @Override
+            public void run() throws Exception {
+                calls[0]++;
+            }
+        }));
+
+        assertEquals(1, calls[0]);
+    }
+
+    @Test
+    public void doOnDisposeSuccess() {
+        final int[] calls = { 0 };
+
+        Single.just(1)
+        .doOnDispose(new Action() {
+            @Override
+            public void run() throws Exception {
+                calls[0]++;
+            }
+        })
+        .test()
+        .assertResult(1);
+
+        assertEquals(0, calls[0]);
+    }
+
+    @Test
+    public void doOnDisposeError() {
+        final int[] calls = { 0 };
+
+        Single.error(new TestException())
+        .doOnDispose(new Action() {
+            @Override
+            public void run() throws Exception {
+                calls[0]++;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+
+        assertEquals(0, calls[0]);
+    }
+
+    @Test
+    public void doOnDisposeDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Single<Object> s) throws Exception {
+                return s.doOnDispose(Functions.EMPTY_ACTION);
+            }
+        });
+    }
+
+    @Test
+    public void doOnDisposeCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            PublishSubject<Integer> ps = PublishSubject.create();
+
+            ps.singleOrError().doOnDispose(new Action() {
+                @Override
+                public void run() throws Exception {
+                    throw new TestException();
+                }
+            })
+            .test()
+            .cancel();
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void doOnSuccessErrors() {
+        final int[] call = { 0 };
+
+        Single.error(new TestException())
+        .doOnSuccess(new Consumer<Object>() {
+            @Override
+            public void accept(Object v) throws Exception {
+                call[0]++;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+
+        assertEquals(0, call[0]);
+    }
+
+    @Test
+    public void doOnSuccessCrash() {
+        Single.just(1)
+        .doOnSuccess(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
     }
 }

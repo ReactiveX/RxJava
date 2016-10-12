@@ -13,11 +13,11 @@
 
 package io.reactivex.internal.operators.single;
 
-import io.reactivex.Maybe;
-import io.reactivex.MaybeSource;
-import io.reactivex.Single;
-import io.reactivex.functions.Function;
 import org.junit.Test;
+
+import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 
 public class SingleFlatMapMaybeTest {
     @Test(expected = NullPointerException.class)
@@ -93,5 +93,54 @@ public class SingleFlatMapMaybeTest {
         })
             .test()
             .assertError(exception);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.just(1);
+            }
+        }));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeSingleToMaybe(new Function<Single<Integer>, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Single<Integer> v) throws Exception {
+                return v.flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+                    @Override
+                    public MaybeSource<Integer> apply(Integer v) throws Exception {
+                        return Maybe.just(1);
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void mapsToError() {
+        Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.error(new TestException());
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void mapsToEmpty() {
+        Single.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.empty();
+            }
+        })
+        .test()
+        .assertResult();
     }
 }

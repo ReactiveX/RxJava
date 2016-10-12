@@ -48,7 +48,7 @@ public final class SingleOnErrorReturn<T> extends Single<T> {
                         v = valueSupplier.apply(e);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        s.onError(new CompositeException(ex, e));
+                        s.onError(new CompositeException(e, ex));
                         return;
                     }
                 } else {

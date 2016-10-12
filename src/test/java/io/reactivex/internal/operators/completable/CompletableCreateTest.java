@@ -13,7 +13,9 @@
 
 package io.reactivex.internal.operators.completable;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -95,5 +97,179 @@ public class CompletableCreateTest {
         .assertFailure(TestException.class);
 
         assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void callbackThrows() {
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void onErrorNull() {
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                e.onError(null);
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                e.onComplete();
+            }
+        }));
+    }
+
+    @Test
+    public void onErrorThrows() {
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                Disposable d = Disposables.empty();
+                e.setDisposable(d);
+
+                try {
+                    e.onError(new IOException());
+                    fail("Should have thrown");
+                } catch (TestException ex) {
+                    // expected
+                }
+
+                assertTrue(d.isDisposed());
+                assertTrue(e.isDisposed());
+            }
+        }).subscribe(new CompletableObserver() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    @Test
+    public void onCompleteThrows() {
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                Disposable d = Disposables.empty();
+                e.setDisposable(d);
+
+                try {
+                    e.onComplete();
+                    fail("Should have thrown");
+                } catch (TestException ex) {
+                    // expected
+                }
+
+                assertTrue(d.isDisposed());
+                assertTrue(e.isDisposed());
+            }
+        }).subscribe(new CompletableObserver() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                throw new TestException();
+            }
+        });
+    }
+
+    @Test
+    public void onErrorThrows2() {
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                try {
+                    e.onError(new IOException());
+                    fail("Should have thrown");
+                } catch (TestException ex) {
+                    // expected
+                }
+
+                assertTrue(e.isDisposed());
+            }
+        }).subscribe(new CompletableObserver() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    @Test
+    public void onCompleteThrows2() {
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter e) throws Exception {
+                try {
+                    e.onComplete();
+                    fail("Should have thrown");
+                } catch (TestException ex) {
+                    // expected
+                }
+
+                assertTrue(e.isDisposed());
+            }
+        }).subscribe(new CompletableObserver() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                throw new TestException();
+            }
+        });
     }
 }

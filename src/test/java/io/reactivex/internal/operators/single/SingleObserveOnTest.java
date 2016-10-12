@@ -13,51 +13,36 @@
 
 package io.reactivex.internal.operators.single;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.observers.TestObserver;
-import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.*;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
-public class SingleSubscribeOnTest {
-
-    @Test
-    public void normal() {
-        List<Throwable> list = TestHelper.trackPluginErrors();
-        try {
-            TestScheduler scheduler = new TestScheduler();
-
-            TestObserver<Integer> ts = Single.just(1)
-            .subscribeOn(scheduler)
-            .test();
-
-            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-
-            ts.assertResult(1);
-
-            assertTrue(list.toString(), list.isEmpty());
-        } finally {
-            RxJavaPlugins.reset();
-        }
-    }
+public class SingleObserveOnTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishSubject.create().singleOrError().subscribeOn(new TestScheduler()));
+        TestHelper.checkDisposed(Single.just(1).observeOn(Schedulers.single()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Single<Object> s) throws Exception {
+                return s.observeOn(Schedulers.single());
+            }
+        });
     }
 
     @Test
     public void error() {
         Single.error(new TestException())
-        .subscribeOn(Schedulers.single())
+        .observeOn(Schedulers.single())
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);

@@ -19,9 +19,13 @@ import java.util.*;
 
 import org.junit.Test;
 
-import io.reactivex.Single;
+import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.*;
 
 public class SingleAmbTest {
     @Test
@@ -118,5 +122,143 @@ public class SingleAmbTest {
     @Test
     public void ambSingleSource() {
         assertSame(Single.never(), Single.ambArray(Single.never()));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void error() {
+        Single.ambArray(Single.error(new TestException()), Single.just(1))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void nullSourceSuccessRace() {
+        for (int i = 0; i < 1000; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+
+            try {
+
+                final Subject<Integer> ps = ReplaySubject.create();
+                ps.onNext(1);
+
+                @SuppressWarnings("unchecked")
+                final Single<Integer> source = Single.ambArray(ps.singleOrError(), Single.<Integer>never(), Single.<Integer>never(), null);
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        source.test();
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps.onComplete();
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertError(errors, 0, NullPointerException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void multipleErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+
+            try {
+
+                final Subject<Integer> ps1 = PublishSubject.create();
+                final Subject<Integer> ps2 = PublishSubject.create();
+
+                Single.ambArray(ps1.singleOrError(), ps2.singleOrError()).test();
+
+                final TestException ex = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onError(ex);
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex);
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertError(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void successErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+
+            try {
+
+                final Subject<Integer> ps1 = PublishSubject.create();
+                final Subject<Integer> ps2 = PublishSubject.create();
+
+                Single.ambArray(ps1.singleOrError(), ps2.singleOrError()).test();
+
+                final TestException ex = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onNext(1);
+                        ps1.onComplete();
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex);
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertError(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void manySources() {
+        Single<?>[] sources = new Single[32];
+        Arrays.fill(sources, Single.never());
+        sources[31] = Single.just(31);
+
+        Single.amb(Arrays.asList(sources))
+        .test()
+        .assertResult(31);
     }
 }

@@ -127,7 +127,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
 
     static final class TakeUntilOtherSubscriber
     extends AtomicReference<Subscription>
-    implements Subscriber<Object>, Disposable {
+    implements Subscriber<Object> {
 
         private static final long serialVersionUID = 5170026210238877381L;
 
@@ -161,14 +161,8 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
             parent.otherError(new CancellationException());
         }
 
-        @Override
         public void dispose() {
             SubscriptionHelper.cancel(this);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(get());
         }
     }
 }

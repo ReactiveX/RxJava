@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.operators.single.SingleDelayWithCompletable.DelayWithMainObserver;
+import io.reactivex.internal.observers.ResumeSingleObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleDelayWithObservable<T, U> extends Single<T> {
@@ -85,7 +85,7 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
                 return;
             }
             done = true;
-            source.subscribe(new DelayWithMainObserver<T>(this, actual));
+            source.subscribe(new ResumeSingleObserver<T>(this, actual));
         }
 
         @Override

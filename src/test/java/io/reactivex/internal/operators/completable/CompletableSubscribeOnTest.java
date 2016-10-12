@@ -21,9 +21,11 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
+import io.reactivex.subjects.PublishSubject;
 
 public class CompletableSubscribeOnTest {
 
@@ -45,5 +47,20 @@ public class CompletableSubscribeOnTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().ignoreElements().subscribeOn(new TestScheduler()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Completable c) throws Exception {
+                return c.subscribeOn(Schedulers.single());
+            }
+        });
     }
 }
