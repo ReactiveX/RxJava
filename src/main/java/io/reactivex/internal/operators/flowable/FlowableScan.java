@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
@@ -63,17 +64,11 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
                 T u;
 
                 try {
-                    u = accumulator.apply(v, t);
+                    u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     s.cancel();
                     a.onError(e);
-                    return;
-                }
-
-                if (u == null) {
-                    s.cancel();
-                    a.onError(new NullPointerException("The value returned by the accumulator is null"));
                     return;
                 }
 

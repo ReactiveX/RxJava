@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.maybe;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -38,14 +39,10 @@ public final class MaybeErrorCallable<T> extends Maybe<T> {
         Throwable ex;
 
         try {
-            ex = errorSupplier.call();
+            ex = ObjectHelper.requireNonNull(errorSupplier.call(), "Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable ex1) {
             Exceptions.throwIfFatal(ex1);
             ex = ex1;
-        }
-
-        if (ex == null) {
-            ex = new NullPointerException("Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         }
 
         observer.onError(ex);

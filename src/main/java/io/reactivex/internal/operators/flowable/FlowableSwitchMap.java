@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -104,17 +105,11 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
 
             Publisher<? extends R> p;
             try {
-                p = mapper.apply(t);
+                p = ObjectHelper.requireNonNull(mapper.apply(t), "The publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();
                 onError(e);
-                return;
-            }
-
-            if (p == null) {
-                s.cancel();
-                onError(new NullPointerException("The publisher returned is null"));
                 return;
             }
 

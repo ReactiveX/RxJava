@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Arrays;
 import java.util.concurrent.atomic.*;
 
@@ -182,17 +183,11 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
                     R v;
                     try {
-                        v = zipper.apply(os.clone());
+                        v = ObjectHelper.requireNonNull(zipper.apply(os.clone()), "The zipper returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         clear();
                         a.onError(ex);
-                        return;
-                    }
-
-                    if (v == null) {
-                        clear();
-                        a.onError(new NullPointerException("The zipper returned a null value"));
                         return;
                     }
 

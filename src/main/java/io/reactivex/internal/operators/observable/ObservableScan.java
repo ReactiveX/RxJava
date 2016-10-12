@@ -18,6 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
 
 public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T> {
     final BiFunction<T, T, T> accumulator;
@@ -75,17 +76,11 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
                 T u;
 
                 try {
-                    u = accumulator.apply(v, t);
+                    u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     s.dispose();
                     a.onError(e);
-                    return;
-                }
-
-                if (u == null) {
-                    s.dispose();
-                    a.onError(new NullPointerException("The value returned by the accumulator is null"));
                     return;
                 }
 

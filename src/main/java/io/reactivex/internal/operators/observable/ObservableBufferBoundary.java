@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -159,30 +160,20 @@ extends AbstractObservableWithUpstream<T, U> {
             U b;
 
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 onError(e);
-                return;
-            }
-
-            if (b == null) {
-                onError(new NullPointerException("The buffer supplied is null"));
                 return;
             }
 
             ObservableSource<? extends Close> p;
 
             try {
-                p = bufferClose.apply(window);
+                p = ObjectHelper.requireNonNull(bufferClose.apply(window), "The buffer closing Observable is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 onError(e);
-                return;
-            }
-
-            if (p == null) {
-                onError(new NullPointerException("The buffer closing Observable is null"));
                 return;
             }
 

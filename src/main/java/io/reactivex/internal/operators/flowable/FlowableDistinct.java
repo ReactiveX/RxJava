@@ -107,15 +107,10 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
     protected void subscribeActual(Subscriber<? super T> s) {
         Predicate<? super K> coll;
         try {
-            coll = predicateSupplier.call();
+            coll = ObjectHelper.requireNonNull(predicateSupplier.call(), "predicateSupplier returned null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);
-            return;
-        }
-
-        if (coll == null) {
-            EmptySubscription.error(new NullPointerException("predicateSupplier returned null"), s);
             return;
         }
 
@@ -148,20 +143,13 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             K key;
 
             try {
-                key = keySelector.apply(t);
+                key = ObjectHelper.requireNonNull(keySelector.apply(t), "Null key supplied");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();
                 actual.onError(e);
                 return;
             }
-
-            if (key == null) {
-                s.cancel();
-                actual.onError(new NullPointerException("Null key supplied"));
-                return;
-            }
-
 
             boolean b;
             try {

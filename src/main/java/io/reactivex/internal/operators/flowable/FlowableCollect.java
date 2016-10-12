@@ -12,6 +12,7 @@
  */
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
@@ -36,13 +37,9 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
     protected void subscribeActual(Subscriber<? super U> s) {
         U u;
         try {
-            u = initialSupplier.call();
+            u = ObjectHelper.requireNonNull(initialSupplier.call(), "The initial value supplied is null");
         } catch (Throwable e) {
             EmptySubscription.error(e, s);
-            return;
-        }
-        if (u == null) {
-            EmptySubscription.error(new NullPointerException("The initial value supplied is null"), s);
             return;
         }
 

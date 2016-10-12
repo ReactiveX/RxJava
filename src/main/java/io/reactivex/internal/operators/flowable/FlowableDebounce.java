@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -86,17 +87,11 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
             Publisher<U> p;
 
             try {
-                p = debounceSelector.apply(t);
+                p = ObjectHelper.requireNonNull(debounceSelector.apply(t), "The publisher supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
-                return;
-            }
-
-            if (p == null) {
-                cancel();
-                actual.onError(new NullPointerException("The publisher supplied is null"));
                 return;
             }
 

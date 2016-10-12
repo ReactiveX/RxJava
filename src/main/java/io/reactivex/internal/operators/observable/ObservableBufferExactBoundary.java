@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
@@ -68,7 +69,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = bufferSupplier.call();
+                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancelled = true;
@@ -77,12 +78,6 @@ extends AbstractObservableWithUpstream<T, U> {
                     return;
                 }
 
-                if (b == null) {
-                    cancelled = true;
-                    s.dispose();
-                    EmptyDisposable.error(new NullPointerException("The buffer supplied is null"), actual);
-                    return;
-                }
                 buffer = b;
 
                 BufferBoundaryObserver<T, U, B> bs = new BufferBoundaryObserver<T, U, B>(this);
@@ -153,17 +148,11 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = bufferSupplier.call();
+                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
-                return;
-            }
-
-            if (next == null) {
-                dispose();
-                actual.onError(new NullPointerException("The buffer supplied is null"));
                 return;
             }
 

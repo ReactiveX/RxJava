@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -118,17 +119,11 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             Publisher<V> p;
 
             try {
-                p = itemTimeoutIndicator.apply(t);
+                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.apply(t), "The publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
-                return;
-            }
-
-            if (p == null) {
-                cancel();
-                actual.onError(new NullPointerException("The publisher returned is null"));
                 return;
             }
 
@@ -287,15 +282,10 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             Publisher<V> p;
 
             try {
-                p = itemTimeoutIndicator.apply(t);
+                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.apply(t), "The publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
-                return;
-            }
-
-            if (p == null) {
-                actual.onError(new NullPointerException("The publisher returned is null"));
                 return;
             }
 

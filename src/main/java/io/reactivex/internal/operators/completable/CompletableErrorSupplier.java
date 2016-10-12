@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.completable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -32,15 +33,12 @@ public final class CompletableErrorSupplier extends Completable {
         Throwable error;
 
         try {
-            error = errorSupplier.call();
+            error = ObjectHelper.requireNonNull(errorSupplier.call(), "The error returned is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             error = e;
         }
 
-        if (error == null) {
-            error = new NullPointerException("The error supplied is null");
-        }
         EmptyDisposable.error(error, s);
     }
 

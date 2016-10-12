@@ -12,6 +12,7 @@
  */
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -35,14 +36,9 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
     protected void subscribeActual(Observer<? super U> t) {
         U u;
         try {
-            u = initialSupplier.call();
+            u = ObjectHelper.requireNonNull(initialSupplier.call(), "The initialSupplier returned a null value");
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
-            return;
-        }
-
-        if (u == null) {
-            EmptyDisposable.error(new NullPointerException("The initialSupplier returned a null value"), t);
             return;
         }
 

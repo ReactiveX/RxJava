@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.Subscriber;
@@ -30,13 +31,10 @@ public final class FlowableError<T> extends Flowable<T> {
     public void subscribeActual(Subscriber<? super T> s) {
         Throwable error;
         try {
-            error = errorSupplier.call();
+            error = ObjectHelper.requireNonNull(errorSupplier.call(), "Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             error = t;
-        }
-        if (error == null) {
-            error = new NullPointerException("Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         }
         EmptySubscription.error(error, s);
     }

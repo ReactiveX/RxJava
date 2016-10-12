@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -66,27 +67,19 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             public void subscribe(Subscriber<? super R> child) {
                 ConnectableFlowable<U> co;
                 try {
-                    co = connectableFactory.call();
+                    co = ObjectHelper.requireNonNull(connectableFactory.call(), "The connectableFactory returned null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     EmptySubscription.error(e, child);
-                    return;
-                }
-                if (co == null) {
-                    EmptySubscription.error(new NullPointerException("The connectableFactory returned null"), child);
                     return;
                 }
 
                 Publisher<R> observable;
                 try {
-                    observable = selector.apply(co);
+                    observable = ObjectHelper.requireNonNull(selector.apply(co), "The selector returned a null Publisher");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     EmptySubscription.error(e, child);
-                    return;
-                }
-                if (observable == null) {
-                    EmptySubscription.error(new NullPointerException("The selector returned a null Publisher"), child);
                     return;
                 }
 

@@ -12,6 +12,7 @@
  */
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
@@ -289,18 +290,12 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             Publisher<? extends R> p;
 
                             try {
-                                p = mapper.apply(v);
+                                p = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
                             } catch (Throwable e) {
                                 Exceptions.throwIfFatal(e);
 
                                 s.cancel();
                                 actual.onError(e);
-                                return;
-                            }
-
-                            if (p == null) {
-                                s.cancel();
-                                actual.onError(new NullPointerException("The mapper returned a null Publisher"));
                                 return;
                             }
 
@@ -511,18 +506,12 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                             Publisher<? extends R> p;
 
                             try {
-                                p = mapper.apply(v);
+                                p = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null Publisher");
                             } catch (Throwable e) {
                                 Exceptions.throwIfFatal(e);
 
                                 s.cancel();
                                 actual.onError(e);
-                                return;
-                            }
-
-                            if (p == null) {
-                                s.cancel();
-                                actual.onError(new NullPointerException("The mapper returned a null Publisher"));
                                 return;
                             }
 

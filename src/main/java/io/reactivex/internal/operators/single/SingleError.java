@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.single;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -32,14 +33,10 @@ public final class SingleError<T> extends Single<T> {
         Throwable error;
 
         try {
-            error = errorSupplier.call();
+            error = ObjectHelper.requireNonNull(errorSupplier.call(), "Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             error = e;
-        }
-
-        if (error == null) {
-            error = new NullPointerException("Callable returned null throwable. Null values are generally not allowed in 2.x operators and sources.");
         }
 
         EmptyDisposable.error(error, s);

@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -111,17 +112,11 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             ObservableSource<V> p;
 
             try {
-                p = itemTimeoutIndicator.apply(t);
+                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.apply(t), "The ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
                 actual.onError(e);
-                return;
-            }
-
-            if (p == null) {
-                dispose();
-                actual.onError(new NullPointerException("The ObservableSource returned is null"));
                 return;
             }
 
@@ -279,15 +274,10 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             ObservableSource<V> p;
 
             try {
-                p = itemTimeoutIndicator.apply(t);
+                p = ObjectHelper.requireNonNull(itemTimeoutIndicator.apply(t), "The ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
-                return;
-            }
-
-            if (p == null) {
-                actual.onError(new NullPointerException("The ObservableSource returned is null"));
                 return;
             }
 

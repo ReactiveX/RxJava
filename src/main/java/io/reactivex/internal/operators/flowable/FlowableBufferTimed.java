@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -113,17 +114,11 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U b;
 
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
                 EmptySubscription.error(e, actual);
-                return;
-            }
-
-            if (b == null) {
-                cancel();
-                EmptySubscription.error(new NullPointerException("buffer supplied is null"), actual);
                 return;
             }
 
@@ -206,19 +201,12 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U next;
 
             try {
-                next = bufferSupplier.call();
+                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 selfCancel = true;
                 cancel();
                 actual.onError(e);
-                return;
-            }
-
-            if (next == null) {
-                selfCancel = true;
-                cancel();
-                actual.onError(new NullPointerException("buffer supplied is null"));
                 return;
             }
 
@@ -292,19 +280,12 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             final U b; // NOPMD
 
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 w.dispose();
                 s.cancel();
                 EmptySubscription.error(e, actual);
-                return;
-            }
-
-            if (b == null) {
-                w.dispose();
-                s.cancel();
-                EmptySubscription.error(new NullPointerException("The supplied buffer is null"), actual);
                 return;
             }
 
@@ -388,7 +369,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             final U b; // NOPMD
 
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
@@ -396,11 +377,6 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 return;
             }
 
-            if (b == null) {
-                cancel();
-                actual.onError(new NullPointerException("The supplied buffer is null"));
-                return;
-            }
             synchronized (this) {
                 if (cancelled) {
                     return;
@@ -470,19 +446,12 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U b;
 
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 w.dispose();
                 s.cancel();
                 EmptySubscription.error(e, actual);
-                return;
-            }
-
-            if (b == null) {
-                w.dispose();
-                s.cancel();
-                EmptySubscription.error(new NullPointerException("The supplied buffer is null"), actual);
                 return;
             }
 
@@ -521,21 +490,13 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             fastPathOrderedEmitMax(b, false, this);
 
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
                 return;
             }
-
-            if (b == null) {
-                cancel();
-                actual.onError(new NullPointerException("The buffer supplied is null"));
-                return;
-            }
-
-
 
             if (restartTimerOnMaxSize) {
                 synchronized (this) {
@@ -616,17 +577,11 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             U next;
 
             try {
-                next = bufferSupplier.call();
+                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The supplied buffer is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
-                return;
-            }
-
-            if (next == null) {
-                cancel();
-                actual.onError(new NullPointerException("The buffer supplied is null"));
                 return;
             }
 

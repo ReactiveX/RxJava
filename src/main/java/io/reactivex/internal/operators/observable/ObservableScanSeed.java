@@ -12,6 +12,7 @@
  */
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -36,15 +37,10 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
         R r;
 
         try {
-            r = seedSupplier.call();
+            r = ObjectHelper.requireNonNull(seedSupplier.call(), "The seed supplied is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
-            return;
-        }
-
-        if (r == null) {
-            EmptyDisposable.error(new NullPointerException("The seed supplied is null"), t);
             return;
         }
 
@@ -96,17 +92,11 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
             R u;
 
             try {
-                u = accumulator.apply(v, t);
+                u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();
                 onError(e);
-                return;
-            }
-
-            if (u == null) {
-                s.dispose();
-                onError(new NullPointerException("The accumulator returned a null value"));
                 return;
             }
 

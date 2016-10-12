@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Iterator;
 
 import org.reactivestreams.*;
@@ -41,15 +42,10 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
         Iterator<U> it;
 
         try {
-            it = other.iterator();
+            it = ObjectHelper.requireNonNull(other.iterator(), "The iterator returned by other is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, t);
-            return;
-        }
-
-        if (it == null) {
-            EmptySubscription.error(new NullPointerException("The iterator returned by other is null"), t);
             return;
         }
 
@@ -104,27 +100,17 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
             U u;
 
             try {
-                u = iterator.next();
+                u = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null value");
             } catch (Throwable e) {
                 error(e);
                 return;
             }
 
-            if (u == null) {
-                error(new NullPointerException("The iterator returned a null value"));
-                return;
-            }
-
             V v;
             try {
-                v = zipper.apply(t, u);
+                v = ObjectHelper.requireNonNull(zipper.apply(t, u), "The zipper function returned a null value");
             } catch (Throwable e) {
-                error(new NullPointerException("The iterator returned a null value"));
-                return;
-            }
-
-            if (v == null) {
-                error(new NullPointerException("The zipper function returned a null value"));
+                error(e);
                 return;
             }
 

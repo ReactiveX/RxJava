@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
@@ -90,17 +91,11 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
             Publisher<B> p;
 
             try {
-                p = other.call();
+                p = ObjectHelper.requireNonNull(other.call(), "The first window publisher supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();
                 a.onError(e);
-                return;
-            }
-
-            if (p == null) {
-                s.cancel();
-                a.onError(new NullPointerException("The first window publisher supplied is null"));
                 return;
             }
 
@@ -248,17 +243,11 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
                         Publisher<B> p;
 
                         try {
-                            p = other.call();
+                            p = ObjectHelper.requireNonNull(other.call(), "The publisher supplied is null");
                         } catch (Throwable e) {
                             Exceptions.throwIfFatal(e);
                             DisposableHelper.dispose(boundary);
                             a.onError(e);
-                            return;
-                        }
-
-                        if (p == null) {
-                            DisposableHelper.dispose(boundary);
-                            a.onError(new NullPointerException("The publisher supplied is null"));
                             return;
                         }
 

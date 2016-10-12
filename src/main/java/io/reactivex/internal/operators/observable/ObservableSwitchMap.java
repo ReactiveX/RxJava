@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
@@ -106,17 +107,11 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
             ObservableSource<? extends R> p;
             try {
-                p = mapper.apply(t);
+                p = ObjectHelper.requireNonNull(mapper.apply(t), "The ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();
                 onError(e);
-                return;
-            }
-
-            if (p == null) {
-                s.dispose();
-                onError(new NullPointerException("The publisher returned is null"));
                 return;
             }
 

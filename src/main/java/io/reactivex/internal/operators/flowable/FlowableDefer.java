@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
@@ -30,17 +31,13 @@ public final class FlowableDefer<T> extends Flowable<T> {
     public void subscribeActual(Subscriber<? super T> s) {
         Publisher<? extends T> pub;
         try {
-            pub = supplier.call();
+            pub = ObjectHelper.requireNonNull(supplier.call(), "The publisher supplied is null");
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             EmptySubscription.error(t, s);
             return;
         }
 
-        if (pub == null) {
-            EmptySubscription.error(new NullPointerException("null publisher supplied"), s);
-            return;
-        }
         pub.subscribe(s);
     }
 }

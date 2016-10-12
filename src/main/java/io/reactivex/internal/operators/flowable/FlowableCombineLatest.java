@@ -78,15 +78,10 @@ extends Flowable<R> {
             Iterator<? extends Publisher<? extends T>> it;
 
             try {
-                it = iterable.iterator();
+                it = ObjectHelper.requireNonNull(iterable.iterator(), "The iterator returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptySubscription.error(e, s);
-                return;
-            }
-
-            if (it == null) {
-                EmptySubscription.error(new NullPointerException("The iterator returned is null"), s);
                 return;
             }
 
@@ -109,16 +104,10 @@ extends Flowable<R> {
                 Publisher<? extends T> p;
 
                 try {
-                    p = it.next();
+                    p = ObjectHelper.requireNonNull(it.next(), "The publisher returned by the iterator is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     EmptySubscription.error(e, s);
-                    return;
-                }
-
-                if (p == null) {
-                    EmptySubscription.error(new NullPointerException("The Publisher returned by the iterator is " +
-                      "null"), s);
                     return;
                 }
 

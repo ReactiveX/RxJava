@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
@@ -71,7 +72,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             U b;
 
             try {
-                b = bufferSupplier.call();
+                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancelled = true;
@@ -80,12 +81,6 @@ extends AbstractFlowableWithUpstream<T, U> {
                 return;
             }
 
-            if (b == null) {
-                cancelled = true;
-                s.cancel();
-                EmptySubscription.error(new NullPointerException("The buffer supplied is null"), actual);
-                return;
-            }
             buffer = b;
 
             BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
@@ -157,17 +152,11 @@ extends AbstractFlowableWithUpstream<T, U> {
             U next;
 
             try {
-                next = bufferSupplier.call();
+                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 cancel();
                 actual.onError(e);
-                return;
-            }
-
-            if (next == null) {
-                cancel();
-                actual.onError(new NullPointerException("The buffer supplied is null"));
                 return;
             }
 

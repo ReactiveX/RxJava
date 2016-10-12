@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
@@ -72,7 +73,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 U b;
 
                 try {
-                    b = bufferSupplier.call();
+                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancelled = true;
@@ -81,30 +82,17 @@ extends AbstractObservableWithUpstream<T, U> {
                     return;
                 }
 
-                if (b == null) {
-                    cancelled = true;
-                    s.dispose();
-                    EmptyDisposable.error(new NullPointerException("The buffer supplied is null"), actual);
-                    return;
-                }
                 buffer = b;
 
                 ObservableSource<B> boundary;
 
                 try {
-                    boundary = boundarySupplier.call();
+                    boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary publisher supplied is null");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     cancelled = true;
                     s.dispose();
                     EmptyDisposable.error(ex, actual);
-                    return;
-                }
-
-                if (boundary == null) {
-                    cancelled = true;
-                    s.dispose();
-                    EmptyDisposable.error(new NullPointerException("The boundary publisher supplied is null"), actual);
                     return;
                 }
 
@@ -180,7 +168,7 @@ extends AbstractObservableWithUpstream<T, U> {
             U next;
 
             try {
-                next = bufferSupplier.call();
+                next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();
@@ -188,28 +176,15 @@ extends AbstractObservableWithUpstream<T, U> {
                 return;
             }
 
-            if (next == null) {
-                dispose();
-                actual.onError(new NullPointerException("The buffer supplied is null"));
-                return;
-            }
-
             ObservableSource<B> boundary;
 
             try {
-                boundary = boundarySupplier.call();
+                boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary publisher supplied is null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancelled = true;
                 s.dispose();
                 actual.onError(ex);
-                return;
-            }
-
-            if (boundary == null) {
-                cancelled = true;
-                s.dispose();
-                actual.onError(new NullPointerException("The boundary publisher supplied is null"));
                 return;
             }
 

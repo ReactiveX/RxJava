@@ -12,6 +12,7 @@
  */
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
@@ -38,15 +39,10 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
         R r;
 
         try {
-            r = seedSupplier.call();
+            r = ObjectHelper.requireNonNull(seedSupplier.call(), "The seed supplied is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);
-            return;
-        }
-
-        if (r == null) {
-            EmptySubscription.error(new NullPointerException("The seed supplied is null"), s);
             return;
         }
 
@@ -83,17 +79,11 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
             R u;
 
             try {
-                u = accumulator.apply(v, t);
+                u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();
                 onError(e);
-                return;
-            }
-
-            if (u == null) {
-                s.cancel();
-                onError(new NullPointerException("The accumulator returned a null value"));
                 return;
             }
 

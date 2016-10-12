@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
@@ -85,17 +86,11 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
                 ObservableSource<B> p;
 
                 try {
-                    p = other.call();
+                    p = ObjectHelper.requireNonNull(other.call(), "The first window ObservableSource supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     s.dispose();
                     a.onError(e);
-                    return;
-                }
-
-                if (p == null) {
-                    s.dispose();
-                    a.onError(new NullPointerException("The first window ObservableSource supplied is null"));
                     return;
                 }
 
@@ -232,17 +227,11 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
                         ObservableSource<B> p;
 
                         try {
-                            p = other.call();
+                            p = ObjectHelper.requireNonNull(other.call(), "The ObservableSource supplied is null");
                         } catch (Throwable e) {
                             Exceptions.throwIfFatal(e);
                             DisposableHelper.dispose(boundary);
                             a.onError(e);
-                            return;
-                        }
-
-                        if (p == null) {
-                            DisposableHelper.dispose(boundary);
-                            a.onError(new NullPointerException("The ObservableSource supplied is null"));
                             return;
                         }
 
