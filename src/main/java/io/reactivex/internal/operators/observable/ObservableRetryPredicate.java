@@ -82,7 +82,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
                     b = predicate.test(t);
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
-                    actual.onError(new CompositeException(e, t));
+                    actual.onError(new CompositeException(t, e));
                     return;
                 }
                 if (!b) {

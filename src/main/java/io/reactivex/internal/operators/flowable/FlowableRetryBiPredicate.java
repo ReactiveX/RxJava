@@ -74,7 +74,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
                 b = predicate.test(++retries, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(e, t));
+                actual.onError(new CompositeException(t, e));
                 return;
             }
             if (!b) {

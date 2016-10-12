@@ -53,7 +53,7 @@ public final class CompletableResumeNext extends Completable {
                     c = errorMapper.apply(e);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    s.onError(new CompositeException(ex, e));
+                    s.onError(new CompositeException(e, ex));
                     return;
                 }
 

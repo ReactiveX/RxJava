@@ -194,7 +194,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
                 predicate.test(null); // special case: poison pill
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(e, t));
+                actual.onError(new CompositeException(t, e));
                 return;
             }
             actual.onError(t);
