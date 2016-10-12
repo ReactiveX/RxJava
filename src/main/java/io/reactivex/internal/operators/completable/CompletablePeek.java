@@ -78,7 +78,7 @@ public final class CompletablePeek extends Completable {
                     onTerminate.run();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    e = new CompositeException(e, ex);
+                    e = new CompositeException(ex, e);
                 }
 
                 s.onError(e);
