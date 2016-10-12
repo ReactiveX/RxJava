@@ -47,7 +47,7 @@ public final class SingleResumeNext<T> extends Single<T> {
 
         final Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction;
 
-        public ResumeMainSingleObserver(SingleObserver<? super T> actual,
+        ResumeMainSingleObserver(SingleObserver<? super T> actual,
                 Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction) {
             this.actual = actual;
             this.nextFunction = nextFunction;

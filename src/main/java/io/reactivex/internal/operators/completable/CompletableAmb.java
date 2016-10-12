@@ -104,9 +104,6 @@ public final class CompletableAmb extends Completable {
                 }
                 return;
             }
-            if (once.get() || set.isDisposed()) {
-                return;
-            }
 
             // no need to have separate subscribers because inner is stateless
             c.subscribe(inner);

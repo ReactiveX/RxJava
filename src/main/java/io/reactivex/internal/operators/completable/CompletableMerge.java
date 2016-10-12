@@ -19,6 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -52,14 +53,9 @@ public final class CompletableMerge extends Completable {
 
         final AtomicThrowable error;
 
-        final AtomicBoolean once;
-
         final CompositeDisposable set;
 
         Subscription s;
-
-        volatile boolean done;
-
 
         CompletableMergeSubscriber(CompletableObserver actual, int maxConcurrency, boolean delayErrors) {
             this.actual = actual;
@@ -67,7 +63,6 @@ public final class CompletableMerge extends Completable {
             this.delayErrors = delayErrors;
             this.set = new CompositeDisposable();
             this.error = new AtomicThrowable();
-            this.once = new AtomicBoolean();
             lazySet(1);
         }
 
@@ -97,99 +92,120 @@ public final class CompletableMerge extends Completable {
 
         @Override
         public void onNext(CompletableSource t) {
-            if (done) {
-                return;
-            }
-
             getAndIncrement();
 
-            t.subscribe(new InnerObserver());
+            MergeInnerObserver inner = new MergeInnerObserver();
+            set.add(inner);
+            t.subscribe(inner);
         }
 
         @Override
         public void onError(Throwable t) {
-            if (done || !error.addThrowable(t)) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
+            if (!delayErrors) {
+                set.dispose();
 
-            done = true;
-            terminate();
+                if (error.addThrowable(t)) {
+                    if (getAndSet(0) > 0) {
+                        actual.onError(error.terminate());
+                    }
+                } else {
+                    RxJavaPlugins.onError(t);
+                }
+            } else {
+                if (error.addThrowable(t)) {
+                    if (decrementAndGet() == 0) {
+                        actual.onError(error.terminate());
+                    }
+                } else {
+                    RxJavaPlugins.onError(t);
+                }
+            }
         }
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            terminate();
-        }
-
-        void terminate() {
             if (decrementAndGet() == 0) {
                 Throwable ex = error.get();
-                if (ex == null) {
-                    actual.onComplete();
-                } else {
+                if (ex != null) {
                     actual.onError(error.terminate());
-                }
-            }
-            else if (!delayErrors) {
-                Throwable ex = error.get();
-                if (ex != null && ex != ExceptionHelper.TERMINATED) {
-                    s.cancel();
-                    set.dispose();
-                    if (once.compareAndSet(false, true)) {
-                        actual.onError(error.terminate());
-                    } else {
-                        RxJavaPlugins.onError(ex);
-                    }
+                } else {
+                    actual.onComplete();
                 }
             }
         }
 
-        final class InnerObserver implements CompletableObserver {
-            Disposable d;
-            boolean innerDone;
+        void innerError(MergeInnerObserver inner, Throwable t) {
+            set.delete(inner);
+            if (!delayErrors) {
+                s.cancel();
+                set.dispose();
+
+                if (error.addThrowable(t)) {
+                    if (getAndSet(0) > 0) {
+                        actual.onError(error.terminate());
+                    }
+                } else {
+                    RxJavaPlugins.onError(t);
+                }
+            } else {
+                if (error.addThrowable(t)) {
+                    if (decrementAndGet() == 0) {
+                        actual.onError(error.terminate());
+                    } else {
+                        if (maxConcurrency != Integer.MAX_VALUE) {
+                            s.request(1);
+                        }
+                    }
+                } else {
+                    RxJavaPlugins.onError(t);
+                }
+            }
+        }
+
+        void innerComplete(MergeInnerObserver inner) {
+            set.delete(inner);
+            if (decrementAndGet() == 0) {
+                Throwable ex = error.get();
+                if (ex != null) {
+                    actual.onError(ex);
+                } else {
+                    actual.onComplete();
+                }
+            } else {
+                if (maxConcurrency != Integer.MAX_VALUE) {
+                    s.request(1);
+                }
+            }
+        }
+
+        final class MergeInnerObserver
+        extends AtomicReference<Disposable>
+        implements CompletableObserver, Disposable {
+            private static final long serialVersionUID = 251330541679988317L;
 
             @Override
             public void onSubscribe(Disposable d) {
-                this.d = d;
-                set.add(d);
+                DisposableHelper.setOnce(this, d);
             }
 
             @Override
             public void onError(Throwable e) {
-                if (innerDone || !error.addThrowable(e)) {
-                    RxJavaPlugins.onError(e);
-                    return;
-                }
-
-                set.delete(d);
-                innerDone = true;
-
-                terminate();
-
-                if (delayErrors && !done) {
-                    s.request(1);
-                }
+                innerError(this, e);
             }
 
             @Override
             public void onComplete() {
-                if (innerDone) {
-                    return;
-                }
+                innerComplete(this);
+            }
 
-                set.delete(d);
-                innerDone = true;
+            @Override
+            public boolean isDisposed() {
+                return DisposableHelper.isDisposed(get());
+            }
 
-                terminate();
-
-                if (!done) {
-                    s.request(1);
-                }
+            @Override
+            public void dispose() {
+                DisposableHelper.dispose(this);
             }
         }
     }

@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableMergeIterable extends Completable {
@@ -50,8 +51,8 @@ public final class CompletableMergeIterable extends Completable {
         }
 
         final AtomicInteger wip = new AtomicInteger(1);
-        final AtomicBoolean once = new AtomicBoolean();
 
+        MergeCompletableObserver shared = new MergeCompletableObserver(s, set, wip);
         for (;;) {
             if (set.isDisposed()) {
                 return;
@@ -63,11 +64,7 @@ public final class CompletableMergeIterable extends Completable {
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 set.dispose();
-                if (once.compareAndSet(false, true)) {
-                    s.onError(e);
-                } else {
-                    RxJavaPlugins.onError(e);
-                }
+                shared.onError(e);
                 return;
             }
 
@@ -82,15 +79,11 @@ public final class CompletableMergeIterable extends Completable {
             CompletableSource c;
 
             try {
-                c = iterator.next();
+                c = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null CompletableSource");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 set.dispose();
-                if (once.compareAndSet(false, true)) {
-                    s.onError(e);
-                } else {
-                    RxJavaPlugins.onError(e);
-                }
+                shared.onError(e);
                 return;
             }
 
@@ -98,50 +91,51 @@ public final class CompletableMergeIterable extends Completable {
                 return;
             }
 
-            if (c == null) {
-                set.dispose();
-                NullPointerException npe = new NullPointerException("A completable source is null");
-                if (once.compareAndSet(false, true)) {
-                    s.onError(npe);
-                } else {
-                    RxJavaPlugins.onError(npe);
-                }
-                return;
-            }
-
             wip.getAndIncrement();
 
-            c.subscribe(new CompletableObserver() {
-                @Override
-                public void onSubscribe(Disposable d) {
-                    set.add(d);
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    set.dispose();
-                    if (once.compareAndSet(false, true)) {
-                        s.onError(e);
-                    } else {
-                        RxJavaPlugins.onError(e);
-                    }
-                }
-
-                @Override
-                public void onComplete() {
-                    if (wip.decrementAndGet() == 0) {
-                        if (once.compareAndSet(false, true)) {
-                            s.onComplete();
-                        }
-                    }
-                }
-
-            });
+            c.subscribe(shared);
         }
 
-        if (wip.decrementAndGet() == 0) {
-            if (once.compareAndSet(false, true)) {
-                s.onComplete();
+        shared.onComplete();
+    }
+
+    static final class MergeCompletableObserver extends AtomicBoolean implements CompletableObserver {
+
+        private static final long serialVersionUID = -7730517613164279224L;
+
+        final CompositeDisposable set;
+
+        final CompletableObserver actual;
+
+        final AtomicInteger wip;
+
+        MergeCompletableObserver(CompletableObserver actual, CompositeDisposable set, AtomicInteger wip) {
+            this.actual = actual;
+            this.set = set;
+            this.wip = wip;
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            set.add(d);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            set.dispose();
+            if (compareAndSet(false, true)) {
+                actual.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
+            }
+        }
+
+        @Override
+        public void onComplete() {
+            if (wip.decrementAndGet() == 0) {
+                if (compareAndSet(false, true)) {
+                    actual.onComplete();
+                }
             }
         }
     }
