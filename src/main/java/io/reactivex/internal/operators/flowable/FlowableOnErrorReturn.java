@@ -85,7 +85,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 state.lazySet(HAS_REQUEST_HAS_VALUE);
-                actual.onError(new CompositeException(e, t));
+                actual.onError(new CompositeException(t, e));
                 return;
             }
 

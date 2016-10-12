@@ -60,7 +60,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                 disposer.accept(resource);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                EmptyDisposable.error(new CompositeException(ex, e), s);
+                EmptyDisposable.error(new CompositeException(e, ex), s);
                 return;
             }
             EmptyDisposable.error(e, s);
@@ -111,7 +111,7 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                         disposer.accept(resource);
                     } catch (Throwable e) {
                         Exceptions.throwIfFatal(e);
-                        t = new CompositeException(e, t);
+                        t = new CompositeException(t, e);
                     }
                 }
 

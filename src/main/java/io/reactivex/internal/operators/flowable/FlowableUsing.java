@@ -61,7 +61,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
                 disposer.accept(resource);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                EmptySubscription.error(new CompositeException(ex, e), s);
+                EmptySubscription.error(new CompositeException(e, ex), s);
                 return;
             }
             EmptySubscription.error(e, s);
@@ -119,7 +119,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
 
                 s.cancel();
                 if (innerError != null) {
-                    actual.onError(new CompositeException(innerError, t));
+                    actual.onError(new CompositeException(t, innerError));
                 } else {
                     actual.onError(t);
                 }

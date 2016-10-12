@@ -94,7 +94,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
                 p = nextSupplier.apply(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(e, t));
+                actual.onError(new CompositeException(t, e));
                 return;
             }
 
