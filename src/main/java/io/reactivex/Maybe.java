@@ -1264,7 +1264,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Maybe that emits one item after a specified delay.
+     * Returns a Maybe that emits {@code 0L} after a specified delay.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.png" alt="">
      * <dl>
@@ -1276,7 +1276,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            the initial delay before emitting a single {@code 0L}
      * @param unit
      *            time units to use for {@code delay}
-     * @return a Maybe that emits one item after a specified delay
+     * @return a Maybe that emits {@code 0L} after a specified delay
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -1285,7 +1285,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a Maybe that emits one item after a specified delay on a specified Scheduler.
+     * Returns a Maybe that emits {@code 0L} after a specified delay on a specified Scheduler.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.png" alt="">
      * <dl>
@@ -1299,7 +1299,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *            time units to use for {@code delay}
      * @param scheduler
      *            the {@link Scheduler} to use for scheduling the item
-     * @return a Maybe that emits one item after a specified delay, on a specified Scheduler
+     * @return a Maybe that emits {@code 0L} after a specified delay, on a specified Scheduler
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
     @SchedulerSupport(SchedulerSupport.CUSTOM)

@@ -3784,7 +3784,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits one item after a specified delay, and then completes.
+     * Returns a Flowable that emits {@code 0L} after a specified delay, and then completes.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.png" alt="">
      * <dl>
@@ -3799,7 +3799,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the initial delay before emitting a single {@code 0L}
      * @param unit
      *            time units to use for {@code delay}
-     * @return a Flowable that emits one item after a specified delay, and then completes
+     * @return a Flowable that emits {@code 0L} after a specified delay, and then completes
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
     @BackpressureSupport(BackpressureKind.ERROR)
@@ -3809,7 +3809,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits one item after a specified delay, on a specified Scheduler, and then
+     * Returns a Flowable that emits {@code 0L} after a specified delay, on a specified Scheduler, and then
      * completes.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.png" alt="">
@@ -3827,7 +3827,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            time units to use for {@code delay}
      * @param scheduler
      *            the {@link Scheduler} to use for scheduling the item
-     * @return a Flowable that emits one item after a specified delay, on a specified Scheduler, and then
+     * @return a Flowable that emits {@code 0L} after a specified delay, on a specified Scheduler, and then
      *         completes
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
