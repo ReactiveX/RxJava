@@ -3750,7 +3750,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits one item after a specified delay, and then completes.
+     * Returns an Observable that emits {@code 0L} after a specified delay, and then completes.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.png" alt="">
      * <dl>
@@ -3773,7 +3773,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits one item after a specified delay, on a specified Scheduler, and then
+     * Returns an Observable that emits {@code 0L} after a specified delay, on a specified Scheduler, and then
      * completes.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.png" alt="">
