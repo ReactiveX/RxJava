@@ -242,15 +242,13 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         ReplaySubscription<T> rs = new ReplaySubscription<T>(s, this);
         s.onSubscribe(rs);
 
-        if (!rs.cancelled) {
-            if (add(rs)) {
-                if (rs.cancelled) {
-                    remove(rs);
-                    return;
-                }
+        if (add(rs)) {
+            if (rs.cancelled) {
+                remove(rs);
+                return;
             }
-            buffer.replay(rs);
         }
+        buffer.replay(rs);
     }
 
     @Override
@@ -280,6 +278,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable t) {
         if (t == null) {
@@ -296,12 +295,12 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         ReplayBuffer<T> b = buffer;
 
         b.addFinal(o);
-
-        for (ReplaySubscription<T> rs : terminate(o)) {
+        for (ReplaySubscription<T> rs : subscribers.getAndSet(TERMINATED)) {
             b.replay(rs);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onComplete() {
         if (done) {
@@ -315,7 +314,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         b.addFinal(o);
 
-        for (ReplaySubscription<T> rs : terminate(o)) {
+        for (ReplaySubscription<T> rs : subscribers.getAndSet(TERMINATED)) {
             b.replay(rs);
         }
     }
@@ -450,14 +449,6 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    ReplaySubscription<T>[] terminate(Object terminalValue) {
-        if (buffer.compareAndSet(null, terminalValue)) {
-            return subscribers.getAndSet(TERMINATED);
-        }
-        return TERMINATED;
-    }
-
     /**
      * Abstraction over a buffer that receives events and replays them to
      * individual Subscribers.
@@ -483,15 +474,6 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
          * @return the terminal NotificationLite object or null if not yet terminated
          */
         Object get();
-
-        /**
-         * Atomically compares and sets the next terminal NotificationLite object if the
-         * current equals to the expected NotificationLite object.
-         * @param expected the expected NotificationLite object
-         * @param next the next NotificationLite object
-         * @return true if successful
-         */
-        boolean compareAndSet(Object expected, Object next);
     }
 
     static final class ReplaySubscription<T> extends AtomicInteger implements Subscription {
@@ -552,6 +534,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         @Override
         public void addFinal(Object notificationLite) {
+            lazySet(notificationLite);
             buffer.add(notificationLite);
             size++;
             done = true;
@@ -780,6 +763,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         @Override
         public void addFinal(Object notificationLite) {
+            lazySet(notificationLite);
             Node<Object> n = new Node<Object>(notificationLite);
             Node<Object> t = tail;
 
@@ -863,11 +847,6 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             for (;;) {
 
-                if (rs.cancelled) {
-                    rs.index = null;
-                    return;
-                }
-
                 long r = rs.requested.get();
                 long e = 0;
 
@@ -917,10 +896,6 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
                     if (rs.requested.get() != Long.MAX_VALUE) {
                         r = rs.requested.addAndGet(e);
                     }
-                }
-
-                if (index.get() != null && r != 0L) {
-                    continue;
                 }
 
                 rs.index = index;
@@ -1044,6 +1019,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         @Override
         public void addFinal(Object notificationLite) {
+            lazySet(notificationLite);
             TimedNode<Object> n = new TimedNode<Object>(notificationLite, Long.MAX_VALUE);
             TimedNode<Object> t = tail;
 
@@ -1141,11 +1117,6 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             for (;;) {
 
-                if (rs.cancelled) {
-                    rs.index = null;
-                    return;
-                }
-
                 long r = rs.requested.get();
                 long e = 0;
 
@@ -1195,10 +1166,6 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
                     if (rs.requested.get() != Long.MAX_VALUE) {
                         r = rs.requested.addAndGet(e);
                     }
-                }
-
-                if (index.get() != null && r != 0L) {
-                    continue;
                 }
 
                 rs.index = index;

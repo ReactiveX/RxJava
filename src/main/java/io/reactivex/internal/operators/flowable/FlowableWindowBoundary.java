@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -95,7 +95,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
                     produced(1);
                 }
             } else {
-                a.onError(new IllegalStateException("Could not deliver first window due to lack of requests"));
+                a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests"));
                 return;
             }
 
@@ -239,7 +239,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
                         } else {
                             // don't emit new windows
                             cancelled = true;
-                            a.onError(new IllegalStateException("Could not deliver new window due to lack of requests"));
+                            a.onError(new MissingBackpressureException("Could not deliver new window due to lack of requests"));
                             continue;
                         }
 

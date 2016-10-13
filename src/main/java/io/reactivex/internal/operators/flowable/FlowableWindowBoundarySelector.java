@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -21,9 +20,10 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.QueueDrainSubscriber;
@@ -275,7 +275,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                             }
                         } else {
                             cancelled = true;
-                            a.onError(new IllegalStateException("Could not deliver new window due to lack of requests"));
+                            a.onError(new MissingBackpressureException("Could not deliver new window due to lack of requests"));
                             continue;
                         }
 

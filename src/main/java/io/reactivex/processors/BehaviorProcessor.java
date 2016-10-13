@@ -19,11 +19,11 @@ import java.util.concurrent.locks.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Predicate;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -145,20 +145,18 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     protected void subscribeActual(Subscriber<? super T> s) {
         BehaviorSubscription<T> bs = new BehaviorSubscription<T>(s, this);
         s.onSubscribe(bs);
-        if (!bs.cancelled) {
-            if (add(bs)) {
-                if (bs.cancelled) {
-                    remove(bs);
-                } else {
-                    bs.emitFirst();
-                }
+        if (add(bs)) {
+            if (bs.cancelled) {
+                remove(bs);
             } else {
-                Object o = value.get();
-                if (NotificationLite.isComplete(o)) {
-                    s.onComplete();
-                } else {
-                    s.onError(NotificationLite.getError(o));
-                }
+                bs.emitFirst();
+            }
+        } else {
+            Object o = value.get();
+            if (NotificationLite.isComplete(o)) {
+                s.onComplete();
+            } else {
+                s.onError(NotificationLite.getError(o));
             }
         }
     }
@@ -383,16 +381,14 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     }
 
     void setCurrent(Object o) {
-        writeLock.lock();
-        try {
-            index++;
-            value.lazySet(o);
-        } finally {
-            writeLock.unlock();
-        }
+        Lock wl = writeLock;
+        wl.lock();
+        index++;
+        value.lazySet(o);
+        wl.unlock();
     }
 
-    static final class BehaviorSubscription<T> extends AtomicLong implements Subscription, Predicate<Object> {
+    static final class BehaviorSubscription<T> extends AtomicLong implements Subscription, NonThrowingPredicate<Object> {
 
         private static final long serialVersionUID = 3293175281126227086L;
 
@@ -447,12 +443,9 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
                 Lock readLock = s.readLock;
                 readLock.lock();
-                try {
-                    index = s.index;
-                    o = s.value.get();
-                } finally {
-                    readLock.unlock();
-                }
+                index = s.index;
+                o = s.value.get();
+                readLock.unlock();
 
                 emitting = o != null;
                 next = true;
@@ -503,12 +496,10 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             }
 
             if (NotificationLite.isComplete(o)) {
-                cancel();
                 actual.onComplete();
                 return true;
             } else
             if (NotificationLite.isError(o)) {
-                cancel();
                 actual.onError(NotificationLite.getError(o));
                 return true;
             }
@@ -522,7 +513,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                 return false;
             }
             cancel();
-            actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
+            actual.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
             return true;
         }
 
@@ -541,13 +532,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                     queue = null;
                 }
 
-                try {
-                    q.forEachWhile(this);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    actual.onError(ex);
-                    return;
-                }
+                q.forEachWhile(this);
             }
         }
     }

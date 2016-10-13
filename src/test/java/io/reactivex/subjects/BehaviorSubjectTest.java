@@ -14,8 +14,10 @@
 package io.reactivex.subjects;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,9 +25,11 @@ import org.junit.*;
 import org.mockito.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 public class BehaviorSubjectTest {
@@ -581,5 +585,188 @@ public class BehaviorSubjectTest {
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onNextNullDelayed() {
+        final BehaviorSubject<Object> p = BehaviorSubject.create();
+
+        TestObserver<Object> ts = p.test();
+
+        assertTrue(p.hasObservers());
+
+        p.onNext(null);
+
+        assertFalse(p.hasObservers());
+
+        ts
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNullDelayed() {
+        final BehaviorSubject<Object> p = BehaviorSubject.create();
+
+        TestObserver<Object> ts = p.test();
+
+        assertTrue(p.hasObservers());
+
+        p.onError(null);
+
+        assertFalse(p.hasObservers());
+
+        ts
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void cancelOnArrival() {
+        BehaviorSubject<Object> p = BehaviorSubject.create();
+
+        assertFalse(p.hasObservers());
+
+        p.test(true).assertEmpty();
+
+        assertFalse(p.hasObservers());
+    }
+
+    @Test
+    public void onSubscribe() {
+        BehaviorSubject<Object> p = BehaviorSubject.create();
+
+        Disposable bs = Disposables.empty();
+
+        p.onSubscribe(bs);
+
+        assertFalse(bs.isDisposed());
+
+        p.onComplete();
+
+        bs = Disposables.empty();
+
+        p.onSubscribe(bs);
+
+        assertTrue(bs.isDisposed());
+    }
+
+    @Test
+    public void onErrorAfterComplete() {
+        BehaviorSubject<Object> p = BehaviorSubject.create();
+
+        p.onComplete();
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            p.onError(new TestException());
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void cancelOnArrival2() {
+        BehaviorSubject<Object> p = BehaviorSubject.create();
+
+        TestObserver<Object> ts = p.test();
+
+        p.test(true).assertEmpty();
+
+        p.onNext(1);
+        p.onComplete();
+
+        ts.assertResult(1);
+    }
+
+    @Test
+    public void addRemoveRace() {
+        for (int i = 0; i < 500; i++) {
+            final BehaviorSubject<Object> p = BehaviorSubject.create();
+
+            final TestObserver<Object> ts = p.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    p.test();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void subscribeOnNextRace() {
+        for (int i = 0; i < 500; i++) {
+            final BehaviorSubject<Object> p = BehaviorSubject.createDefault((Object)1);
+
+            final TestObserver[] ts = { null };
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts[0] = p.test();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    p.onNext(2);
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            if (ts[0].valueCount() == 1) {
+                ts[0].assertValue(2).assertNoErrors().assertNotComplete();
+            } else {
+                ts[0].assertValues(1, 2).assertNoErrors().assertNotComplete();
+            }
+        }
+    }
+
+    @Test
+    public void innerDisposed() {
+        BehaviorSubject.create()
+        .subscribe(new Observer<Object>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                assertFalse(d.isDisposed());
+
+                d.dispose();
+
+                assertTrue(d.isDisposed());
+            }
+
+            @Override
+            public void onNext(Object value) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 }

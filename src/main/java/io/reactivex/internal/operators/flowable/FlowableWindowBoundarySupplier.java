@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
@@ -21,8 +20,9 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.QueueDrainSubscriber;
@@ -109,7 +109,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
                 }
             } else {
                 s.cancel();
-                a.onError(new IllegalStateException("Could not deliver first window due to lack of requests"));
+                a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests"));
                 return;
             }
 
@@ -264,7 +264,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
                         } else {
                             // don't emit new windows
                             cancelled = true;
-                            a.onError(new IllegalStateException("Could not deliver new window due to lack of requests"));
+                            a.onError(new MissingBackpressureException("Could not deliver new window due to lack of requests"));
                             continue;
                         }
 

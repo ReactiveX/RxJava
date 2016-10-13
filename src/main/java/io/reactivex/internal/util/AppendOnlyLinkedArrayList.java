@@ -66,13 +66,22 @@ public class AppendOnlyLinkedArrayList<T> {
     }
 
     /**
+     * Predicate interface suppressing the exception.
+     *
+     * @param <T> the value type
+     */
+    public interface NonThrowingPredicate<T> extends Predicate<T> {
+        @Override
+        boolean test(T t);
+    }
+
+    /**
      * Loops over all elements of the array until a null element is encountered or
      * the given predicate returns true.
      * @param consumer the consumer of values that returns true if the forEach should terminate
-     * @throws Exception if the predicate throws
      */
     @SuppressWarnings("unchecked")
-    public void forEachWhile(Predicate<? super T> consumer) throws Exception {
+    public void forEachWhile(NonThrowingPredicate<? super T> consumer) {
         Object[] a = head;
         final int c = capacity;
         while (a != null) {
@@ -107,15 +116,9 @@ public class AppendOnlyLinkedArrayList<T> {
                     break;
                 }
 
-                if (NotificationLite.isComplete(o)) {
-                    subscriber.onComplete();
-                    return true;
-                } else
-                if (NotificationLite.isError(o)) {
-                    subscriber.onError(NotificationLite.getError(o));
-                    return true;
+                if (NotificationLite.acceptFull(o, subscriber)) {
+                    break;
                 }
-                subscriber.onNext(NotificationLite.<U>getValue(o));
             }
             a = (Object[])a[c];
         }
@@ -141,15 +144,9 @@ public class AppendOnlyLinkedArrayList<T> {
                     break;
                 }
 
-                if (NotificationLite.isComplete(o)) {
-                    observer.onComplete();
-                    return true;
-                } else
-                if (NotificationLite.isError(o)) {
-                    observer.onError(NotificationLite.getError(o));
-                    return true;
+                if (NotificationLite.acceptFull(o, observer)) {
+                    break;
                 }
-                observer.onNext(NotificationLite.<U>getValue(o));
             }
             a = (Object[])a[c];
         }

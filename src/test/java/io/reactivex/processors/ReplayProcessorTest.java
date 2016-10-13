@@ -28,6 +28,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
@@ -354,6 +355,7 @@ public class ReplayProcessorTest {
 
         assertEquals(0, replaySubject.subscriberCount());
     }
+
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
         ReplayProcessor<String> src = ReplayProcessor.create();
@@ -1038,5 +1040,257 @@ public class ReplayProcessorTest {
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void capacityHint() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.create(8);
+
+        for (int i = 0; i < 15; i++) {
+            rp.onNext(i);
+        }
+        rp.onComplete();
+
+        rp.test().assertResult(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+    }
+
+    @Test
+    public void subscribeCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+            final ReplayProcessor<Integer> rp = ReplayProcessor.create();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    rp.subscribe(ts);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void subscribeAfterDone() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.create();
+        rp.onComplete();
+
+        BooleanSubscription bs = new BooleanSubscription();
+
+        rp.onSubscribe(bs);
+
+        assertTrue(bs.isCancelled());
+    }
+
+    @Test
+    public void subscribeRace() {
+        for (int i = 0; i < 500; i++) {
+            final ReplayProcessor<Integer> rp = ReplayProcessor.create();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    rp.test();
+                }
+            };
+
+            TestHelper.race(r1, r1, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void cancelUpfront() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.create();
+        rp.test();
+        rp.test();
+
+        TestSubscriber<Integer> ts = rp.test(0L, true);
+
+        assertEquals(2, rp.subscriberCount());
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void cancelRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final ReplayProcessor<Integer> rp = ReplayProcessor.create();
+            final TestSubscriber<Integer> ts1 = rp.test();
+            final TestSubscriber<Integer> ts2 = rp.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts1.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts2.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            assertFalse(rp.hasSubscribers());
+        }
+    }
+
+    @Test
+    public void sizeboundReplayError() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithSize(2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+        rp.onNext(4);
+        rp.onError(new TestException());
+
+        rp.test()
+        .assertFailure(TestException.class, 3, 4);
+    }
+
+    @Test
+    public void sizeAndTimeBoundReplayError() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.DAYS, Schedulers.single(), 2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+        rp.onNext(4);
+        rp.onError(new TestException());
+
+        rp.test()
+        .assertFailure(TestException.class, 3, 4);
+    }
+
+    @Test
+    public void replayRequestRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.DAYS, Schedulers.single(), 2);
+            final TestSubscriber<Integer> ts = rp.test(0L);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    rp.onNext(1);
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void timedSkipOld() {
+        TestScheduler scheduler = new TestScheduler();
+
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        rp.onNext(1);
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        rp.test()
+        .assertEmpty();
+    }
+
+    @Test
+    public void takeSizeAndTime() {
+        TestScheduler scheduler = new TestScheduler();
+
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+
+        rp
+        .take(1)
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void takeSize() {
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithSize(2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+
+        rp
+        .take(1)
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void reentrantDrain() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                if (t == 1) {
+                    rp.onNext(2);
+                }
+                super.onNext(t);
+            }
+        };
+
+        rp.subscribe(ts);
+
+        rp.onNext(1);
+        rp.onComplete();
+
+        ts.assertResult(1, 2);
+    }
+
+    @Test
+    public void reentrantDrainBackpressured() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final ReplayProcessor<Integer> rp = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
+            @Override
+            public void onNext(Integer t) {
+                if (t == 1) {
+                    rp.onNext(2);
+                }
+                super.onNext(t);
+            }
+        };
+
+        rp.subscribe(ts);
+
+        rp.onNext(1);
+        rp.onComplete();
+
+        ts.request(1);
+
+        ts.assertResult(1, 2);
     }
 }

@@ -14,6 +14,7 @@
 package io.reactivex.subjects;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -24,7 +25,7 @@ import org.junit.Test;
 import org.mockito.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.*;
@@ -950,5 +951,206 @@ public class ReplaySubjectTest {
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void capacityHint() {
+        ReplaySubject<Integer> rp = ReplaySubject.create(8);
+
+        for (int i = 0; i < 15; i++) {
+            rp.onNext(i);
+        }
+        rp.onComplete();
+
+        rp.test().assertResult(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+    }
+
+    @Test
+    public void subscribeCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final TestObserver<Integer> ts = new TestObserver<Integer>();
+
+            final ReplaySubject<Integer> rp = ReplaySubject.create();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    rp.subscribe(ts);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void subscribeAfterDone() {
+        ReplaySubject<Integer> rp = ReplaySubject.create();
+        rp.onComplete();
+
+        Disposable bs = Disposables.empty();
+
+        rp.onSubscribe(bs);
+
+        assertTrue(bs.isDisposed());
+    }
+
+    @Test
+    public void subscribeRace() {
+        for (int i = 0; i < 500; i++) {
+            final ReplaySubject<Integer> rp = ReplaySubject.create();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    rp.test();
+                }
+            };
+
+            TestHelper.race(r1, r1, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void cancelUpfront() {
+        ReplaySubject<Integer> rp = ReplaySubject.create();
+        rp.test();
+        rp.test();
+
+        TestObserver<Integer> ts = rp.test(true);
+
+        assertEquals(2, rp.observerCount());
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void cancelRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final ReplaySubject<Integer> rp = ReplaySubject.create();
+            final TestObserver<Integer> ts1 = rp.test();
+            final TestObserver<Integer> ts2 = rp.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts1.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts2.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            assertFalse(rp.hasObservers());
+        }
+    }
+
+    @Test
+    public void sizeboundReplayError() {
+        ReplaySubject<Integer> rp = ReplaySubject.createWithSize(2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+        rp.onNext(4);
+        rp.onError(new TestException());
+
+        rp.test()
+        .assertFailure(TestException.class, 3, 4);
+    }
+
+    @Test
+    public void sizeAndTimeBoundReplayError() {
+        ReplaySubject<Integer> rp = ReplaySubject.createWithTimeAndSize(1, TimeUnit.DAYS, Schedulers.single(), 2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+        rp.onNext(4);
+        rp.onError(new TestException());
+
+        rp.test()
+        .assertFailure(TestException.class, 3, 4);
+    }
+
+    @Test
+    public void timedSkipOld() {
+        TestScheduler scheduler = new TestScheduler();
+
+        ReplaySubject<Integer> rp = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        rp.onNext(1);
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        rp.test()
+        .assertEmpty();
+    }
+
+    @Test
+    public void takeSizeAndTime() {
+        TestScheduler scheduler = new TestScheduler();
+
+        ReplaySubject<Integer> rp = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+
+        rp
+        .take(1)
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void takeSize() {
+        ReplaySubject<Integer> rp = ReplaySubject.createWithSize(2);
+
+        rp.onNext(1);
+        rp.onNext(2);
+        rp.onNext(3);
+
+        rp
+        .take(1)
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void reentrantDrain() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final ReplaySubject<Integer> rp = ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, scheduler, 2);
+
+        TestObserver<Integer> ts = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                if (t == 1) {
+                    rp.onNext(2);
+                }
+                super.onNext(t);
+            }
+        };
+
+        rp.subscribe(ts);
+
+        rp.onNext(1);
+        rp.onComplete();
+
+        ts.assertResult(1, 2);
     }
 }

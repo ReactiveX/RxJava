@@ -143,4 +143,18 @@ public enum ObserverFusion {
         TestObserver<T> ts = new TestObserver<T>();
         ts.setInitialFusionMode(mode);
         return ts;
-    }}
+    }
+
+    /**
+     * Assert that the TestSubscriber received a fuseabe QueueSubscription and
+     * is in the given fusion mode.
+     * @param <T> the value type
+     * @param ts the TestSubscriber instance
+     * @param mode the expected mode
+     * @return the TestSubscriber
+     */
+    public static <T> TestObserver<T> assertFusion(TestObserver<T> ts, int mode) {
+        return ts.assertOf(ObserverFusion.<T>assertFuseable())
+                .assertOf(ObserverFusion.<T>assertFusionMode(mode));
+    }
+}
