@@ -13,10 +13,9 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static io.reactivex.internal.operators.observable.BlockingObservableMostRecent.mostRecent;
 import static org.junit.Assert.*;
 
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
@@ -30,6 +29,10 @@ public class BlockingObservableMostRecentTest {
     @Test
     public void testMostRecentNull() {
         assertEquals(null, Observable.<Void>never().blockingMostRecent(null).iterator().next());
+    }
+
+    static <T> Iterable<T> mostRecent(Observable<T> source, T initialValue) {
+        return source.blockingMostRecent(initialValue);
     }
 
     @Test
@@ -96,5 +99,26 @@ public class BlockingObservableMostRecentTest {
             Assert.assertEquals(false, it.hasNext());
         }
 
+    }
+
+    @Test
+    public void empty() {
+        Iterator<Integer> it = Observable.<Integer>empty()
+        .blockingMostRecent(1)
+        .iterator();
+
+        try {
+            it.next();
+            fail("Should have thrown");
+        } catch (NoSuchElementException ex) {
+            // expected
+        }
+
+        try {
+            it.remove();
+            fail("Should have thrown");
+        } catch (UnsupportedOperationException ex) {
+            // expected
+        }
     }
 }

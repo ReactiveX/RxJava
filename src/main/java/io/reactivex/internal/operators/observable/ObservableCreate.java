@@ -136,7 +136,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         final AtomicThrowable error;
 
-        final SimpleQueue<T> queue;
+        final SpscLinkedArrayQueue<T> queue;
 
         volatile boolean done;
 
@@ -206,7 +206,7 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         void drainLoop() {
             ObservableEmitter<T> e = emitter;
-            SimpleQueue<T> q = queue;
+            SpscLinkedArrayQueue<T> q = queue;
             AtomicThrowable error = this.error;
             int missed = 1;
             for (;;) {
@@ -224,15 +224,7 @@ public final class ObservableCreate<T> extends Observable<T> {
                     }
 
                     boolean d = done;
-                    T v;
-
-                    try {
-                        v = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        // should never happen
-                        v = null;
-                    }
+                    T v = q.poll();
 
                     boolean empty = v == null;
 

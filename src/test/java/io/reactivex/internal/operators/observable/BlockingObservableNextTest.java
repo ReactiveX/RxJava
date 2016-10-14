@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static io.reactivex.internal.operators.observable.BlockingObservableNext.next;
 import static org.junit.Assert.*;
 
 import java.util.*;
@@ -22,11 +21,13 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.operators.observable.BlockingObservableNext.NextObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
@@ -59,6 +60,10 @@ public class BlockingObservableNextTest {
                 o.onError(new TestException());
             }
         }.start();
+    }
+
+    static <T> Iterable<T> next(ObservableSource<T> source) {
+        return new BlockingObservableNext<T>(source);
     }
 
     @Test
@@ -316,5 +321,62 @@ public class BlockingObservableNextTest {
         assertEquals(1, BehaviorProcessor.createDefault(1).take(1).blockingSingle().intValue());
         assertEquals(2, BehaviorProcessor.createDefault(2).blockingIterable().iterator().next().intValue());
         assertEquals(3, BehaviorProcessor.createDefault(3).blockingNext().iterator().next().intValue());
+    }
+
+    @Test
+    public void interrupt() {
+        Iterator<Object> it = Observable.never().blockingNext().iterator();
+
+        try {
+            Thread.currentThread().interrupt();
+            it.next();
+        } catch (RuntimeException ex) {
+            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+        }
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void remove() {
+        Observable.never().blockingNext().iterator().remove();
+    }
+
+    @Test
+    public void nextObserverError() {
+        NextObserver<Integer> no = new NextObserver<Integer>();
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            no.onError(new TestException());
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void nextObserverOnNext() throws Exception {
+        NextObserver<Integer> no = new NextObserver<Integer>();
+
+        no.setWaiting();
+        no.onNext(Notification.createOnNext(1));
+
+        no.setWaiting();
+        no.onNext(Notification.createOnNext(1));
+
+        assertEquals(1, no.takeNext().getValue().intValue());
+    }
+
+    @Test
+    public void nextObserverOnCompleteOnNext() throws Exception {
+        NextObserver<Integer> no = new NextObserver<Integer>();
+
+        no.setWaiting();
+        no.onNext(Notification.<Integer>createOnComplete());
+
+        no.setWaiting();
+        no.onNext(Notification.createOnNext(1));
+
+        assertTrue(no.takeNext().isOnComplete());
     }
 }

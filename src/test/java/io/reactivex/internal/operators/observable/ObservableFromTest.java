@@ -20,6 +20,7 @@ import java.util.concurrent.*;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.ScalarCallable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -56,5 +57,20 @@ public class ObservableFromTest {
     @Test
     public void fromArraySingle() {
         assertTrue(Observable.fromArray(1) instanceof ScalarCallable);
+    }
+
+    @Test
+    public void fromPublisherDispose() {
+        TestHelper.checkDisposed(Flowable.just(1).toObservable());
+    }
+
+    @Test
+    public void fromPublisherDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowableToObservable(new Function<Flowable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Flowable<Object> f) throws Exception {
+                return f.toObservable();
+            }
+        });
     }
 }

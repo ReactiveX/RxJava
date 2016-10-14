@@ -17,62 +17,55 @@ import java.util.concurrent.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.observers.*;
 import io.reactivex.internal.util.*;
-import io.reactivex.observers.DefaultObserver;
-import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Utility methods to consume an Observable in a blocking manner with callbacks or Observer.
  */
-public enum ObservableBlockingSubscribe {
-    ;
+public final class ObservableBlockingSubscribe {
+
+    /** Utility class. */
+    private ObservableBlockingSubscribe() {
+        throw new IllegalStateException("No instances!");
+    }
 
     /**
      * Subscribes to the source and calls the Observer methods on the current thread.
      * <p>
      * @param o the source publisher
      * The call to dispose() is composed through.
-     * @param subscriber the subscriber to forward events and calls to in the current thread
+     * @param observer the subscriber to forward events and calls to in the current thread
      * @param <T> the value type
      */
-    public static <T> void subscribe(ObservableSource<? extends T> o, Observer<? super T> subscriber) {
+    public static <T> void subscribe(ObservableSource<? extends T> o, Observer<? super T> observer) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
 
         BlockingObserver<T> bs = new BlockingObserver<T>(queue);
+        observer.onSubscribe(bs);
 
         o.subscribe(bs);
-
-        try {
-            for (;;) {
-                if (bs.isDisposed()) {
-                    break;
-                }
-                Object v = queue.poll();
-                if (v == null) {
-                    if (bs.isDisposed()) {
-                        break;
-                    }
+        for (;;) {
+            if (bs.isDisposed()) {
+                break;
+            }
+            Object v = queue.poll();
+            if (v == null) {
+                try {
                     v = queue.take();
-                }
-                if (bs.isDisposed()) {
-                    break;
-                }
-                if (o == BlockingObserver.TERMINATED) {
-                    break;
-                }
-                if (NotificationLite.acceptFull(v, subscriber)) {
-                    break;
+                } catch (InterruptedException ex) {
+                    bs.dispose();
+                    observer.onError(ex);
+                    return;
                 }
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            subscriber.onError(e);
-        } finally {
-            bs.dispose();
+            if (bs.isDisposed()
+                    || o == BlockingObserver.TERMINATED
+                    || NotificationLite.acceptFull(v, observer)) {
+                break;
+            }
         }
     }
 
@@ -121,50 +114,6 @@ public enum ObservableBlockingSubscribe {
      */
     public static <T> void subscribe(ObservableSource<? extends T> o, final Consumer<? super T> onNext,
             final Consumer<? super Throwable> onError, final Action onComplete) {
-        subscribe(o, new DefaultObserver<T>() {
-            boolean done;
-            @Override
-            public void onNext(T t) {
-                if (done) {
-                    return;
-                }
-                try {
-                    onNext.accept(t);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    cancel();
-                    onError(ex);
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if (done) {
-                    RxJavaPlugins.onError(e);
-                    return;
-                }
-                done = true;
-                try {
-                    onError.accept(e);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    RxJavaPlugins.onError(ex);
-                }
-            }
-
-            @Override
-            public void onComplete() {
-                if (done) {
-                    return;
-                }
-                done = true;
-                try {
-                    onComplete.run();
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    RxJavaPlugins.onError(ex);
-                }
-            }
-        });
+        subscribe(o, new LambdaObserver<T>(onNext, onError, onComplete, Functions.emptyConsumer()));
     }
 }

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -24,9 +25,13 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 
@@ -233,4 +238,129 @@ public class ObservableAmbTest {
         assertSame(Observable.never(), Observable.ambArray(Observable.never()));
     }
 
+    @Test
+    public void manySources() {
+        Observable<?>[] a = new Observable[32];
+        Arrays.fill(a, Observable.never());
+        a[31] = Observable.just(1);
+
+        Observable.amb(Arrays.asList(a))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void emptyIterable() {
+        Observable.amb(Collections.<Observable<Integer>>emptyList())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void singleIterable() {
+        Observable.amb(Collections.singletonList(Observable.just(1)))
+        .test()
+        .assertResult(1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(Observable.ambArray(Observable.never(), Observable.never()));
+    }
+
+    @Test
+    public void onNextRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishSubject<Integer> ps1 = PublishSubject.create();
+            final PublishSubject<Integer> ps2 = PublishSubject.create();
+
+            @SuppressWarnings("unchecked")
+            TestObserver<Integer> to = Observable.ambArray(ps1, ps2).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps1.onNext(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ps2.onNext(1);
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to.assertSubscribed().assertNoErrors()
+            .assertNotComplete().assertValueCount(1);
+        }
+    }
+
+    @Test
+    public void onCompleteRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishSubject<Integer> ps1 = PublishSubject.create();
+            final PublishSubject<Integer> ps2 = PublishSubject.create();
+
+            @SuppressWarnings("unchecked")
+            TestObserver<Integer> to = Observable.ambArray(ps1, ps2).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps1.onComplete();
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ps2.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to.assertResult();
+        }
+    }
+
+    @Test
+    public void onErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishSubject<Integer> ps1 = PublishSubject.create();
+            final PublishSubject<Integer> ps2 = PublishSubject.create();
+
+            @SuppressWarnings("unchecked")
+            TestObserver<Integer> to = Observable.ambArray(ps1, ps2).test();
+
+            final Throwable ex = new TestException();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps1.onError(ex);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ps2.onError(ex);
+                }
+            };
+
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                TestHelper.race(r1, r2, Schedulers.single());
+            } finally {
+                RxJavaPlugins.reset();
+            }
+
+            to.assertFailure(TestException.class);
+            if (!errors.isEmpty()) {
+                TestHelper.assertError(errors, 0, TestException.class);
+            }
+        }
+    }
 }

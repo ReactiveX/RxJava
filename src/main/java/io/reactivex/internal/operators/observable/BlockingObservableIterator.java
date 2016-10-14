@@ -24,7 +24,7 @@ import io.reactivex.internal.util.ExceptionHelper;
 
 public final class BlockingObservableIterator<T>
 extends AtomicReference<Disposable>
-implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
+implements io.reactivex.Observer<T>, Iterator<T>, Disposable {
 
 
     private static final long serialVersionUID = 6695226475494099826L;
@@ -38,8 +38,6 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
     volatile boolean done;
     Throwable error;
 
-    volatile boolean cancelled;
-
     public BlockingObservableIterator(int batchSize) {
         this.queue = new SpscLinkedArrayQueue<T>(batchSize);
         this.lock = new ReentrantLock();
@@ -49,9 +47,6 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
     @Override
     public boolean hasNext() {
         for (;;) {
-            if (cancelled) {
-                return false;
-            }
             boolean d = done;
             boolean empty = queue.isEmpty();
             if (d) {
@@ -64,16 +59,19 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
                 }
             }
             if (empty) {
-                lock.lock();
                 try {
-                    while (!cancelled && !done && queue.isEmpty()) {
-                        condition.await();
+                    lock.lock();
+                    try {
+                        while (!done && queue.isEmpty()) {
+                            condition.await();
+                        }
+                    } finally {
+                        lock.unlock();
                     }
                 } catch (InterruptedException ex) {
-                    run();
+                    DisposableHelper.dispose(this);
+                    signalConsumer();
                     throw ExceptionHelper.wrapOrThrow(ex);
-                } finally {
-                    lock.unlock();
                 }
             } else {
                 return true;
@@ -84,15 +82,7 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
     @Override
     public T next() {
         if (hasNext()) {
-            T v = queue.poll();
-
-            if (v == null) {
-                run();
-
-                throw new IllegalStateException("Queue empty?!");
-            }
-
-            return v;
+            return queue.poll();
         }
         throw new NoSuchElementException();
     }
@@ -104,13 +94,8 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
 
     @Override
     public void onNext(T t) {
-        if (!queue.offer(t)) {
-            DisposableHelper.dispose(this);
-
-            onError(new IllegalStateException("Queue full?!"));
-        } else {
-            signalConsumer();
-        }
+        queue.offer(t);
+        signalConsumer();
     }
 
     @Override
@@ -133,12 +118,6 @@ implements io.reactivex.Observer<T>, Iterator<T>, Runnable, Disposable {
         } finally {
             lock.unlock();
         }
-    }
-
-    @Override
-    public void run() {
-        DisposableHelper.dispose(this);
-        signalConsumer();
     }
 
     @Override // otherwise default method which isn't available in Java 7

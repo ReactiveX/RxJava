@@ -16,15 +16,18 @@ package io.reactivex.internal.operators.observable;
 import static org.junit.Assert.assertEquals;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.TestHelper;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class ObservableBlockingTest {
@@ -218,5 +221,66 @@ public class ObservableBlockingTest {
     @Test(expected = NoSuchElementException.class)
     public void blockingSingleEmpty() {
         Observable.empty().blockingSingle();
+    }
+
+    @Test
+    public void utilityClass() {
+        TestHelper.checkUtilityClass(ObservableBlockingSubscribe.class);
+    }
+
+    @Test
+    public void disposeUpFront() {
+        TestObserver<Object> to = new TestObserver<Object>();
+        to.dispose();
+        Observable.just(1).blockingSubscribe(to);
+
+        to.assertEmpty();
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void delayed() throws Exception {
+        final TestObserver<Object> to = new TestObserver<Object>();
+        final Observer[] s = { null };
+
+        Schedulers.single().scheduleDirect(new Runnable() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void run() {
+                to.dispose();
+                s[0].onNext(1);
+            }
+        }, 200, TimeUnit.MILLISECONDS);
+
+        new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                s[0] = observer;
+            }
+        }.blockingSubscribe(to);
+
+        while (!to.isDisposed()) {
+            Thread.sleep(100);
+        }
+
+        to.assertEmpty();
+    }
+
+    @Test
+    public void interrupt() {
+        TestObserver<Object> to = new TestObserver<Object>();
+        Thread.currentThread().interrupt();
+        Observable.never().blockingSubscribe(to);
+    }
+
+    @Test
+    public void onCompleteDelayed() {
+        TestObserver<Object> to = new TestObserver<Object>();
+
+        Observable.empty().delay(100, TimeUnit.MILLISECONDS)
+        .blockingSubscribe(to);
+
+        to.assertResult();
     }
 }

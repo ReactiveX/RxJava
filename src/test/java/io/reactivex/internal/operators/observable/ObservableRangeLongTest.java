@@ -13,26 +13,19 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.TestHelper;
-import io.reactivex.functions.Consumer;
-import io.reactivex.observers.DefaultObserver;
-import io.reactivex.observers.TestObserver;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import io.reactivex.*;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.observers.*;
 
 public class ObservableRangeLongTest {
     @Test
@@ -166,5 +159,42 @@ public class ObservableRangeLongTest {
         Observable.rangeLong(5495454L, 1L)
             .test()
             .assertResult(5495454L);
+    }
+
+    @Test
+    public void noOverflow() {
+        Observable.rangeLong(Long.MAX_VALUE - 1, 2);
+        Observable.rangeLong(Long.MIN_VALUE, 2);
+        Observable.rangeLong(Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    @Test
+    public void fused() {
+        TestObserver<Long> to = ObserverFusion.newTest(QueueDisposable.ANY);
+
+        Observable.rangeLong(1, 2).subscribe(to);
+
+        ObserverFusion.assertFusion(to, QueueDisposable.SYNC)
+        .assertResult(1L, 2L);
+    }
+
+    @Test
+    public void fusedReject() {
+        TestObserver<Long> to = ObserverFusion.newTest(QueueDisposable.ASYNC);
+
+        Observable.rangeLong(1, 2).subscribe(to);
+
+        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        .assertResult(1L, 2L);
+    }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(Observable.rangeLong(1, 2));
+    }
+
+    @Test
+    public void fusedClearIsEmpty() {
+        TestHelper.checkFusedIsEmptyClear(Observable.rangeLong(1, 2));
     }
 }

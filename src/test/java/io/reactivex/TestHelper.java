@@ -30,7 +30,7 @@ import org.reactivestreams.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.internal.operators.single.SingleToFlowable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -1278,7 +1278,6 @@ public enum TestHelper {
         }
     }
 
-
     /**
      * Check if the given transformed reactive type reports multiple onSubscribe calls to
      * RxJavaPlugins.
@@ -1326,6 +1325,221 @@ public enum TestHelper {
             assertEquals("Second not disposed?", true, b[1]);
 
             assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param <R> the output value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T, R> void checkDoubleOnSubscribeObservableToSingle(Function<Observable<T>, ? extends SingleSource<R>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Observable<T> source = new Observable<T>() {
+                @Override
+                protected void subscribeActual(Observer<? super T> observer) {
+                    try {
+                        Disposable d1 = Disposables.empty();
+
+                        observer.onSubscribe(d1);
+
+                        Disposable d2 = Disposables.empty();
+
+                        observer.onSubscribe(d2);
+
+                        b[0] = d1.isDisposed();
+                        b[1] = d2.isDisposed();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            SingleSource<R> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First disposed?", false, b[0]);
+            assertEquals("Second not disposed?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param <R> the output value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T, R> void checkDoubleOnSubscribeObservableToMaybe(Function<Observable<T>, ? extends MaybeSource<R>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Observable<T> source = new Observable<T>() {
+                @Override
+                protected void subscribeActual(Observer<? super T> observer) {
+                    try {
+                        Disposable d1 = Disposables.empty();
+
+                        observer.onSubscribe(d1);
+
+                        Disposable d2 = Disposables.empty();
+
+                        observer.onSubscribe(d2);
+
+                        b[0] = d1.isDisposed();
+                        b[1] = d2.isDisposed();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            MaybeSource<R> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First disposed?", false, b[0]);
+            assertEquals("Second not disposed?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T> void checkDoubleOnSubscribeObservableToCompletable(Function<Observable<T>, ? extends CompletableSource> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Observable<T> source = new Observable<T>() {
+                @Override
+                protected void subscribeActual(Observer<? super T> observer) {
+                    try {
+                        Disposable d1 = Disposables.empty();
+
+                        observer.onSubscribe(d1);
+
+                        Disposable d2 = Disposables.empty();
+
+                        observer.onSubscribe(d2);
+
+                        b[0] = d1.isDisposed();
+                        b[1] = d2.isDisposed();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            CompletableSource out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First disposed?", false, b[0]);
+            assertEquals("Second not disposed?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param <R> the output value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T, R> void checkDoubleOnSubscribeFlowableToObservable(Function<Flowable<T>, ? extends ObservableSource<R>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Flowable<T> source = new Flowable<T>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super T> observer) {
+                    try {
+                        BooleanSubscription d1 = new BooleanSubscription();
+
+                        observer.onSubscribe(d1);
+
+                        BooleanSubscription d2 = new BooleanSubscription();
+
+                        observer.onSubscribe(d2);
+
+                        b[0] = d1.isCancelled();
+                        b[1] = d2.isCancelled();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            ObservableSource<R> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First cancelled?", false, b[0]);
+            assertEquals("Second not cancelled?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         } finally {
@@ -1651,5 +1865,137 @@ public enum TestHelper {
             p.onNext(v);
         }
         p.onComplete();
+    }
+
+    /**
+     * Checks if the source is fuseable and its isEmpty/clear works properly.
+     * @param <T> the value type
+     * @param source the source sequence
+     */
+    public static <T> void checkFusedIsEmptyClear(Observable<T> source) {
+        final CountDownLatch cdl = new CountDownLatch(1);
+
+        final Boolean[] state = { null, null, null, null };
+
+        source.subscribe(new Observer<T>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                try {
+                    if (d instanceof QueueDisposable) {
+                        @SuppressWarnings("unchecked")
+                        QueueDisposable<Object> qd = (QueueDisposable<Object>) d;
+                        state[0] = true;
+
+                        int m = qd.requestFusion(QueueDisposable.ANY);
+
+                        if (m != QueueDisposable.NONE) {
+                            state[1] = true;
+
+                            state[2] = qd.isEmpty();
+
+                            qd.clear();
+
+                            state[3] = qd.isEmpty();
+                        }
+                    }
+                    cdl.countDown();
+                } finally {
+                    d.dispose();
+                }
+            }
+
+            @Override
+            public void onNext(T value) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
+        try {
+            assertTrue(cdl.await(5, TimeUnit.SECONDS));
+
+            assertTrue("Not fuseable", state[0]);
+            assertTrue("Fusion rejected", state[1]);
+
+            assertNotNull(state[2]);
+            assertTrue("Did not empty", state[3]);
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Checks if the source is fuseable and its isEmpty/clear works properly.
+     * @param <T> the value type
+     * @param source the source sequence
+     */
+    public static <T> void checkFusedIsEmptyClear(Flowable<T> source) {
+        final CountDownLatch cdl = new CountDownLatch(1);
+
+        final Boolean[] state = { null, null, null, null };
+
+        source.subscribe(new Subscriber<T>() {
+            @Override
+            public void onSubscribe(Subscription d) {
+                try {
+                    if (d instanceof QueueSubscription) {
+                        @SuppressWarnings("unchecked")
+                        QueueSubscription<Object> qd = (QueueSubscription<Object>) d;
+                        state[0] = true;
+
+                        int m = qd.requestFusion(QueueSubscription.ANY);
+
+                        if (m != QueueSubscription.NONE) {
+                            state[1] = true;
+
+                            state[2] = qd.isEmpty();
+
+                            qd.clear();
+
+                            state[3] = qd.isEmpty();
+                        }
+                    }
+                    cdl.countDown();
+                } finally {
+                    d.cancel();
+                }
+            }
+
+            @Override
+            public void onNext(T value) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
+        try {
+            assertTrue(cdl.await(5, TimeUnit.SECONDS));
+
+            assertTrue("Not fuseable", state[0]);
+            assertTrue("Fusion rejected", state[1]);
+
+            assertNotNull(state[2]);
+            assertTrue("Did not empty", state[3]);
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

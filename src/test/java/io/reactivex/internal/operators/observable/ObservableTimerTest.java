@@ -281,4 +281,9 @@ public class ObservableTimerTest {
         inOrder.verifyNoMoreInteractions();
         verify(observer, never()).onComplete();
     }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(Observable.timer(1, TimeUnit.DAYS));
+    }
 }

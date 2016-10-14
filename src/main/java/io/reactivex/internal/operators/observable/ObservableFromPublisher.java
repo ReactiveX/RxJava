@@ -12,71 +12,68 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
+import org.reactivestreams.*;
+
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import java.util.concurrent.atomic.AtomicBoolean;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class ObservableFromPublisher<T> extends Observable<T> {
-    private final Publisher<? extends T> publisher;
+
+    final Publisher<? extends T> source;
 
     public ObservableFromPublisher(Publisher<? extends T> publisher) {
-        this.publisher = publisher;
+        this.source = publisher;
     }
 
     @Override
     protected void subscribeActual(final Observer<? super T> o) {
-        publisher.subscribe(new PublisherSubscriber<T>(o));
+        source.subscribe(new PublisherSubscriber<T>(o));
     }
 
     static final class PublisherSubscriber<T>
-    extends AtomicBoolean
     implements Subscriber<T>, Disposable {
 
-
-        private static final long serialVersionUID = -7306579371159152354L;
-
-        private final Observer<? super T> o;
-        private Subscription inner;
+        final Observer<? super T> actual;
+        Subscription s;
 
         PublisherSubscriber(Observer<? super T> o) {
-            this.o = o;
+            this.actual = o;
         }
 
         @Override
         public void onComplete() {
-            o.onComplete();
+            actual.onComplete();
         }
 
         @Override
         public void onError(Throwable t) {
-            o.onError(t);
+            actual.onError(t);
         }
 
         @Override
         public void onNext(T t) {
-            o.onNext(t);
+            actual.onNext(t);
         }
 
         @Override
-        public void onSubscribe(Subscription inner) {
-            this.inner = inner;
-            o.onSubscribe(this);
-            inner.request(Long.MAX_VALUE);
-        }
-
-        @Override public void dispose() {
-            if (compareAndSet(false, true)) {
-                inner.cancel();
-                inner = null;
+        public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
+                s.request(Long.MAX_VALUE);
             }
         }
 
-        @Override public boolean isDisposed() {
-            return get();
+        @Override
+        public void dispose() {
+            s.cancel();
+            s = SubscriptionHelper.CANCELLED;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return s == SubscriptionHelper.CANCELLED;
         }
     }
 }
