@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import io.reactivex.TestHelper;
 import io.reactivex.functions.*;
+import io.reactivex.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
 
 public class MiscUtilTest {
     @Test
@@ -96,9 +97,9 @@ public class MiscUtilTest {
 
         final List<Integer> out = new ArrayList<Integer>();
 
-        list.forEachWhile(new Predicate<Integer>() {
+        list.forEachWhile(new NonThrowingPredicate<Integer>() {
             @Override
-            public boolean test(Integer t2) throws Exception {
+            public boolean test(Integer t2) {
                 out.add(t2);
                 return t2 == 2;
             }
@@ -117,9 +118,9 @@ public class MiscUtilTest {
 
         final List<Integer> out = new ArrayList<Integer>();
 
-        list.forEachWhile(new Predicate<Integer>() {
+        list.forEachWhile(new NonThrowingPredicate<Integer>() {
             @Override
-            public boolean test(Integer t2) throws Exception {
+            public boolean test(Integer t2) {
                 out.add(t2);
                 return t2 == 2;
             }
@@ -138,9 +139,9 @@ public class MiscUtilTest {
 
         final List<Integer> out = new ArrayList<Integer>();
 
-        list.forEachWhile(new Predicate<Integer>() {
+        list.forEachWhile(new NonThrowingPredicate<Integer>() {
             @Override
-            public boolean test(Integer t2) throws Exception {
+            public boolean test(Integer t2) {
                 out.add(t2);
                 return t2 == 3;
             }
@@ -159,9 +160,9 @@ public class MiscUtilTest {
 
         final List<Integer> out = new ArrayList<Integer>();
 
-        list.forEachWhile(new Predicate<Integer>() {
+        list.forEachWhile(new NonThrowingPredicate<Integer>() {
             @Override
-            public boolean test(Integer t2) throws Exception {
+            public boolean test(Integer t2) {
                 out.add(t2);
                 return false;
             }

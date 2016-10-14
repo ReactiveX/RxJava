@@ -20,7 +20,8 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
@@ -106,7 +107,7 @@ public final class FlowableIntervalRange extends Flowable<Long> {
                     }
                 } else {
                     try {
-                        actual.onError(new IllegalStateException("Can't deliver value " + count + " due to lack of requests"));
+                        actual.onError(new MissingBackpressureException("Can't deliver value " + count + " due to lack of requests"));
                     } finally {
                         DisposableHelper.dispose(resource);
                     }

@@ -14,8 +14,10 @@
 package io.reactivex.processors;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,8 +26,10 @@ import org.mockito.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
@@ -581,5 +585,167 @@ public class BehaviorProcessorTest {
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onNextNullDelayed() {
+        final BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+        TestSubscriber<Object> ts = p.test();
+
+        assertTrue(p.hasSubscribers());
+
+        p.onNext(null);
+
+        assertFalse(p.hasSubscribers());
+
+        ts
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNullDelayed() {
+        final BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+        TestSubscriber<Object> ts = p.test();
+
+        assertTrue(p.hasSubscribers());
+
+        p.onError(null);
+
+        assertFalse(p.hasSubscribers());
+
+        ts
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void cancelOnArrival() {
+        BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+        assertFalse(p.hasSubscribers());
+
+        p.test(0L, true).assertEmpty();
+
+        assertFalse(p.hasSubscribers());
+    }
+
+    @Test
+    public void onSubscribe() {
+        BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+        BooleanSubscription bs = new BooleanSubscription();
+
+        p.onSubscribe(bs);
+
+        assertFalse(bs.isCancelled());
+
+        p.onComplete();
+
+        bs = new BooleanSubscription();
+
+        p.onSubscribe(bs);
+
+        assertTrue(bs.isCancelled());
+    }
+
+    @Test
+    public void onErrorAfterComplete() {
+        BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+        p.onComplete();
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            p.onError(new TestException());
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void cancelOnArrival2() {
+        BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+        TestSubscriber<Object> ts = p.test();
+
+        p.test(0L, true).assertEmpty();
+
+        p.onNext(1);
+        p.onComplete();
+
+        ts.assertResult(1);
+    }
+
+    @Test
+    public void addRemoveRace() {
+        for (int i = 0; i < 500; i++) {
+            final BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+            final TestSubscriber<Object> ts = p.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    p.test();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void subscribeOnNextRace() {
+        for (int i = 0; i < 500; i++) {
+            final BehaviorProcessor<Object> p = BehaviorProcessor.createDefault((Object)1);
+
+            final TestSubscriber[] ts = { null };
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts[0] = p.test();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    p.onNext(2);
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            if (ts[0].valueCount() == 1) {
+                ts[0].assertValue(2).assertNoErrors().assertNotComplete();
+            } else {
+                ts[0].assertValues(1, 2).assertNoErrors().assertNotComplete();
+            }
+        }
+    }
+
+    @Test
+    public void firstBackpressured() {
+        BehaviorProcessor<Object> p = BehaviorProcessor.createDefault((Object)1);
+
+        p.test(0L, false).assertFailure(MissingBackpressureException.class);
+
+        assertFalse(p.hasSubscribers());
     }
 }

@@ -19,10 +19,9 @@ import java.util.concurrent.locks.*;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Predicate;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -144,20 +143,18 @@ public final class BehaviorSubject<T> extends Subject<T> {
     protected void subscribeActual(Observer<? super T> observer) {
         BehaviorDisposable<T> bs = new BehaviorDisposable<T>(observer, this);
         observer.onSubscribe(bs);
-        if (!bs.cancelled) {
-            if (add(bs)) {
-                if (bs.cancelled) {
-                    remove(bs);
-                } else {
-                    bs.emitFirst();
-                }
+        if (add(bs)) {
+            if (bs.cancelled) {
+                remove(bs);
             } else {
-                Object o = value.get();
-                if (NotificationLite.isComplete(o)) {
-                    observer.onComplete();
-                } else {
-                    observer.onError(NotificationLite.getError(o));
-                }
+                bs.emitFirst();
+            }
+        } else {
+            Object o = value.get();
+            if (NotificationLite.isComplete(o)) {
+                observer.onComplete();
+            } else {
+                observer.onError(NotificationLite.getError(o));
             }
         }
     }
@@ -388,7 +385,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         }
     }
 
-    static final class BehaviorDisposable<T> implements Disposable, Predicate<Object> {
+    static final class BehaviorDisposable<T> implements Disposable, NonThrowingPredicate<Object> {
 
         final Observer<? super T> actual;
         final BehaviorSubject<T> state;
@@ -439,12 +436,9 @@ public final class BehaviorSubject<T> extends Subject<T> {
                 Lock lock = s.readLock;
 
                 lock.lock();
-                try {
-                    index = s.index;
-                    o = s.value.get();
-                } finally {
-                    lock.unlock();
-                }
+                index = s.index;
+                o = s.value.get();
+                lock.unlock();
 
                 emitting = o != null;
                 next = true;
@@ -508,13 +502,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
                     queue = null;
                 }
 
-                try {
-                    q.forEachWhile(this);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    actual.onError(ex);
-                    return;
-                }
+                q.forEachWhile(this);
             }
         }
     }

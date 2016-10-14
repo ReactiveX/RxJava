@@ -15,13 +15,19 @@ package io.reactivex.processors;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.junit.Assert.*;
 import org.junit.Test;
 
-import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
 public class UnicastProcessorTest {
@@ -149,5 +155,174 @@ public class UnicastProcessorTest {
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onNextNullDelayed() {
+        final UnicastProcessor<Object> p = UnicastProcessor.create();
+
+        TestSubscriber<Object> ts = p.test();
+
+        p.onNext(null);
+
+        ts
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNullDelayed() {
+        final UnicastProcessor<Object> p = UnicastProcessor.create();
+
+        assertFalse(p.hasSubscribers());
+
+        TestSubscriber<Object> ts = p.test();
+
+        assertTrue(p.hasSubscribers());
+
+        p.onError(null);
+
+        assertFalse(p.hasSubscribers());
+
+        ts
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void completeCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final int[] calls = { 0 };
+            final UnicastProcessor<Object> up = UnicastProcessor.create(100, new Runnable() {
+                @Override
+                public void run() {
+                    calls[0]++;
+                }
+            });
+
+            final TestSubscriber<Object> ts = up.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    up.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            assertEquals(1, calls[0]);
+        }
+    }
+
+    @Test
+    public void afterDone() {
+        UnicastProcessor<Object> p = UnicastProcessor.create();
+        p.onComplete();
+
+        BooleanSubscription bs = new BooleanSubscription();
+        p.onSubscribe(bs);
+
+        p.onNext(1);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            p.onError(new TestException());
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+        p.onComplete();
+
+        p.test().assertResult();
+
+        assertNull(p.getThrowable());
+        assertTrue(p.hasComplete());
+        assertFalse(p.hasThrowable());
+    }
+
+    @Test
+    public void onErrorStatePeeking() {
+        UnicastProcessor<Object> p = UnicastProcessor.create();
+
+        assertFalse(p.hasComplete());
+        assertFalse(p.hasThrowable());
+        assertNull(p.getThrowable());
+
+        TestException ex = new TestException();
+        p.onError(ex);
+
+        assertFalse(p.hasComplete());
+        assertTrue(p.hasThrowable());
+        assertSame(ex, p.getThrowable());
+    }
+
+    @Test
+    public void rejectSyncFusion() {
+        UnicastProcessor<Object> p = UnicastProcessor.create();
+
+        TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueSubscription.SYNC);
+
+        p.subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE);
+    }
+
+    @Test
+    public void cancelOnArrival() {
+        UnicastProcessor.create()
+        .test(0L, true)
+        .assertEmpty();
+    }
+
+    @Test
+    public void multiSubscriber() {
+        UnicastProcessor<Object> p = UnicastProcessor.create();
+
+        TestSubscriber<Object> ts = p.test();
+
+        p.test()
+        .assertFailure(IllegalStateException.class);
+
+        p.onNext(1);
+        p.onComplete();
+
+        ts.assertResult(1);
+    }
+
+    @Test
+    public void fusedDrainCancel() {
+        for (int i = 0; i < 500; i++) {
+            final UnicastProcessor<Object> p = UnicastProcessor.create();
+
+            final TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+            p.subscribe(ts);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    p.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
     }
 }

@@ -13,13 +13,13 @@
 package io.reactivex.internal.util;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.BooleanSupplier;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.*;
@@ -136,7 +136,7 @@ public final class QueueDrainHelper {
                     if (dispose != null) {
                         dispose.dispose();
                     }
-                    a.onError(new IllegalStateException("Could not emit value due to lack of requests."));
+                    a.onError(new MissingBackpressureException("Could not emit value due to lack of requests."));
                     return;
                 }
             }

@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
@@ -129,7 +130,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
                     }
                 } else {
                     cancel();
-                    actual.onError(new IllegalStateException("Couldn't emit value due to lack of requests!"));
+                    actual.onError(new MissingBackpressureException("Couldn't emit value due to lack of requests!"));
                 }
             }
         }

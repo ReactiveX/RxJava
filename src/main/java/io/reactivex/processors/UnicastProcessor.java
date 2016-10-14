@@ -279,10 +279,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
             return;
         }
 
-        if (!queue.offer(t)) {
-            onError(new IllegalStateException("The queue is full"));
-            return;
-        }
+        queue.offer(t);
         drain();
     }
 
@@ -404,7 +401,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public boolean hasComplete() {
-        return done;
+        return done && error == null;
     }
 
     @Override

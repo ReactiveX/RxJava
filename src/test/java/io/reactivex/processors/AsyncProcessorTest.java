@@ -14,6 +14,7 @@
 package io.reactivex.processors;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,8 @@ import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
 public class AsyncProcessorTest {
@@ -441,5 +444,193 @@ public class AsyncProcessorTest {
             .assertNoValues()
             .assertError(NullPointerException.class)
             .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onNextNullDelayed() {
+        final AsyncProcessor<Object> p = AsyncProcessor.create();
+
+        TestSubscriber<Object> ts = p.test();
+
+        p.onNext(null);
+
+        ts
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onErrorNullDelayed() {
+        final AsyncProcessor<Object> p = AsyncProcessor.create();
+
+        TestSubscriber<Object> ts = p.test();
+
+        p.onError(null);
+
+        ts
+            .assertNoValues()
+            .assertError(NullPointerException.class)
+            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onSubscribeAfterDone() {
+        AsyncProcessor<Object> p = AsyncProcessor.create();
+
+        BooleanSubscription bs = new BooleanSubscription();
+        p.onSubscribe(bs);
+
+        assertFalse(bs.isCancelled());
+
+        p.onComplete();
+
+        bs = new BooleanSubscription();
+        p.onSubscribe(bs);
+
+        assertTrue(bs.isCancelled());
+
+        p.test().assertResult();
+    }
+
+    @Test
+    public void cancelUpfront() {
+        AsyncProcessor<Object> p = AsyncProcessor.create();
+
+        assertFalse(p.hasSubscribers());
+
+        p.test().assertEmpty();
+        p.test().assertEmpty();
+
+        p.test(0L, true).assertEmpty();
+
+        assertTrue(p.hasSubscribers());
+    }
+
+    @Test
+    public void cancelRace() {
+        AsyncProcessor<Object> p = AsyncProcessor.create();
+
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Object> ts1 = p.test();
+            final TestSubscriber<Object> ts2 = p.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts1.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts2.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void onErrorCancelRace() {
+
+        for (int i = 0; i < 500; i++) {
+            final AsyncProcessor<Object> p = AsyncProcessor.create();
+
+            final TestSubscriber<Object> ts1 = p.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts1.cancel();
+                }
+            };
+
+            final TestException ex = new TestException();
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    p.onError(ex);
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            if (ts1.errorCount() != 0) {
+                ts1.assertFailure(TestException.class);
+            } else {
+                ts1.assertEmpty();
+            }
+        }
+    }
+
+    @Test
+    public void onNextCrossCancel() {
+        AsyncProcessor<Object> p = AsyncProcessor.create();
+
+        final TestSubscriber<Object> ts2 = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() {
+            @Override
+            public void onNext(Object t) {
+                ts2.cancel();
+                super.onNext(t);
+            }
+        };
+
+        p.subscribe(ts1);
+        p.subscribe(ts2);
+
+        p.onNext(1);
+        p.onComplete();
+
+        ts1.assertResult(1);
+        ts2.assertEmpty();
+    }
+
+    @Test
+    public void onErrorCrossCancel() {
+        AsyncProcessor<Object> p = AsyncProcessor.create();
+
+        final TestSubscriber<Object> ts2 = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() {
+            @Override
+            public void onError(Throwable t) {
+                ts2.cancel();
+                super.onError(t);
+            }
+        };
+
+        p.subscribe(ts1);
+        p.subscribe(ts2);
+
+        p.onError(new TestException());
+
+        ts1.assertFailure(TestException.class);
+        ts2.assertEmpty();
+    }
+
+    @Test
+    public void onCompleteCrossCancel() {
+        AsyncProcessor<Object> p = AsyncProcessor.create();
+
+        final TestSubscriber<Object> ts2 = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts1 = new TestSubscriber<Object>() {
+            @Override
+            public void onComplete() {
+                ts2.cancel();
+                super.onComplete();
+            }
+        };
+
+        p.subscribe(ts1);
+        p.subscribe(ts2);
+
+        p.onComplete();
+
+        ts1.assertResult();
+        ts2.assertEmpty();
     }
 }

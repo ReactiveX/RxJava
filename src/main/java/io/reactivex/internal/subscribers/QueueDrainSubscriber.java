@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
@@ -80,7 +81,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
                 }
             } else {
                 dispose.dispose();
-                s.onError(new IllegalStateException("Could not emit buffer due to lack of requests"));
+                s.onError(new MissingBackpressureException("Could not emit buffer due to lack of requests"));
                 return;
             }
         } else {
@@ -114,7 +115,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
             } else {
                 cancelled = true;
                 dispose.dispose();
-                s.onError(new IllegalStateException("Could not emit buffer due to lack of requests"));
+                s.onError(new MissingBackpressureException("Could not emit buffer due to lack of requests"));
                 return;
             }
         } else {

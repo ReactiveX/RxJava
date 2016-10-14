@@ -15,8 +15,6 @@ package io.reactivex.processors;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Predicate;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -51,26 +49,34 @@ import io.reactivex.plugins.RxJavaPlugins;
 
     @Override
     public void onSubscribe(Subscription s) {
-        if (done) {
-            return;
-        }
-        synchronized (this) {
-            if (done) {
-                return;
-            }
-            if (emitting) {
-                AppendOnlyLinkedArrayList<Object> q = queue;
-                if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<Object>(4);
-                    queue = q;
+        boolean cancel;
+        if (!done) {
+            synchronized (this) {
+                if (done) {
+                    cancel = true;
+                } else {
+                    if (emitting) {
+                        AppendOnlyLinkedArrayList<Object> q = queue;
+                        if (q == null) {
+                            q = new AppendOnlyLinkedArrayList<Object>(4);
+                            queue = q;
+                        }
+                        q.add(NotificationLite.subscription(s));
+                        return;
+                    }
+                    emitting = true;
+                    cancel = false;
                 }
-                q.add(NotificationLite.subscription(s));
-                return;
             }
-            emitting = true;
+        } else {
+            cancel = true;
         }
-        actual.onSubscribe(s);
-        emitLoop();
+        if (cancel) {
+            s.cancel();
+        } else {
+            actual.onSubscribe(s);
+            emitLoop();
+        }
     }
 
     @Override
@@ -165,26 +171,9 @@ import io.reactivex.plugins.RxJavaPlugins;
                 }
                 queue = null;
             }
-            try {
-                q.forEachWhile(consumer);
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
-                return;
-            }
-        }
-    }
 
-    final Predicate<Object> consumer = new Predicate<Object>() {
-        @Override
-        public boolean test(Object v) {
-            return SerializedProcessor.this.accept(v);
+            q.accept(actual);
         }
-    };
-
-    /** Delivers the notification to the actual subscriber. */
-    boolean accept(Object o) {
-        return NotificationLite.acceptFull(o, actual);
     }
 
     @Override
