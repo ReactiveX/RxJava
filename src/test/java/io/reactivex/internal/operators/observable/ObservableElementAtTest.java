@@ -15,11 +15,18 @@ package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
+import java.util.*;
+
 import org.junit.Test;
 
-import java.util.NoSuchElementException;
-
+import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposables;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservableElementAtTest {
 
@@ -165,5 +172,65 @@ public class ObservableElementAtTest {
             .elementAtOrError(1)
             .test()
             .assertFailure(NoSuchElementException.class);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().elementAt(0).toObservable());
+        TestHelper.checkDisposed(PublishSubject.create().elementAt(0, 1).toObservable());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.elementAt(0).toObservable();
+            }
+        });
+    }
+
+    @Test
+    public void elementAtIndex1WithDefaultOnEmptySourceObservable() {
+        Observable.empty()
+            .elementAt(1, 10)
+            .toObservable()
+            .test()
+            .assertResult(10);
+    }
+
+    @Test
+    public void errorObservable() {
+        Observable.error(new TestException())
+            .elementAt(1, 10)
+            .toObservable()
+            .test()
+            .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .elementAt(0)
+            .toObservable()
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

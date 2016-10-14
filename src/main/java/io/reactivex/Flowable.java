@@ -5683,7 +5683,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit) {
-        return buffer(timespan, unit, Integer.MAX_VALUE, Schedulers.computation());
+        return buffer(timespan, unit, Schedulers.computation(), Integer.MAX_VALUE);
     }
 
     /**
@@ -5717,7 +5717,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, int count) {
-        return buffer(timespan, unit, count, Schedulers.computation());
+        return buffer(timespan, unit, Schedulers.computation(), count);
     }
 
     /**
@@ -5742,10 +5742,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            buffer
      * @param unit
      *            the unit of time which applies to the {@code timespan} argument
-     * @param count
-     *            the maximum size of each buffer before it is emitted
      * @param scheduler
      *            the {@link Scheduler} to use when determining the end and start of a buffer
+     * @param count
+     *            the maximum size of each buffer before it is emitted
      * @return a Flowable that emits connected, non-overlapping buffers of items emitted by the source
      *         Publisher after a fixed duration or when the buffer reaches maximum capacity (whichever occurs
      *         first)
@@ -5753,8 +5753,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
-        return buffer(timespan, unit, count, scheduler, ArrayListSupplier.<T>asCallable(), false);
+    public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler, int count) {
+        return buffer(timespan, unit, scheduler, count, ArrayListSupplier.<T>asCallable(), false);
     }
 
     /**
@@ -5780,10 +5780,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            buffer
      * @param unit
      *            the unit of time which applies to the {@code timespan} argument
-     * @param count
-     *            the maximum size of each buffer before it is emitted
      * @param scheduler
      *            the {@link Scheduler} to use when determining the end and start of a buffer
+     * @param count
+     *            the maximum size of each buffer before it is emitted
      * @param bufferSupplier
      *            a factory function that returns an instance of the collection subclass to be used and returned
      *            as the buffer
@@ -5798,7 +5798,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <U extends Collection<? super T>> Flowable<U> buffer(
             long timespan, TimeUnit unit,
-            int count, Scheduler scheduler,
+            Scheduler scheduler, int count,
             Callable<U> bufferSupplier,
             boolean restartTimerOnMaxSize) {
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -5838,7 +5838,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) {
-        return buffer(timespan, unit, Integer.MAX_VALUE, scheduler, ArrayListSupplier.<T>asCallable(), false);
+        return buffer(timespan, unit, scheduler, Integer.MAX_VALUE, ArrayListSupplier.<T>asCallable(), false);
     }
 
     /**

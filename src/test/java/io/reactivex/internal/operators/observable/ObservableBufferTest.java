@@ -130,7 +130,7 @@ public class ObservableBufferTest {
             }
         });
 
-        Observable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler);
+        Observable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler, 2);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -662,7 +662,7 @@ public class ObservableBufferTest {
     public void bufferWithTimeAndSize() {
         Observable<Long> source = Observable.interval(30, 30, TimeUnit.MILLISECONDS, scheduler);
 
-        Observable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler).take(3);
+        Observable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler, 2).take(3);
 
         Observer<Object> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
@@ -844,7 +844,7 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierThrows() {
         Observable.just(1)
-        .buffer(1, TimeUnit.SECONDS, Integer.MAX_VALUE, Schedulers.single(), new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), Integer.MAX_VALUE, new Callable<Collection<Integer>>() {
             @Override
             public Collection<Integer> call() throws Exception {
                 throw new TestException();
@@ -858,7 +858,7 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierThrows2() {
         Observable.just(1)
-        .buffer(1, TimeUnit.SECONDS, 10, Schedulers.single(), new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), 10, new Callable<Collection<Integer>>() {
             @Override
             public Collection<Integer> call() throws Exception {
                 throw new TestException();
@@ -886,7 +886,7 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierThrows4() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, Integer.MAX_VALUE, Schedulers.single(), new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Callable<Collection<Integer>>() {
             int count;
             @Override
             public Collection<Integer> call() throws Exception {
@@ -906,7 +906,7 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierThrows5() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, 10, Schedulers.single(), new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Callable<Collection<Integer>>() {
             int count;
             @Override
             public Collection<Integer> call() throws Exception {
@@ -946,7 +946,7 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierReturnsNull() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, Integer.MAX_VALUE, Schedulers.single(), new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Callable<Collection<Integer>>() {
             int count;
             @Override
             public Collection<Integer> call() throws Exception {
@@ -966,7 +966,7 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     public void supplierReturnsNull2() {
         Observable.<Integer>never()
-        .buffer(1, TimeUnit.MILLISECONDS, 10, Schedulers.single(), new Callable<Collection<Integer>>() {
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Callable<Collection<Integer>>() {
             int count;
             @Override
             public Collection<Integer> call() throws Exception {
@@ -1203,5 +1203,26 @@ public class ObservableBufferTest {
         pp.onError(new TestException());
 
         ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.range(1, 5).buffer(1, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Observable.range(1, 5).buffer(2, 1, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Observable.range(1, 5).buffer(1, 2, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Observable.range(1, 5)
+                .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void restartTimer() {
+        Observable.range(1, 5)
+        .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true)
+        .test()
+        .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5));
     }
 }

@@ -334,6 +334,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 ConsumerIndexHolder consumerIndexHolder = new ConsumerIndexHolder(producerIndex, this);
                 if (restartTimerOnMaxSize) {
                     Scheduler.Worker sw = scheduler.createWorker();
+                    worker = sw;
                     sw.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
                     d = sw;
                 } else {

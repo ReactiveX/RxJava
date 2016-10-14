@@ -121,27 +121,6 @@ public abstract class BasicFuseableObserver<T, R> implements Observer<T>, QueueD
 
     /**
      * Calls the upstream's QueueDisposable.requestFusion with the mode and
-     * saves the established mode in {@link #sourceMode}.
-     * <p>
-     * If the upstream doesn't support fusion ({@link #qs} is null), the method
-     * returns {@link QueueDisposable#NONE}.
-     * @param mode the fusion mode requested
-     * @return the established fusion mode
-     */
-    protected final int transitiveFusion(int mode) {
-        QueueDisposable<T> qs = this.qs;
-        if (qs != null) {
-            int m = qs.requestFusion(mode);
-            if (m != NONE) {
-                sourceMode = m;
-            }
-            return m;
-        }
-        return NONE;
-    }
-
-    /**
-     * Calls the upstream's QueueDisposable.requestFusion with the mode and
      * saves the established mode in {@link #sourceMode} if that mode doesn't
      * have the {@link QueueDisposable#BOUNDARY} flag set.
      * <p>

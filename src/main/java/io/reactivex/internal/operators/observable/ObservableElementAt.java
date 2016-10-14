@@ -96,7 +96,7 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
 
         @Override
         public void onComplete() {
-            if (index <= count && !done) {
+            if (!done) {
                 done = true;
                 T v = defaultValue;
                 if (v != null) {

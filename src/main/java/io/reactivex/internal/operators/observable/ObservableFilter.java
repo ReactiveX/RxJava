@@ -15,9 +15,8 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.observers.BasicFuseableObserver;
 
 public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
@@ -31,60 +30,47 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
         source.subscribe(new FilterObserver<T>(s, predicate));
     }
 
-    static final class FilterObserver<T> implements Observer<T>, Disposable {
+    static final class FilterObserver<T> extends BasicFuseableObserver<T, T> {
         final Predicate<? super T> filter;
-        final Observer<? super T> actual;
 
         Disposable s;
 
         FilterObserver(Observer<? super T> actual, Predicate<? super T> filter) {
-            this.actual = actual;
+            super(actual);
             this.filter = filter;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
-            }
-        }
-
-
-        @Override
-        public void dispose() {
-            s.dispose();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return s.isDisposed();
-        }
-
-
-        @Override
         public void onNext(T t) {
-            boolean b;
-            try {
-                b = filter.test(t);
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                s.dispose();
-                actual.onError(e);
-                return;
-            }
-            if (b) {
-                actual.onNext(t);
+            if (sourceMode == NONE) {
+                boolean b;
+                try {
+                    b = filter.test(t);
+                } catch (Throwable e) {
+                    fail(e);
+                    return;
+                }
+                if (b) {
+                    actual.onNext(t);
+                }
+            } else {
+                actual.onNext(null);
             }
         }
 
         @Override
-        public void onError(Throwable t) {
-            actual.onError(t);
+        public int requestFusion(int mode) {
+            return transitiveBoundaryFusion(mode);
         }
+
         @Override
-        public void onComplete() {
-            actual.onComplete();
+        public T poll() throws Exception {
+            for (;;) {
+                T v = qs.poll();
+                if (v == null || filter.test(v)) {
+                    return v;
+                }
+            }
         }
     }
 }

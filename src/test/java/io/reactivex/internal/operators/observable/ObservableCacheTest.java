@@ -22,14 +22,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservableCacheTest {
     @Test
@@ -236,6 +237,7 @@ public class ObservableCacheTest {
     }
 
     @Test
+    @Ignore("2.x consumers are not allowed to throw")
     public void unsafeChildThrows() {
         final AtomicInteger count = new AtomicInteger();
 
@@ -262,5 +264,91 @@ public class ObservableCacheTest {
         ts.assertNoValues();
         ts.assertNotComplete();
         ts.assertError(TestException.class);
+    }
+
+    @Test
+    public void observers() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        ObservableCache<Integer> cache = (ObservableCache<Integer>)Observable.range(1, 5).concatWith(ps).cache();
+
+        assertFalse(cache.hasObservers());
+
+        assertEquals(0, cache.cachedEventCount());
+
+        TestObserver<Integer> to = cache.test();
+
+        assertTrue(cache.hasObservers());
+
+        assertEquals(5, cache.cachedEventCount());
+
+        ps.onComplete();
+
+        to.assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void disposeOnArrival() {
+        Observable.range(1, 5).cache()
+        .test(true)
+        .assertEmpty();
+    }
+
+    @Test
+    public void disposeOnArrival2() {
+        Observable<Integer> o = PublishSubject.<Integer>create().cache();
+
+        o.test();
+
+        o.test(true)
+        .assertEmpty();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.range(1, 5).cache());
+    }
+
+    @Test
+    public void take() {
+        Observable<Integer> cache = Observable.range(1, 5).cache();
+
+        cache.take(2).test().assertResult(1, 2);
+        cache.take(3).test().assertResult(1, 2, 3);
+    }
+
+    @Test
+    public void subscribeEmitRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishSubject<Integer> ps = PublishSubject.<Integer>create();
+
+            final Observable<Integer> cache = ps.cache();
+
+            cache.test();
+
+            final TestObserver<Integer> to = new TestObserver<Integer>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    cache.subscribe(to);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < 500; j++) {
+                        ps.onNext(j);
+                    }
+                    ps.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertSubscribed().assertValueCount(500).assertComplete().assertNoErrors();
+        }
     }
 }

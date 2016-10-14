@@ -131,7 +131,7 @@ public class FlowableBufferTest {
             }
         });
 
-        Flowable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler);
+        Flowable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler, 2);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -663,7 +663,7 @@ public class FlowableBufferTest {
     public void bufferWithTimeAndSize() {
         Flowable<Long> source = Flowable.interval(30, 30, TimeUnit.MILLISECONDS, scheduler);
 
-        Flowable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler).take(3);
+        Flowable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler, 2).take(3);
 
         Subscriber<Object> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
