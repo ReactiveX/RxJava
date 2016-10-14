@@ -13,12 +13,16 @@
 
 package io.reactivex.internal.operators.observable;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class ObservableGenerateTest {
 
@@ -43,5 +47,83 @@ public class ObservableGenerateTest {
         .take(5)
         .test()
         .assertResult(10, 10, 10, 10, 10);
+    }
+
+    @Test
+    public void stateSupplierThrows() {
+        Observable.generate(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                throw new TestException();
+            }
+        }, new BiConsumer<Object, Emitter<Object>>() {
+            @Override
+            public void accept(Object s, Emitter<Object> e) throws Exception {
+                e.onNext(s);
+            }
+        }, Functions.emptyConsumer())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void generatorThrows() {
+        Observable.generate(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return 1;
+            }
+        }, new BiConsumer<Object, Emitter<Object>>() {
+            @Override
+            public void accept(Object s, Emitter<Object> e) throws Exception {
+                throw new TestException();
+            }
+        }, Functions.emptyConsumer())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void disposerThrows() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Observable.generate(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    return 1;
+                }
+            }, new BiConsumer<Object, Emitter<Object>>() {
+                @Override
+                public void accept(Object s, Emitter<Object> e) throws Exception {
+                    e.onComplete();
+                }
+            }, new Consumer<Object>() {
+                @Override
+                public void accept(Object d) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.generate(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    return 1;
+                }
+            }, new BiConsumer<Object, Emitter<Object>>() {
+                @Override
+                public void accept(Object s, Emitter<Object> e) throws Exception {
+                    e.onComplete();
+                }
+            }, Functions.emptyConsumer()));
     }
 }

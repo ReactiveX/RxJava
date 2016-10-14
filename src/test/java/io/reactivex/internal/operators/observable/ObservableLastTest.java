@@ -14,15 +14,17 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import java.util.NoSuchElementException;
-
 import io.reactivex.*;
-import io.reactivex.functions.Predicate;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 
 public class ObservableLastTest {
 
@@ -293,5 +295,28 @@ public class ObservableLastTest {
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.never().lastElement());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.lastElement();
+            }
+        });
+    }
+
+    @Test
+    public void error() {
+        Observable.error(new TestException())
+        .lastElement()
+        .test()
+        .assertFailure(TestException.class);
     }
 }

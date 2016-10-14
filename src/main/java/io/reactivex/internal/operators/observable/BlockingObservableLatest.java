@@ -21,41 +21,32 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.DisposableObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Wait for and iterate over the latest values of the source observable. If the source works faster than the
  * iterator, values may be skipped, but not the {@code onError} or {@code onComplete} events.
+ * @param <T> the value type
  */
-public enum BlockingObservableLatest {
-    ;
+public final class BlockingObservableLatest<T> implements Iterable<T> {
 
-    /**
-     * Returns an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
-     * been returned by the {@code Iterable}, then returns that item.
-     *
-     * @param <T> the value type
-     * @param source
-     *            the source {@code Observable}
-     * @return an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
-     *         been returned by the {@code Iterable}, then returns that item
-     */
-    public static <T> Iterable<T> latest(final ObservableSource<? extends T> source) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                LatestObserverIterator<T> lio = new LatestObserverIterator<T>();
+    final ObservableSource<T> source;
 
-                @SuppressWarnings("unchecked")
-                Observable<Notification<T>> materialized = Observable.wrap((ObservableSource<T>)source).materialize();
-
-                materialized.subscribe(lio);
-                return lio;
-            }
-        };
+    public BlockingObservableLatest(ObservableSource<T> source) {
+        this.source = source;
     }
 
-    /** Observer of source, iterator for output. */
-    static final class LatestObserverIterator<T> extends DisposableObserver<Notification<T>> implements Iterator<T> {
+    @Override
+    public Iterator<T> iterator() {
+        BlockingObservableLatestIterator<T> lio = new BlockingObservableLatestIterator<T>();
+
+        Observable<Notification<T>> materialized = Observable.wrap(source).materialize();
+
+        materialized.subscribe(lio);
+        return lio;
+    }
+
+    static final class BlockingObservableLatestIterator<T> extends DisposableObserver<Notification<T>> implements Iterator<T> {
         // iterator's notification
         Notification<T> iteratorNotification;
 
@@ -73,7 +64,7 @@ public enum BlockingObservableLatest {
 
         @Override
         public void onError(Throwable e) {
-            // not expected
+            RxJavaPlugins.onError(e);
         }
 
         @Override
@@ -86,22 +77,20 @@ public enum BlockingObservableLatest {
             if (iteratorNotification != null && iteratorNotification.isOnError()) {
                 throw ExceptionHelper.wrapOrThrow(iteratorNotification.getError());
             }
-            if (iteratorNotification == null || iteratorNotification.isOnNext()) {
-                if (iteratorNotification == null) {
-                    try {
-                        notify.acquire();
-                    } catch (InterruptedException ex) {
-                        dispose();
-                        Thread.currentThread().interrupt();
-                        iteratorNotification = Notification.createOnError(ex);
-                        throw ExceptionHelper.wrapOrThrow(ex);
-                    }
+            if (iteratorNotification == null) {
+                try {
+                    notify.acquire();
+                } catch (InterruptedException ex) {
+                    dispose();
+                    Thread.currentThread().interrupt();
+                    iteratorNotification = Notification.createOnError(ex);
+                    throw ExceptionHelper.wrapOrThrow(ex);
+                }
 
-                    Notification<T> n = value.getAndSet(null);
-                    iteratorNotification = n;
-                    if (n.isOnError()) {
-                        throw ExceptionHelper.wrapOrThrow(n.getError());
-                    }
+                Notification<T> n = value.getAndSet(null);
+                iteratorNotification = n;
+                if (n.isOnError()) {
+                    throw ExceptionHelper.wrapOrThrow(n.getError());
                 }
             }
             return iteratorNotification.isOnNext();
@@ -110,11 +99,9 @@ public enum BlockingObservableLatest {
         @Override
         public T next() {
             if (hasNext()) {
-                if (iteratorNotification.isOnNext()) {
-                    T v = iteratorNotification.getValue();
-                    iteratorNotification = null;
-                    return v;
-                }
+                T v = iteratorNotification.getValue();
+                iteratorNotification = null;
+                return v;
             }
             throw new NoSuchElementException();
         }
@@ -123,6 +110,5 @@ public enum BlockingObservableLatest {
         public void remove() {
             throw new UnsupportedOperationException("Read-only iterator.");
         }
-
     }
 }

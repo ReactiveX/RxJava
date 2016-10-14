@@ -12,10 +12,8 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.internal.fuseable.QueueDisposable;
-import java.util.concurrent.atomic.AtomicLong;
+import io.reactivex.*;
+import io.reactivex.internal.observers.BasicIntQueueDisposable;
 
 public final class ObservableRangeLong extends Observable<Long> {
     private final long start;
@@ -34,8 +32,7 @@ public final class ObservableRangeLong extends Observable<Long> {
     }
 
     static final class RangeDisposable
-    extends AtomicLong
-    implements QueueDisposable<Long> {
+    extends BasicIntQueueDisposable<Long> {
 
         private static final long serialVersionUID = 396518478098735504L;
 
@@ -66,16 +63,6 @@ public final class ObservableRangeLong extends Observable<Long> {
                 lazySet(1);
                 actual.onComplete();
             }
-        }
-
-        @Override
-        public boolean offer(Long value) {
-            throw new UnsupportedOperationException("Should not be called!");
-        }
-
-        @Override
-        public boolean offer(Long v1, Long v2) {
-            throw new UnsupportedOperationException("Should not be called!");
         }
 
         @Override

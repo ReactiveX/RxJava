@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.plugins.RxJavaPlugins;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
@@ -23,9 +22,11 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
+import io.reactivex.internal.util.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
@@ -67,9 +68,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         volatile boolean done;
 
-        final AtomicReference<SimpleQueue<Throwable>> errors = new AtomicReference<SimpleQueue<Throwable>>();
-
-        static final SimpleQueue<Throwable> ERRORS_CLOSED = new RejectingQueue<Throwable>();
+        final AtomicThrowable errors = new AtomicThrowable();
 
         volatile boolean cancelled;
 
@@ -169,10 +168,10 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         void removeInner(InnerObserver<T, U> inner) {
             for (;;) {
                 InnerObserver<?, ?>[] a = observers.get();
-                if (a == CANCELLED || a == EMPTY) {
+                int n = a.length;
+                if (n == 0) {
                     return;
                 }
-                int n = a.length;
                 int j = -1;
                 for (int i = 0; i < n; i++) {
                     if (a[i] == inner) {
@@ -216,7 +215,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 u = value.call();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                getErrorQueue().offer(ex);
+                errors.addThrowable(ex);
                 drain();
                 return;
             }
@@ -282,9 +281,12 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 RxJavaPlugins.onError(t);
                 return;
             }
-            getErrorQueue().offer(t);
-            done = true;
-            drain();
+            if (errors.addThrowable(t)) {
+                done = true;
+                drain();
+            } else {
+                RxJavaPlugins.onError(t);
+            }
         }
 
         @Override
@@ -300,9 +302,11 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
-                if (getAndIncrement() == 0) {
-                    s.dispose();
-                    disposeAll();
+                if (disposeAll()) {
+                    Throwable ex = errors.terminate();
+                    if (ex != null && ex != ExceptionHelper.TERMINATED) {
+                        RxJavaPlugins.onError(ex);
+                    }
                 }
             }
         }
@@ -338,7 +342,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                                 o = svq.poll();
                             } catch (Throwable ex) {
                                 Exceptions.throwIfFatal(ex);
-                                getErrorQueue().offer(ex);
+                                errors.addThrowable(ex);
                                 continue;
                             }
                             if (o == null) {
@@ -359,11 +363,11 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 int n = inner.length;
 
                 if (d && (svq == null || svq.isEmpty()) && n == 0) {
-                    SimpleQueue<Throwable> e = errors.get();
-                    if (e == null || e.isEmpty()) {
+                    Throwable ex = errors.get();
+                    if (ex == null) {
                         child.onComplete();
                     } else {
-                        reportError(e);
+                        child.onError(errors.terminate());
                     }
                     return;
                 }
@@ -414,7 +418,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                                     o = q.poll();
                                 } catch (Throwable ex) {
                                     Exceptions.throwIfFatal(ex);
-                                    getErrorQueue().offer(ex);
+                                    errors.addThrowable(ex);
                                     continue;
                                 }
                                 if (o == null) {
@@ -469,93 +473,34 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         boolean checkTerminate() {
             if (cancelled) {
-                s.dispose();
-                disposeAll();
                 return true;
             }
-            SimpleQueue<Throwable> e = errors.get();
-            if (!delayErrors && (e != null && !e.isEmpty())) {
-                try {
-                    reportError(e);
-                } finally {
-                    disposeAll();
-                }
+            Throwable e = errors.get();
+            if (!delayErrors && (e != null)) {
+                actual.onError(errors.terminate());
                 return true;
             }
             return false;
         }
 
-        void reportError(SimpleQueue<Throwable> q) {
-            List<Throwable> composite = null;
-            Throwable ex = null;
-
-            for (;;) {
-                Throwable t;
-                try {
-                    t = q.poll();
-                } catch (Throwable exc) {
-                    Exceptions.throwIfFatal(exc);
-                    if (ex == null) {
-                        ex = exc;
-                    } else {
-                        if (composite == null) {
-                            composite = new ArrayList<Throwable>();
-                            composite.add(ex);
-                        }
-                        composite.add(exc);
-                    }
-                    break;
-                }
-
-                if (t == null) {
-                    break;
-                }
-                if (ex == null) {
-                    ex = t;
-                } else {
-                    if (composite == null) {
-                        composite = new ArrayList<Throwable>();
-                        composite.add(ex);
-                    }
-                    composite.add(t);
-                }
-            }
-            if (composite != null) {
-                actual.onError(new CompositeException(composite));
-            } else {
-                actual.onError(ex);
-            }
-        }
-
-        void disposeAll() {
+        boolean disposeAll() {
+            s.dispose();
             InnerObserver<?, ?>[] a = observers.get();
             if (a != CANCELLED) {
                 a = observers.getAndSet(CANCELLED);
                 if (a != CANCELLED) {
-                    errors.getAndSet(ERRORS_CLOSED);
                     for (InnerObserver<?, ?> inner : a) {
                         inner.dispose();
                     }
+                    return true;
                 }
             }
-        }
-
-        SimpleQueue<Throwable> getErrorQueue() {
-            for (;;) {
-                SimpleQueue<Throwable> q = errors.get();
-                if (q != null) {
-                    return q;
-                }
-                q = new MpscLinkedQueue<Throwable>();
-                if (errors.compareAndSet(null, q)) {
-                    return q;
-                }
-            }
+            return false;
         }
     }
 
     static final class InnerObserver<T, U> extends AtomicReference<Disposable>
-    implements Observer<U>, Disposable {
+    implements Observer<U> {
 
         private static final long serialVersionUID = -4606175640614850599L;
         final long id;
@@ -602,9 +547,15 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
         @Override
         public void onError(Throwable t) {
-            parent.getErrorQueue().offer(t);
-            done = true;
-            parent.drain();
+            if (parent.errors.addThrowable(t)) {
+                if (!parent.delayErrors) {
+                    parent.disposeAll();
+                }
+                done = true;
+                parent.drain();
+            } else {
+                RxJavaPlugins.onError(t);
+            }
         }
         @Override
         public void onComplete() {
@@ -612,42 +563,8 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             parent.drain();
         }
 
-        @Override
         public void dispose() {
             DisposableHelper.dispose(this);
         }
-
-        @Override
-        public boolean isDisposed() {
-            return get() == DisposableHelper.DISPOSED;
-        }
-    }
-
-    static final class RejectingQueue<T> implements SimpleQueue<T> {
-        @Override
-        public boolean offer(T e) {
-            return false;
-        }
-
-        @Override
-        public T poll() {
-            return null;
-        }
-
-        @Override
-        public boolean offer(T v1, T v2) {
-            return false;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
     }
 }

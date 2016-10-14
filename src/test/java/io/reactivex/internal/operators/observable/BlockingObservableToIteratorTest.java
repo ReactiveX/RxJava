@@ -13,13 +13,15 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-import java.util.Iterator;
+import java.util.*;
 
 import org.junit.*;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 
@@ -78,5 +80,42 @@ public class BlockingObservableToIteratorTest {
             // never reaches here
             System.out.println(string);
         }
+    }
+
+    @Test
+    public void dispose() {
+        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<Integer>(128);
+
+        assertFalse(it.isDisposed());
+
+        it.dispose();
+
+        assertTrue(it.isDisposed());
+    }
+
+    @Test
+    public void interruptWait() {
+        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<Integer>(128);
+
+        try {
+            Thread.currentThread().interrupt();
+
+            it.hasNext();
+        } catch (RuntimeException ex) {
+            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+        }
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void emptyThrowsNoSuch() {
+        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<Integer>(128);
+        it.onComplete();
+        it.next();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void remove() {
+        BlockingObservableIterator<Integer> it = new BlockingObservableIterator<Integer>(128);
+        it.remove();
     }
 }

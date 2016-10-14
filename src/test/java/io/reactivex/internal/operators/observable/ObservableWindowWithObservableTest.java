@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -25,7 +26,8 @@ import org.junit.Test;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.TestHelper;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.subjects.PublishSubject;
 
@@ -416,5 +418,28 @@ public class ObservableWindowWithObservableTest {
 
         assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());
+    }
+
+    @Test
+    public void boundaryDispose() {
+        TestHelper.checkDisposed(Observable.never().window(Observable.never()));
+    }
+
+    @Test
+    public void boundaryDispose2() {
+        TestHelper.checkDisposed(Observable.never().window(Functions.justCallable(Observable.never())));
+    }
+
+    @Test
+    public void boundaryOnError() {
+        TestObserver<Object> to = Observable.error(new TestException())
+        .window(Observable.never())
+        .flatMap(Functions.<Observable<Object>>identity(), true)
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+
+        TestHelper.assertError(errors, 0, TestException.class);
     }
 }

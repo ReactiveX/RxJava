@@ -137,7 +137,7 @@ public final class ObservableAmb<T> extends Observable<T> {
         }
     }
 
-    static final class AmbInnerObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
+    static final class AmbInnerObserver<T> extends AtomicReference<Disposable> implements Observer<T> {
 
         private static final long serialVersionUID = -1185974347409665484L;
         final AmbCoordinator<T> parent;
@@ -180,7 +180,6 @@ public final class ObservableAmb<T> extends Observable<T> {
                     won = true;
                     actual.onError(t);
                 } else {
-                    get().dispose();
                     RxJavaPlugins.onError(t);
                 }
             }
@@ -194,20 +193,12 @@ public final class ObservableAmb<T> extends Observable<T> {
                 if (parent.win(index)) {
                     won = true;
                     actual.onComplete();
-                } else {
-                    get().dispose();
                 }
             }
         }
 
-        @Override
         public void dispose() {
             DisposableHelper.dispose(this);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return get() == DisposableHelper.DISPOSED;
         }
     }
 }

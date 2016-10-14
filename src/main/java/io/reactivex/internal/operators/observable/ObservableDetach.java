@@ -55,8 +55,7 @@ public final class ObservableDetach<T> extends AbstractObservableWithUpstream<T,
 
         @Override
         public boolean isDisposed() {
-            Disposable s = this.s;
-            return s == null || s.isDisposed();
+            return s.isDisposed();
         }
 
         @Override

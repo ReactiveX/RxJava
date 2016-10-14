@@ -14,15 +14,22 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class ObservableAnyTest {
 
@@ -476,5 +483,51 @@ public class ObservableAnyTest {
         ts.assertError(ex);
         // FIXME value as last cause?
 //        assertTrue(ex.getCause().getMessage().contains("Boo!"));
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).any(Functions.alwaysTrue()).toObservable());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Boolean>>() {
+            @Override
+            public ObservableSource<Boolean> apply(Observable<Object> o) throws Exception {
+                return o.any(Functions.alwaysTrue()).toObservable();
+            }
+        });
+    }
+
+    @Test
+    public void predicateThrowsSuppressOthers() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new IOException());
+                    observer.onComplete();
+                }
+            }
+            .any(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .toObservable()
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

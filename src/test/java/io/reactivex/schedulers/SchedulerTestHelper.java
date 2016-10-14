@@ -81,7 +81,10 @@ final class SchedulerTestHelper {
                 fail("timed out");
             }
 
-            assertEquals("Handler should not have received anything", 0, handler.count);
+            if (handler.count != 0) {
+                handler.caught.printStackTrace();
+            }
+            assertEquals("Handler should not have received anything: " + handler.caught, 0, handler.count);
             assertEquals("Observer should have received an error", 1, observer.errorCount);
             assertEquals("Observer should not have received a next value", 0, observer.nextCount);
 
@@ -110,7 +113,7 @@ final class SchedulerTestHelper {
         }
     }
 
-    private static final class CapturingObserver<T> extends DefaultSubscriber<T> {
+    static final class CapturingObserver<T> extends DefaultSubscriber<T> {
         CountDownLatch completed = new CountDownLatch(1);
         int errorCount;
         int nextCount;

@@ -19,8 +19,9 @@ import java.lang.ref.WeakReference;
 
 import org.junit.*;
 
-import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 
 
@@ -155,5 +156,20 @@ public class ObservableDetachTest {
 //        ts.assertValues(1, 2, 3);
 //        ts.assertComplete();
 //        ts.assertNoErrors();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.never().onTerminateDetach());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.onTerminateDetach();
+            }
+        });
     }
 }

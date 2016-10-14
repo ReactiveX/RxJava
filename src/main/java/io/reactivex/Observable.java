@@ -4549,7 +4549,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingLatest() {
-        return BlockingObservableLatest.latest(this);
+        return new BlockingObservableLatest<T>(this);
     }
 
     /**
@@ -4571,7 +4571,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingMostRecent(T initialValue) {
-        return BlockingObservableMostRecent.mostRecent(this, initialValue);
+        return new BlockingObservableMostRecent<T>(this, initialValue);
     }
 
     /**
@@ -4590,7 +4590,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingNext() {
-        return BlockingObservableNext.next(this);
+        return new BlockingObservableNext<T>(this);
     }
 
     /**

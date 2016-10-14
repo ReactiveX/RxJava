@@ -13,12 +13,18 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.*;
+
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 
 import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.TestHelper;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
@@ -161,5 +167,63 @@ public class BlockingObservableLatestTest {
         source.onComplete();
 
         Assert.assertEquals(false, it.hasNext());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void remove() {
+        Observable.never().blockingLatest().iterator().remove();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void empty() {
+        Observable.empty().blockingLatest().iterator().next();
+    }
+
+    @Test(expected = TestException.class)
+    public void error() {
+        Observable.error(new TestException()).blockingLatest().iterator().next();
+    }
+
+    @Test
+    public void error2() {
+        Iterator<Object> it = Observable.error(new TestException()).blockingLatest().iterator();
+
+        for (int i = 0; i < 3; i++) {
+            try {
+                it.hasNext();
+                fail("Should have thrown");
+            } catch (TestException ex) {
+                // expected
+            }
+        }
+    }
+
+    @Test
+    public void interrupted() {
+        Iterator<Object> it = Observable.never().blockingLatest().iterator();
+
+        Thread.currentThread().interrupt();
+
+        try {
+            it.hasNext();
+        } catch (RuntimeException ex) {
+            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+        }
+        Thread.interrupted();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void onError() {
+        Iterator<Object> it = Observable.never().blockingLatest().iterator();
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            ((Observer<Object>)it).onError(new TestException());
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
