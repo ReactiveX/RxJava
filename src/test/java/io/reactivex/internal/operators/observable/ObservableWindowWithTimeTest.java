@@ -417,7 +417,7 @@ public class ObservableWindowWithTimeTest {
 
         TestHelper.checkDisposed(Observable.range(1, 5).window(1, 2, TimeUnit.DAYS, Schedulers.single()));
 
-        TestHelper.checkDisposed(Observable.range(1, 5)
+        TestHelper.checkDisposed(Observable.never()
                 .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true));
     }
 
