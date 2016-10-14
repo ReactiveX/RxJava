@@ -26,6 +26,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import co.touchlab.doppel.testing.DoppelHacks;
+import co.touchlab.doppel.testing.PlatformUtils;
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -455,7 +457,10 @@ public class OperatorZipTest {
     }
 
     @Test
+    @DoppelHacks//Divide by zero and j2objc don't mix
     public void testOnNextExceptionInvokesOnError() {
+        if(PlatformUtils.isJ2objc())
+            return;
         Func2<Integer, Integer, Integer> zipr = getDivideZipr();
 
         @SuppressWarnings("unchecked")

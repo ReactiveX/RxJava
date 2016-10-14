@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
+import co.touchlab.doppel.testing.PlatformUtils;
 import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.TestException;
@@ -30,7 +32,10 @@ public class OnSubscribeDetachTest {
     Object o;
 
     @Test
+    @DoppelHacks //WeakReference doesn't work exactly as expected in j2objc
     public void just() throws Exception {
+        if(PlatformUtils.isJ2objc())
+            return;
         o = new Object();
 
         WeakReference<Object> wr = new WeakReference<Object>(o);
@@ -87,7 +92,10 @@ public class OnSubscribeDetachTest {
 
 
     @Test
+    @DoppelHacks //WeakReference doesn't work exactly as expected in j2objc
     public void backpressured() throws Exception {
+        if(PlatformUtils.isJ2objc())
+            return;
         o = new Object();
 
         WeakReference<Object> wr = new WeakReference<Object>(o);
@@ -113,7 +121,10 @@ public class OnSubscribeDetachTest {
     }
 
     @Test
+    @DoppelHacks //WeakReference doesn't work exactly as expected in j2objc
     public void justUnsubscribed() throws Exception {
+        if(PlatformUtils.isJ2objc())
+            return;
         o = new Object();
 
         WeakReference<Object> wr = new WeakReference<Object>(o);

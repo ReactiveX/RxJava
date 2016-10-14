@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
@@ -34,6 +35,7 @@ import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
+@DoppelHacks//Fails java.lang.Throwable: *** -objCType only defined for abstract class.  Define -[RxInternalOperatorsOperatorReplay_InnerProducer objCType]!
 public class OperatorRepeatTest {
 
     @Test(timeout = 2000)

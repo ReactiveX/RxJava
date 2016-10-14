@@ -1,0 +1,38 @@
+# Uncomment this line to define a global platform for your project
+# platform :ios, '8.0'
+# Uncomment this line if you're using Swift
+# use_frameworks!
+
+
+
+
+
+# J2ObjC Gradle Plugin - PodMethods - DO NOT MODIFY START - can be moved as a block
+def j2objc_rxjava
+    pod 'j2objc-rxjava-debug', :configuration => ['Debug'], :path => '../build/doppel'
+    pod 'j2objc-rxjava-release', :configuration => ['Release'], :path => '../build/doppel'
+    pod 'j2objc-rxjava-test', :path => '../build/j2objcOutputs'
+end
+# J2ObjC Gradle Plugin - PodMethods - DO NOT MODIFY END
+
+target 'ios' do
+    platform :ios, '8.3'
+    j2objc_rxjava
+pod 'j2objc-androidbase-debug', :configuration => ['Debug'], :path => '../build/doppelDependencyExploded/co_touchlab_doppel_androidbase_0_3_1_SNAPSHOT'
+pod 'j2objc-androidbase-release', :configuration => ['Release'], :path => '../build/doppelDependencyExploded/co_touchlab_doppel_androidbase_0_3_1_SNAPSHOT'
+pod 'j2objc-androidbasetest-debug', :configuration => ['Debug'], :path => '../build/doppelDependencyExploded/co_touchlab_doppel_androidbasetest_0_3_1_SNAPSHOT'
+pod 'j2objc-androidbasetest-release', :configuration => ['Release'], :path => '../build/doppelDependencyExploded/co_touchlab_doppel_androidbasetest_0_3_1_SNAPSHOT'
+    
+    
+end
+
+target 'iosTests' do
+    platform :ios, '8.3'
+    j2objc_rxjava
+pod 'j2objc-androidbase-debug', :configuration => ['Debug'], :path => '../build/doppelDependencyExploded/co_touchlab_doppel_androidbase_0_3_1_SNAPSHOT'
+pod 'j2objc-androidbase-release', :configuration => ['Release'], :path => '../build/doppelDependencyExploded/co_touchlab_doppel_androidbase_0_3_1_SNAPSHOT'
+pod 'j2objc-androidbasetest-debug', :configuration => ['Debug'], :path => '../build/doppelDependencyExploded/co_touchlab_doppel_androidbasetest_0_3_1_SNAPSHOT'
+pod 'j2objc-androidbasetest-release', :configuration => ['Release'], :path => '../build/doppelDependencyExploded/co_touchlab_doppel_androidbasetest_0_3_1_SNAPSHOT'
+
+
+end

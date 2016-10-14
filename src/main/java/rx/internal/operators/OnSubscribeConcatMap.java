@@ -16,6 +16,8 @@
 
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
@@ -349,6 +351,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
     static final class ConcatMapInnerScalarProducer<T, R> implements Producer {
         final R value;
 
+        @Weak
         final ConcatMapSubscriber<T, R> parent;
 
         boolean once;

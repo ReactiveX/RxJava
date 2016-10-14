@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "3B4146233A538D9C0924D4761F58DD8BE09D991C",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "3B4146233A538D9C0924D4761F58DD8BE09D991C" : 0,
+    "44D221F7591175A4A445187FEA95357B21A925E5" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "4FFBD734-68A0-47FF-A0F5-D3EBB7606D74",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "3B4146233A538D9C0924D4761F58DD8BE09D991C" : "xp\/",
+    "44D221F7591175A4A445187FEA95357B21A925E5" : "j2objc\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "ios",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "gradletrans\/gson\/ios\/ios.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:touchlab\/DoppelPoc.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "3B4146233A538D9C0924D4761F58DD8BE09D991C"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:google\/j2objc.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "44D221F7591175A4A445187FEA95357B21A925E5"
+    }
+  ]
+}

@@ -36,7 +36,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     private static final long NOT_SET = Long.MIN_VALUE;
 
     private final SubscriptionList subscriptions;
-    private final Subscriber<?> subscriber;
+    private Subscriber<?> subscriber;
     /* protected by `this` */
     private Producer producer;
     /* protected by `this` */
@@ -211,5 +211,26 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
                 producer.request(toRequest);
             }
         }
+    }
+
+    /**
+     * Added for j2objc compatibility. Lots of memory cycles, so setting nulls is simpler than
+     * trying to set weak references. It will clutter code somewhat, but should be safer.
+     */
+    public void j2objcCleanup()
+    {
+        producer = null;
+        if(subscriber != null)
+        {
+            subscriber.j2objcCleanup();
+            subscriber = null;
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable
+    {
+        super.finalize();
+        j2objcCleanup();
     }
 }

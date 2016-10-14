@@ -36,10 +36,12 @@ import org.junit.*;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
+import co.touchlab.doppel.testing.MockGen;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.doppl.mock.MObserver;
 import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
@@ -48,11 +50,12 @@ import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
+@MockGen(classes = "rx.doppl.mock.MObserver")
 public class OperatorDelayTest {
     @Mock
-    private Observer<Long> observer;
+    private MObserver<Long> observer;
     @Mock
-    private Observer<Long> observer2;
+    private MObserver<Long>  observer2;
 
     private TestScheduler scheduler;
 

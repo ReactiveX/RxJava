@@ -15,6 +15,8 @@
  */
 package rx.internal.producers;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.*;
 
 import rx.*;
@@ -31,6 +33,7 @@ import rx.internal.operators.BackpressureUtils;
  * @param <T> the value type
  */
 public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
+    @Weak
     final Subscriber<? super T> child;
 
     boolean emitting;

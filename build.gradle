@@ -1,136 +1,99 @@
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
+        maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven {
+            // change to point to your repo, e.g. http://my.org/repo
+//            url "http://dopplmaven.s3-website-us-east-1.amazonaws.com/"
+            url dopplMavenDeploy
+        }
     }
     dependencies {
-        classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0'
-        classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.1.0'
+        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.5"
+        classpath 'co.touchlab.doppel:doppelgradle:0.3.2-SNAPSHOT'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
-
-description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
+System.properties['com.android.build.gradle.overrideVersionCheck'] = 'true'
+allprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url "https://raw.github.com/Raizlabs/maven-releases/master/releases" }
+        maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
+        maven {
+            // change to point to your repo, e.g. http://my.org/repo
+//            url "http://dopplmaven.s3-website-us-east-1.amazonaws.com/"
+            url dopplMavenDeploy
+        }
+    }
+}
 
 apply plugin: 'java'
-//apply plugin: 'pmd'
-apply plugin: 'findbugs'
-apply plugin: 'jacoco'
-apply plugin: 'ru.vyarus.animalsniffer'
-apply plugin: 'nebula.rxjava-project'
+apply plugin: 'maven-publish'
+apply plugin: 'net.ltgt.apt'
+apply plugin: 'com.touchlab.doppel.doppelgradle'
 
-repositories {
-    mavenCentral()
-}
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 dependencies {
-    signature 'org.codehaus.mojo.signature:java16:1.1@signature'
-
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
-    testCompile 'com.google.guava:guava:19.0'
-    testCompile 'com.pushtorefresh.java-private-constructor-checker:checker:1.2.0'
-
-    perfCompile 'org.openjdk.jmh:jmh-core:1.11.3'
-    perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.3'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'junit:junit:4.11'
+    testCompile 'org.mockito:mockito-core:1.9.5'
+    testApt 'co.touchlab.doppel:testapt:0.3.2-SNAPSHOT'
 }
 
-javadoc {
-    exclude "**/rx/internal/**"
-    exclude "**/test/**"
-    exclude "**/perf/**"
-    options {
-        windowTitle = "RxJava Javadoc ${project.version}"
+group = 'doppl.io.reactivex'
+version = '1.2.1.0'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId 'rxjava'
+            from components.java
+
+            artifact doppelArchive
+        }
     }
-    // Clear the following options to make the docs consistent with the old format
-    options.addStringOption('top').value = ''
-    options.addStringOption('doctitle').value = ''
-    options.addStringOption('header').value = ''
-    if (JavaVersion.current().isJava7()) {
-        // "./gradle/stylesheet.css" only supports Java 7
-        options.addStringOption('stylesheetfile', rootProject.file('./gradle/stylesheet.css').toString())
+    repositories {
+        maven {
+            // change to point to your repo, e.g. http://my.org/repo
+            url dopplMavenDeploy
+        }
     }
-}
-
-// support for snapshot/final releases with the various branches RxJava uses
-nebulaRelease {
-    addReleaseBranchPattern(/\d+\.\d+\.\d+/)
-    addReleaseBranchPattern('HEAD')
-}
-
-if (project.hasProperty('release.useLastTag')) {
-    tasks.prepare.enabled = false
 }
 
 test{
-     maxHeapSize = "1200m"
+    enabled = false
 }
 
-license {
-    excludes(["**/*.md", "**/*.txt", "**/unsafe/*.java", "**/atomic/*.java", "**/Beta.java", "**/Experimental.java"])
+j2objcTestDebug{
+    enabled = false
 }
 
-jacoco {
-    toolVersion = '0.7.7.201606060606' // See http://www.eclemma.org/jacoco/.
+j2objcTestRelease{
+    enabled = false
 }
 
-jacocoTestReport {
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-}
+j2objcConfig {
+    extraLinkerArgs '-lsqlite3'
 
-build.dependsOn jacocoTestReport
+//    useArc true
 
+    testMinExpectedTests 0
 
-//pmd {
-//    toolVersion = '5.4.2'
-//    ignoreFailures = true
-//    sourceSets = [sourceSets.main]
-//    ruleSets = []
-//    ruleSetFiles = files('pmd.xml')
-//}
+    extraObjcCompilerArgs '-Wno-deprecated'
 
-//pmdMain {
-//    reports {
-//        html.enabled = true
-//        xml.enabled = true
-//    }
-//}
+    xcodeTestProjectDir 'ios'  //  suggested directory name
+    xcodeTestTargetsIos 'ios', 'iosTests'  // replace with your iOS targets
 
-//task pmdPrint(dependsOn: 'pmdMain') << {
-//    File file = new File('build/reports/pmd/main.xml')
-//    if (file.exists()) {
-//
-//        println("Listing first 100 PMD violations")
-//
-//        file.eachLine { line, count ->
-//            if (count <= 100) {
-//               println(line)
-//            }
-//        }
-//
-//    } else {
-//        println("PMD file not found.")
-//    }
-//}
+    j2objcCycleFinder { enabled = true }
 
-//build.dependsOn pmdPrint
-
-animalsniffer {
-    annotation = 'rx.internal.util.SuppressAnimalSniffer'
-}
-
-findbugs {
-    ignoreFailures true
-    toolVersion = '3.0.1'
-    effort = 'max'
-    reportLevel = 'low'
-    sourceSets = [sourceSets.main]
-}
-
-findbugsMain {
-    reports {
-        html.enabled = false // Findbugs can only have on report enabled
-        xml.enabled = true
-    }
+    finalConfigure()          // Must be last call to configuration
 }

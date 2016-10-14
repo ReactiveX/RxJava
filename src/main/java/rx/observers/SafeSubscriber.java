@@ -57,7 +57,7 @@ import rx.plugins.*;
  */
 public class SafeSubscriber<T> extends Subscriber<T> {
 
-    private final Subscriber<? super T> actual;
+    private Subscriber<? super T> actual;
 
     boolean done;
 
@@ -94,6 +94,13 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 }
             }
         }
+    }
+
+    @Override
+    public void j2objcCleanup()
+    {
+        actual = null;
+        super.j2objcCleanup();
     }
 
     /**

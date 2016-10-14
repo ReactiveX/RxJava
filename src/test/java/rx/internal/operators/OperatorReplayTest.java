@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.lang.management.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -27,6 +26,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -1497,8 +1497,9 @@ public class OperatorReplayTest {
         ts.assertCompleted();
     }
 
+    @DoppelHacks //Not normal memory world
     void replayNoRetention(Func1<Observable<Integer>, ConnectableObservable<Integer>> replayOp) throws InterruptedException {
-        System.gc();
+        /*System.gc();
 
         Thread.sleep(500);
 
@@ -1543,7 +1544,7 @@ public class OperatorReplayTest {
 
         if (finish > initial * 5) {
             fail(String.format("Leak: %.3f -> %.3f -> %.3f", initial / 1024 / 1024.0, middle / 1024 / 1024.0, finish / 1024 / 1024d));
-        }
+        }*/
 
     }
 

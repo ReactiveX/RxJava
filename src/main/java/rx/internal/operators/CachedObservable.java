@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.concurrent.atomic.*;
 
 import rx.*;
@@ -261,6 +263,7 @@ public final class CachedObservable<T> extends Observable<T> {
         /** */
         private static final long serialVersionUID = -2557562030197141021L;
         /** The actual child subscriber. */
+        @Weak
         final Subscriber<? super T> child;
         /** The cache state object. */
         final CacheState<T> state;

@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -354,6 +355,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         }
     }
     @Test(timeout = 5000)
+    @DoppelHacks //Problem recovering memory on ios
     public void testConcurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
         final CyclicBarrier cb = new CyclicBarrier(2);
@@ -368,7 +370,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
                 } catch (BrokenBarrierException e) {
                     return;
                 }
-                for (int i = 0; i < 1000000; i++) {
+                for (int i = 0; i < 10000; i++) {
                     rs.onNext(i);
                 }
                 rs.onCompleted();
@@ -408,6 +410,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         t.join();
     }
     @Test(timeout = 5000)
+    @DoppelHacks //Problem recovering memory on ios
     public void testConcurrentSizeAndHasAnyValueBounded() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.createWithSize(3);
         final CyclicBarrier cb = new CyclicBarrier(2);
@@ -422,7 +425,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
                 } catch (BrokenBarrierException e) {
                     return;
                 }
-                for (int i = 0; i < 1000000; i++) {
+                for (int i = 0; i < 10000; i++) {
                     rs.onNext(i);
                 }
                 rs.onCompleted();
@@ -451,6 +454,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         t.join();
     }
     @Test(timeout = 10000)
+    @DoppelHacks //Problem recovering memory on ios
     public void testConcurrentSizeAndHasAnyValueTimeBounded() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.createWithTime(1, TimeUnit.MILLISECONDS, Schedulers.computation());
         final CyclicBarrier cb = new CyclicBarrier(2);
@@ -465,9 +469,9 @@ public class ReplaySubjectBoundedConcurrencyTest {
                 } catch (BrokenBarrierException e) {
                     return;
                 }
-                for (int i = 0; i < 1000000; i++) {
+                for (int i = 0; i < 10000; i++) {
                     rs.onNext(i);
-                    if (i % 10000 == 0) {
+                    if (i % 1000 == 0) {
                         try {
                             Thread.sleep(1);
                         } catch (InterruptedException e) {

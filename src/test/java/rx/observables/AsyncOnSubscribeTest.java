@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import rx.Observable;
@@ -44,7 +45,6 @@ import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 
-@RunWith(MockitoJUnitRunner.class)
 public class AsyncOnSubscribeTest {
 
     @Mock
@@ -54,6 +54,7 @@ public class AsyncOnSubscribeTest {
 
     @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         subscriber = new TestSubscriber<Integer>(o, 0L);
     }
 

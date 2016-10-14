@@ -15,6 +15,9 @@
  */
 package rx;
 
+import com.google.j2objc.annotations.Weak;
+
+
 import static org.junit.Assert.*;
 
 import java.util.List;
@@ -599,35 +602,50 @@ public class BackpressureTests {
 
             @Override
             public void call(final Subscriber<? super Integer> s) {
-                s.setProducer(new Producer() {
-                    int i = 0;
-
-                    @Override
-                    public void request(long n) {
-                        if (n == 0) {
-                            // nothing to do
-                            return;
-                        }
-                        if (threadsSeen != null) {
-                            threadsSeen.offer(Thread.currentThread());
-                        }
-                        long _c = requested.getAndAdd(n);
-                        if (_c == 0) {
-                            while (!s.isUnsubscribed()) {
-                                counter.incrementAndGet();
-                                s.onNext(i++);
-                                if (requested.decrementAndGet() == 0) {
-                                    // we're done emitting the number requested so return
-                                    return;
-                                }
-                            }
-                        }
-                    }
-
-                });
+                s.setProducer(new BPTPRoducer(counter, threadsSeen, requested, s));
             }
 
         });
+    }
+
+    static class BPTPRoducer implements Producer
+    {
+        final AtomicInteger counter;
+        final ConcurrentLinkedQueue<Thread> threadsSeen;
+        final AtomicLong requested;
+        @Weak
+        final Subscriber<? super Integer> s;
+        int i = 0;
+
+        BPTPRoducer(AtomicInteger counter, ConcurrentLinkedQueue<Thread> threadsSeen, AtomicLong requested, Subscriber<? super Integer> s)
+        {
+            this.counter = counter;
+            this.threadsSeen = threadsSeen;
+            this.requested = requested;
+            this.s = s;
+        }
+
+        @Override
+        public void request(long n) {
+            if (n == 0) {
+                // nothing to do
+                return;
+            }
+            if (threadsSeen != null) {
+                threadsSeen.offer(Thread.currentThread());
+            }
+            long _c = requested.getAndAdd(n);
+            if (_c == 0) {
+                while (!s.isUnsubscribed()) {
+                    counter.incrementAndGet();
+                    s.onNext(i++);
+                    if (requested.decrementAndGet() == 0) {
+                        // we're done emitting the number requested so return
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     /**

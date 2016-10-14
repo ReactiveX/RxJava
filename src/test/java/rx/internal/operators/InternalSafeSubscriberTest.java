@@ -30,7 +30,8 @@ import rx.Subscription;
 import rx.observers.SafeSubscriber;
 import rx.observers.TestSubscriber;
 
-public class SafeSubscriberTest {
+public class InternalSafeSubscriberTest
+{
 
     /**
      * Ensure onNext can not be called after onError

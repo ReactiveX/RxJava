@@ -85,6 +85,7 @@ public final class RxJavaHooks {
 
     /** Initialize with the default delegation to the original RxJavaPlugins. */
     static {
+        System.out.println("In init YYYYYYYYYYYYYYYYYY");
         init();
     }
 
@@ -217,6 +218,7 @@ public final class RxJavaHooks {
             }
         };
 
+        System.out.println("Making onCompletableCreate");
         onCompletableCreate = new Func1<Completable.OnSubscribe, Completable.OnSubscribe>() {
             @Override
             public Completable.OnSubscribe call(Completable.OnSubscribe f) {

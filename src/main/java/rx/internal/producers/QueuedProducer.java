@@ -15,6 +15,8 @@
  */
 package rx.internal.producers;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
@@ -35,6 +37,7 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
     /** */
     private static final long serialVersionUID = 7277121710709137047L;
 
+    @Weak
     final Subscriber<? super T> child;
     final Queue<Object> queue;
     final AtomicInteger wip;

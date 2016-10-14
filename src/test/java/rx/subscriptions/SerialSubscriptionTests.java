@@ -33,7 +33,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import rx.Subscription;
 
-@RunWith(MockitoJUnitRunner.class)
 public class SerialSubscriptionTests {
     private SerialSubscription serialSubscription;
 

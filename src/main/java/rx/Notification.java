@@ -178,7 +178,7 @@ public final class Notification<T> {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder(64).append('[').append(super.toString())
+        StringBuilder str = new StringBuilder(64).append('[').append(super.getClass().getName())
                 .append(' ').append(getKind());
         if (hasValue()) {
             str.append(' ').append(getValue());

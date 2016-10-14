@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+import com.google.j2objc.annotations.Weak;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.*;
@@ -42,7 +45,8 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         /** */
         private static final long serialVersionUID = 4114392207069098388L;
 
-        private final Subscriber<? super Integer> childSubscriber;
+        @Weak
+        private Subscriber<? super Integer> childSubscriber;
         private final int endOfRange;
         private long currentIndex;
 
@@ -77,6 +81,9 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
             long emitted = 0L;
             long endIndex = endOfRange + 1L;
             long index = currentIndex;
+
+            if(childSubscriber == null)
+                return;
 
             final Subscriber<? super Integer> childSubscriber = this.childSubscriber;
 
@@ -113,6 +120,13 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
                     emitted = 0L;
                 }
             }
+        }
+
+        @Override
+        protected void finalize() throws Throwable
+        {
+            super.finalize();
+            childSubscriber = null;
         }
 
         /**

@@ -277,7 +277,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
     static final class AmbSubscriber<T> extends Subscriber<T> {
 
-        private final Subscriber<? super T> subscriber;
+        private Subscriber<? super T> subscriber;
         private final Selection<T> selection;
         private boolean chosen;
 
@@ -301,15 +301,25 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
         @Override
         public void onCompleted() {
-            if (isSelected()) {
-                subscriber.onCompleted();
+            if(subscriber != null)
+            {
+                if(isSelected())
+                {
+                    subscriber.onCompleted();
+                }
+                subscriber = null;
             }
         }
 
         @Override
         public void onError(Throwable e) {
-            if (isSelected()) {
-                subscriber.onError(e);
+            if(subscriber != null)
+            {
+                if(isSelected())
+                {
+                    subscriber.onError(e);
+                }
+                subscriber = null;
             }
         }
 

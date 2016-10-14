@@ -30,14 +30,17 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import co.touchlab.doppel.testing.MockGen;
 import rx.Observer;
 import rx.Subscription;
+import rx.doppl.mock.MObserver;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.exceptions.TestException;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
+@MockGen(classes = "rx.doppl.mock.MObserver")
 public class AsyncSubjectTest {
 
     private final Throwable testException = new Throwable();
@@ -47,7 +50,7 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Observer<String> observer = mock(MObserver.class);
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -64,7 +67,7 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Observer<String> observer = mock(MObserver.class);
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -82,7 +85,7 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Observer<String> observer = mock(MObserver.class);
         subject.subscribe(observer);
 
         subject.onNext(null);
@@ -98,7 +101,7 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Observer<String> observer = mock(MObserver.class);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -117,7 +120,7 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Observer<String> observer = mock(MObserver.class);
 
         subject.onNext("one");
         subject.onNext("two");
@@ -138,7 +141,7 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Observer<String> observer = mock(MObserver.class);
         subject.subscribe(observer);
 
         subject.onNext("one");
@@ -159,7 +162,7 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Observer<String> observer = mock(MObserver.class);
         Subscription subscription = subject.subscribe(observer);
 
         subject.onNext("one");
@@ -184,7 +187,7 @@ public class AsyncSubjectTest {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        Observer<String> observer = mock(MObserver.class);
         subject.subscribe(observer);
 
         subject.onCompleted();

@@ -214,7 +214,7 @@ public class OperatorTakeLastTimedTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    @Test(timeout = 30000) // original could get into an infinite loop
+    @Test(timeout = 60000) // original could get into an infinite loop
     public void completionRequestRace() {
         Worker w = Schedulers.computation().createWorker();
         try {

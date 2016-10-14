@@ -24,6 +24,7 @@ import java.util.*;
 
 import org.junit.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.exceptions.TestException;
 
 public class NotificationTest {
@@ -122,6 +123,7 @@ public class NotificationTest {
     }
 
     @Test
+    @DoppelHacks //Modified 'toString' on Notification to explicitly get class name
     public void toStringVariants() {
         assertEquals("[rx.Notification OnNext 1]", stripAt(Notification.createOnNext(1).toString()));
         assertEquals("[rx.Notification OnError Forced failure]", stripAt(Notification.createOnError(new TestException("Forced failure")).toString()));

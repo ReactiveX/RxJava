@@ -16,6 +16,8 @@
 
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
@@ -163,6 +165,7 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
      * Redirects the downstream request amount bach to the DeferredScalarSubscriber.
      */
     static final class InnerProducer implements Producer {
+        @Weak
         final DeferredScalarSubscriber<?, ?> parent;
 
         public InnerProducer(DeferredScalarSubscriber<?, ?> parent) {

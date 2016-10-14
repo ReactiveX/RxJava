@@ -15,6 +15,8 @@
  */
 package rx.internal.producers;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.*;
@@ -29,6 +31,7 @@ public final class SingleProducer<T> extends AtomicBoolean implements Producer {
     /** */
     private static final long serialVersionUID = -3353584923995471404L;
     /** The child subscriber. */
+    @Weak
     final Subscriber<? super T> child;
     /** The value to be emitted. */
     final T value;

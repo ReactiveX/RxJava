@@ -20,8 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
-
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.Scheduler.Worker;
 import rx.exceptions.Exceptions;
 import rx.functions.Action0;
@@ -38,12 +37,13 @@ public enum TestUtil {
      * throws IllegalStateException("No instances!") upon instantiation.
      * @param clazz the target class to check
      */
+    @DoppelHacks //Need an analog for this
     public static void checkUtilityClass(Class<?> clazz) {
-        PrivateConstructorChecker
+        /*PrivateConstructorChecker
             .forClass(clazz)
             .expectedTypeOfException(IllegalStateException.class)
             .expectedExceptionMessage("No instances!")
-            .check();
+            .check();*/
     }
 
     /**

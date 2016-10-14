@@ -53,6 +53,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
 
     @Override
     public void call(Subscriber<? super R> t) {
+
         final FlattenIterableSubscriber<T, R> parent = new FlattenIterableSubscriber<T, R>(t, mapper, prefetch);
 
         t.add(parent);
@@ -76,7 +77,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
     }
 
     static final class FlattenIterableSubscriber<T, R> extends Subscriber<T> {
-        final Subscriber<? super R> actual;
+        Subscriber<? super R> actual;
 
         final Func1<? super T, ? extends Iterable<? extends R>> mapper;
 
@@ -142,6 +143,14 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
         public void onCompleted() {
             done = true;
             drain();
+        }
+
+        @Override
+        public void j2objcCleanup()
+        {
+            super.j2objcCleanup();
+            actual.j2objcCleanup();
+            actual = null;
         }
 
         void requestMore(long n) {

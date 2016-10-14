@@ -26,10 +26,6 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.mockito.*;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
-
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -1926,7 +1922,7 @@ public class OperatorGroupByTest {
             }};
     }
 
-    @Test
+    /*@Test
     public void mapFactoryEvictionWorksWithGuavaCache() {
         final List<Integer> evictedKeys = new ArrayList<Integer>();
         Func1<Action1<Integer>, Map<Integer, Object>> mapFactory =
@@ -1974,7 +1970,7 @@ public class OperatorGroupByTest {
                     })
                 .toList().toBlocking().single();
         assertEquals(expected, ts.getOnNextEvents());
-    }
+    }*/
 
     @Test(expected = NullPointerException.class)
     public void testGroupByThrowsNpeIfEvictingMapFactoryNull() {

@@ -10284,11 +10284,14 @@ public class Observable<T> {
          * to user code from within an Observer"
          */
         // if not already wrapped
+        System.out.println("Observable: a");
         if (!(subscriber instanceof SafeSubscriber)) {
             // assign to `observer` so we return the protected version
+            System.out.println("Observable: b");
             subscriber = new SafeSubscriber<T>(subscriber);
         }
 
+        System.out.println("Observable: c");
         // The code below is exactly the same an unsafeSubscribe but not used because it would
         // add a significant depth to already huge call stacks.
         try {

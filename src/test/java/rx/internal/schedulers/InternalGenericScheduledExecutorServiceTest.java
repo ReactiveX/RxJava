@@ -21,7 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
-public class GenericScheduledExecutorServiceTest {
+public class InternalGenericScheduledExecutorServiceTest
+{
     @Test
     public void verifyInstanceIsSingleThreaded() throws Exception {
         ScheduledExecutorService exec = GenericScheduledExecutorService.getInstance();

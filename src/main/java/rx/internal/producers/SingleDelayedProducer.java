@@ -15,6 +15,8 @@
  */
 package rx.internal.producers;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
@@ -30,6 +32,7 @@ public final class SingleDelayedProducer<T> extends AtomicInteger implements Pro
     /** */
     private static final long serialVersionUID = -2873467947112093874L;
     /** The child to emit the value and completion once possible. */
+    @Weak
     final Subscriber<? super T> child;
     /** The value to emit.*/
     T value;

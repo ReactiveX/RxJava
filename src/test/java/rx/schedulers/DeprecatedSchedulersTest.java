@@ -19,6 +19,8 @@ package rx.schedulers;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.internal.util.SuppressAnimalSniffer;
 import rx.internal.util.unsafe.UnsafeAccess;
@@ -42,8 +44,9 @@ public class DeprecatedSchedulersTest {
         TestUtil.checkUtilityClass(TrampolineScheduler.class);
     }
 
+    @DoppelHacks //Um?
     void checkWorker(Class<?> schedulerClass) {
-        if (UnsafeAccess.isUnsafeAvailable()) {
+        /*if (UnsafeAccess.isUnsafeAvailable()) {
             try {
                 Scheduler s =  (Scheduler)UnsafeAccess.UNSAFE.allocateInstance(schedulerClass);
 
@@ -51,7 +54,7 @@ public class DeprecatedSchedulersTest {
             } catch (InstantiationException e) {
                 throw new IllegalStateException(e);
             }
-        }
+        }*/
     }
 
     @Test

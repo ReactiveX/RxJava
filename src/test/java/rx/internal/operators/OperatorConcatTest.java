@@ -739,7 +739,7 @@ public class OperatorConcatTest {
         ts.assertReceivedOnNext(Arrays.asList("hello", "hello"));
     }
 
-    @Test(timeout = 10000)
+    @Test(timeout = 100000)
     public void testIssue2890NoStackoverflow() throws InterruptedException {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);

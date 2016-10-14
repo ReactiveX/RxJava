@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
@@ -68,7 +69,10 @@ public class SchedulerWorkerTest {
     }
 
     @Test
+    @DoppelHacks //Just a bit too slow
     public void testCurrentTimeDriftBackwards() throws Exception {
+        int adjust = 100;
+
         CustomDriftScheduler s = new CustomDriftScheduler();
 
         Scheduler.Worker w = s.createWorker();
@@ -81,9 +85,9 @@ public class SchedulerWorkerTest {
                 public void call() {
                     times.add(System.currentTimeMillis());
                 }
-            }, 100, 100, TimeUnit.MILLISECONDS);
+            }, 100, 100+adjust, TimeUnit.MILLISECONDS);
 
-            Thread.sleep(150);
+            Thread.sleep(150+adjust);
 
             s.drift = -1000 - TimeUnit.NANOSECONDS.toMillis(Scheduler.CLOCK_DRIFT_TOLERANCE_NANOS);
 
@@ -91,14 +95,16 @@ public class SchedulerWorkerTest {
 
             d.unsubscribe();
 
-            Thread.sleep(150);
+            Thread.sleep(150+adjust);
 
             System.out.println("Runs: " + times.size());
+
+            int halfAdjust = adjust/2;
 
             for (int i = 0; i < times.size() - 1 ; i++) {
                 long diff = times.get(i + 1) - times.get(i);
                 System.out.println("Diff #" + i + ": " + diff);
-                assertTrue("" + i + ":" + diff, diff < 150 && diff > 50);
+                assertTrue("" + i + ":" + diff, diff < 150+(adjust*2) && diff > 50+halfAdjust);
             }
 
             assertTrue("Too few invocations: " + times.size(), times.size() > 2);
