@@ -13,21 +13,26 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.observers.DeferredScalarDisposable;
+import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableFromCallable<T> extends Observable<T> {
+/**
+ * Calls a Callable and emits its resulting single value or signals its exception.
+ * @param <T> the value type
+ */
+public final class ObservableFromCallable<T> extends Observable<T> implements Callable<T> {
     final Callable<? extends T> callable;
     public ObservableFromCallable(Callable<? extends T> callable) {
         this.callable = callable;
     }
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        Disposable d = Disposables.empty();
+        DeferredScalarDisposable<T> d = new DeferredScalarDisposable<T>(s);
         s.onSubscribe(d);
         if (d.isDisposed()) {
             return;
@@ -39,13 +44,16 @@ public final class ObservableFromCallable<T> extends Observable<T> {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
                 s.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
             }
             return;
         }
-        if (d.isDisposed()) {
-            return;
-        }
-        s.onNext(value);
-        s.onComplete();
+        d.complete(value);
+    }
+
+    @Override
+    public T call() throws Exception {
+        return callable.call();
     }
 }

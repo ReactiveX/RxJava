@@ -15,16 +15,24 @@
  */
 package io.reactivex.internal.operators.observable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.util.*;
 
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
 
 import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableGroupJoinTest {
@@ -354,5 +362,331 @@ public class ObservableGroupJoinTest {
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onComplete();
         verify(observer, never()).onNext(any());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).groupJoin(
+            Observable.just(2),
+            new Function<Integer, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Integer left) throws Exception {
+                    return Observable.never();
+                }
+            },
+            new Function<Integer, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Integer right) throws Exception {
+                    return Observable.never();
+                }
+            },
+            new BiFunction<Integer, Observable<Integer>, Object>() {
+                @Override
+                public Object apply(Integer r, Observable<Integer> l) throws Exception {
+                    return l;
+                }
+            }
+        ));
+    }
+
+    @Test
+    public void innerCompleteLeft() {
+        Observable.just(1)
+        .groupJoin(
+            Observable.just(2),
+            new Function<Integer, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Integer left) throws Exception {
+                    return Observable.empty();
+                }
+            },
+            new Function<Integer, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Integer right) throws Exception {
+                    return Observable.never();
+                }
+            },
+            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
+                    return l;
+                }
+            }
+        )
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void innerErrorLeft() {
+        Observable.just(1)
+        .groupJoin(
+            Observable.just(2),
+            new Function<Integer, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Integer left) throws Exception {
+                    return Observable.error(new TestException());
+                }
+            },
+            new Function<Integer, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Integer right) throws Exception {
+                    return Observable.never();
+                }
+            },
+            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
+                    return l;
+                }
+            }
+        )
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void innerCompleteRight() {
+        Observable.just(1)
+        .groupJoin(
+            Observable.just(2),
+            new Function<Integer, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Integer left) throws Exception {
+                    return Observable.never();
+                }
+            },
+            new Function<Integer, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Integer right) throws Exception {
+                    return Observable.empty();
+                }
+            },
+            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
+                    return l;
+                }
+            }
+        )
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void innerErrorRight() {
+        Observable.just(1)
+        .groupJoin(
+            Observable.just(2),
+            new Function<Integer, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Integer left) throws Exception {
+                    return Observable.never();
+                }
+            },
+            new Function<Integer, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Integer right) throws Exception {
+                    return Observable.error(new TestException());
+                }
+            },
+            new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
+                    return l;
+                }
+            }
+        )
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void innerErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishSubject<Object> ps1 = PublishSubject.create();
+            final PublishSubject<Object> ps2 = PublishSubject.create();
+
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+
+            try {
+                TestObserver<Observable<Integer>> to = Observable.just(1)
+                .groupJoin(
+                    Observable.just(2).concatWith(Observable.<Integer>never()),
+                    new Function<Integer, ObservableSource<Object>>() {
+                        @Override
+                        public ObservableSource<Object> apply(Integer left) throws Exception {
+                            return ps1;
+                        }
+                    },
+                    new Function<Integer, ObservableSource<Object>>() {
+                        @Override
+                        public ObservableSource<Object> apply(Integer right) throws Exception {
+                            return ps2;
+                        }
+                    },
+                    new BiFunction<Integer, Observable<Integer>, Observable<Integer>>() {
+                        @Override
+                        public Observable<Integer> apply(Integer r, Observable<Integer> l) throws Exception {
+                            return l;
+                        }
+                    }
+                )
+                .test();
+
+                final TestException ex1 = new TestException();
+                final TestException ex2 = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onError(ex1);
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex2);
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                to.assertError(Throwable.class).assertSubscribed().assertNotComplete().assertValueCount(1);
+
+                Throwable exc = to.errors().get(0);
+
+                if (exc instanceof CompositeException) {
+                    List<Throwable> es = TestHelper.compositeList(exc);
+                    TestHelper.assertError(es, 0, TestException.class);
+                    TestHelper.assertError(es, 1, TestException.class);
+                } else {
+                    to.assertError(TestException.class);
+                }
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertError(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void outerErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishSubject<Object> ps1 = PublishSubject.create();
+            final PublishSubject<Object> ps2 = PublishSubject.create();
+
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+
+            try {
+                TestObserver<Object> to = ps1
+                .groupJoin(
+                    ps2,
+                    new Function<Object, ObservableSource<Object>>() {
+                        @Override
+                        public ObservableSource<Object> apply(Object left) throws Exception {
+                            return Observable.never();
+                        }
+                    },
+                    new Function<Object, ObservableSource<Object>>() {
+                        @Override
+                        public ObservableSource<Object> apply(Object right) throws Exception {
+                            return Observable.never();
+                        }
+                    },
+                    new BiFunction<Object, Observable<Object>, Observable<Object>>() {
+                        @Override
+                        public Observable<Object> apply(Object r, Observable<Object> l) throws Exception {
+                            return l;
+                        }
+                    }
+                )
+                .flatMap(Functions.<Observable<Object>>identity())
+                .test();
+
+                final TestException ex1 = new TestException();
+                final TestException ex2 = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onError(ex1);
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex2);
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                to.assertError(Throwable.class).assertSubscribed().assertNotComplete().assertNoValues();
+
+                Throwable exc = to.errors().get(0);
+
+                if (exc instanceof CompositeException) {
+                    List<Throwable> es = TestHelper.compositeList(exc);
+                    TestHelper.assertError(es, 0, TestException.class);
+                    TestHelper.assertError(es, 1, TestException.class);
+                } else {
+                    to.assertError(TestException.class);
+                }
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertError(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void rightEmission() {
+        final PublishSubject<Object> ps1 = PublishSubject.create();
+        final PublishSubject<Object> ps2 = PublishSubject.create();
+
+        TestObserver<Object> to = ps1
+        .groupJoin(
+            ps2,
+            new Function<Object, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Object left) throws Exception {
+                    return Observable.never();
+                }
+            },
+            new Function<Object, ObservableSource<Object>>() {
+                @Override
+                public ObservableSource<Object> apply(Object right) throws Exception {
+                    return Observable.never();
+                }
+            },
+            new BiFunction<Object, Observable<Object>, Observable<Object>>() {
+                @Override
+                public Observable<Object> apply(Object r, Observable<Object> l) throws Exception {
+                    return l;
+                }
+            }
+        )
+        .flatMap(Functions.<Observable<Object>>identity())
+        .test();
+
+        ps2.onNext(2);
+
+        ps1.onNext(1);
+        ps1.onComplete();
+
+        ps2.onComplete();
+
+        to.assertResult(2);
     }
 }

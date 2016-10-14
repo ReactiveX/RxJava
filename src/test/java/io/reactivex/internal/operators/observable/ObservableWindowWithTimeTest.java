@@ -408,4 +408,25 @@ public class ObservableWindowWithTimeTest {
 
         ts.assertFailure(TestException.class);
     }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.range(1, 5).window(1, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Observable.range(1, 5).window(2, 1, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Observable.range(1, 5).window(1, 2, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Observable.range(1, 5)
+                .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true));
+    }
+
+    @Test
+    public void restartTimer() {
+        Observable.range(1, 5)
+        .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
 }

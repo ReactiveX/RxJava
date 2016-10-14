@@ -16,10 +16,12 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.FuseToObservable;
+
 import java.util.NoSuchElementException;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableElementAtSingle<T> extends Single<T> {
+public final class ObservableElementAtSingle<T> extends Single<T> implements FuseToObservable<T> {
     final ObservableSource<T> source;
     final long index;
     final T defaultValue;
@@ -33,6 +35,11 @@ public final class ObservableElementAtSingle<T> extends Single<T> {
     @Override
     public void subscribeActual(SingleObserver<? super T> t) {
         source.subscribe(new ElementAtObserver<T>(t, index, defaultValue));
+    }
+
+    @Override
+    public Observable<T> fuseToObservable() {
+        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(source, index, defaultValue));
     }
 
     static final class ElementAtObserver<T> implements Observer<T>, Disposable {

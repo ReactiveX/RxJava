@@ -469,7 +469,7 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
 
         @Override
         public void onError(Throwable t) {
-            parent.innerError(t);
+            parent.innerCloseError(t);
         }
 
         @Override

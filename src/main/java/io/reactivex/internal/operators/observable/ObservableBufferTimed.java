@@ -89,8 +89,6 @@ extends AbstractObservableWithUpstream<T, U> {
 
         U buffer;
 
-        boolean selfCancel;
-
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
         BufferExactUnboundedObserver(
@@ -183,23 +181,12 @@ extends AbstractObservableWithUpstream<T, U> {
 
         @Override
         public void run() {
-            /*
-             * If running on a synchronous scheduler, the timer might never
-             * be set so the periodic timer can't be stopped this loop-back way.
-             * The last resort is to crash the task so it hopefully won't
-             * be rescheduled.
-             */
-            if (selfCancel) {
-                throw new CancellationException();
-            }
-
             U next;
 
             try {
                 next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                selfCancel = true;
                 dispose();
                 actual.onError(e);
                 return;
@@ -215,7 +202,6 @@ extends AbstractObservableWithUpstream<T, U> {
             }
 
             if (current == null) {
-                selfCancel = true;
                 DisposableHelper.dispose(timer);
                 return;
             }

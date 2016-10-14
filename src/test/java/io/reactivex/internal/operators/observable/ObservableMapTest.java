@@ -20,11 +20,15 @@ import java.util.*;
 
 import org.junit.*;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.UnicastSubject;
 
 public class ObservableMapTest {
 
@@ -327,4 +331,59 @@ public class ObservableMapTest {
 //            }
 //        });
 //    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.range(1, 5).map(Functions.identity()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.map(Functions.identity());
+            }
+        });
+    }
+
+    @Test
+    public void fusedSync() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+
+        Observable.range(1, 5)
+        .map(Functions.<Integer>identity())
+        .subscribe(to);
+
+        ObserverFusion.assertFusion(to, QueueDisposable.SYNC)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void fusedAsync() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+
+        UnicastSubject<Integer> us = UnicastSubject.create();
+
+        us
+        .map(Functions.<Integer>identity())
+        .subscribe(to);
+
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
+
+        ObserverFusion.assertFusion(to, QueueDisposable.ASYNC)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void fusedReject() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
+
+        Observable.range(1, 5)
+        .map(Functions.<Integer>identity())
+        .subscribe(to);
+
+        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        .assertResult(1, 2, 3, 4, 5);
+    }
 }

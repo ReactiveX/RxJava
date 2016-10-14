@@ -124,10 +124,8 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             if (done) {
                 return;
             }
-            if (fusionMode == QueueDisposable.NONE && !queue.offer(t)) {
-                dispose();
-                actual.onError(new IllegalStateException("More values received than requested!"));
-                return;
+            if (fusionMode == QueueDisposable.NONE) {
+                queue.offer(t);
             }
             drain();
         }
@@ -337,7 +335,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                     }
                 }
 
-                queue = QueueDrainHelper.createQueue(-bufferSize);
+                queue = new SpscLinkedArrayQueue<T>(bufferSize);
 
                 actual.onSubscribe(this);
             }
@@ -502,7 +500,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             public void onError(Throwable e) {
                 ConcatMapDelayErrorObserver<?, R> p = parent;
                 if (p.error.addThrowable(e)) {
-                    if (p.tillTheEnd) {
+                    if (!p.tillTheEnd) {
                         p.d.dispose();
                     }
                     p.active = false;

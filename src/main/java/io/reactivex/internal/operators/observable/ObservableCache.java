@@ -13,13 +13,12 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -74,9 +73,9 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
     protected void subscribeActual(Observer<? super T> t) {
         // we can connect first because we replay everything anyway
         ReplayDisposable<T> rp = new ReplayDisposable<T>(t, state);
-        state.addChild(rp);
-
         t.onSubscribe(rp);
+
+        state.addChild(rp);
 
         // we ensure a single connection here to save an instance field of AtomicBoolean in state.
         if (!once.get() && once.compareAndSet(false, true)) {
@@ -99,7 +98,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
      * @return true if the cache has downstream Observers
      */
     /* public */ boolean hasObservers() {
-        return state.observers.length != 0;
+        return state.observers.get().length != 0;
     }
 
     /**
@@ -121,9 +120,13 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         /** Holds onto the subscriber connected to source. */
         final SequentialDisposable connection;
         /** Guarded by connection (not this). */
-        volatile ReplayDisposable<?>[] observers;
+        final AtomicReference<ReplayDisposable<T>[]> observers;
         /** The default empty array of observers. */
-        static final ReplayDisposable<?>[] EMPTY = new ReplayDisposable<?>[0];
+        @SuppressWarnings("rawtypes")
+        static final ReplayDisposable[] EMPTY = new ReplayDisposable[0];
+        /** The default empty array of observers. */
+        @SuppressWarnings("rawtypes")
+        static final ReplayDisposable[] TERMINATED = new ReplayDisposable[0];
 
         /** Set to true after connection. */
         volatile boolean isConnected;
@@ -133,36 +136,49 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
          */
         boolean sourceDone;
 
+        @SuppressWarnings("unchecked")
         CacheState(Observable<? extends T> source, int capacityHint) {
             super(capacityHint);
             this.source = source;
-            this.observers = EMPTY;
+            this.observers = new AtomicReference<ReplayDisposable<T>[]>(EMPTY);
             this.connection = new SequentialDisposable();
         }
         /**
          * Adds a ReplayDisposable to the observers array atomically.
          * @param p the target ReplayDisposable wrapping a downstream Observer with additional state
+         * @return true if the disposable was added, false otherwise
          */
-        public void addChild(ReplayDisposable<T> p) {
+        public boolean addChild(ReplayDisposable<T> p) {
             // guarding by connection to save on allocating another object
             // thus there are two distinct locks guarding the value-addition and child come-and-go
-            synchronized (connection) {
-                ReplayDisposable<?>[] a = observers;
+            for (;;) {
+                ReplayDisposable<T>[] a = observers.get();
+                if (a == TERMINATED) {
+                    return false;
+                }
                 int n = a.length;
-                ReplayDisposable<?>[] b = new ReplayDisposable<?>[n + 1];
+
+                @SuppressWarnings("unchecked")
+                ReplayDisposable<T>[] b = new ReplayDisposable[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = p;
-                observers = b;
+                if (observers.compareAndSet(a, b)) {
+                    return true;
+                }
             }
         }
         /**
          * Removes the ReplayDisposable (if present) from the observers array atomically.
          * @param p the target ReplayDisposable wrapping a downstream Observer with additional state
          */
+        @SuppressWarnings("unchecked")
         public void removeChild(ReplayDisposable<T> p) {
-            synchronized (connection) {
-                ReplayDisposable<?>[] a = observers;
+            for (;;) {
+                ReplayDisposable<T>[] a = observers.get();
                 int n = a.length;
+                if (n == 0) {
+                    return;
+                }
                 int j = -1;
                 for (int i = 0; i < n; i++) {
                     if (a[i].equals(p)) {
@@ -173,14 +189,17 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                 if (j < 0) {
                     return;
                 }
+                ReplayDisposable<T>[] b;
                 if (n == 1) {
-                    observers = EMPTY;
+                    b = EMPTY;
+                } else {
+                    b = new ReplayDisposable[n - 1];
+                    System.arraycopy(a, 0, b, 0, j);
+                    System.arraycopy(a, j + 1, b, j, n - j - 1);
+                }
+                if (observers.compareAndSet(a, b)) {
                     return;
                 }
-                ReplayDisposable<?>[] b = new ReplayDisposable<?>[n - 1];
-                System.arraycopy(a, 0, b, 0, j);
-                System.arraycopy(a, j + 1, b, j, n - j - 1);
-                observers = b;
             }
         }
 
@@ -202,9 +221,12 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
             if (!sourceDone) {
                 Object o = NotificationLite.next(t);
                 add(o);
-                dispatch();
+                for (ReplayDisposable<?> rp : observers.get()) {
+                    rp.replay();
+                }
             }
         }
+        @SuppressWarnings("unchecked")
         @Override
         public void onError(Throwable e) {
             if (!sourceDone) {
@@ -212,9 +234,12 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                 Object o = NotificationLite.error(e);
                 add(o);
                 connection.dispose();
-                dispatch();
+                for (ReplayDisposable<?> rp : observers.getAndSet(TERMINATED)) {
+                    rp.replay();
+                }
             }
         }
+        @SuppressWarnings("unchecked")
         @Override
         public void onComplete() {
             if (!sourceDone) {
@@ -222,16 +247,9 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                 Object o = NotificationLite.complete();
                 add(o);
                 connection.dispose();
-                dispatch();
-            }
-        }
-        /**
-         * Signals all known children there is work to do.
-         */
-        void dispatch() {
-            ReplayDisposable<?>[] a = observers;
-            for (ReplayDisposable<?> rp : a) {
-                rp.replay();
+                for (ReplayDisposable<?> rp : observers.getAndSet(TERMINATED)) {
+                    rp.replay();
+                }
             }
         }
     }
@@ -241,7 +259,11 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
      *
      * @param <T>
      */
-    static final class ReplayDisposable<T> implements Disposable {
+    static final class ReplayDisposable<T>
+    extends AtomicInteger
+    implements Disposable {
+        private static final long serialVersionUID = 7058506693698832024L;
+
         /** The actual child subscriber. */
         final Observer<? super T> child;
         /** The cache state object. */
@@ -261,11 +283,6 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
          * Contains the absolute index up until the values have been replayed so far.
          */
         int index;
-
-        /** Indicates there is a replay going on; guarded by this. */
-        boolean emitting;
-        /** Indicates there were some state changes/replay attempts; guarded by this. */
-        boolean missed;
 
         /** Set if the ReplayDisposable has been cancelled/disposed. */
         volatile boolean cancelled;
@@ -292,95 +309,65 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
          */
         public void replay() {
             // make sure there is only a single thread emitting
-            synchronized (this) {
-                if (emitting) {
-                    missed = true;
+            if (getAndIncrement() != 0) {
+                return;
+            }
+
+            final Observer<? super T> child = this.child;
+            int missed = 1;
+
+            for (;;) {
+
+                if (cancelled) {
                     return;
                 }
-                emitting = true;
-            }
-            boolean skipFinal = false;
-            try {
-                final Observer<? super T> child = this.child;
 
-                for (;;) {
+                // read the size, if it is non-zero, we can safely read the head and
+                // read values up to the given absolute index
+                int s = state.size();
+                if (s != 0) {
+                    Object[] b = currentBuffer;
+
+                    // latch onto the very first buffer now that it is available.
+                    if (b == null) {
+                        b = state.head();
+                        currentBuffer = b;
+                    }
+                    final int n = b.length - 1;
+                    int j = index;
+                    int k = currentIndexInBuffer;
+
+                    while (j < s) {
+                        if (cancelled) {
+                            return;
+                        }
+                        if (k == n) {
+                            b = (Object[])b[n];
+                            k = 0;
+                        }
+                        Object o = b[k];
+
+                        if (NotificationLite.accept(o, child)) {
+                            return;
+                        }
+
+                        k++;
+                        j++;
+                    }
 
                     if (cancelled) {
-                        skipFinal = true;
                         return;
                     }
 
-                    // read the size, if it is non-zero, we can safely read the head and
-                    // read values up to the given absolute index
-                    int s = state.size();
-                    if (s != 0) {
-                        Object[] b = currentBuffer;
+                    index = j;
+                    currentIndexInBuffer = k;
+                    currentBuffer = b;
 
-                        // latch onto the very first buffer now that it is available.
-                        if (b == null) {
-                            b = state.head();
-                            currentBuffer = b;
-                        }
-                        final int n = b.length - 1;
-                        int j = index;
-                        int k = currentIndexInBuffer;
-
-                        while (j < s) {
-                            if (cancelled) {
-                                skipFinal = true;
-                                return;
-                            }
-                            if (k == n) {
-                                b = (Object[])b[n];
-                                k = 0;
-                            }
-                            Object o = b[k];
-
-                            try {
-                                if (NotificationLite.accept(o, child)) {
-                                    skipFinal = true;
-                                    dispose();
-                                    return;
-                                }
-                            } catch (Throwable err) {
-                                Exceptions.throwIfFatal(err);
-                                skipFinal = true;
-                                dispose();
-                                if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {
-                                    child.onError(err);
-                                }
-                                return;
-                            }
-
-                            k++;
-                            j++;
-                        }
-
-                        if (cancelled) {
-                            skipFinal = true;
-                            return;
-                        }
-
-                        index = j;
-                        currentIndexInBuffer = k;
-                        currentBuffer = b;
-
-                    }
-
-                    synchronized (this) {
-                        if (!missed) {
-                            emitting = false;
-                            skipFinal = true;
-                            return;
-                        }
-                        missed = false;
-                    }
                 }
-            } finally {
-                if (!skipFinal) {
-                    synchronized (this) {
-                        emitting = false;
-                    }
+
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
         }
