@@ -98,7 +98,7 @@ public class TestSubscriberTest {
         o.assertTerminalEvent();
     }
 
-    private void assertException(AssertionError e, String message)
+    public static void assertException(AssertionError e, String message)
     {
         String exMessage = e.getMessage();
         assertTrue(exMessage.contains(message));
