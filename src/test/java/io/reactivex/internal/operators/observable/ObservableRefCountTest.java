@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -28,6 +29,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
+import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.ReplaySubject;
@@ -590,5 +592,31 @@ public class ObservableRefCountTest {
         @Override
         public void onComplete() {
         }
+    }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(Observable.just(1).publish().refCount());
+    }
+
+    @Test
+    public void noOpConnect() {
+        final int[] calls = { 0 };
+        Observable<Integer> o = new ConnectableObservable<Integer>() {
+            @Override
+            public void connect(Consumer<? super Disposable> connection) {
+                calls[0]++;
+            }
+
+            @Override
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.disposed());
+            }
+        }.refCount();
+
+        o.test();
+        o.test();
+
+        assertEquals(1, calls[0]);
     }
 }

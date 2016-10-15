@@ -25,10 +25,15 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.fuseable.HasUpstreamObservableSource;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservablePublishTest {
 
@@ -391,5 +396,307 @@ public class ObservablePublishTest {
                 s.dispose();
             }
         }
+    }
+
+    @Test
+    public void preNextConnect() {
+        for (int i = 0; i < 500; i++) {
+
+            final ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
+
+            co.connect();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    co.test();
+                }
+            };
+
+            TestHelper.race(r1, r1);
+        }
+    }
+
+    @Test
+    public void connectRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    co.connect();
+                }
+            };
+
+            TestHelper.race(r1, r1);
+        }
+    }
+
+    @Test
+    public void selectorCrash() {
+        Observable.just(1).publish(new Function<Observable<Integer>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Integer> v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void source() {
+        Observable<Integer> o = Observable.never();
+
+        assertSame(o, (((HasUpstreamObservableSource<?>)o.publish()).source()));
+    }
+
+    @Test
+    public void connectThrows() {
+        ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
+        try {
+            co.connect(new Consumer<Disposable>() {
+                @Override
+                public void accept(Disposable s) throws Exception {
+                    throw new TestException();
+                }
+            });
+        } catch (TestException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void addRemoveRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
+
+            final TestObserver<Integer> to = co.test();
+
+            final TestObserver<Integer> to2 = new TestObserver<Integer>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    co.subscribe(to2);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void disposeOnArrival() {
+        ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
+
+        co.test(true).assertEmpty();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.never().publish());
+
+        TestHelper.checkDisposed(Observable.never().publish(Functions.<Observable<Object>>identity()));
+    }
+
+    @Test
+    public void empty() {
+        ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
+
+        co.connect();
+    }
+
+    @Test
+    public void take() {
+        ConnectableObservable<Integer> co = Observable.range(1, 2).publish();
+
+        TestObserver<Integer> to = co.take(1).test();
+
+        co.connect();
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void just() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        ConnectableObservable<Integer> co = ps.publish();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                ps.onComplete();
+            }
+        };
+
+        co.subscribe(to);
+        co.connect();
+
+        ps.onNext(1);
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void nextCancelRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final ConnectableObservable<Integer> co = ps.publish();
+
+            final TestObserver<Integer> to = co.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onNext(1);
+                    observer.onComplete();
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .publish()
+            .autoConnect()
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void noErrorLoss() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            ConnectableObservable<Object> co = Observable.error(new TestException()).publish();
+
+            co.connect();
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void subscribeDisconnectRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final ConnectableObservable<Integer> co = ps.publish();
+
+            final Disposable d = co.connect();
+            final TestObserver<Integer> to = new TestObserver<Integer>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    d.dispose();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    co.subscribe(to);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void selectorDisconnectsIndependentSource() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        ps.publish(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                return Observable.range(1, 2);
+            }
+        })
+        .test()
+        .assertResult(1, 2);
+
+        assertFalse(ps.hasObservers());
+    }
+
+    @Test(timeout = 5000)
+    public void selectorLatecommer() {
+        Observable.range(1, 5)
+        .publish(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                return v.concatWith(v);
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void mainError() {
+        Observable.error(new TestException())
+        .publish(Functions.<Observable<Object>>identity())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void selectorInnerError() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        ps.publish(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                return Observable.error(new TestException());
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+
+        assertFalse(ps.hasObservers());
     }
 }

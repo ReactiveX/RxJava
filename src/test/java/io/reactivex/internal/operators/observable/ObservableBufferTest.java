@@ -1215,6 +1215,12 @@ public class ObservableBufferTest {
 
         TestHelper.checkDisposed(Observable.range(1, 5)
                 .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true));
+
+        TestHelper.checkDisposed(Observable.range(1, 5).buffer(1));
+
+        TestHelper.checkDisposed(Observable.range(1, 5).buffer(2, 1));
+
+        TestHelper.checkDisposed(Observable.range(1, 5).buffer(1, 2));
     }
 
     @SuppressWarnings("unchecked")
@@ -1224,5 +1230,166 @@ public class ObservableBufferTest {
         .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true)
         .test()
         .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferSupplierCrash2() {
+        Observable.range(1, 2)
+        .buffer(1, new Callable<List<Integer>>() {
+            int calls;
+            @Override
+            public List<Integer> call() throws Exception {
+                if (++calls == 2) {
+                    throw new TestException();
+                }
+                return new ArrayList<Integer>();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, Arrays.asList(1));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferSkipSupplierCrash2() {
+        Observable.range(1, 2)
+        .buffer(2, 1, new Callable<List<Integer>>() {
+            int calls;
+            @Override
+            public List<Integer> call() throws Exception {
+                if (++calls == 2) {
+                    throw new TestException();
+                }
+                return new ArrayList<Integer>();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferSkipError() {
+        Observable.<Integer>error(new TestException())
+        .buffer(2, 1)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferSkipOverlap() {
+        Observable.range(1, 5)
+        .buffer(5, 1)
+        .test()
+        .assertResult(
+            Arrays.asList(1, 2, 3, 4, 5),
+            Arrays.asList(2, 3, 4, 5),
+            Arrays.asList(3, 4, 5),
+            Arrays.asList(4, 5),
+            Arrays.asList(5)
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedExactError() {
+        Observable.error(new TestException())
+        .buffer(1, TimeUnit.DAYS)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedSkipError() {
+        Observable.error(new TestException())
+        .buffer(1, 2, TimeUnit.DAYS)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedOverlapError() {
+        Observable.error(new TestException())
+        .buffer(2, 1, TimeUnit.DAYS)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedExactEmpty() {
+        Observable.empty()
+        .buffer(1, TimeUnit.DAYS)
+        .test()
+        .assertResult(Collections.emptyList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedSkipEmpty() {
+        Observable.empty()
+        .buffer(1, 2, TimeUnit.DAYS)
+        .test()
+        .assertResult(Collections.emptyList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedOverlapEmpty() {
+        Observable.empty()
+        .buffer(2, 1, TimeUnit.DAYS)
+        .test()
+        .assertResult(Collections.emptyList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedExactSupplierCrash() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<List<Integer>> to = ps
+        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, new Callable<List<Integer>>() {
+            int calls;
+            @Override
+            public List<Integer> call() throws Exception {
+                if (++calls == 2) {
+                    throw new TestException();
+                }
+                return new ArrayList<Integer>();
+            }
+        }, true)
+        .test();
+
+        ps.onNext(1);
+
+        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+
+        ps.onNext(2);
+
+        to
+        .assertFailure(TestException.class, Arrays.asList(1));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedExactBoundedError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<List<Integer>> to = ps
+        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, Functions.<Integer>createArrayList(16), true)
+        .test();
+
+        ps.onError(new TestException());
+
+        to
+        .assertFailure(TestException.class);
     }
 }

@@ -38,6 +38,7 @@ import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.Subject;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -280,7 +281,16 @@ public enum TestHelper {
             RxJavaPlugins.setErrorHandler(null);
         }
     }
-
+    /**
+     * Synchronizes the execution of two runnables (as much as possible)
+     * to test race conditions.
+     * <p>The method blocks until both have run to completion.
+     * @param r1 the first runnable
+     * @param r2 the second runnable
+     */
+    public static void race(final Runnable r1, final Runnable r2) {
+        race(r1, r2, Schedulers.single());
+    }
     /**
      * Synchronizes the execution of two runnables (as much as possible)
      * to test race conditions.
@@ -1997,5 +2007,23 @@ public enum TestHelper {
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    /**
+     * Returns an expanded error list of the given test consumer.
+     * @param to the test consumer instance
+     * @return the list
+     */
+    public static List<Throwable> errorList(TestObserver<?> to) {
+        return compositeList(to.errors().get(0));
+    }
+
+    /**
+     * Returns an expanded error list of the given test consumer.
+     * @param to the test consumer instance
+     * @return the list
+     */
+    public static List<Throwable> errorList(TestSubscriber<?> to) {
+        return compositeList(to.errors().get(0));
     }
 }

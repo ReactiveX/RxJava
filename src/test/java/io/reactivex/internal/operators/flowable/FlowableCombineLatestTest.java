@@ -794,7 +794,7 @@ public class FlowableCombineLatestTest {
             }
         }).subscribe(ts);
 
-        if (!latch.await(SIZE + 1000, TimeUnit.MILLISECONDS)) {
+        if (!latch.await(SIZE + 2000, TimeUnit.MILLISECONDS)) {
             fail("timed out");
         }
 

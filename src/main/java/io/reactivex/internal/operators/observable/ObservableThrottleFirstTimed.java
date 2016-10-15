@@ -44,25 +44,16 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
     }
 
     static final class DebounceTimedObserver<T>
+    extends AtomicReference<Disposable>
     implements Observer<T>, Disposable, Runnable {
+        private static final long serialVersionUID = 786994795061867455L;
+
         final Observer<? super T> actual;
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
 
         Disposable s;
-
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-
-        static final Disposable NEW_TIMER = new Disposable() {
-            @Override
-            public void dispose() { }
-
-            @Override
-            public boolean isDisposed() {
-                return true;
-            }
-        };
 
         volatile boolean gate;
 
@@ -85,27 +76,16 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
 
         @Override
         public void onNext(T t) {
-            if (done) {
-                return;
-            }
-
-            if (!gate) {
+            if (!gate && !done) {
                 gate = true;
 
                 actual.onNext(t);
 
-                // FIXME should this be a periodic blocking or a value-relative blocking?
-                Disposable d = timer.get();
+                Disposable d = get();
                 if (d != null) {
                     d.dispose();
                 }
-
-                if (timer.compareAndSet(d, NEW_TIMER)) {
-                    d = worker.schedule(this, timeout, unit);
-                    if (!timer.compareAndSet(NEW_TIMER, d)) {
-                        d.dispose();
-                    }
-                }
+                DisposableHelper.replace(this, worker.schedule(this, timeout, unit));
             }
 
 
@@ -120,34 +100,33 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
         public void onError(Throwable t) {
             if (done) {
                 RxJavaPlugins.onError(t);
-                return;
+            } else {
+                done = true;
+                DisposableHelper.dispose(this);
+                actual.onError(t);
             }
-            done = true;
-            DisposableHelper.dispose(timer);
-            actual.onError(t);
         }
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
+            if (!done) {
+                done = true;
+                DisposableHelper.dispose(this);
+                worker.dispose();
+                actual.onComplete();
             }
-            done = true;
-            DisposableHelper.dispose(timer);
-            worker.dispose();
-            actual.onComplete();
         }
 
         @Override
         public void dispose() {
-            DisposableHelper.dispose(timer);
+            DisposableHelper.dispose(this);
             worker.dispose();
             s.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return timer.get() == DisposableHelper.DISPOSED;
+            return DisposableHelper.isDisposed(get());
         }
     }
 }

@@ -316,36 +316,22 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
     static final class OperatorWindowBoundaryOpenObserver<T, B> extends DisposableObserver<B> {
         final WindowBoundaryMainObserver<T, B, ?> parent;
 
-        boolean done;
-
         OperatorWindowBoundaryOpenObserver(WindowBoundaryMainObserver<T, B, ?> parent) {
             this.parent = parent;
         }
 
         @Override
         public void onNext(B t) {
-            if (done) {
-                return;
-            }
             parent.open(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            done = true;
             parent.error(t);
         }
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
             parent.onComplete();
         }
     }

@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
@@ -45,7 +45,8 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
         source.subscribe(new TakeLastTimedObserver<T>(t, count, time, unit, scheduler, bufferSize, delayError));
     }
 
-    static final class TakeLastTimedObserver<T> extends AtomicInteger implements Observer<T>, Disposable {
+    static final class TakeLastTimedObserver<T>
+    extends AtomicBoolean implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -5677354903406201275L;
         final Observer<? super T> actual;
@@ -56,7 +57,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
         final SpscLinkedArrayQueue<Object> queue;
         final boolean delayError;
 
-        Disposable s;
+        Disposable d;
 
         volatile boolean cancelled;
 
@@ -74,9 +75,9 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.d, d)) {
+                this.d = d;
                 actual.onSubscribe(this);
             }
         }
@@ -118,12 +119,12 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
 
         @Override
         public void dispose() {
-            if (cancelled) {
+            if (!cancelled) {
                 cancelled = true;
+                d.dispose();
 
-                if (getAndIncrement() == 0) {
+                if (compareAndSet(false, true)) {
                     queue.clear();
-                    s.dispose();
                 }
             }
         }
@@ -134,89 +135,51 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
         }
 
         void drain() {
-            if (getAndIncrement() != 0) {
+            if (!compareAndSet(false, true)) {
                 return;
             }
-
-            int missed = 1;
 
             final Observer<? super T> a = actual;
             final SpscLinkedArrayQueue<Object> q = queue;
             final boolean delayError = this.delayError;
 
             for (;;) {
+                if (cancelled) {
+                    q.clear();
+                    return;
+                }
 
-                if (done) {
-                    boolean empty = q.isEmpty();
-
-                    if (checkTerminated(empty, a, delayError)) {
+                if (!delayError) {
+                    Throwable ex = error;
+                    if (ex != null) {
+                        q.clear();
+                        a.onError(ex);
                         return;
                     }
-
-                    for (;;) {
-                        Object ts = q.poll(); // the timestamp long
-                        empty = ts == null;
-
-                        if (checkTerminated(empty, a, delayError)) {
-                            return;
-                        }
-
-                        if (empty) {
-                            break;
-                        }
-
-                        @SuppressWarnings("unchecked")
-                        T o = (T)q.poll();
-                        if (o == null) {
-                            s.dispose();
-                            a.onError(new IllegalStateException("Queue empty?!"));
-                            return;
-                        }
-
-                        if ((Long)ts < scheduler.now(unit) - time) {
-                            continue;
-                        }
-
-                        a.onNext(o);
-                    }
                 }
 
-                missed = addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            }
-        }
+                Object ts = q.poll(); // the timestamp long
+                boolean empty = ts == null;
 
-        boolean checkTerminated(boolean empty, Observer<? super T> a, boolean delayError) {
-            if (cancelled) {
-                queue.clear();
-                s.dispose();
-                return true;
-            }
-            if (delayError) {
                 if (empty) {
-                    Throwable e = error;
-                    if (e != null) {
-                        a.onError(e);
+                    Throwable ex = error;
+                    if (ex != null) {
+                        a.onError(ex);
                     } else {
                         a.onComplete();
                     }
-                    return true;
+                    return;
                 }
-            } else {
-                Throwable e = error;
-                if (e != null) {
-                    queue.clear();
-                    a.onError(e);
-                    return true;
-                } else
-                if (empty) {
-                    a.onComplete();
-                    return true;
+
+                @SuppressWarnings("unchecked")
+                T o = (T)q.poll();
+
+                if ((Long)ts < scheduler.now(unit) - time) {
+                    continue;
                 }
+
+                a.onNext(o);
             }
-            return false;
         }
     }
 }
