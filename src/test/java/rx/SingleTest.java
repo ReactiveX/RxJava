@@ -25,7 +25,11 @@ import org.junit.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import co.touchlab.doppel.testing.MockGen;
 import rx.Single.OnSubscribe;
+import rx.doppl.mock.singletest.FuncCreate;
+import rx.doppl.mock.singletest.FuncReturn;
+import rx.doppl.mock.singletest.FuncStart;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.observers.*;
@@ -35,6 +39,7 @@ import rx.singles.BlockingSingle;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
+@MockGen(classes = {"rx.doppl.mock.singletest.FuncCreate", "rx.doppl.mock.singletest.FuncStart", "rx.doppl.mock.singletest.FuncReturn"})
 public class SingleTest {
 
     @SuppressWarnings("rawtypes")
@@ -48,30 +53,15 @@ public class SingleTest {
     @SuppressWarnings("rawtypes")
     @Before
     public void setUp() throws Exception {
-        onCreate = spy(new Func1<Single.OnSubscribe, Single.OnSubscribe>() {
-            @Override
-            public Single.OnSubscribe call(Single.OnSubscribe t) {
-                return t;
-            }
-        });
+        onCreate = spy(new FuncCreate());
 
         RxJavaHooks.setOnSingleCreate(onCreate);
 
-        onStart = spy(new Func2<Single, Single.OnSubscribe, Single.OnSubscribe>() {
-            @Override
-            public Single.OnSubscribe call(Single t1, Single.OnSubscribe t2) {
-                return t2;
-            }
-        });
+        onStart = spy(new FuncStart());
 
         RxJavaHooks.setOnSingleStart(onStart);
 
-        onReturn = spy(new Func1<Subscription, Subscription>() {
-            @Override
-            public Subscription call(Subscription t) {
-                return t;
-            }
-        });
+        onReturn = spy(new FuncReturn());
 
         RxJavaHooks.setOnSingleReturn(onReturn);
     }

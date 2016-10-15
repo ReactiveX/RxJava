@@ -546,7 +546,7 @@ public class Single<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
-    public static <T> Single<T> from(Future<? extends T> future, Scheduler scheduler) {
+    public static <T> Single<? extends T> from(Future<? extends T> future, Scheduler scheduler) {
         return from(future).subscribeOn(scheduler);
     }
 

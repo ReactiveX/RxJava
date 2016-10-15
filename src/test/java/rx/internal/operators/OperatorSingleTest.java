@@ -36,6 +36,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.doppl.mock.MObserver;
+import rx.doppl.mock.MSubscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -417,7 +418,7 @@ public class OperatorSingleTest {
     public void testSingleWithBackpressure() {
         Observable<Integer> observable = Observable.just(1, 2).single();
 
-        Subscriber<Integer> subscriber = spy(new Subscriber<Integer>() {
+        Subscriber<Integer> subscriber = spy(new MSubscriber<Integer>() {
 
             @Override
             public void onStart() {

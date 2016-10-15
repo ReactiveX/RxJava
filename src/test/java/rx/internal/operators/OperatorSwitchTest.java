@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -27,6 +30,8 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import co.touchlab.doppel.testing.DoppelHacks;
+import co.touchlab.doppel.testing.PlatformUtils;
 import rx.*;
 import rx.Observable;
 import rx.Observer;
@@ -795,7 +800,10 @@ public class OperatorSwitchTest {
     Object ref;
 
     @Test
+    @DoppelHacks //WeakReference doesn't do what you want
     public void producerIsNotRetained() throws Exception {
+        if(PlatformUtils.isJ2objc())
+            return;
         ref = new Object();
 
         WeakReference<Object> wr = new WeakReference<Object>(ref);
@@ -832,6 +840,7 @@ public class OperatorSwitchTest {
     }
 
     @Test
+    @AutoreleasePool
     public void switchAsyncHeavily() {
         for (int i = 1; i < 1024; i *= 2) {
             System.out.println("switchAsyncHeavily >> " + i);
@@ -894,7 +903,7 @@ public class OperatorSwitchTest {
             .switchMap(UtilityFunctions.<Observable<Integer>>identity())
             .observeOn(Schedulers.computation())
             .ignoreElements()
-            .timeout(5, TimeUnit.SECONDS)
+            .timeout(10, TimeUnit.SECONDS)
             .toBlocking()
             .subscribe(Actions.empty(), new Action1<Throwable>() {
                 @Override

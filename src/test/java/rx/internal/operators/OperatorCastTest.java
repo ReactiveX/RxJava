@@ -61,7 +61,7 @@ public class OperatorCastTest {
 
         ps.cast(String.class).unsafeSubscribe(ts);
 
-        Assert.assertTrue("Not subscribed?", ps.hasObservers());
+        Assert.assertTrue("Not subscribed?",  ps.hasObservers());
 
         ps.onNext(1);
 

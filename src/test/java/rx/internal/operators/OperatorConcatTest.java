@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -740,6 +741,7 @@ public class OperatorConcatTest {
     }
 
     @Test(timeout = 100000)
+    @DoppelHacks//Needed more time to complete
     public void testIssue2890NoStackoverflow() throws InterruptedException {
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         final Scheduler sch = Schedulers.from(executor);
@@ -785,7 +787,7 @@ public class OperatorConcatTest {
             }
         });
 
-        executor.awaitTermination(12000, TimeUnit.MILLISECONDS);
+        executor.awaitTermination(20000, TimeUnit.MILLISECONDS);
 
         assertEquals(n, counter.get());
     }

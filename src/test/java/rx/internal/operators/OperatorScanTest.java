@@ -25,14 +25,17 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
 
+import co.touchlab.doppel.testing.MockGen;
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.doppl.mock.MProducer;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
+@MockGen(classes = "rx.doppl.mock.MProducer")
 public class OperatorScanTest {
 
     @Before
@@ -309,7 +312,7 @@ public class OperatorScanTest {
         Observable<Integer> o = Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(final Subscriber<? super Integer> subscriber) {
-                Producer p = spy(new Producer() {
+                Producer p = spy(new MProducer() {
 
                     private AtomicBoolean requested = new AtomicBoolean(false);
 

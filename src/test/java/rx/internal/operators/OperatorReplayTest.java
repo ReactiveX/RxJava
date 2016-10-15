@@ -27,11 +27,17 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import co.touchlab.doppel.testing.DoppelHacks;
+import co.touchlab.doppel.testing.MockGen;
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler.Worker;
+import rx.doppl.mock.MAction0;
+import rx.doppl.mock.MAction1;
+import rx.doppl.mock.MObserver;
+import rx.doppl.mock.MScheduler;
+import rx.doppl.mock.MSubscription;
 import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.internal.operators.OperatorReplay.*;
@@ -41,6 +47,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 
+@MockGen(classes = {"rx.doppl.mock.MAction1", "rx.doppl.mock.MAction0"/*, "rx.doppl.mock.MScheduler"*/, "rx.doppl.mock.MSubscription", "rx.doppl.mock.MObserver"})
 public class OperatorReplayTest {
     @Test
     public void testBufferedReplay() {
@@ -579,14 +586,14 @@ public class OperatorReplayTest {
     @Test
     public void testIssue2191_SchedulerUnsubscribe() throws Exception {
         // setup mocks
-        Action1<Integer> sourceNext = mock(Action1.class);
-        Action0 sourceCompleted = mock(Action0.class);
-        Action0 sourceUnsubscribed = mock(Action0.class);
-        final Scheduler mockScheduler = mock(Scheduler.class);
-        final Subscription mockSubscription = mock(Subscription.class);
+        Action1<Integer> sourceNext = mock(MAction1.class);
+        Action0 sourceCompleted = mock(MAction0.class);
+        Action0 sourceUnsubscribed = mock(MAction0.class);
+        final Scheduler mockScheduler = mock(MScheduler.class);
+        final Subscription mockSubscription = mock(MSubscription.class);
         Worker spiedWorker = workerSpy(mockSubscription);
-        Observer<Integer> mockObserverBeforeConnect = mock(Observer.class);
-        Observer<Integer> mockObserverAfterConnect = mock(Observer.class);
+        Observer<Integer> mockObserverBeforeConnect = mock(MObserver.class);
+        Observer<Integer> mockObserverAfterConnect = mock(MObserver.class);
 
         when(mockScheduler.createWorker()).thenReturn(spiedWorker);
 
