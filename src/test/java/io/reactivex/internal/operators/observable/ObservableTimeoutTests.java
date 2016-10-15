@@ -13,11 +13,12 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.*;
 
 import org.junit.*;
@@ -25,7 +26,9 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
@@ -380,5 +383,102 @@ public class ObservableTimeoutTests {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
+    }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(PublishSubject.create().timeout(1, TimeUnit.DAYS));
+
+        TestHelper.checkDisposed(PublishSubject.create().timeout(1, TimeUnit.DAYS, Observable.just(1)));
+    }
+
+    @Test
+    public void timedErrorOther() {
+        Observable.error(new TestException())
+        .timeout(1, TimeUnit.DAYS, Observable.just(1))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void timedError() {
+        Observable.error(new TestException())
+        .timeout(1, TimeUnit.DAYS)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void timedEmptyOther() {
+        Observable.empty()
+        .timeout(1, TimeUnit.DAYS, Observable.just(1))
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void timedEmpty() {
+        Observable.empty()
+        .timeout(1, TimeUnit.DAYS)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void newTimer() {
+        ObservableTimeoutTimed.NEW_TIMER.dispose();
+        assertTrue(ObservableTimeoutTimed.NEW_TIMER.isDisposed());
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+
+                    observer.onNext(1);
+                    observer.onComplete();
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .timeout(1, TimeUnit.DAYS)
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badSourceOther() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+
+                    observer.onNext(1);
+                    observer.onComplete();
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .timeout(1, TimeUnit.DAYS, Observable.just(3))
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

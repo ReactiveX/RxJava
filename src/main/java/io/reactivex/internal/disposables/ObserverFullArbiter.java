@@ -54,7 +54,8 @@ public final class ObserverFullArbiter<T> extends FullArbiterPad1 implements Dis
 
     @Override
     public boolean isDisposed() {
-        return cancelled;
+        Disposable d = resource;
+        return d != null ? d.isDisposed() : cancelled;
     }
 
     void disposeResource() {

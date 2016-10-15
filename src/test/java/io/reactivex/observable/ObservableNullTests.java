@@ -1259,7 +1259,7 @@ public class ObservableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void distinctUntilChangedFunctionReturnsNull() {
-        just1.distinctUntilChanged(new Function<Integer, Object>() {
+        Observable.range(1, 2).distinctUntilChanged(new Function<Integer, Object>() {
             @Override
             public Object apply(Integer v) {
                 return null;

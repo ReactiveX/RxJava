@@ -299,7 +299,14 @@ public class ObservableLastTest {
 
     @Test
     public void dispose() {
+        TestHelper.checkDisposed(Observable.never().lastElement().toObservable());
         TestHelper.checkDisposed(Observable.never().lastElement());
+
+        TestHelper.checkDisposed(Observable.just(1).lastOrError().toObservable());
+        TestHelper.checkDisposed(Observable.just(1).lastOrError());
+
+        TestHelper.checkDisposed(Observable.just(1).last(2).toObservable());
+        TestHelper.checkDisposed(Observable.just(1).last(2));
     }
 
     @Test
@@ -308,6 +315,38 @@ public class ObservableLastTest {
             @Override
             public MaybeSource<Object> apply(Observable<Object> o) throws Exception {
                 return o.lastElement();
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.lastElement().toObservable();
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.lastOrError();
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.lastOrError().toObservable();
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.last(2);
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.last(2).toObservable();
             }
         });
     }

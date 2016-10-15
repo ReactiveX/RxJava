@@ -13,16 +13,17 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Arrays;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.AtomicThrowable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableCombineLatest<T, R> extends Observable<R> {
@@ -86,7 +87,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
         volatile boolean done;
 
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicThrowable errors = new AtomicThrowable();
 
         int active;
         int complete;
@@ -181,7 +182,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                     if (value != null && f) {
                         queue.offer(cs, latest.clone());
                     } else
-                    if (value == null && error.get() != null) {
+                    if (value == null && errors.get() != null) {
                         done = true; // if this source completed without a value
                     }
                 } else {
@@ -227,13 +228,6 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                     @SuppressWarnings("unchecked")
                     T[] array = (T[])q.poll();
 
-                    if (array == null) {
-                        cancelled = true;
-                        cancel(q);
-                        a.onError(new IllegalStateException("Broken queue?! Sender received but not the array."));
-                        return;
-                    }
-
                     R v;
                     try {
                         v = ObjectHelper.requireNonNull(combiner.apply(array), "The combiner returned a null");
@@ -265,7 +259,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                 if (delayError) {
                     if (empty) {
                         clear(queue);
-                        Throwable e = error.get();
+                        Throwable e = errors.terminate();
                         if (e != null) {
                             a.onError(e);
                         } else {
@@ -274,10 +268,10 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                         return true;
                     }
                 } else {
-                    Throwable e = error.get();
+                    Throwable e = errors.get();
                     if (e != null) {
                         cancel(q);
-                        a.onError(e);
+                        a.onError(errors.terminate());
                         return true;
                     } else
                     if (empty) {
@@ -291,25 +285,15 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         }
 
         void onError(Throwable e) {
-            for (;;) {
-                Throwable curr = error.get();
-                if (curr != null) {
-                    CompositeException ce = new CompositeException(curr, e);
-                    e = ce;
-                }
-                Throwable next = e;
-                if (error.compareAndSet(curr, next)) {
-                    return;
-                }
+            if (!errors.addThrowable(e)) {
+                RxJavaPlugins.onError(e);
             }
         }
     }
 
-    static final class CombinerObserver<T, R> implements Observer<T>, Disposable {
+    static final class CombinerObserver<T, R> implements Observer<T> {
         final LatestCoordinator<T, R> parent;
         final int index;
-
-        boolean done;
 
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
@@ -325,40 +309,22 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
         @Override
         public void onNext(T t) {
-            if (done) {
-                return;
-            }
             parent.combine(t, index);
         }
 
         @Override
         public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
             parent.onError(t);
-            done = true;
             parent.combine(null, index);
         }
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
             parent.combine(null, index);
         }
 
-        @Override
         public void dispose() {
             DisposableHelper.dispose(s);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return s.get() == DisposableHelper.DISPOSED;
         }
     }
 }

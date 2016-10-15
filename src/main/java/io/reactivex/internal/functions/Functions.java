@@ -637,4 +637,29 @@ public final class Functions {
         return new ListSorter<T>(comparator);
     }
 
+    static final BiPredicate<Object, Object> DEFAULT_EQUALS_PREDICATE = equalsPredicate(Functions.identity());
+
+    @SuppressWarnings("unchecked")
+    public static <T> BiPredicate<T, T> equalsPredicate() {
+        return (BiPredicate<T, T>)DEFAULT_EQUALS_PREDICATE;
+    }
+
+    static final class KeyedEqualsPredicate<T, K> implements BiPredicate<T, T> {
+        final Function<? super T, K> keySelector;
+
+        KeyedEqualsPredicate(Function<? super T, K> keySelector) {
+            this.keySelector = keySelector;
+        }
+
+        @Override
+        public boolean test(T t1, T t2) throws Exception {
+            K k1 = ObjectHelper.requireNonNull(keySelector.apply(t1), "The keySelector returned a null key");
+            K k2 = ObjectHelper.requireNonNull(keySelector.apply(t2), "The keySelector returned a null key");
+            return ObjectHelper.equals(k1, k2);
+        }
+    }
+
+    public static <T, K> BiPredicate<T, T> equalsPredicate(Function<? super T, K> keySelector) {
+        return new KeyedEqualsPredicate<T, K>(keySelector);
+    }
 }

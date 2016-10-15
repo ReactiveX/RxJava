@@ -23,6 +23,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.util.*;
@@ -109,7 +110,6 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             }
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public void onNext(T t) {
             // safeguard against misbehaving sources
@@ -118,34 +118,51 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             }
             ObservableSource<? extends U> p;
             try {
-                p = mapper.apply(t);
+                p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
+                s.dispose();
                 onError(e);
                 return;
             }
-            if (p instanceof Callable) {
-                tryEmitScalar(((Callable<? extends U>)p));
-            } else {
-                if (maxConcurrency == Integer.MAX_VALUE) {
-                    subscribeInner(p);
-                } else {
-                    synchronized (this) {
-                        if (wip == maxConcurrency) {
-                            sources.offer(p);
-                            return;
-                        }
-                        wip++;
+
+            if (maxConcurrency != Integer.MAX_VALUE) {
+                synchronized (this) {
+                    if (wip == maxConcurrency) {
+                        sources.offer(p);
+                        return;
                     }
-                    subscribeInner(p);
+                    wip++;
                 }
             }
+
+            subscribeInner(p);
         }
 
+        @SuppressWarnings("unchecked")
         void subscribeInner(ObservableSource<? extends U> p) {
-            InnerObserver<T, U> inner = new InnerObserver<T, U>(this, uniqueId++);
-            addInner(inner);
-            p.subscribe(inner);
+            for (;;) {
+                if (p instanceof Callable) {
+                    tryEmitScalar(((Callable<? extends U>)p));
+
+                    if (maxConcurrency != Integer.MAX_VALUE) {
+                        synchronized (this) {
+                            p = sources.poll();
+                            if (p == null) {
+                                wip--;
+                                break;
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                } else {
+                    InnerObserver<T, U> inner = new InnerObserver<T, U>(this, uniqueId++);
+                    addInner(inner);
+                    p.subscribe(inner);
+                    break;
+                }
+            }
         }
 
         void addInner(InnerObserver<T, U> inner) {
@@ -246,7 +263,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         SimpleQueue<U> getInnerQueue(InnerObserver<T, U> inner) {
             SimpleQueue<U> q = inner.queue;
             if (q == null) {
-                q = new SpscArrayQueue<U>(bufferSize);
+                q = new SpscLinkedArrayQueue<U>(bufferSize);
                 inner.queue = q;
             }
             return q;
@@ -264,10 +281,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     q = new SpscLinkedArrayQueue<U>(bufferSize);
                     inner.queue = q;
                 }
-                if (!q.offer(value)) {
-                    onError(new MissingBackpressureException("Inner queue full?!"));
-                    return;
-                }
+                q.offer(value);
                 if (getAndIncrement() != 0) {
                     return;
                 }

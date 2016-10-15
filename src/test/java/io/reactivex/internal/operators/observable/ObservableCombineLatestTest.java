@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -26,10 +27,11 @@ import org.mockito.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
@@ -859,5 +861,159 @@ public class ObservableCombineLatestTest {
     @Test
     public void combineLatestDelayErrorEmpty() {
         assertSame(Observable.empty(), Observable.combineLatestDelayError(new ObservableSource[0], Functions.<Object[]>identity(), 16));
+    }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(Observable.combineLatest(Observable.never(), Observable.never(), new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        }));
+    }
+
+    @Test
+    public void cancelWhileSubscribing() {
+        final TestObserver<Object> to = new TestObserver<Object>();
+
+        Observable.combineLatest(
+                Observable.just(1)
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer v) throws Exception {
+                        to.cancel();
+                    }
+                }),
+                Observable.never(),
+                new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        })
+        .subscribe(to);
+    }
+
+    @Test
+    public void combineAsync() {
+        Observable<Integer> source = Observable.range(1, 1000).subscribeOn(Schedulers.computation());
+
+        Observable.combineLatest(source, source, new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        })
+        .take(500)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void error() {
+        Observable.combineLatest(Observable.never(), Observable.error(new TestException()), new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorDelayed() {
+        Observable.combineLatestDelayError(
+                new Function<Object[], Object>() {
+                    @Override
+                    public Object apply(Object[] a) throws Exception {
+                        return a;
+                    }
+                },
+                128,
+                Observable.error(new TestException()),
+                Observable.just(1)
+        )
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorDelayed2() {
+        Observable.combineLatestDelayError(
+                new Function<Object[], Object>() {
+                    @Override
+                    public Object apply(Object[] a) throws Exception {
+                        return a;
+                    }
+                },
+                128,
+                Observable.error(new TestException()).startWith(1),
+                Observable.empty()
+        )
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void onErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final PublishSubject<Integer> ps1 = PublishSubject.create();
+                final PublishSubject<Integer> ps2 = PublishSubject.create();
+
+                TestObserver<Integer> to = Observable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        return a;
+                    }
+                }).test();
+
+                final TestException ex1 = new TestException();
+                final TestException ex2 = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onError(ex1);
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex2);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                if (to.errorCount() != 0) {
+                    if (to.errors().get(0) instanceof CompositeException) {
+                        to.assertSubscribed()
+                        .assertNotComplete()
+                        .assertNoValues();
+
+                        for (Throwable e : TestHelper.errorList(to)) {
+                            assertTrue(e.toString(), e instanceof TestException);
+                        }
+
+                    } else {
+                        to.assertFailure(TestException.class);
+                    }
+                }
+
+                for (Throwable e : errors) {
+                    assertTrue(e.toString(), e instanceof TestException);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
     }
 }

@@ -23,8 +23,11 @@ import io.reactivex.observables.ConnectableObservable;
 /**
  * Helper utility class to support Observable with inner classes.
  */
-public enum ObservableInternalHelper {
-    ;
+public final class ObservableInternalHelper {
+
+    private ObservableInternalHelper() {
+        throw new IllegalStateException("No instances!");
+    }
 
     static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
         final Consumer<Emitter<T>> consumer;

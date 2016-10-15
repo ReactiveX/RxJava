@@ -3034,7 +3034,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits a Boolean value that indicates whether two ObservableSource sequences are the
+     * Returns a Single that emits a Boolean value that indicates whether two ObservableSource sequences are the
      * same by comparing the items emitted by each ObservableSource pairwise.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
@@ -3049,16 +3049,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the second ObservableSource to compare
      * @param <T>
      *            the type of items emitted by each ObservableSource
-     * @return an Observable that emits a Boolean value that indicates whether the two sequences are the same
+     * @return a Single that emits a Boolean value that indicates whether the two sequences are the same
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2) {
+    public static <T> Single<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2) {
         return sequenceEqual(source1, source2, ObjectHelper.equalsPredicate(), bufferSize());
     }
 
     /**
-     * Returns an Observable that emits a Boolean value that indicates whether two ObservableSource sequences are the
+     * Returns a Single that emits a Boolean value that indicates whether two ObservableSource sequences are the
      * same by comparing the items emitted by each ObservableSource pairwise based on the results of a specified
      * equality function.
      * <p>
@@ -3076,18 +3076,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a function used to compare items emitted by each ObservableSource
      * @param <T>
      *            the type of items emitted by each ObservableSource
-     * @return an Observable that emits a Boolean value that indicates whether the two ObservableSource two sequences
+     * @return a Single that emits a Boolean value that indicates whether the two ObservableSource two sequences
      *         are the same according to the specified function
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
+    public static <T> Single<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
             BiPredicate<? super T, ? super T> isEqual) {
         return sequenceEqual(source1, source2, isEqual, bufferSize());
     }
 
     /**
-     * Returns an Observable that emits a Boolean value that indicates whether two ObservableSource sequences are the
+     * Returns a Single that emits a Boolean value that indicates whether two ObservableSource sequences are the
      * same by comparing the items emitted by each ObservableSource pairwise based on the results of a specified
      * equality function.
      * <p>
@@ -3112,17 +3112,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
+    public static <T> Single<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
             BiPredicate<? super T, ? super T> isEqual, int bufferSize) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(isEqual, "isEqual is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new ObservableSequenceEqual<T>(source1, source2, isEqual, bufferSize));
+        return RxJavaPlugins.onAssembly(new ObservableSequenceEqualSingle<T>(source1, source2, isEqual, bufferSize));
     }
 
     /**
-     * Returns an Observable that emits a Boolean value that indicates whether two ObservableSource sequences are the
+     * Returns a Single that emits a Boolean value that indicates whether two ObservableSource sequences are the
      * same by comparing the items emitted by each ObservableSource pairwise.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
@@ -3139,11 +3139,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the number of items to prefetch from the first and second source ObservableSource
      * @param <T>
      *            the type of items emitted by each ObservableSource
-     * @return an Observable that emits a Boolean value that indicates whether the two sequences are the same
+     * @return a Single that emits a Boolean value that indicates whether the two sequences are the same
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Observable<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
+    public static <T> Single<Boolean> sequenceEqual(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
             int bufferSize) {
         return sequenceEqual(source1, source2, ObjectHelper.equalsPredicate(), bufferSize);
     }
@@ -6319,7 +6319,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <K> Observable<T> distinct(Function<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
-        return ObservableDistinct.withCollection(this, keySelector, collectionSupplier);
+        return new ObservableDistinct<T, K>(this, keySelector, collectionSupplier);
     }
 
     /**
@@ -6338,7 +6338,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> distinctUntilChanged() {
-        return ObservableDistinct.<T>untilChanged(this);
+        return new ObservableDistinctUntilChanged<T>(this, Functions.equalsPredicate());
     }
 
     /**
@@ -6362,7 +6362,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Observable<T> distinctUntilChanged(Function<? super T, K> keySelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
-        return ObservableDistinct.untilChanged(this, keySelector);
+        return new ObservableDistinctUntilChanged<T>(this, Functions.equalsPredicate(keySelector));
     }
 
     /**

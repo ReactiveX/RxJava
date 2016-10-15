@@ -21,6 +21,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
@@ -121,4 +122,17 @@ public class ObservableTimeIntervalTest {
         }
     }
 
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).timeInterval());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void error() {
+        Observable.error(new TestException())
+        .timeInterval()
+        .test()
+        .assertFailure(TestException.class);
+    }
 }
