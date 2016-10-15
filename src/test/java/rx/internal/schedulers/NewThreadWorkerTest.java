@@ -24,6 +24,9 @@ import java.util.concurrent.*;
 
 import org.junit.Test;
 
+import co.touchlab.doppel.testing.MockGen;
+
+@MockGen(classes = {"java.util.concurrent.ScheduledThreadPoolExecutor"})
 public class NewThreadWorkerTest {
 
     @Test
