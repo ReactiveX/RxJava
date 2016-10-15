@@ -29,29 +29,13 @@ public class TransformerTest {
         try {
             Flowable.just(1).compose(new FlowableTransformer<Integer, Integer>() {
                 @Override
-                public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+                public Publisher<Integer> apply(Flowable<Integer> v) {
                     throw new TestException("Forced failure");
                 }
             });
             fail("Should have thrown!");
         } catch (TestException ex) {
             assertEquals("Forced failure", ex.getMessage());
-        }
-    }
-
-    @Test
-    public void flowableTransformerThrowsChecked() {
-        try {
-            Flowable.just(1).compose(new FlowableTransformer<Integer, Integer>() {
-                @Override
-                public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
-                    throw new IOException("Forced failure");
-                }
-            });
-            fail("Should have thrown!");
-        } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof IOException);
-            assertEquals("Forced failure", ex.getCause().getMessage());
         }
     }
 
@@ -60,29 +44,13 @@ public class TransformerTest {
         try {
             Observable.just(1).compose(new ObservableTransformer<Integer, Integer>() {
                 @Override
-                public Observable<Integer> apply(Observable<Integer> v) throws Exception {
+                public Observable<Integer> apply(Observable<Integer> v) {
                     throw new TestException("Forced failure");
                 }
             });
             fail("Should have thrown!");
         } catch (TestException ex) {
             assertEquals("Forced failure", ex.getMessage());
-        }
-    }
-
-    @Test
-    public void observableTransformerThrowsChecked() {
-        try {
-            Observable.just(1).compose(new ObservableTransformer<Integer, Integer>() {
-                @Override
-                public Observable<Integer> apply(Observable<Integer> v) throws Exception {
-                    throw new IOException("Forced failure");
-                }
-            });
-            fail("Should have thrown!");
-        } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof IOException);
-            assertEquals("Forced failure", ex.getCause().getMessage());
         }
     }
 
@@ -91,29 +59,13 @@ public class TransformerTest {
         try {
             Single.just(1).compose(new SingleTransformer<Integer, Integer>() {
                 @Override
-                public Single<Integer> apply(Single<Integer> v) throws Exception {
+                public Single<Integer> apply(Single<Integer> v) {
                     throw new TestException("Forced failure");
                 }
             });
             fail("Should have thrown!");
         } catch (TestException ex) {
             assertEquals("Forced failure", ex.getMessage());
-        }
-    }
-
-    @Test
-    public void singleTransformerThrowsChecked() {
-        try {
-            Single.just(1).compose(new SingleTransformer<Integer, Integer>() {
-                @Override
-                public Single<Integer> apply(Single<Integer> v) throws Exception {
-                    throw new IOException("Forced failure");
-                }
-            });
-            fail("Should have thrown!");
-        } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof IOException);
-            assertEquals("Forced failure", ex.getCause().getMessage());
         }
     }
 
@@ -122,29 +74,13 @@ public class TransformerTest {
         try {
             Maybe.just(1).compose(new MaybeTransformer<Integer, Integer>() {
                 @Override
-                public Maybe<Integer> apply(Maybe<Integer> v) throws Exception {
+                public Maybe<Integer> apply(Maybe<Integer> v) {
                     throw new TestException("Forced failure");
                 }
             });
             fail("Should have thrown!");
         } catch (TestException ex) {
             assertEquals("Forced failure", ex.getMessage());
-        }
-    }
-
-    @Test
-    public void maybeTransformerThrowsChecked() {
-        try {
-            Maybe.just(1).compose(new MaybeTransformer<Integer, Integer>() {
-                @Override
-                public Maybe<Integer> apply(Maybe<Integer> v) throws Exception {
-                    throw new IOException("Forced failure");
-                }
-            });
-            fail("Should have thrown!");
-        } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof IOException);
-            assertEquals("Forced failure", ex.getCause().getMessage());
         }
     }
 
@@ -153,29 +89,13 @@ public class TransformerTest {
         try {
             Completable.complete().compose(new CompletableTransformer() {
                 @Override
-                public Completable apply(Completable v) throws Exception {
+                public Completable apply(Completable v) {
                     throw new TestException("Forced failure");
                 }
             });
             fail("Should have thrown!");
         } catch (TestException ex) {
             assertEquals("Forced failure", ex.getMessage());
-        }
-    }
-
-    @Test
-    public void completabeTransformerThrowsChecked() {
-        try {
-            Completable.complete().compose(new CompletableTransformer() {
-                @Override
-                public Completable apply(Completable v) throws Exception {
-                    throw new IOException("Forced failure");
-                }
-            });
-            fail("Should have thrown!");
-        } catch (RuntimeException ex) {
-            assertTrue(ex.toString(), ex.getCause() instanceof IOException);
-            assertEquals("Forced failure", ex.getCause().getMessage());
         }
     }
 }

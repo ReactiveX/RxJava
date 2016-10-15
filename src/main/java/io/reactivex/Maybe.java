@@ -2010,12 +2010,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> compose(MaybeTransformer<T, R> transformer) {
-        try {
-            return wrap(transformer.apply(this));
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
+        return wrap(transformer.apply(this));
     }
 
     /**

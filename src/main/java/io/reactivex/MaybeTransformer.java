@@ -25,8 +25,6 @@ public interface MaybeTransformer<Upstream, Downstream> {
      * optionally different element type.
      * @param upstream the upstream Maybe instance
      * @return the transformed MaybeSource instance
-     * @throws Exception in case the transformation throws, checked exceptions will be wrapped
-     * into a RuntimeException
      */
-    MaybeSource<Downstream> apply(Maybe<Upstream> upstream) throws Exception;
+    MaybeSource<Downstream> apply(Maybe<Upstream> upstream);
 }

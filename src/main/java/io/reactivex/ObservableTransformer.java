@@ -25,8 +25,6 @@ public interface ObservableTransformer<Upstream, Downstream> {
      * optionally different element type.
      * @param upstream the upstream Observable instance
      * @return the transformed ObservableSource instance
-     * @throws Exception in case the transformation throws, checked exceptions will be wrapped
-     * into a RuntimeException
      */
-    ObservableSource<Downstream> apply(Observable<Upstream> upstream) throws Exception;
+    ObservableSource<Downstream> apply(Observable<Upstream> upstream);
 }
