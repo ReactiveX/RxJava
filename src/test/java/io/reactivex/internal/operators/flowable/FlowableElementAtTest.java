@@ -15,10 +15,15 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.Test;
-
-import io.reactivex.Flowable;
+import org.reactivestreams.*;
 
 public class FlowableElementAtTest {
 
@@ -174,5 +179,60 @@ public class FlowableElementAtTest {
             .elementAtOrError(1)
             .test()
             .assertFailure(NoSuchElementException.class);
+    }
+
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Flowable<Object> o) throws Exception {
+                return o.elementAt(0).toFlowable();
+            }
+        });
+    }
+
+    @Test
+    public void elementAtIndex1WithDefaultOnEmptySourceObservable() {
+        Flowable.empty()
+            .elementAt(1, 10)
+            .toFlowable()
+            .test()
+            .assertResult(10);
+    }
+
+    @Test
+    public void errorFlowable() {
+        Flowable.error(new TestException())
+            .elementAt(1, 10)
+            .toFlowable()
+            .test()
+            .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+
+                    subscriber.onNext(1);
+                    subscriber.onNext(2);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
+                }
+            }
+            .elementAt(0)
+            .toFlowable()
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
