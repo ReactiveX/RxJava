@@ -87,7 +87,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
 
         @Override
         public void onComplete() {
-            if (index <= count && !done) {
+            if (!done) {
                 done = true;
                 T v = defaultValue;
                 if (v == null) {
