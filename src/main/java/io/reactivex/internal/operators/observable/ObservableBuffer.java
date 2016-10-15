@@ -183,7 +183,7 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
                 U b;
 
                 try {
-                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
                 } catch (Throwable e) {
                     buffers.clear();
                     s.dispose();
