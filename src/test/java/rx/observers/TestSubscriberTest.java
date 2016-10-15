@@ -15,30 +15,37 @@
  */
 package rx.observers;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.hamcrest.core.Is;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.InOrder;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.junit.*;
-import org.junit.rules.ExpectedException;
-import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler.Worker;
 import rx.Subscriber;
-import rx.exceptions.*;
+import rx.exceptions.CompositeException;
+import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-public class TestSubscriberTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+public class TestSubscriberTest {
 
     @Test
     public void testAssert() {
@@ -57,10 +64,16 @@ public class TestSubscriberTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Number of items does not match. Provided: 1  Actual: 2");
+        try
+        {
+            o.assertReceivedOnNext(Arrays.asList(1));
+            fail("Expected an AssertionError to be thrown");
+        }
+        catch(AssertionError e)
+        {
+            assertException(e, "Number of items does not match. Provided: 1  Actual: 2");
+        }
 
-        o.assertReceivedOnNext(Arrays.asList(1));
         assertEquals(2, o.getOnNextEvents().size());
         o.assertTerminalEvent();
     }
@@ -71,13 +84,24 @@ public class TestSubscriberTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("Value at index: 1 expected to be [3] (Integer) but was: [2] (Integer)");
+        try
+        {
+            o.assertReceivedOnNext(Arrays.asList(1, 3));
+            fail("Expected an AssertionError to be thrown");
+        }
+        catch(AssertionError e)
+        {
+            assertException(e, "Value at index: 1 expected to be [3] (Integer) but was: [2] (Integer)");
+        }
 
-
-        o.assertReceivedOnNext(Arrays.asList(1, 3));
         assertEquals(2, o.getOnNextEvents().size());
         o.assertTerminalEvent();
+    }
+
+    private void assertException(AssertionError e, String message)
+    {
+        String exMessage = e.getMessage();
+        assertTrue(exMessage.contains(message));
     }
 
     @Test
@@ -89,12 +113,17 @@ public class TestSubscriberTest {
         p.onNext(1);
         p.onNext(2);
 
-        thrown.expect(AssertionError.class);
-        thrown.expectMessage("No terminal events received.");
-
-        o.assertReceivedOnNext(Arrays.asList(1, 2));
-        assertEquals(2, o.getOnNextEvents().size());
-        o.assertTerminalEvent();
+        try
+        {
+            o.assertReceivedOnNext(Arrays.asList(1, 2));
+            assertEquals(2, o.getOnNextEvents().size());
+            o.assertTerminalEvent();
+            fail("Expected an AssertionError to be thrown");
+        }
+        catch(AssertionError e)
+        {
+            assertException(e, "No terminal events received.");
+        }
     }
 
     @Test
