@@ -47,7 +47,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 
-@MockGen(classes = {"rx.doppl.mock.MAction1", "rx.doppl.mock.MAction0"/*, "rx.doppl.mock.MScheduler"*/, "rx.doppl.mock.MSubscription", "rx.doppl.mock.MObserver"})
+@MockGen(classes = {"rx.doppl.mock.MAction1", "rx.doppl.mock.MAction0"/*, "rx.doppl.mock.MScheduler"*/, "rx.doppl.mock.MSubscription", "rx.doppl.mock.MObserver", "rx.internal.operators.OperatorReplayTest.InprocessWorker"})
 public class OperatorReplayTest {
     @Test
     public void testBufferedReplay() {
@@ -715,7 +715,7 @@ public class OperatorReplayTest {
     }
 
 
-    private static class InprocessWorker extends Worker {
+    public static class InprocessWorker extends Worker {
         private final Subscription mockSubscription;
         public boolean unsubscribed;
 
