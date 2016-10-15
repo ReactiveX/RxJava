@@ -499,7 +499,7 @@ public class SerializedObserverTest {
         /**
          * used to store the order and number of events received
          */
-        private final LinkedBlockingQueue<TestConcurrencyObserverEvent> events = new LinkedBlockingQueue<TestConcurrencyObserverEvent>();
+        private final List<TestConcurrencyObserverEvent> events = new ArrayList<>(10000);
         private final int waitTime;
 
         @SuppressWarnings("unused")
@@ -523,7 +523,11 @@ public class SerializedObserverTest {
 
         @Override
         public void onNext(String args) {
-            events.add(TestConcurrencyObserverEvent.onNext);
+            synchronized(events)
+            {
+                events.add(TestConcurrencyObserverEvent.onNext);
+            }
+
             // do some artificial work to make the thread scheduling/timing vary
             int s = 0;
             for (int i = 0; i < 20; i++) {

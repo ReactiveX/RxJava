@@ -19,7 +19,7 @@ public class OneTest
     {
         List<String> allClassnames = new ArrayList<>();
 
-        loadClasses(allClassnames, alltests);
+        loadClasses(allClassnames, littletest);
 
         for(String allClassname : allClassnames)
         {
@@ -739,6 +739,11 @@ public class OneTest
             }
         }.start();
     }
+
+    public static Class[] littletest = new Class[] {
+            rx.observers.SerializedObserverTest.class,
+            rx.doppl.misc.LinkedBlockingQueueTest.class
+    };
 
     public static Class[] alltests = new Class[]{
             rx.BackpressureTests.class,
