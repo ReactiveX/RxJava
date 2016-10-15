@@ -13,14 +13,17 @@
 
 package io.reactivex;
 
-import io.reactivex.functions.Function;
-
 /**
- * Interface to map/wrap a downstream subscriber to an upstream MaybeObserver.
+ * Interface to map/wrap a downstream observer to an upstream observer.
  *
  * @param <Downstream> the value type of the downstream
  * @param <Upstream> the value type of the upstream
  */
-public interface MaybeOperator<Downstream, Upstream> extends Function<MaybeObserver<? super Downstream>, MaybeObserver<? super Upstream>> {
-
+public interface MaybeOperator<Downstream, Upstream> {
+    /**
+     * Applies a function to the child MaybeObserver and returns a new parent MaybeObserver.
+     * @param observer the child MaybeObserver instance
+     * @return the parent MaybeObserver instance
+     */
+    MaybeObserver<? super Upstream> apply(MaybeObserver<? super Downstream> observer) throws Exception;
 }

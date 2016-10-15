@@ -13,14 +13,17 @@
 
 package io.reactivex;
 
-import io.reactivex.functions.Function;
-
 /**
- * Interface to map/wrap a downstream subscriber to an upstream SingleObserver.
+ * Interface to map/wrap a downstream observer to an upstream observer.
  *
  * @param <Downstream> the value type of the downstream
  * @param <Upstream> the value type of the upstream
  */
-public interface SingleOperator<Downstream, Upstream> extends Function<SingleObserver<? super Downstream>, SingleObserver<? super Upstream>> {
-
+public interface SingleOperator<Downstream, Upstream> {
+    /**
+     * Applies a function to the child SingleObserver and returns a new parent SingleObserver.
+     * @param observer the child SingleObserver instance
+     * @return the parent SingleObserver instance
+     */
+    SingleObserver<? super Upstream> apply(SingleObserver<? super Downstream> observer) throws Exception;
 }
