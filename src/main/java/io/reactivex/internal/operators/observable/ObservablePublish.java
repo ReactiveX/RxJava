@@ -18,11 +18,10 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.HasUpstreamObservableSource;
-import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -37,124 +36,85 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
     final AtomicReference<PublishObserver<T>> current;
 
-    /** The size of the prefetch buffer. */
-    final int bufferSize;
-
     final ObservableSource<T> onSubscribe;
 
     /**
      * Creates a OperatorPublish instance to publish values of the given source observable.
      * @param <T> the source value type
      * @param source the source observable
-     * @param bufferSize the size of the prefetch buffer
      * @return the connectable observable
      */
-    public static <T> ConnectableObservable<T> create(ObservableSource<T> source, final int bufferSize) {
+    public static <T> ConnectableObservable<T> create(ObservableSource<T> source) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<PublishObserver<T>> curr = new AtomicReference<PublishObserver<T>>();
         ObservableSource<T> onSubscribe = new ObservableSource<T>() {
             @Override
             public void subscribe(Observer<? super T> child) {
-            // concurrent connection/disconnection may change the state,
-            // we loop to be atomic while the child subscribes
-            for (;;) {
-                // get the current subscriber-to-source
-                PublishObserver<T> r = curr.get();
-                // if there isn't one or it is disposed
-                if (r == null || r.isDisposed()) {
-                    // create a new subscriber to source
-                    PublishObserver<T> u = new PublishObserver<T>(curr, bufferSize);
-                    // let's try setting it as the current subscriber-to-source
-                    if (!curr.compareAndSet(r, u)) {
-                        // didn't work, maybe someone else did it or the current subscriber
-                        // to source has just finished
-                        continue;
-                    }
-                    // we won, let's use it going onwards
-                    r = u;
-                }
-
                 // create the backpressure-managing producer for this child
-                InnerDisposable<T> inner = new InnerDisposable<T>(r, child);
-                /*
-                 * Try adding it to the current subscriber-to-source, add is atomic in respect
-                 * to other adds and the termination of the subscriber-to-source.
-                 */
-                if (r.add(inner)) {
-                    // the producer has been registered with the current subscriber-to-source so
-                    // at least it will receive the next terminal event
-                    // setting the producer will trigger the first request to be considered by
-                    // the subscriber-to-source.
-                    child.onSubscribe(inner);
-                    break; // NOPMD
+                InnerDisposable<T> inner = new InnerDisposable<T>(child);
+                child.onSubscribe(inner);
+                // concurrent connection/disconnection may change the state,
+                // we loop to be atomic while the child subscribes
+                for (;;) {
+                    // get the current subscriber-to-source
+                    PublishObserver<T> r = curr.get();
+                    // if there isn't one or it is disposed
+                    if (r == null || r.isDisposed()) {
+                        // create a new subscriber to source
+                        PublishObserver<T> u = new PublishObserver<T>(curr);
+                        // let's try setting it as the current subscriber-to-source
+                        if (!curr.compareAndSet(r, u)) {
+                            // didn't work, maybe someone else did it or the current subscriber
+                            // to source has just finished
+                            continue;
+                        }
+                        // we won, let's use it going onwards
+                        r = u;
+                    }
+
+                    /*
+                     * Try adding it to the current subscriber-to-source, add is atomic in respect
+                     * to other adds and the termination of the subscriber-to-source.
+                     */
+                    if (r.add(inner)) {
+                        inner.setParent(r);
+                        break; // NOPMD
+                    }
+                    /*
+                     * The current PublishObserver has been terminated, try with a newer one.
+                     */
+                    /*
+                     * Note: although technically correct, concurrent disconnects can cause
+                     * unexpected behavior such as child observers never receiving anything
+                     * (unless connected again). An alternative approach, similar to
+                     * PublishSubject would be to immediately terminate such child
+                     * observers as well:
+                     *
+                     * Object term = r.terminalEvent;
+                     * if (r.nl.isCompleted(term)) {
+                     *     child.onComplete();
+                     * } else {
+                     *     child.onError(r.nl.getError(term));
+                     * }
+                     * return;
+                     *
+                     * The original concurrent behavior was non-deterministic in this regard as well.
+                     * Allowing this behavior, however, may introduce another unexpected behavior:
+                     * after disconnecting a previous connection, one might not be able to prepare
+                     * a new connection right after a previous termination by subscribing new child
+                     * observers asynchronously before a connect call.
+                     */
                 }
-                /*
-                 * The current PublishObserver has been terminated, try with a newer one.
-                 */
-                /*
-                 * Note: although technically correct, concurrent disconnects can cause
-                 * unexpected behavior such as child observers never receiving anything
-                 * (unless connected again). An alternative approach, similar to
-                 * PublishSubject would be to immediately terminate such child
-                 * observers as well:
-                 *
-                 * Object term = r.terminalEvent;
-                 * if (r.nl.isCompleted(term)) {
-                 *     child.onComplete();
-                 * } else {
-                 *     child.onError(r.nl.getError(term));
-                 * }
-                 * return;
-                 *
-                 * The original concurrent behavior was non-deterministic in this regard as well.
-                 * Allowing this behavior, however, may introduce another unexpected behavior:
-                 * after disconnecting a previous connection, one might not be able to prepare
-                 * a new connection right after a previous termination by subscribing new child
-                 * observers asynchronously before a connect call.
-                 */
-            }
             }
         };
-        return RxJavaPlugins.onAssembly(new ObservablePublish<T>(onSubscribe, source, curr, bufferSize));
-    }
-
-    public static <T, R> Observable<R> create(final ObservableSource<T> source,
-                                              final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize) {
-        return RxJavaPlugins.onAssembly(new Observable<R>() {
-            @Override
-            protected void subscribeActual(Observer<? super R> o) {
-                ConnectableObservable<T> op = ObservablePublish.create(source, bufferSize);
-
-                final ObserverResourceWrapper<R> srw = new ObserverResourceWrapper<R>(o);
-
-                ObservableSource<R> target;
-
-                try {
-                    target = selector.apply(op);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    EmptyDisposable.error(ex, srw);
-                    return;
-                }
-
-                target.subscribe(srw);
-
-                op.connect(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable r) {
-                        srw.setResource(r);
-                    }
-                });
-            }
-        });
+        return RxJavaPlugins.onAssembly(new ObservablePublish<T>(onSubscribe, source, curr));
     }
 
     private ObservablePublish(ObservableSource<T> onSubscribe, ObservableSource<T> source,
-                              final AtomicReference<PublishObserver<T>> current, int bufferSize) {
+                              final AtomicReference<PublishObserver<T>> current) {
         this.onSubscribe = onSubscribe;
         this.source = source;
         this.current = current;
-        this.bufferSize = bufferSize;
     }
 
     @Override
@@ -178,7 +138,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
             // if there is none yet or the current has been disposed
             if (ps == null || ps.isDisposed()) {
                 // create a new subscriber-to-source
-                PublishObserver<T> u = new PublishObserver<T>(current, bufferSize);
+                PublishObserver<T> u = new PublishObserver<T>(current);
                 // try setting it as the current subscriber-to-source
                 if (!current.compareAndSet(ps, u)) {
                     // did not work, perhaps a new subscriber arrived
@@ -217,13 +177,10 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
     }
 
     @SuppressWarnings("rawtypes")
-    static final class PublishObserver<T> implements Observer<T>, Disposable {
-        /** Holds notifications from upstream. */
-        final SpscLinkedArrayQueue<Object> queue;
+    static final class PublishObserver<T>
+    implements Observer<T>, Disposable {
         /** Holds onto the current connected PublishObserver. */
         final AtomicReference<PublishObserver<T>> current;
-        /** Contains either an onComplete or an onError token from upstream. */
-        volatile Object terminalEvent;
 
         /** Indicates an empty array of inner observers. */
         static final InnerDisposable[] EMPTY = new InnerDisposable[0];
@@ -231,28 +188,23 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         static final InnerDisposable[] TERMINATED = new InnerDisposable[0];
 
         /** Tracks the subscribed observers. */
-        final AtomicReference<InnerDisposable[]> observers;
+        final AtomicReference<InnerDisposable<T>[]> observers;
         /**
          * Atomically changed from false to true by connect to make sure the
          * connection is only performed by one thread.
          */
         final AtomicBoolean shouldConnect;
 
-        /** Guarded by this. */
-        boolean emitting;
-        /** Guarded by this. */
-        boolean missed;
-
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
-        PublishObserver(AtomicReference<PublishObserver<T>> current, int bufferSize) {
-            this.queue = new SpscLinkedArrayQueue<Object>(bufferSize);
-
-            this.observers = new AtomicReference<InnerDisposable[]>(EMPTY);
+        @SuppressWarnings("unchecked")
+        PublishObserver(AtomicReference<PublishObserver<T>> current) {
+            this.observers = new AtomicReference<InnerDisposable<T>[]>(EMPTY);
             this.current = current;
             this.shouldConnect = new AtomicBoolean();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void dispose() {
             if (observers.get() != TERMINATED) {
@@ -277,36 +229,29 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
 
         @Override
         public void onNext(T t) {
-            // we expect upstream to honor backpressure requests
-            // nl is required because JCTools queue doesn't accept nulls.
-            if (!queue.offer(t)) {
-                onError(new IllegalStateException("Prefetch queue is full?!"));
-            } else {
-                // since many things can happen concurrently, we have a common dispatch
-                // loop to act on the current state serially
-                dispatch();
+            for (InnerDisposable<T> inner : observers.get()) {
+                inner.child.onNext(t);
             }
         }
+        @SuppressWarnings("unchecked")
         @Override
         public void onError(Throwable e) {
-            // The observer front is accessed serially as required by spec so
-            // no need to CAS in the terminal value
-            if (terminalEvent == null) {
-                terminalEvent = NotificationLite.error(e);
-                // since many things can happen concurrently, we have a common dispatch
-                // loop to act on the current state serially
-                dispatch();
+            current.compareAndSet(this, null);
+            InnerDisposable<T>[] a = observers.getAndSet(TERMINATED);
+            if (a.length != 0) {
+                for (InnerDisposable<T> inner : a) {
+                    inner.child.onError(e);
+                }
+            } else {
+                RxJavaPlugins.onError(e);
             }
         }
+        @SuppressWarnings("unchecked")
         @Override
         public void onComplete() {
-            // The observer front is accessed serially as required by spec so
-            // no need to CAS in the terminal value
-            if (terminalEvent == null) {
-                terminalEvent = NotificationLite.complete();
-                // since many things can happen concurrently, we have a common dispatch loop
-                // to act on the current state serially
-                dispatch();
+            current.compareAndSet(this, null);
+            for (InnerDisposable<T> inner : observers.getAndSet(TERMINATED)) {
+                inner.child.onComplete();
             }
         }
 
@@ -317,13 +262,10 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
          * @return true if succeeded, false otherwise
          */
         boolean add(InnerDisposable<T> producer) {
-            if (producer == null) {
-                throw new NullPointerException();
-            }
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
                 // get the current producer array
-                InnerDisposable[] c = observers.get();
+                InnerDisposable<T>[] c = observers.get();
                 // if this subscriber-to-source reached a terminal state by receiving
                 // an onError or onComplete, just refuse to add the new producer
                 if (c == TERMINATED) {
@@ -331,7 +273,8 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 }
                 // we perform a copy-on-write logic
                 int len = c.length;
-                InnerDisposable[] u = new InnerDisposable[len + 1];
+                @SuppressWarnings("unchecked")
+                InnerDisposable<T>[] u = new InnerDisposable[len + 1];
                 System.arraycopy(c, 0, u, 0, len);
                 u[len] = producer;
                 // try setting the observers array
@@ -347,19 +290,20 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
          * Atomically removes the given producer from the observers array.
          * @param producer the producer to remove
          */
+        @SuppressWarnings("unchecked")
         void remove(InnerDisposable<T> producer) {
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
                 // let's read the current observers array
-                InnerDisposable[] c = observers.get();
+                InnerDisposable<T>[] c = observers.get();
                 // if it is either empty or terminated, there is nothing to remove so we quit
-                if (c == EMPTY || c == TERMINATED) {
+                int len = c.length;
+                if (len == 0) {
                     return;
                 }
                 // let's find the supplied producer in the array
                 // although this is O(n), we don't expect too many child observers in general
                 int j = -1;
-                int len = c.length;
                 for (int i = 0; i < len; i++) {
                     if (c[i].equals(producer)) {
                         j = i;
@@ -371,7 +315,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                     return;
                 }
                 // we do copy-on-write logic here
-                InnerDisposable[] u;
+                InnerDisposable<T>[] u;
                 // we don't create a new empty array if producer was the single inhabitant
                 // but rather reuse an empty array
                 if (len == 1) {
@@ -392,264 +336,41 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 // (a concurrent add/remove or termination), we need to retry
             }
         }
-
-        /**
-         * Perform termination actions in case the source has terminated in some way and
-         * the queue has also become empty.
-         * @param term the terminal event (a NotificationLite.error or completed)
-         * @param empty set to true if the queue is empty
-         * @return true if there is indeed a terminal condition
-         */
-        boolean checkTerminated(Object term, boolean empty) {
-            // first of all, check if there is actually a terminal event
-            if (term != null) {
-                // is it a completion event (impl. note, this is much cheaper than checking for isError)
-                if (NotificationLite.isComplete(term)) {
-                    // but we also need to have an empty queue
-                    if (empty) {
-                        // this will prevent OnSubscribe spinning on a terminated but
-                        // not yet disposed PublishObserver
-                        current.compareAndSet(this, null);
-                        try {
-                            /*
-                             * This will swap in a terminated array so add() in OnSubscribe will reject
-                             * child observers to associate themselves with a terminated and thus
-                             * never again emitting chain.
-                             *
-                             * Since we atomically change the contents of 'observers' only one
-                             * operation wins at a time. If an add() wins before this getAndSet,
-                             * its value will be part of the returned array by getAndSet and thus
-                             * will receive the terminal notification. Otherwise, if getAndSet wins,
-                             * add() will refuse to add the child producer and will trigger the
-                             * creation of subscriber-to-source.
-                             */
-                            for (InnerDisposable<?> ip : observers.getAndSet(TERMINATED)) {
-                                ip.child.onComplete();
-                            }
-                        } finally {
-                            // we explicitly dispose/disconnect from the upstream
-                            // after we sent out the terminal event to child observers
-                            dispose();
-                        }
-                        // indicate we reached the terminal state
-                        return true;
-                    }
-                } else {
-                    Throwable t = NotificationLite.getError(term);
-                    // this will prevent OnSubscribe spinning on a terminated
-                    // but not yet disposed PublishObserver
-                    current.compareAndSet(this, null);
-                    try {
-                        // this will swap in a terminated array so add() in OnSubscribe will reject
-                        // child observers to associate themselves with a terminated and thus
-                        // never again emitting chain
-                        for (InnerDisposable<?> ip : observers.getAndSet(TERMINATED)) {
-                            ip.child.onError(t);
-                        }
-                    } finally {
-                        // we explicitly dispose/disconnect from the upstream
-                        // after we sent out the terminal event to child observers
-                        dispose();
-                    }
-                    // indicate we reached the terminal state
-                    return true;
-                }
-            }
-            // there is still work to be done
-            return false;
-        }
-
-        /**
-         * The common serialization point of events arriving from upstream and child observers
-         * requesting more.
-         */
-        void dispatch() {
-            // standard construct of emitter loop (blocking)
-            // if there is an emission going on, indicate that more work needs to be done
-            // the exact nature of this work needs to be determined from other data structures
-            synchronized (this) {
-                if (emitting) {
-                    missed = true;
-                    return;
-                }
-                // there was no emission going on, we won and will start emitting
-                emitting = true;
-                missed = false;
-            }
-            /*
-             * In case an exception is thrown in the loop, we need to set emitting back to false
-             * on the way out (the exception will propagate up) so if it bounces back and
-             * onError is called, its dispatch() call will have the opportunity to emit it.
-             * However, if we want to exit regularly, we will set the emitting to false (+ other operations)
-             * atomically so we want to prevent the finally part to accidentally unlock some other
-             * emissions happening between the two synchronized blocks.
-             */
-            boolean skipFinal = false;
-            try {
-                for (;;) {
-                    /*
-                     * We need to read terminalEvent before checking the queue for emptiness because
-                     * all enqueue happens before setting the terminal event.
-                     * If it were the other way around, when the emission is paused between
-                     * checking isEmpty and checking terminalEvent, some other thread might
-                     * have produced elements and set the terminalEvent and we'd quit emitting
-                     * prematurely.
-                     */
-                    Object term = terminalEvent;
-                    /*
-                     * See if the queue is empty; since we need this information multiple
-                     * times later on, we read it one.
-                     * Although the queue can become non-empty in the mean time, we will
-                     * detect it through the missing flag and will do another iteration.
-                     */
-                    boolean empty = queue.isEmpty();
-                    // if the queue is empty and the terminal event was received, quit
-                    // and don't bother restoring emitting to false: no further activity is
-                    // possible at this point
-                    if (checkTerminated(term, empty)) {
-                        skipFinal = true;
-                        return;
-                    }
-
-                    // We have elements queued. Note that due to the serialization nature of dispatch()
-                    // this loop is the only one which can turn a non-empty queue into an empty one
-                    // and as such, no need to ask the queue itself again for that.
-                    if (!empty) {
-                        // We take a snapshot of the current child observers.
-                        // Concurrent observers may miss this iteration, but it is to be expected
-                        @SuppressWarnings("unchecked")
-                        InnerDisposable<T>[] ps = observers.get();
-
-                        int len = ps.length;
-                        // count how many have triggered dispose()
-                        int disposed = 0;
-
-                        // Now find the minimum amount each child-subscriber requested
-                        // since we can only emit that much to all of them without violating
-                        // backpressure constraints
-                        for (InnerDisposable<T> ip : ps) {
-                            if (ip.cancelled) {
-                                disposed++;
-                            }
-                            // we ignore those with NOT_REQUESTED as if they aren't even there
-                        }
-
-                        // it may happen everyone has disposed between here and observers.get()
-                        // or we have no observers at all to begin with
-                        if (len == disposed) {
-                            term = terminalEvent;
-                            // so let's consume a value from the queue
-                            Object v = queue.poll();
-                            // or terminate if there was a terminal event and the queue is empty
-                            if (checkTerminated(term, v == null)) {
-                                skipFinal = true;
-                                return;
-                            }
-                            // and retry emitting to potential new child observers
-                            continue;
-                        }
-                        // if we get here, it means there are non-disposed child observers
-                        // and we count the number of emitted values because the queue
-                        // may contain less than requested
-                        for (;;) {
-                            term = terminalEvent;
-                            Object v = queue.poll();
-                            empty = v == null;
-                            // let's check if there is a terminal event and the queue became empty just now
-                            if (checkTerminated(term, empty)) {
-                                skipFinal = true;
-                                return;
-                            }
-                            // the queue is empty but we aren't terminated yet, finish this emission loop
-                            if (empty) {
-                                break;
-                            }
-                            // we need to unwrap potential nulls
-                            T value = NotificationLite.getValue(v);
-                            // let's emit this value to all child observers
-                            for (InnerDisposable<T> ip : ps) {
-                                // if ip.get() is negative, the child has either disposed in the
-                                // meantime or hasn't requested anything yet
-                                // this eager behavior will skip disposed children in case
-                                // multiple values are available in the queue
-                                if (!ip.cancelled) {
-                                    ip.child.onNext(value);
-                                }
-                            }
-                        }
-
-                        // if we have requests but not an empty queue after emission
-                        // let's try again to see if more requests/child observers are
-                        // ready to receive more
-                        if (!empty) {
-                            continue;
-                        }
-                    }
-
-                    // we did what we could: either the queue is empty or child observers
-                    // haven't requested more (or both), let's try to finish dispatching
-                    synchronized (this) {
-                        // since missed is changed atomically, if we see it as true
-                        // it means some state has changed and we need to loop again
-                        // and handle that case
-                        if (!missed) {
-                            // but if no missed dispatch happened, let's stop emitting
-                            emitting = false;
-                            // and skip the emitting = false in the finally block as well
-                            skipFinal = true;
-                            return;
-                        }
-                        // we acknowledge the missed changes so far
-                        missed = false;
-                    }
-                }
-            } finally {
-                // unless returned cleanly (i.e., some method above threw)
-                if (!skipFinal) {
-                    // we stop emitting so the error can propagate back down through onError
-                    synchronized (this) {
-                        emitting = false;
-                    }
-                }
-            }
-        }
     }
     /**
      * A Disposable that manages the request and disposed state of a
      * child Observer in thread-safe manner.
+     * {@code this} holds the parent PublishObserver or itself if disposed
      * @param <T> the value type
      */
-    static final class InnerDisposable<T> implements Disposable {
-        /**
-         * The parent subscriber-to-source used to allow removing the child in case of
-         * child dispose() call.
-         */
-        final PublishObserver<T> parent;
+    static final class InnerDisposable<T>
+    extends AtomicReference<Object>
+    implements Disposable {
+        private static final long serialVersionUID = -1100270633763673112L;
         /** The actual child subscriber. */
         final Observer<? super T> child;
-        /**
-         * Indicates this child has been disposed: the state is swapped in atomically and
-         * will prevent the dispatch() to emit (too many) values to a terminated child subscriber.
-         */
-        volatile boolean cancelled;
 
-        InnerDisposable(PublishObserver<T> parent, Observer<? super T> child) {
-            this.parent = parent;
+        InnerDisposable(Observer<? super T> child) {
             this.child = child;
         }
 
         @Override
         public boolean isDisposed() {
-            return cancelled;
+            return get() == this;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-                // remove this from the parent
-                parent.remove(this);
-                parent.dispatch();
+            Object o = getAndSet(this);
+            if (o != null && o != this) {
+                ((PublishObserver<T>)o).remove(this);
+            }
+        }
+
+        void setParent(PublishObserver<T> p) {
+            if (!compareAndSet(null, p)) {
+                p.remove(this);
             }
         }
     }

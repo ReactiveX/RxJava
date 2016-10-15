@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -24,6 +25,7 @@ import org.mockito.Mockito;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.exceptions.TestException;
 
 public class ObservableToListTest {
 
@@ -181,5 +183,35 @@ public class ObservableToListTest {
         .toList(4)
         .test()
         .assertResult(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).toList().toObservable());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void error() {
+        Observable.error(new TestException())
+        .toList()
+        .toObservable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void collectionSupplierThrows() {
+        Observable.just(1)
+        .toList(new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .toObservable()
+        .test()
+        .assertFailure(TestException.class);
     }
 }

@@ -183,12 +183,8 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
             for (;;) {
 
-                try {
-                    inner = observers.poll();
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    throw ExceptionHelper.wrapOrThrow(ex);
-                }
+                inner = observers.poll();
+
                 if (inner == null) {
                     return;
                 }

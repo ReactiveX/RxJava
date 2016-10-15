@@ -199,4 +199,92 @@ public class ObservableFlatMapMaybeTest {
         .test()
         .assertFailure(NumberFormatException.class, 1);
     }
+
+    @Test
+    public void asyncFlatten() {
+        Observable.range(1, 1000)
+        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.just(1).subscribeOn(Schedulers.computation());
+            }
+        })
+        .take(500)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertSubscribed()
+        .assertValueCount(500)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void asyncFlattenNone() {
+        Observable.range(1, 1000)
+        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.<Integer>empty().subscribeOn(Schedulers.computation());
+            }
+        })
+        .take(500)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult();
+    }
+
+    @Test
+    public void successError() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = Observable.range(1, 2)
+        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                if (v == 2) {
+                    return ps.singleElement();
+                }
+                return Maybe.error(new TestException());
+            }
+        }, true)
+        .test();
+
+        ps.onNext(1);
+        ps.onComplete();
+
+        to
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void completeError() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = Observable.range(1, 2)
+        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                if (v == 2) {
+                    return ps.singleElement();
+                }
+                return Maybe.error(new TestException());
+            }
+        }, true)
+        .test();
+
+        ps.onComplete();
+
+        to
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.<Integer>empty();
+            }
+        }));
+    }
 }

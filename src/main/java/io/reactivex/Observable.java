@@ -8305,7 +8305,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableObservable<T> publish() {
-        return publish(bufferSize());
+        return ObservablePublish.create(this);
     }
 
     /**
@@ -8329,58 +8329,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> publish(Function<? super Observable<T>, ? extends ObservableSource<R>> selector) {
-        return publish(selector, bufferSize());
-    }
-
-    /**
-     * Returns an Observable that emits the results of invoking a specified selector on items emitted by a
-     * {@link ConnectableObservable} that shares a single subscription to the underlying sequence.
-     * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.f.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param <R>
-     *            the type of items emitted by the resulting ObservableSource
-     * @param selector
-     *            a function that can use the multicasted source sequence as many times as needed, without
-     *            causing multiple subscriptions to the source sequence. Observers to the given source will
-     *            receive all notifications of the source from the time of the subscription forward.
-     * @param bufferSize
-     *            the number of elements to prefetch from the current Observable
-     * @return an Observable that emits the results of invoking the selector on the items emitted by a {@link ConnectableObservable} that shares a single subscription to the underlying sequence
-     * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> publish(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, int bufferSize) {
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(selector, "selector is null");
-        return ObservablePublish.create(this, selector, bufferSize);
-    }
-
-    /**
-     * Returns a {@link ConnectableObservable}, which is a variety of ObservableSource that waits until its
-     * {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those
-     * {@link Observer}s that have subscribed to it.
-     * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishConnect.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param bufferSize
-     *            the number of elements to prefetch from the current Observable
-     * @return a {@link ConnectableObservable} that upon connection causes the source ObservableSource to emit items
-     *         to its {@link Observer}s
-     * @see <a href="http://reactivex.io/documentation/operators/publish.html">ReactiveX operators documentation: Publish</a>
-     */
-    @SchedulerSupport(SchedulerSupport.NONE)
-    public final ConnectableObservable<T> publish(int bufferSize) {
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return ObservablePublish.create(this, bufferSize);
+        return new ObservablePublishSelector<T, R>(this, selector);
     }
 
     /**

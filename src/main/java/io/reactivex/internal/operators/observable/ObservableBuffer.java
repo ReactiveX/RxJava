@@ -106,17 +106,15 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         @Override
         public void onNext(T t) {
             U b = buffer;
-            if (b == null) {
-                return;
-            }
+            if (b != null) {
+                b.add(t);
 
-            b.add(t);
+                if (++size >= count) {
+                    actual.onNext(b);
 
-            if (++size >= count) {
-                actual.onNext(b);
-
-                size = 0;
-                createBuffer();
+                    size = 0;
+                    createBuffer();
+                }
             }
         }
 
@@ -185,18 +183,11 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
                 U b;
 
                 try {
-                    b = bufferSupplier.call();
+                    b = ObjectHelper.requireNonNull(bufferSupplier.call(), "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
                 } catch (Throwable e) {
                     buffers.clear();
                     s.dispose();
                     actual.onError(e);
-                    return;
-                }
-
-                if (b == null) {
-                    buffers.clear();
-                    s.dispose();
-                    actual.onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
                     return;
                 }
 

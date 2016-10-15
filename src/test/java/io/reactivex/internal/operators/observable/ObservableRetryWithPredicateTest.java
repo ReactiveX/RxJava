@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -28,9 +29,11 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableRetryWithPredicateTest {
@@ -356,5 +359,114 @@ public class ObservableRetryWithPredicateTest {
                 list.add(t);
             }});
         assertEquals(Arrays.asList(1L,1L,2L,3L), list);
+    }
+
+    @Test
+    public void predicateThrows() {
+
+        TestObserver<Object> to = Observable.error(new TestException("Outer"))
+        .retry(new Predicate<Throwable>() {
+            @Override
+            public boolean test(Throwable e) throws Exception {
+                throw new TestException("Inner");
+            }
+        })
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+
+        TestHelper.assertError(errors, 0, TestException.class, "Outer");
+        TestHelper.assertError(errors, 1, TestException.class, "Inner");
+    }
+
+    @Test
+    public void dontRetry() {
+        Observable.error(new TestException("Outer"))
+        .retry(Functions.alwaysFalse())
+        .test()
+        .assertFailureAndMessage(TestException.class, "Outer");
+    }
+
+    @Test
+    public void retryDisposeRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final TestObserver<Integer> to = ps.retry(Functions.alwaysTrue()).test();
+
+            final TestException ex = new TestException();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onError(ex);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to.assertEmpty();
+        }
+    }
+
+    @Test
+    public void bipredicateThrows() {
+
+        TestObserver<Object> to = Observable.error(new TestException("Outer"))
+        .retry(new BiPredicate<Integer, Throwable>() {
+            @Override
+            public boolean test(Integer n, Throwable e) throws Exception {
+                throw new TestException("Inner");
+            }
+        })
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+
+        TestHelper.assertError(errors, 0, TestException.class, "Outer");
+        TestHelper.assertError(errors, 1, TestException.class, "Inner");
+    }
+
+    @Test
+    public void retryBiPredicateDisposeRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final TestObserver<Integer> to = ps.retry(new BiPredicate<Object, Object>() {
+                @Override
+                public boolean test(Object t1, Object t2) throws Exception {
+                    return true;
+                }
+            }).test();
+
+            final TestException ex = new TestException();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onError(ex);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to.assertEmpty();
+        }
     }
 }

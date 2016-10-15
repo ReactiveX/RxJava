@@ -218,4 +218,43 @@ public class ObservableRepeatTest {
         }
     }
 
+    @Test
+    public void repeatUntilError() {
+        Observable.error(new TestException())
+        .repeatUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return true;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void repeatUntilFalse() {
+        Observable.just(1)
+        .repeatUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return true;
+            }
+        })
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void repeatUntilSupplierCrash() {
+        Observable.just(1)
+        .repeatUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
 }

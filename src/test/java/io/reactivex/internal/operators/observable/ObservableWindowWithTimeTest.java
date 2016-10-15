@@ -429,4 +429,28 @@ public class ObservableWindowWithTimeTest {
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
+
+    @Test
+    public void exactBoundaryError() {
+        Observable.error(new TestException())
+        .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
+        .test()
+        .assertSubscribed()
+        .assertError(TestException.class)
+        .assertNotComplete();
+    }
+
+    @Test
+    public void restartTimerMany() {
+        Observable.intervalRange(1, 1000, 1, 1, TimeUnit.MILLISECONDS)
+        .window(1, TimeUnit.MILLISECONDS, Schedulers.single(), 2, true)
+        .flatMap(Functions.<Observable<Long>>identity())
+        .take(500)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertSubscribed()
+        .assertValueCount(500)
+        .assertNoErrors()
+        .assertComplete();
+    }
 }

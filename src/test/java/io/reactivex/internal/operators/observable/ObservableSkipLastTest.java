@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -106,4 +108,16 @@ public class ObservableSkipLastTest {
         Observable.just("one").skipLast(-1);
     }
 
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).skipLast(1));
+    }
+
+    @Test
+    public void error() {
+        Observable.error(new TestException())
+        .skipLast(1)
+        .test()
+        .assertFailure(TestException.class);
+    }
 }

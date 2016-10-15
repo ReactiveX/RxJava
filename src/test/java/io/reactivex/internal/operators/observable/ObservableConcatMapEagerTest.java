@@ -16,19 +16,21 @@ package io.reactivex.internal.operators.observable;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.Observable;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.*;
 
 public class ObservableConcatMapEagerTest {
 
@@ -738,5 +740,214 @@ public class ObservableConcatMapEagerTest {
         Observable.concatEager(Arrays.asList(Observable.just(1), Observable.just(2)))
         .test()
         .assertResult(1, 2);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.range(1, 2);
+            }
+        }));
+    }
+
+    @Test
+    public void empty() {
+        Observable.<Integer>empty().hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.range(1, 2);
+            }
+        })
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void innerError() {
+        Observable.<Integer>just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.error(new TestException());
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void innerErrorMaxConcurrency() {
+        Observable.<Integer>just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.error(new TestException());
+            }
+        }, 1, 128)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void innerCallableThrows() {
+        Observable.<Integer>just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.fromCallable(new Callable<Integer>() {
+                    @Override
+                    public Integer call() throws Exception {
+                        throw new TestException();
+                    }
+                });
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void innerOuterRace() {
+        for (int i = 0; i < 500; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final PublishSubject<Integer> ps1 = PublishSubject.create();
+                final PublishSubject<Integer> ps2 = PublishSubject.create();
+
+                TestObserver<Integer> to = ps1.concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Integer v) throws Exception {
+                        return ps2;
+                    }
+                }).test();
+
+                final TestException ex1 = new TestException();
+                final TestException ex2 = new TestException();
+
+                ps1.onNext(1);
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onError(ex1);
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex2);
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                to.assertSubscribed().assertNoValues().assertNotComplete();
+
+                Throwable ex = to.errors().get(0);
+
+                if (ex instanceof CompositeException) {
+                    List<Throwable> es = TestHelper.errorList(to);
+                    TestHelper.assertError(es, 0, TestException.class);
+                    TestHelper.assertError(es, 1, TestException.class);
+                } else {
+                    to.assertError(TestException.class);
+                    if (!errors.isEmpty()) {
+                        TestHelper.assertError(errors, 0, TestException.class);
+                    }
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void nextCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishSubject<Integer> ps1 = PublishSubject.create();
+
+            final TestObserver<Integer> to = ps1.concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+                @Override
+                public ObservableSource<Integer> apply(Integer v) throws Exception {
+                    return Observable.never();
+                }
+            }).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps1.onNext(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to.assertEmpty();
+        }
+    }
+
+    @Test
+    public void mapperCancels() {
+        final TestObserver<Integer> to = new TestObserver<Integer>();
+
+        Observable.just(1).hide()
+        .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                to.cancel();
+                return Observable.never();
+            }
+        }, 1, 128)
+        .subscribe(to);
+
+        to.assertEmpty();
+    }
+
+    @Test
+    public void innerErrorFused() {
+        Observable.<Integer>just(1).hide().concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.range(1, 2).map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer v) throws Exception {
+                        throw new TestException();
+                    }
+                });
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void innerErrorAfterPoll() {
+        final UnicastSubject<Integer> us = UnicastSubject.create();
+        us.onNext(1);
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                us.onError(new TestException());
+            }
+        };
+
+        Observable.<Integer>just(1).hide()
+        .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return us;
+            }
+        }, 1, 128)
+        .subscribe(to);
+
+        to
+        .assertFailure(TestException.class, 1);
     }
 }
