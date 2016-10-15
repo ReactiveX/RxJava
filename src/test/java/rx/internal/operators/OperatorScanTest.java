@@ -30,12 +30,11 @@ import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.doppl.mock.MProducer;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
-@MockGen(classes = "rx.doppl.mock.MProducer")
+@MockGen(classes = "rx.internal.operators.OperatorScanTest.InnerProducer")
 public class OperatorScanTest {
 
     @Before
@@ -312,19 +311,7 @@ public class OperatorScanTest {
         Observable<Integer> o = Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(final Subscriber<? super Integer> subscriber) {
-                Producer p = spy(new MProducer() {
-
-                    private AtomicBoolean requested = new AtomicBoolean(false);
-
-                    @Override
-                    public void request(long n) {
-                        if (requested.compareAndSet(false, true)) {
-                            subscriber.onNext(1);
-                        } else {
-                            subscriber.onCompleted();
-                        }
-                    }
-                });
+                Producer p = spy(new InnerProducer(subscriber));
                 producer.set(p);
                 subscriber.setProducer(p);
             }
@@ -471,5 +458,25 @@ public class OperatorScanTest {
             }}).count().subscribe();
 
         assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
+    }
+
+    public static class InnerProducer implements Producer
+    {
+        final Subscriber<? super Integer> subscriber;
+        private AtomicBoolean requested = new AtomicBoolean(false);
+
+        public InnerProducer(Subscriber<? super Integer> subscriber)
+        {
+            this.subscriber = subscriber;
+        }
+
+        @Override
+        public void request(long n) {
+            if (requested.compareAndSet(false, true)) {
+                subscriber.onNext(1);
+            } else {
+                subscriber.onCompleted();
+            }
+        }
     }
 }
