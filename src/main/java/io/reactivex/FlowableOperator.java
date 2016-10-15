@@ -15,14 +15,17 @@ package io.reactivex;
 
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.functions.Function;
-
 /**
  * Interface to map/wrap a downstream subscriber to an upstream subscriber.
  *
  * @param <Downstream> the value type of the downstream
  * @param <Upstream> the value type of the upstream
  */
-public interface FlowableOperator<Downstream, Upstream> extends Function<Subscriber<? super Downstream>, Subscriber<? super Upstream>> {
-
+public interface FlowableOperator<Downstream, Upstream> {
+    /**
+     * Applies a function to the child Subscriber and returns a new parent Subscriber.
+     * @param observer the child Subscriber instance
+     * @return the parent Subscriber instance
+     */
+    Subscriber<? super Upstream> apply(Subscriber<? super Downstream> observer) throws Exception;
 }

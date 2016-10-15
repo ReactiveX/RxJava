@@ -13,12 +13,14 @@
 
 package io.reactivex;
 
-import io.reactivex.functions.Function;
-
 /**
- * Convenience interface and callback used by the lift operator that given a child CompletableSubscriber,
- * return a parent CompletableSubscriber that does any kind of lifecycle-related transformations.
+ * Interface to map/wrap a downstream observer to an upstream observer.
  */
-public interface CompletableOperator extends Function<CompletableObserver, CompletableObserver> {
-
+public interface CompletableOperator {
+    /**
+     * Applies a function to the child CompletableObserver and returns a new parent CompletableObserver.
+     * @param observer the child CompletableObservable instance
+     * @return the parent CompletableObserver instance
+     */
+    CompletableObserver apply(CompletableObserver observer) throws Exception;
 }
