@@ -15,6 +15,9 @@
  */
 package rx.subjects;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.*;
@@ -324,10 +327,12 @@ public class ReplaySubjectConcurrencyTest {
     /**
      * https://github.com/ReactiveX/RxJava/issues/1147
      */
+
+    //DOPPL: Good test for cached cycles
     @Test
     public void testRaceForTerminalState() {
         final List<Integer> expected = Arrays.asList(1);
-        for (int i = 0; i < 100000; i++) {
+        for (@AutoreleasePool int i = 0; i < 10000; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             Observable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(ts);
             ts.awaitTerminalEvent();
@@ -361,7 +366,7 @@ public class ReplaySubjectConcurrencyTest {
         Scheduler s = Schedulers.io();
         Scheduler.Worker worker = Schedulers.io().createWorker();
         try {
-            for (int i = 0; i < 50000; i++) {
+            for (@AutoreleasePool int i = 0; i < 50000; i++) {
                 if (i % 1000 == 0) {
                     System.out.println(i);
                 }
@@ -460,7 +465,7 @@ public class ReplaySubjectConcurrencyTest {
             return;
         }
         int lastSize = 0;
-        for (; !rs.hasThrowable() && !rs.hasCompleted();) {
+        for (@AutoreleasePool int syntax=0; !rs.hasThrowable() && !rs.hasCompleted();) {
             int size = rs.size();
             boolean hasAny = rs.hasAnyValue();
             Object[] values = rs.getValues();
