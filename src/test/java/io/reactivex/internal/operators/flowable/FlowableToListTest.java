@@ -23,6 +23,8 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -43,7 +45,7 @@ public class FlowableToListTest {
     }
 
     @Test
-    public void testListViaObservableFlowable() {
+    public void testListViaFlowableFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Flowable<List<String>> observable = w.toList().toFlowable();
 
@@ -176,7 +178,7 @@ public class FlowableToListTest {
     }
 
     @Test
-    public void testListViaObservable() {
+    public void testListViaFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Single<List<String>> observable = w.toList();
 
@@ -300,5 +302,60 @@ public class FlowableToListTest {
         .toList(4)
         .test()
         .assertResult(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).toList().toFlowable());
+
+        TestHelper.checkDisposed(Flowable.just(1).toList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+        .toList()
+        .toFlowable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorSingle() {
+        Flowable.error(new TestException())
+        .toList()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void collectionSupplierThrows() {
+        Flowable.just(1)
+        .toList(new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .toFlowable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void singleCollectionSupplierThrows() {
+        Flowable.just(1)
+        .toList(new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
     }
 }

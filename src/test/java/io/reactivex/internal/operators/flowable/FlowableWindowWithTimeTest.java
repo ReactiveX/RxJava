@@ -23,6 +23,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -136,8 +137,8 @@ public class FlowableWindowWithTimeTest {
     private <T> Consumer<Flowable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
         return new Consumer<Flowable<T>>() {
             @Override
-            public void accept(Flowable<T> stringObservable) {
-                stringObservable.subscribe(new DefaultSubscriber<T>() {
+            public void accept(Flowable<T> stringFlowable) {
+                stringFlowable.subscribe(new DefaultSubscriber<T>() {
                     @Override
                     public void onComplete() {
                         lists.add(new ArrayList<T>(list));
@@ -494,5 +495,50 @@ public class FlowableWindowWithTimeTest {
         scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
 
         ts.assertError(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.range(1, 5).window(1, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Flowable.range(1, 5).window(2, 1, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Flowable.range(1, 5).window(1, 2, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Flowable.never()
+                .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true));
+    }
+
+    @Test
+    public void restartTimer() {
+        Flowable.range(1, 5)
+        .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void exactBoundaryError() {
+        Flowable.error(new TestException())
+        .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true)
+        .test()
+        .assertSubscribed()
+        .assertError(TestException.class)
+        .assertNotComplete();
+    }
+
+    @Test
+    public void restartTimerMany() {
+        Flowable.intervalRange(1, 1000, 1, 1, TimeUnit.MILLISECONDS)
+        .window(1, TimeUnit.MILLISECONDS, Schedulers.single(), 2, true)
+        .flatMap(Functions.<Flowable<Long>>identity())
+        .take(500)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertSubscribed()
+        .assertValueCount(500)
+        .assertNoErrors()
+        .assertComplete();
     }
 }

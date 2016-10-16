@@ -21,33 +21,28 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
 import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.DisposableSubscriber;
 
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
+ *
+ * @param <T> the value type
  */
-public enum BlockingFlowableNext {
-    ;
-    /**
-     * Returns an {@code Iterable} that blocks until the {@code Observable} emits another item, then returns
-     * that item.
-     *
-     * @param <T> the value type
-     * @param items
-     *            the {@code Observable} to observe
-     * @return an {@code Iterable} that behaves like a blocking version of {@code items}
-     */
-    public static <T> Iterable<T> next(final Publisher<? extends T> items) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                NextSubscriber<T> nextSubscriber = new NextSubscriber<T>();
-                return new NextIterator<T>(items, nextSubscriber);
-            }
-        };
+public final class BlockingFlowableNext<T> implements Iterable<T> {
 
+    final Publisher<? extends T> source;
+
+    public BlockingFlowableNext(Publisher<? extends T> source) {
+        this.source = source;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        NextSubscriber<T> nextSubscriber = new NextSubscriber<T>();
+        return new NextIterator<T>(source, nextSubscriber);
     }
 
     // test needs to access the observer.waiting flag
@@ -111,7 +106,6 @@ public enum BlockingFlowableNext {
                 throw new IllegalStateException("Should not reach here");
             } catch (InterruptedException e) {
                 observer.dispose();
-                Thread.currentThread().interrupt();
                 error = e;
                 throw ExceptionHelper.wrapOrThrow(e);
             }
@@ -149,7 +143,7 @@ public enum BlockingFlowableNext {
 
         @Override
         public void onError(Throwable e) {
-            // ignore
+            RxJavaPlugins.onError(e);
         }
 
         @Override

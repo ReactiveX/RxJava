@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
@@ -103,4 +103,25 @@ public class BlockingFlowableMostRecentTest {
         TestHelper.checkUtilityClass(BlockingFlowableMostRecent.class);
     }
 
+
+    @Test
+    public void empty() {
+        Iterator<Integer> it = Flowable.<Integer>empty()
+        .blockingMostRecent(1)
+        .iterator();
+
+        try {
+            it.next();
+            fail("Should have thrown");
+        } catch (NoSuchElementException ex) {
+            // expected
+        }
+
+        try {
+            it.remove();
+            fail("Should have thrown");
+        } catch (UnsupportedOperationException ex) {
+            // expected
+        }
+    }
 }

@@ -176,7 +176,8 @@ public class InternalWrongNaming {
                 "FlowableFlatMapCompletable",
                 "FlowableFlatMapCompletableCompletable",
                 "FlowableFlatMapSingle",
-                "FlowableFlatMapMaybe"
+                "FlowableFlatMapMaybe",
+                "FlowableSequenceEqualSingle"
         );
     }
 }

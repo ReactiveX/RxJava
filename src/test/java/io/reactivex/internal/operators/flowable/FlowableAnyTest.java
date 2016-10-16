@@ -14,16 +14,23 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableAnyTest {
@@ -546,5 +553,52 @@ public class FlowableAnyTest {
         ts.assertError(ex);
         // FIXME value as last cause?
 //        assertTrue(ex.getCause().getMessage().contains("Boo!"));
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void dispose() {
+        // TestHelper.checkDisposed(Flowable.just(1).any(Functions.alwaysTrue()).toFlowable());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Boolean>>() {
+            @Override
+            public Publisher<Boolean> apply(Flowable<Object> o) throws Exception {
+                return o.any(Functions.alwaysTrue()).toFlowable();
+            }
+        });
+    }
+
+    @Test
+    public void predicateThrowsSuppressOthers() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new IOException());
+                    observer.onComplete();
+                }
+            }
+            .any(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .toFlowable()
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

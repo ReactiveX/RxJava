@@ -26,6 +26,7 @@ public interface FlowableOperator<Downstream, Upstream> {
      * Applies a function to the child Subscriber and returns a new parent Subscriber.
      * @param observer the child Subscriber instance
      * @return the parent Subscriber instance
+     * @throws Exception on failure
      */
     Subscriber<? super Upstream> apply(Subscriber<? super Downstream> observer) throws Exception;
 }

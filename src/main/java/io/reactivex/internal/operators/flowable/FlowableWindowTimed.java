@@ -382,6 +382,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             ConsumerIndexHolder consumerIndexHolder = new ConsumerIndexHolder(producerIndex, this);
             if (restartTimerOnMaxSize) {
                 Scheduler.Worker sw = scheduler.createWorker();
+                worker = sw;
                 sw.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
                 d = sw;
             } else {

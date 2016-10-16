@@ -743,4 +743,108 @@ public class FlowableFlatMapTest {
         }));
     }
 
+    @Test
+    public void mergeScalar() {
+        Flowable.merge(Flowable.just(Flowable.just(1)))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void mergeScalar2() {
+        Flowable.merge(Flowable.just(Flowable.just(1)).hide())
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void mergeScalarEmpty() {
+        Flowable.merge(Flowable.just(Flowable.empty()).hide())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void mergeScalarError() {
+        Flowable.merge(Flowable.just(Flowable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                throw new TestException();
+            }
+        })).hide())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void scalarReentrant() {
+        final PublishProcessor<Flowable<Integer>> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(Flowable.just(2));
+                }
+            }
+        };
+
+        Flowable.merge(ps)
+        .subscribe(to);
+
+        ps.onNext(Flowable.just(1));
+        ps.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void scalarReentrant2() {
+        final PublishProcessor<Flowable<Integer>> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(Flowable.just(2));
+                }
+            }
+        };
+
+        Flowable.merge(ps, 2)
+        .subscribe(to);
+
+        ps.onNext(Flowable.just(1));
+        ps.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void innerCompleteCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+            final TestSubscriber<Integer> to = Flowable.merge(Flowable.just(ps)).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
 }

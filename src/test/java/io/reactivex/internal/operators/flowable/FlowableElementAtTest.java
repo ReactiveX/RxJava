@@ -15,15 +15,17 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
+import java.util.*;
+
+import org.junit.*;
+import org.reactivestreams.*;
+
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import java.util.List;
-import java.util.NoSuchElementException;
-import org.junit.Test;
-import org.reactivestreams.*;
+import io.reactivex.processors.PublishProcessor;
 
 public class FlowableElementAtTest {
 
@@ -234,5 +236,12 @@ public class FlowableElementAtTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().elementAt(0).toFlowable());
+        TestHelper.checkDisposed(PublishProcessor.create().elementAt(0, 1).toFlowable());
     }
 }

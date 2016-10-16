@@ -271,6 +271,8 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 // since many things can happen concurrently, we have a common dispatch
                 // loop to act on the current state serially
                 dispatch();
+            } else {
+                RxJavaPlugins.onError(e);
             }
         }
         @Override
@@ -418,8 +420,13 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                         // this will swap in a terminated array so add() in OnSubscribe will reject
                         // child subscribers to associate themselves with a terminated and thus
                         // never again emitting chain
-                        for (InnerSubscriber<?> ip : subscribers.getAndSet(TERMINATED)) {
-                            ip.child.onError(t);
+                        InnerSubscriber[] a = subscribers.getAndSet(TERMINATED);
+                        if (a.length != 0) {
+                            for (InnerSubscriber<?> ip : a) {
+                                ip.child.onError(t);
+                            }
+                        } else {
+                            RxJavaPlugins.onError(t);
                         }
                     } finally {
                         // we explicitly dispose/disconnect from the upstream

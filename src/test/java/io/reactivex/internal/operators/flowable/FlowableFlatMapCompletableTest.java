@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
@@ -379,5 +379,17 @@ public class FlowableFlatMapCompletableTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult();
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void disposedObservable() {
+        TestHelper.checkDisposed(Flowable.range(1, 10)
+        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Integer v) throws Exception {
+                return Completable.complete();
+            }
+        }).toFlowable());
     }
 }

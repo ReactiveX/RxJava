@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -30,6 +30,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -530,6 +531,132 @@ public class FlowableAmbTest {
     @Test
     public void ambArraySingleElement() {
         assertSame(Flowable.never(), Flowable.ambArray(Flowable.never()));
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void disposed() {
+        //TestHelper.checkDisposed(Flowable.ambArray(Flowable.never(), Flowable.never()));
+    }
+
+    @Test
+    public void manySources() {
+        Flowable<?>[] a = new Flowable[32];
+        Arrays.fill(a, Flowable.never());
+        a[31] = Flowable.just(1);
+
+        Flowable.amb(Arrays.asList(a))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void emptyIterable() {
+        Flowable.amb(Collections.<Flowable<Integer>>emptyList())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void singleIterable() {
+        Flowable.amb(Collections.singletonList(Flowable.just(1)))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void onNextRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+            final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+
+            @SuppressWarnings("unchecked")
+            TestSubscriber<Integer> to = Flowable.ambArray(ps1, ps2).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps1.onNext(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ps2.onNext(1);
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to.assertSubscribed().assertNoErrors()
+            .assertNotComplete().assertValueCount(1);
+        }
+    }
+
+    @Test
+    public void onCompleteRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+            final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+
+            @SuppressWarnings("unchecked")
+            TestSubscriber<Integer> to = Flowable.ambArray(ps1, ps2).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps1.onComplete();
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ps2.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to.assertResult();
+        }
+    }
+
+    @Test
+    public void onErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+            final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+
+            @SuppressWarnings("unchecked")
+            TestSubscriber<Integer> to = Flowable.ambArray(ps1, ps2).test();
+
+            final Throwable ex = new TestException();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps1.onError(ex);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ps2.onError(ex);
+                }
+            };
+
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                TestHelper.race(r1, r2, Schedulers.single());
+            } finally {
+                RxJavaPlugins.reset();
+            }
+
+            to.assertFailure(TestException.class);
+            if (!errors.isEmpty()) {
+                TestHelper.assertError(errors, 0, TestException.class);
+            }
+        }
     }
 
 }

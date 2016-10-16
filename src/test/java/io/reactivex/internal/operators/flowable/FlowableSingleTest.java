@@ -13,19 +13,20 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.DefaultSubscriber;
 
 public class FlowableSingleTest {
@@ -683,5 +684,45 @@ public class FlowableSingleTest {
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
+    }
+
+    @Test(timeout = 30000)
+    public void testIssue1527Flowable() throws InterruptedException {
+        //https://github.com/ReactiveX/RxJava/pull/1527
+        Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
+        Flowable<Integer> reduced = source.reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer i1, Integer i2) {
+                return i1 + i2;
+            }
+        }).toFlowable();
+
+        Integer r = reduced.blockingFirst();
+        assertEquals(21, r.intValue());
+    }
+
+    @Test
+    public void singleElementOperatorDoNotSwallowExceptionWhenDone() {
+        final Throwable exception = new RuntimeException("some error");
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+
+        try {
+            RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+                @Override public void accept(final Throwable throwable) throws Exception {
+                    error.set(throwable);
+                }
+            });
+
+            Flowable.unsafeCreate(new Publisher<Integer>() {
+                @Override public void subscribe(final Subscriber<? super Integer> observer) {
+                    observer.onComplete();
+                    observer.onError(exception);
+                }
+            }).singleElement().test().assertComplete();
+
+            assertSame(exception, error.get());
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

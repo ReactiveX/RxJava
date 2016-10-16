@@ -581,6 +581,14 @@ public enum TestHelper {
     }
 
     /**
+     * Checks if the upstream's Subscription sent through the onSubscribe reports
+     * isCancelled properly before and after calling dispose.
+     * @param source the source to test
+     */
+    public static void checkDisposed(Flowable<?> source) {
+        // actually there is no way of testing this
+    }
+    /**
      * Checks if the upstream's Disposable sent through the onSubscribe reports
      * isDisposed properly before and after calling dispose.
      * @param source the source to test
@@ -1537,6 +1545,167 @@ public enum TestHelper {
             };
 
             ObservableSource<R> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First cancelled?", false, b[0]);
+            assertEquals("Second not cancelled?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param <R> the output value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T, R> void checkDoubleOnSubscribeFlowableToSingle(Function<Flowable<T>, ? extends SingleSource<R>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Flowable<T> source = new Flowable<T>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super T> observer) {
+                    try {
+                        BooleanSubscription d1 = new BooleanSubscription();
+
+                        observer.onSubscribe(d1);
+
+                        BooleanSubscription d2 = new BooleanSubscription();
+
+                        observer.onSubscribe(d2);
+
+                        b[0] = d1.isCancelled();
+                        b[1] = d2.isCancelled();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            SingleSource<R> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First cancelled?", false, b[0]);
+            assertEquals("Second not cancelled?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param <R> the output value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T, R> void checkDoubleOnSubscribeFlowableToMaybe(Function<Flowable<T>, ? extends MaybeSource<R>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Flowable<T> source = new Flowable<T>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super T> observer) {
+                    try {
+                        BooleanSubscription d1 = new BooleanSubscription();
+
+                        observer.onSubscribe(d1);
+
+                        BooleanSubscription d2 = new BooleanSubscription();
+
+                        observer.onSubscribe(d2);
+
+                        b[0] = d1.isCancelled();
+                        b[1] = d2.isCancelled();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            MaybeSource<R> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First cancelled?", false, b[0]);
+            assertEquals("Second not cancelled?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param <T> the input value type
+     * @param transform the transform to drive an operator
+     */
+    public static <T> void checkDoubleOnSubscribeFlowableToCompletable(Function<Flowable<T>, ? extends Completable> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Flowable<T> source = new Flowable<T>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super T> observer) {
+                    try {
+                        BooleanSubscription d1 = new BooleanSubscription();
+
+                        observer.onSubscribe(d1);
+
+                        BooleanSubscription d2 = new BooleanSubscription();
+
+                        observer.onSubscribe(d2);
+
+                        b[0] = d1.isCancelled();
+                        b[1] = d2.isCancelled();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            Completable out = transform.apply(source);
 
             out.subscribe(NoOpConsumer.INSTANCE);
 

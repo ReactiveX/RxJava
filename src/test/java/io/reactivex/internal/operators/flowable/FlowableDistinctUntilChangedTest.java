@@ -13,8 +13,11 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.*;
@@ -24,7 +27,10 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.*;
 
 public class FlowableDistinctUntilChangedTest {
@@ -262,4 +268,77 @@ public class FlowableDistinctUntilChangedTest {
         ts.assertNotComplete();
         ts.assertError(TestException.class);
     }
+
+    @Test
+    public void fused() {
+        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ANY);
+
+        Flowable.just(1, 2, 2, 3, 3, 4, 5)
+        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer a, Integer b) throws Exception {
+                return a.equals(b);
+            }
+        })
+        .subscribe(to);
+
+        to.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueDisposable.SYNC))
+        .assertResult(1, 2, 3, 4, 5)
+        ;
+    }
+
+    @Test
+    public void fusedAsync() {
+        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ANY);
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        up
+        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer a, Integer b) throws Exception {
+                return a.equals(b);
+            }
+        })
+        .subscribe(to);
+
+        TestHelper.emit(up, 1, 2, 2, 3, 3, 4, 5);
+
+        to.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC))
+        .assertResult(1, 2, 3, 4, 5)
+        ;
+    }
+
+    @Test
+    public void ignoreCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
+        try {
+            new Flowable<Integer>() {
+                @Override
+                public void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onNext(2);
+                    s.onNext(3);
+                    s.onError(new IOException());
+                    s.onComplete();
+                }
+            }
+            .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                @Override
+                public boolean test(Integer a, Integer b) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .test()
+            .assertFailure(TestException.class, 1);
+
+            TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+   }
 }

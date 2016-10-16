@@ -15,17 +15,23 @@
  */
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.util.*;
 
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableGroupJoinTest {
 
@@ -355,5 +361,331 @@ public class FlowableGroupJoinTest {
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onComplete();
         verify(observer, never()).onNext(any());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).groupJoin(
+            Flowable.just(2),
+            new Function<Integer, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Integer left) throws Exception {
+                    return Flowable.never();
+                }
+            },
+            new Function<Integer, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Integer right) throws Exception {
+                    return Flowable.never();
+                }
+            },
+            new BiFunction<Integer, Flowable<Integer>, Object>() {
+                @Override
+                public Object apply(Integer r, Flowable<Integer> l) throws Exception {
+                    return l;
+                }
+            }
+        ));
+    }
+
+    @Test
+    public void innerCompleteLeft() {
+        Flowable.just(1)
+        .groupJoin(
+            Flowable.just(2),
+            new Function<Integer, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Integer left) throws Exception {
+                    return Flowable.empty();
+                }
+            },
+            new Function<Integer, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Integer right) throws Exception {
+                    return Flowable.never();
+                }
+            },
+            new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                @Override
+                public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                    return l;
+                }
+            }
+        )
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void innerErrorLeft() {
+        Flowable.just(1)
+        .groupJoin(
+            Flowable.just(2),
+            new Function<Integer, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Integer left) throws Exception {
+                    return Flowable.error(new TestException());
+                }
+            },
+            new Function<Integer, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Integer right) throws Exception {
+                    return Flowable.never();
+                }
+            },
+            new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                @Override
+                public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                    return l;
+                }
+            }
+        )
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void innerCompleteRight() {
+        Flowable.just(1)
+        .groupJoin(
+            Flowable.just(2),
+            new Function<Integer, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Integer left) throws Exception {
+                    return Flowable.never();
+                }
+            },
+            new Function<Integer, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Integer right) throws Exception {
+                    return Flowable.empty();
+                }
+            },
+            new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                @Override
+                public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                    return l;
+                }
+            }
+        )
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .assertResult(2);
+    }
+
+    @Test
+    public void innerErrorRight() {
+        Flowable.just(1)
+        .groupJoin(
+            Flowable.just(2),
+            new Function<Integer, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Integer left) throws Exception {
+                    return Flowable.never();
+                }
+            },
+            new Function<Integer, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Integer right) throws Exception {
+                    return Flowable.error(new TestException());
+                }
+            },
+            new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                @Override
+                public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                    return l;
+                }
+            }
+        )
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void innerErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Object> ps1 = PublishProcessor.create();
+            final PublishProcessor<Object> ps2 = PublishProcessor.create();
+
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+
+            try {
+                TestSubscriber<Flowable<Integer>> to = Flowable.just(1)
+                .groupJoin(
+                    Flowable.just(2).concatWith(Flowable.<Integer>never()),
+                    new Function<Integer, Flowable<Object>>() {
+                        @Override
+                        public Flowable<Object> apply(Integer left) throws Exception {
+                            return ps1;
+                        }
+                    },
+                    new Function<Integer, Flowable<Object>>() {
+                        @Override
+                        public Flowable<Object> apply(Integer right) throws Exception {
+                            return ps2;
+                        }
+                    },
+                    new BiFunction<Integer, Flowable<Integer>, Flowable<Integer>>() {
+                        @Override
+                        public Flowable<Integer> apply(Integer r, Flowable<Integer> l) throws Exception {
+                            return l;
+                        }
+                    }
+                )
+                .test();
+
+                final TestException ex1 = new TestException();
+                final TestException ex2 = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onError(ex1);
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex2);
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                to.assertError(Throwable.class).assertSubscribed().assertNotComplete().assertValueCount(1);
+
+                Throwable exc = to.errors().get(0);
+
+                if (exc instanceof CompositeException) {
+                    List<Throwable> es = TestHelper.compositeList(exc);
+                    TestHelper.assertError(es, 0, TestException.class);
+                    TestHelper.assertError(es, 1, TestException.class);
+                } else {
+                    to.assertError(TestException.class);
+                }
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertError(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void outerErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Object> ps1 = PublishProcessor.create();
+            final PublishProcessor<Object> ps2 = PublishProcessor.create();
+
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+
+            try {
+                TestSubscriber<Object> to = ps1
+                .groupJoin(
+                    ps2,
+                    new Function<Object, Flowable<Object>>() {
+                        @Override
+                        public Flowable<Object> apply(Object left) throws Exception {
+                            return Flowable.never();
+                        }
+                    },
+                    new Function<Object, Flowable<Object>>() {
+                        @Override
+                        public Flowable<Object> apply(Object right) throws Exception {
+                            return Flowable.never();
+                        }
+                    },
+                    new BiFunction<Object, Flowable<Object>, Flowable<Object>>() {
+                        @Override
+                        public Flowable<Object> apply(Object r, Flowable<Object> l) throws Exception {
+                            return l;
+                        }
+                    }
+                )
+                .flatMap(Functions.<Flowable<Object>>identity())
+                .test();
+
+                final TestException ex1 = new TestException();
+                final TestException ex2 = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onError(ex1);
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex2);
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                to.assertError(Throwable.class).assertSubscribed().assertNotComplete().assertNoValues();
+
+                Throwable exc = to.errors().get(0);
+
+                if (exc instanceof CompositeException) {
+                    List<Throwable> es = TestHelper.compositeList(exc);
+                    TestHelper.assertError(es, 0, TestException.class);
+                    TestHelper.assertError(es, 1, TestException.class);
+                } else {
+                    to.assertError(TestException.class);
+                }
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertError(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void rightEmission() {
+        final PublishProcessor<Object> ps1 = PublishProcessor.create();
+        final PublishProcessor<Object> ps2 = PublishProcessor.create();
+
+        TestSubscriber<Object> to = ps1
+        .groupJoin(
+            ps2,
+            new Function<Object, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Object left) throws Exception {
+                    return Flowable.never();
+                }
+            },
+            new Function<Object, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Object right) throws Exception {
+                    return Flowable.never();
+                }
+            },
+            new BiFunction<Object, Flowable<Object>, Flowable<Object>>() {
+                @Override
+                public Flowable<Object> apply(Object r, Flowable<Object> l) throws Exception {
+                    return l;
+                }
+            }
+        )
+        .flatMap(Functions.<Flowable<Object>>identity())
+        .test();
+
+        ps2.onNext(2);
+
+        ps1.onNext(1);
+        ps1.onComplete();
+
+        ps2.onComplete();
+
+        to.assertResult(2);
     }
 }

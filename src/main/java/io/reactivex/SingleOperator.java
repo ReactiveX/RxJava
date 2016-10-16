@@ -24,6 +24,7 @@ public interface SingleOperator<Downstream, Upstream> {
      * Applies a function to the child SingleObserver and returns a new parent SingleObserver.
      * @param observer the child SingleObserver instance
      * @return the parent SingleObserver instance
+     * @throws Exception on failure
      */
     SingleObserver<? super Upstream> apply(SingleObserver<? super Downstream> observer) throws Exception;
 }

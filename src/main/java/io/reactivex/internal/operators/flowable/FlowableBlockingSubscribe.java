@@ -28,8 +28,12 @@ import io.reactivex.subscribers.DefaultSubscriber;
 /**
  * Utility methods to consume a Publisher in a blocking manner with callbacks or Subscriber.
  */
-public enum FlowableBlockingSubscribe {
-    ;
+public final class FlowableBlockingSubscribe {
+
+    /** Utility class. */
+    private FlowableBlockingSubscribe() {
+        throw new IllegalStateException("No instances!");
+    }
 
     /**
      * Subscribes to the source and calls the Subscriber methods on the current thread.
@@ -69,7 +73,6 @@ public enum FlowableBlockingSubscribe {
                 }
             }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             subscriber.onError(e);
         } finally {
             bs.cancel();

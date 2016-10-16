@@ -24,6 +24,7 @@ public interface ObservableOperator<Downstream, Upstream> {
      * Applies a function to the child Observer and returns a new parent Observer.
      * @param observer the child Observer instance
      * @return the parent Observer instance
+     * @throws Exception on failure
      */
     Observer<? super Upstream> apply(Observer<? super Downstream> observer) throws Exception;
 }

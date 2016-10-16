@@ -13,26 +13,20 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.Flowable;
-import io.reactivex.TestHelper;
-import io.reactivex.functions.Consumer;
-import io.reactivex.subscribers.DefaultSubscriber;
-import io.reactivex.subscribers.TestSubscriber;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.*;
+import java.util.concurrent.atomic.*;
+
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import io.reactivex.*;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.subscribers.*;
 
 public class FlowableRangeLongTest {
 
@@ -291,5 +285,42 @@ public class FlowableRangeLongTest {
         Flowable.rangeLong(5495454L, 1L)
             .test()
             .assertResult(5495454L);
+    }
+
+    @Test
+    public void fused() {
+        TestSubscriber<Long> to = SubscriberFusion.newTest(QueueDisposable.ANY);
+
+        Flowable.rangeLong(1, 2).subscribe(to);
+
+        SubscriberFusion.assertFusion(to, QueueDisposable.SYNC)
+        .assertResult(1L, 2L);
+    }
+
+    @Test
+    public void fusedReject() {
+        TestSubscriber<Long> to = SubscriberFusion.newTest(QueueDisposable.ASYNC);
+
+        Flowable.rangeLong(1, 2).subscribe(to);
+
+        SubscriberFusion.assertFusion(to, QueueDisposable.NONE)
+        .assertResult(1L, 2L);
+    }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(Flowable.rangeLong(1, 2));
+    }
+
+    @Test
+    public void fusedClearIsEmpty() {
+        TestHelper.checkFusedIsEmptyClear(Flowable.rangeLong(1, 2));
+    }
+
+    @Test
+    public void noOverflow() {
+        Flowable.rangeLong(Long.MAX_VALUE - 1, 2);
+        Flowable.rangeLong(Long.MIN_VALUE, 2);
+        Flowable.rangeLong(Long.MIN_VALUE, Long.MAX_VALUE);
     }
 }

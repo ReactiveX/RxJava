@@ -14,19 +14,22 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.ReplayProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
@@ -589,5 +592,32 @@ public class FlowableRefCountTest {
 
         @Override public void onComplete() {
         }
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void disposed() {
+        TestHelper.checkDisposed(Flowable.just(1).publish().refCount());
+    }
+
+    @Test
+    public void noOpConnect() {
+        final int[] calls = { 0 };
+        Flowable<Integer> o = new ConnectableFlowable<Integer>() {
+            @Override
+            public void connect(Consumer<? super Disposable> connection) {
+                calls[0]++;
+            }
+
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+            }
+        }.refCount();
+
+        o.test();
+        o.test();
+
+        assertEquals(1, calls[0]);
     }
 }

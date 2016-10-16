@@ -21,8 +21,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.subscribers.TestSubscriber;
 
 
@@ -157,5 +158,21 @@ public class FlowableDetachTest {
         ts.assertValues(1, 2, 3);
         ts.assertComplete();
         ts.assertNoErrors();
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.never().onTerminateDetach());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.onTerminateDetach();
+            }
+        });
     }
 }

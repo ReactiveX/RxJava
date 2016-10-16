@@ -545,4 +545,17 @@ public class FlowableFlattenIterableTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
+
+    @Test
+    public void flatMapIterablePrefetch() {
+        Flowable.just(1, 2)
+        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer t) throws Exception {
+                return Arrays.asList(t * 10);
+            }
+        }, 1)
+        .test()
+        .assertResult(10, 20);
+    }
 }

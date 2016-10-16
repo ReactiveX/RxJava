@@ -32,7 +32,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableBufferTest {
@@ -183,7 +183,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testObservableBasedOpenerAndCloser() {
+    public void testFlowableBasedOpenerAndCloser() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
@@ -234,7 +234,7 @@ public class FlowableBufferTest {
     }
 
     @Test
-    public void testObservableBasedCloser() {
+    public void testFlowableBasedCloser() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
             public void subscribe(Subscriber<? super String> observer) {
@@ -1519,5 +1519,356 @@ public class FlowableBufferTest {
         pp.onError(new TestException());
 
         ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.range(1, 5).buffer(1, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Flowable.range(1, 5).buffer(2, 1, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Flowable.range(1, 5).buffer(1, 2, TimeUnit.DAYS, Schedulers.single()));
+
+        TestHelper.checkDisposed(Flowable.range(1, 5)
+                .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true));
+
+        TestHelper.checkDisposed(Flowable.range(1, 5).buffer(1));
+
+        TestHelper.checkDisposed(Flowable.range(1, 5).buffer(2, 1));
+
+        TestHelper.checkDisposed(Flowable.range(1, 5).buffer(1, 2));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierReturnsNull() {
+        Flowable.<Integer>never()
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        }, false)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierReturnsNull2() {
+        Flowable.<Integer>never()
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        }, false)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierReturnsNull3() {
+        Flowable.<Integer>never()
+        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    return null;
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows() {
+        Flowable.just(1)
+        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), Integer.MAX_VALUE, new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        }, false)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows2() {
+        Flowable.just(1)
+        .buffer(1, TimeUnit.SECONDS, Schedulers.single(), 10, new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        }, false)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows3() {
+        Flowable.just(1)
+        .buffer(2, 1, TimeUnit.SECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows4() {
+        Flowable.<Integer>never()
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), Integer.MAX_VALUE, new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    throw new TestException();
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        }, false)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows5() {
+        Flowable.<Integer>never()
+        .buffer(1, TimeUnit.MILLISECONDS, Schedulers.single(), 10, new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    throw new TestException();
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        }, false)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void supplierThrows6() {
+        Flowable.<Integer>never()
+        .buffer(2, 1, TimeUnit.MILLISECONDS, Schedulers.single(), new Callable<Collection<Integer>>() {
+            int count;
+            @Override
+            public Collection<Integer> call() throws Exception {
+                if (count++ == 1) {
+                    throw new TestException();
+                } else {
+                    return new ArrayList<Integer>();
+                }
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void restartTimer() {
+        Flowable.range(1, 5)
+        .buffer(1, TimeUnit.DAYS, Schedulers.single(), 2, Functions.<Integer>createArrayList(16), true)
+        .test()
+        .assertResult(Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferSkipError() {
+        Flowable.<Integer>error(new TestException())
+        .buffer(2, 1)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferSupplierCrash2() {
+        Flowable.range(1, 2)
+        .buffer(1, new Callable<List<Integer>>() {
+            int calls;
+            @Override
+            public List<Integer> call() throws Exception {
+                if (++calls == 2) {
+                    throw new TestException();
+                }
+                return new ArrayList<Integer>();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, Arrays.asList(1));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferSkipSupplierCrash2() {
+        Flowable.range(1, 2)
+        .buffer(2, 1, new Callable<List<Integer>>() {
+            int calls;
+            @Override
+            public List<Integer> call() throws Exception {
+                if (++calls == 2) {
+                    throw new TestException();
+                }
+                return new ArrayList<Integer>();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferSkipOverlap() {
+        Flowable.range(1, 5)
+        .buffer(5, 1)
+        .test()
+        .assertResult(
+            Arrays.asList(1, 2, 3, 4, 5),
+            Arrays.asList(2, 3, 4, 5),
+            Arrays.asList(3, 4, 5),
+            Arrays.asList(4, 5),
+            Arrays.asList(5)
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedExactError() {
+        Flowable.error(new TestException())
+        .buffer(1, TimeUnit.DAYS)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedSkipError() {
+        Flowable.error(new TestException())
+        .buffer(1, 2, TimeUnit.DAYS)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedOverlapError() {
+        Flowable.error(new TestException())
+        .buffer(2, 1, TimeUnit.DAYS)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedExactEmpty() {
+        Flowable.empty()
+        .buffer(1, TimeUnit.DAYS)
+        .test()
+        .assertResult(Collections.emptyList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedSkipEmpty() {
+        Flowable.empty()
+        .buffer(1, 2, TimeUnit.DAYS)
+        .test()
+        .assertResult(Collections.emptyList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedOverlapEmpty() {
+        Flowable.empty()
+        .buffer(2, 1, TimeUnit.DAYS)
+        .test()
+        .assertResult(Collections.emptyList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedExactSupplierCrash() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<List<Integer>> to = ps
+        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, new Callable<List<Integer>>() {
+            int calls;
+            @Override
+            public List<Integer> call() throws Exception {
+                if (++calls == 2) {
+                    throw new TestException();
+                }
+                return new ArrayList<Integer>();
+            }
+        }, true)
+        .test();
+
+        ps.onNext(1);
+
+        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+
+        ps.onNext(2);
+
+        to
+        .assertFailure(TestException.class, Arrays.asList(1));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferTimedExactBoundedError() {
+        TestScheduler scheduler = new TestScheduler();
+
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<List<Integer>> to = ps
+        .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, Functions.<Integer>createArrayList(16), true)
+        .test();
+
+        ps.onError(new TestException());
+
+        to
+        .assertFailure(TestException.class);
     }
 }

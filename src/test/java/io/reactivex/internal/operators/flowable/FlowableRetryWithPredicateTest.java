@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -27,10 +28,12 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
 public class FlowableRetryWithPredicateTest {
@@ -226,8 +229,8 @@ public class FlowableRetryWithPredicateTest {
 
         Subscriber<Long> observer = TestHelper.mockSubscriber();
 
-        // Observable that always fails after 100ms
-        FlowableRetryTest.SlowObservable so = new FlowableRetryTest.SlowObservable(100, 0);
+        // Flowable that always fails after 100ms
+        FlowableRetryTest.SlowFlowable so = new FlowableRetryTest.SlowFlowable(100, 0);
         Flowable<Long> o = Flowable
                 .unsafeCreate(so)
                 .retry(retry5);
@@ -252,8 +255,8 @@ public class FlowableRetryWithPredicateTest {
 
         Subscriber<Long> observer = TestHelper.mockSubscriber();
 
-        // Observable that sends every 100ms (timeout fails instead)
-        FlowableRetryTest.SlowObservable so = new FlowableRetryTest.SlowObservable(100, 10);
+        // Flowable that sends every 100ms (timeout fails instead)
+        FlowableRetryTest.SlowFlowable so = new FlowableRetryTest.SlowFlowable(100, 10);
         Flowable<Long> o = Flowable
                 .unsafeCreate(so)
                 .timeout(80, TimeUnit.MILLISECONDS)
@@ -385,5 +388,114 @@ public class FlowableRetryWithPredicateTest {
         ts.assertValues(1, 1, 1);
         ts.assertNotComplete();
         ts.assertNoErrors();
+    }
+
+    @Test
+    public void predicateThrows() {
+
+        TestSubscriber<Object> to = Flowable.error(new TestException("Outer"))
+        .retry(new Predicate<Throwable>() {
+            @Override
+            public boolean test(Throwable e) throws Exception {
+                throw new TestException("Inner");
+            }
+        })
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+
+        TestHelper.assertError(errors, 0, TestException.class, "Outer");
+        TestHelper.assertError(errors, 1, TestException.class, "Inner");
+    }
+
+    @Test
+    public void dontRetry() {
+        Flowable.error(new TestException("Outer"))
+        .retry(Functions.alwaysFalse())
+        .test()
+        .assertFailureAndMessage(TestException.class, "Outer");
+    }
+
+    @Test
+    public void retryDisposeRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+            final TestSubscriber<Integer> to = ps.retry(Functions.alwaysTrue()).test();
+
+            final TestException ex = new TestException();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onError(ex);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to.assertEmpty();
+        }
+    }
+
+    @Test
+    public void bipredicateThrows() {
+
+        TestSubscriber<Object> to = Flowable.error(new TestException("Outer"))
+        .retry(new BiPredicate<Integer, Throwable>() {
+            @Override
+            public boolean test(Integer n, Throwable e) throws Exception {
+                throw new TestException("Inner");
+            }
+        })
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+
+        TestHelper.assertError(errors, 0, TestException.class, "Outer");
+        TestHelper.assertError(errors, 1, TestException.class, "Inner");
+    }
+
+    @Test
+    public void retryBiPredicateDisposeRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+            final TestSubscriber<Integer> to = ps.retry(new BiPredicate<Object, Object>() {
+                @Override
+                public boolean test(Object t1, Object t2) throws Exception {
+                    return true;
+                }
+            }).test();
+
+            final TestException ex = new TestException();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onError(ex);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to.assertEmpty();
+        }
     }
 }

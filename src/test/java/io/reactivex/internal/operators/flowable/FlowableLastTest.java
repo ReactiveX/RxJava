@@ -22,7 +22,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.functions.Predicate;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
 
 public class FlowableLastTest {
 
@@ -46,7 +47,7 @@ public class FlowableLastTest {
     }
 
     @Test
-    public void testLastViaObservable() {
+    public void testLastViaFlowable() {
         Flowable.just(1, 2, 3).lastElement();
     }
 
@@ -293,5 +294,67 @@ public class FlowableLastTest {
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.never().lastElement().toFlowable());
+        TestHelper.checkDisposed(Flowable.never().lastElement());
+
+        TestHelper.checkDisposed(Flowable.just(1).lastOrError().toFlowable());
+        TestHelper.checkDisposed(Flowable.just(1).lastOrError());
+
+        TestHelper.checkDisposed(Flowable.just(1).last(2).toFlowable());
+        TestHelper.checkDisposed(Flowable.just(1).last(2));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Flowable<Object> o) throws Exception {
+                return o.lastElement();
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.lastElement().toFlowable();
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Flowable<Object> o) throws Exception {
+                return o.lastOrError();
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.lastOrError().toFlowable();
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Flowable<Object> o) throws Exception {
+                return o.last(2);
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.last(2).toFlowable();
+            }
+        });
+    }
+
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+        .lastElement()
+        .test()
+        .assertFailure(TestException.class);
     }
 }

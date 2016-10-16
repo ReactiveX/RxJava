@@ -13,9 +13,9 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-import java.util.Iterator;
+import java.util.*;
 
 import org.junit.*;
 import org.reactivestreams.*;
@@ -130,5 +130,42 @@ public class BlockingFlowableToIteratorTest {
         public void remove() {
             throw new UnsupportedOperationException();
         }
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void remove() {
+        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<Integer>(128);
+        it.remove();
+    }
+
+    @Test
+    public void dispose() {
+        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<Integer>(128);
+
+        assertFalse(it.isDisposed());
+
+        it.dispose();
+
+        assertTrue(it.isDisposed());
+    }
+
+    @Test
+    public void interruptWait() {
+        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<Integer>(128);
+
+        try {
+            Thread.currentThread().interrupt();
+
+            it.hasNext();
+        } catch (RuntimeException ex) {
+            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+        }
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void emptyThrowsNoSuch() {
+        BlockingFlowableIterator<Integer> it = new BlockingFlowableIterator<Integer>(128);
+        it.onComplete();
+        it.next();
     }
 }

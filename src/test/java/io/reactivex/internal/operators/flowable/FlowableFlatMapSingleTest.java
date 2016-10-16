@@ -258,4 +258,55 @@ public class FlowableFlatMapSingleTest {
         .test()
         .assertFailure(NumberFormatException.class, 1);
     }
+
+    @Test
+    public void asyncFlatten() {
+        Flowable.range(1, 1000)
+        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Integer v) throws Exception {
+                return Single.just(1).subscribeOn(Schedulers.computation());
+            }
+        })
+        .take(500)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertSubscribed()
+        .assertValueCount(500)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void successError() {
+        final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = Flowable.range(1, 2)
+        .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Integer v) throws Exception {
+                if (v == 2) {
+                    return ps.singleOrError();
+                }
+                return Single.error(new TestException());
+            }
+        }, true, Integer.MAX_VALUE)
+        .test();
+
+        ps.onNext(1);
+        ps.onComplete();
+
+        to
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(PublishProcessor.<Integer>create().flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Integer v) throws Exception {
+                return Single.<Integer>just(1);
+            }
+        }));
+    }
 }

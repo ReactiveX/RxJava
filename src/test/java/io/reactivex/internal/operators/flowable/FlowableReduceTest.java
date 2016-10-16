@@ -285,4 +285,13 @@ public class FlowableReduceTest {
         ts.assertEmpty();
 
     }
+
+    @Test
+    public void testBackpressureWithNoInitialValueObservable() throws InterruptedException {
+        Flowable<Integer> source = Flowable.just(1, 2, 3, 4, 5, 6);
+        Flowable<Integer> reduced = source.reduce(sum).toFlowable();
+
+        Integer r = reduced.blockingFirst();
+        assertEquals(21, r.intValue());
+    }
 }

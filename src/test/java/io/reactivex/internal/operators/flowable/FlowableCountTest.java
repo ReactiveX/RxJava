@@ -15,7 +15,8 @@ package io.reactivex.internal.operators.flowable;
 
 import org.junit.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
+import io.reactivex.functions.Function;
 
 public class FlowableCountTest {
     @Test
@@ -36,6 +37,31 @@ public class FlowableCountTest {
 
         Assert.assertEquals(10, Flowable.range(1, 10).count().blockingGet().intValue());
 
+    }
+
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).count());
+
+        TestHelper.checkDisposed(Flowable.just(1).count().toFlowable());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Long>>() {
+            @Override
+            public Flowable<Long> apply(Flowable<Object> o) throws Exception {
+                return o.count().toFlowable();
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Long>>() {
+            @Override
+            public SingleSource<Long> apply(Flowable<Object> o) throws Exception {
+                return o.count();
+            }
+        });
     }
 
 }

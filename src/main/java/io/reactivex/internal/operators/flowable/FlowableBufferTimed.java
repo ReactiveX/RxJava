@@ -459,9 +459,9 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
             actual.onSubscribe(this);
 
-            s.request(Long.MAX_VALUE);
-
             timer = w.schedulePeriodically(this, timespan, timespan, unit);
+
+            s.request(Long.MAX_VALUE);
         }
 
         @Override
