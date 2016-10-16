@@ -897,6 +897,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             public Node(T value) {
                 this.value = value;
             }
+
+            @Override
+            protected void finalize() throws Throwable
+            {
+                set(null);
+                super.finalize();
+            }
         }
 
         @Override
@@ -928,6 +935,22 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 s++;
             }
             return s;
+        }
+
+        public void _j2objcClean() {
+            Node<T> n = head.get();
+            while (n != null) {
+                Node<T> lastN = n;
+                n = n.get();
+                lastN.set(null);
+            }
+        }
+
+        @Override
+        protected void finalize() throws Throwable
+        {
+            _j2objcClean();
+            super.finalize();
         }
 
         @Override
@@ -998,6 +1021,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 if (n.timestamp > now) {
                     break;
                 }
+
+                j2objcNodeClear(h, "next");
+
                 h = n;
                 s--;
             }
@@ -1007,8 +1033,17 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 head = h;
             }
         }
+
+        private void j2objcNodeClear(TimedNode<T> h, String source)
+        {
+            System.out.println("TimedNode-remove ("+source+"): "+ h.timestamp);
+            //j2objc clear
+            h.set(null);
+        }
+
         @Override
         public void error(Throwable ex) {
+            System.out.println("ReplaySizeAndTimeBoundBuffer-error");
             evictFinal();
             error = ex;
             done = true;
@@ -1016,23 +1051,33 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
         @Override
         public void complete() {
+            System.out.println("ReplaySizeAndTimeBoundBuffer-complete");
             evictFinal();
             done = true;
         }
 
         void evictFinal() {
+            System.out.println("ReplaySizeAndTimeBoundBuffer-evictFinal");
             long now = scheduler.now() - maxAgeMillis;
 
             TimedNode<T> h0 = head;
             TimedNode<T> h = h0;
             TimedNode<T> n;
 
+            int removedCount = 0;
+
             while ((n = h.get()) != null) {
                 if (n.timestamp > now) {
                     break;
                 }
+
+                removedCount++;
+                j2objcNodeClear(h, "evictFinal");
+
                 h = n;
             }
+
+            System.out.println("ReplaySizeAndTimeBoundBuffer-evictFinal removed: "+ removedCount);
 
             if (h0 != h) {
                 head = h;
@@ -1047,6 +1092,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 if (n.timestamp > now) {
                     break;
                 }
+
+                j2objcNodeClear(h, "latestHead");
+
                 h = n;
             }
             return h;
@@ -1152,6 +1200,14 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 this.value = value;
                 this.timestamp = timestamp;
             }
+
+            @Override
+            protected void finalize() throws Throwable
+            {
+                //Clears ios/j2objc memory chain. Avoids dealloc stack overflow.
+                set(null);
+                super.finalize();
+            }
         }
 
         @Override
@@ -1166,9 +1222,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
         @Override
         public T last() {
+            System.out.println("ReplaySizeAndTimeBoundBuffer-last");
             TimedNode<T> h = latestHead();
             TimedNode<T> n;
             while ((n = h.get()) != null) {
+
+                j2objcNodeClear(h, "last");
+
                 h = n;
             }
             return h.value;
@@ -1183,6 +1243,23 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 s++;
             }
             return s;
+        }
+
+        public void _j2objcClean() {
+            TimedNode<T> n = latestHead().get();
+            while (n != null) {
+                TimedNode<T> lastN = n;
+                n = n.get();
+                lastN.set(null);
+            }
+        }
+
+        @Override
+        protected void finalize() throws Throwable
+        {
+            System.out.println("ReplaySizeAndTimeBoundBuffer-finalize");
+            _j2objcClean();
+            super.finalize();
         }
 
         @Override

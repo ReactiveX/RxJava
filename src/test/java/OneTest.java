@@ -742,6 +742,7 @@ public class OneTest
 
     public static Class[] littletest = new Class[] {
             rx.observers.SerializedObserverTest.class,
+            rx.subjects.ReplaySubjectBoundedConcurrencyTest.class,
             rx.doppl.misc.LinkedBlockingQueueTest.class
     };
 
