@@ -1181,38 +1181,48 @@ public class SerializedObserverTest {
     @Test
     public void onCompleteOnErrorRace() {
         for (int i = 0; i < 500; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                TestObserver<Integer> ts = new TestObserver<Integer>();
 
-            Disposable d = Disposables.empty();
+                final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
 
-            so.onSubscribe(d);
+                Disposable d = Disposables.empty();
 
-            final Throwable ex = new TestException();
+                so.onSubscribe(d);
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    so.onError(ex);
+                final Throwable ex = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        so.onError(ex);
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        so.onComplete();
+                    }
+                };
+
+                TestHelper.race(r1, r2, Schedulers.single());
+
+                ts.awaitDone(5, TimeUnit.SECONDS);
+
+                if (ts.completions() != 0) {
+                    ts.assertResult();
+                } else {
+                    ts.assertFailure(TestException.class).assertError(ex);
                 }
-            };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    so.onComplete();
+                for (Throwable e : errors) {
+                    assertTrue(e.toString(), e instanceof TestException);
                 }
-            };
-
-            TestHelper.race(r1, r2, Schedulers.single());
-
-            ts.awaitDone(5, TimeUnit.SECONDS);
-
-            if (ts.completions() != 0) {
-                ts.assertResult();
-            } else {
-                ts.assertFailure(TestException.class).assertError(ex);
+            } finally {
+                RxJavaPlugins.reset();
             }
         }
 

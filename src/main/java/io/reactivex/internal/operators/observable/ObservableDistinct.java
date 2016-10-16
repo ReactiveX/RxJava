@@ -18,186 +18,122 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
-import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.functions.*;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Function;
+import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.observers.BasicFuseableObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstream<T, T> {
+
     final Function<? super T, K> keySelector;
-    final Callable<? extends Predicate<? super K>> predicateSupplier;
 
-    public ObservableDistinct(ObservableSource<T> source, Function<? super T, K> keySelector, Callable<? extends Predicate<? super K>> predicateSupplier) {
+    final Callable<? extends Collection<? super K>> collectionSupplier;
+
+    public ObservableDistinct(ObservableSource<T> source, Function<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
         super(source);
-        this.predicateSupplier = predicateSupplier;
         this.keySelector = keySelector;
+        this.collectionSupplier = collectionSupplier;
     }
-
-    public static <T, K> ObservableDistinct<T, K> withCollection(ObservableSource<T> source, final Function<? super T, K> keySelector, final Callable<? extends Collection<? super K>> collectionSupplier) {
-        Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
-            @Override
-            public Predicate<K> call() throws Exception {
-                final Collection<? super K> coll = collectionSupplier.call();
-
-                return new Predicate<K>() {
-                    @Override
-                    public boolean test(K t) {
-                        if (t == null) {
-                            coll.clear();
-                            return true;
-                        }
-                        return coll.add(t);
-                    }
-                };
-            }
-        };
-
-        return new ObservableDistinct<T, K>(source, keySelector, p);
-    }
-
-    public static <T> ObservableDistinct<T, T> untilChanged(ObservableSource<T> source) {
-        Callable<? extends Predicate<? super T>> p = new Callable<Predicate<T>>() {
-            @Override
-            public Predicate<T> call() {
-                final Object[] last = { null };
-
-                return new Predicate<T>() {
-                    @Override
-                    public boolean test(T t) {
-                        if (t == null) {
-                            last[0] = null;
-                            return true;
-                        }
-                        Object o = last[0];
-                        last[0] = t;
-                        return !ObjectHelper.equals(o, t);
-                    }
-                };
-            }
-        };
-        return new ObservableDistinct<T, T>(source, Functions.<T>identity(), p);
-    }
-
-    public static <T, K> ObservableDistinct<T, K> untilChanged(ObservableSource<T> source, Function<? super T, K> keySelector) {
-        Callable<? extends Predicate<? super K>> p = new Callable<Predicate<K>>() {
-            @Override
-            public Predicate<K> call() {
-                final Object[] last = { null };
-
-                return new Predicate<K>() {
-                    @Override
-                    public boolean test(K t) {
-                        if (t == null) {
-                            last[0] = null;
-                            return true;
-                        }
-                        Object o = last[0];
-                        last[0] = t;
-                        return !ObjectHelper.equals(o, t);
-                    }
-                };
-            }
-        };
-        return new ObservableDistinct<T, K>(source, keySelector, p);
-    }
-
 
     @Override
-    public void subscribeActual(Observer<? super T> t) {
-        Predicate<? super K> coll;
+    protected void subscribeActual(Observer<? super T> observer) {
+        Collection<? super K> collection;
+
         try {
-            coll = ObjectHelper.requireNonNull(predicateSupplier.call(), "predicateSupplier returned null");
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, t);
+            collection = collectionSupplier.call();
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            EmptyDisposable.error(ex, observer);
             return;
         }
 
-        source.subscribe(new DistinctObserver<T, K>(t, keySelector, coll));
+        source.subscribe(new DistinctObserver<T, K>(observer, keySelector, collection));
     }
 
-    static final class DistinctObserver<T, K> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
-        final Predicate<? super K> predicate;
+    static final class DistinctObserver<T, K> extends BasicFuseableObserver<T, T> {
+
+        final Collection<? super K> collection;
+
         final Function<? super T, K> keySelector;
 
-        Disposable s;
+        Disposable d;
 
-        DistinctObserver(Observer<? super T> actual, Function<? super T, K> keySelector, Predicate<? super K> predicate) {
-            this.actual = actual;
+        SimpleQueue<T> queue;
+
+        DistinctObserver(Observer<? super T> actual, Function<? super T, K> keySelector, Collection<? super K> collection) {
+            super(actual);
             this.keySelector = keySelector;
-            this.predicate = predicate;
+            this.collection = collection;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onNext(T value) {
+            if (done) {
+                return;
+            }
+            if (sourceMode == NONE) {
+                K key;
+                boolean b;
+
+                try {
+                    key = ObjectHelper.requireNonNull(keySelector.apply(value), "The keySelector returned a null key");
+                    b = collection.add(key);
+                } catch (Throwable ex) {
+                    fail(ex);
+                    return;
+                }
+
+                if (b) {
+                    actual.onNext(value);
+                }
+            } else {
+                actual.onNext(null);
             }
         }
 
-
         @Override
-        public void dispose() {
-            s.dispose();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return s.isDisposed();
-        }
-
-        @Override
-        public void onNext(T t) {
-            K key;
-
-            try {
-                key = ObjectHelper.requireNonNull(keySelector.apply(t), "Null key supplied");
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                s.dispose();
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaPlugins.onError(e);
+            } else {
+                done = true;
+                collection.clear();
                 actual.onError(e);
-                return;
             }
-
-            boolean b;
-            try {
-                b = predicate.test(key);
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                s.dispose();
-                actual.onError(e);
-                return;
-            }
-
-            if (b) {
-                actual.onNext(t);
-            }
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            try {
-                predicate.test(null); // special case: poison pill
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(t, e));
-                return;
-            }
-            actual.onError(t);
         }
 
         @Override
         public void onComplete() {
-            try {
-                predicate.test(null); // special case: poison pill
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                actual.onError(e);
-                return;
+            if (!done) {
+                done = true;
+                collection.clear();
+                actual.onComplete();
             }
-            actual.onComplete();
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            return transitiveBoundaryFusion(mode);
+        }
+
+        @Override
+        public T poll() throws Exception {
+            for (;;) {
+                T v = qs.poll();
+
+                if (v == null || collection.add(ObjectHelper.requireNonNull(keySelector.apply(v), "The keySelector returned a null key"))) {
+                    return v;
+                }
+            }
+        }
+
+        @Override
+        public void clear() {
+            collection.clear();
+            super.clear();
         }
     }
 }

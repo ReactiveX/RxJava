@@ -53,6 +53,7 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
                 lastTime = scheduler.now(unit);
                 actual.onSubscribe(this);
             }

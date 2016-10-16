@@ -22,6 +22,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.FuseToObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -32,15 +33,10 @@ extends Single<U> implements FuseToObservable<U> {
 
     final Callable<U> collectionSupplier;
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ObservableToListSingle(ObservableSource<T> source, final int defaultCapacityHint) {
         this.source = source;
-        this.collectionSupplier = new Callable<U>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public U call() throws Exception {
-                return (U)new ArrayList<T>(defaultCapacityHint);
-            }
-        };
+        this.collectionSupplier = (Callable)Functions.createArrayList(defaultCapacityHint);
     }
 
     public ObservableToListSingle(ObservableSource<T> source, Callable<U> collectionSupplier) {

@@ -30,6 +30,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservableFlatMapTest {
     @Test
@@ -607,5 +608,109 @@ public class ObservableFlatMapTest {
                 return Observable.just(v);
             }
         }));
+    }
+
+    @Test
+    public void mergeScalar() {
+        Observable.merge(Observable.just(Observable.just(1)))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void mergeScalar2() {
+        Observable.merge(Observable.just(Observable.just(1)).hide())
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void mergeScalarEmpty() {
+        Observable.merge(Observable.just(Observable.empty()).hide())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void mergeScalarError() {
+        Observable.merge(Observable.just(Observable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                throw new TestException();
+            }
+        })).hide())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void scalarReentrant() {
+        final PublishSubject<Observable<Integer>> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(Observable.just(2));
+                }
+            }
+        };
+
+        Observable.merge(ps)
+        .subscribe(to);
+
+        ps.onNext(Observable.just(1));
+        ps.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void scalarReentrant2() {
+        final PublishSubject<Observable<Integer>> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(Observable.just(2));
+                }
+            }
+        };
+
+        Observable.merge(ps, 2)
+        .subscribe(to);
+
+        ps.onNext(Observable.just(1));
+        ps.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void innerCompleteCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            final TestObserver<Integer> to = Observable.merge(Observable.just(ps)).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
     }
 }

@@ -20,15 +20,17 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.disposables.ArrayCompositeDisposable;
+import io.reactivex.internal.fuseable.FuseToObservable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
+public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> implements FuseToObservable<Boolean> {
     final ObservableSource<? extends T> first;
     final ObservableSource<? extends T> second;
     final BiPredicate<? super T, ? super T> comparer;
     final int bufferSize;
 
-    public ObservableSequenceEqual(ObservableSource<? extends T> first, ObservableSource<? extends T> second,
+    public ObservableSequenceEqualSingle(ObservableSource<? extends T> first, ObservableSource<? extends T> second,
                                    BiPredicate<? super T, ? super T> comparer, int bufferSize) {
         this.first = first;
         this.second = second;
@@ -37,16 +39,21 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super Boolean> s) {
+    public void subscribeActual(SingleObserver<? super Boolean> s) {
         EqualCoordinator<T> ec = new EqualCoordinator<T>(s, bufferSize, first, second, comparer);
         s.onSubscribe(ec);
         ec.subscribe();
     }
 
+    @Override
+    public Observable<Boolean> fuseToObservable() {
+        return RxJavaPlugins.onAssembly(new ObservableSequenceEqual<T>(first, second, comparer, bufferSize));
+    }
+
     static final class EqualCoordinator<T> extends AtomicInteger implements Disposable {
 
         private static final long serialVersionUID = -6178010334400373240L;
-        final Observer<? super Boolean> actual;
+        final SingleObserver<? super Boolean> actual;
         final BiPredicate<? super T, ? super T> comparer;
         final ArrayCompositeDisposable resources;
         final ObservableSource<? extends T> first;
@@ -59,7 +66,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
 
         T v2;
 
-        EqualCoordinator(Observer<? super Boolean> actual, int bufferSize,
+        EqualCoordinator(SingleObserver<? super Boolean> actual, int bufferSize,
                                 ObservableSource<? extends T> first, ObservableSource<? extends T> second,
                                 BiPredicate<? super T, ? super T> comparer) {
             this.actual = actual;
@@ -165,15 +172,13 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                     boolean e2 = v2 == null;
 
                     if (d1 && d2 && e1 && e2) {
-                        actual.onNext(true);
-                        actual.onComplete();
+                        actual.onSuccess(true);
                         return;
                     }
                     if ((d1 && d2) && (e1 != e2)) {
                         cancel(q1, q2);
 
-                        actual.onNext(false);
-                        actual.onComplete();
+                        actual.onSuccess(false);
                         return;
                     }
 
@@ -193,8 +198,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                         if (!c) {
                             cancel(q1, q2);
 
-                            actual.onNext(false);
-                            actual.onComplete();
+                            actual.onSuccess(false);
                             return;
                         }
 

@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
@@ -21,7 +20,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.queue.*;
 import io.reactivex.internal.util.AtomicThrowable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -144,11 +144,10 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
+            if (!done) {
+                done = true;
+                drain();
             }
-            done = true;
-            drain();
         }
 
         @Override
@@ -219,7 +218,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                 SwitchMapInnerObserver<T, R> inner = active.get();
 
                 if (inner != null) {
-                    SpscArrayQueue<R> q = inner.queue;
+                    SpscLinkedArrayQueue<R> q = inner.queue;
 
                     if (inner.done) {
                         boolean empty = q.isEmpty();
@@ -252,22 +251,22 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                             break;
                         }
 
-                        boolean d = inner.done;
-                        R v = q.poll();
-                        boolean empty = v == null;
-
-                        if (d) {
-                            if (delayErrors || empty) {
-                                active.compareAndSet(inner, null);
-                                retry = true;
-                                break;
-                            }
-
+                        if (!delayErrors) {
                             Throwable ex = errors.get();
                             if (ex != null) {
                                 a.onError(errors.terminate());
                                 return;
                             }
+                        }
+
+                        boolean d = inner.done;
+                        R v = q.poll();
+                        boolean empty = v == null;
+
+                        if (d && empty) {
+                            active.compareAndSet(inner, null);
+                            retry = true;
+                            break;
                         }
 
                         if (empty) {
@@ -307,32 +306,25 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         private static final long serialVersionUID = 3837284832786408377L;
         final SwitchMapObserver<T, R> parent;
         final long index;
-        final SpscArrayQueue<R> queue;
+        final SpscLinkedArrayQueue<R> queue;
 
         volatile boolean done;
 
         SwitchMapInnerObserver(SwitchMapObserver<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
             this.index = index;
-            this.queue = new SpscArrayQueue<R>(bufferSize);
+            this.queue = new SpscLinkedArrayQueue<R>(bufferSize);
         }
 
         @Override
         public void onSubscribe(Disposable s) {
-            if (index == parent.unique) {
-                DisposableHelper.setOnce(this, s);
-            } else {
-                s.dispose();
-            }
+            DisposableHelper.setOnce(this, s);
         }
 
         @Override
         public void onNext(R t) {
             if (index == parent.unique) {
-                if (!queue.offer(t)) {
-                    onError(new IllegalStateException("Queue full?!"));
-                    return;
-                }
+                queue.offer(t);
                 parent.drain();
             }
         }

@@ -188,6 +188,8 @@ public class ObservableToListTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.just(1).toList().toObservable());
+
+        TestHelper.checkDisposed(Observable.just(1).toList());
     }
 
     @SuppressWarnings("unchecked")
@@ -196,6 +198,15 @@ public class ObservableToListTest {
         Observable.error(new TestException())
         .toList()
         .toObservable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorSingle() {
+        Observable.error(new TestException())
+        .toList()
         .test()
         .assertFailure(TestException.class);
     }
@@ -211,6 +222,20 @@ public class ObservableToListTest {
             }
         })
         .toObservable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void singleCollectionSupplierThrows() {
+        Observable.just(1)
+        .toList(new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        })
         .test()
         .assertFailure(TestException.class);
     }

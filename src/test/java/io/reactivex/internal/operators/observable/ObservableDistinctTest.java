@@ -13,13 +13,27 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+
+import java.util.*;
+import java.util.concurrent.Callable;
 
 import org.junit.*;
 import org.mockito.InOrder;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.TestHelper;
+import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.UnicastSubject;
 
 public class ObservableDistinctTest {
 
@@ -118,5 +132,110 @@ public class ObservableDistinctTest {
         inOrder.verify(w, times(1)).onError(any(NullPointerException.class));
         inOrder.verify(w, never()).onNext(anyString());
         inOrder.verify(w, never()).onComplete();
+    }
+
+    @Test
+    public void error() {
+        Observable.error(new TestException())
+        .distinct()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedSync() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+
+        Observable.just(1, 1, 2, 1, 3, 2, 4, 5, 4)
+        .distinct()
+        .subscribe(to);
+
+        ObserverFusion.assertFusion(to, QueueDisposable.SYNC)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void fusedAsync() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+
+        UnicastSubject<Integer> us = UnicastSubject.create();
+
+        us
+        .distinct()
+        .subscribe(to);
+
+        TestHelper.emit(us, 1, 1, 2, 1, 3, 2, 4, 5, 4);
+
+        ObserverFusion.assertFusion(to, QueueDisposable.ASYNC)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void fusedClear() {
+        Observable.just(1, 1, 2, 1, 3, 2, 4, 5, 4)
+        .distinct()
+        .subscribe(new Observer<Integer>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                QueueDisposable<?> qd = (QueueDisposable<?>)d;
+
+                assertFalse(qd.isEmpty());
+
+                qd.clear();
+
+                assertTrue(qd.isEmpty());
+            }
+
+            @Override
+            public void onNext(Integer value) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+    }
+
+    @Test
+    public void collectionSupplierThrows() {
+        Observable.just(1)
+        .distinct(Functions.identity(), new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+
+                    observer.onNext(1);
+                    observer.onComplete();
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .distinct()
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
