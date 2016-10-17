@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.*;
@@ -26,11 +27,11 @@ import org.mockito.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.flowable.FlowableZipTest.ArgsToString;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
@@ -1214,5 +1215,160 @@ public class FlowableCombineLatestTest {
     @Test
     public void combineLatestDelayErrorEmpty() {
         assertSame(Flowable.empty(), Flowable.combineLatestDelayError(new Flowable[0], Functions.<Object[]>identity(), 16));
+    }
+
+    @Test
+    public void error() {
+        Flowable.combineLatest(Flowable.never(), Flowable.error(new TestException()), new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void disposed() {
+        TestHelper.checkDisposed(Flowable.combineLatest(Flowable.never(), Flowable.never(), new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        }));
+    }
+
+    @Test
+    public void cancelWhileSubscribing() {
+        final TestSubscriber<Object> to = new TestSubscriber<Object>();
+
+        Flowable.combineLatest(
+                Flowable.just(1)
+                .doOnNext(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer v) throws Exception {
+                        to.cancel();
+                    }
+                }),
+                Flowable.never(),
+                new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        })
+        .subscribe(to);
+    }
+
+    @Test
+    public void onErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+                final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+
+                TestSubscriber<Integer> to = Flowable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        return a;
+                    }
+                }).test();
+
+                final TestException ex1 = new TestException();
+                final TestException ex2 = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onError(ex1);
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex2);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                if (to.errorCount() != 0) {
+                    if (to.errors().get(0) instanceof CompositeException) {
+                        to.assertSubscribed()
+                        .assertNotComplete()
+                        .assertNoValues();
+
+                        for (Throwable e : TestHelper.errorList(to)) {
+                            assertTrue(e.toString(), e instanceof TestException);
+                        }
+
+                    } else {
+                        to.assertFailure(TestException.class);
+                    }
+                }
+
+                for (Throwable e : errors) {
+                    assertTrue(e.toString(), e instanceof TestException);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void combineAsync() {
+        Flowable<Integer> source = Flowable.range(1, 1000).subscribeOn(Schedulers.computation());
+
+        Flowable.combineLatest(source, source, new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        })
+        .take(500)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorDelayed() {
+        Flowable.combineLatestDelayError(
+                new Function<Object[], Object>() {
+                    @Override
+                    public Object apply(Object[] a) throws Exception {
+                        return a;
+                    }
+                },
+                128,
+                Flowable.error(new TestException()),
+                Flowable.just(1)
+        )
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorDelayed2() {
+        Flowable.combineLatestDelayError(
+                new Function<Object[], Object>() {
+                    @Override
+                    public Object apply(Object[] a) throws Exception {
+                        return a;
+                    }
+                },
+                128,
+                Flowable.error(new TestException()).startWith(1),
+                Flowable.empty()
+        )
+        .test()
+        .assertFailure(TestException.class);
     }
 }

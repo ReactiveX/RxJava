@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -22,6 +23,10 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Action;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -194,5 +199,71 @@ public class FlowableUnsubscribeOnTest {
         .assertComplete()
         .assertNoErrors()
         .assertSubscribed();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).unsubscribeOn(Schedulers.single()));
+    }
+
+    @Test
+    public void normal() {
+        final int[] calls = { 0 };
+
+        Flowable.just(1)
+        .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                calls[0]++;
+            }
+        })
+        .unsubscribeOn(Schedulers.single())
+        .test()
+        .assertResult(1);
+
+        assertEquals(0, calls[0]);
+    }
+
+    @Test
+    public void error() {
+        final int[] calls = { 0 };
+
+        Flowable.error(new TestException())
+        .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                calls[0]++;
+            }
+        })
+        .unsubscribeOn(Schedulers.single())
+        .test()
+        .assertFailure(TestException.class);
+
+        assertEquals(0, calls[0]);
+    }
+
+    @Test
+    public void signalAfterDispose() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .unsubscribeOn(Schedulers.single())
+            .take(1)
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

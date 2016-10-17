@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -24,7 +25,6 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -265,6 +265,45 @@ public class FlowableRepeatTest {
         } catch (IllegalArgumentException ex) {
             assertEquals("times >= 0 required but it was -99", ex.getMessage());
         }
+    }
+
+    @Test
+    public void repeatUntilError() {
+        Flowable.error(new TestException())
+        .repeatUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return true;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void repeatUntilFalse() {
+        Flowable.just(1)
+        .repeatUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return true;
+            }
+        })
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void repeatUntilSupplierCrash() {
+        Flowable.just(1)
+        .repeatUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, 1);
     }
 
 }

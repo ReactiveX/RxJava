@@ -72,7 +72,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
     abstract static class BaseRangeSubscription<T> extends BasicQueueSubscription<T> {
         private static final long serialVersionUID = -2252972430506210021L;
 
-        final Iterator<? extends T> it;
+        Iterator<? extends T> it;
 
         volatile boolean cancelled;
 
@@ -89,6 +89,9 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
         @Override
         public final T poll() {
+            if (it == null) {
+                return null;
+            }
             if (!once) {
                 once = true;
             } else {
@@ -102,12 +105,12 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
         @Override
         public final boolean isEmpty() {
-            return !it.hasNext();
+            return it == null || !it.hasNext();
         }
 
         @Override
         public final void clear() {
-            // nothing to do
+            it = null;
         }
 
         @Override

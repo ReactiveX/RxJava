@@ -22,6 +22,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -120,6 +121,21 @@ public class FlowableTimeIntervalTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).timeInterval());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+        .timeInterval()
+        .test()
+        .assertFailure(TestException.class);
     }
 
 }

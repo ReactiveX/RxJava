@@ -82,7 +82,6 @@ public final class BlockingObservableLatest<T> implements Iterable<T> {
                     notify.acquire();
                 } catch (InterruptedException ex) {
                     dispose();
-                    Thread.currentThread().interrupt();
                     iteratorNotification = Notification.createOnError(ex);
                     throw ExceptionHelper.wrapOrThrow(ex);
                 }

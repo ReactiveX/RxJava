@@ -21,6 +21,7 @@ public interface CompletableOperator {
      * Applies a function to the child CompletableObserver and returns a new parent CompletableObserver.
      * @param observer the child CompletableObservable instance
      * @return the parent CompletableObserver instance
+     * @throws Exception on failure
      */
     CompletableObserver apply(CompletableObserver observer) throws Exception;
 }

@@ -39,7 +39,7 @@ public class FlowableFilterTest {
     @Test
     public void testFilter() {
         Flowable<String> w = Flowable.just("one", "two", "three");
-        Flowable<String> observable = w.filter(new Predicate<String>() {
+        Flowable<String> Flowable = w.filter(new Predicate<String>() {
 
             @Override
             public boolean test(String t1) {
@@ -47,15 +47,15 @@ public class FlowableFilterTest {
             }
         });
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> Subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        Flowable.subscribe(Subscriber);
 
-        verify(observer, Mockito.never()).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(Subscriber, Mockito.never()).onNext("one");
+        verify(Subscriber, times(1)).onNext("two");
+        verify(Subscriber, Mockito.never()).onNext("three");
+        verify(Subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(Subscriber, times(1)).onComplete();
     }
 
     /**
@@ -156,7 +156,7 @@ public class FlowableFilterTest {
     @Ignore("subscribers are not allowed to throw")
     public void testFatalError() {
 //        try {
-//            Observable.just(1)
+//            Flowable.just(1)
 //            .filter(new Predicate<Integer>() {
 //                @Override
 //                public boolean test(Integer t) {
@@ -544,5 +544,88 @@ public class FlowableFilterTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.range(1, 5).filter(Functions.alwaysTrue()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.filter(Functions.alwaysTrue());
+            }
+        });
+    }
+
+    @Test
+    public void fusedSync() {
+        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ANY);
+
+        Flowable.range(1, 5)
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .subscribe(to);
+
+        SubscriberFusion.assertFusion(to, QueueDisposable.SYNC)
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void fusedAsync() {
+        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ANY);
+
+        UnicastProcessor<Integer> us = UnicastProcessor.create();
+
+        us
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .subscribe(to);
+
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
+
+        SubscriberFusion.assertFusion(to, QueueDisposable.ASYNC)
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void fusedReject() {
+        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
+
+        Flowable.range(1, 5)
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .subscribe(to);
+
+        SubscriberFusion.assertFusion(to, QueueDisposable.NONE)
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void filterThrows() {
+        Flowable.range(1, 5)
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
     }
 }

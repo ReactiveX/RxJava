@@ -22,11 +22,16 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -415,5 +420,307 @@ public class FlowablePublishTest {
                 s.dispose();
             }
         }
+    }
+
+    @Test
+    public void source() {
+        Flowable<Integer> o = Flowable.never();
+
+        assertSame(o, (((HasUpstreamPublisher<?>)o.publish()).source()));
+    }
+
+    @Test
+    public void connectThrows() {
+        ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
+        try {
+            co.connect(new Consumer<Disposable>() {
+                @Override
+                public void accept(Disposable s) throws Exception {
+                    throw new TestException();
+                }
+            });
+        } catch (TestException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void addRemoveRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
+
+            final TestSubscriber<Integer> to = co.test();
+
+            final TestSubscriber<Integer> to2 = new TestSubscriber<Integer>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    co.subscribe(to2);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void disposeOnArrival() {
+        ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
+
+        co.test(Long.MAX_VALUE, true).assertEmpty();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.never().publish());
+
+        TestHelper.checkDisposed(Flowable.never().publish(Functions.<Flowable<Object>>identity()));
+    }
+
+    @Test
+    public void empty() {
+        ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
+
+        co.connect();
+    }
+
+    @Test
+    public void take() {
+        ConnectableFlowable<Integer> co = Flowable.range(1, 2).publish();
+
+        TestSubscriber<Integer> to = co.take(1).test();
+
+        co.connect();
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void just() {
+        final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> co = ps.publish();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                ps.onComplete();
+            }
+        };
+
+        co.subscribe(to);
+        co.connect();
+
+        ps.onNext(1);
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void nextCancelRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+            final ConnectableFlowable<Integer> co = ps.publish();
+
+            final TestSubscriber<Integer> to = co.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onNext(1);
+                    observer.onComplete();
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .publish()
+            .autoConnect()
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void noErrorLoss() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            ConnectableFlowable<Object> co = Flowable.error(new TestException()).publish();
+
+            co.connect();
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void subscribeDisconnectRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+            final ConnectableFlowable<Integer> co = ps.publish();
+
+            final Disposable d = co.connect();
+            final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    d.dispose();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    co.subscribe(to);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void selectorDisconnectsIndependentSource() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                return Flowable.range(1, 2);
+            }
+        })
+        .test()
+        .assertResult(1, 2);
+
+        assertFalse(ps.hasSubscribers());
+    }
+
+    @Test(timeout = 5000)
+    public void selectorLatecommer() {
+        Flowable.range(1, 5)
+        .publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                return v.concatWith(v);
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void mainError() {
+        Flowable.error(new TestException())
+        .publish(Functions.<Flowable<Object>>identity())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void selectorInnerError() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                return Flowable.error(new TestException());
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+
+        assertFalse(ps.hasSubscribers());
+    }
+
+    @Test
+    public void preNextConnect() {
+        for (int i = 0; i < 500; i++) {
+
+            final ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
+
+            co.connect();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    co.test();
+                }
+            };
+
+            TestHelper.race(r1, r1);
+        }
+    }
+
+    @Test
+    public void connectRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    co.connect();
+                }
+            };
+
+            TestHelper.race(r1, r1);
+        }
+    }
+
+    @Test
+    public void selectorCrash() {
+        Flowable.just(1).publish(new Function<Flowable<Integer>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Integer> v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
     }
 }

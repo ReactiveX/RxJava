@@ -269,4 +269,48 @@ public class FlowableTakeLastTimedTest {
         .assertFailure(TestException.class, 1, 2);
     }
 
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(PublishProcessor.create().takeLast(1, TimeUnit.MINUTES));
+    }
+
+    @Test
+    public void observeOn() {
+        Observable.range(1, 1000)
+        .takeLast(1, TimeUnit.DAYS)
+        .take(500)
+        .observeOn(Schedulers.single(), true, 1)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertSubscribed()
+        .assertValueCount(500)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void cancelCompleteRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+            final TestSubscriber<Integer> to = ps.takeLast(1, TimeUnit.DAYS).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
 }

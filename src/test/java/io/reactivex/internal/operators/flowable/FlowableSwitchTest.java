@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -30,6 +31,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.*;
@@ -809,5 +811,270 @@ public class FlowableSwitchTest {
         ts.cancel();
 
         assertFalse(pp.hasSubscribers());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.switchOnNext(
+                Flowable.just(Flowable.just(1)).hide()));
+    }
+
+    @Test
+    public void nextSourceErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+
+                final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+                final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+
+                ps1.switchMap(new Function<Integer, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Integer v) throws Exception {
+                        if (v == 1) {
+                            return ps2;
+                        }
+                        return Flowable.never();
+                    }
+                })
+                .test();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onNext(2);
+                    }
+                };
+
+                final TestException ex = new TestException();
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                for (Throwable e : errors) {
+                    assertTrue(e.toString(), e instanceof TestException);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void outerInnerErrorRace() {
+        for (int i = 0; i < 500; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+
+                final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+                final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+
+                ps1.switchMap(new Function<Integer, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Integer v) throws Exception {
+                        if (v == 1) {
+                            return ps2;
+                        }
+                        return Flowable.never();
+                    }
+                })
+                .test();
+
+                final TestException ex1 = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps1.onError(ex1);
+                    }
+                };
+
+                final TestException ex2 = new TestException();
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps2.onError(ex2);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                for (Throwable e : errors) {
+                    assertTrue(e.toString(), e instanceof TestException);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void nextCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+
+            final TestSubscriber<Integer> to = ps1.switchMap(new Function<Integer, Flowable<Integer>>() {
+                @Override
+                public Flowable<Integer> apply(Integer v) throws Exception {
+                    return Flowable.never();
+                }
+            })
+            .test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps1.onNext(2);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void mapperThrows() {
+        Flowable.just(1).hide()
+        .switchMap(new Function<Integer, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void badMainSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onComplete();
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .switchMap(Functions.justFunction(Flowable.never()))
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void emptyInner() {
+        Flowable.range(1, 5)
+        .switchMap(Functions.justFunction(Flowable.empty()))
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void justInner() {
+        Flowable.range(1, 5)
+        .switchMap(Functions.justFunction(Flowable.just(1)))
+        .test()
+        .assertResult(1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void badInnerSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.just(1).hide()
+            .switchMap(Functions.justFunction(new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }))
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void innerCompletesReentrant() {
+        final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                ps.onComplete();
+            }
+        };
+
+        Flowable.just(1).hide()
+        .switchMap(Functions.justFunction(ps))
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void innerErrorsReentrant() {
+        final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                ps.onError(new TestException());
+            }
+        };
+
+        Flowable.just(1).hide()
+        .switchMap(Functions.justFunction(ps))
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to.assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void scalarMap() {
+        Flowable.switchOnNext(Flowable.just(Flowable.just(1)))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void scalarMapDelayError() {
+        Flowable.switchOnNextDelayError(Flowable.just(Flowable.just(1)))
+        .test()
+        .assertResult(1);
     }
 }

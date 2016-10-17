@@ -24,7 +24,9 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.operators.flowable.BlockingFlowableNext.NextSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
 
@@ -319,6 +321,63 @@ public class BlockingFlowableNextTest {
     @Test
     public void constructorshouldbeprivate() {
         TestHelper.checkUtilityClass(BlockingFlowableNext.class);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void remove() {
+        Flowable.never().blockingNext().iterator().remove();
+    }
+
+    @Test
+    public void interrupt() {
+        Iterator<Object> it = Flowable.never().blockingNext().iterator();
+
+        try {
+            Thread.currentThread().interrupt();
+            it.next();
+        } catch (RuntimeException ex) {
+            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+        }
+    }
+
+    @Test
+    public void nextObserverError() {
+        NextSubscriber<Integer> no = new NextSubscriber<Integer>();
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            no.onError(new TestException());
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void nextObserverOnNext() throws Exception {
+        NextSubscriber<Integer> no = new NextSubscriber<Integer>();
+
+        no.setWaiting();
+        no.onNext(Notification.createOnNext(1));
+
+        no.setWaiting();
+        no.onNext(Notification.createOnNext(1));
+
+        assertEquals(1, no.takeNext().getValue().intValue());
+    }
+
+    @Test
+    public void nextObserverOnCompleteOnNext() throws Exception {
+        NextSubscriber<Integer> no = new NextSubscriber<Integer>();
+
+        no.setWaiting();
+        no.onNext(Notification.<Integer>createOnComplete());
+
+        no.setWaiting();
+        no.onNext(Notification.createOnNext(1));
+
+        assertTrue(no.takeNext().isOnComplete());
     }
 
 }

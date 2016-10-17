@@ -558,7 +558,7 @@ public class FlowableRetryTest {
         assertEquals(1, subsCount.get());
     }
 
-    static final class SlowObservable implements Publisher<Long> {
+    static final class SlowFlowable implements Publisher<Long> {
 
         final AtomicInteger efforts = new AtomicInteger(0);
         final AtomicInteger active = new AtomicInteger(0);
@@ -567,7 +567,7 @@ public class FlowableRetryTest {
 
         private final int emitDelay;
 
-        SlowObservable(int emitDelay, int countNext) {
+        SlowFlowable(int emitDelay, int countNext) {
             this.emitDelay = emitDelay;
             this.nextBeforeFailure = new AtomicInteger(countNext);
         }
@@ -663,7 +663,7 @@ public class FlowableRetryTest {
         DefaultSubscriber<Long> observer = mock(DefaultSubscriber.class);
 
         // Flowable that always fails after 100ms
-        SlowObservable so = new SlowObservable(100, 0);
+        SlowFlowable so = new SlowFlowable(100, 0);
         Flowable<Long> o = Flowable.unsafeCreate(so).retry(5);
 
         AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
@@ -688,7 +688,7 @@ public class FlowableRetryTest {
         DefaultSubscriber<Long> observer = mock(DefaultSubscriber.class);
 
         // Flowable that sends every 100ms (timeout fails instead)
-        SlowObservable so = new SlowObservable(100, 10);
+        SlowFlowable so = new SlowFlowable(100, 10);
         Flowable<Long> o = Flowable.unsafeCreate(so).timeout(80, TimeUnit.MILLISECONDS).retry(5);
 
         AsyncObserver<Long> async = new AsyncObserver<Long>(observer);

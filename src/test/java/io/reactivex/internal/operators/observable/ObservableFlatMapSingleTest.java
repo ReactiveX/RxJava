@@ -227,6 +227,7 @@ public class ObservableFlatMapSingleTest {
         to
         .assertFailure(TestException.class, 1);
     }
+
     @Test
     public void disposed() {
         TestHelper.checkDisposed(PublishSubject.<Integer>create().flatMapSingle(new Function<Integer, SingleSource<Integer>>() {

@@ -23,6 +23,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -105,6 +106,20 @@ public class FlowableSkipLastTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void testSkipLastWithNegativeCount() {
         Flowable.just("one").skipLast(-1);
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).skipLast(1));
+    }
+
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+        .skipLast(1)
+        .test()
+        .assertFailure(TestException.class);
     }
 
 }

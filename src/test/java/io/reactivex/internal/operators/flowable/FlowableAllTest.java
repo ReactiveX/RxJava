@@ -14,8 +14,10 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
@@ -23,8 +25,11 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableAllTest {
@@ -370,5 +375,42 @@ public class FlowableAllTest {
         ts.assertError(ex);
         // FIXME need to decide about adding the value that probably caused the crash in some way
 //        assertTrue(ex.getCause().getMessage().contains("Boo!"));
+    }
+
+    @Test
+    @Ignore("RS Subscription can't be checked for isCancelled")
+    public void dispose() {
+        // TestHelper.checkDisposed(Flowable.just(1).all(Functions.alwaysTrue()).toFlowable());
+    }
+
+    @Test
+    public void predicateThrows() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .all(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .toFlowable()
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

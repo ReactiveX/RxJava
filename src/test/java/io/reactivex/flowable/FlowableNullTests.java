@@ -1168,7 +1168,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void distinctUntilChangedFunctionReturnsNull() {
-        just1.distinctUntilChanged(new Function<Integer, Object>() {
+        Flowable.range(1, 2).distinctUntilChanged(new Function<Integer, Object>() {
             @Override
             public Object apply(Integer v) {
                 return null;
@@ -2348,7 +2348,17 @@ public class FlowableNullTests {
             public Collection<Integer> call() {
                 return null;
             }
-        }).blockingSubscribe();
+        }).toFlowable().blockingSubscribe();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void toListSupplierReturnsNullSingle() {
+        just1.toList(new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() {
+                return null;
+            }
+        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)

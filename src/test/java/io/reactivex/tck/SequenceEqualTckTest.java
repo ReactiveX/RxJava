@@ -24,7 +24,10 @@ public class SequenceEqualTckTest extends BaseTck<Boolean> {
     @Override
     public Publisher<Boolean> createPublisher(final long elements) {
         return FlowableTck.wrap(
-                Flowable.sequenceEqual(Flowable.range(1, 1000), Flowable.range(1, 1001))
+                Flowable.sequenceEqual(
+                        Flowable.range(1, 1000),
+                        Flowable.range(1, 1001))
+                .toFlowable()
             );
     }
 

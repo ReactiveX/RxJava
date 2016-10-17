@@ -24,6 +24,7 @@ public interface MaybeOperator<Downstream, Upstream> {
      * Applies a function to the child MaybeObserver and returns a new parent MaybeObserver.
      * @param observer the child MaybeObserver instance
      * @return the parent MaybeObserver instance
+     * @throws Exception on failure
      */
     MaybeObserver<? super Upstream> apply(MaybeObserver<? super Downstream> observer) throws Exception;
 }

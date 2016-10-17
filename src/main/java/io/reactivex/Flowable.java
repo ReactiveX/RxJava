@@ -3500,7 +3500,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a Boolean value that indicates whether two Publisher sequences are the
+     * Returns a Single that emits a Boolean value that indicates whether two Publisher sequences are the
      * same by comparing the items emitted by each Publisher pairwise.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
@@ -3523,12 +3523,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2) {
+    public static <T> Single<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2) {
         return sequenceEqual(source1, source2, ObjectHelper.equalsPredicate(), bufferSize());
     }
 
     /**
-     * Returns a Flowable that emits a Boolean value that indicates whether two Publisher sequences are the
+     * Returns a Single that emits a Boolean value that indicates whether two Publisher sequences are the
      * same by comparing the items emitted by each Publisher pairwise based on the results of a specified
      * equality function.
      * <p>
@@ -3549,19 +3549,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a function used to compare items emitted by each Publisher
      * @param <T>
      *            the type of items emitted by each Publisher
-     * @return a Flowable that emits a Boolean value that indicates whether the two Publisher sequences
+     * @return a Single that emits a Boolean value that indicates whether the two Publisher sequences
      *         are the same according to the specified function
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2,
+    public static <T> Single<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2,
             BiPredicate<? super T, ? super T> isEqual) {
         return sequenceEqual(source1, source2, isEqual, bufferSize());
     }
 
     /**
-     * Returns a Flowable that emits a Boolean value that indicates whether two Publisher sequences are the
+     * Returns a Single that emits a Boolean value that indicates whether two Publisher sequences are the
      * same by comparing the items emitted by each Publisher pairwise based on the results of a specified
      * equality function.
      * <p>
@@ -3584,23 +3584,23 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of items to prefetch from the first and second source Publisher
      * @param <T>
      *            the type of items emitted by each Publisher
-     * @return a Flowable that emits a Boolean value that indicates whether the two Publisher sequences
+     * @return a Single that emits a Boolean value that indicates whether the two Publisher sequences
      *         are the same according to the specified function
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2,
+    public static <T> Single<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2,
             BiPredicate<? super T, ? super T> isEqual, int bufferSize) {
         ObjectHelper.requireNonNull(source1, "source1 is null");
         ObjectHelper.requireNonNull(source2, "source2 is null");
         ObjectHelper.requireNonNull(isEqual, "isEqual is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        return RxJavaPlugins.onAssembly(new FlowableSequenceEqual<T>(source1, source2, isEqual, bufferSize));
+        return RxJavaPlugins.onAssembly(new FlowableSequenceEqualSingle<T>(source1, source2, isEqual, bufferSize));
     }
 
     /**
-     * Returns a Flowable that emits a Boolean value that indicates whether two Publisher sequences are the
+     * Returns a Single that emits a Boolean value that indicates whether two Publisher sequences are the
      * same by comparing the items emitted by each Publisher pairwise.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sequenceEqual.png" alt="">
@@ -3620,12 +3620,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the number of items to prefetch from the first and second source Publisher
      * @param <T>
      *            the type of items emitted by each Publisher
-     * @return a Flowable that emits a Boolean value that indicates whether the two sequences are the same
+     * @return a Single that emits a Boolean value that indicates whether the two sequences are the same
      * @see <a href="http://reactivex.io/documentation/operators/sequenceequal.html">ReactiveX operators documentation: SequenceEqual</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2, int bufferSize) {
+    public static <T> Single<Boolean> sequenceEqual(Publisher<? extends T> source1, Publisher<? extends T> source2, int bufferSize) {
         return sequenceEqual(source1, source2, ObjectHelper.equalsPredicate(), bufferSize);
     }
 
@@ -5196,7 +5196,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingLatest() {
-        return BlockingFlowableLatest.latest(this);
+        return new BlockingFlowableLatest<T>(this);
     }
 
     /**
@@ -5222,7 +5222,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingMostRecent(T initialItem) {
-        return BlockingFlowableMostRecent.mostRecent(this, initialItem);
+        return new BlockingFlowableMostRecent<T>(this, initialItem);
     }
 
     /**
@@ -5245,7 +5245,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Iterable<T> blockingNext() {
-        return BlockingFlowableNext.next(this);
+        return new BlockingFlowableNext<T>(this);
     }
 
     /**
@@ -5267,7 +5267,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingSingle() {
-        return singleElement().blockingGet();
+        return singleOrError().blockingGet();
     }
 
     /**
@@ -7248,7 +7248,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             Callable<? extends Collection<? super K>> collectionSupplier) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
-        return FlowableDistinct.withCollection(this, keySelector, collectionSupplier);
+        return RxJavaPlugins.onAssembly(new FlowableDistinct<T, K>(this, keySelector, collectionSupplier));
     }
 
     /**
@@ -7271,7 +7271,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> distinctUntilChanged() {
-        return FlowableDistinct.<T>untilChanged(this);
+        return new FlowableDistinctUntilChanged<T>(this, Functions.equalsPredicate());
     }
 
     /**
@@ -7299,7 +7299,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<T> distinctUntilChanged(Function<? super T, K> keySelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
-        return FlowableDistinct.untilChanged(this, keySelector);
+        return new FlowableDistinctUntilChanged<T>(this, Functions.equalsPredicate(keySelector));
     }
 
     /**
@@ -13734,7 +13734,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a single item, a list composed of all the items emitted by the source
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
      * Publisher.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
@@ -13758,15 +13758,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <U> the subclass of a collection of Ts
      * @param collectionSupplier
      *               the Callable returning the collection (for each individual Subscriber) to be filled in
-     * @return a Flowable that emits a single item: a List containing all of the items emitted by the source
+     * @return a Single that emits a single item: a List containing all of the items emitted by the source
      *         Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <U extends Collection<? super T>> Flowable<U> toList(Callable<U> collectionSupplier) {
+    public final <U extends Collection<? super T>> Single<U> toList(Callable<U> collectionSupplier) {
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
-        return RxJavaPlugins.onAssembly(new FlowableToList<T, U>(this, collectionSupplier));
+        return RxJavaPlugins.onAssembly(new FlowableToListSingle<T, U>(this, collectionSupplier));
     }
 
     /**

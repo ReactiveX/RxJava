@@ -13,11 +13,12 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.*;
 
 import org.junit.*;
@@ -25,7 +26,9 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
@@ -227,7 +230,7 @@ public class FlowableTimeoutTests {
     }
 
     @Test
-    public void shouldTimeoutIfSynchronizedObservableEmitFirstOnNextNotWithinTimeout()
+    public void shouldTimeoutIfSynchronizedFlowableEmitFirstOnNextNotWithinTimeout()
             throws InterruptedException {
         final CountDownLatch exit = new CountDownLatch(1);
         final CountDownLatch timeoutSetuped = new CountDownLatch(1);
@@ -381,6 +384,104 @@ public class FlowableTimeoutTests {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void disposed() {
+        TestHelper.checkDisposed(PublishProcessor.create().timeout(1, TimeUnit.DAYS));
+
+        TestHelper.checkDisposed(PublishProcessor.create().timeout(1, TimeUnit.DAYS, Flowable.just(1)));
+    }
+
+    @Test
+    public void timedErrorOther() {
+        Flowable.error(new TestException())
+        .timeout(1, TimeUnit.DAYS, Flowable.just(1))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void timedError() {
+        Flowable.error(new TestException())
+        .timeout(1, TimeUnit.DAYS)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void timedEmptyOther() {
+        Flowable.empty()
+        .timeout(1, TimeUnit.DAYS, Flowable.just(1))
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void timedEmpty() {
+        Flowable.empty()
+        .timeout(1, TimeUnit.DAYS)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void newTimer() {
+        FlowableTimeoutTimed.NEW_TIMER.dispose();
+        assertTrue(FlowableTimeoutTimed.NEW_TIMER.isDisposed());
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+
+                    observer.onNext(1);
+                    observer.onComplete();
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .timeout(1, TimeUnit.DAYS)
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badSourceOther() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+
+                    observer.onNext(1);
+                    observer.onComplete();
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .timeout(1, TimeUnit.DAYS, Flowable.just(3))
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
 }

@@ -282,4 +282,10 @@ public class FlowableTimerTest {
         inOrder.verifyNoMoreInteractions();
         verify(observer, never()).onComplete();
     }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void disposed() {
+        TestHelper.checkDisposed(Flowable.timer(1, TimeUnit.DAYS));
+    }
 }

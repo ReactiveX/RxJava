@@ -23,10 +23,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -287,5 +288,92 @@ public class FlowableCacheTest {
         ts.assertNoValues();
         ts.assertNotComplete();
         ts.assertError(TestException.class);
+    }
+
+    @Test
+    public void take() {
+        Flowable<Integer> cache = Flowable.range(1, 5).cache();
+
+        cache.take(2).test().assertResult(1, 2);
+        cache.take(3).test().assertResult(1, 2, 3);
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.range(1, 5).cache());
+    }
+
+    @Test
+    public void disposeOnArrival2() {
+        Flowable<Integer> o = PublishProcessor.<Integer>create().cache();
+
+        o.test();
+
+        o.test(0L, true)
+        .assertEmpty();
+    }
+
+    @Test
+    public void subscribeEmitRace() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> ps = PublishProcessor.<Integer>create();
+
+            final Flowable<Integer> cache = ps.cache();
+
+            cache.test();
+
+            final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    cache.subscribe(to);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < 500; j++) {
+                        ps.onNext(j);
+                    }
+                    ps.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            to
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertSubscribed().assertValueCount(500).assertComplete().assertNoErrors();
+        }
+    }
+
+    @Test
+    public void observers() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+        FlowableCache<Integer> cache = (FlowableCache<Integer>)Flowable.range(1, 5).concatWith(ps).cache();
+
+        assertFalse(cache.hasSubscribers());
+
+        assertEquals(0, cache.cachedEventCount());
+
+        TestSubscriber<Integer> to = cache.test();
+
+        assertTrue(cache.hasSubscribers());
+
+        assertEquals(5, cache.cachedEventCount());
+
+        ps.onComplete();
+
+        to.assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void disposeOnArrival() {
+        Flowable.range(1, 5).cache()
+        .test(0L, true)
+        .assertEmpty();
     }
 }

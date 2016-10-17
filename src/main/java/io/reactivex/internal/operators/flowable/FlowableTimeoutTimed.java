@@ -33,6 +33,16 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
     final Scheduler scheduler;
     final Publisher<? extends T> other;
 
+    static final Disposable NEW_TIMER = new Disposable() {
+        @Override
+        public void dispose() { }
+
+        @Override
+        public boolean isDisposed() {
+            return true;
+        }
+    };
+
     public FlowableTimeoutTimed(Publisher<T> source,
             long timeout, TimeUnit unit, Scheduler scheduler, Publisher<? extends T> other) {
         super(source);
@@ -67,16 +77,6 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         final FullArbiter<T> arbiter;
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-
-        static final Disposable NEW_TIMER = new Disposable() {
-            @Override
-            public void dispose() { }
-
-            @Override
-            public boolean isDisposed() {
-                return true;
-            }
-        };
 
         volatile long index;
 
@@ -142,9 +142,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
                     }
                 }, timeout, unit);
 
-                if (!timer.compareAndSet(NEW_TIMER, d)) {
-                    d.dispose();
-                }
+                DisposableHelper.replace(timer, d);
             }
         }
 
@@ -196,16 +194,6 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         Subscription s;
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-
-        static final Disposable NEW_TIMER = new Disposable() {
-            @Override
-            public void dispose() { }
-
-            @Override
-            public boolean isDisposed() {
-                return true;
-            }
-        };
 
         volatile long index;
 
@@ -259,9 +247,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
                     }
                 }, timeout, unit);
 
-                if (!timer.compareAndSet(NEW_TIMER, d)) {
-                    d.dispose();
-                }
+                DisposableHelper.replace(timer, d);
             }
         }
 

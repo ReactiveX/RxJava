@@ -13,8 +13,10 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
@@ -24,6 +26,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 
@@ -157,6 +160,38 @@ public class FlowableThrottleFirstTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
+    }
+
+    @Test
+    @Ignore("RS Subscription no isCancelled")
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).throttleFirst(1, TimeUnit.DAYS));
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onComplete();
+                    observer.onNext(3);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .throttleFirst(1, TimeUnit.DAYS)
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
 }

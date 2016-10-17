@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.assertEquals;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -27,6 +28,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableBlockingTest {
 
@@ -262,5 +264,71 @@ public class FlowableBlockingTest {
         });
 
         source.blockingFirst();
+    }
+
+    @Test
+    public void interrupt() {
+        TestSubscriber<Object> to = new TestSubscriber<Object>();
+        Thread.currentThread().interrupt();
+        Flowable.never().blockingSubscribe(to);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void blockingSingleEmpty() {
+        Flowable.empty().blockingSingle();
+    }
+
+    @Test
+    public void onCompleteDelayed() {
+        TestSubscriber<Object> to = new TestSubscriber<Object>();
+
+        Flowable.empty().delay(100, TimeUnit.MILLISECONDS)
+        .blockingSubscribe(to);
+
+        to.assertResult();
+    }
+
+    @Test
+    public void utilityClass() {
+        TestHelper.checkUtilityClass(FlowableBlockingSubscribe.class);
+    }
+
+    @Test
+    public void disposeUpFront() {
+        TestSubscriber<Object> to = new TestSubscriber<Object>();
+        to.dispose();
+        Flowable.just(1).blockingSubscribe(to);
+
+        to.assertEmpty();
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void delayed() throws Exception {
+        final TestSubscriber<Object> to = new TestSubscriber<Object>();
+        final Subscriber[] s = { null };
+
+        Schedulers.single().scheduleDirect(new Runnable() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void run() {
+                to.dispose();
+                s[0].onNext(1);
+            }
+        }, 200, TimeUnit.MILLISECONDS);
+
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+                s[0] = observer;
+            }
+        }.blockingSubscribe(to);
+
+        while (!to.isDisposed()) {
+            Thread.sleep(100);
+        }
+
+        to.assertEmpty();
     }
 }

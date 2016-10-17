@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.Callable;
 
@@ -24,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableScalarXMapTest {
@@ -174,5 +175,63 @@ public class FlowableScalarXMapTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void scalarDisposableStateCheck() {
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+        ScalarSubscription<Integer> sd = new ScalarSubscription<Integer>(to, 1);
+        to.onSubscribe(sd);
+
+        assertFalse(sd.isCancelled());
+
+        assertTrue(sd.isEmpty());
+
+        sd.request(1);
+
+        assertFalse(sd.isCancelled());
+
+        assertTrue(sd.isEmpty());
+
+        to.assertResult(1);
+
+        try {
+            sd.offer(1);
+            fail("Should have thrown");
+        } catch (UnsupportedOperationException ex) {
+            // expected
+        }
+
+        try {
+            sd.offer(1, 2);
+            fail("Should have thrown");
+        } catch (UnsupportedOperationException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void scalarDisposableRunDisposeRace() {
+        for (int i = 0; i < 500; i++) {
+            TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+            final ScalarSubscription<Integer> sd = new ScalarSubscription<Integer>(to, 1);
+            to.onSubscribe(sd);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    sd.request(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    sd.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+        }
     }
 }

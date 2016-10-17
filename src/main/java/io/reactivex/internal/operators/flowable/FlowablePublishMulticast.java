@@ -148,7 +148,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         final AtomicReference<Subscription> s;
 
-        SimpleQueue<T> queue;
+        volatile SimpleQueue<T> queue;
 
         int sourceMode;
 
@@ -197,7 +197,10 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         public void dispose() {
             SubscriptionHelper.cancel(s);
             if (wip.getAndIncrement() == 0) {
-                queue.clear();
+                SimpleQueue<T> q = queue;
+                if (q != null) {
+                    q.clear();
+                }
             }
         }
 

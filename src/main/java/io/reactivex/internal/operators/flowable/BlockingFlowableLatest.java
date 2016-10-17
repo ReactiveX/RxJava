@@ -21,34 +21,27 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
 import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.DisposableSubscriber;
 
 /**
  * Wait for and iterate over the latest values of the source observable. If the source works faster than the
  * iterator, values may be skipped, but not the {@code onError} or {@code onComplete} events.
+ * @param <T> the value type emitted
  */
-public enum BlockingFlowableLatest {
-    ;
+public final class BlockingFlowableLatest<T> implements Iterable<T> {
 
-    /**
-     * Returns an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
-     * been returned by the {@code Iterable}, then returns that item.
-     *
-     * @param <T> the value type
-     * @param source
-     *            the source {@code Observable}
-     * @return an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
-     *         been returned by the {@code Iterable}, then returns that item
-     */
-    public static <T> Iterable<T> latest(final Publisher<? extends T> source) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                LatestSubscriberIterator<T> lio = new LatestSubscriberIterator<T>();
-                Flowable.<T>fromPublisher(source).materialize().subscribe(lio);
-                return lio;
-            }
-        };
+    final Publisher<? extends T> source;
+
+    public BlockingFlowableLatest(Publisher<? extends T> source) {
+        this.source = source;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        LatestSubscriberIterator<T> lio = new LatestSubscriberIterator<T>();
+        Flowable.<T>fromPublisher(source).materialize().subscribe(lio);
+        return lio;
     }
 
     /** Subscriber of source, iterator for output. */
@@ -70,7 +63,7 @@ public enum BlockingFlowableLatest {
 
         @Override
         public void onError(Throwable e) {
-            // not expected
+            RxJavaPlugins.onError(e);
         }
 
         @Override
@@ -89,7 +82,6 @@ public enum BlockingFlowableLatest {
                         notify.acquire();
                     } catch (InterruptedException ex) {
                         dispose();
-                        Thread.currentThread().interrupt();
                         iteratorNotification = Notification.createOnError(ex);
                         throw ExceptionHelper.wrapOrThrow(ex);
                     }

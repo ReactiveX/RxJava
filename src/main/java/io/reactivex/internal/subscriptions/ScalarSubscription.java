@@ -64,6 +64,14 @@ public final class ScalarSubscription<T> extends AtomicInteger implements QueueS
         lazySet(CANCELLED);
     }
 
+    /**
+     * Returns true if this Subscription was cancelled.
+     * @return true if this Subscription was cancelled
+     */
+    public boolean isCancelled() {
+        return get() == CANCELLED;
+    }
+
     @Override
     public boolean offer(T e) {
         throw new UnsupportedOperationException("Should not be called!");

@@ -25,36 +25,31 @@ import io.reactivex.subscribers.DefaultSubscriber;
  * seed value if no item has yet been emitted.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
+ *
+ * @param <T> the value type
  */
-public enum BlockingFlowableMostRecent {
-    ;
-    /**
-     * Returns an {@code Iterable} that always returns the item most recently emitted by the {@code Observable}.
-     *
-     * @param <T> the value type
-     * @param source
-     *            the source {@code Observable}
-     * @param initialValue
-     *            a default item to return from the {@code Iterable} if {@code source} has not yet emitted any
-     *            items
-     * @return an {@code Iterable} that always returns the item most recently emitted by {@code source}, or
-     *         {@code initialValue} if {@code source} has not yet emitted any items
-     */
-    public static <T> Iterable<T> mostRecent(final Publisher<? extends T> source, final T initialValue) {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                MostRecentSubscriber<T> mostRecentSubscriber = new MostRecentSubscriber<T>(initialValue);
+public final class BlockingFlowableMostRecent<T> implements Iterable<T> {
 
-                /**
-                 * Subscribe instead of unsafeSubscribe since this is the final subscribe in the chain
-                 * since it is for BlockingObservable.
-                 */
-                source.subscribe(mostRecentSubscriber);
+    final Publisher<? extends T> source;
 
-                return mostRecentSubscriber.getIterable();
-            }
-        };
+    final T initialValue;
+
+    public BlockingFlowableMostRecent(Publisher<? extends T> source, T initialValue) {
+        this.source = source;
+        this.initialValue = initialValue;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        MostRecentSubscriber<T> mostRecentSubscriber = new MostRecentSubscriber<T>(initialValue);
+
+        /**
+         * Subscribe instead of unsafeSubscribe since this is the final subscribe in the chain
+         * since it is for BlockingObservable.
+         */
+        source.subscribe(mostRecentSubscriber);
+
+        return mostRecentSubscriber.getIterable();
     }
 
     static final class MostRecentSubscriber<T> extends DefaultSubscriber<T> {
