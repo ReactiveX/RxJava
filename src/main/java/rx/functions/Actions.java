@@ -15,6 +15,8 @@
  */
 package rx.functions;
 
+import rx.exceptions.OnErrorNotImplementedException;
+
 /**
  * Utility class for the Action interfaces.
  */
@@ -565,5 +567,21 @@ public final class Actions {
         public void call(T t) {
             action.call();
         }
+    }
+
+    enum NotImplemented implements Action1<Throwable> {
+        INSTANCE;
+        @Override
+        public void call(Throwable t) {
+            throw new OnErrorNotImplementedException(t);
+        }
+    }
+
+    /**
+     * Returns an action which throws OnErrorNotImplementedException.
+     * @return the the shared action
+     */
+    public static Action1<Throwable> errorNotImplemented() {
+        return NotImplemented.INSTANCE;
     }
 }

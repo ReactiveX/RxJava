@@ -1535,19 +1535,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe() {
-        return subscribe(new SingleSubscriber<T>() {
-
-            @Override
-            public final void onError(Throwable e) {
-                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public final void onSuccess(T args) {
-                // do nothing
-            }
-
-        });
+        return subscribe(Actions.empty(), Actions.errorNotImplemented());
     }
 
     /**
@@ -1567,23 +1555,7 @@ public class Single<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe(final Action1<? super T> onSuccess) {
-        if (onSuccess == null) {
-            throw new IllegalArgumentException("onSuccess can not be null");
-        }
-
-        return subscribe(new SingleSubscriber<T>() {
-
-            @Override
-            public final void onError(Throwable e) {
-                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public final void onSuccess(T args) {
-                onSuccess.call(args);
-            }
-
-        });
+        return subscribe(onSuccess, Actions.errorNotImplemented());
     }
 
     /**
@@ -1617,12 +1589,20 @@ public class Single<T> {
 
             @Override
             public final void onError(Throwable e) {
-                onError.call(e);
+                try {
+                    onError.call(e);
+                } finally {
+                    unsubscribe();
+                }
             }
 
             @Override
             public final void onSuccess(T args) {
-                onSuccess.call(args);
+                try {
+                    onSuccess.call(args);
+                } finally {
+                    unsubscribe();
+                }
             }
 
         });
