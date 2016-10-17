@@ -204,7 +204,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         @Override
         public void dispose() {
             DisposableHelper.dispose(d);
-            for (Disposable s : observers) {
+            for (WithLatestInnerObserver s : observers) {
                 s.dispose();
             }
         }
@@ -240,7 +240,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
     static final class WithLatestInnerObserver
     extends AtomicReference<Disposable>
-    implements Observer<Object>, Disposable {
+    implements Observer<Object> {
 
         private static final long serialVersionUID = 3256684027868224024L;
 
@@ -278,12 +278,6 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
             parent.innerComplete(index, hasValue);
         }
 
-        @Override
-        public boolean isDisposed() {
-            return DisposableHelper.isDisposed(get());
-        }
-
-        @Override
         public void dispose() {
             DisposableHelper.dispose(this);
         }

@@ -68,7 +68,7 @@ public class ObservableUnsubscribeOnTest {
 
             System.out.println("unsubscribeThread: " + unsubscribeThread);
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
-            assertTrue(unsubscribeThread == UI_EVENT_LOOP.getThread());
+            assertTrue(unsubscribeThread.toString(), unsubscribeThread == UI_EVENT_LOOP.getThread());
 
             observer.assertValues(1, 2);
             observer.assertTerminated();

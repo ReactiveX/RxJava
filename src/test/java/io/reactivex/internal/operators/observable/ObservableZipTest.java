@@ -1331,4 +1331,31 @@ public class ObservableZipTest {
     public void zipArrayEmpty() {
         assertSame(Observable.empty(), Observable.zipArray(Functions.<Object[]>identity(), false, 16));
     }
+
+    @Test
+    public void zipArrayMany() {
+        @SuppressWarnings("unchecked")
+        Observable<Integer>[] arr = new Observable[10];
+
+        Arrays.fill(arr, Observable.just(1));
+
+        Observable.zip(Arrays.asList(arr), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertResult("[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]");
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.zip(Observable.just(1), Observable.just(1), new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }));
+    }
 }

@@ -301,6 +301,39 @@ public class ObservableAllTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.just(1).all(Functions.alwaysTrue()).toObservable());
+
+        TestHelper.checkDisposed(Observable.just(1).all(Functions.alwaysTrue()));
+    }
+
+    @Test
+    public void predicateThrowsObservable() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .all(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .toObservable()
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -324,7 +357,6 @@ public class ObservableAllTest {
                     throw new TestException();
                 }
             })
-            .toObservable()
             .test()
             .assertFailure(TestException.class);
 

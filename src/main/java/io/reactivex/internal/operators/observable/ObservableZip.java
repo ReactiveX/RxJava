@@ -240,7 +240,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
         }
     }
 
-    static final class ZipObserver<T, R> implements Observer<T>, Disposable {
+    static final class ZipObserver<T, R> implements Observer<T> {
 
         final ZipCoordinator<T, R> parent;
         final SpscLinkedArrayQueue<T> queue;
@@ -261,16 +261,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
         @Override
         public void onNext(T t) {
-            if (t == null) {
-                s.get().dispose();
-                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
-                return;
-            }
-            if (!queue.offer(t)) {
-                s.get().dispose();
-                onError(new IllegalStateException("Queue full?!"));
-                return;
-            }
+            queue.offer(t);
             parent.drain();
         }
 
@@ -287,14 +278,8 @@ public final class ObservableZip<T, R> extends Observable<R> {
             parent.drain();
         }
 
-        @Override
         public void dispose() {
             DisposableHelper.dispose(s);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return s.get() == DisposableHelper.DISPOSED;
         }
     }
 }

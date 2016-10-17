@@ -44,7 +44,7 @@ public class ObservableToFutureTest {
         verify(o, times(1)).onNext(value);
         verify(o, times(1)).onComplete();
         verify(o, never()).onError(any(Throwable.class));
-        verify(future, times(1)).cancel(true);
+        verify(future, never()).cancel(true);
     }
 
     @Test
@@ -86,7 +86,7 @@ public class ObservableToFutureTest {
         verify(o, never()).onNext(null);
         verify(o, never()).onComplete();
         verify(o, times(1)).onError(e);
-        verify(future, times(1)).cancel(true);
+        verify(future, never()).cancel(true);
     }
 
     @Test
