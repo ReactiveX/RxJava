@@ -21,13 +21,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservableWindowWithSizeTest {
 
@@ -132,7 +134,7 @@ public class ObservableWindowWithSizeTest {
                         if (count.incrementAndGet() == 500000) {
                             // give it a small break halfway through
                             try {
-                                Thread.sleep(10);
+                                Thread.sleep(50);
                             } catch (InterruptedException ex) {
                                 // ignored
                             }
@@ -246,5 +248,122 @@ public class ObservableWindowWithSizeTest {
         ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
         ts.assertComplete();
         ts.assertValueCount(22);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().window(1));
+
+        TestHelper.checkDisposed(PublishSubject.create().window(2, 1));
+
+        TestHelper.checkDisposed(PublishSubject.create().window(1, 2));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Observable<Object>>>() {
+            @Override
+            public ObservableSource<Observable<Object>> apply(Observable<Object> o) throws Exception {
+                return o.window(1);
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Observable<Object>>>() {
+            @Override
+            public ObservableSource<Observable<Object>> apply(Observable<Object> o) throws Exception {
+                return o.window(2, 1);
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Observable<Object>>>() {
+            @Override
+            public ObservableSource<Observable<Object>> apply(Observable<Object> o) throws Exception {
+                return o.window(1, 2);
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorExact() {
+        Observable.error(new TestException())
+        .window(1)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorSkip() {
+        Observable.error(new TestException())
+        .window(1, 2)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorOverlap() {
+        Observable.error(new TestException())
+        .window(2, 1)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorExactInner() {
+        @SuppressWarnings("rawtypes")
+        final TestObserver[] to = { null };
+        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        .window(2)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> w) throws Exception {
+                to[0] = w.test();
+            }
+        })
+        .test()
+        .assertError(TestException.class);
+
+        to[0].assertFailure(TestException.class, 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorSkipInner() {
+        @SuppressWarnings("rawtypes")
+        final TestObserver[] to = { null };
+        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        .window(2, 3)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> w) throws Exception {
+                to[0] = w.test();
+            }
+        })
+        .test()
+        .assertError(TestException.class);
+
+        to[0].assertFailure(TestException.class, 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorOverlapInner() {
+        @SuppressWarnings("rawtypes")
+        final TestObserver[] to = { null };
+        Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
+        .window(3, 2)
+        .doOnNext(new Consumer<Observable<Integer>>() {
+            @Override
+            public void accept(Observable<Integer> w) throws Exception {
+                to[0] = w.test();
+            }
+        })
+        .test()
+        .assertError(TestException.class);
+
+        to[0].assertFailure(TestException.class, 1);
     }
 }

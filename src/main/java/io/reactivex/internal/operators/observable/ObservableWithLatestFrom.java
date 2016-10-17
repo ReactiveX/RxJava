@@ -19,9 +19,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
-import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableWithUpstream<T, R> {
     final BiFunction<? super T, ? super U, ? extends R> combiner;
@@ -37,6 +36,8 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
     public void subscribeActual(Observer<? super R> t) {
         final SerializedObserver<R> serial = new SerializedObserver<R>(t);
         final WithLatestFromObserver<T, U, R> wlf = new WithLatestFromObserver<T, U, R>(serial, combiner);
+
+        t.onSubscribe(wlf);
 
         other.subscribe(new Observer<U>() {
             @Override
@@ -68,6 +69,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         private static final long serialVersionUID = -312246233408980075L;
 
         final Observer<? super R> actual;
+
         final BiFunction<? super T, ? super U, ? extends R> combiner;
 
         final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
@@ -80,9 +82,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         }
         @Override
         public void onSubscribe(Disposable s) {
-            if (DisposableHelper.setOnce(this.s, s)) {
-                actual.onSubscribe(this);
-            }
+            DisposableHelper.setOnce(this.s, s);
         }
 
         @Override
@@ -116,43 +116,22 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
 
         @Override
         public void dispose() {
-            s.get().dispose();
+            DisposableHelper.dispose(s);
             DisposableHelper.dispose(other);
         }
 
-        @Override public boolean isDisposed() {
-            return s.get().isDisposed();
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(s.get());
         }
 
         public boolean setOther(Disposable o) {
-            for (;;) {
-                Disposable current = other.get();
-                if (current == DisposableHelper.DISPOSED) {
-                    o.dispose();
-                    return false;
-                }
-                if (current != null) {
-                    RxJavaPlugins.onError(new IllegalStateException("Other subscription already set!"));
-                    o.dispose();
-                    return false;
-                }
-                if (other.compareAndSet(null, o)) {
-                    return true;
-                }
-            }
+            return DisposableHelper.setOnce(other, o);
         }
 
         public void otherError(Throwable e) {
-            if (this.s.compareAndSet(null, DisposableHelper.DISPOSED)) {
-                EmptyDisposable.error(e, actual);
-            } else {
-                if (this.s.get() != DisposableHelper.DISPOSED) {
-                    dispose();
-                    actual.onError(e);
-                } else {
-                    RxJavaPlugins.onError(e);
-                }
-            }
+            DisposableHelper.dispose(s);
+            actual.onError(e);
         }
     }
 }

@@ -24,9 +24,12 @@ import org.mockito.InOrder;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.TestHelper;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableWithLatestFromTest {
@@ -542,4 +545,78 @@ public class ObservableWithLatestFromTest {
         ts.assertComplete();
     }
 
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).withLatestFrom(Observable.just(2), new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return a;
+            }
+        }));
+
+        TestHelper.checkDisposed(Observable.just(1).withLatestFrom(Observable.just(2), Observable.just(3), new Function3<Integer, Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b, Integer c) throws Exception {
+                return a;
+            }
+        }));
+    }
+
+    @Test
+    public void manyIteratorThrows() {
+        Observable.just(1)
+        .withLatestFrom(new CrashingMappedIterable<Observable<Integer>>(1, 100, 100, new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer v) throws Exception {
+                return Observable.just(2);
+            }
+        }), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return a;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(TestException.class, "iterator()");
+    }
+
+    @Test
+    public void manyCombinerThrows() {
+        Observable.just(1).withLatestFrom(Observable.just(2), Observable.just(3), new Function3<Integer, Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b, Integer c) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void manyErrors() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException("First"));
+                    observer.onNext(1);
+                    observer.onError(new TestException("Second"));
+                    observer.onComplete();
+                }
+            }.withLatestFrom(Observable.just(2), Observable.just(3), new Function3<Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b, Integer c) throws Exception {
+                    return a;
+                }
+            })
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

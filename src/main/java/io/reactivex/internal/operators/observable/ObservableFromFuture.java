@@ -13,12 +13,12 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.observers.DeferredScalarDisposable;
 
 public final class ObservableFromFuture<T> extends Observable<T> {
     final Future<? extends T> future;
@@ -33,7 +33,7 @@ public final class ObservableFromFuture<T> extends Observable<T> {
 
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        Disposable d = Disposables.empty();
+        DeferredScalarDisposable<T> d = new DeferredScalarDisposable<T>(s);
         s.onSubscribe(d);
         if (!d.isDisposed()) {
             T v;
@@ -45,13 +45,8 @@ public final class ObservableFromFuture<T> extends Observable<T> {
                     s.onError(ex);
                 }
                 return;
-            } finally {
-                future.cancel(true); // TODO ?? not sure about this
             }
-            if (!d.isDisposed()) {
-                s.onNext(v);
-                s.onComplete();
-            }
+            d.complete(v);
         }
     }
 }
