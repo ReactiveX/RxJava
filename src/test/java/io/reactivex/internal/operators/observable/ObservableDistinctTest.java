@@ -214,6 +214,20 @@ public class ObservableDistinctTest {
     }
 
     @Test
+    public void collectionSupplierIsNull() {
+        Observable.just(1)
+        .distinct(Functions.identity(), new Callable<Collection<Object>>() {
+            @Override
+            public Collection<Object> call() throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class)
+        .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {

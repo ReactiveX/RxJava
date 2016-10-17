@@ -43,7 +43,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
         Collection<? super K> collection;
 
         try {
-            collection = collectionSupplier.call();
+            collection = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);
