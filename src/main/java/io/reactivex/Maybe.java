@@ -3390,7 +3390,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> retryWhen(
-            final Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler) {
+            final Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler) {
         return toFlowable().retryWhen(handler).singleElement();
     }
 

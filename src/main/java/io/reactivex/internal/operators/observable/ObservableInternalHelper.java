@@ -277,10 +277,10 @@ public final class ObservableInternalHelper {
 
     static final class RetryWhenInner
     implements Function<Observable<Notification<Object>>, ObservableSource<?>> {
-        private final Function<? super Observable<? extends Throwable>, ? extends ObservableSource<?>> handler;
+        private final Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler;
 
         RetryWhenInner(
-                Function<? super Observable<? extends Throwable>, ? extends ObservableSource<?>> handler) {
+                Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
             this.handler = handler;
         }
 
@@ -293,7 +293,7 @@ public final class ObservableInternalHelper {
         }
     }
 
-    public static <T> Function<Observable<Notification<Object>>, ObservableSource<?>> retryWhenHandler(final Function<? super Observable<? extends Throwable>, ? extends ObservableSource<?>> handler) {
+    public static <T> Function<Observable<Notification<Object>>, ObservableSource<?>> retryWhenHandler(final Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
         return new RetryWhenInner(handler);
     }
 
