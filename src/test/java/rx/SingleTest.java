@@ -2136,4 +2136,51 @@ public class SingleTest {
 
         assertEquals(1, atomicInteger.get());
     }
+
+    @Test
+    public void isUnsubscribedAfterSuccess() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final int[] calls = { 0 };
+
+        Subscription s = ps.toSingle().subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                calls[0]++;
+            }
+        });
+
+        assertFalse(s.isUnsubscribed());
+
+        ps.onNext(1);
+        ps.onCompleted();
+
+        assertTrue(s.isUnsubscribed());
+
+        assertEquals(1, calls[0]);
+    }
+
+    @Test
+    public void isUnsubscribedAfterError() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final int[] calls = { 0 };
+
+        Action1<Integer> a = Actions.empty();
+
+        Subscription s = ps.toSingle().subscribe(a, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                calls[0]++;
+            }
+        });
+
+        assertFalse(s.isUnsubscribed());
+
+        ps.onError(new TestException());
+
+        assertTrue(s.isUnsubscribed());
+
+        assertEquals(1, calls[0]);
+    }
 }
