@@ -133,4 +133,18 @@ public class LinkedArrayList {
     public String toString() {
         return toList().toString();
     }
+
+    @Override
+    protected void finalize() throws Throwable
+    {
+        Object[] myArray = head;
+        while(myArray != null)
+        {
+            int lastIndex = myArray.length - 1;
+            Object[] lastRef = (Object[])myArray[lastIndex];
+            myArray[lastIndex] = null;
+            myArray = lastRef;
+        }
+        super.finalize();
+    }
 }

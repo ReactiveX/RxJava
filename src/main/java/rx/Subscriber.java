@@ -96,6 +96,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     @Override
     public final void unsubscribe() {
         subscriptions.unsubscribe();
+        producer = null;
     }
 
     /**

@@ -36,7 +36,7 @@ public class OnSubscribeFlattenIterableTest {
         }
     };
 
-    /*@Test
+    @Test
     public void normal() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
@@ -88,13 +88,13 @@ public class OnSubscribeFlattenIterableTest {
         ts.assertValues(1, 2, 2, 3, 3, 4, 4, 5, 5, 6);
         ts.assertNoErrors();
         ts.assertCompleted();
-    }*/
+    }
 
     @Test
     public void longRunning() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        int n = 1000 * 100;
+        int n = 1000 * 1000;
 
         Observable.range(1, n).concatMapIterable(mapper)
         .subscribe(ts);
@@ -104,7 +104,7 @@ public class OnSubscribeFlattenIterableTest {
         ts.assertCompleted();
     }
 
-   /* @Test
+    @Test
     public void asIntermediate() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
@@ -520,5 +520,5 @@ public class OnSubscribeFlattenIterableTest {
         ts.assertValues(11, 21, 31, 41, 51);
         ts.assertNoErrors();
         ts.assertCompleted();
-    }*/
+    }
 }

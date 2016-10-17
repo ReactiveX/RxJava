@@ -16,28 +16,39 @@
 package rx.internal.operators;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.util.collections.ArrayUtils;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.doppl.mock.MObserver;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 
 public class OnSubscribeGroupJoinTest {
-    @Mock
+
     Observer<Object> observer;
+
+    @Before
+    public void setup()
+    {
+        observer = mock(Observer.class);
+    }
 
     Func2<Integer, Integer, Integer> add = new Func2<Integer, Integer, Integer>() {
         @Override
@@ -149,66 +160,100 @@ public class OnSubscribeGroupJoinTest {
     }
 
     @Test
-    public void normal1() {
-        Observable<Person> source1 = Observable.from(Arrays.asList(
-                new Person(1, "Joe"),
+    public void normal1()
+    {
+        final Observer<List<String>> ugnMockito = new Observer<List<String>>()
+        {
+            int count = 0;
+
+            @Override
+            public void onCompleted()
+            {
+                Assert.assertEquals("Too many calls to something", count, 3);
+            }
+
+            @Override
+            public void onError(Throwable e)
+            {
+                e.printStackTrace();
+                //                Assert.fail("Should be no error");
+            }
+
+            @Override
+            public void onNext(List<String> strings)
+            {
+                System.out.println("Got here!!!!!");
+                switch(count)
+                {
+                    case 0:
+                        Assert.assertEquals(strings, Arrays.asList("Joe", "Strawberry"));
+                        break;
+                    case 1:
+                        Assert.assertEquals(strings, Arrays.asList("Joe", "Apple"));
+                        break;
+                    case 2:
+                        Assert.assertEquals(strings, Arrays.asList("Charlie", "Peach"));
+                        break;
+                }
+                count++;
+            }
+        };
+
+        Observable<Person> source1 = Observable.from(Arrays.asList(new Person(1, "Joe"),
                 new Person(2, "Mike"),
-                new Person(3, "Charlie")
-                ));
+                new Person(3, "Charlie")));
 
-        Observable<PersonFruit> source2 = Observable.from(Arrays.asList(
-                new PersonFruit(1, "Strawberry"),
-                new PersonFruit(1, "Apple"),
-                new PersonFruit(3, "Peach")
-                ));
+        Observable<PersonFruit> source2 = Observable.from(Arrays.asList(new PersonFruit(1,
+                "Strawberry"), new PersonFruit(1, "Apple"), new PersonFruit(3, "Peach")));
 
-        Observable<PPF> q = source1.groupJoin(
-                source2,
+        Observable<PPF> q = source1.groupJoin(source2,
                 just2(Observable.<Object> never()),
                 just2(Observable.<Object> never()),
-                new Func2<Person, Observable<PersonFruit>, PPF>() {
+                new Func2<Person, Observable<PersonFruit>, PPF>()
+                {
                     @Override
-                    public PPF call(Person t1, Observable<PersonFruit> t2) {
+                    public PPF call(Person t1, Observable<PersonFruit> t2)
+                    {
                         return new PPF(t1, t2);
                     }
                 });
 
-        q.subscribe(
-                new Subscriber<PPF>() {
+        q.subscribe(new Subscriber<PPF>()
+        {
+            @Override
+            public void onNext(final PPF ppf)
+            {
+                ppf.fruits.filter(new Func1<PersonFruit, Boolean>()
+                {
                     @Override
-                    public void onNext(final PPF ppf) {
-                        ppf.fruits.filter(new Func1<PersonFruit, Boolean>() {
-                            @Override
-                            public Boolean call(PersonFruit t1) {
-                                return ppf.person.id == t1.personId;
-                            }
-                        }).subscribe(new Action1<PersonFruit>() {
-                            @Override
-                            public void call(PersonFruit t1) {
-                                observer.onNext(Arrays.asList(ppf.person.name, t1.fruit));
-                            }
-                        });
+                    public Boolean call(PersonFruit t1)
+                    {
+                        return ppf.person.id == t1.personId;
                     }
-
+                }).subscribe(new Action1<PersonFruit>()
+                {
                     @Override
-                    public void onError(Throwable e) {
-                        observer.onError(e);
+                    public void call(PersonFruit t1)
+                    {
+                        ugnMockito.onNext(Arrays.asList(ppf.person.name, t1.fruit));
                     }
+                });
+            }
 
-                    @Override
-                    public void onCompleted() {
-                        observer.onCompleted();
-                    }
+            @Override
+            public void onError(Throwable e)
+            {
+                ugnMockito.onError(e);
+            }
 
-                }
-                );
+            @Override
+            public void onCompleted()
+            {
+                ugnMockito.onCompleted();
+            }
 
-        verify(observer, times(1)).onNext(Arrays.asList("Joe", "Strawberry"));
-        verify(observer, times(1)).onNext(Arrays.asList("Joe", "Apple"));
-        verify(observer, times(1)).onNext(Arrays.asList("Charlie", "Peach"));
+        });
 
-        verify(observer, times(1)).onCompleted();
-        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test

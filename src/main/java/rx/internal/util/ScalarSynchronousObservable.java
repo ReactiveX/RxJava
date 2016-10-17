@@ -169,6 +169,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
     static final class ScalarAsyncProducer<T> extends AtomicBoolean implements Producer, Action0 {
         /** */
         private static final long serialVersionUID = -2466317989629281651L;
+
         final Subscriber<? super T> actual;
         final T value;
         final Func1<Action0, Subscription> onSchedule;

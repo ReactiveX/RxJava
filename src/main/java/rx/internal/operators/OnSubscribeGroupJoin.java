@@ -61,7 +61,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
     public void call(Subscriber<? super R> child) {
         ResultManager ro = new ResultManager(new SerializedSubscriber<R>(child));
         child.add(ro);
-        ro.init();
+        ro.onit();
     }
 
     /** Manages sub-observers and subscriptions. */
@@ -91,7 +91,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
             this.cancel = new RefCountSubscription(group);
         }
 
-        public void init() {
+        public void onit() {
 
             Subscriber<T1> s1 = new LeftObserver();
             Subscriber<T2> s2 = new RightObserver();

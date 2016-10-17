@@ -755,6 +755,20 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             return a;
         }
+
+        @Override
+        protected void finalize() throws Throwable
+        {
+            Object[] myArray = head;
+            while(myArray != null)
+            {
+                int lastIndex = myArray.length - 1;
+                Object[] lastRef = (Object[])myArray[lastIndex];
+                myArray[lastIndex] = null;
+                myArray = lastRef;
+            }
+            super.finalize();
+        }
     }
 
     static final class ReplaySizeBoundBuffer<T> implements ReplayBuffer<T> {

@@ -198,6 +198,7 @@
 				TargetAttributes = {
 					631DDEA81D0CB97400F7DDF3 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = 2UER9BPG44;
 					};
 					631DDEC11D0CB97400F7DDF3 = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -474,6 +475,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				DEVELOPMENT_TEAM = 2UER9BPG44;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -508,6 +510,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				DEVELOPMENT_TEAM = 2UER9BPG44;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",

@@ -19,6 +19,8 @@ import static org.mockito.Mockito.*;
 
 import org.junit.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
+import co.touchlab.doppel.testing.PlatformUtils;
 import rx.*;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
@@ -41,7 +43,12 @@ public class OperatorCastTest {
     }
 
     @Test
+    @DoppelHacks //Cast doesn't do anything in j2objc
     public void testCastWithWrongType() {
+
+        if(PlatformUtils.isJ2objc())
+            return;
+
         Observable<?> source = Observable.just(1, 2);
         Observable<Boolean> observable = source.cast(Boolean.class);
 
@@ -53,7 +60,11 @@ public class OperatorCastTest {
     }
 
     @Test
+    @DoppelHacks //Cast doesn't do anything in j2objc
     public void castCrashUnsubscribes() {
+
+        if(PlatformUtils.isJ2objc())
+            return;
 
         PublishSubject<Integer> ps = PublishSubject.create();
 
