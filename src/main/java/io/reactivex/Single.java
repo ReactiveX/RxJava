@@ -2396,7 +2396,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Single<T> retryWhen(Function<? super Flowable<? extends Throwable>, ? extends Publisher<Object>> handler) {
+    public final Single<T> retryWhen(Function<? super Flowable<Throwable>, ? extends Publisher<Object>> handler) {
         return toSingle(toFlowable().retryWhen(handler));
     }
 

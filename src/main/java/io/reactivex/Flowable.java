@@ -11105,7 +11105,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> retryWhen(
-            final Function<? super Flowable<? extends Throwable>, ? extends Publisher<?>> handler) {
+            final Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler) {
         ObjectHelper.requireNonNull(handler, "handler is null");
 
         return RxJavaPlugins.onAssembly(new FlowableRetryWhen<T>(this, handler));

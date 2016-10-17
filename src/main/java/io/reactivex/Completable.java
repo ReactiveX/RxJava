@@ -1415,7 +1415,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if handler is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable retryWhen(Function<? super Flowable<? extends Throwable>, ? extends Publisher<Object>> handler) {
+    public final Completable retryWhen(Function<? super Flowable<Throwable>, ? extends Publisher<Object>> handler) {
         return fromPublisher(toFlowable().retryWhen(handler));
     }
 
