@@ -18,17 +18,16 @@ package rx.internal.operators;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.*;
-import rx.AsyncEmitter.Cancellable;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
-import rx.internal.operators.OnSubscribeFromAsyncEmitter.CancellableSubscription;
+import rx.functions.Cancellable;
+import rx.internal.operators.OnSubscribeFromEmitter.CancellableSubscription;
 import rx.internal.subscriptions.SequentialSubscription;
 import rx.plugins.RxJavaHooks;
 
 /**
  * Allows push-based emission of terminal events to a CompletableSubscriber.
  */
-@SuppressWarnings("deprecation")
 public final class CompletableFromEmitter implements Completable.OnSubscribe {
 
     final Action1<CompletableEmitter> producer;

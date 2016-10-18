@@ -15,8 +15,8 @@
  */
 package rx;
 
-import rx.AsyncEmitter.Cancellable;
 import rx.annotations.Experimental;
+import rx.functions.Cancellable;
 
 /**
  * Abstraction over a {@link CompletableSubscriber} that gets either an onCompleted or onError
@@ -25,10 +25,8 @@ import rx.annotations.Experimental;
  * All methods are thread-safe; calling onCompleted or onError twice or one after the other has
  * no effect.
  * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
- * @deprecated as of 1.2.1 because `setCancellation` method will change signature (not name) for 1.2.2.
  */
 @Experimental
-@Deprecated
 public interface CompletableEmitter {
 
     /**

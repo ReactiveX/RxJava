@@ -150,7 +150,7 @@ public class CompletableFromEmitterTest {
     public void resourceCleanupCancellable() throws Exception {
         TestSubscriber<Void> ts = TestSubscriber.create();
 
-        final AsyncEmitter.Cancellable c = Mockito.mock(AsyncEmitter.Cancellable.class);
+        final Cancellable c = Mockito.mock(Cancellable.class);
 
         Completable.fromEmitter(new Action1<CompletableEmitter>() {
             @Override
@@ -172,7 +172,7 @@ public class CompletableFromEmitterTest {
         TestSubscriber<Void> ts = TestSubscriber.create();
         ts.unsubscribe();
 
-        final AsyncEmitter.Cancellable c = Mockito.mock(AsyncEmitter.Cancellable.class);
+        final Cancellable c = Mockito.mock(Cancellable.class);
 
         Completable.fromEmitter(new Action1<CompletableEmitter>() {
             @Override
@@ -191,7 +191,7 @@ public class CompletableFromEmitterTest {
 
     @Test
     public void resourceCleanupOnCompleteCrashes() throws Exception {
-        final AsyncEmitter.Cancellable c = Mockito.mock(AsyncEmitter.Cancellable.class);
+        final Cancellable c = Mockito.mock(Cancellable.class);
 
         Completable.fromEmitter(new Action1<CompletableEmitter>() {
             @Override
@@ -224,7 +224,7 @@ public class CompletableFromEmitterTest {
 
     @Test
     public void resourceCleanupOnErrorCrashes() throws Exception {
-        final AsyncEmitter.Cancellable c = Mockito.mock(AsyncEmitter.Cancellable.class);
+        final Cancellable c = Mockito.mock(Cancellable.class);
 
         Completable.fromEmitter(new Action1<CompletableEmitter>() {
             @Override
