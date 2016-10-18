@@ -86,13 +86,12 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             }
 
             DebounceEmitter<T> de = new DebounceEmitter<T>(t, idx, this);
-            if (!timer.compareAndSet(d, de)) {
-                return;
+            if (timer.compareAndSet(d, de)) {
+                d = worker.schedule(de, timeout, unit);
+
+                de.setResource(d);
             }
 
-            d = worker.schedule(de, timeout, unit);
-
-            de.setResource(d);
         }
 
         @Override
@@ -117,7 +116,9 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             if (d != DisposableHelper.DISPOSED) {
                 @SuppressWarnings("unchecked")
                 DebounceEmitter<T> de = (DebounceEmitter<T>)d;
-                de.emit();
+                if (de != null) {
+                    de.run();
+                }
                 DisposableHelper.dispose(timer);
                 worker.dispose();
                 actual.onComplete();
@@ -162,10 +163,6 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
 
         @Override
         public void run() {
-            emit();
-        }
-
-        void emit() {
             if (once.compareAndSet(false, true)) {
                 parent.emit(idx, value, this);
             }

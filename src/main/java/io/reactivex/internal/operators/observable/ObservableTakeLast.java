@@ -70,9 +70,6 @@ public final class ObservableTakeLast<T> extends AbstractObservableWithUpstream<
 
         @Override
         public void onComplete() {
-            if (cancelled) {
-                return;
-            }
             Observer<? super T> a = actual;
             for (;;) {
                 if (cancelled) {

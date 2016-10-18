@@ -11,26 +11,19 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.observable;
+package io.reactivex.internal.util;
 
-import java.util.Arrays;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
-import org.junit.Test;
+/**
+ * Store the Disposable received from the connection.
+ */
+public final class ConnectConsumer implements Consumer<Disposable> {
+    public Disposable disposable;
 
-import io.reactivex.TestHelper;
-import io.reactivex.functions.Function;
-import io.reactivex.subjects.PublishSubject;
-
-public class ObservableFlattenIterableTest {
-
-    @Test
-    public void dispose() {
-        TestHelper.checkDisposed(PublishSubject.create().flatMapIterable(new Function<Object, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Object v) throws Exception {
-                return Arrays.asList(10, 20);
-            }
-        }));
+    @Override
+    public void accept(Disposable t) throws Exception {
+        this.disposable = t;
     }
-
 }

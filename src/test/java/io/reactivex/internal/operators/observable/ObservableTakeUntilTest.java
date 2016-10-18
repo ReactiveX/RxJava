@@ -252,4 +252,9 @@ public class ObservableTakeUntilTest {
         assertFalse("Until still has observers", until.hasObservers());
         assertTrue("Not cancelled!", ts.isCancelled());
     }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().takeUntil(Observable.never()));
+    }
 }

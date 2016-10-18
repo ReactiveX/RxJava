@@ -34,6 +34,8 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
 
         final TakeUntilObserver<T> tus = new TakeUntilObserver<T>(serial, frc);
 
+        child.onSubscribe(frc);
+
         other.subscribe(new Observer<U>() {
             @Override
             public void onSubscribe(Disposable s) {
@@ -42,36 +44,24 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
             @Override
             public void onNext(U t) {
                 frc.dispose();
-                if (tus.compareAndSet(false, true)) {
-                    EmptyDisposable.complete(serial);
-                } else {
-                    serial.onComplete();
-                }
+                serial.onComplete();
             }
             @Override
             public void onError(Throwable t) {
                 frc.dispose();
-                if (tus.compareAndSet(false, true)) {
-                    EmptyDisposable.error(t, serial);
-                } else {
-                    serial.onError(t);
-                }
+                serial.onError(t);
             }
             @Override
             public void onComplete() {
                 frc.dispose();
-                if (tus.compareAndSet(false, true)) {
-                    EmptyDisposable.complete(serial);
-                } else {
-                    serial.onComplete();
-                }
+                serial.onComplete();
             }
         });
 
         source.subscribe(tus);
     }
 
-    static final class TakeUntilObserver<T> extends AtomicBoolean implements Observer<T>, Disposable {
+    static final class TakeUntilObserver<T> extends AtomicBoolean implements Observer<T> {
 
         private static final long serialVersionUID = 3451719290311127173L;
         final Observer<? super T> actual;
@@ -88,11 +78,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                if (frc.setResource(0, s)) {
-                    if (compareAndSet(false, true)) {
-                        actual.onSubscribe(this);
-                    }
-                }
+                frc.setResource(0, s);
             }
         }
 
@@ -111,16 +97,6 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
         public void onComplete() {
             frc.dispose();
             actual.onComplete();
-        }
-
-        @Override
-        public void dispose() {
-            frc.dispose();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return frc.isDisposed();
         }
     }
 }

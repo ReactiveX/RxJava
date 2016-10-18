@@ -40,7 +40,7 @@ public class ObservableRefCountTest {
     public void testRefCountAsync() {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
-        Observable<Long> r = Observable.interval(0, 5, TimeUnit.MILLISECONDS)
+        Observable<Long> r = Observable.interval(0, 25, TimeUnit.MILLISECONDS)
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(Disposable s) {
@@ -67,7 +67,7 @@ public class ObservableRefCountTest {
 
         // give time to emit
         try {
-            Thread.sleep(52);
+            Thread.sleep(260);
         } catch (InterruptedException e) {
         }
 

@@ -13,12 +13,12 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.schedulers.TrampolineScheduler;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -45,24 +45,16 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
         }
     }
 
-    /**
-     * Pads the base atomic integer used for wip counting.
-     */
-    static class Padding0 extends AtomicInteger {
-
-        private static final long serialVersionUID = 3172843496016154809L;
-
-        volatile long p01, p02, p03, p04, p05, p06, p07;
-        volatile long p08, p09, p0A, p0B, p0C, p0D, p0E, p0F;
-    }
-
-    static final class ObserveOnObserver<T> extends Padding0 implements Observer<T>, Disposable, Runnable {
+    static final class ObserveOnObserver<T> extends BasicIntQueueDisposable<T>
+    implements Observer<T>, Runnable {
 
         private static final long serialVersionUID = 6576896619930983584L;
         final Observer<? super T> actual;
         final Scheduler.Worker worker;
         final boolean delayError;
-        final SpscLinkedArrayQueue<T> queue;
+        final int bufferSize;
+
+        SimpleQueue<T> queue;
 
         Disposable s;
 
@@ -71,17 +63,45 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
 
         volatile boolean cancelled;
 
+        int sourceMode;
+
+        boolean outputFused;
+
         ObserveOnObserver(Observer<? super T> actual, Scheduler.Worker worker, boolean delayError, int bufferSize) {
             this.actual = actual;
             this.worker = worker;
             this.delayError = delayError;
-            this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
+            this.bufferSize = bufferSize;
         }
 
         @Override
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
+                if (s instanceof QueueDisposable) {
+                    @SuppressWarnings("unchecked")
+                    QueueDisposable<T> qd = (QueueDisposable<T>) s;
+
+                    int m = qd.requestFusion(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
+
+                    if (m == QueueDisposable.SYNC) {
+                        sourceMode = m;
+                        queue = qd;
+                        done = true;
+                        actual.onSubscribe(this);
+                        schedule();
+                        return;
+                    }
+                    if (m == QueueDisposable.ASYNC) {
+                        sourceMode = m;
+                        queue = qd;
+                        actual.onSubscribe(this);
+                        return;
+                    }
+                }
+
+                queue = new SpscLinkedArrayQueue<T>(bufferSize);
+
                 actual.onSubscribe(this);
             }
         }
@@ -92,10 +112,8 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                 return;
             }
 
-            if (!queue.offer(t)) {
-                s.dispose();
-                onError(new MissingBackpressureException("Queue full?!"));
-                return;
+            if (sourceMode != QueueDisposable.ASYNC) {
+                queue.offer(t);
             }
             schedule();
         }
@@ -126,6 +144,9 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                 cancelled = true;
                 s.dispose();
                 worker.dispose();
+                if (getAndIncrement() == 0) {
+                    queue.clear();
+                }
             }
         }
 
@@ -140,11 +161,10 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             }
         }
 
-        @Override
-        public void run() {
+        void drainNormal() {
             int missed = 1;
 
-            final SpscLinkedArrayQueue<T> q = queue;
+            final SimpleQueue<T> q = queue;
             final Observer<? super T> a = actual;
 
             for (;;) {
@@ -154,7 +174,17 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
 
                 for (;;) {
                     boolean d = done;
-                    T v = q.poll();
+                    T v;
+
+                    try {
+                        v = q.poll();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        s.dispose();
+                        q.clear();
+                        a.onError(ex);
+                        return;
+                    }
                     boolean empty = v == null;
 
                     if (checkTerminated(d, empty, a)) {
@@ -175,10 +205,55 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             }
         }
 
+        void drainFused() {
+            int missed = 1;
+
+            for (;;) {
+                if (cancelled) {
+                    return;
+                }
+
+                boolean d = done;
+                Throwable ex = error;
+
+                if (!delayError && d && ex != null) {
+                    actual.onError(error);
+                    worker.dispose();
+                    return;
+                }
+
+                actual.onNext(null);
+
+                if (d) {
+                    ex = error;
+                    if (ex != null) {
+                        actual.onError(ex);
+                    } else {
+                        actual.onComplete();
+                    }
+                    worker.dispose();
+                    return;
+                }
+
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            if (outputFused) {
+                drainFused();
+            } else {
+                drainNormal();
+            }
+        }
+
         boolean checkTerminated(boolean d, boolean empty, Observer<? super T> a) {
             if (cancelled) {
-                s.dispose();
-                worker.dispose();
+                queue.clear();
                 return true;
             }
             if (d) {
@@ -195,6 +270,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                     }
                 } else {
                     if (e != null) {
+                        queue.clear();
                         a.onError(e);
                         worker.dispose();
                         return true;
@@ -207,6 +283,30 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                 }
             }
             return false;
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            if ((mode & ASYNC) != 0) {
+                outputFused = true;
+                return ASYNC;
+            }
+            return NONE;
+        }
+
+        @Override
+        public T poll() throws Exception {
+            return queue.poll();
+        }
+
+        @Override
+        public void clear() {
+            queue.clear();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return queue.isEmpty();
         }
     }
 }

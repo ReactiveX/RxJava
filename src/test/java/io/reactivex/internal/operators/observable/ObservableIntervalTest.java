@@ -13,24 +13,17 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
-import io.reactivex.functions.Function;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.*;
+import io.reactivex.schedulers.TestScheduler;
 
-public class ObservableFlattenIterableTest {
+public class ObservableIntervalTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishSubject.create().flatMapIterable(new Function<Object, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Object v) throws Exception {
-                return Arrays.asList(10, 20);
-            }
-        }));
+        TestHelper.checkDisposed(Observable.interval(1, TimeUnit.MILLISECONDS, new TestScheduler()));
     }
-
 }

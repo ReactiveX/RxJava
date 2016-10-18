@@ -1221,6 +1221,12 @@ public class ObservableBufferTest {
         TestHelper.checkDisposed(Observable.range(1, 5).buffer(2, 1));
 
         TestHelper.checkDisposed(Observable.range(1, 5).buffer(1, 2));
+
+        TestHelper.checkDisposed(PublishSubject.create().buffer(Observable.never()));
+
+        TestHelper.checkDisposed(PublishSubject.create().buffer(Functions.justCallable(Observable.never())));
+
+        TestHelper.checkDisposed(PublishSubject.create().buffer(Observable.never(), Functions.justFunction(Observable.never())));
     }
 
     @SuppressWarnings("unchecked")

@@ -14,9 +14,10 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,10 +27,14 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
@@ -365,5 +370,144 @@ public class ObservableTimeoutWithSelectorTest {
         inOrder.verify(o, never()).onNext(3);
         inOrder.verify(o).onComplete();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().timeout(Functions.justFunction(Observable.never())));
+
+        TestHelper.checkDisposed(PublishSubject.create().timeout(Functions.justFunction(Observable.never()), Observable.never()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.timeout(Functions.justFunction(Observable.never()));
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.timeout(Functions.justFunction(Observable.never()), Observable.never());
+            }
+        });
+    }
+
+    @Test
+    public void empty() {
+        Observable.empty()
+        .timeout(Functions.justFunction(Observable.never()))
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void error() {
+        Observable.error(new TestException())
+        .timeout(Functions.justFunction(Observable.never()))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void emptyInner() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps
+        .timeout(Functions.justFunction(Observable.empty()))
+        .test();
+
+        ps.onNext(1);
+
+        to.assertFailure(TimeoutException.class, 1);
+    }
+
+    @Test
+    public void badInnerSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            PublishSubject<Integer> ps = PublishSubject.create();
+
+            TestObserver<Integer> to = ps
+            .timeout(Functions.justFunction(new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException("First"));
+                    observer.onNext(2);
+                    observer.onError(new TestException("Second"));
+                    observer.onComplete();
+                }
+            }))
+            .test();
+
+            ps.onNext(1);
+
+            to.assertFailureAndMessage(TestException.class, "First", 1);
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badInnerSourceOther() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            PublishSubject<Integer> ps = PublishSubject.create();
+
+            TestObserver<Integer> to = ps
+            .timeout(Functions.justFunction(new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException("First"));
+                    observer.onNext(2);
+                    observer.onError(new TestException("Second"));
+                    observer.onComplete();
+                }
+            }), Observable.just(2))
+            .test();
+
+            ps.onNext(1);
+
+            to.assertFailureAndMessage(TestException.class, "First", 1);
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void withOtherMainError() {
+        Observable.error(new TestException())
+        .timeout(Functions.justFunction(Observable.never()), Observable.never())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void badSourceTimeout() {
+        new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onNext(1);
+                observer.onNext(2);
+                observer.onError(new TestException("First"));
+                observer.onNext(3);
+                observer.onComplete();
+                observer.onError(new TestException("Second"));
+            }
+        }
+        .timeout(Functions.justFunction(Observable.never()), Observable.<Integer>never())
+        .take(1)
+        .test()
+        .assertResult(1);
     }
 }

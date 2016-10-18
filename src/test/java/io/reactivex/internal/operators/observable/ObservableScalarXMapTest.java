@@ -187,7 +187,7 @@ public class ObservableScalarXMapTest {
 
         assertFalse(sd.isDisposed());
 
-        assertFalse(sd.isEmpty());
+        assertTrue(sd.isEmpty());
 
         sd.run();
 

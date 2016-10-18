@@ -15,13 +15,21 @@
  */
 package io.reactivex.internal.operators.observable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+import java.util.List;
 
 import org.junit.*;
 import org.mockito.MockitoAnnotations;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableJoinTest {
@@ -297,5 +305,144 @@ public class ObservableJoinTest {
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onComplete();
         verify(observer, never()).onNext(any());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().join(Observable.just(1),
+                Functions.justFunction(Observable.never()),
+                Functions.justFunction(Observable.never()), new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        return a + b;
+                    }
+                }));
+    }
+
+    @Test
+    public void take() {
+        Observable.just(1).join(
+                Observable.just(2),
+                Functions.justFunction(Observable.never()),
+                Functions.justFunction(Observable.never()),
+                new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        return a + b;
+                    }
+                })
+        .take(1)
+        .test()
+        .assertResult(3);
+    }
+
+    @Test
+    public void rightClose() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.join(Observable.just(2),
+                Functions.justFunction(Observable.never()),
+                Functions.justFunction(Observable.empty()),
+                new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        return a + b;
+                    }
+            })
+        .test()
+        .assertEmpty();
+
+        ps.onNext(1);
+
+        to.assertEmpty();
+    }
+
+    @Test
+    public void resultSelectorThrows2() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.join(
+                Observable.just(2),
+                Functions.justFunction(Observable.never()),
+                Functions.justFunction(Observable.never()),
+                new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        throw new TestException();
+                    }
+                })
+        .test();
+
+        ps.onNext(1);
+        ps.onComplete();
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void badOuterSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException("First"));
+                    observer.onError(new TestException("Second"));
+                }
+            }
+            .join(Observable.just(2),
+                    Functions.justFunction(Observable.never()),
+                    Functions.justFunction(Observable.never()),
+                    new BiFunction<Integer, Integer, Integer>() {
+                        @Override
+                        public Integer apply(Integer a, Integer b) throws Exception {
+                            return a + b;
+                        }
+                })
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badEndSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            @SuppressWarnings("rawtypes")
+            final Observer[] o = { null };
+
+            TestObserver<Integer> to = Observable.just(1)
+            .join(Observable.just(2),
+                    Functions.justFunction(Observable.never()),
+                    Functions.justFunction(new Observable<Integer>() {
+                        @Override
+                        protected void subscribeActual(Observer<? super Integer> observer) {
+                            o[0] = observer;
+                            observer.onSubscribe(Disposables.empty());
+                            observer.onError(new TestException("First"));
+                        }
+                    }),
+                    new BiFunction<Integer, Integer, Integer>() {
+                        @Override
+                        public Integer apply(Integer a, Integer b) throws Exception {
+                            return a + b;
+                        }
+                })
+            .test();
+
+            o[0].onError(new TestException("Second"));
+
+            to
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

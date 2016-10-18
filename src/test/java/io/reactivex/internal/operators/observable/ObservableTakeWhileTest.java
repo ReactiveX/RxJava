@@ -21,7 +21,8 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Predicate;
+import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.*;
 
@@ -247,4 +248,33 @@ public class ObservableTakeWhileTest {
 //        assertTrue(ts.getOnErrorEvents().get(0).getCause().getMessage().contains("abc"));
     }
 
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().takeWhile(Functions.alwaysTrue()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.takeWhile(Functions.alwaysTrue());
+            }
+        });
+    }
+
+    @Test
+    public void badSource() {
+        new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onComplete();
+                observer.onComplete();
+            }
+        }
+        .takeWhile(Functions.alwaysTrue())
+        .test()
+        .assertResult();
+    }
 }

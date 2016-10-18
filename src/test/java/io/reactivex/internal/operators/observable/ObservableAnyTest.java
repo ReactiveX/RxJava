@@ -488,6 +488,8 @@ public class ObservableAnyTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.just(1).any(Functions.alwaysTrue()).toObservable());
+
+        TestHelper.checkDisposed(Observable.just(1).any(Functions.alwaysTrue()));
     }
 
     @Test
@@ -496,6 +498,12 @@ public class ObservableAnyTest {
             @Override
             public ObservableSource<Boolean> apply(Observable<Object> o) throws Exception {
                 return o.any(Functions.alwaysTrue()).toObservable();
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Boolean>>() {
+            @Override
+            public SingleSource<Boolean> apply(Observable<Object> o) throws Exception {
+                return o.any(Functions.alwaysTrue());
             }
         });
     }
@@ -526,6 +534,31 @@ public class ObservableAnyTest {
             .assertFailure(TestException.class);
 
             TestHelper.assertError(errors, 0, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badSourceSingle() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException("First"));
+
+                    observer.onNext(1);
+                    observer.onError(new TestException("Second"));
+                    observer.onComplete();
+                }
+            }
+            .any(Functions.alwaysTrue())
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
         }

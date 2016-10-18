@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -22,9 +23,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.subjects.PublishSubject;
@@ -225,5 +227,43 @@ public class ObservableScanTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
         ts.assertValue(0);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().scan(new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        }));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.scan(new BiFunction<Object, Object, Object>() {
+                    @Override
+                    public Object apply(Object a, Object b) throws Exception {
+                        return a;
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void error() {
+        Observable.error(new TestException())
+        .scan(new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
     }
 }

@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.*;
 
@@ -29,7 +29,8 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 
@@ -883,4 +884,85 @@ public class ObservableDelayTest {
         assertNotEquals(Thread.currentThread(), thread.get());
     }
 
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().delay(1, TimeUnit.SECONDS));
+
+        TestHelper.checkDisposed(PublishSubject.create().delay(Functions.justFunction(Observable.never())));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.delay(1, TimeUnit.SECONDS);
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.delay(Functions.justFunction(Observable.never()));
+            }
+        });
+    }
+
+    @Test
+    public void onCompleteFinal() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Observable.empty()
+        .delay(1, TimeUnit.MILLISECONDS, scheduler)
+        .subscribe(new DisposableObserver<Object>() {
+            @Override
+            public void onNext(Object value) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
+                throw new TestException();
+            }
+        });
+
+        try {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            fail("Should have thrown");
+        } catch (TestException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void onErrorFinal() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Observable.error(new TestException())
+        .delay(1, TimeUnit.MILLISECONDS, scheduler)
+        .subscribe(new DisposableObserver<Object>() {
+            @Override
+            public void onNext(Object value) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException();
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+
+        try {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            fail("Should have thrown");
+        } catch (TestException ex) {
+            // expected
+        }
+    }
 }
