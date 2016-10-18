@@ -183,8 +183,9 @@ public final class ObservableScalarXMap {
         final T value;
 
         static final int START = 0;
-        static final int ON_NEXT = 1;
-        static final int ON_COMPLETE = 2;
+        static final int FUSED = 1;
+        static final int ON_NEXT = 2;
+        static final int ON_COMPLETE = 3;
 
         public ScalarDisposable(Observer<? super T> observer, T value) {
             this.observer = observer;
@@ -203,7 +204,7 @@ public final class ObservableScalarXMap {
 
         @Override
         public T poll() throws Exception {
-            if (get() == START) {
+            if (get() == FUSED) {
                 lazySet(ON_COMPLETE);
                 return value;
             }
@@ -212,7 +213,7 @@ public final class ObservableScalarXMap {
 
         @Override
         public boolean isEmpty() {
-            return get() != START;
+            return get() != FUSED;
         }
 
         @Override
@@ -232,7 +233,11 @@ public final class ObservableScalarXMap {
 
         @Override
         public int requestFusion(int mode) {
-            return mode & SYNC;
+            if ((mode & SYNC) != 0) {
+                lazySet(FUSED);
+                return SYNC;
+            }
+            return NONE;
         }
 
         @Override

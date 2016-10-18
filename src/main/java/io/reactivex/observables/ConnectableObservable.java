@@ -20,6 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.observable.*;
+import io.reactivex.internal.util.ConnectConsumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -58,14 +59,9 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
     public final Disposable connect() {
-        final Disposable[] connection = new Disposable[1];
-        connect(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable d) {
-                connection[0] = d;
-            }
-        });
-        return connection[0];
+        ConnectConsumer cc = new ConnectConsumer();
+        connect(cc);
+        return cc.disposable;
     }
 
     /**

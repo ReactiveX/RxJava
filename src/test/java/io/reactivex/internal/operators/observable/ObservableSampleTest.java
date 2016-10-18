@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,7 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
@@ -273,5 +275,20 @@ public class ObservableSampleTest {
         );
         o.throttleLast(1, TimeUnit.MILLISECONDS).subscribe().dispose();
         verify(s).dispose();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().sample(1, TimeUnit.SECONDS, new TestScheduler()));
+
+        TestHelper.checkDisposed(PublishSubject.create().sample(Observable.never()));
+    }
+
+    @Test
+    public void error() {
+        Observable.error(new TestException())
+        .sample(1, TimeUnit.SECONDS)
+        .test()
+        .assertFailure(TestException.class);
     }
 }

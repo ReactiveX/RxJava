@@ -13,18 +13,24 @@
 
 package io.reactivex.internal.operators.observable;
 
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
@@ -297,5 +303,43 @@ public class ObservableDebounceTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().debounce(1, TimeUnit.SECONDS, new TestScheduler()));
+
+        TestHelper.checkDisposed(PublishSubject.create().debounce(Functions.justFunction(Observable.never())));
+
+        Disposable d = new ObservableDebounceTimed.DebounceEmitter<Integer>(1, 1, null);
+        assertFalse(d.isDisposed());
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onComplete();
+                    observer.onNext(1);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .debounce(1, TimeUnit.SECONDS, new TestScheduler())
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

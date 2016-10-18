@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.nio.channels.CancelledKeyException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -86,8 +85,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         Disposable s;
 
-        boolean selfCancel;
-
         UnicastSubject<T> window;
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
@@ -119,10 +116,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                 if (!cancelled) {
                     Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
-                    if (!timer.compareAndSet(null, d)) {
-                        d.dispose();
-                    }
-
+                    DisposableHelper.replace(timer, d);
                 }
             }
         }
@@ -180,17 +174,11 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         }
 
         void disposeTimer() {
-            selfCancel = true;
             DisposableHelper.dispose(timer);
         }
 
         @Override
         public void run() {
-
-            if (selfCancel) {
-                throw new CancelledKeyException();
-            }
-
             if (cancelled) {
                 terminated = true;
                 disposeTimer();
@@ -199,7 +187,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             if (enter()) {
                 drainLoop();
             }
-
         }
 
         void drainLoop() {
@@ -282,8 +269,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         final int bufferSize;
         final boolean restartTimerOnMaxSize;
         final long maxSize;
-
-        boolean selfCancel;
 
         long count;
 
@@ -427,7 +412,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         }
 
         void disposeTimer() {
-            selfCancel = true;
             DisposableHelper.dispose(timer);
         }
 
@@ -543,9 +527,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             @Override
             public void run() {
                 WindowExactBoundedObserver<?> p = parent;
-                if (p.selfCancel) {
-                    throw new CancelledKeyException();
-                }
 
                 if (!p.cancelled) {
                     p.queue.offer(this);

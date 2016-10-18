@@ -442,4 +442,12 @@ public class ObservableWindowWithObservableTest {
 
         TestHelper.assertError(errors, 0, TestException.class);
     }
+
+    @Test
+    public void mainError() {
+        Observable.error(new TestException())
+        .window(Functions.justCallable(Observable.never()))
+        .test()
+        .assertError(TestException.class);
+    }
 }

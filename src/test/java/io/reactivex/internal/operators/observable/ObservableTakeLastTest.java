@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,6 +23,7 @@ import org.junit.*;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
@@ -178,5 +180,37 @@ public class ObservableTakeLastTest {
             }
         });
         assertEquals(1,count.get());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.range(1, 10).takeLast(5));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.takeLast(5);
+            }
+        });
+    }
+
+    @Test
+    public void error() {
+        Observable.error(new TestException())
+        .takeLast(5)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void takeLastTake() {
+        Observable.range(1, 10)
+        .takeLast(5)
+        .take(2)
+        .test()
+        .assertResult(6, 7);
     }
 }

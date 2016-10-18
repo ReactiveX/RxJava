@@ -129,13 +129,12 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
 
         @Override
         public void dispose() {
-            if (cancelled) {
-                return;
-            }
-            cancelled = true;
-            cancelAll();
-            if (getAndIncrement() == 0) {
-                queue.clear();
+            if (!cancelled) {
+                cancelled = true;
+                cancelAll();
+                if (getAndIncrement() == 0) {
+                    queue.clear();
+                }
             }
         }
 
@@ -303,8 +302,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
 
                         lefts.remove(end.index);
                         disposables.remove(end);
-                    }
-                    else if (mode == RIGHT_CLOSE) {
+                    } else {
                         LeftRightEndObserver end = (LeftRightEndObserver)val;
 
                         rights.remove(end.index);

@@ -366,4 +366,27 @@ public class ObservableTakeTest {
             assertEquals("count >= 0 required but it was -99", ex.getMessage());
         }
     }
+
+    @Test
+    public void takeZero() {
+        Observable.just(1)
+        .take(0)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().take(2));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.take(2);
+            }
+        });
+    }
 }

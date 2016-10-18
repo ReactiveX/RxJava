@@ -13,14 +13,21 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+import java.util.List;
 
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Predicate;
+import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.PublishSubject;
 ;
 
 public class ObservableTakeUntilPredicateTest {
@@ -144,5 +151,44 @@ public class ObservableTakeUntilPredicateTest {
         ts.assertError(TestException.class);
         // FIXME last cause value is not saved
 //        assertTrue(ts.errors().get(0).getCause().getMessage().contains("abc"));
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().takeUntil(Functions.alwaysFalse()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.takeUntil(Functions.alwaysFalse());
+            }
+        });
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onComplete();
+                    observer.onNext(1);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .takeUntil(Functions.alwaysFalse())
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

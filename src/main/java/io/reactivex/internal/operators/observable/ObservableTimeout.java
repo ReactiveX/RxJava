@@ -129,13 +129,13 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
 
         @Override
         public void onError(Throwable t) {
-            dispose();
+            DisposableHelper.dispose(this);
             actual.onError(t);
         }
 
         @Override
         public void onComplete() {
-            dispose();
+            DisposableHelper.dispose(this);
             actual.onComplete();
         }
 
@@ -158,12 +158,18 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 actual.onError(new TimeoutException());
             }
         }
+
+        @Override
+        public void innerError(Throwable e) {
+            s.dispose();
+            actual.onError(e);
+        }
     }
 
     interface OnTimeout {
         void timeout(long index);
 
-        void onError(Throwable e);
+        void innerError(Throwable e);
     }
 
     static final class TimeoutInnerObserver<T, U, V> extends DisposableObserver<Object> {
@@ -189,7 +195,12 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
 
         @Override
         public void onError(Throwable t) {
-            parent.onError(t);
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
+            parent.innerError(t);
         }
 
         @Override
@@ -234,9 +245,8 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
 
-                if (!arbiter.setDisposable(s)) {
-                    return;
-                }
+                arbiter.setDisposable(s);
+
                 Observer<? super T> a = actual;
 
                 ObservableSource<U> p = firstTimeoutIndicator;
@@ -327,6 +337,12 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 dispose();
                 other.subscribe(new FullArbiterObserver<T>(arbiter));
             }
+        }
+
+        @Override
+        public void innerError(Throwable e) {
+            s.dispose();
+            actual.onError(e);
         }
     }
 }

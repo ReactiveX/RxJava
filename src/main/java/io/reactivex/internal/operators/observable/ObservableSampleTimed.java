@@ -65,12 +65,9 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
                 actual.onSubscribe(this);
-                if (timer.get() == null) {
-                    Disposable d = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
-                    if (!timer.compareAndSet(null, d)) {
-                        d.dispose();
-                    }
-                }
+
+                Disposable d = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
+                DisposableHelper.replace(timer, d);
             }
         }
 

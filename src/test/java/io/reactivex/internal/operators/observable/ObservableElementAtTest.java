@@ -177,7 +177,10 @@ public class ObservableElementAtTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(PublishSubject.create().elementAt(0).toObservable());
+        TestHelper.checkDisposed(PublishSubject.create().elementAt(0));
+
         TestHelper.checkDisposed(PublishSubject.create().elementAt(0, 1).toObservable());
+        TestHelper.checkDisposed(PublishSubject.create().elementAt(0, 1));
     }
 
     @Test
@@ -186,6 +189,20 @@ public class ObservableElementAtTest {
             @Override
             public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
                 return o.elementAt(0).toObservable();
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.elementAt(0);
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.elementAt(0, 1);
             }
         });
     }
@@ -209,7 +226,7 @@ public class ObservableElementAtTest {
     }
 
     @Test
-    public void badSource() {
+    public void badSourceObservable() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new Observable<Integer>() {
@@ -225,6 +242,56 @@ public class ObservableElementAtTest {
             }
             .elementAt(0)
             .toObservable()
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .elementAt(0)
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badSource2() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .elementAt(0, 1)
             .test()
             .assertResult(1);
 
