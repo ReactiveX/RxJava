@@ -38,6 +38,7 @@ public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUp
 
     static final class BackpressureErrorSubscriber<T>
             extends AtomicLong implements Subscriber<T>, Subscription {
+        private static final long serialVersionUID = -3176480756392482682L;
 
         final Subscriber<? super T> actual;
         Subscription s;
