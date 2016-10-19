@@ -9735,12 +9735,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureLatest<T>(this));
     }
 
-    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    /*package*/ Flowable<T>  onBackpressureError() {
-        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<T>(this));
-    }
-
     /**
      * Instructs a Publisher to pass control to another Publisher rather than invoking
      * {@link Subscriber#onError onError} if it encounters an error.

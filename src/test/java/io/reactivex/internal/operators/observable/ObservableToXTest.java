@@ -55,7 +55,7 @@ public class ObservableToXTest {
         TestSubscriber<Integer> ts = Observable.range(1, 5)
         .toFlowable(BackpressureStrategy.ERROR)
         .test(1)
-        .assertError(MissingBackpressureException.class);
+        .assertFailure(MissingBackpressureException.class, 1);
     }
 
     @Test

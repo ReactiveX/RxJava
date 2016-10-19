@@ -61,12 +61,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
             emitter = new LatestAsyncEmitter<T>(t);
             break;
         }
-        case BUFFER: {
+        default: {
             emitter = new BufferAsyncEmitter<T>(t, bufferSize());
             break;
-        }
-        default: {
-            throw new UnsupportedOperationException();
         }
         }
 

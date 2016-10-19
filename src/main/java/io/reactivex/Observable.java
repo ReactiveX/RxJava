@@ -16,6 +16,7 @@ package io.reactivex;
 import java.util.*;
 import java.util.concurrent.*;
 
+import io.reactivex.internal.operators.flowable.FlowableOnBackpressureError;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.annotations.*;
@@ -11714,11 +11715,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
             case NONE:
                 return o;
             case ERROR:
-                return o.onBackpressureError();
-            case BUFFER:
-                return o.onBackpressureBuffer();
+                return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<T>(o));
             default:
-                throw new UnsupportedOperationException();
+                return o.onBackpressureBuffer();
         }
     }
 
