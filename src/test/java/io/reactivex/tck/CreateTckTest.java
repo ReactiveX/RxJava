@@ -17,7 +17,6 @@ import org.reactivestreams.Publisher;
 import org.testng.annotations.Test;
 
 import io.reactivex.*;
-import io.reactivex.FlowableEmitter.BackpressureMode;
 
 @Test
 public class CreateTckTest extends BaseTck<Long> {
@@ -33,7 +32,7 @@ public class CreateTckTest extends BaseTck<Long> {
                     }
                     e.onComplete();
                 }
-            }, BackpressureMode.BUFFER)
+            }, BackpressureStrategy.BUFFER)
         );
     }
 }

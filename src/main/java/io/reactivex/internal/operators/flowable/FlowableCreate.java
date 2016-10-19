@@ -33,9 +33,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     final FlowableOnSubscribe<T> source;
 
-    final FlowableEmitter.BackpressureMode backpressure;
+    final BackpressureStrategy backpressure;
 
-    public FlowableCreate(FlowableOnSubscribe<T> source, FlowableEmitter.BackpressureMode backpressure) {
+    public FlowableCreate(FlowableOnSubscribe<T> source, BackpressureStrategy backpressure) {
         this.source = source;
         this.backpressure = backpressure;
     }

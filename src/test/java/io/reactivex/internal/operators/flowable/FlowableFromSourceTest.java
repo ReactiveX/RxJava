@@ -39,16 +39,10 @@ public class FlowableFromSourceTest {
         ts = new TestSubscriber<Integer>(0L);
     }
 
-    @Test
-    public void backpressureModeEnum() {
-        assertEquals(5, FlowableEmitter.BackpressureMode.values().length);
-
-        assertNotNull(FlowableEmitter.BackpressureMode.valueOf("BUFFER"));
-    }
 
     @Test
     public void normalBuffered() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.BUFFER).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -69,7 +63,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void normalDrop() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.DROP).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.DROP).subscribe(ts);
 
         source.onNext(1);
 
@@ -87,7 +81,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void normalLatest() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.LATEST).subscribe(ts);
 
         source.onNext(1);
 
@@ -105,7 +99,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void normalNone() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.NONE).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.NONE).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -118,7 +112,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void normalNoneRequested() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.NONE).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.NONE).subscribe(ts);
         ts.request(2);
 
         source.onNext(1);
@@ -133,7 +127,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void normalError() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.ERROR).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.ERROR).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -148,7 +142,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void errorBuffered() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.BUFFER).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -167,7 +161,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void errorLatest() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.LATEST).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -184,7 +178,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void errorNone() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.NONE).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.NONE).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -199,7 +193,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedBuffer() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.BUFFER).subscribe(ts);
         ts.cancel();
 
         source.onNext(1);
@@ -215,7 +209,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedLatest() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.LATEST).subscribe(ts);
         ts.cancel();
 
         source.onNext(1);
@@ -231,7 +225,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedError() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.ERROR).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.ERROR).subscribe(ts);
         ts.cancel();
 
         source.onNext(1);
@@ -247,7 +241,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedDrop() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.DROP).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.DROP).subscribe(ts);
         ts.cancel();
 
         source.onNext(1);
@@ -263,7 +257,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedNone() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.NONE).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.NONE).subscribe(ts);
         ts.cancel();
 
         source.onNext(1);
@@ -279,7 +273,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedNoCancelBuffer() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.BUFFER).subscribe(ts);
         ts.cancel();
 
         sourceNoCancel.onNext(1);
@@ -295,7 +289,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedNoCancelLatest() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.LATEST).subscribe(ts);
         ts.cancel();
 
         sourceNoCancel.onNext(1);
@@ -311,7 +305,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedNoCancelError() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.ERROR).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.ERROR).subscribe(ts);
         ts.cancel();
 
         sourceNoCancel.onNext(1);
@@ -327,7 +321,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedNoCancelDrop() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.DROP).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.DROP).subscribe(ts);
         ts.cancel();
 
         sourceNoCancel.onNext(1);
@@ -343,7 +337,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribedNoCancelNone() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.NONE).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.NONE).subscribe(ts);
         ts.cancel();
 
         sourceNoCancel.onNext(1);
@@ -359,7 +353,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void deferredRequest() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.BUFFER).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -374,7 +368,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void take() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).take(2).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.BUFFER).take(2).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -389,7 +383,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void takeOne() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).take(1).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.BUFFER).take(1).subscribe(ts);
         ts.request(2);
 
         source.onNext(1);
@@ -403,7 +397,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void requestExact() {
-        Flowable.create(source, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(source, BackpressureStrategy.BUFFER).subscribe(ts);
         ts.request(2);
 
         source.onNext(1);
@@ -417,7 +411,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void takeNoCancel() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).take(2).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.BUFFER).take(2).subscribe(ts);
 
         sourceNoCancel.onNext(1);
         sourceNoCancel.onNext(2);
@@ -432,7 +426,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void takeOneNoCancel() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).take(1).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.BUFFER).take(1).subscribe(ts);
         ts.request(2);
 
         sourceNoCancel.onNext(1);
@@ -446,7 +440,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void unsubscribeNoCancel() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.BUFFER).subscribe(ts);
         ts.request(2);
 
         sourceNoCancel.onNext(1);
@@ -471,7 +465,7 @@ public class FlowableFromSourceTest {
             }
         };
 
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts1);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.BUFFER).subscribe(ts1);
 
         sourceNoCancel.onNext(1);
 
@@ -482,7 +476,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void completeInline() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.BUFFER).subscribe(ts);
 
         sourceNoCancel.onNext(1);
         sourceNoCancel.onComplete();
@@ -496,7 +490,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void errorInline() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.BUFFER).subscribe(ts);
 
         sourceNoCancel.onNext(1);
         sourceNoCancel.onError(new TestException());
@@ -518,7 +512,7 @@ public class FlowableFromSourceTest {
             }
         };
 
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.BUFFER).subscribe(ts1);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.BUFFER).subscribe(ts1);
 
         sourceNoCancel.onNext(1);
         sourceNoCancel.onNext(2);
@@ -538,7 +532,7 @@ public class FlowableFromSourceTest {
             }
         };
 
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts1);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.LATEST).subscribe(ts1);
 
         sourceNoCancel.onNext(1);
 
@@ -557,7 +551,7 @@ public class FlowableFromSourceTest {
             }
         };
 
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts1);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.LATEST).subscribe(ts1);
 
         sourceNoCancel.onNext(1);
 
@@ -568,7 +562,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void completeInlineLatest() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.LATEST).subscribe(ts);
 
         sourceNoCancel.onNext(1);
         sourceNoCancel.onComplete();
@@ -582,7 +576,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void completeInlineExactLatest() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.LATEST).subscribe(ts);
 
         sourceNoCancel.onNext(1);
         sourceNoCancel.onComplete();
@@ -596,7 +590,7 @@ public class FlowableFromSourceTest {
 
     @Test
     public void errorInlineLatest() {
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.LATEST).subscribe(ts);
 
         sourceNoCancel.onNext(1);
         sourceNoCancel.onError(new TestException());
@@ -618,7 +612,7 @@ public class FlowableFromSourceTest {
             }
         };
 
-        Flowable.create(sourceNoCancel, FlowableEmitter.BackpressureMode.LATEST).subscribe(ts1);
+        Flowable.create(sourceNoCancel, BackpressureStrategy.LATEST).subscribe(ts1);
 
         sourceNoCancel.onNext(1);
         sourceNoCancel.onNext(2);
