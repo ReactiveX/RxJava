@@ -228,6 +228,22 @@ public class ObservableToListTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void collectionSupplierReturnsNull() {
+        Observable.just(1)
+        .toList(new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                return null;
+            }
+        })
+        .toObservable()
+        .test()
+        .assertFailure(NullPointerException.class)
+        .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void singleCollectionSupplierThrows() {
         Observable.just(1)
         .toList(new Callable<Collection<Integer>>() {
@@ -238,5 +254,20 @@ public class ObservableToListTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void singleCollectionSupplierReturnsNull() {
+        Observable.just(1)
+        .toList(new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class)
+        .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
     }
 }

@@ -347,6 +347,22 @@ public class FlowableToListTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void collectionSupplierReturnsNull() {
+        Flowable.just(1)
+        .toList(new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                return null;
+            }
+        })
+        .toFlowable()
+        .test()
+        .assertFailure(NullPointerException.class)
+        .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void singleCollectionSupplierThrows() {
         Flowable.just(1)
         .toList(new Callable<Collection<Integer>>() {
@@ -357,5 +373,20 @@ public class FlowableToListTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void singleCollectionSupplierReturnsNull() {
+        Flowable.just(1)
+        .toList(new Callable<Collection<Integer>>() {
+            @Override
+            public Collection<Integer> call() throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class)
+        .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
     }
 }
