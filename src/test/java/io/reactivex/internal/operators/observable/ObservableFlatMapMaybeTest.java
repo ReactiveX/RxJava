@@ -22,9 +22,13 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
@@ -286,5 +290,165 @@ public class ObservableFlatMapMaybeTest {
                 return Maybe.<Integer>empty();
             }
         }));
+    }
+
+    @Test
+    public void innerSuccessCompletesAfterMain() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        TestObserver<Integer> to = Observable.just(1).flatMapMaybe(Functions.justFunction(ps.singleElement()))
+        .test();
+        
+        ps.onNext(2);
+        ps.onComplete();
+        
+        to
+        .assertResult(2);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Object> f) throws Exception {
+                return f.flatMapMaybe(Functions.justFunction(Maybe.just(2)));
+            }
+        });
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException("First"));
+                    observer.onError(new TestException("Second"));
+                }
+            }
+            .flatMapMaybe(Functions.justFunction(Maybe.just(2)))
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+            
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badInnerSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Observable.just(1)
+            .flatMapMaybe(Functions.justFunction(new Maybe<Integer>() {
+                @Override
+                protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException("First"));
+                    observer.onError(new TestException("Second"));
+                }
+            }))
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+            
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void emissionQueueTrigger() {
+        final PublishSubject<Integer> ps1 = PublishSubject.create();
+        final PublishSubject<Integer> ps2 = PublishSubject.create();
+        
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps2.onNext(2);
+                    ps2.onComplete();
+                }
+            }
+        };
+        
+        Observable.just(ps1, ps2)
+                .flatMapMaybe(new Function<PublishSubject<Integer>, MaybeSource<Integer>>() {
+                    @Override
+                    public MaybeSource<Integer> apply(PublishSubject<Integer> v) throws Exception {
+                        return v.singleElement();
+                    }
+                })
+        .subscribe(to);
+
+        ps1.onNext(1);
+        ps1.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void emissionQueueTrigger2() {
+        final PublishSubject<Integer> ps1 = PublishSubject.create();
+        final PublishSubject<Integer> ps2 = PublishSubject.create();
+        final PublishSubject<Integer> ps3 = PublishSubject.create();
+        
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps2.onNext(2);
+                    ps2.onComplete();
+                }
+            }
+        };
+        
+        Observable.just(ps1, ps2, ps3)
+                .flatMapMaybe(new Function<PublishSubject<Integer>, MaybeSource<Integer>>() {
+                    @Override
+                    public MaybeSource<Integer> apply(PublishSubject<Integer> v) throws Exception {
+                        return v.singleElement();
+                    }
+                })
+        .subscribe(to);
+
+        ps1.onNext(1);
+        ps1.onComplete();
+        
+        ps3.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void disposeInner() {
+        final TestObserver<Object> to = new TestObserver<Object>();
+
+        Observable.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Integer v) throws Exception {
+                return new Maybe<Object>() {
+                    @Override
+                    protected void subscribeActual(MaybeObserver<? super Object> observer) {
+                        observer.onSubscribe(Disposables.empty());
+
+                        assertFalse(((Disposable)observer).isDisposed());
+
+                        to.dispose();
+
+                        assertTrue(((Disposable)observer).isDisposed());
+                    }
+                };
+            }
+        })
+        .subscribe(to);
+        
+        to
+        .assertEmpty();
     }
 }

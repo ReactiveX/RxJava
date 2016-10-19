@@ -20,6 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.ToNotificationObserver;
 import io.reactivex.subjects.*;
 
@@ -44,7 +45,7 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
         ObservableSource<?> action;
 
         try {
-            action = manager.apply(subject);
+            action = ObjectHelper.requireNonNull(manager.apply(subject), "The function returned a null ObservableSource");
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             s.onError(ex);

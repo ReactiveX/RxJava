@@ -828,11 +828,6 @@ public final class ReplaySubject<T> extends Subject<T> {
 
             for (;;) {
 
-                if (rs.cancelled) {
-                    rs.index = null;
-                    return;
-                }
-
                 for (;;) {
                     if (rs.cancelled) {
                         rs.index = null;

@@ -234,4 +234,15 @@ public class FlowableScalarXMapTest {
             TestHelper.race(r1, r2, Schedulers.single());
         }
     }
+
+    @Test
+    public void cancelled() {
+        ScalarSubscription<Integer> scalar = new ScalarSubscription<Integer>(new TestSubscriber<Integer>(), 1);
+        
+        assertFalse(scalar.isCancelled());
+        
+        scalar.cancel();
+        
+        assertTrue(scalar.isCancelled());
+    }
 }

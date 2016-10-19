@@ -12,12 +12,13 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.Flowable;
-import io.reactivex.functions.*;
-import io.reactivex.internal.subscribers.SubscriptionLambdaSubscriber;
+import org.reactivestreams.*;
 
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.*;
+import io.reactivex.internal.subscriptions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream<T, T> {
     private final Consumer<? super Subscription> onSubscribe;
@@ -35,5 +36,79 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         source.subscribe(new SubscriptionLambdaSubscriber<T>(s, onSubscribe, onRequest, onCancel));
+    }
+
+    static final class SubscriptionLambdaSubscriber<T> implements Subscriber<T>, Subscription {
+        final Subscriber<? super T> actual;
+        final Consumer<? super Subscription> onSubscribe;
+        final LongConsumer onRequest;
+        final Action onCancel;
+
+        Subscription s;
+
+        public SubscriptionLambdaSubscriber(Subscriber<? super T> actual,
+                Consumer<? super Subscription> onSubscribe,
+                LongConsumer onRequest,
+                Action onCancel) {
+            this.actual = actual;
+            this.onSubscribe = onSubscribe;
+            this.onCancel = onCancel;
+            this.onRequest = onRequest;
+        }
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            // this way, multiple calls to onSubscribe can show up in tests that use doOnSubscribe to validate behavior
+            try {
+                onSubscribe.accept(s);
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                s.cancel();
+                RxJavaPlugins.onError(e);
+                EmptySubscription.error(e, actual);
+                return;
+            }
+            if (SubscriptionHelper.validate(this.s, s)) {
+                this.s = s;
+                actual.onSubscribe(this);
+            }
+        }
+
+        @Override
+        public void onNext(T t) {
+            actual.onNext(t);
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            actual.onError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            actual.onComplete();
+        }
+
+        @Override
+        public void request(long n) {
+            try {
+                onRequest.accept(n);
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                RxJavaPlugins.onError(e);
+            }
+            s.request(n);
+        }
+
+        @Override
+        public void cancel() {
+            try {
+                onCancel.run();
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                RxJavaPlugins.onError(e);
+            }
+            s.cancel();
+        }
     }
 }

@@ -601,7 +601,33 @@ public enum TestHelper {
      * @param source the source to test
      */
     public static void checkDisposed(Flowable<?> source) {
-        source.test(0L, true).assertEmpty();
+        final TestSubscriber<Object> ts = new TestSubscriber<Object>(0L);
+        source.subscribe(new Subscriber<Object>() {
+            @Override
+            public void onSubscribe(Subscription s) {
+                ts.onSubscribe(new BooleanSubscription());
+
+                s.cancel();
+
+                s.cancel();
+            }
+            
+            @Override
+            public void onNext(Object t) {
+                ts.onNext(t);
+            }
+            
+            @Override
+            public void onError(Throwable t) {
+                ts.onError(t);
+            }
+            
+            @Override
+            public void onComplete() {
+                ts.onComplete();
+            }
+        });
+        ts.assertEmpty();
     }
     /**
      * Checks if the upstream's Disposable sent through the onSubscribe reports
@@ -621,6 +647,8 @@ public enum TestHelper {
                     d.dispose();
 
                     b[1] = d.isDisposed();
+
+                    d.dispose();
                 } finally {
                     cdl.countDown();
                 }
@@ -670,6 +698,8 @@ public enum TestHelper {
                     d.dispose();
 
                     b[1] = d.isDisposed();
+
+                    d.dispose();
                 } finally {
                     cdl.countDown();
                 }
@@ -719,6 +749,8 @@ public enum TestHelper {
                     d.dispose();
 
                     b[1] = d.isDisposed();
+
+                    d.dispose();
                 } finally {
                     cdl.countDown();
                 }
@@ -763,6 +795,8 @@ public enum TestHelper {
                     d.dispose();
 
                     b[1] = d.isDisposed();
+
+                    d.dispose();
                 } finally {
                     cdl.countDown();
                 }

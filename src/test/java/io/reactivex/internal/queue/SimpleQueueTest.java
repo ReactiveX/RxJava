@@ -19,6 +19,9 @@
 package io.reactivex.internal.queue;
 
 import static org.junit.Assert.*;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 
 public class SimpleQueueTest {
@@ -71,4 +74,85 @@ public class SimpleQueueTest {
         assertNull(q.poll());
     }
 
+    @Test
+    public void spscBiOfferCapacity() {
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(8);
+        assertTrue(q.offer(1, 2));
+        assertTrue(q.offer(3, 4));
+        assertTrue(q.offer(5, 6));
+        assertTrue(q.offer(7));
+        
+        assertFalse(q.offer(8, 9));
+        assertFalse(q.offer(9, 10));
+    }
+
+    @Test
+    public void spscLinkedNewBufferPeek() {
+        SpscLinkedArrayQueue<Integer> q = new SpscLinkedArrayQueue<Integer>(8);
+        assertTrue(q.offer(1, 2));
+        assertTrue(q.offer(3, 4));
+        assertTrue(q.offer(5, 6));
+        assertTrue(q.offer(7, 8)); // this should trigger a new buffer
+        
+        for (int i = 0; i < 8; i++) {
+            assertEquals(i + 1, q.peek().intValue());
+            assertEquals(i + 1, q.poll().intValue());
+        }
+        
+        assertNull(q.peek());
+        assertNull(q.poll());
+    }
+
+    @Test
+    public void mpscOfferPollRace() throws Exception {
+        final MpscLinkedQueue<Integer> q = new MpscLinkedQueue<Integer>();
+        
+        final AtomicInteger c = new AtomicInteger(3);
+        
+        Thread t1 = new Thread(new Runnable() {
+            int i = 0;
+            @Override
+            public void run() {
+                c.decrementAndGet();
+                while (c.get() != 0) { }
+
+                while (i++ < 10000) {
+                    q.offer(i);
+                }
+            }
+        });
+        t1.start();
+
+        Thread t2 = new Thread(new Runnable() {
+            int i = 10000;
+            @Override
+            public void run() { 
+                c.decrementAndGet();
+                while (c.get() != 0) { }
+
+                while (i++ < 10000) {
+                    q.offer(i);
+                }
+            }
+        });
+        t2.start();
+
+        Runnable r3 = new Runnable() {
+            int i = 20000;
+            @Override
+            public void run() { 
+                c.decrementAndGet();
+                while (c.get() != 0) { }
+
+                while (--i > 0) {
+                    q.poll();
+                }
+            }
+        };
+
+        r3.run();
+        
+        t1.join();
+        t2.join();
+    }
 }

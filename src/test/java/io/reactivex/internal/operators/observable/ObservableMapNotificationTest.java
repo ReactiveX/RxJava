@@ -17,8 +17,11 @@ import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
-import io.reactivex.Observable;
+import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.observable.ObservableMapNotification.MapNotificationObserver;
 import io.reactivex.observers.TestObserver;
 
 public class ObservableMapNotificationTest {
@@ -50,5 +53,36 @@ public class ObservableMapNotificationTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
         ts.assertValue(2);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(new Observable<Integer>() {
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @Override
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                MapNotificationObserver mn = new MapNotificationObserver(
+                        observer,
+                        Functions.justFunction(Observable.just(1)),
+                        Functions.justFunction(Observable.just(2)),
+                        Functions.justCallable(Observable.just(3))
+                );
+                mn.onSubscribe(Disposables.empty());
+            }
+        });
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Object> o) throws Exception {
+                return o.flatMap(
+                        Functions.justFunction(Observable.just(1)),
+                        Functions.justFunction(Observable.just(2)),
+                        Functions.justCallable(Observable.just(3))
+                );
+            }
+        });
     }
 }
