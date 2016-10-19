@@ -33,9 +33,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     final FlowableOnSubscribe<T> source;
 
-    final FlowableEmitter.BackpressureMode backpressure;
+    final BackpressureStrategy backpressure;
 
-    public FlowableCreate(FlowableOnSubscribe<T> source, FlowableEmitter.BackpressureMode backpressure) {
+    public FlowableCreate(FlowableOnSubscribe<T> source, BackpressureStrategy backpressure) {
         this.source = source;
         this.backpressure = backpressure;
     }
@@ -61,9 +61,12 @@ public final class FlowableCreate<T> extends Flowable<T> {
             emitter = new LatestAsyncEmitter<T>(t);
             break;
         }
-        default: {
+        case BUFFER: {
             emitter = new BufferAsyncEmitter<T>(t, bufferSize());
             break;
+        }
+        default: {
+            throw new UnsupportedOperationException();
         }
         }
 

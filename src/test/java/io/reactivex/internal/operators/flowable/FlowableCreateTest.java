@@ -34,7 +34,7 @@ public class FlowableCreateTest {
 
     @Test(expected = NullPointerException.class)
     public void sourceNull() {
-        Flowable.create(null, FlowableEmitter.BackpressureMode.BUFFER);
+        Flowable.create(null, BackpressureStrategy.BUFFER);
     }
 
     @Test(expected = NullPointerException.class)
@@ -63,7 +63,7 @@ public class FlowableCreateTest {
                 e.onError(new TestException());
                 e.onComplete();
             }
-        }, FlowableEmitter.BackpressureMode.BUFFER)
+        }, BackpressureStrategy.BUFFER)
         .test()
         .assertResult(1, 2, 3);
 
@@ -95,7 +95,7 @@ public class FlowableCreateTest {
                 e.onError(new TestException());
                 e.onComplete();
             }
-        }, FlowableEmitter.BackpressureMode.BUFFER)
+        }, BackpressureStrategy.BUFFER)
         .test()
         .assertResult(1, 2, 3);
 
@@ -120,7 +120,7 @@ public class FlowableCreateTest {
                 e.onNext(4);
                 e.onError(new TestException());
             }
-        }, FlowableEmitter.BackpressureMode.BUFFER)
+        }, BackpressureStrategy.BUFFER)
         .test()
         .assertFailure(TestException.class, 1, 2, 3);
 
@@ -147,7 +147,7 @@ public class FlowableCreateTest {
                 e.onError(new TestException());
                 e.onComplete();
             }
-        }, FlowableEmitter.BackpressureMode.BUFFER)
+        }, BackpressureStrategy.BUFFER)
         .test()
         .assertResult(1, 2, 3);
 
@@ -173,7 +173,7 @@ public class FlowableCreateTest {
                 e.onNext(4);
                 e.onError(new TestException());
             }
-        }, FlowableEmitter.BackpressureMode.BUFFER)
+        }, BackpressureStrategy.BUFFER)
         .test()
         .assertFailure(TestException.class, 1, 2, 3);
 
@@ -237,7 +237,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, FlowableEmitter.BackpressureMode.BUFFER)
+        }, BackpressureStrategy.BUFFER)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -260,7 +260,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, FlowableEmitter.BackpressureMode.LATEST)
+        }, BackpressureStrategy.LATEST)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -283,7 +283,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, FlowableEmitter.BackpressureMode.ERROR)
+        }, BackpressureStrategy.ERROR)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -306,7 +306,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, FlowableEmitter.BackpressureMode.DROP)
+        }, BackpressureStrategy.DROP)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -329,7 +329,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, FlowableEmitter.BackpressureMode.NONE)
+        }, BackpressureStrategy.NONE)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -353,7 +353,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, FlowableEmitter.BackpressureMode.BUFFER)
+        }, BackpressureStrategy.BUFFER)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -377,7 +377,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, FlowableEmitter.BackpressureMode.LATEST)
+        }, BackpressureStrategy.LATEST)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -401,7 +401,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, FlowableEmitter.BackpressureMode.ERROR)
+        }, BackpressureStrategy.ERROR)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -425,7 +425,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, FlowableEmitter.BackpressureMode.DROP)
+        }, BackpressureStrategy.DROP)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -449,7 +449,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, FlowableEmitter.BackpressureMode.NONE)
+        }, BackpressureStrategy.NONE)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -458,7 +458,7 @@ public class FlowableCreateTest {
 
     @Test
     public void onErrorRace() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             Flowable<Object> source = Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -501,7 +501,7 @@ public class FlowableCreateTest {
 
     @Test
     public void onCompleteRace() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             Flowable<Object> source = Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -535,7 +535,7 @@ public class FlowableCreateTest {
 
     @Test
     public void nullValue() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -549,7 +549,7 @@ public class FlowableCreateTest {
 
     @Test
     public void nullThrowable() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             System.out.println(m);
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
@@ -564,7 +564,7 @@ public class FlowableCreateTest {
 
     @Test
     public void serializedConcurrentOnNextOnError() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -600,7 +600,7 @@ public class FlowableCreateTest {
 
     @Test
     public void callbackThrows() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -614,7 +614,7 @@ public class FlowableCreateTest {
 
     @Test
     public void nullValueSync() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -628,7 +628,7 @@ public class FlowableCreateTest {
 
     @Test
     public void createNullValue() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             final Throwable[] error = { null };
 
             Flowable.create(new FlowableOnSubscribe<Integer>() {
@@ -653,12 +653,12 @@ public class FlowableCreateTest {
 
     @Test(expected = NullPointerException.class)
     public void nullArgument() {
-        Flowable.create(null, FlowableEmitter.BackpressureMode.NONE);
+        Flowable.create(null, BackpressureStrategy.NONE);
     }
 
     @Test
     public void onErrorCrash() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -696,7 +696,7 @@ public class FlowableCreateTest {
 
     @Test
     public void onCompleteCrash() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -734,7 +734,7 @@ public class FlowableCreateTest {
 
     @Test
     public void createNullValueSerialized() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             final Throwable[] error = { null };
 
             Flowable.create(new FlowableOnSubscribe<Integer>() {
@@ -760,7 +760,7 @@ public class FlowableCreateTest {
 
     @Test
     public void nullThrowableSync() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -774,7 +774,7 @@ public class FlowableCreateTest {
 
     @Test
     public void serializedConcurrentOnNext() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -800,7 +800,7 @@ public class FlowableCreateTest {
 
     @Test
     public void serializedConcurrentOnNextOnComplete() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             TestSubscriber<Object> to = Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
@@ -839,7 +839,7 @@ public class FlowableCreateTest {
 
     @Test
     public void serialized() {
-        for (FlowableEmitter.BackpressureMode m : FlowableEmitter.BackpressureMode.values()) {
+        for (BackpressureStrategy m : BackpressureStrategy.values()) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 Flowable.create(new FlowableOnSubscribe<Object>() {

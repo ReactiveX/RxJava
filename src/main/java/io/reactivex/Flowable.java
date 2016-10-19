@@ -1525,7 +1525,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      *     emitter.setCancellable(c::close);
      *
-     * }, BackpressureMode.BUFFER);
+     * }, BackpressureStrategy.BUFFER);
      * </code></pre>
      * <p>
      * You should call the FlowableEmitter onNext, onError and onComplete methods in a serialized fashion. The
@@ -1542,12 +1542,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param mode the backpressure mode to apply if the downstream Subscriber doesn't request (fast) enough
      * @return the new Flowable instance
      * @see FlowableOnSubscribe
-     * @see FlowableEmitter.BackpressureMode
+     * @see BackpressureStrategy
      * @see Cancellable
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Flowable<T> create(FlowableOnSubscribe<T> source, FlowableEmitter.BackpressureMode mode) {
+    public static <T> Flowable<T> create(FlowableOnSubscribe<T> source, BackpressureStrategy mode) {
         ObjectHelper.requireNonNull(source, "source is null");
         ObjectHelper.requireNonNull(mode, "mode is null");
         return RxJavaPlugins.onAssembly(new FlowableCreate<T>(source, mode));
@@ -9733,6 +9733,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onBackpressureLatest() {
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureLatest<T>(this));
+    }
+
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    /*package*/ Flowable<T>  onBackpressureError() {
+        return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<T>(this));
     }
 
     /**

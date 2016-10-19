@@ -63,33 +63,4 @@ public interface FlowableEmitter<T> extends Emitter<T> {
      * @return the serialized FlowableEmitter
      */
     FlowableEmitter<T> serialize();
-
-    /**
-     * Options to handle backpressure in the emitter.
-     */
-    enum BackpressureMode {
-        /**
-         * OnNext events are written without any buffering or dropping.
-         * Downstream has to deal with any overflow.
-         * <p>Useful when one applies one of the custom-parameter onBackpressureXXX operators.
-         */
-        NONE,
-        /**
-         * Signals a MissingBackpressureException in case the downstream can't keep up.
-         */
-        ERROR,
-        /**
-         * Buffers <em>all</em> onNext values until the downstream consumes it.
-         */
-        BUFFER,
-        /**
-         * Drops the most recent onNext value if the downstream can't keep up.
-         */
-        DROP,
-        /**
-         * Keeps only the latest onNext value, overwriting any previous value if the
-         * downstream can't keep up.
-         */
-        LATEST
-    }
 }

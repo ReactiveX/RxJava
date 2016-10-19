@@ -32,7 +32,7 @@ public class BackpressureEnumTest {
 
     @Test
     public void backpressureStrategy() {
-        assertEquals(3, BackpressureStrategy.values().length);
+        assertEquals(5, BackpressureStrategy.values().length);
 
         assertNotNull(BackpressureStrategy.valueOf("BUFFER"));
     }

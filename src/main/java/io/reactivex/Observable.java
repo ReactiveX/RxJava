@@ -11707,12 +11707,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
         Flowable<T> o = new FlowableFromObservable<T>(this);
 
         switch (strategy) {
-        case DROP:
-            return o.onBackpressureDrop();
-        case LATEST:
-            return o.onBackpressureLatest();
-        default:
-            return o.onBackpressureBuffer();
+            case DROP:
+                return o.onBackpressureDrop();
+            case LATEST:
+                return o.onBackpressureLatest();
+            case NONE:
+                return o;
+            case ERROR:
+                return o.onBackpressureError();
+            case BUFFER:
+                return o.onBackpressureBuffer();
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 
