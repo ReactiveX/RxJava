@@ -12,30 +12,30 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import io.reactivex.*;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.observers.BasicIntQueueDisposable;
 
+/**
+ * Emits a range of integer values from start to end.
+ */
 public final class ObservableRange extends Observable<Integer> {
     private final int start;
-    private final int count;
+    private final long end;
 
     public ObservableRange(int start, int count) {
         this.start = start;
-        this.count = count;
+        this.end = (long)start + count;
     }
 
     @Override
     protected void subscribeActual(Observer<? super Integer> o) {
-        RangeDisposable parent = new RangeDisposable(o, start, (long)start + count);
+        RangeDisposable parent = new RangeDisposable(o, start, end);
         o.onSubscribe(parent);
         parent.run();
     }
 
     static final class RangeDisposable
-    extends AtomicInteger
-    implements QueueDisposable<Integer> {
+    extends BasicIntQueueDisposable<Integer> {
 
         private static final long serialVersionUID = 396518478098735504L;
 
@@ -66,16 +66,6 @@ public final class ObservableRange extends Observable<Integer> {
                 lazySet(1);
                 actual.onComplete();
             }
-        }
-
-        @Override
-        public boolean offer(Integer value) {
-            throw new UnsupportedOperationException("Should not be called!");
-        }
-
-        @Override
-        public boolean offer(Integer v1, Integer v2) {
-            throw new UnsupportedOperationException("Should not be called!");
         }
 
         @Override

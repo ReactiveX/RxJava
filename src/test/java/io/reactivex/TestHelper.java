@@ -28,7 +28,7 @@ import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.maybe.MaybeToFlowable;
@@ -144,22 +144,37 @@ public enum TestHelper {
     }
 
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz) {
-        assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
+        try {
+            assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
+        } catch (AssertionError e) {
+            list.get(index).printStackTrace();
+            throw e;
+        }
     }
 
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz, String message) {
-        assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
-        assertEquals(message, list.get(index).getMessage());
+        try {
+            assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
+            assertEquals(message, list.get(index).getMessage());
+        } catch (AssertionError e) {
+            list.get(index).printStackTrace();
+            throw e;
+        }
     }
 
     public static void assertError(TestObserver<?> ts, int index, Class<? extends Throwable> clazz) {
         Throwable ex = ts.errors().get(0);
-        if (ex instanceof CompositeException) {
-            CompositeException ce = (CompositeException) ex;
-            List<Throwable> cel = ce.getExceptions();
-            assertTrue(cel.get(index).toString(), clazz.isInstance(cel.get(index)));
-        } else {
-            fail(ex.toString() + ": not a CompositeException");
+        try {
+            if (ex instanceof CompositeException) {
+                CompositeException ce = (CompositeException) ex;
+                List<Throwable> cel = ce.getExceptions();
+                assertTrue(cel.get(index).toString(), clazz.isInstance(cel.get(index)));
+            } else {
+                fail(ex.toString() + ": not a CompositeException");
+            }
+        } catch (AssertionError e) {
+            ex.printStackTrace();
+            throw e;
         }
     }
 
@@ -586,7 +601,7 @@ public enum TestHelper {
      * @param source the source to test
      */
     public static void checkDisposed(Flowable<?> source) {
-        // actually there is no way of testing this
+        source.test(0L, true).assertEmpty();
     }
     /**
      * Checks if the upstream's Disposable sent through the onSubscribe reports
@@ -2194,5 +2209,329 @@ public enum TestHelper {
      */
     public static List<Throwable> errorList(TestSubscriber<?> to) {
         return compositeList(to.errors().get(0));
+    }
+
+    /**
+     * Tests the given mapping of a bad Observable by emitting the good values, then an error/completion and then
+     * a bad value followed by a TestException and and a completion.
+     * @param <T> the value type
+     * @param mapper the mapper that receives a bad Observable and returns a reactive base type (detected via reflection).
+     * @param error if true, the good value emission is followed by a TestException("error"), if false then onComplete is called
+     * @param badValue the bad value to emit if not null
+     * @param goodValue the good value to emit before turning bad, if not null
+     * @param expected the expected resulting values, null to ignore values received
+     */
+    public static <T> void checkBadSourceObservable(Function<Observable<T>, Object> mapper,
+            final boolean error, final T goodValue, final T badValue, final Object... expected) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            Observable<T> bad = new Observable<T>() {
+                boolean once;
+                @Override
+                protected void subscribeActual(Observer<? super T> observer) {
+                    observer.onSubscribe(Disposables.empty());
+
+                    if (once) {
+                        return;
+                    }
+                    once = true;
+
+                    if (goodValue != null) {
+                        observer.onNext(goodValue);
+                    }
+
+                    if (error) {
+                        observer.onError(new TestException("error"));
+                    } else {
+                        observer.onComplete();
+                    }
+
+                    if (badValue != null) {
+                        observer.onNext(badValue);
+                    }
+                    observer.onError(new TestException("second"));
+                    observer.onComplete();
+                }
+            };
+
+            Object o = mapper.apply(bad);
+
+            if (o instanceof ObservableSource) {
+                ObservableSource<?> os = (ObservableSource<?>) o;
+                TestObserver<Object> to = new TestObserver<Object>();
+
+                os.subscribe(to);
+
+                to.awaitDone(5, TimeUnit.SECONDS);
+
+                to.assertSubscribed();
+
+                if (expected != null) {
+                    to.assertValues(expected);
+                }
+                if (error) {
+                    to.assertError(TestException.class)
+                    .assertErrorMessage("error")
+                    .assertNotComplete();
+                } else {
+                    to.assertNoErrors().assertComplete();
+                }
+            }
+
+            if (o instanceof Publisher) {
+                Publisher<?> os = (Publisher<?>) o;
+                TestSubscriber<Object> to = new TestSubscriber<Object>();
+
+                os.subscribe(to);
+
+                to.awaitDone(5, TimeUnit.SECONDS);
+
+                to.assertSubscribed();
+
+                if (expected != null) {
+                    to.assertValues(expected);
+                }
+                if (error) {
+                    to.assertError(TestException.class)
+                    .assertErrorMessage("error")
+                    .assertNotComplete();
+                } else {
+                    to.assertNoErrors().assertComplete();
+                }
+            }
+
+            if (o instanceof SingleSource) {
+                SingleSource<?> os = (SingleSource<?>) o;
+                TestObserver<Object> to = new TestObserver<Object>();
+
+                os.subscribe(to);
+
+                to.awaitDone(5, TimeUnit.SECONDS);
+
+                to.assertSubscribed();
+
+                if (expected != null) {
+                    to.assertValues(expected);
+                }
+                if (error) {
+                    to.assertError(TestException.class)
+                    .assertErrorMessage("error")
+                    .assertNotComplete();
+                } else {
+                    to.assertNoErrors().assertComplete();
+                }
+            }
+
+            if (o instanceof MaybeSource) {
+                MaybeSource<?> os = (MaybeSource<?>) o;
+                TestObserver<Object> to = new TestObserver<Object>();
+
+                os.subscribe(to);
+
+                to.awaitDone(5, TimeUnit.SECONDS);
+
+                to.assertSubscribed();
+
+                if (expected != null) {
+                    to.assertValues(expected);
+                }
+                if (error) {
+                    to.assertError(TestException.class)
+                    .assertErrorMessage("error")
+                    .assertNotComplete();
+                } else {
+                    to.assertNoErrors().assertComplete();
+                }
+            }
+
+            if (o instanceof CompletableSource) {
+                CompletableSource os = (CompletableSource) o;
+                TestObserver<Object> to = new TestObserver<Object>();
+
+                os.subscribe(to);
+
+                to.awaitDone(5, TimeUnit.SECONDS);
+
+                to.assertSubscribed();
+
+                if (expected != null) {
+                    to.assertValues(expected);
+                }
+                if (error) {
+                    to.assertError(TestException.class)
+                    .assertErrorMessage("error")
+                    .assertNotComplete();
+                } else {
+                    to.assertNoErrors().assertComplete();
+                }
+            }
+
+            assertError(errors, 0, TestException.class, "second");
+        } catch (AssertionError ex) {
+            throw ex;
+        } catch (Throwable ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Tests the given mapping of a bad Observable by emitting the good values, then an error/completion and then
+     * a bad value followed by a TestException and and a completion.
+     * @param <T> the value type
+     * @param mapper the mapper that receives a bad Observable and returns a reactive base type (detected via reflection).
+     * @param error if true, the good value emission is followed by a TestException("error"), if false then onComplete is called
+     * @param badValue the bad value to emit if not null
+     * @param goodValue the good value to emit before turning bad, if not null
+     * @param expected the expected resulting values, null to ignore values received
+     */
+    public static <T> void checkBadSourceFlowable(Function<Flowable<T>, Object> mapper,
+            final boolean error, final T goodValue, final T badValue, final Object... expected) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            Flowable<T> bad = new Flowable<T>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super T> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+
+                    if (goodValue != null) {
+                        observer.onNext(goodValue);
+                    }
+
+                    if (error) {
+                        observer.onError(new TestException("error"));
+                    } else {
+                        observer.onComplete();
+                    }
+
+                    if (badValue != null) {
+                        observer.onNext(badValue);
+                    }
+                    observer.onError(new TestException("second"));
+                    observer.onComplete();
+                }
+            };
+
+            Object o = mapper.apply(bad);
+
+            if (o instanceof ObservableSource) {
+                ObservableSource<?> os = (ObservableSource<?>) o;
+                TestObserver<Object> to = new TestObserver<Object>();
+
+                os.subscribe(to);
+
+                to.awaitDone(5, TimeUnit.SECONDS);
+
+                to.assertSubscribed();
+
+                if (expected != null) {
+                    to.assertValues(expected);
+                }
+                if (error) {
+                    to.assertError(TestException.class)
+                    .assertErrorMessage("error")
+                    .assertNotComplete();
+                } else {
+                    to.assertNoErrors().assertComplete();
+                }
+            }
+
+            if (o instanceof Publisher) {
+                Publisher<?> os = (Publisher<?>) o;
+                TestSubscriber<Object> to = new TestSubscriber<Object>();
+
+                os.subscribe(to);
+
+                to.awaitDone(5, TimeUnit.SECONDS);
+
+                to.assertSubscribed();
+
+                if (expected != null) {
+                    to.assertValues(expected);
+                }
+                if (error) {
+                    to.assertError(TestException.class)
+                    .assertErrorMessage("error")
+                    .assertNotComplete();
+                } else {
+                    to.assertNoErrors().assertComplete();
+                }
+            }
+
+            if (o instanceof SingleSource) {
+                SingleSource<?> os = (SingleSource<?>) o;
+                TestObserver<Object> to = new TestObserver<Object>();
+
+                os.subscribe(to);
+
+                to.awaitDone(5, TimeUnit.SECONDS);
+
+                to.assertSubscribed();
+
+                if (expected != null) {
+                    to.assertValues(expected);
+                }
+                if (error) {
+                    to.assertError(TestException.class)
+                    .assertErrorMessage("error")
+                    .assertNotComplete();
+                } else {
+                    to.assertNoErrors().assertComplete();
+                }
+            }
+
+            if (o instanceof MaybeSource) {
+                MaybeSource<?> os = (MaybeSource<?>) o;
+                TestObserver<Object> to = new TestObserver<Object>();
+
+                os.subscribe(to);
+
+                to.awaitDone(5, TimeUnit.SECONDS);
+
+                to.assertSubscribed();
+
+                if (expected != null) {
+                    to.assertValues(expected);
+                }
+                if (error) {
+                    to.assertError(TestException.class)
+                    .assertErrorMessage("error")
+                    .assertNotComplete();
+                } else {
+                    to.assertNoErrors().assertComplete();
+                }
+            }
+
+            if (o instanceof CompletableSource) {
+                CompletableSource os = (CompletableSource) o;
+                TestObserver<Object> to = new TestObserver<Object>();
+
+                os.subscribe(to);
+
+                to.awaitDone(5, TimeUnit.SECONDS);
+
+                to.assertSubscribed();
+
+                if (expected != null) {
+                    to.assertValues(expected);
+                }
+                if (error) {
+                    to.assertError(TestException.class)
+                    .assertErrorMessage("error")
+                    .assertNotComplete();
+                } else {
+                    to.assertNoErrors().assertComplete();
+                }
+            }
+
+            assertError(errors, 0, TestException.class, "second");
+        } catch (AssertionError ex) {
+            throw ex;
+        } catch (Throwable ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

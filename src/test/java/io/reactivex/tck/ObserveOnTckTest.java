@@ -22,6 +22,10 @@ import io.reactivex.schedulers.Schedulers;
 @Test
 public class ObserveOnTckTest extends BaseTck<Integer> {
 
+    public ObserveOnTckTest() {
+        super(100L);
+    }
+
     @Override
     public Publisher<Integer> createPublisher(long elements) {
         return FlowableTck.wrap(

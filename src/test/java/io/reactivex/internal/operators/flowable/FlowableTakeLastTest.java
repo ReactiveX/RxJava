@@ -24,6 +24,8 @@ import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
@@ -315,5 +317,37 @@ public class FlowableTakeLastTest {
                 request(Long.MAX_VALUE - 1);
             }});
         assertEquals(50, list.size());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.range(1, 10).takeLast(5));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.takeLast(5);
+            }
+        });
+    }
+
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+        .takeLast(5)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void takeLastTake() {
+        Flowable.range(1, 10)
+        .takeLast(5)
+        .take(2)
+        .test()
+        .assertResult(6, 7);
     }
 }

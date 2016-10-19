@@ -284,7 +284,6 @@ public class FlowableTimerTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void disposed() {
         TestHelper.checkDisposed(Flowable.timer(1, TimeUnit.DAYS));
     }

@@ -13,13 +13,19 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+import java.util.List;
 
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableDematerializeTest {
@@ -129,5 +135,45 @@ public class FlowableDematerializeTest {
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onComplete();
         verify(o).onError(any(TestException.class));
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(Notification.createOnComplete()).dematerialize());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.dematerialize();
+            }
+        });
+    }
+
+    @Test
+    public void eventsAfterDematerializedTerminal() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Object>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Object> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onNext(Notification.createOnComplete());
+                    observer.onNext(Notification.createOnNext(1));
+                    observer.onNext(Notification.createOnError(new TestException("First")));
+                    observer.onError(new TestException("Second"));
+                }
+            }
+            .dematerialize()
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, TestException.class, "First");
+            TestHelper.assertError(errors, 1, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

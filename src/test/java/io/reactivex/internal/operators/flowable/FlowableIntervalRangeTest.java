@@ -73,4 +73,9 @@ public class FlowableIntervalRangeTest {
             assertEquals("Overflow! start + count is bigger than Long.MAX_VALUE", ex.getMessage());
         }
     }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.intervalRange(1, 2, 1, 1, TimeUnit.MILLISECONDS));
+    }
 }

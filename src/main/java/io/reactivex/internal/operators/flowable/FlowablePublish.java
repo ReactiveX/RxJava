@@ -97,7 +97,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                  * Note: although technically correct, concurrent disconnects can cause
                  * unexpected behavior such as child subscribers never receiving anything
                  * (unless connected again). An alternative approach, similar to
-                 * PublishSubject would be to immediately terminate such child
+                 * PublishProcessor would be to immediately terminate such child
                  * subscribers as well:
                  *
                  * Object term = r.terminalEvent;
@@ -172,7 +172,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
          * Disposable as subscribe() may never return on its own.
          *
          * Note however, that asynchronously disconnecting a running source might leave
-         * child subscribers without any terminal event; PublishSubject does not have this
+         * child subscribers without any terminal event; PublishProcessor does not have this
          * issue because the cancellation was always triggered by the child subscribers
          * themselves.
          */

@@ -125,7 +125,9 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
             if (!DisposableHelper.isDisposed(d)) {
                 @SuppressWarnings("unchecked")
                 DebounceEmitter<T> de = (DebounceEmitter<T>)d;
-                de.emit();
+                if (de != null) {
+                    de.emit();
+                }
                 DisposableHelper.dispose(timer);
                 worker.dispose();
                 actual.onComplete();

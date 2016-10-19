@@ -7967,7 +7967,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Modifies an ObservableSource to perform its emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with a bounded buffer of {@link Flowable#bufferSize()} slots.
+     * asynchronously with an unbounded buffer with {@link Flowable#bufferSize()} "island size".
      *
      * <p>Note that onError notifications will cut ahead of onNext notifications on the emission thread if Scheduler is truly
      * asynchronous. If strict event ordering is required, consider using the {@link #observeOn(Scheduler, boolean)} overload.
@@ -7977,7 +7977,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
-     *
+     * <p>"Island size" indicates how large chunks the unbounded buffer allocates to store the excess elements waiting to be consumed
+     * on the other side of the asynchronous boundary.
+     * 
      * @param scheduler
      *            the {@link Scheduler} to notify {@link Observer}s on
      * @return the source ObservableSource modified so that its {@link Observer}s are notified on the specified
@@ -7995,13 +7997,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Modifies an ObservableSource to perform its emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with a bounded buffer and optionally delays onError notifications.
+     * asynchronously with an unbounded buffer with {@link Flowable#bufferSize()} "island size" and optionally delays onError notifications.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
+     * <p>"Island size" indicates how large chunks the unbounded buffer allocates to store the excess elements waiting to be consumed
+     * on the other side of the asynchronous boundary.
      *
      * @param scheduler
      *            the {@link Scheduler} to notify {@link Observer}s on
@@ -8024,13 +8028,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Modifies an ObservableSource to perform its emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with a bounded buffer of configurable size and optionally delays onError notifications.
+     * asynchronously with an unbounded buffer of configurable "island size" and optionally delays onError notifications.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
+     * <p>"Island size" indicates how large chunks the unbounded buffer allocates to store the excess elements waiting to be consumed
+     * on the other side of the asynchronous boundary. Values below 16 are not recommended in performance sensitive scenarios.
      *
      * @param scheduler
      *            the {@link Scheduler} to notify {@link Observer}s on

@@ -87,6 +87,10 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
 
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
+
             R v = value;
 
             R u;

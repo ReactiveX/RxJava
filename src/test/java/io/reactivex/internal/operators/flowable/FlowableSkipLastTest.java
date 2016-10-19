@@ -109,7 +109,6 @@ public class FlowableSkipLastTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1).skipLast(1));
     }

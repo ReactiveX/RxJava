@@ -32,6 +32,8 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observables.GroupedObservable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+
 import org.mockito.Mockito;
 
 public class ObservableGroupByTest {
@@ -1471,4 +1473,63 @@ public class ObservableGroupByTest {
         .assertFailure(TestException.class, 1);
     }
 
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).groupBy(Functions.justFunction(1)));
+
+        Observable.just(1)
+        .groupBy(Functions.justFunction(1))
+        .doOnNext(new Consumer<GroupedObservable<Integer, Integer>>() {
+            @Override
+            public void accept(GroupedObservable<Integer, Integer> g) throws Exception {
+                TestHelper.checkDisposed(g);
+            }
+        })
+        .test();
+    }
+
+    @Test
+    public void reentrantComplete() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onComplete();
+                }
+            }
+        };
+
+        Observable.merge(ps.groupBy(Functions.justFunction(1)))
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void reentrantCompleteCancel() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onComplete();
+                    dispose();
+                }
+            }
+        };
+
+        Observable.merge(ps.groupBy(Functions.justFunction(1)))
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to.assertSubscribed().assertValue(1).assertNoErrors().assertNotComplete();
+    }
 }

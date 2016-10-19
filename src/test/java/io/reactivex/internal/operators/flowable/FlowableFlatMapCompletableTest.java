@@ -19,15 +19,16 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.*;
 
 public class FlowableFlatMapCompletableTest {
@@ -216,7 +217,7 @@ public class FlowableFlatMapCompletableTest {
 
     @Test
     public void mapperThrows() {
-        PublishSubject<Integer> ps = PublishSubject.create();
+        PublishProcessor<Integer> ps = PublishProcessor.create();
 
         TestObserver<Void> to = ps
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -227,18 +228,18 @@ public class FlowableFlatMapCompletableTest {
         })
         .test();
 
-        assertTrue(ps.hasObservers());
+        assertTrue(ps.hasSubscribers());
 
         ps.onNext(1);
 
         to.assertFailure(TestException.class);
 
-        assertFalse(ps.hasObservers());
+        assertFalse(ps.hasSubscribers());
     }
 
     @Test
     public void mapperReturnsNull() {
-        PublishSubject<Integer> ps = PublishSubject.create();
+        PublishProcessor<Integer> ps = PublishProcessor.create();
 
         TestObserver<Void> to = ps
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -249,13 +250,13 @@ public class FlowableFlatMapCompletableTest {
         })
         .test();
 
-        assertTrue(ps.hasObservers());
+        assertTrue(ps.hasSubscribers());
 
         ps.onNext(1);
 
         to.assertFailure(NullPointerException.class);
 
-        assertFalse(ps.hasObservers());
+        assertFalse(ps.hasSubscribers());
     }
 
     @Test
@@ -382,8 +383,7 @@ public class FlowableFlatMapCompletableTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
-    public void disposedObservable() {
+    public void disposedFlowable() {
         TestHelper.checkDisposed(Flowable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
@@ -391,5 +391,119 @@ public class FlowableFlatMapCompletableTest {
                 return Completable.complete();
             }
         }).toFlowable());
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> o) throws Exception {
+                return o.flatMapCompletable(new Function<Integer, CompletableSource>() {
+                    @Override
+                    public CompletableSource apply(Integer v) throws Exception {
+                        return Completable.complete();
+                    }
+                });
+            }
+        }, false, 1, null);
+    }
+
+    @Test
+    public void fusedInternalsFlowable() {
+        Flowable.range(1, 10)
+        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Integer v) throws Exception {
+                return Completable.complete();
+            }
+        })
+        .toFlowable()
+        .subscribe(new Subscriber<Object>() {
+            @Override
+            public void onSubscribe(Subscription d) {
+                QueueSubscription<?> qd = (QueueSubscription<?>)d;
+                try {
+                    assertNull(qd.poll());
+                } catch (Throwable ex) {
+                    throw new RuntimeException(ex);
+                }
+                assertTrue(qd.isEmpty());
+                qd.clear();
+            }
+
+            @Override
+            public void onNext(Object t) {
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+    }
+
+    @Test
+    public void innerObserverFlowable() {
+        Flowable.range(1, 3)
+        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Integer v) throws Exception {
+                return new Completable() {
+                    @Override
+                    protected void subscribeActual(CompletableObserver s) {
+                        s.onSubscribe(Disposables.empty());
+
+                        assertFalse(((Disposable)s).isDisposed());
+
+                        ((Disposable)s).dispose();
+
+                        assertTrue(((Disposable)s).isDisposed());
+                    }
+                };
+            }
+        })
+        .toFlowable()
+        .test();
+    }
+
+    @Test
+    public void badSourceFlowable() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> o) throws Exception {
+                return o.flatMapCompletable(new Function<Integer, CompletableSource>() {
+                    @Override
+                    public CompletableSource apply(Integer v) throws Exception {
+                        return Completable.complete();
+                    }
+                }).toFlowable();
+            }
+        }, false, 1, null);
+    }
+
+    @Test
+    public void innerObserver() {
+        Flowable.range(1, 3)
+        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Integer v) throws Exception {
+                return new Completable() {
+                    @Override
+                    protected void subscribeActual(CompletableObserver s) {
+                        s.onSubscribe(Disposables.empty());
+
+                        assertFalse(((Disposable)s).isDisposed());
+
+                        ((Disposable)s).dispose();
+
+                        assertTrue(((Disposable)s).isDisposed());
+                    }
+                };
+            }
+        })
+        .test();
     }
 }

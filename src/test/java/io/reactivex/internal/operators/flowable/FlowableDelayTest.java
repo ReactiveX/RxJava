@@ -13,14 +13,13 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -29,9 +28,10 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableDelayTest {
     private Subscriber<Long> observer;
@@ -229,7 +229,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableNormal1() {
+    public void testDelayWithFlowableNormal1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final List<PublishProcessor<Integer>> delays = new ArrayList<PublishProcessor<Integer>>();
         final int n = 10;
@@ -264,7 +264,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSingleSend1() {
+    public void testDelayWithFlowableSingleSend1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
@@ -290,7 +290,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSourceThrows() {
+    public void testDelayWithFlowableSourceThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
@@ -316,7 +316,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableDelayFunctionThrows() {
+    public void testDelayWithFlowableDelayFunctionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
@@ -339,7 +339,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableDelayThrows() {
+    public void testDelayWithFlowableDelayThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
 
@@ -364,7 +364,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSubscriptionNormal() {
+    public void testDelayWithFlowableSubscriptionNormal() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
         Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
@@ -393,7 +393,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSubscriptionFunctionThrows() {
+    public void testDelayWithFlowableSubscriptionFunctionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
         Callable<Flowable<Integer>> subFunc = new Callable<Flowable<Integer>>() {
@@ -427,7 +427,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSubscriptionThrows() {
+    public void testDelayWithFlowableSubscriptionThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
         Callable<Flowable<Integer>> subFunc = new Callable<Flowable<Integer>>() {
@@ -461,7 +461,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableEmptyDelayer() {
+    public void testDelayWithFlowableEmptyDelayer() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
         Function<Integer, Flowable<Integer>> delayFunc = new Function<Integer, Flowable<Integer>>() {
@@ -486,7 +486,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableSubscriptionRunCompletion() {
+    public void testDelayWithFlowableSubscriptionRunCompletion() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> sdelay = PublishProcessor.create();
         final PublishProcessor<Integer> delay = PublishProcessor.create();
@@ -522,7 +522,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableAsTimed() {
+    public void testDelayWithFlowableAsTimed() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
 
         final Flowable<Long> delayer = Flowable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
@@ -572,7 +572,7 @@ public class FlowableDelayTest {
     }
 
     @Test
-    public void testDelayWithObservableReorder() {
+    public void testDelayWithFlowableReorder() {
         int n = 3;
 
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -934,6 +934,88 @@ public class FlowableDelayTest {
         latch.await();
 
         assertNotEquals(Thread.currentThread(), thread.get());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().delay(1, TimeUnit.SECONDS));
+
+        TestHelper.checkDisposed(PublishProcessor.create().delay(Functions.justFunction(Flowable.never())));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.delay(1, TimeUnit.SECONDS);
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.delay(Functions.justFunction(Flowable.never()));
+            }
+        });
+    }
+
+    @Test
+    public void onCompleteFinal() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Flowable.empty()
+        .delay(1, TimeUnit.MILLISECONDS, scheduler)
+        .subscribe(new DisposableSubscriber<Object>() {
+            @Override
+            public void onNext(Object value) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
+                throw new TestException();
+            }
+        });
+
+        try {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            fail("Should have thrown");
+        } catch (TestException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void onErrorFinal() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Flowable.error(new TestException())
+        .delay(1, TimeUnit.MILLISECONDS, scheduler)
+        .subscribe(new DisposableSubscriber<Object>() {
+            @Override
+            public void onNext(Object value) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException();
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+
+        try {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+            fail("Should have thrown");
+        } catch (TestException ex) {
+            // expected
+        }
     }
 
 }

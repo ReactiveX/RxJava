@@ -237,6 +237,13 @@ public class ObservableScanTest {
                 return a;
             }
         }));
+
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().scan(0, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }));
     }
 
     @Test
@@ -245,6 +252,18 @@ public class ObservableScanTest {
             @Override
             public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
                 return o.scan(new BiFunction<Object, Object, Object>() {
+                    @Override
+                    public Object apply(Object a, Object b) throws Exception {
+                        return a;
+                    }
+                });
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.scan(0, new BiFunction<Object, Object, Object>() {
                     @Override
                     public Object apply(Object a, Object b) throws Exception {
                         return a;
@@ -265,5 +284,20 @@ public class ObservableScanTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+            @Override
+            public Object apply(Observable<Object> o) throws Exception {
+                return o.scan(0, new BiFunction<Object, Object, Object>() {
+                    @Override
+                    public Object apply(Object a, Object b) throws Exception {
+                        return a;
+                    }
+                });
+            }
+        }, false, 1, 1, 0, 0);
     }
 }

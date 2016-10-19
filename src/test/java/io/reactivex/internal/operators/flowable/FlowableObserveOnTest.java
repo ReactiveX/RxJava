@@ -29,9 +29,11 @@ import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.operators.flowable.FlowableObserveOn.BaseObserveOnSubscriber;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -1137,5 +1139,259 @@ public class FlowableObserveOnTest {
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(2, 4);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().observeOn(new TestScheduler()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.observeOn(new TestScheduler());
+            }
+        });
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestScheduler scheduler = new TestScheduler();
+            TestSubscriber<Integer> to = new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onComplete();
+                    observer.onNext(1);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .observeOn(scheduler)
+            .test();
+
+            scheduler.triggerActions();
+
+            to.assertResult();
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void inputSyncFused() {
+        Flowable.range(1, 5)
+        .observeOn(Schedulers.single())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void inputAsyncFused() {
+        UnicastProcessor<Integer> us = UnicastProcessor.create();
+
+        TestSubscriber<Integer> to = us.observeOn(Schedulers.single()).test();
+
+        TestHelper.emit(us, 1, 2, 3, 4, 5);
+
+        to
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void inputAsyncFusedError() {
+        UnicastProcessor<Integer> us = UnicastProcessor.create();
+
+        TestSubscriber<Integer> to = us.observeOn(Schedulers.single()).test();
+
+        us.onError(new TestException());
+
+        to
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void inputAsyncFusedErrorDelayed() {
+        UnicastProcessor<Integer> us = UnicastProcessor.create();
+
+        TestSubscriber<Integer> to = us.observeOn(Schedulers.single(), true).test();
+
+        us.onError(new TestException());
+
+        to
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void outputFused() {
+        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 5).hide()
+        .observeOn(Schedulers.single())
+        .subscribe(to);
+
+        SubscriberFusion.assertFusion(to, QueueSubscription.ASYNC)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void outputFusedReject() {
+        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueSubscription.SYNC);
+
+        Flowable.range(1, 5).hide()
+        .observeOn(Schedulers.single())
+        .subscribe(to);
+
+        SubscriberFusion.assertFusion(to, QueueSubscription.NONE)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void inputOutputAsyncFusedError() {
+        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        UnicastProcessor<Integer> us = UnicastProcessor.create();
+
+        us.observeOn(Schedulers.single())
+        .subscribe(to);
+
+        us.onError(new TestException());
+
+        to
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+
+        SubscriberFusion.assertFusion(to, QueueSubscription.ASYNC)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void inputOutputAsyncFusedErrorDelayed() {
+        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        UnicastProcessor<Integer> us = UnicastProcessor.create();
+
+        us.observeOn(Schedulers.single(), true)
+        .subscribe(to);
+
+        us.onError(new TestException());
+
+        to
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+
+        SubscriberFusion.assertFusion(to, QueueSubscription.ASYNC)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void outputFusedCancelReentrant() throws Exception {
+        final UnicastProcessor<Integer> us = UnicastProcessor.create();
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+
+        us.observeOn(Schedulers.single())
+        .subscribe(new Subscriber<Integer>() {
+            Subscription d;
+            int count;
+            @Override
+            public void onSubscribe(Subscription d) {
+                this.d = d;
+                ((QueueSubscription<?>)d).requestFusion(QueueSubscription.ANY);
+            }
+
+            @Override
+            public void onNext(Integer value) {
+                if (++count == 1) {
+                    us.onNext(2);
+                    d.cancel();
+                    cdl.countDown();
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
+        us.onNext(1);
+
+        cdl.await();
+    }
+
+    @Test
+    public void nonFusedPollThrows() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+
+                @SuppressWarnings("unchecked")
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)observer;
+
+                oo.queue = new SimpleQueue<Integer>() {
+
+                    @Override
+                    public boolean offer(Integer value) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean offer(Integer v1, Integer v2) {
+                        return false;
+                    }
+
+                    @Override
+                    public Integer poll() throws Exception {
+                        throw new TestException();
+                    }
+
+                    @Override
+                    public boolean isEmpty() {
+                        return false;
+                    }
+
+                    @Override
+                    public void clear() {
+                    }
+                };
+
+                oo.clear();
+
+                oo.trySchedule();
+            }
+        }
+        .observeOn(Schedulers.single())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void trampolineScheduler() {
+        Flowable.just(1)
+        .observeOn(Schedulers.trampoline())
+        .test()
+        .assertResult(1);
     }
 }

@@ -24,7 +24,6 @@ import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.util.NotificationLite;
@@ -191,7 +190,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         void drainLoop() {
 
-            final SimpleQueue<Object> q = queue;
+            final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
             final Observer<? super Observable<T>> a = actual;
             UnicastSubject<T> w = window;
 
@@ -252,11 +251,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                     break;
                 }
             }
-        }
-
-        @Override
-        public void accept(Observer<? super Observable<T>> a, Object v) {
-            // not used in this operator
         }
     }
 
@@ -326,9 +320,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                     d = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
                 }
 
-                if (!timer.compareAndSet(null, d)) {
-                    d.dispose();
-                }
+                DisposableHelper.replace(timer, d);
             }
         }
 
@@ -358,9 +350,8 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                         tm.dispose();
                         Disposable task = worker.schedulePeriodically(
                                 new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
-                        if (!timer.compareAndSet(tm, task)) {
-                            task.dispose();
-                        }
+
+                        DisposableHelper.replace(timer, task);
                     }
                 } else {
                     count = c;
@@ -415,13 +406,8 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             DisposableHelper.dispose(timer);
         }
 
-        @Override
-        public void accept(Observer<? super Observable<T>> a, Object v) {
-            // not needed in this operator
-        }
-
         void drainLoop() {
-            final SimpleQueue<Object> q = queue;
+            final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
             final Observer<? super Observable<T>> a = actual;
             UnicastSubject<T> w = window;
 
@@ -438,16 +424,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                     boolean d = done;
 
-                    Object o;
-
-                    try {
-                        o = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        disposeTimer();
-                        w.onError(ex);
-                        return;
-                    }
+                    Object o = q.poll();
 
                     boolean empty = o == null;
                     boolean isHolder = o instanceof ConsumerIndexHolder;
@@ -650,11 +627,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             worker.dispose();
         }
 
-        @Override
-        public void accept(Observer<? super Observable<T>> a, Object v) {
-            // not used by this operator
-        }
-
         void complete(UnicastSubject<T> w) {
             queue.offer(new SubjectWork<T>(w, false));
             if (enter()) {
@@ -664,7 +636,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         @SuppressWarnings("unchecked")
         void drainLoop() {
-            final SimpleQueue<Object> q = queue;
+            final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
             final Observer<? super Observable<T>> a = actual;
             final List<UnicastSubject<T>> ws = windows;
 
@@ -683,18 +655,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                     boolean d = done;
 
-                    Object v;
-
-                    try {
-                        v = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        disposeWorker();
-                        for (UnicastSubject<T> w : ws) {
-                            w.onError(ex);
-                        }
-                        return;
-                    }
+                    Object v = q.poll();
 
                     boolean empty = v == null;
                     boolean sw = v instanceof SubjectWork;

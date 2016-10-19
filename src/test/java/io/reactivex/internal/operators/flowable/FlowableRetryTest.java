@@ -354,7 +354,7 @@ public class FlowableRetryTest {
         Consumer<Integer> throwException = mock(Consumer.class);
         doThrow(new RuntimeException()).when(throwException).accept(Mockito.anyInt());
 
-        // create a retrying observable based on a PublishSubject
+        // create a retrying observable based on a PublishProcessor
         PublishProcessor<Integer> subject = PublishProcessor.create();
         subject
         // record item

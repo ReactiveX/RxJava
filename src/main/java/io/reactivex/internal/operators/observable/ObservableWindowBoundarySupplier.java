@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
@@ -21,7 +20,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.util.NotificationLite;
@@ -131,7 +130,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
         @Override
         public void onError(Throwable t) {
             if (done) {
-                RxJavaPlugins.onError(error);
+                RxJavaPlugins.onError(t);
                 return;
             }
             error = t;
@@ -176,7 +175,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
         }
 
         void drainLoop() {
-            final SimpleQueue<Object> q = queue;
+            final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
             final Observer<? super Observable<T>> a = actual;
             int missed = 1;
             UnicastSubject<T> w = window;
@@ -185,16 +184,7 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
                 for (;;) {
                     boolean d = done;
 
-                    Object o;
-
-                    try {
-                        o = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        DisposableHelper.dispose(boundary);
-                        w.onError(ex);
-                        return;
-                    }
+                    Object o = q.poll();
                     boolean empty = o == null;
 
                     if (d && empty) {
@@ -267,11 +257,6 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
             if (enter()) {
                 drainLoop();
             }
-        }
-
-        @Override
-        public void accept(Observer<? super Observable<T>> a, Object v) {
-            // not used by this operator
         }
     }
 

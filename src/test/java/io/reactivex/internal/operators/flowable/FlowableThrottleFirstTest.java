@@ -163,7 +163,6 @@ public class FlowableThrottleFirstTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1).throttleFirst(1, TimeUnit.DAYS));
     }

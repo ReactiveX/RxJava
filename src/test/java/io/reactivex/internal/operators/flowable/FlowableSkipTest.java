@@ -170,4 +170,9 @@ public class FlowableSkipTest {
         assertEquals(Arrays.asList(6,7,8,9,10), ts.values());
     }
 
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).skip(2));
+    }
+
 }

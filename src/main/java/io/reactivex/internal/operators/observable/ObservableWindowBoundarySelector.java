@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 
@@ -24,7 +23,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.util.NotificationLite;
@@ -178,7 +177,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         }
 
         void drainLoop() {
-            final SimpleQueue<Object> q = queue;
+            final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
             final Observer<? super Observable<T>> a = actual;
             final List<UnicastSubject<T>> ws = this.ws;
             int missed = 1;
@@ -188,18 +187,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                 for (;;) {
                     boolean d = done;
 
-                    Object o;
-
-                    try {
-                        o = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        DisposableHelper.dispose(boundary);
-                        for (UnicastSubject<T> w : ws) {
-                            w.onError(ex);
-                        }
-                        return;
-                    }
+                    Object o = q.poll();
 
                     boolean empty = o == null;
 

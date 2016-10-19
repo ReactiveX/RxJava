@@ -601,4 +601,29 @@ public class FlowableAnyTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void badSourceSingle() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onError(new TestException("First"));
+
+                    observer.onNext(1);
+                    observer.onError(new TestException("Second"));
+                    observer.onComplete();
+                }
+            }
+            .any(Functions.alwaysTrue())
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

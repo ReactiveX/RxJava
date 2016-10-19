@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -26,6 +27,9 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.CrashingIterable;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 
 public class FlowableZipIterableTest {
@@ -357,5 +361,72 @@ public class FlowableZipIterableTest {
         o.map(squareStr).zipWith(it, concat2Strings).take(2).subscribe(printer);
 
         assertEquals(2, squareStr.counter.get());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Integer>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Integer> o) throws Exception {
+                return o.zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+                    @Override
+                    public Object apply(Integer a, Integer b) throws Exception {
+                        return a + b;
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void iteratorThrows() {
+        Flowable.just(1).zipWith(new CrashingIterable(100, 1, 100), new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(TestException.class, "hasNext()");
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onNext(1);
+                    observer.onComplete();
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
+                @Override
+                public Object apply(Integer a, Integer b) throws Exception {
+                    return a + b;
+                }
+            })
+            .test()
+            .assertResult(2);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

@@ -71,4 +71,9 @@ public class ObservableIntervalRangeTest {
             assertEquals("Overflow! start + count is bigger than Long.MAX_VALUE", ex.getMessage());
         }
     }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.intervalRange(1, 2, 1, 1, TimeUnit.MILLISECONDS));
+    }
 }

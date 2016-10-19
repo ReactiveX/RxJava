@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
@@ -281,5 +281,20 @@ public class FlowableMaterializeTest {
         ts.assertValueCount(6)
         .assertNoErrors()
         .assertComplete();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).materialize());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Notification<Object>>>() {
+            @Override
+            public Flowable<Notification<Object>> apply(Flowable<Object> o) throws Exception {
+                return o.materialize();
+            }
+        });
     }
 }

@@ -52,6 +52,9 @@ public final class FlowableDematerialize<T> extends AbstractFlowableWithUpstream
         @Override
         public void onNext(Notification<T> t) {
             if (done) {
+                if (t.isOnError()) {
+                    RxJavaPlugins.onError(t.getError());
+                }
                 return;
             }
             if (t.isOnError()) {

@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -24,8 +25,10 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
@@ -325,5 +328,122 @@ public class FlowableWindowWithSizeTest {
                 Arrays.asList(3, 4), Arrays.asList(4, 5), Arrays.asList(5));
         ts.assertNoErrors();
         ts.assertComplete();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().window(1));
+
+        TestHelper.checkDisposed(PublishProcessor.create().window(2, 1));
+
+        TestHelper.checkDisposed(PublishProcessor.create().window(1, 2));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
+            @Override
+            public Flowable<Flowable<Object>> apply(Flowable<Object> o) throws Exception {
+                return o.window(1);
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
+            @Override
+            public Flowable<Flowable<Object>> apply(Flowable<Object> o) throws Exception {
+                return o.window(2, 1);
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
+            @Override
+            public Flowable<Flowable<Object>> apply(Flowable<Object> o) throws Exception {
+                return o.window(1, 2);
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorExact() {
+        Flowable.error(new TestException())
+        .window(1)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorSkip() {
+        Flowable.error(new TestException())
+        .window(1, 2)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorOverlap() {
+        Flowable.error(new TestException())
+        .window(2, 1)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorExactInner() {
+        @SuppressWarnings("rawtypes")
+        final TestSubscriber[] to = { null };
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .window(2)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> w) throws Exception {
+                to[0] = w.test();
+            }
+        })
+        .test()
+        .assertError(TestException.class);
+
+        to[0].assertFailure(TestException.class, 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorSkipInner() {
+        @SuppressWarnings("rawtypes")
+        final TestSubscriber[] to = { null };
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .window(2, 3)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> w) throws Exception {
+                to[0] = w.test();
+            }
+        })
+        .test()
+        .assertError(TestException.class);
+
+        to[0].assertFailure(TestException.class, 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void errorOverlapInner() {
+        @SuppressWarnings("rawtypes")
+        final TestSubscriber[] to = { null };
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .window(3, 2)
+        .doOnNext(new Consumer<Flowable<Integer>>() {
+            @Override
+            public void accept(Flowable<Integer> w) throws Exception {
+                to[0] = w.test();
+            }
+        })
+        .test()
+        .assertError(TestException.class);
+
+        to[0].assertFailure(TestException.class, 1);
     }
 }

@@ -13,13 +13,15 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.QueueDisposable;
@@ -342,6 +344,7 @@ public class ObservableFlatMapCompletableTest {
                 return Completable.complete();
             }
         })
+        .<Integer>toObservable()
         .subscribe(to);
 
         to
@@ -359,5 +362,119 @@ public class ObservableFlatMapCompletableTest {
                 return Completable.complete();
             }
         }));
+    }
+
+    @Test
+    public void innerObserver() {
+        Observable.range(1, 3)
+        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Integer v) throws Exception {
+                return new Completable() {
+                    @Override
+                    protected void subscribeActual(CompletableObserver s) {
+                        s.onSubscribe(Disposables.empty());
+
+                        assertFalse(((Disposable)s).isDisposed());
+
+                        ((Disposable)s).dispose();
+
+                        assertTrue(((Disposable)s).isDisposed());
+                    }
+                };
+            }
+        })
+        .test();
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(Observable<Integer> o) throws Exception {
+                return o.flatMapCompletable(new Function<Integer, CompletableSource>() {
+                    @Override
+                    public CompletableSource apply(Integer v) throws Exception {
+                        return Completable.complete();
+                    }
+                });
+            }
+        }, false, 1, null);
+    }
+
+    @Test
+    public void fusedInternalsObservable() {
+        Observable.range(1, 10)
+        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Integer v) throws Exception {
+                return Completable.complete();
+            }
+        })
+        .toObservable()
+        .subscribe(new Observer<Object>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                QueueDisposable<?> qd = (QueueDisposable<?>)d;
+                try {
+                    assertNull(qd.poll());
+                } catch (Throwable ex) {
+                    throw new RuntimeException(ex);
+                }
+                assertTrue(qd.isEmpty());
+                qd.clear();
+            }
+
+            @Override
+            public void onNext(Object t) {
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+    }
+
+    @Test
+    public void innerObserverObservable() {
+        Observable.range(1, 3)
+        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Integer v) throws Exception {
+                return new Completable() {
+                    @Override
+                    protected void subscribeActual(CompletableObserver s) {
+                        s.onSubscribe(Disposables.empty());
+
+                        assertFalse(((Disposable)s).isDisposed());
+
+                        ((Disposable)s).dispose();
+
+                        assertTrue(((Disposable)s).isDisposed());
+                    }
+                };
+            }
+        })
+        .toObservable()
+        .test();
+    }
+
+    @Test
+    public void badSourceObservable() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(Observable<Integer> o) throws Exception {
+                return o.flatMapCompletable(new Function<Integer, CompletableSource>() {
+                    @Override
+                    public CompletableSource apply(Integer v) throws Exception {
+                        return Completable.complete();
+                    }
+                }).toObservable();
+            }
+        }, false, 1, null);
     }
 }

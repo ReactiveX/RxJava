@@ -26,6 +26,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -82,12 +83,12 @@ public class FlowableZipTest {
     }
 
     @Test
-    public void testStartpingDifferentLengthObservableSequences1() {
+    public void testStartpingDifferentLengthFlowableSequences1() {
         Subscriber<String> w = TestHelper.mockSubscriber();
 
-        TestObservable w1 = new TestObservable();
-        TestObservable w2 = new TestObservable();
-        TestObservable w3 = new TestObservable();
+        TestFlowable w1 = new TestFlowable();
+        TestFlowable w2 = new TestFlowable();
+        TestFlowable w3 = new TestFlowable();
 
         Flowable<String> zipW = Flowable.zip(
                 Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2),
@@ -117,12 +118,12 @@ public class FlowableZipTest {
     }
 
     @Test
-    public void testStartpingDifferentLengthObservableSequences2() {
+    public void testStartpingDifferentLengthFlowableSequences2() {
         Subscriber<String> w = TestHelper.mockSubscriber();
 
-        TestObservable w1 = new TestObservable();
-        TestObservable w2 = new TestObservable();
-        TestObservable w3 = new TestObservable();
+        TestFlowable w1 = new TestFlowable();
+        TestFlowable w2 = new TestFlowable();
+        TestFlowable w3 = new TestFlowable();
 
         Flowable<String> zipW = Flowable.zip(Flowable.unsafeCreate(w1), Flowable.unsafeCreate(w2), Flowable.unsafeCreate(w3), getConcat3StringsZipr());
         zipW.subscribe(w);
@@ -179,7 +180,7 @@ public class FlowableZipTest {
 
         Flowable.zip(r1, r2, zipr2).subscribe(observer);
 
-        /* simulate the Observables pushing data into the aggregator */
+        /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
 
@@ -205,7 +206,7 @@ public class FlowableZipTest {
 
     @Test
     public void testAggregatorDifferentSizedResultsWithOnComplete() {
-        /* create the aggregator which will execute the zip function when all Observables provide values */
+        /* create the aggregator which will execute the zip function when all Flowables provide values */
         /* define a Subscriber to receive aggregated events */
         PublishProcessor<String> r1 = PublishProcessor.create();
         PublishProcessor<String> r2 = PublishProcessor.create();
@@ -213,7 +214,7 @@ public class FlowableZipTest {
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Flowable.zip(r1, r2, zipr2).subscribe(observer);
 
-        /* simulate the Observables pushing data into the aggregator */
+        /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
         r2.onComplete();
@@ -241,7 +242,7 @@ public class FlowableZipTest {
 
         Flowable.zip(r1, r2, zipr2).subscribe(observer);
 
-        /* simulate the Observables pushing data into the aggregator */
+        /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext(1);
         r2.onComplete();
@@ -270,7 +271,7 @@ public class FlowableZipTest {
 
         Flowable.zip(r1, r2, r3, zipr3).subscribe(observer);
 
-        /* simulate the Observables pushing data into the aggregator */
+        /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext(2);
         r3.onNext(Arrays.asList(5, 6, 7));
@@ -289,7 +290,7 @@ public class FlowableZipTest {
 
         Flowable.zip(r1, r2, zipr2).subscribe(observer);
 
-        /* simulate the Observables pushing data into the aggregator */
+        /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("one");
         r1.onNext("two");
         r1.onNext("three");
@@ -324,7 +325,7 @@ public class FlowableZipTest {
 
         Flowable.zip(r1, r2, zipr2).subscribe(observer);
 
-        /* simulate the Observables pushing data into the aggregator */
+        /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
 
@@ -352,7 +353,7 @@ public class FlowableZipTest {
 
         Flowable.zip(r1, r2, zipr2).subscribe(ts);
 
-        /* simulate the Observables pushing data into the aggregator */
+        /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
 
@@ -379,7 +380,7 @@ public class FlowableZipTest {
 
         Flowable.zip(r1, r2, zipr2).subscribe(observer);
 
-        /* simulate the Observables pushing data into the aggregator */
+        /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("one");
         r1.onNext("two");
         r1.onComplete();
@@ -614,7 +615,7 @@ public class FlowableZipTest {
         }
     }
 
-    private static class TestObservable implements Publisher<String> {
+    private static class TestFlowable implements Publisher<String> {
 
         Subscriber<? super String> observer;
 
@@ -808,9 +809,9 @@ public class FlowableZipTest {
     @Test
     public void testStartInfiniteAndFinite() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final CountDownLatch infiniteObservable = new CountDownLatch(1);
+        final CountDownLatch infiniteFlowable = new CountDownLatch(1);
         Flowable<String> os = OBSERVABLE_OF_5_INTEGERS
-                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservable), new BiFunction<Integer, Integer, String>() {
+                .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteFlowable), new BiFunction<Integer, Integer, String>() {
 
                     @Override
                     public String apply(Integer a, Integer b) {
@@ -840,7 +841,7 @@ public class FlowableZipTest {
         });
 
         latch.await(1000, TimeUnit.MILLISECONDS);
-        if (!infiniteObservable.await(2000, TimeUnit.MILLISECONDS)) {
+        if (!infiniteFlowable.await(2000, TimeUnit.MILLISECONDS)) {
             throw new RuntimeException("didn't unsubscribe");
         }
 
@@ -930,7 +931,7 @@ public class FlowableZipTest {
     }
 
     @Test
-    public void testStartEmptyObservables() {
+    public void testStartEmptyFlowables() {
 
         Flowable<String> o = Flowable.zip(Flowable.<Integer> empty(), Flowable.<String> empty(), new BiFunction<Integer, String, String>() {
 
@@ -999,8 +1000,8 @@ public class FlowableZipTest {
     public void testBackpressureSync() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteObservable(generatedA);
-        Flowable<Integer> o2 = createInfiniteObservable(generatedB);
+        Flowable<Integer> o1 = createInfiniteFlowable(generatedA);
+        Flowable<Integer> o2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
@@ -1023,8 +1024,8 @@ public class FlowableZipTest {
     public void testBackpressureAsync() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteObservable(generatedA).subscribeOn(Schedulers.computation());
-        Flowable<Integer> o2 = createInfiniteObservable(generatedB).subscribeOn(Schedulers.computation());
+        Flowable<Integer> o1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
+        Flowable<Integer> o2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
@@ -1044,11 +1045,11 @@ public class FlowableZipTest {
     }
 
     @Test
-    public void testDownstreamBackpressureRequestsWithFiniteSyncObservables() {
+    public void testDownstreamBackpressureRequestsWithFiniteSyncFlowables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteObservable(generatedA).take(Flowable.bufferSize() * 2);
-        Flowable<Integer> o2 = createInfiniteObservable(generatedB).take(Flowable.bufferSize() * 2);
+        Flowable<Integer> o1 = createInfiniteFlowable(generatedA).take(Flowable.bufferSize() * 2);
+        Flowable<Integer> o2 = createInfiniteFlowable(generatedB).take(Flowable.bufferSize() * 2);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
@@ -1069,11 +1070,11 @@ public class FlowableZipTest {
     }
 
     @Test
-    public void testDownstreamBackpressureRequestsWithInfiniteAsyncObservables() {
+    public void testDownstreamBackpressureRequestsWithInfiniteAsyncFlowables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteObservable(generatedA).subscribeOn(Schedulers.computation());
-        Flowable<Integer> o2 = createInfiniteObservable(generatedB).subscribeOn(Schedulers.computation());
+        Flowable<Integer> o1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
+        Flowable<Integer> o2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
@@ -1094,11 +1095,11 @@ public class FlowableZipTest {
     }
 
     @Test
-    public void testDownstreamBackpressureRequestsWithInfiniteSyncObservables() {
+    public void testDownstreamBackpressureRequestsWithInfiniteSyncFlowables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteObservable(generatedA);
-        Flowable<Integer> o2 = createInfiniteObservable(generatedB);
+        Flowable<Integer> o1 = createInfiniteFlowable(generatedA);
+        Flowable<Integer> o2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
@@ -1118,7 +1119,7 @@ public class FlowableZipTest {
         assertTrue(generatedB.get() < (Flowable.bufferSize() * 4));
     }
 
-    private Flowable<Integer> createInfiniteObservable(final AtomicInteger generated) {
+    private Flowable<Integer> createInfiniteFlowable(final AtomicInteger generated) {
         Flowable<Integer> observable = Flowable.fromIterable(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
@@ -1586,5 +1587,32 @@ public class FlowableZipTest {
         .assertResult("123456789");
     }
 
+
+    @Test
+    public void zipArrayMany() {
+        @SuppressWarnings("unchecked")
+        Flowable<Integer>[] arr = new Flowable[10];
+
+        Arrays.fill(arr, Flowable.just(1));
+
+        Flowable.zip(Arrays.asList(arr), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return Arrays.toString(a);
+            }
+        })
+        .test()
+        .assertResult("[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]");
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.zip(Flowable.just(1), Flowable.just(1), new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }));
+    }
 
 }

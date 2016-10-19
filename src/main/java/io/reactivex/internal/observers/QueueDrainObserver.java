@@ -121,6 +121,11 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
             QueueDrainHelper.drainLoop(queue, actual, delayError, dispose, this);
         }
     }
+
+    @Override
+    public void accept(Observer<? super V> a, U v) {
+        // ignored by default
+    }
 }
 
 // -------------------------------------------------------------------

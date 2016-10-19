@@ -159,14 +159,12 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
         @Override
         public void onComplete() {
             if (decrementAndGet() == 0) {
-                if (delayErrors) {
-                    Throwable ex = errors.terminate();
-                    if (ex != null) {
-                        actual.onError(ex);
-                        return;
-                    }
+                Throwable ex = errors.terminate();
+                if (ex != null) {
+                    actual.onError(ex);
+                } else {
+                    actual.onComplete();
                 }
-                actual.onComplete();
             } else {
                 if (maxConcurrency != Integer.MAX_VALUE) {
                     s.request(1);

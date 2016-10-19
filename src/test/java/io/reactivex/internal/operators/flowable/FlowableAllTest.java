@@ -24,7 +24,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -385,6 +385,37 @@ public class FlowableAllTest {
 
     @Test
     public void predicateThrows() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .all(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            })
+            .toFlowable()
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void predicateThrowsObservable() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             new Flowable<Integer>() {

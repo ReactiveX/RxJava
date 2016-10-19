@@ -18,6 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableTakeUntilPredicate<T> extends AbstractFlowableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
@@ -75,6 +76,8 @@ public final class FlowableTakeUntilPredicate<T> extends AbstractFlowableWithUps
             if (!done) {
                 done = true;
                 actual.onError(t);
+            } else {
+                RxJavaPlugins.onError(t);
             }
         }
 

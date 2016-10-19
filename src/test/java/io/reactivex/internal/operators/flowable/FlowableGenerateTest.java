@@ -113,7 +113,6 @@ public class FlowableGenerateTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void dispose() {
         TestHelper.checkDisposed(Flowable.generate(new Callable<Object>() {
                 @Override

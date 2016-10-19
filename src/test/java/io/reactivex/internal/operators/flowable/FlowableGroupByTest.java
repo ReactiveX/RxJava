@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -31,6 +32,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
@@ -215,11 +217,11 @@ public class FlowableGroupByTest {
         }).flatMap(new Function<GroupedFlowable<Integer, Event>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedObservable) {
-                System.out.println("GroupedObservable Key: " + eventGroupedObservable.getKey());
+            public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
+                System.out.println("GroupedFlowable Key: " + eventGroupedFlowable.getKey());
                 groupCounter.incrementAndGet();
 
-                return eventGroupedObservable.map(new Function<Event, String>() {
+                return eventGroupedFlowable.map(new Function<Event, String>() {
 
                     @Override
                     public String apply(Event event) {
@@ -295,11 +297,11 @@ public class FlowableGroupByTest {
                 .flatMap(new Function<GroupedFlowable<Integer, Event>, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedObservable) {
-                        System.out.println("testUnsubscribe => GroupedObservable Key: " + eventGroupedObservable.getKey());
+                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
+                        System.out.println("testUnsubscribe => GroupedFlowable Key: " + eventGroupedFlowable.getKey());
                         groupCounter.incrementAndGet();
 
-                        return eventGroupedObservable
+                        return eventGroupedFlowable
                                 .take(20) // limit to only 20 events on this group
                                 .map(new Function<Event, String>() {
 
@@ -360,8 +362,8 @@ public class FlowableGroupByTest {
                 .flatMap(new Function<GroupedFlowable<Integer, Event>, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedObservable) {
-                        return eventGroupedObservable
+                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
+                        return eventGroupedFlowable
                                 .map(new Function<Event, String>() {
 
                                     @Override
@@ -406,14 +408,14 @@ public class FlowableGroupByTest {
                 .flatMap(new Function<GroupedFlowable<Integer, Event>, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedObservable) {
+                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
                         int numToTake = 0;
-                        if (eventGroupedObservable.getKey() == 1) {
+                        if (eventGroupedFlowable.getKey() == 1) {
                             numToTake = 10;
-                        } else if (eventGroupedObservable.getKey() == 2) {
+                        } else if (eventGroupedFlowable.getKey() == 2) {
                             numToTake = 5;
                         }
-                        return eventGroupedObservable
+                        return eventGroupedFlowable
                                 .take(numToTake)
                                 .map(new Function<Event, String>() {
 
@@ -551,11 +553,11 @@ public class FlowableGroupByTest {
                 .flatMap(new Function<GroupedFlowable<Integer, Event>, Flowable<String>>() {
 
                     @Override
-                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedObservable) {
-                        Flowable<Event> eventStream = eventGroupedObservable;
-                        if (eventGroupedObservable.getKey() >= 2) {
+                    public Flowable<String> apply(GroupedFlowable<Integer, Event> eventGroupedFlowable) {
+                        Flowable<Event> eventStream = eventGroupedFlowable;
+                        if (eventGroupedFlowable.getKey() >= 2) {
                             // filter these
-                            eventStream = eventGroupedObservable.filter(new Predicate<Event>() {
+                            eventStream = eventGroupedFlowable.filter(new Predicate<Event>() {
                                 @Override
                                 public boolean test(Event t1) {
                                     return false;
@@ -1201,7 +1203,7 @@ public class FlowableGroupByTest {
     }
 
     /**
-     * Assert we get an IllegalStateException if trying to subscribe to an inner GroupedObservable more than once.
+     * Assert we get an IllegalStateException if trying to subscribe to an inner GroupedFlowable more than once.
      */
     @Test
     public void testExceptionIfSubscribeToChildMoreThanOnce() {
@@ -1361,9 +1363,9 @@ public class FlowableGroupByTest {
         }).subscribe(new Consumer<GroupedFlowable<String, String>>() {
 
             @Override
-            public void accept(GroupedFlowable<String, String> groupedObservable) {
-                key[0] = groupedObservable.getKey();
-                groupedObservable.subscribe(new Consumer<String>() {
+            public void accept(GroupedFlowable<String, String> groupedFlowable) {
+                key[0] = groupedFlowable.getKey();
+                groupedFlowable.subscribe(new Consumer<String>() {
 
                     @Override
                     public void accept(String s) {
@@ -1659,6 +1661,66 @@ public class FlowableGroupByTest {
         })
         .test()
         .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).groupBy(Functions.justFunction(1)));
+
+        Flowable.just(1)
+        .groupBy(Functions.justFunction(1))
+        .doOnNext(new Consumer<GroupedFlowable<Integer, Integer>>() {
+            @Override
+            public void accept(GroupedFlowable<Integer, Integer> g) throws Exception {
+                TestHelper.checkDisposed(g);
+            }
+        })
+        .test();
+    }
+
+    @Test
+    public void reentrantComplete() {
+        final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onComplete();
+                }
+            }
+        };
+
+        Flowable.merge(ps.groupBy(Functions.justFunction(1)))
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void reentrantCompleteCancel() {
+        final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onComplete();
+                    dispose();
+                }
+            }
+        };
+
+        Flowable.merge(ps.groupBy(Functions.justFunction(1)))
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to.assertSubscribed().assertValue(1).assertNoErrors().assertNotComplete();
     }
 
 }

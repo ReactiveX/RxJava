@@ -277,4 +277,9 @@ public class FlowableTakeUntilTest {
         assertFalse("Until still has observers", until.hasSubscribers());
         assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
     }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().takeUntil(Flowable.never()));
+    }
 }

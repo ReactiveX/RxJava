@@ -32,7 +32,11 @@ import io.reactivex.exceptions.TestException;
 public abstract class BaseTck<T> extends PublisherVerification<T> {
 
     public BaseTck() {
-        super(new TestEnvironment(25L));
+        this(25L);
+    }
+
+    public BaseTck(long timeout) {
+        super(new TestEnvironment(timeout));
     }
 
     @Override

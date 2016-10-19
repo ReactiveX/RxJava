@@ -169,4 +169,11 @@ public class ObservableIgnoreElementsTest {
 
         TestHelper.checkDisposed(pp.ignoreElements().<Integer>toObservable());
     }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).ignoreElements());
+
+        TestHelper.checkDisposed(Observable.just(1).ignoreElements().toObservable());
+    }
 }

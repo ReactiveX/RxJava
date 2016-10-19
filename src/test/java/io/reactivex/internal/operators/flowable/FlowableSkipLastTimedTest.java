@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -23,8 +24,10 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableSkipLastTimedTest {
 
@@ -173,6 +176,55 @@ public class FlowableSkipLastTimedTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().skipLast(1, TimeUnit.DAYS));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.skipLast(1, TimeUnit.DAYS);
+            }
+        });
+    }
+
+    @Test
+    public void onNextDisposeRace() {
+        TestScheduler scheduler = new TestScheduler();
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> ps = PublishProcessor.create();
+
+            final TestSubscriber<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void errorDelayed() {
+        Flowable.error(new TestException())
+        .skipLast(1, TimeUnit.DAYS, new TestScheduler(), true)
+        .test()
+        .assertFailure(TestException.class);
     }
 
 }

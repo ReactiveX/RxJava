@@ -124,7 +124,6 @@ public class FlowableTimeIntervalTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1).timeInterval());
     }

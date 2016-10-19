@@ -227,17 +227,26 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
                     // create the backpressure-managing producer for this child
                     InnerSubscription<T> inner = new InnerSubscription<T>(r, child);
-                    // we try to add it to the array of subscribers
-                    // if it fails, no worries because we will still have its buffer
-                    // so it is going to replay it for us
-                    r.add(inner);
-                    // trigger the capturing of the current node and total requested
-                    r.buffer.replay(inner);
                     // the producer has been registered with the current subscriber-to-source so
                     // at least it will receive the next terminal event
                     // setting the producer will trigger the first request to be considered by
                     // the subscriber-to-source.
                     child.onSubscribe(inner);
+                    // we try to add it to the array of subscribers
+                    // if it fails, no worries because we will still have its buffer
+                    // so it is going to replay it for us
+                    r.add(inner);
+
+                    if (inner.isDisposed()) {
+                        r.remove(inner);
+                        return;
+                    }
+
+                    r.manageRequests();
+
+                    // trigger the capturing of the current node and total requested
+                    r.buffer.replay(inner);
+
                     break; // NOPMD
                 }
             }
@@ -315,6 +324,9 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         try {
             connection.accept(ps);
         } catch (Throwable ex) {
+            if (doConnect) {
+                ps.shouldConnect.compareAndSet(true, false);
+            }
             Exceptions.throwIfFatal(ex);
             throw ExceptionHelper.wrapOrThrow(ex);
         }

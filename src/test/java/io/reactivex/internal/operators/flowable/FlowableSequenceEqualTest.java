@@ -359,7 +359,6 @@ public class FlowableSequenceEqualTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void disposedFlowable() {
         TestHelper.checkDisposed(Flowable.sequenceEqual(Flowable.just(1), Flowable.just(2)).toFlowable());
     }

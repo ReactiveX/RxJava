@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
@@ -274,5 +276,20 @@ public class FlowableSampleTest {
         );
         o.throttleLast(1, TimeUnit.MILLISECONDS).subscribe().dispose();
         verify(s).cancel();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().sample(1, TimeUnit.SECONDS, new TestScheduler()));
+
+        TestHelper.checkDisposed(PublishProcessor.create().sample(Flowable.never()));
+    }
+
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+        .sample(1, TimeUnit.SECONDS)
+        .test()
+        .assertFailure(TestException.class);
     }
 }
