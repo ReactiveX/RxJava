@@ -2005,55 +2005,6 @@ public class Observable<T> {
      * }, BackpressureMode.BUFFER);
      * </code></pre>
      * <p>
-     * You should call the AsyncEmitter's onNext, onError and onCompleted methods in a serialized fashion. The
-     * rest of its methods are thread-safe.
-     *
-     * @param <T> the element type
-     * @param emitter the emitter that is called when a Subscriber subscribes to the returned {@code Observable}
-     * @param backpressure the backpressure mode to apply if the downstream Subscriber doesn't request (fast) enough
-     * @return the new Observable instance
-     * @see AsyncEmitter
-     * @see AsyncEmitter.BackpressureMode
-     * @see AsyncEmitter.Cancellable
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
-     * @deprecated since 1.2.1 because Async prefix of AsyncEmitter class is potentially misleading. Use
-     *            {@link #fromEmitter(Action1, Emitter.BackpressureMode)} instead.
-     */
-    @Experimental
-    @Deprecated
-    public static <T> Observable<T> fromEmitter(Action1<AsyncEmitter<T>> emitter, AsyncEmitter.BackpressureMode backpressure) {
-        return create(new OnSubscribeFromAsyncEmitter<T>(emitter, backpressure));
-    }
-
-    /**
-     * Provides an API (via a cold Observable) that bridges the reactive world with the callback-style,
-     * generally non-backpressured world.
-     * <p>
-     * Example:
-     * <pre><code>
-     * Observable.&lt;Event&gt;fromEmitter(emitter -&gt; {
-     *     Callback listener = new Callback() {
-     *         &#64;Override
-     *         public void onEvent(Event e) {
-     *             emitter.onNext(e);
-     *             if (e.isLast()) {
-     *                 emitter.onCompleted();
-     *             }
-     *         }
-     *
-     *         &#64;Override
-     *         public void onFailure(Exception e) {
-     *             emitter.onError(e);
-     *         }
-     *     };
-     *
-     *     AutoCloseable c = api.someMethod(listener);
-     *
-     *     emitter.setCancellation(c::close);
-     *
-     * }, BackpressureMode.BUFFER);
-     * </code></pre>
-     * <p>
      * You should call the Emitter's onNext, onError and onCompleted methods in a serialized fashion. The
      * rest of its methods are thread-safe.
      *
