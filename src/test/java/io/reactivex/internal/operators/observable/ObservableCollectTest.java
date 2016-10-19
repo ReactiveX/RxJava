@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableCollectTest {
@@ -273,5 +273,89 @@ public final class ObservableCollectTest {
         })
         .test()
         .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.range(1, 3).collect(new Callable<List<Integer>>() {
+            @Override
+            public List<Integer> call() throws Exception {
+                return new ArrayList<Integer>();
+            }
+        }, new BiConsumer<List<Integer>, Integer>() {
+            @Override
+            public void accept(List<Integer> a, Integer b) throws Exception {
+                a.add(b);
+            }
+        }));
+
+        TestHelper.checkDisposed(Observable.range(1, 3).collect(new Callable<List<Integer>>() {
+            @Override
+            public List<Integer> call() throws Exception {
+                return new ArrayList<Integer>();
+            }
+        }, new BiConsumer<List<Integer>, Integer>() {
+            @Override
+            public void accept(List<Integer> a, Integer b) throws Exception {
+                a.add(b);
+            }
+        }).toObservable());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Integer>, SingleSource<List<Integer>>>() {
+            @Override
+            public SingleSource<List<Integer>> apply(Observable<Integer> o) throws Exception {
+                return o.collect(new Callable<List<Integer>>() {
+                    @Override
+                    public List<Integer> call() throws Exception {
+                        return new ArrayList<Integer>();
+                    }
+                }, new BiConsumer<List<Integer>, Integer>() {
+                    @Override
+                    public void accept(List<Integer> a, Integer b) throws Exception {
+                        a.add(b);
+                    }
+                });
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Integer>, ObservableSource<List<Integer>>>() {
+            @Override
+            public ObservableSource<List<Integer>> apply(Observable<Integer> o) throws Exception {
+                return o.collect(new Callable<List<Integer>>() {
+                    @Override
+                    public List<Integer> call() throws Exception {
+                        return new ArrayList<Integer>();
+                    }
+                }, new BiConsumer<List<Integer>, Integer>() {
+                    @Override
+                    public void accept(List<Integer> a, Integer b) throws Exception {
+                        a.add(b);
+                    }
+                }).toObservable();
+            }
+        });
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(Observable<Integer> o) throws Exception {
+                return o.collect(new Callable<List<Integer>>() {
+                    @Override
+                    public List<Integer> call() throws Exception {
+                        return new ArrayList<Integer>();
+                    }
+                }, new BiConsumer<List<Integer>, Integer>() {
+                    @Override
+                    public void accept(List<Integer> a, Integer b) throws Exception {
+                        a.add(b);
+                    }
+                }).toObservable();
+            }
+        }, false, 1, 2, Arrays.asList(1));
     }
 }

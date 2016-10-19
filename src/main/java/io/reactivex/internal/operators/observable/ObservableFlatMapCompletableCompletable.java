@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
@@ -22,7 +22,6 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.FuseToObservable;
-import io.reactivex.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.internal.util.AtomicThrowable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -55,8 +54,7 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
         return RxJavaPlugins.onAssembly(new ObservableFlatMapCompletable<T>(source, mapper, delayErrors));
     }
 
-    static final class FlatMapCompletableMainObserver<T> extends BasicIntQueueDisposable<T>
-    implements Observer<T> {
+    static final class FlatMapCompletableMainObserver<T> extends AtomicInteger implements Disposable, Observer<T> {
         private static final long serialVersionUID = 8443155186132538303L;
 
         final CompletableObserver actual;
@@ -136,14 +134,12 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
         @Override
         public void onComplete() {
             if (decrementAndGet() == 0) {
-                if (delayErrors) {
-                    Throwable ex = errors.terminate();
-                    if (ex != null) {
-                        actual.onError(ex);
-                        return;
-                    }
+                Throwable ex = errors.terminate();
+                if (ex != null) {
+                    actual.onError(ex);
+                } else {
+                    actual.onComplete();
                 }
-                actual.onComplete();
             }
         }
 
@@ -156,26 +152,6 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
         @Override
         public boolean isDisposed() {
             return d.isDisposed();
-        }
-
-        @Override
-        public T poll() throws Exception {
-            return null; // always empty
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true; // always empty
-        }
-
-        @Override
-        public void clear() {
-            // nothing to clear
-        }
-
-        @Override
-        public int requestFusion(int mode) {
-            return mode & ASYNC;
         }
 
         void innerComplete(InnerObserver inner) {

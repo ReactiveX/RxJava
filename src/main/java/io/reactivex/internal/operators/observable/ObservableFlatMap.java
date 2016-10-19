@@ -213,19 +213,6 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             }
         }
 
-        SimpleQueue<U> getMainQueue() {
-            SimpleQueue<U> q = queue;
-            if (q == null) {
-                if (maxConcurrency == Integer.MAX_VALUE) {
-                    q = new SpscLinkedArrayQueue<U>(bufferSize);
-                } else {
-                    q = new SpscArrayQueue<U>(maxConcurrency);
-                }
-                queue = q;
-            }
-            return q;
-        }
-
         void tryEmitScalar(Callable<? extends U> value) {
             U u;
             try {
@@ -248,7 +235,16 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     return;
                 }
             } else {
-                SimpleQueue<U> q = getMainQueue();
+                SimpleQueue<U> q = queue;
+                if (q == null) {
+                    if (maxConcurrency == Integer.MAX_VALUE) {
+                        q = new SpscLinkedArrayQueue<U>(bufferSize);
+                    } else {
+                        q = new SpscArrayQueue<U>(maxConcurrency);
+                    }
+                    queue = q;
+                }
+
                 if (!q.offer(u)) {
                     onError(new IllegalStateException("Scalar queue full?!"));
                     return;
@@ -258,15 +254,6 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 }
             }
             drainLoop();
-        }
-
-        SimpleQueue<U> getInnerQueue(InnerObserver<T, U> inner) {
-            SimpleQueue<U> q = inner.queue;
-            if (q == null) {
-                q = new SpscLinkedArrayQueue<U>(bufferSize);
-                inner.queue = q;
-            }
-            return q;
         }
 
         void tryEmit(U value, InnerObserver<T, U> inner) {

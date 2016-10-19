@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import org.junit.*;
 
 import io.reactivex.*;
+import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableSkipUntilTest {
@@ -150,5 +151,27 @@ public class ObservableSkipUntilTest {
         verify(observer, never()).onNext(any());
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onComplete();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishSubject.create().skipUntil(PublishSubject.create()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.skipUntil(Observable.never());
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return Observable.never().skipUntil(o);
+            }
+        });
     }
 }

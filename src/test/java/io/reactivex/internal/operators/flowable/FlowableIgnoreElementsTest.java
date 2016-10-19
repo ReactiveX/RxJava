@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.QueueSubscription;
@@ -322,5 +322,12 @@ public class FlowableIgnoreElementsTest {
             public void onComplete() {
             }
         });
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).ignoreElements());
+
+        TestHelper.checkDisposed(Flowable.just(1).ignoreElements().toFlowable());
     }
 }

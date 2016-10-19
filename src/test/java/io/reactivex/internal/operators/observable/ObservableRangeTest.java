@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.observers.*;
 
 public class ObservableRangeTest {
@@ -153,4 +154,14 @@ public class ObservableRangeTest {
         }
     }
 
+    @Test
+    public void requestWrongFusion() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ASYNC);
+
+        Observable.range(1, 5)
+        .subscribe(to);
+
+        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        .assertResult(1, 2, 3, 4, 5);
+    }
 }

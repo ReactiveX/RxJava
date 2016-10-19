@@ -19,6 +19,7 @@ import org.junit.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 
 public class FlowableSkipUntilTest {
@@ -151,5 +152,27 @@ public class FlowableSkipUntilTest {
         verify(observer, never()).onNext(any());
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, never()).onComplete();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().skipUntil(PublishProcessor.create()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.skipUntil(Flowable.never());
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return Flowable.never().skipUntil(o);
+            }
+        });
     }
 }

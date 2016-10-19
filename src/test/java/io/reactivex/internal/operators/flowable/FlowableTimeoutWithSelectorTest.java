@@ -14,9 +14,10 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -29,7 +30,9 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -154,7 +157,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorFirstObservableThrows() {
+    public void testTimeoutSelectorFirstFlowableThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -178,7 +181,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorSubsequentObservableThrows() {
+    public void testTimeoutSelectorSubsequentFlowableThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -205,7 +208,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorWithFirstTimeoutFirstAndNoOtherObservable() {
+    public void testTimeoutSelectorWithFirstTimeoutFirstAndNoOtherFlowable() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -227,7 +230,7 @@ public class FlowableTimeoutWithSelectorTest {
     }
 
     @Test
-    public void testTimeoutSelectorWithTimeoutFirstAndNoOtherObservable() {
+    public void testTimeoutSelectorWithTimeoutFirstAndNoOtherFlowable() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         final PublishProcessor<Integer> timeout = PublishProcessor.create();
 
@@ -366,5 +369,144 @@ public class FlowableTimeoutWithSelectorTest {
         inOrder.verify(o, never()).onNext(3);
         inOrder.verify(o).onComplete();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().timeout(Functions.justFunction(Flowable.never())));
+
+        TestHelper.checkDisposed(PublishProcessor.create().timeout(Functions.justFunction(Flowable.never()), Flowable.never()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.timeout(Functions.justFunction(Flowable.never()));
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.timeout(Functions.justFunction(Flowable.never()), Flowable.never());
+            }
+        });
+    }
+
+    @Test
+    public void empty() {
+        Flowable.empty()
+        .timeout(Functions.justFunction(Flowable.never()))
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+        .timeout(Functions.justFunction(Flowable.never()))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void emptyInner() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = ps
+        .timeout(Functions.justFunction(Flowable.empty()))
+        .test();
+
+        ps.onNext(1);
+
+        to.assertFailure(TimeoutException.class, 1);
+    }
+
+    @Test
+    public void badInnerSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            PublishProcessor<Integer> ps = PublishProcessor.create();
+
+            TestSubscriber<Integer> to = ps
+            .timeout(Functions.justFunction(new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onError(new TestException("First"));
+                    observer.onNext(2);
+                    observer.onError(new TestException("Second"));
+                    observer.onComplete();
+                }
+            }))
+            .test();
+
+            ps.onNext(1);
+
+            to.assertFailureAndMessage(TestException.class, "First", 1);
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badInnerSourceOther() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            PublishProcessor<Integer> ps = PublishProcessor.create();
+
+            TestSubscriber<Integer> to = ps
+            .timeout(Functions.justFunction(new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onError(new TestException("First"));
+                    observer.onNext(2);
+                    observer.onError(new TestException("Second"));
+                    observer.onComplete();
+                }
+            }), Flowable.just(2))
+            .test();
+
+            ps.onNext(1);
+
+            to.assertFailureAndMessage(TestException.class, "First", 1);
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void withOtherMainError() {
+        Flowable.error(new TestException())
+        .timeout(Functions.justFunction(Flowable.never()), Flowable.never())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void badSourceTimeout() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+                observer.onNext(1);
+                observer.onNext(2);
+                observer.onError(new TestException("First"));
+                observer.onNext(3);
+                observer.onComplete();
+                observer.onError(new TestException("Second"));
+            }
+        }
+        .timeout(Functions.justFunction(Flowable.never()), Flowable.<Integer>never())
+        .take(1)
+        .test()
+        .assertResult(1);
     }
 }

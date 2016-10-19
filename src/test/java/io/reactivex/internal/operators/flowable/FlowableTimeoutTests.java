@@ -387,7 +387,6 @@ public class FlowableTimeoutTests {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void disposed() {
         TestHelper.checkDisposed(PublishProcessor.create().timeout(1, TimeUnit.DAYS));
 

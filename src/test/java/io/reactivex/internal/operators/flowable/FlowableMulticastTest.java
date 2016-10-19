@@ -14,13 +14,11 @@
 package io.reactivex.internal.operators.flowable;
 
 public class FlowableMulticastTest {
-    // FIXME operator multicast not supported
-//
 //    @Test
 //    public void testMulticast() {
-//        Subject<String, String> source = PublishSubject.create();
+//        Processor<String, String> source = PublishProcessor.create();
 //
-//        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishSubjectFactory());
+//        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishProcessorFactory());
 //
 //        @SuppressWarnings("unchecked")
 //        Observer<String> observer = mock(Observer.class);
@@ -45,9 +43,9 @@ public class FlowableMulticastTest {
 //
 //    @Test
 //    public void testMulticastConnectTwice() {
-//        Subject<String, String> source = PublishSubject.create();
+//        Processor<String, String> source = PublishProcessor.create();
 //
-//        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishSubjectFactory());
+//        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishProcessorFactory());
 //
 //        @SuppressWarnings("unchecked")
 //        Observer<String> observer = mock(Observer.class);
@@ -71,9 +69,9 @@ public class FlowableMulticastTest {
 //
 //    @Test
 //    public void testMulticastDisconnect() {
-//        Subject<String, String> source = PublishSubject.create();
+//        Processor<String, String> source = PublishProcessor.create();
 //
-//        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishSubjectFactory());
+//        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishProcessorFactory());
 //
 //        @SuppressWarnings("unchecked")
 //        Observer<String> observer = mock(Observer.class);
@@ -102,11 +100,11 @@ public class FlowableMulticastTest {
 //
 //    }
 //
-//    private static final class PublishSubjectFactory implements Func0<Subject<String, String>> {
+//    private static final class PublishProcessorFactory implements Callable<Processor<String, String>> {
 //
 //        @Override
 //        public Subject<String, String> call() {
-//            return PublishSubject.<String> create();
+//            return PublishProcessor.<String> create();
 //        }
 //
 //    }

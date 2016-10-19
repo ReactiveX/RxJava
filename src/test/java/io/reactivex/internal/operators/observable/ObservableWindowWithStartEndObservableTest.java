@@ -29,7 +29,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.*;
 
 public class ObservableWindowWithStartEndObservableTest {
 
@@ -343,5 +343,51 @@ public class ObservableWindowWithStartEndObservableTest {
         assertFalse("Source has observers!", source.hasObservers());
         assertFalse("Start has observers!", start.hasObservers());
         assertFalse("End has observers!", end.hasObservers());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).window(Observable.just(2), Functions.justFunction(Observable.never())));
+    }
+
+    @Test
+    public void reentrant() {
+        final Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(BehaviorSubject.createDefault(1), Functions.justFunction(Observable.never()))
+        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void badSourceCallable() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+            @Override
+            public Object apply(Observable<Object> o) throws Exception {
+                return o.window(Observable.just(1), Functions.justFunction(Observable.never()));
+            }
+        }, false, 1, 1, (Object[])null);
     }
 }

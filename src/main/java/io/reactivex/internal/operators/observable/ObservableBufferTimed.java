@@ -156,15 +156,14 @@ extends AbstractObservableWithUpstream<T, U> {
             U b;
             synchronized (this) {
                 b = buffer;
-                if (b == null) {
-                    return;
-                }
                 buffer = null;
             }
-            queue.offer(b);
-            done = true;
-            if (enter()) {
-                QueueDrainHelper.drainLoop(queue, actual, false, this, this);
+            if (b != null) {
+                queue.offer(b);
+                done = true;
+                if (enter()) {
+                    QueueDrainHelper.drainLoop(queue, actual, false, this, this);
+                }
             }
         }
 

@@ -299,7 +299,6 @@ public class FlowableCacheTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void dispose() {
         TestHelper.checkDisposed(Flowable.range(1, 5).cache());
     }

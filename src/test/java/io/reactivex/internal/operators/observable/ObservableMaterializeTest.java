@@ -24,7 +24,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 
 public class ObservableMaterializeTest {
@@ -175,5 +175,20 @@ public class ObservableMaterializeTest {
             });
             t.start();
         }
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).materialize());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Notification<Object>>>() {
+            @Override
+            public ObservableSource<Notification<Object>> apply(Observable<Object> o) throws Exception {
+                return o.materialize();
+            }
+        });
     }
 }

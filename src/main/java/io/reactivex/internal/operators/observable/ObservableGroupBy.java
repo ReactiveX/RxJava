@@ -254,12 +254,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         }
 
         public void onNext(T t) {
-            if (t == null) {
-                error = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-                done = true;
-            } else {
-                queue.offer(t);
-            }
+            queue.offer(t);
             drain();
         }
 

@@ -595,7 +595,6 @@ public class FlowableRefCountTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void disposed() {
         TestHelper.checkDisposed(Flowable.just(1).publish().refCount());
     }

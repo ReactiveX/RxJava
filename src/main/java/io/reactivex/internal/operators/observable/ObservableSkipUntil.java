@@ -13,8 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
@@ -33,6 +31,8 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         final SerializedObserver<T> serial = new SerializedObserver<T>(child);
 
         final ArrayCompositeDisposable frc = new ArrayCompositeDisposable(2);
+
+        serial.onSubscribe(frc);
 
         final SkipUntilObserver<T> sus = new SkipUntilObserver<T>(serial, frc);
 
@@ -55,12 +55,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
             @Override
             public void onError(Throwable t) {
                 frc.dispose();
-                // in case the other emits an onError before the main even sets a subscription
-                if (sus.compareAndSet(false, true)) {
-                    EmptyDisposable.error(t, serial);
-                } else {
-                    serial.onError(t);
-                }
+                serial.onError(t);
             }
 
             @Override
@@ -72,9 +67,8 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         source.subscribe(sus);
     }
 
-    static final class SkipUntilObserver<T> extends AtomicBoolean implements Observer<T>, Disposable {
+    static final class SkipUntilObserver<T> implements Observer<T> {
 
-        private static final long serialVersionUID = -1113667257122396604L;
         final Observer<? super T> actual;
         final ArrayCompositeDisposable frc;
 
@@ -92,11 +86,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         public void onSubscribe(Disposable s) {
             if (DisposableHelper.validate(this.s, s)) {
                 this.s = s;
-                if (frc.setResource(0, s)) {
-                    if (compareAndSet(false, true)) {
-                        actual.onSubscribe(this);
-                    }
-                }
+                frc.setResource(0, s);
             }
         }
 
@@ -121,16 +111,6 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         public void onComplete() {
             frc.dispose();
             actual.onComplete();
-        }
-
-        @Override
-        public void dispose() {
-            frc.dispose();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return frc.isDisposed();
         }
     }
 }

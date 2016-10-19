@@ -1230,7 +1230,6 @@ public class FlowableCombineLatestTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void disposed() {
         TestHelper.checkDisposed(Flowable.combineLatest(Flowable.never(), Flowable.never(), new BiFunction<Object, Object, Object>() {
             @Override

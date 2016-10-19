@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -24,6 +25,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.subscribers.*;
 
 public class FlowableRangeTest {
@@ -276,5 +278,16 @@ public class FlowableRangeTest {
         } catch (IllegalArgumentException ex) {
             assertEquals("count >= 0 required but it was -1", ex.getMessage());
         }
+    }
+
+    @Test
+    public void requestWrongFusion() {
+        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ASYNC);
+
+        Flowable.range(1, 5)
+        .subscribe(to);
+
+        SubscriberFusion.assertFusion(to, QueueDisposable.NONE)
+        .assertResult(1, 2, 3, 4, 5);
     }
 }

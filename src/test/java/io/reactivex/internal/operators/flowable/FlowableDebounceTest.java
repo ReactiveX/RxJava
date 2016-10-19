@@ -13,8 +13,10 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
@@ -22,9 +24,12 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
@@ -211,7 +216,7 @@ public class FlowableDebounceTest {
     }
 
     @Test
-    public void debounceSelectorObservableThrows() {
+    public void debounceSelectorFlowableThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         Function<Integer, Flowable<Integer>> debounceSel = new Function<Integer, Flowable<Integer>>() {
 
@@ -310,6 +315,78 @@ public class FlowableDebounceTest {
         Flowable.just(1).debounce(1, TimeUnit.SECONDS)
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().debounce(1, TimeUnit.SECONDS, new TestScheduler()));
+
+        TestHelper.checkDisposed(PublishProcessor.create().debounce(Functions.justFunction(Flowable.never())));
+
+        Disposable d = new FlowableDebounceTimed.DebounceEmitter<Integer>(1, 1, null);
+        assertFalse(d.isDisposed());
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onComplete();
+                    observer.onNext(1);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .debounce(1, TimeUnit.SECONDS, new TestScheduler())
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badSourceSelector() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> o) throws Exception {
+                return o.debounce(new Function<Integer, Flowable<Long>>() {
+                    @Override
+                    public Flowable<Long> apply(Integer v) throws Exception {
+                        return Flowable.timer(1, TimeUnit.SECONDS);
+                    }
+                });
+            }
+        }, false, 1, 1, 1);
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(final Flowable<Integer> o) throws Exception {
+                return Flowable.just(1).debounce(new Function<Integer, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Integer v) throws Exception {
+                        return o;
+                    }
+                });
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void debounceWithEmpty() {
+        Flowable.just(1).debounce(Functions.justFunction(Flowable.empty()))
+        .test()
         .assertResult(1);
     }
 }

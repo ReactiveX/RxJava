@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.*;
@@ -21,7 +22,8 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Predicate;
+import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.*;
 import io.reactivex.subscribers.TestSubscriber;
@@ -118,7 +120,7 @@ public class FlowableTakeWhileTest {
 
     @Test
     public void testTakeWhileProtectsPredicateCall() {
-        TestObservable source = new TestObservable(mock(Subscription.class), "one");
+        TestFlowable source = new TestFlowable(mock(Subscription.class), "one");
         final RuntimeException testException = new RuntimeException("test exception");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
@@ -131,7 +133,7 @@ public class FlowableTakeWhileTest {
         });
         take.subscribe(observer);
 
-        // wait for the Observable to complete
+        // wait for the Flowable to complete
         try {
             source.t.join();
         } catch (Throwable e) {
@@ -146,7 +148,7 @@ public class FlowableTakeWhileTest {
     @Test
     public void testUnsubscribeAfterTake() {
         Subscription s = mock(Subscription.class);
-        TestObservable w = new TestObservable(s, "one", "two", "three");
+        TestFlowable w = new TestFlowable(s, "one", "two", "three");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         Flowable<String> take = Flowable.unsafeCreate(w)
@@ -160,7 +162,7 @@ public class FlowableTakeWhileTest {
         });
         take.subscribe(observer);
 
-        // wait for the Observable to complete
+        // wait for the Flowable to complete
         try {
             w.t.join();
         } catch (Throwable e) {
@@ -168,36 +170,36 @@ public class FlowableTakeWhileTest {
             fail(e.getMessage());
         }
 
-        System.out.println("TestObservable thread finished");
+        System.out.println("TestFlowable thread finished");
         verify(observer, times(1)).onNext("one");
         verify(observer, never()).onNext("two");
         verify(observer, never()).onNext("three");
         verify(s, times(1)).cancel();
     }
 
-    private static class TestObservable implements Publisher<String> {
+    private static class TestFlowable implements Publisher<String> {
 
         final Subscription s;
         final String[] values;
         Thread t;
 
-        TestObservable(Subscription s, String... values) {
+        TestFlowable(Subscription s, String... values) {
             this.s = s;
             this.values = values;
         }
 
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
-            System.out.println("TestObservable subscribed to ...");
+            System.out.println("TestFlowable subscribed to ...");
             observer.onSubscribe(s);
             t = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
                     try {
-                        System.out.println("running TestObservable thread");
+                        System.out.println("running TestFlowable thread");
                         for (String s : values) {
-                            System.out.println("TestObservable onNext: " + s);
+                            System.out.println("TestFlowable onNext: " + s);
                             observer.onNext(s);
                         }
                         observer.onComplete();
@@ -207,9 +209,9 @@ public class FlowableTakeWhileTest {
                 }
 
             });
-            System.out.println("starting TestObservable thread");
+            System.out.println("starting TestFlowable thread");
             t.start();
-            System.out.println("done starting TestObservable thread");
+            System.out.println("done starting TestFlowable thread");
         }
     }
 
@@ -267,6 +269,36 @@ public class FlowableTakeWhileTest {
         ts.assertError(TestException.class);
         // FIXME last cause value not recorded
 //        assertTrue(ts.getOnErrorEvents().get(0).getCause().getMessage().contains("abc"));
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().takeWhile(Functions.alwaysTrue()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.takeWhile(Functions.alwaysTrue());
+            }
+        });
+    }
+
+    @Test
+    public void badSource() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+                observer.onComplete();
+                observer.onComplete();
+            }
+        }
+        .takeWhile(Functions.alwaysTrue())
+        .test()
+        .assertResult();
     }
 
 }

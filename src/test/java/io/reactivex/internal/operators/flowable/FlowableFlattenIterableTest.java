@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
@@ -557,5 +557,15 @@ public class FlowableFlattenIterableTest {
         }, 1)
         .test()
         .assertResult(10, 20);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(PublishProcessor.create().flatMapIterable(new Function<Object, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Object v) throws Exception {
+                return Arrays.asList(10, 20);
+            }
+        }));
     }
 }

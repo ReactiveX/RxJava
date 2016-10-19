@@ -342,4 +342,38 @@ public class ObservableDebounceTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void badSourceSelector() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(Observable<Integer> o) throws Exception {
+                return o.debounce(new Function<Integer, ObservableSource<Long>>() {
+                    @Override
+                    public ObservableSource<Long> apply(Integer v) throws Exception {
+                        return Observable.timer(1, TimeUnit.SECONDS);
+                    }
+                });
+            }
+        }, false, 1, 1, 1);
+
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(final Observable<Integer> o) throws Exception {
+                return Observable.just(1).debounce(new Function<Integer, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Integer v) throws Exception {
+                        return o;
+                    }
+                });
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void debounceWithEmpty() {
+        Observable.just(1).debounce(Functions.justFunction(Observable.empty()))
+        .test()
+        .assertResult(1);
+    }
 }

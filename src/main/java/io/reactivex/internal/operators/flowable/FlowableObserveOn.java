@@ -24,6 +24,7 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableObserveOn<T> extends AbstractFlowableWithUpstream<T, T> {
 final Scheduler scheduler;
@@ -99,6 +100,9 @@ final Scheduler scheduler;
 
         @Override
         public final void onNext(T t) {
+            if (done) {
+                return;
+            }
             if (sourceMode == ASYNC) {
                 trySchedule();
                 return;
@@ -114,6 +118,10 @@ final Scheduler scheduler;
 
         @Override
         public final void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
             error = t;
             done = true;
             trySchedule();
@@ -121,8 +129,10 @@ final Scheduler scheduler;
 
         @Override
         public final void onComplete() {
-            done = true;
-            trySchedule();
+            if (!done) {
+                done = true;
+                trySchedule();
+            }
         }
 
         @Override

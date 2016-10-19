@@ -161,7 +161,6 @@ public class FlowableDetachTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void dispose() {
         TestHelper.checkDisposed(Flowable.never().onTerminateDetach());
     }

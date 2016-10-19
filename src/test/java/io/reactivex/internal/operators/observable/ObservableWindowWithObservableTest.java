@@ -18,18 +18,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.Callable;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.*;
 
 public class ObservableWindowWithObservableTest {
 
@@ -449,5 +450,134 @@ public class ObservableWindowWithObservableTest {
         .window(Functions.justCallable(Observable.never()))
         .test()
         .assertError(TestException.class);
+    }
+
+    @Test
+    public void innerBadSource() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(Observable<Integer> o) throws Exception {
+                return Observable.just(1).window(o).flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                        return v;
+                    }
+                });
+            }
+        }, false, 1, 1, (Object[])null);
+
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(Observable<Integer> o) throws Exception {
+                return Observable.just(1).window(Functions.justCallable(o)).flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                        return v;
+                    }
+                });
+            }
+        }, false, 1, 1, (Object[])null);
+    }
+
+    @Test
+    public void reentrant() {
+        final Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(BehaviorSubject.createDefault(1))
+        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void reentrantCallable() {
+        final Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(new Callable<Observable<Integer>>() {
+            boolean once;
+            @Override
+            public Observable<Integer> call() throws Exception {
+                if (!once) {
+                    once = true;
+                    return BehaviorSubject.createDefault(1);
+                }
+                return Observable.never();
+            }
+        })
+        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+            @Override
+            public Object apply(Observable<Object> o) throws Exception {
+                return o.window(Observable.never()).flatMap(new Function<Observable<Object>, ObservableSource<Object>>() {
+                    @Override
+                    public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
+                        return v;
+                    }
+                });
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void badSourceCallable() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+            @Override
+            public Object apply(Observable<Object> o) throws Exception {
+                return o.window(Functions.justCallable(Observable.never())).flatMap(new Function<Observable<Object>, ObservableSource<Object>>() {
+                    @Override
+                    public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
+                        return v;
+                    }
+                });
+            }
+        }, false, 1, 1, 1);
     }
 }

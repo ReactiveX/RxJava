@@ -121,7 +121,7 @@ public class FlowableToListTest {
         ts.assertComplete();
     }
     @Test(timeout = 2000)
-    @Ignore("PublishSubject no longer emits without requests so this test fails due to the race of onComplete and request")
+    @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
     public void testAsyncRequestedFlowable() {
         Scheduler.Worker w = Schedulers.newThread().createWorker();
         try {

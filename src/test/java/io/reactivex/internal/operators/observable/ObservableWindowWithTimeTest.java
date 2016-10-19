@@ -30,7 +30,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.*;
 
 
 public class ObservableWindowWithTimeTest {
@@ -452,5 +452,137 @@ public class ObservableWindowWithTimeTest {
         .assertValueCount(500)
         .assertNoErrors()
         .assertComplete();
+    }
+
+    @Test
+    public void exactUnboundedReentrant() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(1, TimeUnit.MILLISECONDS, scheduler)
+        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void exactBoundedReentrant() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(1, TimeUnit.MILLISECONDS, scheduler, 10, true)
+        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void exactBoundedReentrant2() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(1, TimeUnit.MILLISECONDS, scheduler, 2, true)
+        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void skipReentrant() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(1, 2, TimeUnit.MILLISECONDS, scheduler)
+        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Observable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
     }
 }

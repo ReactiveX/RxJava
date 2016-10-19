@@ -23,12 +23,11 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
@@ -499,14 +498,14 @@ public class FlowableWindowWithTimeTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Flowable.range(1, 5).window(1, TimeUnit.DAYS, Schedulers.single()));
+        TestHelper.checkDisposed(Flowable.range(1, 5).window(1, TimeUnit.DAYS, Schedulers.single()).onBackpressureDrop());
 
-        TestHelper.checkDisposed(Flowable.range(1, 5).window(2, 1, TimeUnit.DAYS, Schedulers.single()));
+        TestHelper.checkDisposed(Flowable.range(1, 5).window(2, 1, TimeUnit.DAYS, Schedulers.single()).onBackpressureDrop());
 
-        TestHelper.checkDisposed(Flowable.range(1, 5).window(1, 2, TimeUnit.DAYS, Schedulers.single()));
+        TestHelper.checkDisposed(Flowable.range(1, 5).window(1, 2, TimeUnit.DAYS, Schedulers.single()).onBackpressureDrop());
 
         TestHelper.checkDisposed(Flowable.never()
-                .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true));
+                .window(1, TimeUnit.DAYS, Schedulers.single(), 2, true).onBackpressureDrop());
     }
 
     @Test
@@ -540,5 +539,137 @@ public class FlowableWindowWithTimeTest {
         .assertValueCount(500)
         .assertNoErrors()
         .assertComplete();
+    }
+
+    @Test
+    public void exactUnboundedReentrant() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(1, TimeUnit.MILLISECONDS, scheduler)
+        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void exactBoundedReentrant() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(1, TimeUnit.MILLISECONDS, scheduler, 10, true)
+        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void exactBoundedReentrant2() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(1, TimeUnit.MILLISECONDS, scheduler, 2, true)
+        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void skipReentrant() {
+        TestScheduler scheduler = new TestScheduler();
+
+        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(1, 2, TimeUnit.MILLISECONDS, scheduler)
+        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
     }
 }

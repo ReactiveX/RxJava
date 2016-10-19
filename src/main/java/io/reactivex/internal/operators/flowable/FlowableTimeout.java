@@ -196,6 +196,11 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
 
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
             parent.onError(t);
         }
 
