@@ -42,7 +42,7 @@ extends AbstractObservableWithUpstream<T, U> {
     public void subscribeActual(Observer<? super U> t) {
         U coll;
         try {
-            coll = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null Collection");
+            coll = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);

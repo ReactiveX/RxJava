@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
@@ -33,7 +34,7 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
     protected void subscribeActual(Subscriber<? super U> s) {
         U coll;
         try {
-            coll = collectionSupplier.call();
+            coll = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptySubscription.error(e, s);

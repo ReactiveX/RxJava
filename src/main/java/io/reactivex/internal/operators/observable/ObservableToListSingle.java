@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -48,7 +49,7 @@ extends Single<U> implements FuseToObservable<U> {
     public void subscribeActual(SingleObserver<? super U> t) {
         U coll;
         try {
-            coll = collectionSupplier.call();
+            coll = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
