@@ -27,8 +27,6 @@ public interface FlowableTransformer<Upstream, Downstream> {
      * optionally different element type.
      * @param upstream the upstream Flowable instance
      * @return the transformed Publisher instance
-     * @throws Exception in case the transformation throws, checked exceptions will be wrapped
-     * into a RuntimeException
      */
-    Publisher<Downstream> apply(Flowable<Upstream> upstream) throws Exception;
+    Publisher<Downstream> apply(Flowable<Upstream> upstream);
 }

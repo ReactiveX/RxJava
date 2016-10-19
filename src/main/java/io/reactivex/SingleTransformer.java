@@ -25,8 +25,6 @@ public interface SingleTransformer<Upstream, Downstream> {
      * optionally different element type.
      * @param upstream the upstream Single instance
      * @return the transformed SingleSource instance
-     * @throws Exception in case the transformation throws, checked exceptions will be wrapped
-     * into a RuntimeException
      */
-    SingleSource<Downstream> apply(Single<Upstream> upstream) throws Exception;
+    SingleSource<Downstream> apply(Single<Upstream> upstream);
 }

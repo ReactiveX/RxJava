@@ -85,7 +85,7 @@ public class SingleMiscTest {
         Single.just(1)
         .compose(new SingleTransformer<Integer, Object>() {
             @Override
-            public SingleSource<Object> apply(Single<Integer> f) throws Exception {
+            public SingleSource<Object> apply(Single<Integer> f) {
                 return f.map(new Function<Integer, Object>() {
                     @Override
                     public Object apply(Integer v) throws Exception {

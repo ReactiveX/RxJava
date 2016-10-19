@@ -5531,14 +5531,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> compose(ObservableTransformer<T, R> composer) {
-        try {
-            return wrap(composer.apply(this));
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
+        return wrap(composer.apply(this));
     }
-
 
     /**
      * Returns a new Observable that emits items resulting from applying a function that you supply to each item
