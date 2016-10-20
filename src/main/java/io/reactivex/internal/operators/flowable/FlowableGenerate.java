@@ -120,6 +120,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
 
                 n = get();
                 if (e == n) {
+                    state = s;
                     n = addAndGet(-e);
                     if (n == 0L) {
                         break;
