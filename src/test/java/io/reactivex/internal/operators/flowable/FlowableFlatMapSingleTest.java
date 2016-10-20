@@ -19,10 +19,15 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -308,5 +313,131 @@ public class FlowableFlatMapSingleTest {
                 return Single.<Integer>just(1);
             }
         }));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Object> f) throws Exception {
+                return f.flatMapSingle(Functions.justFunction(Single.just(2)));
+            }
+        });
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onError(new TestException("First"));
+                    observer.onError(new TestException("Second"));
+                }
+            }
+            .flatMapSingle(Functions.justFunction(Single.just(2)))
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badInnerSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.just(1)
+            .flatMapSingle(Functions.justFunction(new Single<Integer>() {
+                @Override
+                protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException("First"));
+                    observer.onError(new TestException("Second"));
+                }
+            }))
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void emissionQueueTrigger() {
+        final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+        final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps2.onNext(2);
+                    ps2.onComplete();
+                }
+            }
+        };
+
+        Flowable.just(ps1, ps2)
+                .flatMapSingle(new Function<PublishProcessor<Integer>, SingleSource<Integer>>() {
+                    @Override
+                    public SingleSource<Integer> apply(PublishProcessor<Integer> v) throws Exception {
+                        return v.singleOrError();
+                    }
+                })
+        .subscribe(to);
+
+        ps1.onNext(1);
+        ps1.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void disposeInner() {
+        final TestSubscriber<Object> to = new TestSubscriber<Object>();
+
+        Flowable.just(1).flatMapSingle(new Function<Integer, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Integer v) throws Exception {
+                return new Single<Object>() {
+                    @Override
+                    protected void subscribeActual(SingleObserver<? super Object> observer) {
+                        observer.onSubscribe(Disposables.empty());
+
+                        assertFalse(((Disposable)observer).isDisposed());
+
+                        to.dispose();
+
+                        assertTrue(((Disposable)observer).isDisposed());
+                    }
+                };
+            }
+        })
+        .subscribe(to);
+
+        to
+        .assertEmpty();
+    }
+
+    @Test
+    public void innerSuccessCompletesAfterMain() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = Flowable.just(1).flatMapSingle(Functions.justFunction(ps.singleOrError()))
+        .test();
+
+        ps.onNext(2);
+        ps.onComplete();
+
+        to
+        .assertResult(2);
     }
 }

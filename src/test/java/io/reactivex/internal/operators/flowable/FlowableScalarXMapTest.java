@@ -238,11 +238,11 @@ public class FlowableScalarXMapTest {
     @Test
     public void cancelled() {
         ScalarSubscription<Integer> scalar = new ScalarSubscription<Integer>(new TestSubscriber<Integer>(), 1);
-        
+
         assertFalse(scalar.isCancelled());
-        
+
         scalar.cancel();
-        
+
         assertTrue(scalar.isCancelled());
     }
 }

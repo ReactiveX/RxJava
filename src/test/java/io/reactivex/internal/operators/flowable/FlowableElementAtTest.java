@@ -195,6 +195,20 @@ public class FlowableElementAtTest {
                 return o.elementAt(0).toFlowable();
             }
         });
+
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Object>, Maybe<Object>>() {
+            @Override
+            public Maybe<Object> apply(Flowable<Object> o) throws Exception {
+                return o.elementAt(0);
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<Object>>() {
+            @Override
+            public Single<Object> apply(Flowable<Object> o) throws Exception {
+                return o.elementAt(0, 1);
+            }
+        });
     }
 
     @Test
@@ -213,6 +227,20 @@ public class FlowableElementAtTest {
             .toFlowable()
             .test()
             .assertFailure(TestException.class);
+    }
+
+
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+            .elementAt(1, 10)
+            .test()
+            .assertFailure(TestException.class);
+
+        Flowable.error(new TestException())
+        .elementAt(1)
+        .test()
+        .assertFailure(TestException.class);
     }
 
     @Test
@@ -239,12 +267,43 @@ public class FlowableElementAtTest {
         } finally {
             RxJavaPlugins.reset();
         }
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.elementAt(0);
+            }
+        }, false, null, 1);
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.elementAt(0, 1);
+            }
+        }, false, null, 1, 1);
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.elementAt(0).toFlowable();
+            }
+        }, false, null, 1);
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.elementAt(0, 1).toFlowable();
+            }
+        }, false, null, 1, 1);
     }
 
     @Test
     public void dispose() {
         TestHelper.checkDisposed(PublishProcessor.create().elementAt(0).toFlowable());
         TestHelper.checkDisposed(PublishProcessor.create().elementAt(0, 1).toFlowable());
+
+        TestHelper.checkDisposed(PublishProcessor.create().elementAt(0));
+        TestHelper.checkDisposed(PublishProcessor.create().elementAt(0, 1));
     }
 
     @Test

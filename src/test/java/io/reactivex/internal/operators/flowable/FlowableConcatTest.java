@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Method;
@@ -26,12 +27,12 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -1230,7 +1231,7 @@ public class FlowableConcatTest {
 
     @Test
     public void concatMapJustSource() {
-        Flowable.just(0)
+        Flowable.just(0).hide()
         .concatMap(new Function<Object, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Object v) throws Exception {
@@ -1239,7 +1240,306 @@ public class FlowableConcatTest {
         }, 16)
         .test()
         .assertResult(1);
-
     }
 
+    @Test
+    public void concatMapJustSourceDelayError() {
+        Flowable.just(0).hide()
+        .concatMapDelayError(new Function<Object, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Object v) throws Exception {
+                return Flowable.just(1);
+            }
+        }, 16, false)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void concatMapScalarBackpressured() {
+        Flowable.just(1).hide()
+        .concatMap(Functions.justFunction(Flowable.just(2)))
+        .test(1L)
+        .assertResult(2);
+    }
+
+    @Test
+    public void concatMapScalarBackpressuredDelayError() {
+        Flowable.just(1).hide()
+        .concatMapDelayError(Functions.justFunction(Flowable.just(2)))
+        .test(1L)
+        .assertResult(2);
+    }
+
+    @Test
+    public void concatMapEmpty() {
+        Flowable.just(1).hide()
+        .concatMap(Functions.justFunction(Flowable.empty()))
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void concatMapEmptyDelayError() {
+        Flowable.just(1).hide()
+        .concatMapDelayError(Functions.justFunction(Flowable.empty()))
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void ignoreBackpressure() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                for (int i = 0; i < 10; i++) {
+                    s.onNext(i);
+                }
+            }
+        }
+        .concatMap(Functions.justFunction(Flowable.just(2)), 8)
+        .test(0L)
+        .assertFailure(IllegalStateException.class);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Object> f) throws Exception {
+                return f.concatMap(Functions.justFunction(Flowable.just(2)));
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Object> f) throws Exception {
+                return f.concatMapDelayError(Functions.justFunction(Flowable.just(2)));
+            }
+        });
+    }
+
+    @Test
+    public void immediateInnerNextOuterError() {
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    pp.onError(new TestException("First"));
+                }
+            }
+        };
+
+        pp.concatMap(Functions.justFunction(Flowable.just(1)))
+        .subscribe(ts);
+
+        pp.onNext(1);
+
+        assertFalse(pp.hasSubscribers());
+
+        ts.assertFailureAndMessage(TestException.class, "First", 1);
+    }
+
+    @Test
+    public void immediateInnerNextOuterError2() {
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    pp.onError(new TestException("First"));
+                }
+            }
+        };
+
+        pp.concatMap(Functions.justFunction(Flowable.just(1).hide()))
+        .subscribe(ts);
+
+        pp.onNext(1);
+
+        assertFalse(pp.hasSubscribers());
+
+        ts.assertFailureAndMessage(TestException.class, "First", 1);
+    }
+
+    @Test
+    public void concatMapInnerError() {
+        Flowable.just(1).hide()
+        .concatMap(Functions.justFunction(Flowable.error(new TestException())))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void concatMapInnerErrorDelayError() {
+        Flowable.just(1).hide()
+        .concatMapDelayError(Functions.justFunction(Flowable.error(new TestException())))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.concatMap(Functions.justFunction(Flowable.just(1).hide()));
+            }
+        }, true, 1, 1, 1);
+    }
+
+    @Test
+    public void badInnerSource() {
+        @SuppressWarnings("rawtypes")
+        final Subscriber[] ts0 = { null };
+        TestSubscriber<Integer> ts = Flowable.just(1).hide().concatMap(Functions.justFunction(new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                ts0[0] = s;
+                s.onSubscribe(new BooleanSubscription());
+                s.onError(new TestException("First"));
+            }
+        }))
+        .test();
+
+        ts.assertFailureAndMessage(TestException.class, "First");
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            ts0[0].onError(new TestException("Second"));
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badInnerSourceDelayError() {
+        @SuppressWarnings("rawtypes")
+        final Subscriber[] ts0 = { null };
+        TestSubscriber<Integer> ts = Flowable.just(1).hide().concatMapDelayError(Functions.justFunction(new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                ts0[0] = s;
+                s.onSubscribe(new BooleanSubscription());
+                s.onError(new TestException("First"));
+            }
+        }))
+        .test();
+
+        ts.assertFailureAndMessage(TestException.class, "First");
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            ts0[0].onError(new TestException("Second"));
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badSourceDelayError() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.concatMap(Functions.justFunction(Flowable.just(1).hide()));
+            }
+        }, true, 1, 1, 1);
+    }
+
+    @Test
+    public void fusedCrash() {
+        Flowable.range(1, 2)
+        .map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception { throw new TestException(); }
+        })
+        .concatMap(Functions.justFunction(Flowable.just(1)))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedCrashDelayError() {
+        Flowable.range(1, 2)
+        .map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception { throw new TestException(); }
+        })
+        .concatMapDelayError(Functions.justFunction(Flowable.just(1)))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void callableCrash() {
+        Flowable.just(1).hide()
+        .concatMap(Functions.justFunction(Flowable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                throw new TestException();
+            }
+        })))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void callableCrashDelayError() {
+        Flowable.just(1).hide()
+        .concatMapDelayError(Functions.justFunction(Flowable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                throw new TestException();
+            }
+        })))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.range(1, 2)
+        .concatMap(Functions.justFunction(Flowable.just(1))));
+
+        TestHelper.checkDisposed(Flowable.range(1, 2)
+        .concatMapDelayError(Functions.justFunction(Flowable.just(1))));
+    }
+
+    @Test
+    public void notVeryEnd() {
+        Flowable.range(1, 2)
+        .concatMapDelayError(Functions.justFunction(Flowable.error(new TestException())), 16, false)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+        .concatMapDelayError(Functions.justFunction(Flowable.just(2)), 16, false)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void mapperThrows() {
+        Flowable.range(1, 2)
+        .concatMap(new Function<Integer, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
 }

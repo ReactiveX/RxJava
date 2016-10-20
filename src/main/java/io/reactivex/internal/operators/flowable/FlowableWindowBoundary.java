@@ -132,7 +132,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
         @Override
         public void onError(Throwable t) {
             if (done) {
-                RxJavaPlugins.onError(error);
+                RxJavaPlugins.onError(t);
                 return;
             }
             error = t;

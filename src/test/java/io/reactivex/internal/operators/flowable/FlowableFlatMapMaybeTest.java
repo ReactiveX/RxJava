@@ -19,11 +19,15 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -359,5 +363,165 @@ public class FlowableFlatMapMaybeTest {
 
         to
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Object> f) throws Exception {
+                return f.flatMapMaybe(Functions.justFunction(Maybe.just(2)));
+            }
+        });
+    }
+
+    @Test
+    public void badSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onError(new TestException("First"));
+                    observer.onError(new TestException("Second"));
+                }
+            }
+            .flatMapMaybe(Functions.justFunction(Maybe.just(2)))
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void badInnerSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.just(1)
+            .flatMapMaybe(Functions.justFunction(new Maybe<Integer>() {
+                @Override
+                protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException("First"));
+                    observer.onError(new TestException("Second"));
+                }
+            }))
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void emissionQueueTrigger() {
+        final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+        final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps2.onNext(2);
+                    ps2.onComplete();
+                }
+            }
+        };
+
+        Flowable.just(ps1, ps2)
+                .flatMapMaybe(new Function<PublishProcessor<Integer>, MaybeSource<Integer>>() {
+                    @Override
+                    public MaybeSource<Integer> apply(PublishProcessor<Integer> v) throws Exception {
+                        return v.singleElement();
+                    }
+                })
+        .subscribe(to);
+
+        ps1.onNext(1);
+        ps1.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void emissionQueueTrigger2() {
+        final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+        final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+        final PublishProcessor<Integer> ps3 = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps2.onNext(2);
+                    ps2.onComplete();
+                }
+            }
+        };
+
+        Flowable.just(ps1, ps2, ps3)
+                .flatMapMaybe(new Function<PublishProcessor<Integer>, MaybeSource<Integer>>() {
+                    @Override
+                    public MaybeSource<Integer> apply(PublishProcessor<Integer> v) throws Exception {
+                        return v.singleElement();
+                    }
+                })
+        .subscribe(to);
+
+        ps1.onNext(1);
+        ps1.onComplete();
+
+        ps3.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void disposeInner() {
+        final TestSubscriber<Object> to = new TestSubscriber<Object>();
+
+        Flowable.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Integer v) throws Exception {
+                return new Maybe<Object>() {
+                    @Override
+                    protected void subscribeActual(MaybeObserver<? super Object> observer) {
+                        observer.onSubscribe(Disposables.empty());
+
+                        assertFalse(((Disposable)observer).isDisposed());
+
+                        to.dispose();
+
+                        assertTrue(((Disposable)observer).isDisposed());
+                    }
+                };
+            }
+        })
+        .subscribe(to);
+
+        to
+        .assertEmpty();
+    }
+
+    @Test
+    public void innerSuccessCompletesAfterMain() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = Flowable.just(1).flatMapMaybe(Functions.justFunction(ps.singleElement()))
+        .test();
+
+        ps.onNext(2);
+        ps.onComplete();
+
+        to
+        .assertResult(2);
     }
 }

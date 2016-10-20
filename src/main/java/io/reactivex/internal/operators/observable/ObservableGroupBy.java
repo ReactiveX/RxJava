@@ -220,6 +220,8 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         final AtomicBoolean cancelled = new AtomicBoolean();
 
+        final AtomicBoolean once = new AtomicBoolean();
+
         final AtomicReference<Observer<? super T>> actual = new AtomicReference<Observer<? super T>>();
 
         State(int bufferSize, GroupByObserver<?, K, T> parent, K key, boolean delayError) {
@@ -233,6 +235,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         public void dispose() {
             if (cancelled.compareAndSet(false, true)) {
                 if (getAndIncrement() == 0) {
+                    actual.lazySet(null);
                     parent.cancel(key);
                 }
             }
@@ -245,9 +248,14 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         @Override
         public void subscribe(Observer<? super T> s) {
-            if (actual.compareAndSet(null, s)) {
+            if (once.compareAndSet(false, true)) {
                 s.onSubscribe(this);
-                drain();
+                actual.lazySet(s);
+                if (cancelled.get()) {
+                    actual.lazySet(null);
+                } else {
+                    drain();
+                }
             } else {
                 EmptyDisposable.error(new IllegalStateException("Only one Observer allowed!"), s);
             }
@@ -280,10 +288,6 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             Observer<? super T> a = actual.get();
             for (;;) {
                 if (a != null) {
-                    if (checkTerminated(done, q.isEmpty(), a, delayError)) {
-                        return;
-                    }
-
                     for (;;) {
                         boolean d = done;
                         T v = q.poll();
@@ -315,6 +319,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             if (cancelled.get()) {
                 queue.clear();
                 parent.cancel(key);
+                actual.lazySet(null);
                 return true;
             }
 
@@ -322,6 +327,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
                 if (delayError) {
                     if (empty) {
                         Throwable e = error;
+                        actual.lazySet(null);
                         if (e != null) {
                             a.onError(e);
                         } else {
@@ -333,10 +339,12 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
                     Throwable e = error;
                     if (e != null) {
                         queue.clear();
+                        actual.lazySet(null);
                         a.onError(e);
                         return true;
                     } else
                     if (empty) {
+                        actual.lazySet(null);
                         a.onComplete();
                         return true;
                     }

@@ -27,7 +27,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
-public class FlowableOnErrorResumeNextViaObservableTest {
+public class FlowableOnErrorResumeNextViaFlowableTest {
 
     @Test
     public void testResumeNext() {

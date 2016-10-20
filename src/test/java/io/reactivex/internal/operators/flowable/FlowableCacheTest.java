@@ -34,7 +34,7 @@ import io.reactivex.subscribers.TestSubscriber;
 public class FlowableCacheTest {
     @Test
     public void testColdReplayNoBackpressure() {
-        FlowableCache<Integer> source = (FlowableCache<Integer>)FlowableCache.from(Flowable.range(0, 1000));
+        FlowableCache<Integer> source = new FlowableCache<Integer>(Flowable.range(0, 1000), 16);
 
         assertFalse("Source is connected!", source.isConnected());
 
@@ -56,7 +56,7 @@ public class FlowableCacheTest {
     }
     @Test
     public void testColdReplayBackpressure() {
-        FlowableCache<Integer> source = (FlowableCache<Integer>)FlowableCache.from(Flowable.range(0, 1000));
+        FlowableCache<Integer> source = new FlowableCache<Integer>(Flowable.range(0, 1000), 16);
 
         assertFalse("Source is connected!", source.isConnected());
 
@@ -66,7 +66,7 @@ public class FlowableCacheTest {
         source.subscribe(ts);
 
         assertTrue("Source is not connected!", source.isConnected());
-        assertTrue("Subscribers not retained!", source.hasSubscribers());
+        assertFalse("Subscribers retained!", source.hasSubscribers());
 
         ts.assertNoErrors();
         ts.assertNotComplete();
@@ -145,7 +145,7 @@ public class FlowableCacheTest {
     public void testTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        FlowableCache<Integer> cached = (FlowableCache<Integer>)FlowableCache.from(Flowable.range(1, 100));
+        FlowableCache<Integer> cached = new FlowableCache<Integer>(Flowable.range(1, 100), 16);
         cached.take(10).subscribe(ts);
 
         ts.assertNoErrors();
@@ -161,7 +161,7 @@ public class FlowableCacheTest {
         for (int i = 0; i < 100; i++) {
             TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
 
-            FlowableCache<Integer> cached = (FlowableCache<Integer>)FlowableCache.from(source);
+            FlowableCache<Integer> cached = new FlowableCache<Integer>(source, 16);
 
             cached.observeOn(Schedulers.computation()).subscribe(ts1);
 
@@ -184,7 +184,7 @@ public class FlowableCacheTest {
         Flowable<Long> source = Flowable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
-        FlowableCache<Long> cached = (FlowableCache<Long>)FlowableCache.from(source);
+        FlowableCache<Long> cached = new FlowableCache<Long>(source, 16);
 
         Flowable<Long> output = cached.observeOn(Schedulers.computation());
 
@@ -262,6 +262,7 @@ public class FlowableCacheTest {
     }
 
     @Test
+    @Ignore("RS subscribers should not throw")
     public void unsafeChildThrows() {
         final AtomicInteger count = new AtomicInteger();
 
@@ -374,5 +375,49 @@ public class FlowableCacheTest {
         Flowable.range(1, 5).cache()
         .test(0L, true)
         .assertEmpty();
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+            @Override
+            public Object apply(Flowable<Object> f) throws Exception {
+                return f.cache();
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().cache());
+    }
+
+    @Test
+    public void take1() {
+        Flowable<Integer> cache = Flowable.just(1, 2)
+        .cache();
+
+        cache.test();
+
+        cache
+        .take(1)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void empty() {
+        Flowable.empty()
+        .cache()
+        .test(0L)
+        .assertResult();
+    }
+
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+        .cache()
+        .test(0L)
+        .assertFailure(TestException.class);
     }
 }

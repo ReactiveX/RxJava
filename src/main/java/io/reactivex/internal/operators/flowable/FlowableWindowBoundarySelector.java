@@ -84,30 +84,30 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validate(this.s, s)) {
-                return;
+            if (SubscriptionHelper.validate(this.s, s)) {
+                this.s = s;
+
+                actual.onSubscribe(this);
+
+                if (cancelled) {
+                    return;
+                }
+
+                OperatorWindowBoundaryOpenSubscriber<T, B> os = new OperatorWindowBoundaryOpenSubscriber<T, B>(this);
+
+                if (boundary.compareAndSet(null, os)) {
+                    windows.getAndIncrement();
+                    s.request(Long.MAX_VALUE);
+                    open.subscribe(os);
+                }
             }
-
-            this.s = s;
-
-            actual.onSubscribe(this);
-
-            if (cancelled) {
-                return;
-            }
-
-            OperatorWindowBoundaryOpenSubscriber<T, B> os = new OperatorWindowBoundaryOpenSubscriber<T, B>(this);
-
-            if (boundary.compareAndSet(null, os)) {
-                windows.getAndIncrement();
-                s.request(Long.MAX_VALUE);
-                open.subscribe(os);
-            }
-
         }
 
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             if (fastEnter()) {
                 for (UnicastProcessor<T> w : ws) {
                     w.onNext(t);
@@ -174,10 +174,9 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
         }
 
         void error(Throwable t) {
-            if (windows.decrementAndGet() == 0) {
-                s.cancel();
-                resources.dispose();
-            }
+            s.cancel();
+            resources.dispose();
+            DisposableHelper.dispose(boundary);
 
             actual.onError(t);
         }

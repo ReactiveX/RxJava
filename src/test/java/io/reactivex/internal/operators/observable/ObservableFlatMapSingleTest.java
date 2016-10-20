@@ -245,13 +245,13 @@ public class ObservableFlatMapSingleTest {
     @Test
     public void innerSuccessCompletesAfterMain() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         TestObserver<Integer> to = Observable.just(1).flatMapSingle(Functions.justFunction(ps.singleOrError()))
         .test();
-        
+
         ps.onNext(2);
         ps.onComplete();
-        
+
         to
         .assertResult(2);
     }
@@ -281,7 +281,7 @@ public class ObservableFlatMapSingleTest {
             .flatMapSingle(Functions.justFunction(Single.just(2)))
             .test()
             .assertFailureAndMessage(TestException.class, "First");
-            
+
             TestHelper.assertError(errors, 0, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
@@ -303,7 +303,7 @@ public class ObservableFlatMapSingleTest {
             }))
             .test()
             .assertFailureAndMessage(TestException.class, "First");
-            
+
             TestHelper.assertError(errors, 0, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
@@ -314,7 +314,7 @@ public class ObservableFlatMapSingleTest {
     public void emissionQueueTrigger() {
         final PublishSubject<Integer> ps1 = PublishSubject.create();
         final PublishSubject<Integer> ps2 = PublishSubject.create();
-        
+
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -325,7 +325,7 @@ public class ObservableFlatMapSingleTest {
                 }
             }
         };
-        
+
         Observable.just(ps1, ps2)
                 .flatMapSingle(new Function<PublishSubject<Integer>, SingleSource<Integer>>() {
                     @Override
@@ -363,7 +363,7 @@ public class ObservableFlatMapSingleTest {
             }
         })
         .subscribe(to);
-        
+
         to
         .assertEmpty();
     }

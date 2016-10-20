@@ -332,24 +332,24 @@ public class UnicastSubjectTest {
             @Override
             public void run() { calls[0]++; }
         });
-        
+
         TestHelper.checkDisposed(us);
 
         assertEquals(1, calls[0]);
-        
+
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             us.onError(new TestException());
-            
+
             TestHelper.assertError(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
-        
+
         Disposable d = Disposables.empty();
-        
+
         us.onSubscribe(d);
-        
+
         assertTrue(d.isDisposed());
     }
 }

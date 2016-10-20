@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -25,6 +25,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
@@ -293,5 +294,94 @@ public class FlowableReduceTest {
 
         Integer r = reduced.blockingFirst();
         assertEquals(21, r.intValue());
+    }
+
+    @Test
+    public void source() {
+        Flowable<Integer> source = Flowable.just(1);
+
+        assertSame(source, (((HasUpstreamPublisher<?>)source.reduce(sum))).source());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.range(1, 2).reduce(sum));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Integer>, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Flowable<Integer> f) throws Exception {
+                return f.reduce(sum);
+            }
+        });
+    }
+
+    @Test
+    public void error() {
+        Flowable.<Integer>error(new TestException())
+        .reduce(sum)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void errorFlowable() {
+        Flowable.<Integer>error(new TestException())
+        .reduce(sum)
+        .toFlowable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void empty() {
+        Flowable.<Integer>empty()
+        .reduce(sum)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void emptyFlowable() {
+        Flowable.<Integer>empty()
+        .reduce(sum)
+        .toFlowable()
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.reduce(sum);
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void badSourceFlowable() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.reduce(sum).toFlowable();
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void reducerThrows() {
+        Flowable.just(1, 2)
+        .reduce(new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
     }
 }

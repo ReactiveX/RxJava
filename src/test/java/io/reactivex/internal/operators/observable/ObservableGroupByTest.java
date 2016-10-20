@@ -1532,4 +1532,13 @@ public class ObservableGroupByTest {
 
         to.assertSubscribed().assertValue(1).assertNoErrors().assertNotComplete();
     }
+
+    @Test
+    public void delayErrorSimpleComplete() {
+        Observable.just(1)
+        .groupBy(Functions.justFunction(1), true)
+        .flatMap(Functions.<Observable<Integer>>identity())
+        .test()
+        .assertResult(1);
+    }
 }

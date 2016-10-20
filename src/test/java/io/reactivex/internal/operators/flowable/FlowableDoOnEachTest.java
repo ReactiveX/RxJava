@@ -173,11 +173,11 @@ public class FlowableDoOnEachTest {
     @Ignore("crashing publisher can't propagate to a subscriber")
     public void testFatalError() {
 //        try {
-//            Observable.just(1, 2, 3)
-//                    .flatMap(new Function<Integer, Observable<?>>() {
+//            Flowable.just(1, 2, 3)
+//                    .flatMap(new Function<Integer, Flowable<?>>() {
 //                        @Override
-//                        public Observable<?> apply(Integer integer) {
-//                            return Observable.create(new Publisher<Object>() {
+//                        public Flowable<?> apply(Integer integer) {
+//                            return Flowable.create(new Publisher<Object>() {
 //                                @Override
 //                                public void subscribe(Subscriber<Object> o) {
 //                                    throw new NullPointerException("Test NPE");
@@ -716,5 +716,20 @@ public class FlowableDoOnEachTest {
 
         assertEquals(5, call[0]);
         assertEquals(1, call[1]);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).doOnEach(new TestSubscriber<Integer>()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.doOnEach(new TestSubscriber<Object>());
+            }
+        });
     }
 }

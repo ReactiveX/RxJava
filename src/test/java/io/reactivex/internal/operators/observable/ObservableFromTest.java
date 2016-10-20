@@ -21,7 +21,8 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.*;
+import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 
 public class ObservableFromTest {
@@ -72,5 +73,16 @@ public class ObservableFromTest {
                 return f.toObservable();
             }
         });
+    }
+
+    @Test
+    public void fusionRejected() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ASYNC);
+
+        Observable.fromArray(1, 2, 3)
+        .subscribe(to);
+
+        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        .assertResult(1, 2, 3);
     }
 }

@@ -18,9 +18,6 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -36,38 +33,16 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     final CacheState<T> state;
 
     final AtomicBoolean once;
-    /**
-     * Creates a cached Flowable with a default capacity hint of 16.
-     * @param <T> the value type
-     * @param source the source Observable to cache
-     * @return the CachedObservable instance
-     */
-    public static <T> Flowable<T> from(Flowable<T> source) {
-        return from(source, 16);
-    }
-
-    /**
-     * Creates a cached Flowable with the given capacity hint.
-     * @param <T> the value type
-     * @param source the source Observable to cache
-     * @param capacityHint the hint for the internal buffer size
-     * @return the CachedObservable instance
-     */
-    public static <T> Flowable<T> from(Flowable<T> source, int capacityHint) {
-        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
-        CacheState<T> state = new CacheState<T>(source, capacityHint);
-        return RxJavaPlugins.onAssembly(new FlowableCache<T>(source, state));
-    }
 
     /**
      * Private constructor because state needs to be shared between the Observable body and
      * the onSubscribe function.
      * @param source the upstream source whose signals to cache
-     * @param state the cache state object performing the caching and replaying
+     * @param capacityHint the capacity hint
      */
-    private FlowableCache(Flowable<T> source, CacheState<T> state) {
+    public FlowableCache(Flowable<T> source, int capacityHint) {
         super(source);
-        this.state = state;
+        this.state = new CacheState<T>(source, capacityHint);
         this.once = new AtomicBoolean();
     }
 
@@ -100,7 +75,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
      * @return true if the cache has Subscribers
      */
     /* public */ boolean hasSubscribers() {
-        return state.subscribers.length != 0;
+        return state.subscribers.get().length != 0;
     }
 
     /**
@@ -122,9 +97,13 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         /** Holds onto the subscriber connected to source. */
         final AtomicReference<Subscription> connection = new AtomicReference<Subscription>();
         /** Guarded by connection (not this). */
-        volatile ReplaySubscription<?>[] subscribers;
+        final AtomicReference<ReplaySubscription<T>[]> subscribers;
         /** The default empty array of subscribers. */
-        static final ReplaySubscription<?>[] EMPTY = new ReplaySubscription<?>[0];
+        @SuppressWarnings("rawtypes")
+        static final ReplaySubscription[] EMPTY = new ReplaySubscription[0];
+        /** The default empty array of subscribers. */
+        @SuppressWarnings("rawtypes")
+        static final ReplaySubscription[] TERMINATED = new ReplaySubscription[0];
 
         /** Set to true after connection. */
         volatile boolean isConnected;
@@ -134,10 +113,11 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
          */
         boolean sourceDone;
 
+        @SuppressWarnings("unchecked")
         CacheState(Flowable<? extends T> source, int capacityHint) {
             super(capacityHint);
             this.source = source;
-            this.subscribers = EMPTY;
+            this.subscribers = new AtomicReference<ReplaySubscription<T>[]>(EMPTY);
         }
         /**
          * Adds a ReplaySubscription to the subscribers array atomically.
@@ -146,23 +126,33 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         public void addChild(ReplaySubscription<T> p) {
             // guarding by connection to save on allocating another object
             // thus there are two distinct locks guarding the value-addition and child come-and-go
-            synchronized (connection) {
-                ReplaySubscription<?>[] a = subscribers;
+            for (;;) {
+                ReplaySubscription<T>[] a = subscribers.get();
+                if (a == TERMINATED) {
+                    return;
+                }
                 int n = a.length;
-                ReplaySubscription<?>[] b = new ReplaySubscription<?>[n + 1];
+                @SuppressWarnings("unchecked")
+                ReplaySubscription<T>[] b = new ReplaySubscription[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = p;
-                subscribers = b;
+                if (subscribers.compareAndSet(a, b)) {
+                    return;
+                }
             }
         }
         /**
          * Removes the ReplaySubscription (if present) from the subscribers array atomically.
          * @param p the target ReplaySubscription wrapping a downstream Subscriber with state
          */
+        @SuppressWarnings("unchecked")
         public void removeChild(ReplaySubscription<T> p) {
-            synchronized (connection) {
-                ReplaySubscription<?>[] a = subscribers;
+            for (;;) {
+                ReplaySubscription<T>[] a = subscribers.get();
                 int n = a.length;
+                if (n == 0) {
+                    return;
+                }
                 int j = -1;
                 for (int i = 0; i < n; i++) {
                     if (a[i].equals(p)) {
@@ -173,14 +163,19 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 if (j < 0) {
                     return;
                 }
+
+                ReplaySubscription<T>[] b;
                 if (n == 1) {
-                    subscribers = EMPTY;
+                    b = EMPTY;
+                    return;
+                } else {
+                    b = new ReplaySubscription[n - 1];
+                    System.arraycopy(a, 0, b, 0, j);
+                    System.arraycopy(a, j + 1, b, j, n - j - 1);
+                }
+                if (subscribers.compareAndSet(a, b)) {
                     return;
                 }
-                ReplaySubscription<?>[] b = new ReplaySubscription<?>[n - 1];
-                System.arraycopy(a, 0, b, 0, j);
-                System.arraycopy(a, j + 1, b, j, n - j - 1);
-                subscribers = b;
             }
         }
 
@@ -204,9 +199,12 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
             if (!sourceDone) {
                 Object o = NotificationLite.next(t);
                 add(o);
-                dispatch();
+                for (ReplaySubscription<?> rp : subscribers.get()) {
+                    rp.replay();
+                }
             }
         }
+        @SuppressWarnings("unchecked")
         @Override
         public void onError(Throwable e) {
             if (!sourceDone) {
@@ -214,9 +212,14 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 Object o = NotificationLite.error(e);
                 add(o);
                 SubscriptionHelper.cancel(connection);
-                dispatch();
+                for (ReplaySubscription<?> rp : subscribers.getAndSet(TERMINATED)) {
+                    rp.replay();
+                }
+            } else {
+                RxJavaPlugins.onError(e);
             }
         }
+        @SuppressWarnings("unchecked")
         @Override
         public void onComplete() {
             if (!sourceDone) {
@@ -224,16 +227,9 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 Object o = NotificationLite.complete();
                 add(o);
                 SubscriptionHelper.cancel(connection);
-                dispatch();
-            }
-        }
-        /**
-         * Signals all known children there is work to do.
-         */
-        void dispatch() {
-            ReplaySubscription<?>[] a = subscribers;
-            for (ReplaySubscription<?> rp : a) {
-                rp.replay();
+                for (ReplaySubscription<?> rp : subscribers.getAndSet(TERMINATED)) {
+                    rp.replay();
+                }
             }
         }
     }
@@ -243,7 +239,8 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
      *
      * @param <T>
      */
-    static final class ReplaySubscription<T> extends AtomicLong implements Subscription, Disposable {
+    static final class ReplaySubscription<T>
+    extends AtomicInteger implements Subscription {
 
         private static final long serialVersionUID = -2557562030197141021L;
         private static final long CANCELLED = -1;
@@ -251,6 +248,8 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         final Subscriber<? super T> child;
         /** The cache state object. */
         final CacheState<T> state;
+
+        final AtomicLong requested;
 
         /**
          * Contains the reference to the buffer segment in replay.
@@ -267,178 +266,119 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
          */
         int index;
 
-        /** Indicates there is a replay going on; guarded by this. */
-        boolean emitting;
-        /** Indicates there were some state changes/replay attempts; guarded by this. */
-        boolean missed;
-
         ReplaySubscription(Subscriber<? super T> child, CacheState<T> state) {
             this.child = child;
             this.state = state;
+            this.requested = new AtomicLong();
         }
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validate(n)) {
-                return;
-            }
-            for (;;) {
-                long r = get();
-                if (r == CANCELLED) {
-                    return;
-                }
-                long u = BackpressureHelper.addCap(r, n);
-                if (compareAndSet(r, u)) {
-                    replay();
-                    return;
-                }
-            }
-        }
-        /**
-         * Updates the request count to reflect values have been produced.
-         * @param n the produced amount
-         * @return the current requested amount
-         */
-        public long produced(long n) {
-            return addAndGet(-n);
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return get() == CANCELLED;
-        }
-        @Override
-        public void dispose() {
-            long r = get();
-            if (r != CANCELLED) {
-                r = getAndSet(CANCELLED);
-                if (r != CANCELLED) {
-                    state.removeChild(this);
+            if (SubscriptionHelper.validate(n)) {
+                for (;;) {
+                    long r = requested.get();
+                    if (r == CANCELLED) {
+                        return;
+                    }
+                    long u = BackpressureHelper.addCap(r, n);
+                    if (requested.compareAndSet(r, u)) {
+                        replay();
+                        return;
+                    }
                 }
             }
         }
 
         @Override
         public void cancel() {
-            dispose();
+            if (requested.getAndSet(CANCELLED) != CANCELLED) {
+                state.removeChild(this);
+            }
         }
 
         /**
          * Continue replaying available values if there are requests for them.
          */
         public void replay() {
-            // make sure there is only a single thread emitting
-            synchronized (this) {
-                if (emitting) {
-                    missed = true;
+            if (getAndIncrement() != 0) {
+                return;
+            }
+
+            int missed = 1;
+            final Subscriber<? super T> child = this.child;
+            AtomicLong rq = requested;
+
+            for (;;) {
+
+                long r = rq.get();
+
+                if (r < 0L) {
                     return;
                 }
-                emitting = true;
-            }
-            boolean skipFinal = false;
-            try {
-                final Subscriber<? super T> child = this.child;
 
-                for (;;) {
+                // read the size, if it is non-zero, we can safely read the head and
+                // read values up to the given absolute index
+                int s = state.size();
+                if (s != 0) {
+                    Object[] b = currentBuffer;
 
-                    long r = get();
+                    // latch onto the very first buffer now that it is available.
+                    if (b == null) {
+                        b = state.head();
+                        currentBuffer = b;
+                    }
+                    final int n = b.length - 1;
+                    int j = index;
+                    int k = currentIndexInBuffer;
+                    int valuesProduced = 0;
 
-                    if (r < 0L) {
-                        skipFinal = true;
+                    while (j < s && r > 0) {
+                        if (rq.get() == CANCELLED) {
+                            return;
+                        }
+                        if (k == n) {
+                            b = (Object[])b[n];
+                            k = 0;
+                        }
+                        Object o = b[k];
+
+                        if (NotificationLite.accept(o, child)) {
+                            return;
+                        }
+
+                        k++;
+                        j++;
+                        r--;
+                        valuesProduced++;
+                    }
+
+                    if (rq.get() == CANCELLED) {
                         return;
                     }
 
-                    // read the size, if it is non-zero, we can safely read the head and
-                    // read values up to the given absolute index
-                    int s = state.size();
-                    if (s != 0) {
-                        Object[] b = currentBuffer;
-
-                        // latch onto the very first buffer now that it is available.
-                        if (b == null) {
-                            b = state.head();
-                            currentBuffer = b;
-                        }
-                        final int n = b.length - 1;
-                        int j = index;
-                        int k = currentIndexInBuffer;
-                        // eagerly emit any terminal event
-                        if (r == 0) {
-                            Object o = b[k];
-                            if (NotificationLite.isComplete(o)) {
-                                child.onComplete();
-                                skipFinal = true;
-                                dispose();
-                                return;
-                            } else
-                            if (NotificationLite.isError(o)) {
-                                child.onError(NotificationLite.getError(o));
-                                skipFinal = true;
-                                dispose();
-                                return;
-                            }
+                    if (r == 0) {
+                        Object o = b[k];
+                        if (NotificationLite.isComplete(o)) {
+                            child.onComplete();
+                            return;
                         } else
-                        if (r > 0) {
-                            int valuesProduced = 0;
-
-                            while (j < s && r > 0) {
-                                if (get() == CANCELLED) {
-                                    skipFinal = true;
-                                    return;
-                                }
-                                if (k == n) {
-                                    b = (Object[])b[n];
-                                    k = 0;
-                                }
-                                Object o = b[k];
-
-                                try {
-                                    if (NotificationLite.accept(o, child)) {
-                                        skipFinal = true;
-                                        dispose();
-                                        return;
-                                    }
-                                } catch (Throwable err) {
-                                    Exceptions.throwIfFatal(err);
-                                    skipFinal = true;
-                                    dispose();
-                                    if (!NotificationLite.isError(o) && !NotificationLite.isComplete(o)) {
-                                        child.onError(err);
-                                    }
-                                    return;
-                                }
-
-                                k++;
-                                j++;
-                                r--;
-                                valuesProduced++;
-                            }
-
-                            if (get() == CANCELLED) {
-                                skipFinal = true;
-                                return;
-                            }
-
-                            index = j;
-                            currentIndexInBuffer = k;
-                            currentBuffer = b;
-                            produced(valuesProduced);
-                        }
-                    }
-
-                    synchronized (this) {
-                        if (!missed) {
-                            emitting = false;
-                            skipFinal = true;
+                        if (NotificationLite.isError(o)) {
+                            child.onError(NotificationLite.getError(o));
                             return;
                         }
-                        missed = false;
                     }
+
+                    if (valuesProduced != 0) {
+                        BackpressureHelper.producedCancel(rq, valuesProduced);
+                    }
+
+                    index = j;
+                    currentIndexInBuffer = k;
+                    currentBuffer = b;
                 }
-            } finally {
-                if (!skipFinal) {
-                    synchronized (this) {
-                        emitting = false;
-                    }
+
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
         }

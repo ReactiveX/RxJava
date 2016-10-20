@@ -264,7 +264,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
                     }
                 }
 
-                if (e != 0L && r != Long.MAX_VALUE) {
+                if (e != 0L) {
                     BackpressureHelper.produced(requested, e);
                 }
 

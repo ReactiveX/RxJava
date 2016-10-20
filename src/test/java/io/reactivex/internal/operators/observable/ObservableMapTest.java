@@ -386,4 +386,14 @@ public class ObservableMapTest {
         ObserverFusion.assertFusion(to, QueueDisposable.NONE)
         .assertResult(1, 2, 3, 4, 5);
     }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+            @Override
+            public Object apply(Observable<Object> o) throws Exception {
+                return o.map(Functions.identity());
+            }
+        }, false, 1, 1, 1);
+    }
 }

@@ -950,4 +950,37 @@ public class ObservableConcatMapEagerTest {
         to
         .assertFailure(TestException.class, 1);
     }
+
+    @Test
+    public void fuseAndTake() {
+        UnicastSubject<Integer> us = UnicastSubject.create();
+
+        us.onNext(1);
+        us.onComplete();
+
+        us.concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.just(1);
+            }
+        })
+        .take(1)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.concatMapEager(new Function<Object, ObservableSource<Object>>() {
+                    @Override
+                    public ObservableSource<Object> apply(Object v) throws Exception {
+                        return Observable.just(v);
+                    }
+                });
+            }
+        });
+    }
 }

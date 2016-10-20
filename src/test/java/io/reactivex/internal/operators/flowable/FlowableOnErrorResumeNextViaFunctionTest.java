@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
@@ -25,6 +26,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -76,7 +78,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     public void testResumeNextWithAsyncExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
         Subscription s = mock(Subscription.class);
-        TestObservable w = new TestObservable(s, "one");
+        TestFlowable w = new TestFlowable(s, "one");
         Function<Throwable, Flowable<String>> resume = new Function<Throwable, Flowable<String>>() {
 
             @Override
@@ -114,7 +116,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     @Test
     public void testFunctionThrowsError() {
         Subscription s = mock(Subscription.class);
-        TestObservable w = new TestObservable(s, "one");
+        TestFlowable w = new TestFlowable(s, "one");
         Function<Throwable, Flowable<String>> resume = new Function<Throwable, Flowable<String>>() {
 
             @Override
@@ -237,7 +239,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         Flowable<String> w = Flowable.just("one", "fail", "two", "three", "fail");
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
-        //  rx.operator incl onErrorResumeNextViaObservable)
+        //  rx.operator incl onErrorResumeNextViaFlowable)
         w = w.map(new Function<String, String>() {
             @Override
             public String apply(String s) {
@@ -274,27 +276,27 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         verify(observer, times(1)).onNext("threeResume");
     }
 
-    private static class TestObservable implements Publisher<String> {
+    private static class TestFlowable implements Publisher<String> {
 
         final String[] values;
         Thread t;
 
-        TestObservable(Subscription s, String... values) {
+        TestFlowable(Subscription s, String... values) {
             this.values = values;
         }
 
         @Override
         public void subscribe(final Subscriber<? super String> observer) {
-            System.out.println("TestObservable subscribed to ...");
+            System.out.println("TestFlowable subscribed to ...");
             observer.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
                     try {
-                        System.out.println("running TestObservable thread");
+                        System.out.println("running TestFlowable thread");
                         for (String s : values) {
-                            System.out.println("TestObservable onNext: " + s);
+                            System.out.println("TestFlowable onNext: " + s);
                             observer.onNext(s);
                         }
                         throw new RuntimeException("Forced Failure");
@@ -304,9 +306,9 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
                 }
 
             });
-            System.out.println("starting TestObservable thread");
+            System.out.println("starting TestFlowable thread");
             t.start();
-            System.out.println("done starting TestObservable thread");
+            System.out.println("done starting TestFlowable thread");
         }
 
     }
@@ -374,6 +376,17 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         ts.assertValues(1, 2, 3, 4);
         ts.assertNoErrors();
         ts.assertComplete();
+    }
+
+    @Test
+    public void badOtherSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> o) throws Exception {
+                return Flowable.error(new IOException())
+                        .onErrorResumeNext(Functions.justFunction(o));
+            }
+        }, false, 1, 1, 1);
     }
 
 }

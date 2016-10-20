@@ -6139,7 +6139,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> cache() {
-        return FlowableCache.from(this);
+        return cacheWithInitialCapacity(16);
     }
 
     /**
@@ -6201,7 +6201,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> cacheWithInitialCapacity(int initialCapacity) {
         ObjectHelper.verifyPositive(initialCapacity, "initialCapacity");
-        return FlowableCache.from(this, initialCapacity);
+        return RxJavaPlugins.onAssembly(new FlowableCache<T>(this, initialCapacity));
     }
 
     /**
@@ -6466,7 +6466,7 @@ public abstract class Flowable<T> implements Publisher<T> {
             return FlowableScalarXMap.scalarXMap(v, mapper);
         }
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new FlowableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.IMMEDIATE));
+        return RxJavaPlugins.onAssembly(new FlowableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
     }
 
 
@@ -9633,13 +9633,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param capacity number of slots available in the buffer.
      * @param onOverflow action to execute if an item needs to be buffered, but there are no available slots.  Null is allowed.
      * @param overflowStrategy how should the {@code Publisher} react to buffer overflows.  Null is not allowed.
-     * @return the source {@code Publisher} modified to buffer items up to the given capacity
+     * @return the source {@code Flowable} modified to buffer items up to the given capacity
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Publisher<T> onBackpressureBuffer(long capacity, Action onOverflow, BackpressureOverflowStrategy overflowStrategy) {
+    public final Flowable<T> onBackpressureBuffer(long capacity, Action onOverflow, BackpressureOverflowStrategy overflowStrategy) {
         ObjectHelper.requireNonNull(overflowStrategy, "strategy is null");
         ObjectHelper.verifyPositive(capacity, "capacity");
         return RxJavaPlugins.onAssembly(new FlowableOnBackpressureBufferStrategy<T>(this, capacity, onOverflow, overflowStrategy));

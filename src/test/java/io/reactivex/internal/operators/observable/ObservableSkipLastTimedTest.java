@@ -225,4 +225,14 @@ public class ObservableSkipLastTimedTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void take() {
+        Observable.just(1)
+        .skipLast(0, TimeUnit.SECONDS)
+        .take(1)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
 }
