@@ -25,6 +25,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.DefaultSubscriber;
@@ -724,5 +725,39 @@ public class FlowableSingleTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+            @Override
+            public Object apply(Flowable<Object> o) throws Exception {
+                return o.singleOrError();
+            }
+        }, false, 1, 1, 1);
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+            @Override
+            public Object apply(Flowable<Object> o) throws Exception {
+                return o.singleElement();
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Flowable<Object> o) throws Exception {
+                return o.singleOrError();
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Flowable<Object> o) throws Exception {
+                return o.singleElement();
+            }
+        });
     }
 }

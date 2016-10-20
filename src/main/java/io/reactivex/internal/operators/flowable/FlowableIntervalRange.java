@@ -92,11 +92,10 @@ public final class FlowableIntervalRange extends Flowable<Long> {
                     actual.onNext(c);
 
                     if (c == end) {
-                        try {
+                        if (resource.get() != DisposableHelper.DISPOSED) {
                             actual.onComplete();
-                        } finally {
-                            DisposableHelper.dispose(resource);
                         }
+                        DisposableHelper.dispose(resource);
                         return;
                     }
 
@@ -106,11 +105,8 @@ public final class FlowableIntervalRange extends Flowable<Long> {
                         decrementAndGet();
                     }
                 } else {
-                    try {
-                        actual.onError(new MissingBackpressureException("Can't deliver value " + count + " due to lack of requests"));
-                    } finally {
-                        DisposableHelper.dispose(resource);
-                    }
+                    actual.onError(new MissingBackpressureException("Can't deliver value " + count + " due to lack of requests"));
+                    DisposableHelper.dispose(resource);
                 }
             }
         }

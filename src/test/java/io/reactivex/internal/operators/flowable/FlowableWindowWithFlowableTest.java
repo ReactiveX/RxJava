@@ -14,24 +14,27 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.util.concurrent.Callable;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.exceptions.*;
+import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.processors.*;
 import io.reactivex.subscribers.*;
 
-public class FlowableWindowWithObservableTest {
+public class FlowableWindowWithFlowableTest {
 
     @Test
-    public void testWindowViaObservableNormal1() {
+    public void testWindowViaFlowableNormal1() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
@@ -89,7 +92,7 @@ public class FlowableWindowWithObservableTest {
     }
 
     @Test
-    public void testWindowViaObservableBoundaryCompletes() {
+    public void testWindowViaFlowableBoundaryCompletes() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
@@ -145,7 +148,7 @@ public class FlowableWindowWithObservableTest {
     }
 
     @Test
-    public void testWindowViaObservableBoundaryThrows() {
+    public void testWindowViaFlowableBoundaryThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
@@ -195,7 +198,7 @@ public class FlowableWindowWithObservableTest {
     }
 
     @Test
-    public void testWindowViaObservableSourceThrows() {
+    public void testWindowViaFlowableSourceThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
@@ -280,7 +283,7 @@ public class FlowableWindowWithObservableTest {
     }
 
     @Test
-    public void testWindowViaObservableNoUnsubscribe() {
+    public void testWindowViaFlowableNoUnsubscribe() {
         Flowable<Integer> source = Flowable.range(1, 10);
         Callable<Flowable<String>> boundary = new Callable<Flowable<String>>() {
             @Override
@@ -451,5 +454,165 @@ public class FlowableWindowWithObservableTest {
 
         assertFalse(source.hasSubscribers());
         assertFalse(boundary.hasSubscribers());
+    }
+
+    @Test
+    public void boundaryDispose() {
+        TestHelper.checkDisposed(Flowable.never().window(Flowable.never()));
+    }
+
+    @Test
+    public void boundaryDispose2() {
+        TestHelper.checkDisposed(Flowable.never().window(Functions.justCallable(Flowable.never())));
+    }
+
+    @Test
+    public void boundaryOnError() {
+        TestSubscriber<Object> to = Flowable.error(new TestException())
+        .window(Flowable.never())
+        .flatMap(Functions.<Flowable<Object>>identity(), true)
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+
+        TestHelper.assertError(errors, 0, TestException.class);
+    }
+
+    @Test
+    public void mainError() {
+        Flowable.error(new TestException())
+        .window(Functions.justCallable(Flowable.never()))
+        .test()
+        .assertError(TestException.class);
+    }
+
+    @Test
+    public void innerBadSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> o) throws Exception {
+                return Flowable.just(1).window(o).flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                        return v;
+                    }
+                });
+            }
+        }, false, 1, 1, (Object[])null);
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> o) throws Exception {
+                return Flowable.just(1).window(Functions.justCallable(o)).flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+                    @Override
+                    public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                        return v;
+                    }
+                });
+            }
+        }, false, 1, 1, (Object[])null);
+    }
+
+    @Test
+    public void reentrant() {
+        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(BehaviorProcessor.createDefault(1))
+        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void reentrantCallable() {
+        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(new Callable<Flowable<Integer>>() {
+            boolean once;
+            @Override
+            public Flowable<Integer> call() throws Exception {
+                if (!once) {
+                    once = true;
+                    return BehaviorProcessor.createDefault(1);
+                }
+                return Flowable.never();
+            }
+        })
+        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+            @Override
+            public Object apply(Flowable<Object> o) throws Exception {
+                return o.window(Flowable.never()).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
+                    @Override
+                    public Flowable<Object> apply(Flowable<Object> v) throws Exception {
+                        return v;
+                    }
+                });
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void badSourceCallable() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+            @Override
+            public Object apply(Flowable<Object> o) throws Exception {
+                return o.window(Functions.justCallable(Flowable.never())).flatMap(new Function<Flowable<Object>, Flowable<Object>>() {
+                    @Override
+                    public Flowable<Object> apply(Flowable<Object> v) throws Exception {
+                        return v;
+                    }
+                });
+            }
+        }, false, 1, 1, 1);
     }
 }

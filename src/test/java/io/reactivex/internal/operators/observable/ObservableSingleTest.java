@@ -530,5 +530,29 @@ public class ObservableSingleTest {
                 return o.singleOrError();
             }
         }, false, 1, 1, 1);
+
+        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+            @Override
+            public Object apply(Observable<Object> o) throws Exception {
+                return o.singleElement();
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.singleOrError();
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.singleElement();
+            }
+        });
     }
 }

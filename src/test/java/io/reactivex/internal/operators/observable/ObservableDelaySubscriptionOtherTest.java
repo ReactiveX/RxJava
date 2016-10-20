@@ -17,10 +17,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
-import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 
@@ -189,5 +189,15 @@ public class ObservableDelaySubscriptionOtherTest {
         ts.assertNoValues();
         ts.assertNotComplete();
         ts.assertError(TestException.class);
+    }
+
+    @Test
+    public void badSourceOther() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(Observable<Integer> o) throws Exception {
+                return Observable.just(1).delaySubscription(o);
+            }
+        }, false, 1, 1, 1);
     }
 }

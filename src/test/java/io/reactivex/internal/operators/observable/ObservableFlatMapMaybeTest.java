@@ -295,13 +295,13 @@ public class ObservableFlatMapMaybeTest {
     @Test
     public void innerSuccessCompletesAfterMain() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         TestObserver<Integer> to = Observable.just(1).flatMapMaybe(Functions.justFunction(ps.singleElement()))
         .test();
-        
+
         ps.onNext(2);
         ps.onComplete();
-        
+
         to
         .assertResult(2);
     }
@@ -331,7 +331,7 @@ public class ObservableFlatMapMaybeTest {
             .flatMapMaybe(Functions.justFunction(Maybe.just(2)))
             .test()
             .assertFailureAndMessage(TestException.class, "First");
-            
+
             TestHelper.assertError(errors, 0, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
@@ -353,7 +353,7 @@ public class ObservableFlatMapMaybeTest {
             }))
             .test()
             .assertFailureAndMessage(TestException.class, "First");
-            
+
             TestHelper.assertError(errors, 0, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
@@ -364,7 +364,7 @@ public class ObservableFlatMapMaybeTest {
     public void emissionQueueTrigger() {
         final PublishSubject<Integer> ps1 = PublishSubject.create();
         final PublishSubject<Integer> ps2 = PublishSubject.create();
-        
+
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -375,7 +375,7 @@ public class ObservableFlatMapMaybeTest {
                 }
             }
         };
-        
+
         Observable.just(ps1, ps2)
                 .flatMapMaybe(new Function<PublishSubject<Integer>, MaybeSource<Integer>>() {
                     @Override
@@ -396,7 +396,7 @@ public class ObservableFlatMapMaybeTest {
         final PublishSubject<Integer> ps1 = PublishSubject.create();
         final PublishSubject<Integer> ps2 = PublishSubject.create();
         final PublishSubject<Integer> ps3 = PublishSubject.create();
-        
+
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -407,7 +407,7 @@ public class ObservableFlatMapMaybeTest {
                 }
             }
         };
-        
+
         Observable.just(ps1, ps2, ps3)
                 .flatMapMaybe(new Function<PublishSubject<Integer>, MaybeSource<Integer>>() {
                     @Override
@@ -419,7 +419,7 @@ public class ObservableFlatMapMaybeTest {
 
         ps1.onNext(1);
         ps1.onComplete();
-        
+
         ps3.onComplete();
 
         to.assertResult(1, 2);
@@ -447,7 +447,7 @@ public class ObservableFlatMapMaybeTest {
             }
         })
         .subscribe(to);
-        
+
         to
         .assertEmpty();
     }

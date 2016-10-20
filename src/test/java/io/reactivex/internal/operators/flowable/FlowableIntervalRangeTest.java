@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.schedulers.Schedulers;
 
 public class FlowableIntervalRangeTest {
@@ -77,5 +78,35 @@ public class FlowableIntervalRangeTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.intervalRange(1, 2, 1, 1, TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    public void backpressureBounded() {
+        Flowable.intervalRange(1, 2, 1, 1, TimeUnit.MILLISECONDS)
+        .test(2L)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1L, 2L);
+    }
+
+    @Test
+    public void backpressureOverflow() {
+        Flowable.intervalRange(1, 3, 1, 1, TimeUnit.MILLISECONDS)
+        .test(2L)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(MissingBackpressureException.class, 1L, 2L);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.intervalRange(1, 3, 1, 1, TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    public void take() {
+        Flowable.intervalRange(1, 2, 1, 1, TimeUnit.MILLISECONDS)
+        .take(1)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1L);
     }
 }

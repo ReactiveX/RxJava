@@ -25,7 +25,7 @@ public class ObservableRedoTest {
     @Test
     public void redoCancel() {
         final TestObserver<Integer> to = new TestObserver<Integer>();
-        
+
         Observable.just(1)
         .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
             @Override

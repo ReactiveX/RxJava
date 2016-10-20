@@ -16,9 +16,13 @@ package io.reactivex.internal.operators.flowable;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.flowable.FlowableMapNotification.MapNotificationSubscriber;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -141,5 +145,36 @@ public class FlowableMapNotificationTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(new Flowable<Integer>() {
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                MapNotificationSubscriber mn = new MapNotificationSubscriber(
+                        observer,
+                        Functions.justFunction(Flowable.just(1)),
+                        Functions.justFunction(Flowable.just(2)),
+                        Functions.justCallable(Flowable.just(3))
+                );
+                mn.onSubscribe(new BooleanSubscription());
+            }
+        });
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Object> o) throws Exception {
+                return o.flatMap(
+                        Functions.justFunction(Flowable.just(1)),
+                        Functions.justFunction(Flowable.just(2)),
+                        Functions.justCallable(Flowable.just(3))
+                );
+            }
+        });
     }
 }

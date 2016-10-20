@@ -81,7 +81,7 @@ public class SimpleQueueTest {
         assertTrue(q.offer(3, 4));
         assertTrue(q.offer(5, 6));
         assertTrue(q.offer(7));
-        
+
         assertFalse(q.offer(8, 9));
         assertFalse(q.offer(9, 10));
     }
@@ -93,12 +93,12 @@ public class SimpleQueueTest {
         assertTrue(q.offer(3, 4));
         assertTrue(q.offer(5, 6));
         assertTrue(q.offer(7, 8)); // this should trigger a new buffer
-        
+
         for (int i = 0; i < 8; i++) {
             assertEquals(i + 1, q.peek().intValue());
             assertEquals(i + 1, q.poll().intValue());
         }
-        
+
         assertNull(q.peek());
         assertNull(q.poll());
     }
@@ -106,11 +106,11 @@ public class SimpleQueueTest {
     @Test
     public void mpscOfferPollRace() throws Exception {
         final MpscLinkedQueue<Integer> q = new MpscLinkedQueue<Integer>();
-        
+
         final AtomicInteger c = new AtomicInteger(3);
-        
+
         Thread t1 = new Thread(new Runnable() {
-            int i = 0;
+            int i;
             @Override
             public void run() {
                 c.decrementAndGet();
@@ -126,7 +126,7 @@ public class SimpleQueueTest {
         Thread t2 = new Thread(new Runnable() {
             int i = 10000;
             @Override
-            public void run() { 
+            public void run() {
                 c.decrementAndGet();
                 while (c.get() != 0) { }
 
@@ -140,7 +140,7 @@ public class SimpleQueueTest {
         Runnable r3 = new Runnable() {
             int i = 20000;
             @Override
-            public void run() { 
+            public void run() {
                 c.decrementAndGet();
                 while (c.get() != 0) { }
 
@@ -151,7 +151,7 @@ public class SimpleQueueTest {
         };
 
         r3.run();
-        
+
         t1.join();
         t2.join();
     }

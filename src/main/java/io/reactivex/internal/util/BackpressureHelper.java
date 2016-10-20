@@ -121,4 +121,31 @@ public final class BackpressureHelper {
             }
         }
     }
+
+    /**
+     * Atomically subtract the given number (positive, not validated) from the target field if
+     * it doesn't contain Long.MIN_VALUE (indicating some cancelled state).
+     * @param requested the target field holding the current requested amount
+     * @param n the produced element count, positive (not validated)
+     * @return the new amount
+     */
+    public static long producedCancel(AtomicLong requested, long n) {
+        for (;;) {
+            long current = requested.get();
+            if (current == Long.MIN_VALUE) {
+                return Long.MIN_VALUE;
+            }
+            if (current == Long.MAX_VALUE) {
+                return Long.MAX_VALUE;
+            }
+            long update = current - n;
+            if (update < 0L) {
+                RxJavaPlugins.onError(new IllegalStateException("More produced than requested: " + update));
+                update = 0L;
+            }
+            if (requested.compareAndSet(current, update)) {
+                return update;
+            }
+        }
+    }
 }

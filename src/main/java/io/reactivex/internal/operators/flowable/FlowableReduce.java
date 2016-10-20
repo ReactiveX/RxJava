@@ -13,8 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.NoSuchElementException;
-
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
@@ -108,7 +106,7 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
             if (v != null) {
                 complete(v);
             } else {
-                actual.onError(new NoSuchElementException());
+                actual.onComplete();
             }
         }
 

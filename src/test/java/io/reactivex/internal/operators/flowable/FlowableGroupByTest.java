@@ -1723,4 +1723,13 @@ public class FlowableGroupByTest {
         to.assertSubscribed().assertValue(1).assertNoErrors().assertNotComplete();
     }
 
+    @Test
+    public void delayErrorSimpleComplete() {
+        Flowable.just(1)
+        .groupBy(Functions.justFunction(1), true)
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .assertResult(1);
+    }
+
 }

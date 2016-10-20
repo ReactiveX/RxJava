@@ -162,6 +162,9 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             if (fusionMode != ASYNC && !queue.offer(t)) {
                 onError(new MissingBackpressureException("Queue is full?!"));
                 return;
@@ -171,7 +174,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
         @Override
         public void onError(Throwable t) {
-            if (ExceptionHelper.addThrowable(error, t)) {
+            if (!done && ExceptionHelper.addThrowable(error, t)) {
                 done = true;
                 drain();
             } else {
@@ -181,6 +184,9 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
             done = true;
             drain();
         }
@@ -262,9 +268,11 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             s.cancel();
-                            onError(ex);
                             it = null;
-                            continue;
+                            ExceptionHelper.addThrowable(error, ex);
+                            ex = ExceptionHelper.terminate(error);
+                            a.onError(ex);
+                            return;
                         }
 
                         if (!b) {
@@ -292,9 +300,12 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                             v = it.next();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
+                            current = null;
                             s.cancel();
-                            onError(ex);
-                            continue;
+                            ExceptionHelper.addThrowable(error, ex);
+                            ex = ExceptionHelper.terminate(error);
+                            a.onError(ex);
+                            return;
                         }
 
                         a.onNext(v);
@@ -311,9 +322,12 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                             b = it.hasNext();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
+                            current = null;
                             s.cancel();
-                            onError(ex);
-                            continue;
+                            ExceptionHelper.addThrowable(error, ex);
+                            ex = ExceptionHelper.terminate(error);
+                            a.onError(ex);
+                            return;
                         }
 
                         if (!b) {
@@ -326,16 +340,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
                     if (e == r) {
                         boolean d = done;
-                        boolean empty;
-
-                        try {
-                            empty = q.isEmpty() && it == null;
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            s.cancel();
-                            onError(ex);
-                            empty = true;
-                        }
+                        boolean empty = q.isEmpty() && it == null;
 
                         if (checkTerminated(d, empty, a, q)) {
                             return;

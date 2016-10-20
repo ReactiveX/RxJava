@@ -96,7 +96,8 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                 if (boundary.compareAndSet(null, os)) {
                     windows.getAndIncrement();
                     open.subscribe(os);
-                }            }
+                }
+            }
         }
 
         @Override

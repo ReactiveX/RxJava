@@ -22,13 +22,15 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.processors.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.*;
 
-public class FlowableWindowWithStartEndObservableTest {
+public class FlowableWindowWithStartEndFlowableTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
@@ -40,7 +42,7 @@ public class FlowableWindowWithStartEndObservableTest {
     }
 
     @Test
-    public void testObservableBasedOpenerAndCloser() {
+    public void testFlowableBasedOpenerAndCloser() {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
@@ -91,7 +93,7 @@ public class FlowableWindowWithStartEndObservableTest {
     }
 
     @Test
-    public void testObservableBasedCloser() {
+    public void testFlowableBasedCloser() {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
@@ -169,8 +171,8 @@ public class FlowableWindowWithStartEndObservableTest {
     private Consumer<Flowable<String>> observeWindow(final List<String> list, final List<List<String>> lists) {
         return new Consumer<Flowable<String>>() {
             @Override
-            public void accept(Flowable<String> stringObservable) {
-                stringObservable.subscribe(new DefaultSubscriber<String>() {
+            public void accept(Flowable<String> stringFlowable) {
+                stringFlowable.subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onComplete() {
                         lists.add(new ArrayList<String>(list));
@@ -255,5 +257,136 @@ public class FlowableWindowWithStartEndObservableTest {
         assertTrue(open.hasSubscribers());
         // FIXME subject has subscribers because of the open window
         assertTrue(close.hasSubscribers());
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).window(Flowable.just(2), Functions.justFunction(Flowable.never())));
+    }
+
+    @Test
+    public void reentrant() {
+        final FlowableProcessor<Integer> ps = PublishProcessor.<Integer>create();
+
+        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    ps.onNext(2);
+                    ps.onComplete();
+                }
+            }
+        };
+
+        ps.window(BehaviorProcessor.createDefault(1), Functions.justFunction(Flowable.never()))
+        .flatMap(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> v) throws Exception {
+                return v;
+            }
+        })
+        .subscribe(to);
+
+        ps.onNext(1);
+
+        to
+        .awaitDone(1, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void badSourceCallable() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+            @Override
+            public Object apply(Flowable<Object> o) throws Exception {
+                return o.window(Flowable.just(1), Functions.justFunction(Flowable.never()));
+            }
+        }, false, 1, 1, (Object[])null);
+    }
+
+    @Test
+    public void boundarySelectorNormal() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        PublishProcessor<Integer> start = PublishProcessor.create();
+        final PublishProcessor<Integer> end = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = source.window(start, new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) throws Exception {
+                return end;
+            }
+        })
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test();
+
+        start.onNext(0);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+        source.onNext(4);
+
+        start.onNext(1);
+
+        source.onNext(5);
+        source.onNext(6);
+
+        end.onNext(1);
+
+        start.onNext(2);
+
+        TestHelper.emit(source, 7, 8);
+
+        to.assertResult(1, 2, 3, 4, 5, 5, 6, 6, 7, 8);
+    }
+
+    @Test
+    public void startError() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        PublishProcessor<Integer> start = PublishProcessor.create();
+        final PublishProcessor<Integer> end = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = source.window(start, new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) throws Exception {
+                return end;
+            }
+        })
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test();
+
+        start.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+
+        assertFalse("Source has observers!", source.hasSubscribers());
+        assertFalse("Start has observers!", start.hasSubscribers());
+        assertFalse("End has observers!", end.hasSubscribers());
+    }
+
+    @Test
+    public void endError() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        PublishProcessor<Integer> start = PublishProcessor.create();
+        final PublishProcessor<Integer> end = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = source.window(start, new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) throws Exception {
+                return end;
+            }
+        })
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test();
+
+        start.onNext(1);
+        end.onError(new TestException());
+
+        to.assertFailure(TestException.class);
+
+        assertFalse("Source has observers!", source.hasSubscribers());
+        assertFalse("Start has observers!", start.hasSubscribers());
+        assertFalse("End has observers!", end.hasSubscribers());
     }
 }

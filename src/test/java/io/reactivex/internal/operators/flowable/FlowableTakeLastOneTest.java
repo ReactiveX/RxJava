@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
+import io.reactivex.*;
 import io.reactivex.Flowable;
 import io.reactivex.functions.*;
 import io.reactivex.subscribers.*;
@@ -135,6 +136,21 @@ public class FlowableTakeLastOneTest {
             list.add(t);
         }
 
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).takeLast(1));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.takeLast(1);
+            }
+        });
     }
 
 }

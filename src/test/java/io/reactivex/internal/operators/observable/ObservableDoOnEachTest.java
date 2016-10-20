@@ -691,4 +691,19 @@ public class ObservableDoOnEachTest {
         assertEquals(5, call[0]);
         assertEquals(1, call[1]);
     }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).doOnEach(new TestObserver<Integer>()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o) throws Exception {
+                return o.doOnEach(new TestObserver<Object>());
+            }
+        });
+    }
 }

@@ -22,7 +22,6 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.FlowableOperator;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.*;
@@ -51,7 +50,7 @@ public class FlowableSubscribeOnTest {
                         latch.await();
                     } catch (InterruptedException e) {
                         // this means we were unsubscribed (Scheduler shut down and interrupts)
-                        // ... but we'll pretend we are like many Observables that ignore interrupts
+                        // ... but we'll pretend we are like many Flowables that ignore interrupts
                     }
 
                     subscriber.onComplete();
@@ -279,6 +278,11 @@ public class FlowableSubscribeOnTest {
         .assertSubscribed()
         .assertNoValues()
         .assertNotTerminated();
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1).subscribeOn(Schedulers.single()));
     }
 
 }

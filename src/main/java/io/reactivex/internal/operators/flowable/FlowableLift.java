@@ -37,20 +37,9 @@ public final class FlowableLift<R, T> extends AbstractFlowableWithUpstream<T, R>
         this.operator = operator;
     }
 
-    /**
-     * Returns the operator of this lift publisher.
-     * @return the operator of this lift publisher
-     */
-    public FlowableOperator<? extends R, ? super T> operator() {
-        return operator;
-    }
-
     @Override
     public void subscribeActual(Subscriber<? super R> s) {
         try {
-            if (s == null) {
-                throw new NullPointerException("Operator " + operator + " received a null Subscriber");
-            }
             Subscriber<? super T> st = operator.apply(s);
 
             if (st == null) {

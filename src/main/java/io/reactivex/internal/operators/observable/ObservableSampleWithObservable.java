@@ -80,13 +80,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         }
 
         boolean setOther(Disposable o) {
-            if (other.get() == null) {
-                if (other.compareAndSet(null, o)) {
-                    return true;
-                }
-                o.dispose();
-            }
-            return false;
+            return DisposableHelper.setOnce(other, o);
         }
 
         @Override
@@ -101,12 +95,12 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         }
 
         public void error(Throwable e) {
-            dispose();
+            s.dispose();
             actual.onError(e);
         }
 
         public void complete() {
-            dispose();
+            s.dispose();
             actual.onComplete();
         }
 

@@ -76,56 +76,58 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (!SubscriptionHelper.validate(this.s, s)) {
-                return;
-            }
-            this.s = s;
+            if (SubscriptionHelper.validate(this.s, s)) {
+                this.s = s;
 
-            Subscriber<? super Flowable<T>> a = actual;
-            a.onSubscribe(this);
+                Subscriber<? super Flowable<T>> a = actual;
+                a.onSubscribe(this);
 
-            if (cancelled) {
-                return;
-            }
-
-            Publisher<B> p;
-
-            try {
-                p = ObjectHelper.requireNonNull(other.call(), "The first window publisher supplied is null");
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                s.cancel();
-                a.onError(e);
-                return;
-            }
-
-            UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
-
-            long r = requested();
-            if (r != 0L) {
-                a.onNext(w);
-                if (r != Long.MAX_VALUE) {
-                    produced(1);
+                if (cancelled) {
+                    return;
                 }
-            } else {
-                s.cancel();
-                a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests"));
-                return;
-            }
 
-            window = w;
+                Publisher<B> p;
 
-            WindowBoundaryInnerSubscriber<T, B> inner = new WindowBoundaryInnerSubscriber<T, B>(this);
+                try {
+                    p = ObjectHelper.requireNonNull(other.call(), "The first window publisher supplied is null");
+                } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
+                    s.cancel();
+                    a.onError(e);
+                    return;
+                }
 
-            if (boundary.compareAndSet(null, inner)) {
-                windows.getAndIncrement();
-                s.request(Long.MAX_VALUE);
-                p.subscribe(inner);
+                UnicastProcessor<T> w = UnicastProcessor.<T>create(bufferSize);
+
+                long r = requested();
+                if (r != 0L) {
+                    a.onNext(w);
+                    if (r != Long.MAX_VALUE) {
+                        produced(1);
+                    }
+                } else {
+                    s.cancel();
+                    a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests"));
+                    return;
+                }
+
+                window = w;
+
+                WindowBoundaryInnerSubscriber<T, B> inner = new WindowBoundaryInnerSubscriber<T, B>(this);
+
+                if (boundary.compareAndSet(null, inner)) {
+                    windows.getAndIncrement();
+                    s.request(Long.MAX_VALUE);
+                    p.subscribe(inner);
+                }
             }
         }
 
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             if (fastEnter()) {
                 UnicastProcessor<T> w = window;
 
@@ -146,7 +148,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
         @Override
         public void onError(Throwable t) {
             if (done) {
-                RxJavaPlugins.onError(error);
+                RxJavaPlugins.onError(t);
                 return;
             }
             error = t;

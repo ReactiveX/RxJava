@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.reactivestreams.Subscription;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -308,5 +308,15 @@ public class FlowableDelaySubscriptionOtherTest {
     @Test(expected = NullPointerException.class)
     public void otherNull() {
         Flowable.just(1).delaySubscription((Flowable<Integer>)null);
+    }
+
+    @Test
+    public void badSourceOther() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> o) throws Exception {
+                return Flowable.just(1).delaySubscription(o);
+            }
+        }, false, 1, 1, 1);
     }
 }

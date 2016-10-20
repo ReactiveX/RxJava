@@ -729,4 +729,14 @@ public class FlowableMapTest {
         .assertResult(1, 2, 3, 4, 5);
     }
 
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+            @Override
+            public Object apply(Flowable<Object> o) throws Exception {
+                return o.map(Functions.identity());
+            }
+        }, false, 1, 1, 1);
+    }
+
 }

@@ -611,17 +611,17 @@ public enum TestHelper {
 
                 s.cancel();
             }
-            
+
             @Override
             public void onNext(Object t) {
                 ts.onNext(t);
             }
-            
+
             @Override
             public void onError(Throwable t) {
                 ts.onError(t);
             }
-            
+
             @Override
             public void onComplete() {
                 ts.onComplete();

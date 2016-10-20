@@ -1027,4 +1027,37 @@ public class FlowableConcatMapEagerTest {
         .assertFailure(TestException.class);
     }
 
+    @Test
+    public void fuseAndTake() {
+        UnicastProcessor<Integer> us = UnicastProcessor.create();
+
+        us.onNext(1);
+        us.onComplete();
+
+        us.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) throws Exception {
+                return Flowable.just(1);
+            }
+        })
+        .take(1)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.concatMapEager(new Function<Object, Flowable<Object>>() {
+                    @Override
+                    public Flowable<Object> apply(Object v) throws Exception {
+                        return Flowable.just(v);
+                    }
+                });
+            }
+        });
+    }
+
 }
