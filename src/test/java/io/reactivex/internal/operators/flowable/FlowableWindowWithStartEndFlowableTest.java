@@ -389,4 +389,13 @@ public class FlowableWindowWithStartEndFlowableTest {
         assertFalse("Start has observers!", start.hasSubscribers());
         assertFalse("End has observers!", end.hasSubscribers());
     }
+
+    @Test
+    public void mainError() {
+        Flowable.<Integer>error(new TestException())
+        .window(Flowable.never(), Functions.justFunction(Flowable.just(1)))
+        .flatMap(Functions.<Flowable<Integer>>identity())
+        .test()
+        .assertFailure(TestException.class);
+    }
 }

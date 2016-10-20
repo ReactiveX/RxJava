@@ -13,16 +13,19 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.junit.*;
+import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableGenerateTest {
 
@@ -125,5 +128,112 @@ public class FlowableGenerateTest {
                     e.onComplete();
                 }
             }, Functions.emptyConsumer()));
+    }
+
+    @Test
+    public void nullError() {
+        final int[] call = { 0 };
+        Flowable.generate(Functions.justCallable(1),
+        new BiConsumer<Integer, Emitter<Object>>() {
+            @Override
+            public void accept(Integer s, Emitter<Object> e) throws Exception {
+                try {
+                    e.onError(null);
+                } catch (NullPointerException ex) {
+                    call[0]++;
+                }
+            }
+        }, Functions.emptyConsumer())
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertEquals(0, call[0]);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.generate(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    return 1;
+                }
+            }, new BiConsumer<Object, Emitter<Object>>() {
+                @Override
+                public void accept(Object s, Emitter<Object> e) throws Exception {
+                    e.onComplete();
+                }
+            }, Functions.emptyConsumer()));
+    }
+
+    @Test
+    public void rebatchAndTake() {
+        Flowable.generate(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return 1;
+            }
+        }, new BiConsumer<Object, Emitter<Object>>() {
+            @Override
+            public void accept(Object s, Emitter<Object> e) throws Exception {
+                e.onNext(1);
+            }
+        }, Functions.emptyConsumer())
+        .rebatchRequests(1)
+        .take(5)
+        .test()
+        .assertResult(1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void backpressure() {
+        Flowable.generate(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return 1;
+            }
+        }, new BiConsumer<Object, Emitter<Object>>() {
+            @Override
+            public void accept(Object s, Emitter<Object> e) throws Exception {
+                e.onNext(1);
+            }
+        }, Functions.emptyConsumer())
+        .rebatchRequests(1)
+        .test(5)
+        .assertSubscribed()
+        .assertValues(1, 1, 1, 1, 1)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void requestRace() {
+        Flowable<Object> source = Flowable.generate(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return 1;
+            }
+        }, new BiConsumer<Object, Emitter<Object>>() {
+            @Override
+            public void accept(Object s, Emitter<Object> e) throws Exception {
+                e.onNext(1);
+            }
+        }, Functions.emptyConsumer());
+
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Object> ts = source.test(0L);
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < 500; j++) {
+                        ts.request(1);
+                    }
+                }
+            };
+
+            TestHelper.race(r, r);
+
+            ts.assertValueCount(1000);
+        }
     }
 }

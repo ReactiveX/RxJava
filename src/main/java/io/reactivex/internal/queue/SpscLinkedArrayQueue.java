@@ -20,7 +20,7 @@ package io.reactivex.internal.queue;
 
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
 import io.reactivex.internal.util.Pow2;
 
 /**
@@ -28,7 +28,7 @@ import io.reactivex.internal.util.Pow2;
  * than the producer.
  * @param <T> the contained value type
  */
-public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
+public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     final AtomicLong producerIndex = new AtomicLong();
 

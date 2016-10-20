@@ -20,7 +20,7 @@ package io.reactivex.internal.queue;
 
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
 import io.reactivex.internal.util.Pow2;
 
 /**
@@ -37,7 +37,7 @@ import io.reactivex.internal.util.Pow2;
  *
  * @param <E>
  */
-public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements SimpleQueue<E> {
+public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements SimplePlainQueue<E> {
     private static final long serialVersionUID = -1296597691183856449L;
     private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     final int mask;

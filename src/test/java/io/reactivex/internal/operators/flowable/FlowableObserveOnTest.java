@@ -1349,6 +1349,8 @@ public class FlowableObserveOnTest {
                 @SuppressWarnings("unchecked")
                 BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)observer;
 
+                oo.sourceMode = QueueFuseable.SYNC;
+                oo.requested.lazySet(1);
                 oo.queue = new SimpleQueue<Integer>() {
 
                     @Override
@@ -1382,7 +1384,159 @@ public class FlowableObserveOnTest {
             }
         }
         .observeOn(Schedulers.single())
-        .test()
+        .test(0L)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void conditionalNonFusedPollThrows() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+
+                @SuppressWarnings("unchecked")
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)observer;
+
+                oo.sourceMode = QueueFuseable.SYNC;
+                oo.requested.lazySet(1);
+                oo.queue = new SimpleQueue<Integer>() {
+
+                    @Override
+                    public boolean offer(Integer value) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean offer(Integer v1, Integer v2) {
+                        return false;
+                    }
+
+                    @Override
+                    public Integer poll() throws Exception {
+                        throw new TestException();
+                    }
+
+                    @Override
+                    public boolean isEmpty() {
+                        return false;
+                    }
+
+                    @Override
+                    public void clear() {
+                    }
+                };
+
+                oo.clear();
+
+                oo.trySchedule();
+            }
+        }
+        .observeOn(Schedulers.single())
+        .filter(Functions.alwaysTrue())
+        .test(0L)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void asycFusedPollThrows() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+
+                @SuppressWarnings("unchecked")
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)observer;
+
+                oo.sourceMode = QueueFuseable.ASYNC;
+                oo.requested.lazySet(1);
+                oo.queue = new SimpleQueue<Integer>() {
+
+                    @Override
+                    public boolean offer(Integer value) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean offer(Integer v1, Integer v2) {
+                        return false;
+                    }
+
+                    @Override
+                    public Integer poll() throws Exception {
+                        throw new TestException();
+                    }
+
+                    @Override
+                    public boolean isEmpty() {
+                        return false;
+                    }
+
+                    @Override
+                    public void clear() {
+                    }
+                };
+
+                oo.clear();
+
+                oo.trySchedule();
+            }
+        }
+        .observeOn(Schedulers.single())
+        .test(0L)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void conditionalAsyncFusedPollThrows() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+
+                @SuppressWarnings("unchecked")
+                BaseObserveOnSubscriber<Integer> oo = (BaseObserveOnSubscriber<Integer>)observer;
+
+                oo.sourceMode = QueueFuseable.ASYNC;
+                oo.requested.lazySet(1);
+                oo.queue = new SimpleQueue<Integer>() {
+
+                    @Override
+                    public boolean offer(Integer value) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean offer(Integer v1, Integer v2) {
+                        return false;
+                    }
+
+                    @Override
+                    public Integer poll() throws Exception {
+                        throw new TestException();
+                    }
+
+                    @Override
+                    public boolean isEmpty() {
+                        return false;
+                    }
+
+                    @Override
+                    public void clear() {
+                    }
+                };
+
+                oo.clear();
+
+                oo.trySchedule();
+            }
+        }
+        .observeOn(Schedulers.single())
+        .filter(Functions.alwaysTrue())
+        .test(0L)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
     }
@@ -1393,5 +1547,235 @@ public class FlowableObserveOnTest {
         .observeOn(Schedulers.trampoline())
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void conditionalNormal() {
+        Flowable.range(1, 1000).hide()
+        .observeOn(Schedulers.single())
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .take(250)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertSubscribed()
+        .assertValueCount(250)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void syncFusedCancelAfterRequest() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 2) {
+                    cancel();
+                    onComplete();
+                }
+            }
+        };
+
+        Flowable.range(1, 3)
+        .observeOn(Schedulers.single())
+        .subscribe(ts);
+
+        ts
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void syncFusedCancelAfterRequest2() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L);
+
+        Flowable.range(1, 2)
+        .observeOn(Schedulers.single())
+        .subscribe(ts);
+
+        ts
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void syncFusedCancelAfterRequestConditional() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L) {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 2) {
+                    cancel();
+                    onComplete();
+                }
+            }
+        };
+
+        Flowable.range(1, 3)
+        .observeOn(Schedulers.single())
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        ts
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void syncFusedCancelAfterRequestConditional2() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L);
+
+        Flowable.range(1, 2)
+        .observeOn(Schedulers.single())
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        ts
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void nonFusedCancelAfterRequestConditional2() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L);
+
+        Flowable.range(1, 2).hide()
+        .observeOn(Schedulers.single())
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        ts
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void doubleObserveOn() {
+        Flowable.just(1).hide()
+        .observeOn(Schedulers.computation())
+        .observeOn(Schedulers.single())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void doubleObserveOnError() {
+        Flowable.error(new TestException())
+        .observeOn(Schedulers.computation())
+        .observeOn(Schedulers.single())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void doubleObserveOnConditional() {
+        Flowable.just(1).hide()
+        .observeOn(Schedulers.computation())
+        .distinct()
+        .observeOn(Schedulers.single())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1);
+    }
+
+    @Test
+    public void doubleObserveOnErrorConditional() {
+        Flowable.error(new TestException())
+        .observeOn(Schedulers.computation())
+        .distinct()
+        .observeOn(Schedulers.single())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void request1Conditional() {
+        Flowable.range(1, 10).hide()
+        .observeOn(ImmediateThinScheduler.INSTANCE)
+        .filter(Functions.alwaysTrue())
+        .test(1L)
+        .assertValue(1);
+    }
+
+    @Test
+    public void backFusedConditional() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.range(1, 100).hide()
+        .observeOn(ImmediateThinScheduler.INSTANCE)
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.ASYNC)
+        .assertValueCount(100)
+        .assertComplete()
+        .assertNoErrors();
+    }
+
+    @Test
+    public void backFusedErrorConditional() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.<Integer>error(new TestException())
+        .observeOn(ImmediateThinScheduler.INSTANCE)
+        .filter(Functions.alwaysTrue())
+        .subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.ASYNC)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void backFusedCancelConditional() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+            final TestScheduler scheduler = new TestScheduler();
+
+            Flowable.just(1).hide()
+            .observeOn(scheduler)
+            .filter(Functions.alwaysTrue())
+            .subscribe(ts);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    scheduler.triggerActions();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            SubscriberFusion.assertFusion(ts, QueueSubscription.ASYNC);
+
+            if (ts.valueCount() != 0) {
+                ts.assertResult(1);
+            }
+        }
+    }
+
+    @Test
+    public void syncFusedRequestOneByOneConditional() {
+        Flowable.range(1, 5)
+        .observeOn(ImmediateThinScheduler.INSTANCE)
+        .filter(Functions.alwaysTrue())
+        .rebatchRequests(1)
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
     }
 }

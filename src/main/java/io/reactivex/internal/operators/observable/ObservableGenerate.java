@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
@@ -143,8 +142,11 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
 
         @Override
         public void onError(Throwable t) {
+            if (t == null) {
+                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+            }
             terminate = true;
-            actual.onError(ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources."));
+            actual.onError(t);
         }
 
         @Override
