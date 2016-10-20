@@ -63,13 +63,6 @@ public final class UnicastSubject<T> extends Subject<T> {
     /** Set to 1 atomically for the first and only Subscriber. */
     final AtomicBoolean once;
 
-    /**
-     * Called when the Subscriber has called cancel.
-     * This allows early termination for those who emit into this
-     * subject so that they can stop immediately
-     */
-    Runnable onCancelled;
-
     /** The wip counter and QueueDisposable surface. */
     final BasicIntQueueDisposable<T> wip;
 
@@ -160,24 +153,6 @@ public final class UnicastSubject<T> extends Subject<T> {
         }
     }
 
-    void notifyOnCancelled() {
-        Runnable r = onCancelled;
-        onCancelled = null;
-        if (r != null) {
-            r.run();
-        }
-    }
-
-    /**
-     * Clears the observer and the queue.
-     * @param q the queue reference (avoid re-reading instance field).
-     */
-    void clearAndNotify(SimpleQueue<?> q) {
-        actual.lazySet(null);
-        q.clear();
-        notifyOnCancelled();
-    }
-
     @Override
     public void onSubscribe(Disposable s) {
         if (done || disposed) {
@@ -234,7 +209,8 @@ public final class UnicastSubject<T> extends Subject<T> {
             for (;;) {
 
                 if (disposed) {
-                    clearAndNotify(q);
+                    actual.lazySet(null);
+                    q.clear();
                     return;
                 }
 
@@ -244,7 +220,6 @@ public final class UnicastSubject<T> extends Subject<T> {
 
                 if (d && empty) {
                     actual.lazySet(null);
-                    notifyOnCancelled();
                     Throwable ex = error;
                     if (ex != null) {
                         a.onError(ex);
@@ -276,7 +251,8 @@ public final class UnicastSubject<T> extends Subject<T> {
         for (;;) {
 
             if (disposed) {
-                clearAndNotify(q);
+                actual.lazySet(null);
+                q.clear();
                 return;
             }
 
@@ -392,7 +368,8 @@ public final class UnicastSubject<T> extends Subject<T> {
 
                 actual.lazySet(null);
                 if (wip.getAndIncrement() == 0) {
-                    clearAndNotify(queue);
+                    actual.lazySet(null);
+                    queue.clear();
                 }
             }
         }

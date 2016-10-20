@@ -221,4 +221,18 @@ public class ObservableOnErrorReturnTest {
         .assertResult(1);
     }
 
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).onErrorReturnItem(1));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> f) throws Exception {
+                return f.onErrorReturnItem(1);
+            }
+        });
+    }
 }

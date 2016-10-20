@@ -147,13 +147,11 @@ public final class SpscLinkedArrayQueue<T> implements SimpleQueue<T> {
         consumerBuffer = nextBuffer;
         final int offsetInNew = calcWrappedOffset(index, mask);
         final T n = (T) lvElement(nextBuffer, offsetInNew);// LoadLoad
-        if (null == n) {
-            return null;
-        } else {
+        if (null != n) {
             soElement(nextBuffer, offsetInNew, null);// StoreStore
             soConsumerIndex(index + 1);// this ensures correctness on 32bit platforms
-            return n;
         }
+        return n;
     }
 
     @SuppressWarnings("unchecked")

@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
-import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 
@@ -85,5 +85,20 @@ public class ObservableTakeLastOneTest {
             .takeLast(0).count().blockingGet();
         assertEquals(num, upstreamCount.get());
         assertEquals(0L, count);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).takeLast(1));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> f) throws Exception {
+                return f.takeLast(1);
+            }
+        });
     }
 }

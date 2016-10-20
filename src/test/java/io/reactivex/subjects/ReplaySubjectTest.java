@@ -1153,4 +1153,15 @@ public class ReplaySubjectTest {
 
         ts.assertResult(1, 2);
     }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(ReplaySubject.create());
+
+        TestHelper.checkDisposed(ReplaySubject.createUnbounded());
+
+        TestHelper.checkDisposed(ReplaySubject.createWithSize(10));
+
+        TestHelper.checkDisposed(ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, Schedulers.single(), 10));
+    }
 }

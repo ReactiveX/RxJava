@@ -106,7 +106,9 @@ public final class MpscLinkedQueue<T> implements SimpleQueue<T> {
 
     @Override
     public boolean offer(T v1, T v2) {
-        return offer(v1) && offer(v2);
+        offer(v1);
+        offer(v2);
+        return true;
     }
 
     @Override

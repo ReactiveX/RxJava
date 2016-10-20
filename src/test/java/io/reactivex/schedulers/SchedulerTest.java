@@ -271,4 +271,15 @@ public class SchedulerTest {
 
         assertSame(EmptyDisposable.INSTANCE, s.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 1, 1, TimeUnit.MILLISECONDS));
     }
+
+    @Test
+    public void holders() {
+        assertNotNull(new Schedulers.ComputationHolder());
+
+        assertNotNull(new Schedulers.IoHolder());
+
+        assertNotNull(new Schedulers.NewThreadHolder());
+
+        assertNotNull(new Schedulers.SingleHolder());
+    }
 }

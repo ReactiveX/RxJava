@@ -21,10 +21,11 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.*;
 
 public class MaybeTimeoutPublisherTest {
 
@@ -219,5 +220,15 @@ public class MaybeTimeoutPublisherTest {
                 to.assertNoErrors().assertComplete();
             }
         }
+    }
+
+    @Test
+    public void badSourceOther() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return Maybe.never().timeout(f, Maybe.just(1));
+            }
+        }, false, null, 1, 1);
     }
 }

@@ -521,4 +521,14 @@ public class ObservableSingleTest {
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
     }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
+            @Override
+            public Object apply(Observable<Object> o) throws Exception {
+                return o.singleOrError();
+            }
+        }, false, 1, 1, 1);
+    }
 }

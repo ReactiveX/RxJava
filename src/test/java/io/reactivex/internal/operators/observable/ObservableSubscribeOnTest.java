@@ -200,4 +200,8 @@ public class ObservableSubscribeOnTest {
         .assertNotTerminated();
     }
 
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Observable.just(1).subscribeOn(Schedulers.single()));
+    }
 }

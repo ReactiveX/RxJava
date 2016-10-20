@@ -13,8 +13,10 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.disposables.DisposableHelper;
@@ -36,27 +38,32 @@ public final class SingleDoOnDispose<T> extends Single<T> {
         source.subscribe(new DoOnDisposeObserver<T>(s, onDispose));
     }
 
-    static final class DoOnDisposeObserver<T> implements SingleObserver<T>, Disposable {
-        final SingleObserver<? super T> actual;
+    static final class DoOnDisposeObserver<T>
+    extends AtomicReference<Action>
+    implements SingleObserver<T>, Disposable {
+        private static final long serialVersionUID = -8583764624474935784L;
 
-        final Action onDispose;
+        final SingleObserver<? super T> actual;
 
         Disposable d;
 
         DoOnDisposeObserver(SingleObserver<? super T> actual, Action onDispose) {
             this.actual = actual;
-            this.onDispose = onDispose;
+            this.lazySet(onDispose);
         }
 
         @Override
         public void dispose() {
-            try {
-                onDispose.run();
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                RxJavaPlugins.onError(ex);
+            Action a = getAndSet(null);
+            if (a != null) {
+                try {
+                    a.run();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    RxJavaPlugins.onError(ex);
+                }
+                d.dispose();
             }
-            d.dispose();
         }
 
         @Override

@@ -121,6 +121,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
                 RxJavaPlugins.onError(e);
                 return;
             }
+            d = DisposableHelper.DISPOSED;
             actual.onError(e);
         }
 
@@ -129,6 +130,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
             if (d == DisposableHelper.DISPOSED) {
                 return;
             }
+            d = DisposableHelper.DISPOSED;
             actual.onComplete();
         }
 

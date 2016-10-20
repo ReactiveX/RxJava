@@ -323,4 +323,33 @@ public class UnicastSubjectTest {
             TestHelper.race(r1, r2, Schedulers.single());
         }
     }
+
+    @Test
+    public void dispose() {
+        final int[] calls = { 0 };
+
+        UnicastSubject<Integer> us = new UnicastSubject<Integer>(128, new Runnable() {
+            @Override
+            public void run() { calls[0]++; }
+        });
+        
+        TestHelper.checkDisposed(us);
+
+        assertEquals(1, calls[0]);
+        
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            us.onError(new TestException());
+            
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+        
+        Disposable d = Disposables.empty();
+        
+        us.onSubscribe(d);
+        
+        assertTrue(d.isDisposed());
+    }
 }

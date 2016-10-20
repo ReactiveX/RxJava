@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
+import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 
@@ -33,4 +33,18 @@ public class ObservableFlattenIterableTest {
         }));
     }
 
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(Observable<Integer> o) throws Exception {
+                return o.flatMapIterable(new Function<Object, Iterable<Integer>>() {
+                    @Override
+                    public Iterable<Integer> apply(Object v) throws Exception {
+                        return Arrays.asList(10, 20);
+                    }
+                });
+            }
+        }, false, 1, 1, 10, 20);
+    }
 }

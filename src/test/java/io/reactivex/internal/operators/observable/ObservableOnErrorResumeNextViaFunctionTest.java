@@ -14,8 +14,10 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
@@ -25,6 +27,7 @@ import org.reactivestreams.Subscription;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 
@@ -342,5 +345,16 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
                 .subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
+    }
+
+    @Test
+    public void badOtherSource() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(Observable<Integer> o) throws Exception {
+                return Observable.error(new IOException())
+                        .onErrorResumeNext(Functions.justFunction(o));
+            }
+        }, false, 1, 1, 1);
     }
 }
