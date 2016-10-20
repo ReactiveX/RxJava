@@ -20,11 +20,11 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -162,17 +162,6 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
             actual.onComplete();
         }
 
-
-
-        void complete() {
-            if (windows.decrementAndGet() == 0) {
-                s.cancel();
-                resources.dispose();
-            }
-
-            actual.onComplete();
-        }
-
         void error(Throwable t) {
             s.cancel();
             resources.dispose();
@@ -197,7 +186,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
         }
 
         void drainLoop() {
-            final SimpleQueue<Object> q = queue;
+            final SimplePlainQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             final List<UnicastProcessor<T>> ws = this.ws;
             int missed = 1;
@@ -206,18 +195,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
                 for (;;) {
                     boolean d = done;
-                    Object o;
-
-                    try {
-                        o = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        dispose();
-                        for (UnicastProcessor<T> w : ws) {
-                            w.onError(ex);
-                        }
-                        return;
-                    }
+                    Object o = q.poll();
 
                     boolean empty = o == null;
 

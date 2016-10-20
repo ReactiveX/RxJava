@@ -65,7 +65,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         final int maxConcurrency;
         final int bufferSize;
 
-        volatile SimpleQueue<U> queue;
+        volatile SimplePlainQueue<U> queue;
 
         volatile boolean done;
 
@@ -235,7 +235,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     return;
                 }
             } else {
-                SimpleQueue<U> q = queue;
+                SimplePlainQueue<U> q = queue;
                 if (q == null) {
                     if (maxConcurrency == Integer.MAX_VALUE) {
                         q = new SpscLinkedArrayQueue<U>(bufferSize);
@@ -330,7 +330,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 if (checkTerminate()) {
                     return;
                 }
-                SimpleQueue<U> svq = queue;
+                SimplePlainQueue<U> svq = queue;
 
                 if (svq != null) {
                     for (;;) {
@@ -339,13 +339,9 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                             if (checkTerminate()) {
                                 return;
                             }
-                            try {
-                                o = svq.poll();
-                            } catch (Throwable ex) {
-                                Exceptions.throwIfFatal(ex);
-                                errors.addThrowable(ex);
-                                continue;
-                            }
+
+                            o = svq.poll();
+
                             if (o == null) {
                                 break;
                             }
@@ -398,6 +394,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     }
 
                     int j = index;
+                    sourceLoop:
                     for (int i = 0; i < n; i++) {
                         if (checkTerminate()) {
                             return;
@@ -407,26 +404,37 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
                         U o = null;
                         for (;;) {
+                            if (checkTerminate()) {
+                                return;
+                            }
+                            SimpleQueue<U> q = is.queue;
+                            if (q == null) {
+                                break;
+                            }
                             for (;;) {
-                                if (checkTerminate()) {
-                                    return;
-                                }
-                                SimpleQueue<U> q = is.queue;
-                                if (q == null) {
-                                    break;
-                                }
                                 try {
                                     o = q.poll();
                                 } catch (Throwable ex) {
                                     Exceptions.throwIfFatal(ex);
+                                    is.dispose();
                                     errors.addThrowable(ex);
-                                    continue;
+                                    if (checkTerminate()) {
+                                        return;
+                                    }
+                                    removeInner(is);
+                                    innerCompleted = true;
+                                    i++;
+                                    continue sourceLoop;
                                 }
                                 if (o == null) {
                                     break;
                                 }
 
                                 child.onNext(o);
+
+                                if (checkTerminate()) {
+                                    return;
+                                }
                             }
                             if (o == null) {
                                 break;
@@ -478,6 +486,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             }
             Throwable e = errors.get();
             if (!delayErrors && (e != null)) {
+                disposeAll();
                 actual.onError(errors.terminate());
                 return true;
             }

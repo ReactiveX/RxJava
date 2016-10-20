@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -26,7 +27,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -712,5 +713,47 @@ public class ObservableFlatMapTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @Test
+    public void fusedInnerThrows() {
+        Observable.just(1).hide()
+        .flatMap(new Function<Integer, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Integer v) throws Exception {
+                return Observable.range(1, 2).map(new Function<Integer, Object>() {
+                    @Override
+                    public Object apply(Integer w) throws Exception {
+                        throw new TestException();
+                    }
+                });
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedInnerThrows2() {
+        TestObserver<Integer> to = Observable.range(1, 2).hide()
+        .flatMap(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v) throws Exception {
+                return Observable.range(1, 2).map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer w) throws Exception {
+                        throw new TestException();
+                    }
+                });
+            }
+        }, true)
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.errorList(to);
+
+        TestHelper.assertError(errors, 0, TestException.class);
+
+        TestHelper.assertError(errors, 1, TestException.class);
     }
 }

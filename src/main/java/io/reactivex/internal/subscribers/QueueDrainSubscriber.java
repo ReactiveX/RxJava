@@ -19,7 +19,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.MissingBackpressureException;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 
@@ -33,14 +33,14 @@ import io.reactivex.internal.util.*;
  */
 public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriberPad4 implements Subscriber<T>, QueueDrain<U, V> {
     protected final Subscriber<? super V> actual;
-    protected final SimpleQueue<U> queue;
+    protected final SimplePlainQueue<U> queue;
 
     protected volatile boolean cancelled;
 
     protected volatile boolean done;
     protected Throwable error;
 
-    public QueueDrainSubscriber(Subscriber<? super V> actual, SimpleQueue<U> queue) {
+    public QueueDrainSubscriber(Subscriber<? super V> actual, SimplePlainQueue<U> queue) {
         this.actual = actual;
         this.queue = queue;
     }
@@ -66,7 +66,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
 
     protected final void fastPathEmitMax(U value, boolean delayError, Disposable dispose) {
         final Subscriber<? super V> s = actual;
-        final SimpleQueue<U> q = queue;
+        final SimplePlainQueue<U> q = queue;
 
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             long r = requested.get();

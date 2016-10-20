@@ -13,10 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.plugins.RxJavaPlugins;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
@@ -25,10 +21,12 @@ import org.reactivestreams.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.util.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T, U> {
     final Function<? super T, ? extends Publisher<? extends U>> mapper;
@@ -64,13 +62,11 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         final int maxConcurrency;
         final int bufferSize;
 
-        volatile SimpleQueue<U> queue;
+        volatile SimplePlainQueue<U> queue;
 
         volatile boolean done;
 
-        final AtomicReference<SimpleQueue<Throwable>> errors = new AtomicReference<SimpleQueue<Throwable>>();
-
-        static final SimpleQueue<Throwable> ERRORS_CLOSED = new RejectingQueue<Throwable>();
+        final AtomicThrowable errs = new AtomicThrowable();
 
         volatile boolean cancelled;
 
@@ -126,7 +122,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
             }
             Publisher<? extends U> p;
             try {
-                p = mapper.apply(t);
+                p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();
@@ -140,7 +136,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     u  = ((Callable<U>)p).call();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    getErrorQueue().offer(ex);
+                    errs.addThrowable(ex);
                     drain();
                     return;
                 }
@@ -210,7 +206,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         }
 
         SimpleQueue<U> getMainQueue() {
-            SimpleQueue<U> q = queue;
+            SimplePlainQueue<U> q = queue;
             if (q == null) {
                 if (maxConcurrency == Integer.MAX_VALUE) {
                     q = new SpscLinkedArrayQueue<U>(bufferSize);
@@ -316,9 +312,12 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 RxJavaPlugins.onError(t);
                 return;
             }
-            getErrorQueue().offer(t);
-            done = true;
-            drain();
+            if (errs.addThrowable(t)) {
+                done = true;
+                drain();
+            } else {
+                RxJavaPlugins.onError(t);
+            }
         }
 
         @Override
@@ -343,9 +342,13 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
+                s.cancel();
+                disposeAll();
                 if (getAndIncrement() == 0) {
-                    s.cancel();
-                    disposeAll();
+                    SimpleQueue<U> q = queue;
+                    if (q != null) {
+                        q.clear();
+                    }
                 }
             }
         }
@@ -363,7 +366,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 if (checkTerminate()) {
                     return;
                 }
-                SimpleQueue<U> svq = queue;
+                SimplePlainQueue<U> svq = queue;
 
                 long r = requested.get();
                 boolean unbounded = r == Long.MAX_VALUE;
@@ -375,12 +378,8 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                         long scalarEmission = 0;
                         U o = null;
                         while (r != 0L) {
-                            try {
-                                o = svq.poll();
-                            } catch (Throwable ex) {
-                                Exceptions.throwIfFatal(ex);
-                                getErrorQueue().offer(ex);
-                            }
+                            o = svq.poll();
+
                             if (checkTerminate()) {
                                 return;
                             }
@@ -413,11 +412,11 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 int n = inner.length;
 
                 if (d && (svq == null || svq.isEmpty()) && n == 0) {
-                    SimpleQueue<Throwable> e = errors.get();
-                    if (e == null || e.isEmpty()) {
+                    Throwable ex = errs.terminate();
+                    if (ex == null) {
                         child.onComplete();
                     } else {
-                        reportError(e);
+                        child.onError(ex);
                     }
                     return;
                 }
@@ -447,6 +446,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     }
 
                     int j = index;
+                    sourceLoop:
                     for (int i = 0; i < n; i++) {
                         if (checkTerminate()) {
                             return;
@@ -456,32 +456,39 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
 
                         U o = null;
                         for (;;) {
+                            if (checkTerminate()) {
+                                return;
+                            }
+                            SimpleQueue<U> q = is.queue;
+                            if (q == null) {
+                                break;
+                            }
                             long produced = 0;
                             while (r != 0L) {
-                                if (checkTerminate()) {
-                                    return;
-                                }
-                                SimpleQueue<U> q = is.queue;
-                                if (q == null) {
-                                    break;
-                                }
 
                                 try {
                                     o = q.poll();
                                 } catch (Throwable ex) {
                                     Exceptions.throwIfFatal(ex);
-
-                                    s.cancel();
-                                    disposeAll();
-
-                                    child.onError(ex);
-                                    return;
+                                    is.dispose();
+                                    errs.addThrowable(ex);
+                                    if (checkTerminate()) {
+                                        return;
+                                    }
+                                    removeInner(is);
+                                    innerCompleted = true;
+                                    i++;
+                                    continue sourceLoop;
                                 }
                                 if (o == null) {
                                     break;
                                 }
 
                                 child.onNext(o);
+
+                                if (checkTerminate()) {
+                                    return;
+                                }
 
                                 r--;
                                 produced++;
@@ -536,62 +543,17 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
 
         boolean checkTerminate() {
             if (cancelled) {
-                s.cancel();
-                disposeAll();
+                SimpleQueue<U> q = queue;
+                if (q != null) {
+                    q.clear();
+                }
                 return true;
             }
-            SimpleQueue<Throwable> e = errors.get();
-            if (!delayErrors && (e != null && !e.isEmpty())) {
-                try {
-                    reportError(e);
-                } finally {
-                    disposeAll();
-                }
+            if (!delayErrors && errs.get() != null) {
+                actual.onError(errs.terminate());
                 return true;
             }
             return false;
-        }
-
-        void reportError(SimpleQueue<Throwable> q) {
-            List<Throwable> composite = null;
-            Throwable ex = null;
-
-            for (;;) {
-                Throwable t;
-                try {
-                    t = q.poll();
-                } catch (Throwable exc) {
-                    Exceptions.throwIfFatal(exc);
-                    if (ex == null) {
-                        ex = exc;
-                    } else {
-                        if (composite == null) {
-                            composite = new ArrayList<Throwable>();
-                            composite.add(ex);
-                        }
-                        composite.add(exc);
-                    }
-                    break;
-                }
-
-                if (t == null) {
-                    break;
-                }
-                if (ex == null) {
-                    ex = t;
-                } else {
-                    if (composite == null) {
-                        composite = new ArrayList<Throwable>();
-                        composite.add(ex);
-                    }
-                    composite.add(t);
-                }
-            }
-            if (composite != null) {
-                actual.onError(new CompositeException(composite));
-            } else {
-                actual.onError(ex);
-            }
         }
 
         void disposeAll() {
@@ -599,23 +561,13 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
             if (a != CANCELLED) {
                 a = subscribers.getAndSet(CANCELLED);
                 if (a != CANCELLED) {
-                    errors.getAndSet(ERRORS_CLOSED);
                     for (InnerSubscriber<?, ?> inner : a) {
                         inner.dispose();
                     }
-                }
-            }
-        }
-
-        SimpleQueue<Throwable> getErrorQueue() {
-            for (;;) {
-                SimpleQueue<Throwable> q = errors.get();
-                if (q != null) {
-                    return q;
-                }
-                q = new MpscLinkedQueue<Throwable>();
-                if (errors.compareAndSet(null, q)) {
-                    return q;
+                    Throwable ex = errs.terminate();
+                    if (ex != null && ex != ExceptionHelper.TERMINATED) {
+                        RxJavaPlugins.onError(ex);
+                    }
                 }
             }
         }
@@ -676,9 +628,12 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         }
         @Override
         public void onError(Throwable t) {
-            parent.getErrorQueue().offer(t);
-            done = true;
-            parent.drain();
+            if (parent.errs.addThrowable(t)) {
+                done = true;
+                parent.drain();
+            } else {
+                RxJavaPlugins.onError(t);
+            }
         }
         @Override
         public void onComplete() {
@@ -706,33 +661,6 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         @Override
         public boolean isDisposed() {
             return get() == SubscriptionHelper.CANCELLED;
-        }
-    }
-
-    static final class RejectingQueue<T> implements SimpleQueue<T> {
-        @Override
-        public boolean offer(T e) {
-            return false;
-        }
-
-        @Override
-        public boolean offer(T v1, T v2) {
-            return false;
-        }
-
-        @Override
-        public T poll() {
-            return null;
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
         }
     }
 }

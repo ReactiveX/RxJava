@@ -378,7 +378,6 @@ public class FlowableRangeLongTest {
     @Test
     public void slowPathRebatch() {
         Flowable.rangeLong(1L, 5L)
-        .filter(Functions.alwaysTrue())
         .rebatchRequests(1)
         .test()
         .assertResult(1L, 2L, 3L, 4L, 5L);

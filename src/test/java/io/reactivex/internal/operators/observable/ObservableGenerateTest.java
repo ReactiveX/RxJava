@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -125,5 +126,25 @@ public class ObservableGenerateTest {
                     e.onComplete();
                 }
             }, Functions.emptyConsumer()));
+    }
+
+    @Test
+    public void nullError() {
+        final int[] call = { 0 };
+        Observable.generate(Functions.justCallable(1),
+        new BiConsumer<Integer, Emitter<Object>>() {
+            @Override
+            public void accept(Integer s, Emitter<Object> e) throws Exception {
+                try {
+                    e.onError(null);
+                } catch (NullPointerException ex) {
+                    call[0]++;
+                }
+            }
+        }, Functions.emptyConsumer())
+        .test()
+        .assertFailure(NullPointerException.class);
+
+        assertEquals(0, call[0]);
     }
 }

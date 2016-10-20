@@ -49,10 +49,10 @@ final Scheduler scheduler;
         Worker worker = scheduler.createWorker();
 
         if (s instanceof ConditionalSubscriber) {
-            source.subscribe(new PublisherObserveOnConditionalSubscriber<T>(
+            source.subscribe(new ObserveOnConditionalSubscriber<T>(
                     (ConditionalSubscriber<? super T>) s, worker, delayError, prefetch));
         } else {
-            source.subscribe(new PublisherObserveOnSubscriber<T>(s, worker, delayError, prefetch));
+            source.subscribe(new ObserveOnSubscriber<T>(s, worker, delayError, prefetch));
         }
     }
 
@@ -192,43 +192,30 @@ final Scheduler scheduler;
                     if (empty) {
                         Throwable e = error;
                         if (e != null) {
-                            doError(a, e);
+                            a.onError(e);
                         } else {
-                            doComplete(a);
+                            a.onComplete();
                         }
+                        worker.dispose();
                         return true;
                     }
                 } else {
                     Throwable e = error;
                     if (e != null) {
                         clear();
-                        doError(a, e);
+                        a.onError(e);
+                        worker.dispose();
                         return true;
                     } else
                     if (empty) {
-                        doComplete(a);
+                        a.onComplete();
+                        worker.dispose();
                         return true;
                     }
                 }
             }
 
             return false;
-        }
-
-        final void doComplete(Subscriber<?> a) {
-            try {
-                a.onComplete();
-            } finally {
-                worker.dispose();
-            }
-        }
-
-        final void doError(Subscriber<?> a, Throwable e) {
-            try {
-                a.onError(e);
-            } finally {
-                worker.dispose();
-            }
         }
 
         @Override
@@ -251,14 +238,14 @@ final Scheduler scheduler;
         }
     }
 
-    static final class PublisherObserveOnSubscriber<T> extends BaseObserveOnSubscriber<T>
+    static final class ObserveOnSubscriber<T> extends BaseObserveOnSubscriber<T>
     implements Subscriber<T> {
 
         private static final long serialVersionUID = -4547113800637756442L;
 
         final Subscriber<? super T> actual;
 
-        PublisherObserveOnSubscriber(
+        ObserveOnSubscriber(
                 Subscriber<? super T> actual,
                 Worker worker,
                 boolean delayError,
@@ -326,7 +313,9 @@ final Scheduler scheduler;
                         v = q.poll();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        doError(a, ex);
+                        s.cancel();
+                        a.onError(ex);
+                        worker.dispose();
                         return;
                     }
 
@@ -334,7 +323,8 @@ final Scheduler scheduler;
                         return;
                     }
                     if (v == null) {
-                        doComplete(a);
+                        a.onComplete();
+                        worker.dispose();
                         return;
                     }
 
@@ -343,15 +333,14 @@ final Scheduler scheduler;
                     e++;
                 }
 
-                if (e == r) {
-                    if (cancelled) {
-                        return;
-                    }
+                if (cancelled) {
+                    return;
+                }
 
-                    if (q.isEmpty()) {
-                        doComplete(a);
-                        return;
-                    }
+                if (q.isEmpty()) {
+                    a.onComplete();
+                    worker.dispose();
+                    return;
                 }
 
                 int w = get();
@@ -392,7 +381,8 @@ final Scheduler scheduler;
                         s.cancel();
                         q.clear();
 
-                        doError(a, ex);
+                        a.onError(ex);
+                        worker.dispose();
                         return;
                     }
 
@@ -452,10 +442,11 @@ final Scheduler scheduler;
                 if (d) {
                     Throwable e = error;
                     if (e != null) {
-                        doError(actual, e);
+                        actual.onError(e);
                     } else {
-                        doComplete(actual);
+                        actual.onComplete();
                     }
+                    worker.dispose();
                     return;
                 }
 
@@ -483,7 +474,7 @@ final Scheduler scheduler;
 
     }
 
-    static final class PublisherObserveOnConditionalSubscriber<T>
+    static final class ObserveOnConditionalSubscriber<T>
     extends BaseObserveOnSubscriber<T> {
 
         private static final long serialVersionUID = 644624475404284533L;
@@ -492,7 +483,7 @@ final Scheduler scheduler;
 
         long consumed;
 
-        PublisherObserveOnConditionalSubscriber(
+        ObserveOnConditionalSubscriber(
                 ConditionalSubscriber<? super T> actual,
                 Worker worker,
                 boolean delayError,
@@ -559,7 +550,9 @@ final Scheduler scheduler;
                         v = q.poll();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        doError(a, ex);
+                        s.cancel();
+                        a.onError(ex);
+                        worker.dispose();
                         return;
                     }
 
@@ -567,7 +560,8 @@ final Scheduler scheduler;
                         return;
                     }
                     if (v == null) {
-                        doComplete(a);
+                        a.onComplete();
+                        worker.dispose();
                         return;
                     }
 
@@ -576,15 +570,14 @@ final Scheduler scheduler;
                     }
                 }
 
-                if (e == r) {
-                    if (cancelled) {
-                        return;
-                    }
+                if (cancelled) {
+                    return;
+                }
 
-                    if (q.isEmpty()) {
-                        doComplete(a);
-                        return;
-                    }
+                if (q.isEmpty()) {
+                    a.onComplete();
+                    worker.dispose();
+                    return;
                 }
 
                 int w = get();
@@ -625,7 +618,8 @@ final Scheduler scheduler;
                         s.cancel();
                         q.clear();
 
-                        doError(a, ex);
+                        a.onError(ex);
+                        worker.dispose();
                         return;
                     }
                     boolean empty = v == null;
@@ -686,10 +680,11 @@ final Scheduler scheduler;
                 if (d) {
                     Throwable e = error;
                     if (e != null) {
-                        doError(actual, e);
+                        actual.onError(e);
                     } else {
-                        doComplete(actual);
+                        actual.onComplete();
                     }
+                    worker.dispose();
                     return;
                 }
 

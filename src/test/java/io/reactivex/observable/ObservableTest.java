@@ -282,12 +282,9 @@ public class ObservableTest {
                 return t1 + t2;
             }
         })
-        .subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t1) {
-                // do nothing ... we expect an exception instead
-            }
-        });
+        .toObservable()
+        .test()
+        .assertResult();
     }
 
     /**

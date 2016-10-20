@@ -93,14 +93,7 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
             final BiFunction<S, ? super Emitter<T>, S> f = generator;
 
             for (;;) {
-                if (cancelled) {
-                    dispose(s);
-                    return;
-                }
-
-                boolean unbounded = n == Long.MAX_VALUE; // NOPMD
-
-                while (n != 0L) {
+                while (e != n) {
 
                     if (cancelled) {
                         dispose(s);
@@ -122,30 +115,16 @@ public final class FlowableGenerate<T, S> extends Flowable<T> {
                         return;
                     }
 
-                    n--;
-                    e--;
+                    e++;
                 }
 
-                if (!unbounded) {
-                    n = get();
-                    if (n == Long.MAX_VALUE) {
-                        continue;
+                n = get();
+                if (e == n) {
+                    n = addAndGet(-e);
+                    if (n == 0L) {
+                        break;
                     }
-                    n += e;
-                    if (n != 0L) {
-                        continue; // keep draining and delay the addAndGet as much as possible
-                    }
-                }
-                if (e != 0L) {
-                    if (!unbounded) {
-                        state = s; // save state in case we run out of requests
-                        n = addAndGet(e);
-                        e = 0L;
-                    }
-                }
-
-                if (n == 0L) {
-                    break;
+                    e = 0L;
                 }
             }
         }

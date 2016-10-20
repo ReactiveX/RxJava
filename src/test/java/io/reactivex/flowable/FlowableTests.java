@@ -281,12 +281,8 @@ public class FlowableTests {
             }
         })
         .toFlowable()
-        .blockingForEach(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer t1) {
-                // do nothing ... we expect an exception instead
-            }
-        });
+        .test()
+        .assertResult();
     }
 
     /**

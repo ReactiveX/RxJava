@@ -20,13 +20,13 @@ package io.reactivex.internal.queue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
 
 /**
  * A multi-producer single consumer unbounded queue.
  * @param <T> the contained value type
  */
-public final class MpscLinkedQueue<T> implements SimpleQueue<T> {
+public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
     private final AtomicReference<LinkedQueueNode<T>> producerNode;
     private final AtomicReference<LinkedQueueNode<T>> consumerNode;
 

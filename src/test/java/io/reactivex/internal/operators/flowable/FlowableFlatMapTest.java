@@ -24,8 +24,7 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -845,6 +844,49 @@ public class FlowableFlatMapTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+
+    @Test
+    public void fusedInnerThrows() {
+        Flowable.just(1).hide()
+        .flatMap(new Function<Integer, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Integer v) throws Exception {
+                return Flowable.range(1, 2).map(new Function<Integer, Object>() {
+                    @Override
+                    public Object apply(Integer w) throws Exception {
+                        throw new TestException();
+                    }
+                });
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedInnerThrows2() {
+        TestSubscriber<Integer> to = Flowable.range(1, 2).hide()
+        .flatMap(new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) throws Exception {
+                return Flowable.range(1, 2).map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer w) throws Exception {
+                        throw new TestException();
+                    }
+                });
+            }
+        }, true)
+        .test()
+        .assertFailure(CompositeException.class);
+
+        List<Throwable> errors = TestHelper.errorList(to);
+
+        TestHelper.assertError(errors, 0, TestException.class);
+
+        TestHelper.assertError(errors, 1, TestException.class);
     }
 
 }
