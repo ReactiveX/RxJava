@@ -160,7 +160,7 @@ public enum TestHelper {
             err.initCause(ex);
             throw err;
         }
-        if (ObjectHelper.equals(message, ex.getMessage())) {
+        if (!ObjectHelper.equals(message, ex.getMessage())) {
             AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage());
             err.initCause(ex);
             throw err;
