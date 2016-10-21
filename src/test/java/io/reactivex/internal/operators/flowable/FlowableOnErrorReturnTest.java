@@ -48,8 +48,7 @@ public class FlowableOnErrorReturnTest {
 
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
+        Subscriber<String> observer = TestHelper.mockSubscriber();
         observable.subscribe(observer);
 
         try {
@@ -59,9 +58,9 @@ public class FlowableOnErrorReturnTest {
         }
 
         verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onNext("failure");
+        verify(observer, times(1)).onComplete();
         assertNotNull(capturedException.get());
     }
 
@@ -267,6 +266,21 @@ public class FlowableOnErrorReturnTest {
                 return f.onErrorReturnItem(1);
             }
         });
+    }
+
+    @Test
+    public void doubleOnError() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                s.onError(new TestException());
+                s.onError(new TestException());
+            }
+        }
+        .onErrorReturnItem(1)
+        .test()
+        .assertResult(1);
     }
 
 }

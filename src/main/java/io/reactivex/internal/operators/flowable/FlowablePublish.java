@@ -19,10 +19,10 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.fuseable.HasUpstreamPublisher;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
@@ -34,6 +34,12 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type
  */
 public final class FlowablePublish<T> extends ConnectableFlowable<T> implements HasUpstreamPublisher<T> {
+    /**
+     * Indicates this child has been cancelled: the state is swapped in atomically and
+     * will prevent the dispatch() to emit (too many) values to a terminated child subscriber.
+     */
+    static final long CANCELLED = Long.MIN_VALUE;
+
     /** The source observable. */
     final Publisher<T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
@@ -57,64 +63,66 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         Publisher<T> onSubscribe = new Publisher<T>() {
             @Override
             public void subscribe(Subscriber<? super T> child) {
-            // concurrent connection/disconnection may change the state,
-            // we loop to be atomic while the child subscribes
-            for (;;) {
-                // get the current subscriber-to-source
-                PublishSubscriber<T> r = curr.get();
-                // if there isn't one or it is cancelled/disposed
-                if (r == null || r.isDisposed()) {
-                    // create a new subscriber to source
-                    PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
-                    // let's try setting it as the current subscriber-to-source
-                    if (!curr.compareAndSet(r, u)) {
-                        // didn't work, maybe someone else did it or the current subscriber
-                        // to source has just finished
-                        continue;
-                    }
-                    // we won, let's use it going onwards
-                    r = u;
-                }
-
                 // create the backpressure-managing producer for this child
-                InnerSubscriber<T> inner = new InnerSubscriber<T>(r, child);
-                /*
-                 * Try adding it to the current subscriber-to-source, add is atomic in respect
-                 * to other adds and the termination of the subscriber-to-source.
-                 */
-                if (r.add(inner)) {
-                    // the producer has been registered with the current subscriber-to-source so
-                    // at least it will receive the next terminal event
-                    // setting the producer will trigger the first request to be considered by
-                    // the subscriber-to-source.
-                    child.onSubscribe(inner);
-                    break; // NOPMD
+                InnerSubscriber<T> inner = new InnerSubscriber<T>(child);
+                child.onSubscribe(inner);
+                // concurrent connection/disconnection may change the state,
+                // we loop to be atomic while the child subscribes
+                for (;;) {
+                    // get the current subscriber-to-source
+                    PublishSubscriber<T> r = curr.get();
+                    // if there isn't one or it is cancelled/disposed
+                    if (r == null || r.isDisposed()) {
+                        // create a new subscriber to source
+                        PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
+                        // let's try setting it as the current subscriber-to-source
+                        if (!curr.compareAndSet(r, u)) {
+                            // didn't work, maybe someone else did it or the current subscriber
+                            // to source has just finished
+                            continue;
+                        }
+                        // we won, let's use it going onwards
+                        r = u;
+                    }
+
+                    /*
+                     * Try adding it to the current subscriber-to-source, add is atomic in respect
+                     * to other adds and the termination of the subscriber-to-source.
+                     */
+                    if (r.add(inner)) {
+                        if (inner.get() == CANCELLED) {
+                            r.remove(inner);
+                        } else {
+                            inner.parent = r;
+                        }
+                        r.dispatch();
+                        break; // NOPMD
+                    }
+                    /*
+                     * The current PublishSubscriber has been terminated, try with a newer one.
+                     */
+                    /*
+                     * Note: although technically correct, concurrent disconnects can cause
+                     * unexpected behavior such as child subscribers never receiving anything
+                     * (unless connected again). An alternative approach, similar to
+                     * PublishProcessor would be to immediately terminate such child
+                     * subscribers as well:
+                     *
+                     * Object term = r.terminalEvent;
+                     * if (r.nl.isCompleted(term)) {
+                     *     child.onComplete();
+                     * } else {
+                     *     child.onError(r.nl.getError(term));
+                     * }
+                     * return;
+                     *
+                     * The original concurrent behavior was non-deterministic in this regard as well.
+                     * Allowing this behavior, however, may introduce another unexpected behavior:
+                     * after disconnecting a previous connection, one might not be able to prepare
+                     * a new connection right after a previous termination by subscribing new child
+                     * subscribers asynchronously before a connect call.
+                     */
                 }
-                /*
-                 * The current PublishSubscriber has been terminated, try with a newer one.
-                 */
-                /*
-                 * Note: although technically correct, concurrent disconnects can cause
-                 * unexpected behavior such as child subscribers never receiving anything
-                 * (unless connected again). An alternative approach, similar to
-                 * PublishProcessor would be to immediately terminate such child
-                 * subscribers as well:
-                 *
-                 * Object term = r.terminalEvent;
-                 * if (r.nl.isCompleted(term)) {
-                 *     child.onComplete();
-                 * } else {
-                 *     child.onError(r.nl.getError(term));
-                 * }
-                 * return;
-                 *
-                 * The original concurrent behavior was non-deterministic in this regard as well.
-                 * Allowing this behavior, however, may introduce another unexpected behavior:
-                 * after disconnecting a previous connection, one might not be able to prepare
-                 * a new connection right after a previous termination by subscribing new child
-                 * subscribers asynchronously before a connect call.
-                 */
-            }
             }
         };
         return RxJavaPlugins.onAssembly(new FlowablePublish<T>(onSubscribe, source, curr, bufferSize));
@@ -188,20 +196,20 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
     }
 
     @SuppressWarnings("rawtypes")
-    static final class PublishSubscriber<T> implements Subscriber<T>, Disposable {
-        /** Holds notifications from upstream. */
-        final SpscArrayQueue<Object> queue;
-        /** Holds onto the current connected PublishSubscriber. */
-        final AtomicReference<PublishSubscriber<T>> current;
-        /** The prefetch buffer size. */
-        final int bufferSize;
-        /** Contains either an onComplete or an onError token from upstream. */
-        volatile Object terminalEvent;
+    static final class PublishSubscriber<T>
+    extends AtomicInteger
+    implements Subscriber<T>, Disposable {
+        private static final long serialVersionUID = -202316842419149694L;
 
         /** Indicates an empty array of inner subscribers. */
         static final InnerSubscriber[] EMPTY = new InnerSubscriber[0];
         /** Indicates a terminated PublishSubscriber. */
         static final InnerSubscriber[] TERMINATED = new InnerSubscriber[0];
+
+        /** Holds onto the current connected PublishSubscriber. */
+        final AtomicReference<PublishSubscriber<T>> current;
+        /** The prefetch buffer size. */
+        final int bufferSize;
 
         /** Tracks the subscribed InnerSubscribers. */
         final AtomicReference<InnerSubscriber[]> subscribers;
@@ -211,16 +219,17 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
          */
         final AtomicBoolean shouldConnect;
 
-        /** Guarded by this. */
-        boolean emitting;
-        /** Guarded by this. */
-        boolean missed;
-
         final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 
-        PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
-            this.queue = new SpscArrayQueue<Object>(bufferSize);
+        /** Contains either an onComplete or an onError token from upstream. */
+        volatile Object terminalEvent;
 
+        int sourceMode;
+
+        /** Holds notifications from upstream. */
+        volatile SimpleQueue<T> queue;
+
+        PublishSubscriber(AtomicReference<PublishSubscriber<T>> current, int bufferSize) {
             this.subscribers = new AtomicReference<InnerSubscriber[]>(EMPTY);
             this.current = current;
             this.shouldConnect = new AtomicBoolean();
@@ -246,6 +255,28 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(this.s, s)) {
+                if (s instanceof QueueSubscription) {
+                    @SuppressWarnings("unchecked")
+                    QueueSubscription<T> qs = (QueueSubscription<T>) s;
+
+                    int m = qs.requestFusion(QueueSubscription.ANY);
+                    if (m == QueueSubscription.SYNC) {
+                        sourceMode = m;
+                        queue = qs;
+                        terminalEvent = NotificationLite.complete();
+                        dispatch();
+                        return;
+                    }
+                    if (m == QueueSubscription.ASYNC) {
+                        sourceMode = m;
+                        queue = qs;
+                        s.request(bufferSize);
+                        return;
+                    }
+                }
+
+                queue = new SpscArrayQueue<T>(bufferSize);
+
                 s.request(bufferSize);
             }
         }
@@ -253,14 +284,13 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         @Override
         public void onNext(T t) {
             // we expect upstream to honor backpressure requests
-            // nl is required because JCTools queue doesn't accept nulls.
-            if (!queue.offer(t)) {
-                onError(new IllegalStateException("Prefetch queue is full?!"));
-            } else {
-                // since many things can happen concurrently, we have a common dispatch
-                // loop to act on the current state serially
-                dispatch();
+            if (sourceMode == QueueSubscription.NONE && !queue.offer(t)) {
+                onError(new MissingBackpressureException("Prefetch queue is full?!"));
+                return;
             }
+            // since many things can happen concurrently, we have a common dispatch
+            // loop to act on the current state serially
+            dispatch();
         }
         @Override
         public void onError(Throwable e) {
@@ -294,9 +324,6 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
          * @return true if succeeded, false otherwise
          */
         boolean add(InnerSubscriber<T> producer) {
-            if (producer == null) {
-                throw new NullPointerException();
-            }
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
                 // get the current producer array
@@ -329,14 +356,14 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
             for (;;) {
                 // let's read the current subscribers array
                 InnerSubscriber[] c = subscribers.get();
+                int len = c.length;
                 // if it is either empty or terminated, there is nothing to remove so we quit
-                if (c == EMPTY || c == TERMINATED) {
-                    return;
+                if (len == 0) {
+                    break;
                 }
                 // let's find the supplied producer in the array
                 // although this is O(n), we don't expect too many child subscribers in general
                 int j = -1;
-                int len = c.length;
                 for (int i = 0; i < len; i++) {
                     if (c[i].equals(producer)) {
                         j = i;
@@ -363,7 +390,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 }
                 // try setting this new array as
                 if (subscribers.compareAndSet(c, u)) {
-                    return;
+                    break;
                 }
                 // if we failed, it means something else happened
                 // (a concurrent add/remove or termination), we need to retry
@@ -387,26 +414,20 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                         // this will prevent OnSubscribe spinning on a terminated but
                         // not yet cancelled PublishSubscriber
                         current.compareAndSet(this, null);
-                        try {
-                            /*
-                             * This will swap in a terminated array so add() in OnSubscribe will reject
-                             * child subscribers to associate themselves with a terminated and thus
-                             * never again emitting chain.
-                             *
-                             * Since we atomically change the contents of 'subscribers' only one
-                             * operation wins at a time. If an add() wins before this getAndSet,
-                             * its value will be part of the returned array by getAndSet and thus
-                             * will receive the terminal notification. Otherwise, if getAndSet wins,
-                             * add() will refuse to add the child producer and will trigger the
-                             * creation of subscriber-to-source.
-                             */
-                            for (InnerSubscriber<?> ip : subscribers.getAndSet(TERMINATED)) {
-                                ip.child.onComplete();
-                            }
-                        } finally {
-                            // we explicitly dispose/disconnect from the upstream
-                            // after we sent out the terminal event to child subscribers
-                            dispose();
+                        /*
+                         * This will swap in a terminated array so add() in OnSubscribe will reject
+                         * child subscribers to associate themselves with a terminated and thus
+                         * never again emitting chain.
+                         *
+                         * Since we atomically change the contents of 'subscribers' only one
+                         * operation wins at a time. If an add() wins before this getAndSet,
+                         * its value will be part of the returned array by getAndSet and thus
+                         * will receive the terminal notification. Otherwise, if getAndSet wins,
+                         * add() will refuse to add the child producer and will trigger the
+                         * creation of subscriber-to-source.
+                         */
+                        for (InnerSubscriber<?> ip : subscribers.getAndSet(TERMINATED)) {
+                            ip.child.onComplete();
                         }
                         // indicate we reached the terminal state
                         return true;
@@ -416,22 +437,16 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                     // this will prevent OnSubscribe spinning on a terminated
                     // but not yet cancelled PublishSubscriber
                     current.compareAndSet(this, null);
-                    try {
-                        // this will swap in a terminated array so add() in OnSubscribe will reject
-                        // child subscribers to associate themselves with a terminated and thus
-                        // never again emitting chain
-                        InnerSubscriber[] a = subscribers.getAndSet(TERMINATED);
-                        if (a.length != 0) {
-                            for (InnerSubscriber<?> ip : a) {
-                                ip.child.onError(t);
-                            }
-                        } else {
-                            RxJavaPlugins.onError(t);
+                    // this will swap in a terminated array so add() in OnSubscribe will reject
+                    // child subscribers to associate themselves with a terminated and thus
+                    // never again emitting chain
+                    InnerSubscriber[] a = subscribers.getAndSet(TERMINATED);
+                    if (a.length != 0) {
+                        for (InnerSubscriber<?> ip : a) {
+                            ip.child.onError(t);
                         }
-                    } finally {
-                        // we explicitly dispose/disconnect from the upstream
-                        // after we sent out the terminal event to child subscribers
-                        dispose();
+                    } else {
+                        RxJavaPlugins.onError(t);
                     }
                     // indicate we reached the terminal state
                     return true;
@@ -446,172 +461,160 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
          * requesting more.
          */
         void dispatch() {
-            // standard construct of emitter loop (blocking)
+            // standard construct of queue-drain
             // if there is an emission going on, indicate that more work needs to be done
             // the exact nature of this work needs to be determined from other data structures
-            synchronized (this) {
-                if (emitting) {
-                    missed = true;
+            if (getAndIncrement() != 0) {
+                return;
+            }
+            int missed = 1;
+            for (;;) {
+                /*
+                 * We need to read terminalEvent before checking the queue for emptiness because
+                 * all enqueue happens before setting the terminal event.
+                 * If it were the other way around, when the emission is paused between
+                 * checking isEmpty and checking terminalEvent, some other thread might
+                 * have produced elements and set the terminalEvent and we'd quit emitting
+                 * prematurely.
+                 */
+                Object term = terminalEvent;
+                /*
+                 * See if the queue is empty; since we need this information multiple
+                 * times later on, we read it one.
+                 * Although the queue can become non-empty in the mean time, we will
+                 * detect it through the missing flag and will do another iteration.
+                 */
+                SimpleQueue<T> q = queue;
+
+                boolean empty = q == null || q.isEmpty();
+                // if the queue is empty and the terminal event was received, quit
+                // and don't bother restoring emitting to false: no further activity is
+                // possible at this point
+                if (checkTerminated(term, empty)) {
                     return;
                 }
-                // there was no emission going on, we won and will start emitting
-                emitting = true;
-                missed = false;
-            }
-            /*
-             * In case an exception is thrown in the loop, we need to set emitting back to false
-             * on the way out (the exception will propagate up) so if it bounces back and
-             * onError is called, its dispatch() call will have the opportunity to emit it.
-             * However, if we want to exit regularly, we will set the emitting to false (+ other operations)
-             * atomically so we want to prevent the finally part to accidentally unlock some other
-             * emissions happening between the two synchronized blocks.
-             */
-            boolean skipFinal = false;
-            try {
-                for (;;) {
-                    /*
-                     * We need to read terminalEvent before checking the queue for emptiness because
-                     * all enqueue happens before setting the terminal event.
-                     * If it were the other way around, when the emission is paused between
-                     * checking isEmpty and checking terminalEvent, some other thread might
-                     * have produced elements and set the terminalEvent and we'd quit emitting
-                     * prematurely.
-                     */
-                    Object term = terminalEvent;
-                    /*
-                     * See if the queue is empty; since we need this information multiple
-                     * times later on, we read it one.
-                     * Although the queue can become non-empty in the mean time, we will
-                     * detect it through the missing flag and will do another iteration.
-                     */
-                    boolean empty = queue.isEmpty();
-                    // if the queue is empty and the terminal event was received, quit
-                    // and don't bother restoring emitting to false: no further activity is
-                    // possible at this point
-                    if (checkTerminated(term, empty)) {
-                        skipFinal = true;
-                        return;
+
+                // We have elements queued. Note that due to the serialization nature of dispatch()
+                // this loop is the only one which can turn a non-empty queue into an empty one
+                // and as such, no need to ask the queue itself again for that.
+                if (!empty) {
+                    // We take a snapshot of the current child subscribers.
+                    // Concurrent subscribers may miss this iteration, but it is to be expected
+                    @SuppressWarnings("unchecked")
+                    InnerSubscriber<T>[] ps = subscribers.get();
+
+                    int len = ps.length;
+                    // Let's assume everyone requested the maximum value.
+                    long maxRequested = Long.MAX_VALUE;
+                    // count how many have triggered cancellation
+                    int cancelled = 0;
+
+                    // Now find the minimum amount each child-subscriber requested
+                    // since we can only emit that much to all of them without violating
+                    // backpressure constraints
+                    for (InnerSubscriber<T> ip : ps) {
+                        long r = ip.get();
+                        // if there is one child subscriber that hasn't requested yet
+                        // we can't emit anything to anyone
+                        if (r >= 0L) {
+                            maxRequested = Math.min(maxRequested, r);
+                        } else
+                        // cancellation is indicated by a special value
+                        if (r == CANCELLED) {
+                            cancelled++;
+                        }
+                        // we ignore those with NOT_REQUESTED as if they aren't even there
                     }
 
-                    // We have elements queued. Note that due to the serialization nature of dispatch()
-                    // this loop is the only one which can turn a non-empty queue into an empty one
-                    // and as such, no need to ask the queue itself again for that.
-                    if (!empty) {
-                        // We take a snapshot of the current child subscribers.
-                        // Concurrent subscribers may miss this iteration, but it is to be expected
-                        @SuppressWarnings("unchecked")
-                        InnerSubscriber<T>[] ps = subscribers.get();
+                    // it may happen everyone has cancelled between here and subscribers.get()
+                    // or we have no subscribers at all to begin with
+                    if (len == cancelled) {
+                        term = terminalEvent;
+                        // so let's consume a value from the queue
+                        T v;
 
-                        int len = ps.length;
-                        // Let's assume everyone requested the maximum value.
-                        long maxRequested = Long.MAX_VALUE;
-                        // count how many have triggered cancellation
-                        int cancelled = 0;
-
-                        // Now find the minimum amount each child-subscriber requested
-                        // since we can only emit that much to all of them without violating
-                        // backpressure constraints
-                        for (InnerSubscriber<T> ip : ps) {
-                            long r = ip.get();
-                            // if there is one child subscriber that hasn't requested yet
-                            // we can't emit anything to anyone
-                            if (r >= 0L) {
-                                maxRequested = Math.min(maxRequested, r);
-                            } else
-                            // cancellation is indicated by a special value
-                            if (r == InnerSubscriber.CANCELLED) {
-                                cancelled++;
-                            }
-                            // we ignore those with NOT_REQUESTED as if they aren't even there
+                        try {
+                            v = q.poll();
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            s.get().cancel();
+                            term = NotificationLite.error(ex);
+                            terminalEvent = term;
+                            v = null;
                         }
-
-                        // it may happen everyone has cancelled between here and subscribers.get()
-                        // or we have no subscribers at all to begin with
-                        if (len == cancelled) {
-                            term = terminalEvent;
-                            // so let's consume a value from the queue
-                            Object v = queue.poll();
-                            // or terminate if there was a terminal event and the queue is empty
-                            if (checkTerminated(term, v == null)) {
-                                skipFinal = true;
-                                return;
-                            }
-                            // otherwise, just ask for a new value
-                            s.get().request(1);
-                            // and retry emitting to potential new child subscribers
-                            continue;
-                        }
-                        // if we get here, it means there are non-cancelled child subscribers
-                        // and we count the number of emitted values because the queue
-                        // may contain less than requested
-                        int d = 0;
-                        while (d < maxRequested) {
-                            term = terminalEvent;
-                            Object v = queue.poll();
-                            empty = v == null;
-                            // let's check if there is a terminal event and the queue became empty just now
-                            if (checkTerminated(term, empty)) {
-                                skipFinal = true;
-                                return;
-                            }
-                            // the queue is empty but we aren't terminated yet, finish this emission loop
-                            if (empty) {
-                                break;
-                            }
-                            // we need to unwrap potential nulls
-                            T value = NotificationLite.getValue(v);
-                            // let's emit this value to all child subscribers
-                            for (InnerSubscriber<T> ip : ps) {
-                                // if ip.get() is negative, the child has either cancelled in the
-                                // meantime or hasn't requested anything yet
-                                // this eager behavior will skip cancelled children in case
-                                // multiple values are available in the queue
-                                if (ip.get() > 0L) {
-                                    ip.child.onNext(value);
-                                    // indicate this child has received 1 element
-                                    ip.produced(1);
-                                }
-                            }
-                            // indicate we emitted one element
-                            d++;
-                        }
-
-                        // if we did emit at least one element, request more to replenish the queue
-                        if (d > 0) {
-                            s.get().request(d);
-                        }
-                        // if we have requests but not an empty queue after emission
-                        // let's try again to see if more requests/child subscribers are
-                        // ready to receive more
-                        if (maxRequested != 0L && !empty) {
-                            continue;
-                        }
-                    }
-
-                    // we did what we could: either the queue is empty or child subscribers
-                    // haven't requested more (or both), let's try to finish dispatching
-                    synchronized (this) {
-                        // since missed is changed atomically, if we see it as true
-                        // it means some state has changed and we need to loop again
-                        // and handle that case
-                        if (!missed) {
-                            // but if no missed dispatch happened, let's stop emitting
-                            emitting = false;
-                            // and skip the emitting = false in the finally block as well
-                            skipFinal = true;
+                        // or terminate if there was a terminal event and the queue is empty
+                        if (checkTerminated(term, v == null)) {
                             return;
                         }
-                        // we acknowledge the missed changes so far
-                        missed = false;
+                        // otherwise, just ask for a new value
+                        if (sourceMode != QueueSubscription.SYNC) {
+                            s.get().request(1);
+                        }
+                        // and retry emitting to potential new child subscribers
+                        continue;
+                    }
+                    // if we get here, it means there are non-cancelled child subscribers
+                    // and we count the number of emitted values because the queue
+                    // may contain less than requested
+                    int d = 0;
+                    while (d < maxRequested) {
+                        term = terminalEvent;
+                        T v;
+
+                        try {
+                            v = q.poll();
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            s.get().cancel();
+                            term = NotificationLite.error(ex);
+                            terminalEvent = term;
+                            v = null;
+                        }
+
+                        empty = v == null;
+                        // let's check if there is a terminal event and the queue became empty just now
+                        if (checkTerminated(term, empty)) {
+                            return;
+                        }
+                        // the queue is empty but we aren't terminated yet, finish this emission loop
+                        if (empty) {
+                            break;
+                        }
+                        // we need to unwrap potential nulls
+                        T value = NotificationLite.getValue(v);
+                        // let's emit this value to all child subscribers
+                        for (InnerSubscriber<T> ip : ps) {
+                            // if ip.get() is negative, the child has either cancelled in the
+                            // meantime or hasn't requested anything yet
+                            // this eager behavior will skip cancelled children in case
+                            // multiple values are available in the queue
+                            if (ip.get() > 0L) {
+                                ip.child.onNext(value);
+                                // indicate this child has received 1 element
+                                ip.produced(1);
+                            }
+                        }
+                        // indicate we emitted one element
+                        d++;
+                    }
+
+                    // if we did emit at least one element, request more to replenish the queue
+                    if (d > 0) {
+                        if (sourceMode != QueueSubscription.SYNC) {
+                            s.get().request(d);
+                        }
+                    }
+                    // if we have requests but not an empty queue after emission
+                    // let's try again to see if more requests/child subscribers are
+                    // ready to receive more
+                    if (maxRequested != 0L && !empty) {
+                        continue;
                     }
                 }
-            } finally {
-                // unless returned cleanly (i.e., some method above threw)
-                if (!skipFinal) {
-                    // we stop emitting so the error can propagate back down through onError
-                    synchronized (this) {
-                        emitting = false;
-                    }
+
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
             }
         }
@@ -621,70 +624,29 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
      * child subscriber in thread-safe manner.
      * @param <T> the value type
      */
-    static final class InnerSubscriber<T> extends AtomicLong implements Subscription, Disposable {
+    static final class InnerSubscriber<T> extends AtomicLong implements Subscription {
 
         private static final long serialVersionUID = -4453897557930727610L;
+        /** The actual child subscriber. */
+        final Subscriber<? super T> child;
         /**
          * The parent subscriber-to-source used to allow removing the child in case of
          * child cancellation.
          */
-        final PublishSubscriber<T> parent;
-        /** The actual child subscriber. */
-        final Subscriber<? super T> child;
-        /**
-         * Indicates this child has been cancelled: the state is swapped in atomically and
-         * will prevent the dispatch() to emit (too many) values to a terminated child subscriber.
-         */
-        static final long CANCELLED = Long.MIN_VALUE;
+        volatile PublishSubscriber<T> parent;
 
-        InnerSubscriber(PublishSubscriber<T> parent, Subscriber<? super T> child) {
-            this.parent = parent;
+        InnerSubscriber(Subscriber<? super T> child) {
             this.child = child;
         }
 
         @Override
         public void request(long n) {
-            if (n < 0) {
-                RxJavaPlugins.onError(new IllegalArgumentException("n < 0 required but it was " + n));
-                return;
-            }
-            // In general, RxJava doesn't prevent concurrent requests (with each other or with
-            // a cancel) so we need a CAS-loop, but we need to handle
-            // request overflow and cancelled/not requested state as well.
-            for (;;) {
-                // get the current request amount
-                long r = get();
-                // if child called cancel() do nothing
-                if (r == CANCELLED) {
-                    return;
+            if (SubscriptionHelper.validate(n)) {
+                BackpressureHelper.addCancel(this, n);
+                PublishSubscriber<T> p = parent;
+                if (p != null) {
+                    p.dispatch();
                 }
-                // ignore zero requests except any first that sets in zero
-                if (r >= 0L && n == 0) {
-                    return;
-                }
-                long u;
-                // if this child has not requested yet
-                if (r == 0L) {
-                    // let the new request value this (no overflow check needed)
-                    u = n;
-                } else {
-                    // otherwise, increase the request count
-                    u = r + n;
-                    // and check for long overflow
-                    if (u < 0) {
-                        // cap at max value, which is essentially unlimited
-                        u = Long.MAX_VALUE;
-                    }
-                }
-                // try setting the new request value
-                if (compareAndSet(r, u)) {
-                    // if successful, notify the parent dispatcher this child can receive more
-                    // elements
-                    parent.dispatch();
-                    return;
-                }
-                // otherwise, someone else changed the state (perhaps a concurrent
-                // request or cancellation so retry
             }
         }
 
@@ -694,48 +656,11 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
          * @return the updated request value (may indicate how much can be produced or a terminal state)
          */
         public long produced(long n) {
-            // we don't allow producing zero or less: it would be a bug in the operator
-            if (n <= 0) {
-                throw new IllegalArgumentException("Cant produce zero or less");
-            }
-            for (;;) {
-                // get the current request value
-                long r = get();
-                // if no request has been made yet, we shouldn't have emitted to this child
-                // subscriber so there is a bug in this operator
-                if (r == 0L) {
-                    throw new IllegalStateException("Produced without request");
-                }
-                // if the child has cancelled, simply return and indicate this
-                if (r == CANCELLED) {
-                    return CANCELLED;
-                }
-                // reduce the requested amount
-                long u = r - n;
-                // if the new amount is less than zero, we have a bug in this operator
-                if (u < 0) {
-                    throw new IllegalStateException("More produced (" + n + ") than requested (" + r + ")");
-                }
-                // try updating the request value
-                if (compareAndSet(r, u)) {
-                    // and return the updated value
-                    return u;
-                }
-                // otherwise, some concurrent activity happened and we need to retry
-            }
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return get() == CANCELLED;
+            return BackpressureHelper.producedCancel(this, n);
         }
 
         @Override
         public void cancel() {
-            dispose();
-        }
-        @Override
-        public void dispose() {
             long r = get();
             // let's see if we are cancelled
             if (r != CANCELLED) {
@@ -746,13 +671,16 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 r = getAndSet(CANCELLED);
                 // and only one of them will see a non-terminated value before the swap
                 if (r != CANCELLED) {
-                    // remove this from the parent
-                    parent.remove(this);
-                    // After removal, we might have unblocked the other child subscribers:
-                    // let's assume this child had 0 requested before the cancellation while
-                    // the others had non-zero. By removing this 'blocking' child, the others
-                    // are now free to receive events
-                    parent.dispatch();
+                    PublishSubscriber<T> p = parent;
+                    if (p != null) {
+                        // remove this from the parent
+                        p.remove(this);
+                        // After removal, we might have unblocked the other child subscribers:
+                        // let's assume this child had 0 requested before the cancellation while
+                        // the others had non-zero. By removing this 'blocking' child, the others
+                        // are now free to receive events
+                        p.dispatch();
+                    }
                 }
             }
         }

@@ -297,4 +297,19 @@ public class FlowableMaterializeTest {
             }
         });
     }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+            @Override
+            public Object apply(Flowable<Object> f) throws Exception {
+                return f.materialize();
+            }
+        }, false, null, null, Notification.createOnComplete());
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.just(1).materialize());
+    }
 }

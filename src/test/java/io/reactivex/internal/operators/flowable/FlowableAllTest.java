@@ -24,9 +24,10 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -378,9 +379,10 @@ public class FlowableAllTest {
     }
 
     @Test
-    @Ignore("RS Subscription can't be checked for isCancelled")
     public void dispose() {
-        // TestHelper.checkDisposed(Flowable.just(1).all(Functions.alwaysTrue()).toFlowable());
+        TestHelper.checkDisposed(Flowable.just(1).all(Functions.alwaysTrue()).toFlowable());
+
+        TestHelper.checkDisposed(Flowable.just(1).all(Functions.alwaysTrue()));
     }
 
     @Test
@@ -443,5 +445,38 @@ public class FlowableAllTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> o) throws Exception {
+                return o.all(Functions.alwaysTrue());
+            }
+        }, false, 1, 1, true);
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> o) throws Exception {
+                return o.all(Functions.alwaysTrue()).toFlowable();
+            }
+        }, false, 1, 1, true);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Boolean>>() {
+            @Override
+            public Publisher<Boolean> apply(Flowable<Object> o) throws Exception {
+                return o.all(Functions.alwaysTrue()).toFlowable();
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<Boolean>>() {
+            @Override
+            public Single<Boolean> apply(Flowable<Object> o) throws Exception {
+                return o.all(Functions.alwaysTrue());
+            }
+        });
     }
 }

@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -27,6 +28,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -268,9 +270,18 @@ public class FlowableBlockingTest {
 
     @Test
     public void interrupt() {
-        TestSubscriber<Object> to = new TestSubscriber<Object>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
         Thread.currentThread().interrupt();
-        Flowable.never().blockingSubscribe(to);
+
+        try {
+            Flowable.just(1)
+            .blockingSubscribe(ts);
+
+            ts.assertFailure(InterruptedException.class);
+        } finally {
+            Thread.interrupted(); // clear interrupted status just in case
+        }
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -330,5 +341,46 @@ public class FlowableBlockingTest {
         }
 
         to.assertEmpty();
+    }
+
+    @Test
+    public void blockinsSubscribeCancelAsync() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            final Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            final Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+
+            final AtomicInteger c = new AtomicInteger(2);
+
+            Schedulers.computation().scheduleDirect(new Runnable() {
+                @Override
+                public void run() {
+                    c.decrementAndGet();
+                    while (c.get() != 0 && !pp.hasSubscribers()) { }
+
+                    TestHelper.race(r1, r2);
+                }
+            });
+
+            c.decrementAndGet();
+            while (c.get() != 0) { }
+
+            pp
+            .blockingSubscribe(ts);
+        }
     }
 }

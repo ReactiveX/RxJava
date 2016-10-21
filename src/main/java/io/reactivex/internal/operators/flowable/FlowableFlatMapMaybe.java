@@ -170,10 +170,10 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
         void innerSuccess(InnerObserver inner, R value) {
             set.delete(inner);
             if (get() == 0 && compareAndSet(0, 1)) {
+                boolean d = active.decrementAndGet() == 0;
                 if (requested.get() != 0) {
                     actual.onNext(value);
 
-                    boolean d = active.decrementAndGet() == 0;
                     SpscLinkedArrayQueue<R> q = queue.get();
 
                     if (d && (q == null || q.isEmpty())) {

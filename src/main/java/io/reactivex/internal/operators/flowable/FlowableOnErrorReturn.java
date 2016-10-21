@@ -13,12 +13,13 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
@@ -34,25 +35,22 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
         source.subscribe(new OnErrorReturnSubscriber<T>(s, valueSupplier));
     }
 
-    // FIXME requires post-complete drain management
-    static final class OnErrorReturnSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
+    static final class OnErrorReturnSubscriber<T> extends AtomicLong
+    implements Subscriber<T>, Subscription {
 
         private static final long serialVersionUID = -3740826063558713822L;
         final Subscriber<? super T> actual;
+
         final Function<? super Throwable, ? extends T> valueSupplier;
 
         Subscription s;
 
-        final AtomicInteger state = new AtomicInteger();
-
         T value;
 
-        volatile boolean done;
+        long produced;
 
-        static final int NO_REQUEST_NO_VALUE = 0;
-        static final int NO_REQUEST_HAS_VALUE = 1;
-        static final int HAS_REQUEST_NO_VALUE = 2;
-        static final int HAS_REQUEST_HAS_VALUE = 3;
+        static final long COMPLETE_MASK = Long.MIN_VALUE;
+        static final long REQUEST_MASK = Long.MAX_VALUE;
 
         OnErrorReturnSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends T> valueSupplier) {
             this.actual = actual;
@@ -69,103 +67,75 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void onNext(T t) {
+            produced++;
             actual.onNext(t);
-
-            if (get() != Long.MAX_VALUE) {
-                decrementAndGet();
-            }
         }
 
         @Override
         public void onError(Throwable t) {
-            done = true;
             T v;
             try {
-                v = valueSupplier.apply(t);
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                state.lazySet(HAS_REQUEST_HAS_VALUE);
-                actual.onError(new CompositeException(t, e));
+                v = ObjectHelper.requireNonNull(valueSupplier.apply(t), "The valueSupplier returned a null value");
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                actual.onError(new CompositeException(t, ex));
                 return;
             }
-
-            if (v == null) {
-                state.lazySet(HAS_REQUEST_HAS_VALUE);
-                NullPointerException npe = new NullPointerException("The supplied value is null");
-                npe.initCause(t);
-                actual.onError(npe);
-                return;
-            }
-
-            if (get() != 0L) {
-                state.lazySet(HAS_REQUEST_HAS_VALUE);
-                actual.onNext(v);
-                actual.onComplete();
-            } else {
-                for (;;) {
-                    int s = state.get();
-                    if (s == HAS_REQUEST_NO_VALUE) {
-                        if (state.compareAndSet(s, HAS_REQUEST_HAS_VALUE)) {
-                            actual.onNext(v);
-                            actual.onComplete();
-                            return;
-                        }
-                    } else
-                    if (s == NO_REQUEST_HAS_VALUE) {
-                        return;
-                    } else
-                    if (s == HAS_REQUEST_HAS_VALUE) {
-                        value = null;
-                        return;
-                    } else {
-                        value = v;
-                        if (state.compareAndSet(s, NO_REQUEST_HAS_VALUE)) {
-                            return;
-                        }
-                    }
-                }
-            }
+            complete(v);
         }
 
         @Override
         public void onComplete() {
-            state.lazySet(HAS_REQUEST_HAS_VALUE);
             actual.onComplete();
+        }
+
+        void complete(T n) {
+            long p = produced;
+            if (p != 0L) {
+                BackpressureHelper.produced(this, p);
+            }
+
+            for (;;) {
+                long r = get();
+                if ((r & COMPLETE_MASK) != 0) {
+                    return;
+                }
+                if ((r & REQUEST_MASK) != 0) {
+                    lazySet(COMPLETE_MASK + 1);
+                    actual.onNext(n);
+                    actual.onComplete();
+                    return;
+                }
+                value = n;
+                if (compareAndSet(0, COMPLETE_MASK)) {
+                    return;
+                }
+            }
         }
 
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validate(n)) {
-                return;
-            }
-            BackpressureHelper.add(this, n);
-            if (done) {
+            if (SubscriptionHelper.validate(n)) {
                 for (;;) {
-                    int s = state.get();
-                    if (s == NO_REQUEST_HAS_VALUE) {
-                        if (state.compareAndSet(s, HAS_REQUEST_HAS_VALUE)) {
-                            T v = value;
-                            value = null;
-                            actual.onNext(v);
+                    long r = get();
+                    if ((r & COMPLETE_MASK) != 0) {
+                        if (compareAndSet(COMPLETE_MASK, COMPLETE_MASK + 1)) {
+                            actual.onNext(value);
                             actual.onComplete();
-                            return;
                         }
-                    } else
-                    if (s == HAS_REQUEST_NO_VALUE || s == HAS_REQUEST_HAS_VALUE) {
-                        return;
-                    } else
-                    if (state.compareAndSet(s, HAS_REQUEST_NO_VALUE)) {
-                        return;
+                        break;
+                    }
+                    long u = BackpressureHelper.addCap(r, n);
+                    if (compareAndSet(r, u)) {
+                        s.request(n);
+                        break;
                     }
                 }
-            } else {
-                s.request(n);
             }
         }
 
         @Override
         public void cancel() {
-            state.lazySet(HAS_REQUEST_HAS_VALUE);
             s.cancel();
         }
     }

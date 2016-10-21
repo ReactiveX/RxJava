@@ -32,20 +32,14 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
     @Override
     public void subscribeActual(final Subscriber<? super T> s) {
         Scheduler.Worker w = scheduler.createWorker();
-        final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<T>(s, w);
+        final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<T>(s, w, source);
         s.onSubscribe(sos);
 
-        w.schedule(new Runnable() {
-            @Override
-            public void run() {
-                sos.lazySet(Thread.currentThread());
-                source.subscribe(sos);
-            }
-        });
+        w.schedule(sos);
     }
 
     static final class SubscribeOnSubscriber<T> extends AtomicReference<Thread>
-    implements Subscriber<T>, Subscription {
+    implements Subscriber<T>, Subscription, Runnable {
 
         private static final long serialVersionUID = 8094547886072529208L;
         final Subscriber<? super T> actual;
@@ -55,11 +49,22 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
 
         final AtomicLong requested;
 
-        SubscribeOnSubscriber(Subscriber<? super T> actual, Scheduler.Worker worker) {
+        Publisher<T> source;
+
+        SubscribeOnSubscriber(Subscriber<? super T> actual, Scheduler.Worker worker, Publisher<T> source) {
             this.actual = actual;
             this.worker = worker;
+            this.source = source;
             this.s = new AtomicReference<Subscription>();
             this.requested = new AtomicLong();
+        }
+
+        @Override
+        public void run() {
+            lazySet(Thread.currentThread());
+            Publisher<T> src = source;
+            source = null;
+            src.subscribe(this);
         }
 
         @Override
@@ -79,40 +84,32 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onError(Throwable t) {
-            try {
-                actual.onError(t);
-            } finally {
-                worker.dispose();
-            }
+            actual.onError(t);
+            worker.dispose();
         }
 
         @Override
         public void onComplete() {
-            try {
-                actual.onComplete();
-            } finally {
-                worker.dispose();
-            }
+            actual.onComplete();
+            worker.dispose();
         }
 
         @Override
         public void request(final long n) {
-            if (!SubscriptionHelper.validate(n)) {
-                return;
-            }
-            Subscription s = this.s.get();
-            if (s != null) {
-                requestUpstream(n, s);
-            } else {
-                BackpressureHelper.add(requested, n);
-                s = this.s.get();
+            if (SubscriptionHelper.validate(n)) {
+                Subscription s = this.s.get();
                 if (s != null) {
-                    long r = requested.getAndSet(0L);
-                    if (r != 0L) {
-                        requestUpstream(r, s);
+                    requestUpstream(n, s);
+                } else {
+                    BackpressureHelper.add(requested, n);
+                    s = this.s.get();
+                    if (s != null) {
+                        long r = requested.getAndSet(0L);
+                        if (r != 0L) {
+                            requestUpstream(r, s);
+                        }
                     }
                 }
-
             }
         }
 

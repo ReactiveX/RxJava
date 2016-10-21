@@ -26,6 +26,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -889,4 +890,11 @@ public class FlowableFlatMapTest {
         TestHelper.assertError(errors, 1, TestException.class);
     }
 
+    @Test
+    public void scalarXMap() {
+        Flowable.fromCallable(Functions.justCallable(1))
+        .flatMap(Functions.justFunction(Flowable.fromCallable(Functions.justCallable(2))))
+        .test()
+        .assertResult(2);
+    }
 }

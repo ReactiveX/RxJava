@@ -15,6 +15,8 @@ package io.reactivex.internal.functions;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.reactivestreams.Subscription;
+
 import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -662,4 +664,11 @@ public final class Functions {
     public static <T, K> BiPredicate<T, T> equalsPredicate(Function<? super T, K> keySelector) {
         return new KeyedEqualsPredicate<T, K>(keySelector);
     }
+
+    public static final Consumer<Subscription> REQUEST_MAX = new Consumer<Subscription>() {
+        @Override
+        public void accept(Subscription t) throws Exception {
+            t.request(Long.MAX_VALUE);
+        }
+    };
 }
