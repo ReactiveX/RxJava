@@ -1167,14 +1167,14 @@ public class FlowableNullTests {
         just1.distinctUntilChanged((BiPredicate<Integer, Integer>)null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void distinctUntilChangedFunctionReturnsNull() {
         Flowable.range(1, 2).distinctUntilChanged(new Function<Integer, Object>() {
             @Override
             public Object apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).test().assertResult(1);
     }
 
     @Test(expected = NullPointerException.class)

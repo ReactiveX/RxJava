@@ -29,7 +29,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.QueueDisposable;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subjects.UnicastSubject;
+import io.reactivex.subjects.*;
 
 public class ObservableDistinctUntilChangedTest {
 
@@ -248,4 +248,30 @@ public class ObservableDistinctUntilChangedTest {
             RxJavaPlugins.reset();
         }
    }
+
+    class Mutable {
+        int value;
+    }
+
+    @Test
+    public void mutableWithSelector() {
+        Mutable m = new Mutable();
+
+        PublishSubject<Mutable> pp = PublishSubject.create();
+
+        TestObserver<Mutable> ts = pp.distinctUntilChanged(new Function<Mutable, Object>() {
+            @Override
+            public Object apply(Mutable m) throws Exception {
+                return m.value;
+            }
+        })
+        .test();
+
+        pp.onNext(m);
+        m.value = 1;
+        pp.onNext(m);
+        pp.onComplete();
+
+        ts.assertResult(m, m);
+    }
 }

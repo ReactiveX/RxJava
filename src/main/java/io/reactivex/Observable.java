@@ -6333,7 +6333,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> distinctUntilChanged() {
-        return new ObservableDistinctUntilChanged<T>(this, Functions.equalsPredicate());
+        return distinctUntilChanged(Functions.identity());
     }
 
     /**
@@ -6357,7 +6357,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Observable<T> distinctUntilChanged(Function<? super T, K> keySelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
-        return new ObservableDistinctUntilChanged<T>(this, Functions.equalsPredicate(keySelector));
+        return RxJavaPlugins.onAssembly(new ObservableDistinctUntilChanged<T, K>(this, keySelector, ObjectHelper.equalsPredicate()));
     }
 
     /**
@@ -6380,7 +6380,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> distinctUntilChanged(BiPredicate<? super T, ? super T> comparer) {
         ObjectHelper.requireNonNull(comparer, "comparer is null");
-        return RxJavaPlugins.onAssembly(new ObservableDistinctUntilChanged<T>(this, comparer));
+        return RxJavaPlugins.onAssembly(new ObservableDistinctUntilChanged<T, T>(this, Functions.<T>identity(), comparer));
     }
 
     /**

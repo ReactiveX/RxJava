@@ -25,7 +25,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.ScalarCallable;
 import io.reactivex.internal.operators.flowable.*;
-import io.reactivex.internal.operators.observable.*;
+import io.reactivex.internal.operators.observable.ObservableFromPublisher;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.util.*;
@@ -7266,7 +7266,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> distinctUntilChanged() {
-        return new FlowableDistinctUntilChanged<T>(this, Functions.equalsPredicate());
+        return distinctUntilChanged(Functions.identity());
     }
 
     /**
@@ -7294,7 +7294,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Flowable<T> distinctUntilChanged(Function<? super T, K> keySelector) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
-        return new FlowableDistinctUntilChanged<T>(this, Functions.equalsPredicate(keySelector));
+        return RxJavaPlugins.onAssembly(new FlowableDistinctUntilChanged<T, K>(this, keySelector, ObjectHelper.equalsPredicate()));
     }
 
     /**
@@ -7321,7 +7321,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> distinctUntilChanged(BiPredicate<? super T, ? super T> comparer) {
         ObjectHelper.requireNonNull(comparer, "comparer is null");
-        return RxJavaPlugins.onAssembly(new FlowableDistinctUntilChanged<T>(this, comparer));
+        return RxJavaPlugins.onAssembly(new FlowableDistinctUntilChanged<T, T>(this, Functions.<T>identity(), comparer));
     }
 
     /**
