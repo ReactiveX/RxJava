@@ -577,11 +577,12 @@ public class FlowableConcatMapEagerTest {
             public Flowable<Integer> apply(Integer t) {
                 return Flowable.range(1, 1000).subscribeOn(Schedulers.computation());
             }
-        }).observeOn(Schedulers.newThread()).subscribe(ts);
-
-        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
-        ts.assertNoErrors();
-        ts.assertValueCount(2000);
+        }).observeOn(Schedulers.single())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertValueCount(2000)
+        .assertComplete();
     }
 
     @Test

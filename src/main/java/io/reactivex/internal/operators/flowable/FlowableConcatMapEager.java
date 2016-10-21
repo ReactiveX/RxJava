@@ -233,12 +233,11 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
             int missed = 1;
             InnerQueuedSubscriber<R> inner = current;
             Subscriber<? super R> a = actual;
-            long r = requested.get();
-            long e = 0L;
             ErrorMode em = errorMode;
 
-            outer:
             for (;;) {
+                long r = requested.get();
+                long e = 0L;
 
                 if (inner == null) {
 
@@ -270,6 +269,8 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                         current = inner;
                     }
                 }
+
+                boolean continueNextSource = false;
 
                 if (inner != null) {
                     SimpleQueue<R> q = inner.queue();
@@ -313,7 +314,8 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                                 inner = null;
                                 current = null;
                                 s.request(1);
-                                continue outer;
+                                continueNextSource = true;
+                                break;
                             }
 
                             if (empty) {
@@ -353,15 +355,18 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                                 inner = null;
                                 current = null;
                                 s.request(1);
-                                continue;
+                                continueNextSource = true;
                             }
                         }
                     }
                 }
 
                 if (e != 0L && r != Long.MAX_VALUE) {
-                    r = requested.addAndGet(-e);
-                    e = 0L;
+                    requested.addAndGet(-e);
+                }
+
+                if (continueNextSource) {
+                    continue;
                 }
 
                 missed = addAndGet(-missed);

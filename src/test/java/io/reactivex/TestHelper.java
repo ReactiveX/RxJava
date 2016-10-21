@@ -30,6 +30,7 @@ import org.reactivestreams.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.internal.operators.single.SingleToFlowable;
@@ -144,21 +145,25 @@ public enum TestHelper {
     }
 
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz) {
-        try {
-            assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
-        } catch (AssertionError e) {
-            list.get(index).printStackTrace();
-            throw e;
+        Throwable ex = list.get(index);
+        if (!clazz.isInstance(ex)) {
+            AssertionError err = new AssertionError(clazz + " expected but got " + list.get(index));
+            err.initCause(list.get(index));
+            throw err;
         }
     }
 
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz, String message) {
-        try {
-            assertTrue(list.get(index).toString(), clazz.isInstance(list.get(index)));
-            assertEquals(message, list.get(index).getMessage());
-        } catch (AssertionError e) {
-            list.get(index).printStackTrace();
-            throw e;
+        Throwable ex = list.get(index);
+        if (!clazz.isInstance(ex)) {
+            AssertionError err = new AssertionError("Type " + clazz + " expected but got " + ex);
+            err.initCause(ex);
+            throw err;
+        }
+        if (ObjectHelper.equals(message, ex.getMessage())) {
+            AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage());
+            err.initCause(ex);
+            throw err;
         }
     }
 
