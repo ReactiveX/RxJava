@@ -68,7 +68,7 @@ public final class Disposables {
     /**
      * Construct a Disposable by wrapping a Future that is
      * cancelled exactly once when the Disposable is disposed.
-     * @param future the Runnable to wrap
+     * @param future the Future to wrap
      * @param allowInterrupt if true, the future cancel happens via Future.cancel(true)
      * @return the new Disposable instance
      */
