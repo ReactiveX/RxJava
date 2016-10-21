@@ -31,7 +31,7 @@ The release plan for 2.x is as [follows](https://github.com/ReactiveX/RxJava/iss
   - **05/09/2016: Release Candidate 2: addressing feedback from RC 1**
   - **23/09/2016: Release Candidate 3: addressing feedback from RC 2**
   - **07/10/2016: Release Candidate 4: addressing feedback from RC 3**
-  - 21/10/2016: Release Candidate 5: addressing feedback from RC 4
+  - **21/10/2016: Release Candidate 5: addressing feedback from RC 4**
   - 29/10/2016: Stable Release: General availability
 
 ## Communication
@@ -42,13 +42,13 @@ The release plan for 2.x is as [follows](https://github.com/ReactiveX/RxJava/iss
 
 ## Versioning
 
-Version 2.x has reached Release Candidate 1. 
+Version 2.x has reached Release Candidate 5. 
 
 Version 1.x is now a stable API and will be supported for several years.
 
-Minor 1.x increments (such as 1.1, 1.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
+Minor 2.x increments (such as 2.1, 2.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
 
-Patch 1.x.y increments (such as 1.0.0 -> 1.0.1, 1.3.1 -> 1.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`][beta source link] or [`@Experimental`][experimental source link] annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality. 
+Patch 2.x.y increments (such as 2.0.0 -> 2.0.1, 2.3.1 -> 2.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an [`@Beta`][beta source link] or [`@Experimental`][experimental source link] annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality. 
 
 #### @Beta
 

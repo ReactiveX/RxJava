@@ -2,6 +2,55 @@
 
 Version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.0.0-RC5 - October 21, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.0-RC5%7C))
+
+This release contains API fixes, further cleanups to code and javadoc, better test coverage and bugfixes. Thanks to the respective contributors and @JakeWharton for the reviews.
+
+**API enhancements**
+
+  - [Pull 4685](https://github.com/ReactiveX/RxJava/pull/4685): Test static from methods and add `Maybe.fromSingle` & `fromCompletable`
+  - [Pull 4687](https://github.com/ReactiveX/RxJava/pull/4687): Add `Observable.rangeLong` & `Flowable.rangeLong`.
+  - [Pull 4690](https://github.com/ReactiveX/RxJava/pull/4690): `BaseTestConsumer` add `assertValueAt(index, Predicate<T>)`.
+  - [Pull 4711](https://github.com/ReactiveX/RxJava/pull/4711): Decouple stream operators from Function interface (`FlowableOperator` and co).
+  - [Pull 4712](https://github.com/ReactiveX/RxJava/pull/4712): make `Observable.sequenceEqual` return Single<Boolean>
+  - [Pull 4714](https://github.com/ReactiveX/RxJava/pull/4714): have `Flowable.toList(Callable)` return Single
+  - [Pull 4720](https://github.com/ReactiveX/RxJava/pull/4720): remove variance from the input source of `retryWhen`
+  - [Pull 4723](https://github.com/ReactiveX/RxJava/pull/4723): remove `flatMapIterable(Function, int)` overload and have `flatMapIterable(Function)` use the flatten operator.
+  - [Pull 4729](https://github.com/ReactiveX/RxJava/pull/4729): Merge `FlowableEmitter.BackpressureMode` into `BackpressureStrategy`
+  - [Pull 4710](https://github.com/ReactiveX/RxJava/pull/4710): Remove checked exceptions from transformer interfaces.
+
+**Performance enhancements**
+
+  - [Pull 4723](https://github.com/ReactiveX/RxJava/pull/4723): enable fusion on `Observable.observeOn`
+
+**Bugfixes**
+
+  - [Pull 4681](https://github.com/ReactiveX/RxJava/pull/4681): Fix `Flowable` + `Single` `elementAt` and `elementAtOrError` operators on empty sources.
+  - [Pull 4686](https://github.com/ReactiveX/RxJava/pull/4686): Fix `flatMapX` over-cancellation in case of an inner error.
+  - [Pull 4689](https://github.com/ReactiveX/RxJava/pull/4689): Fix `doOnEvent` NPE on `dispose()`
+  - [Pull 4695](https://github.com/ReactiveX/RxJava/pull/4695): `CompositeException` fix order of exceptions
+  - [Pull 4696](https://github.com/ReactiveX/RxJava/pull/4696): Fix inner `Throwable` order for `CompletablePeek`
+  - [Pull 4705](https://github.com/ReactiveX/RxJava/pull/4705): fix `Observable.flatMap`'s dispose behavior and error accumulation
+  - [Pull 4707](https://github.com/ReactiveX/RxJava/pull/4707): Fix `Flowable.elementAt` on empty sources. 
+  - [Pull 4708](https://github.com/ReactiveX/RxJava/pull/4708): fix `Observable.publish(Function)` latecommer behavior
+  - [Pull 4712](https://github.com/ReactiveX/RxJava/pull/4712): fix `Observable.combineLatest` error management, fix `Observable.flatMap` `maxConcurrency` behavior with scalars, use of unbounded queue, fix `Observable.timeInterval` not saving the `Disposable`
+  - [Pull 4723](https://github.com/ReactiveX/RxJava/pull/4723): fix fusion of `Observable.just`, fix `Observable.replay()` potential emission before `onSubscribe` call
+  - [Pull 4731](https://github.com/ReactiveX/RxJava/pull/4731): Delegate null `Collection`s down to `onError` in `toList`
+  - [Pull 4736](https://github.com/ReactiveX/RxJava/pull/4736): fix `onBackpressureBuffer(long, Action, BufferOverflowStrategy)` return type, fix `concatMapDelayError` wrong barrier mode selected.
+  - [Pull 4738](https://github.com/ReactiveX/RxJava/pull/4738): Fix `Flowable.flatMap` error, cancellation and resource management.
+
+**Removals**
+
+  - [Pull 4689](https://github.com/ReactiveX/RxJava/pull/4689): Remove `Maybe.toCompletable`, use `Maybe.ignoreElement`.
+  - [Pull 4708](https://github.com/ReactiveX/RxJava/pull/4708): remove `bufferSize` overloads of `Observable.publish` as there is no need to buffer anything for an `Observable`
+  - [Pull 4723](https://github.com/ReactiveX/RxJava/pull/4723): remove `flatMapIterable(Function, int)` overload
+
+**Other**
+
+  - [Pull 4682](https://github.com/ReactiveX/RxJava/pull/4682): Update Mockito to 2.1.0
+  - [Pull 4699](https://github.com/ReactiveX/RxJava/pull/4699): Clean up null usages by using `ObjectHelper.requireNonNull`.
+
+
 ### Version 2.0.0-RC4 - October 7, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.0-RC4%7C))
 
 This release contains new operators, further cleanups, better test coverage and bugfixes. Thanks to the respective contributors and @JakeWharton for the reviews.
