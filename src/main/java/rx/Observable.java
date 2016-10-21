@@ -202,22 +202,6 @@ public class Observable<T> {
     }
 
     /**
-     * Transforms a OnSubscribe.call() into an Observable.subscribe() call.
-     * <p>Note: has to be in Observable because it calls the package-private subscribe() method
-     * @param <T> the value type
-     */
-    static final class OnSubscribeExtend<T> implements OnSubscribe<T> {
-        final Observable<T> parent;
-        OnSubscribeExtend(Observable<T> parent) {
-            this.parent = parent;
-        }
-        @Override
-        public void call(Subscriber<? super T> subscriber) {
-            subscriber.add(subscribe(subscriber, parent));
-        }
-    }
-
-    /**
      * <strong>This method requires advanced knowledge about building operators; please consider
      * other standard composition methods first;</strong>
      * Lifts a function to the current Observable and returns a new Observable that when subscribed to will pass
