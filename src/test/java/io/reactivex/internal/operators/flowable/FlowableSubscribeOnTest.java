@@ -22,7 +22,9 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.operators.flowable.FlowableSubscribeOn.SubscribeOnSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -285,4 +287,38 @@ public class FlowableSubscribeOnTest {
         TestHelper.checkDisposed(Flowable.just(1).subscribeOn(Schedulers.single()));
     }
 
+    @Test
+    public void deferredRequestRace() {
+        for (int i = 0; i < 500; i++) {
+
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
+            Worker w = Schedulers.computation().createWorker();
+
+            final SubscribeOnSubscriber<Integer> so = new SubscribeOnSubscriber<Integer>(ts, w, Flowable.<Integer>never());
+            ts.onSubscribe(so);
+
+            final BooleanSubscription bs = new BooleanSubscription();
+
+            try {
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        so.onSubscribe(bs);
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        so.request(1);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+            } finally {
+                w.dispose();
+            }
+        }
+    }
 }

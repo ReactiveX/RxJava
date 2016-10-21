@@ -17,11 +17,12 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static org.junit.Assert.*;
 import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.processors.*;
@@ -1671,14 +1672,22 @@ public class FlowableNullTests {
         just1.onErrorReturnItem(null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void onErrorReturnFunctionReturnsNull() {
-        Flowable.error(new TestException()).onErrorReturn(new Function<Throwable, Object>() {
-            @Override
-            public Object apply(Throwable e) {
-                return null;
-            }
-        }).blockingSubscribe();
+        try {
+            Flowable.error(new TestException()).onErrorReturn(new Function<Throwable, Object>() {
+                @Override
+                public Object apply(Throwable e) {
+                    return null;
+                }
+            }).blockingSubscribe();
+            fail("Should have thrown");
+        } catch (CompositeException ex) {
+            List<Throwable> errors = TestHelper.compositeList(ex);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertError(errors, 1, NullPointerException.class, "The valueSupplier returned a null value");
+        }
     }
 
     @Test(expected = NullPointerException.class)

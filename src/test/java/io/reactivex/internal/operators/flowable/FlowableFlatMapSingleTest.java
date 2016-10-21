@@ -440,4 +440,54 @@ public class FlowableFlatMapSingleTest {
         to
         .assertResult(2);
     }
+
+    @Test
+    public void backpressure() {
+        TestSubscriber<Integer> ts = Flowable.just(1)
+        .flatMapSingle(Functions.justFunction(Single.just(2)))
+        .test(0L)
+        .assertEmpty();
+
+        ts.request(1);
+        ts.assertResult(2);
+    }
+
+    @Test
+    public void error() {
+        Flowable.just(1)
+        .flatMapSingle(Functions.justFunction(Single.<Integer>error(new TestException())))
+        .test(0L)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void errorDelayed() {
+        Flowable.just(1)
+        .flatMapSingle(Functions.justFunction(Single.<Integer>error(new TestException())), true, 16)
+        .test(0L)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void requestCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> to = Flowable.just(1).concatWith(Flowable.<Integer>never())
+            .flatMapSingle(Functions.justFunction(Single.just(2))).test(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    to.request(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
 }

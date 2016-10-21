@@ -17,13 +17,10 @@ import java.util.concurrent.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.util.*;
-import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.DefaultSubscriber;
 
 /**
  * Utility methods to consume a Publisher in a blocking manner with callbacks or Subscriber.
@@ -65,17 +62,14 @@ public final class FlowableBlockingSubscribe {
                 if (bs.isCancelled()) {
                     break;
                 }
-                if (o == BlockingSubscriber.TERMINATED) {
-                    break;
-                }
-                if (NotificationLite.acceptFull(v, subscriber)) {
+                if (o == BlockingSubscriber.TERMINATED
+                        || NotificationLite.acceptFull(v, subscriber)) {
                     break;
                 }
             }
         } catch (InterruptedException e) {
-            subscriber.onError(e);
-        } finally {
             bs.cancel();
+            subscriber.onError(e);
         }
     }
 
@@ -85,31 +79,14 @@ public final class FlowableBlockingSubscribe {
      * @param <T> the value type
      */
     public static <T> void subscribe(Publisher<? extends T> o) {
-        final CountDownLatch cdl = new CountDownLatch(1);
-        final Throwable[] error = { null };
+        BlockingIgnoringReceiver callback = new BlockingIgnoringReceiver();
         LambdaSubscriber<T> ls = new LambdaSubscriber<T>(Functions.emptyConsumer(),
-        new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                error[0] = e;
-                cdl.countDown();
-            }
-        }, new Action() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        }, new Consumer<Subscription>() {
-            @Override
-            public void accept(Subscription s) {
-                s.request(Long.MAX_VALUE);
-            }
-        });
+        callback, callback, Functions.REQUEST_MAX);
 
         o.subscribe(ls);
 
-        BlockingHelper.awaitForComplete(cdl, ls);
-        Throwable e = error[0];
+        BlockingHelper.awaitForComplete(callback, ls);
+        Throwable e = callback.error;
         if (e != null) {
             throw ExceptionHelper.wrapOrThrow(e);
         }
@@ -125,50 +102,6 @@ public final class FlowableBlockingSubscribe {
      */
     public static <T> void subscribe(Publisher<? extends T> o, final Consumer<? super T> onNext,
             final Consumer<? super Throwable> onError, final Action onComplete) {
-        subscribe(o, new DefaultSubscriber<T>() {
-            boolean done;
-            @Override
-            public void onNext(T t) {
-                if (done) {
-                    return;
-                }
-                try {
-                    onNext.accept(t);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    cancel();
-                    onError(ex);
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if (done) {
-                    RxJavaPlugins.onError(e);
-                    return;
-                }
-                done = true;
-                try {
-                    onError.accept(e);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    RxJavaPlugins.onError(ex);
-                }
-            }
-
-            @Override
-            public void onComplete() {
-                if (done) {
-                    return;
-                }
-                done = true;
-                try {
-                    onComplete.run();
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    RxJavaPlugins.onError(ex);
-                }
-            }
-        });
+        subscribe(o, new LambdaSubscriber<T>(onNext, onError, onComplete, Functions.REQUEST_MAX));
     }
 }

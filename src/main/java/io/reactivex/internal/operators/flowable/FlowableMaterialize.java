@@ -13,13 +13,14 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
-import io.reactivex.*;
+import io.reactivex.Notification;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T, Notification<T>> {
 
@@ -32,24 +33,20 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
         source.subscribe(new MaterializeSubscriber<T>(s));
     }
 
-    // FIXME needs post-complete drain management
     static final class MaterializeSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
 
         private static final long serialVersionUID = -3740826063558713822L;
+
         final Subscriber<? super Notification<T>> actual;
 
         Subscription s;
 
-        final AtomicInteger state = new AtomicInteger();
-
         Notification<T> value;
 
-        volatile boolean done;
+        long produced;
 
-        static final int NO_REQUEST_NO_VALUE = 0;
-        static final int NO_REQUEST_HAS_VALUE = 1;
-        static final int HAS_REQUEST_NO_VALUE = 2;
-        static final int HAS_REQUEST_HAS_VALUE = 3;
+        static final long COMPLETE_MASK = Long.MIN_VALUE;
+        static final long REQUEST_MASK = Long.MAX_VALUE;
 
         MaterializeSubscriber(Subscriber<? super Notification<T>> actual) {
             this.actual = actual;
@@ -65,92 +62,70 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onNext(T t) {
+            produced++;
             actual.onNext(Notification.createOnNext(t));
-
-            if (get() != Long.MAX_VALUE) {
-                decrementAndGet();
-            }
-        }
-
-        void tryEmit(Notification<T> v) {
-            if (get() != 0L) {
-                state.lazySet(HAS_REQUEST_HAS_VALUE);
-                actual.onNext(v);
-                actual.onComplete();
-            } else {
-                for (;;) {
-                    int s = state.get();
-                    if (s == HAS_REQUEST_NO_VALUE) {
-                        if (state.compareAndSet(s, HAS_REQUEST_HAS_VALUE)) {
-                            actual.onNext(v);
-                            actual.onComplete();
-                            return;
-                        }
-                    } else
-                    if (s == NO_REQUEST_HAS_VALUE) {
-                        return;
-                    } else
-                    if (s == HAS_REQUEST_HAS_VALUE) {
-                        value = null;
-                        return;
-                    } else {
-                        value = v;
-                        done = true;
-                        if (state.compareAndSet(s, NO_REQUEST_HAS_VALUE)) {
-                            return;
-                        }
-                    }
-                }
-            }
         }
 
         @Override
         public void onError(Throwable t) {
-            Notification<T> v = Notification.createOnError(t);
-
-            tryEmit(v);
+            complete(Notification.<T>createOnError(t));
         }
 
         @Override
         public void onComplete() {
-            Notification<T> v = Notification.createOnComplete();
+            complete(Notification.<T>createOnComplete());
+        }
 
-            tryEmit(v);
+        void complete(Notification<T> n) {
+            long p = produced;
+            if (p != 0) {
+                BackpressureHelper.produced(this, p);
+            }
+
+            for (;;) {
+                long r = get();
+                if ((r & COMPLETE_MASK) != 0) {
+                    if (n.isOnError()) {
+                        RxJavaPlugins.onError(n.getError());
+                    }
+                    return;
+                }
+                if ((r & REQUEST_MASK) != 0) {
+                    lazySet(COMPLETE_MASK + 1);
+                    actual.onNext(n);
+                    actual.onComplete();
+                    return;
+                }
+                value = n;
+                if (compareAndSet(0, COMPLETE_MASK)) {
+                    return;
+                }
+            }
         }
 
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validate(n)) {
-                return;
-            }
-            BackpressureHelper.add(this, n);
-            if (done) {
+            if (SubscriptionHelper.validate(n)) {
                 for (;;) {
-                    int s = state.get();
-                    if (s == NO_REQUEST_HAS_VALUE) {
-                        if (state.compareAndSet(s, HAS_REQUEST_HAS_VALUE)) {
-                            Notification<T> v = value;
-                            value = null;
-                            actual.onNext(v);
+                    long r = get();
+                    if ((r & COMPLETE_MASK) != 0) {
+                        if (compareAndSet(COMPLETE_MASK, COMPLETE_MASK + 1)) {
+                            actual.onNext(value);
                             actual.onComplete();
-                            return;
                         }
-                    } else
-                    if (s == HAS_REQUEST_NO_VALUE || s == HAS_REQUEST_HAS_VALUE) {
-                        return;
-                    } else
-                    if (state.compareAndSet(s, HAS_REQUEST_NO_VALUE)) {
-                        return;
+                        break;
+                    }
+                    long u = BackpressureHelper.addCap(r, n);
+                    if (compareAndSet(r, u)) {
+                        s.request(n);
+                        break;
                     }
                 }
-            } else {
-                s.request(n);
             }
         }
 
         @Override
         public void cancel() {
-            state.lazySet(HAS_REQUEST_HAS_VALUE);
             s.cancel();
         }
     }

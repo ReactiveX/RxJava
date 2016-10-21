@@ -264,7 +264,7 @@ public class FlowableFlatMapMaybeTest {
         Flowable.fromArray(new String[]{"1","a","2"}).flatMapMaybe(new Function<String, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(final String s) throws NumberFormatException {
-                //return Single.just(Integer.valueOf(s)); //This works
+                //return Maybe.just(Integer.valueOf(s)); //This works
                 return Maybe.fromCallable(new Callable<Integer>() {
                     @Override
                     public Integer call() throws NumberFormatException {
@@ -523,5 +523,55 @@ public class FlowableFlatMapMaybeTest {
 
         to
         .assertResult(2);
+    }
+
+    @Test
+    public void backpressure() {
+        TestSubscriber<Integer> ts = Flowable.just(1)
+        .flatMapMaybe(Functions.justFunction(Maybe.just(2)))
+        .test(0L)
+        .assertEmpty();
+
+        ts.request(1);
+        ts.assertResult(2);
+    }
+
+    @Test
+    public void error() {
+        Flowable.just(1)
+        .flatMapMaybe(Functions.justFunction(Maybe.<Integer>error(new TestException())))
+        .test(0L)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void errorDelayed() {
+        Flowable.just(1)
+        .flatMapMaybe(Functions.justFunction(Maybe.<Integer>error(new TestException())), true, 16)
+        .test(0L)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void requestCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> to = Flowable.just(1).concatWith(Flowable.<Integer>never())
+            .flatMapMaybe(Functions.justFunction(Maybe.just(2))).test(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    to.request(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
     }
 }

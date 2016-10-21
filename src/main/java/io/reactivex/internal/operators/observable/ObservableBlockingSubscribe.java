@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.observers.*;
@@ -75,30 +74,14 @@ public final class ObservableBlockingSubscribe {
      * @param <T> the value type
      */
     public static <T> void subscribe(ObservableSource<? extends T> o) {
-        final CountDownLatch cdl = new CountDownLatch(1);
-        final Throwable[] error = { null };
+        BlockingIgnoringReceiver callback = new BlockingIgnoringReceiver();
         LambdaObserver<T> ls = new LambdaObserver<T>(Functions.emptyConsumer(),
-        new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                error[0] = e;
-                cdl.countDown();
-            }
-        }, new Action() {
-            @Override
-            public void run() {
-                cdl.countDown();
-            }
-        }, new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable s) {
-            }
-        });
+        callback, callback, Functions.emptyConsumer());
 
         o.subscribe(ls);
 
-        BlockingHelper.awaitForComplete(cdl, ls);
-        Throwable e = error[0];
+        BlockingHelper.awaitForComplete(callback, ls);
+        Throwable e = callback.error;
         if (e != null) {
             throw ExceptionHelper.wrapOrThrow(e);
         }

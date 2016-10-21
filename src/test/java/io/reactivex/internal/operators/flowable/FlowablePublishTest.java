@@ -24,11 +24,12 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.HasUpstreamPublisher;
+import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -396,8 +397,9 @@ public class FlowablePublishTest {
 
         assertEquals(2, calls.get());
     }
+
     @Test
-    public void testObserveOn() {
+    public void syncFusedObserveOn() {
         ConnectableFlowable<Integer> co = Flowable.range(0, 1000).publish();
         Flowable<Integer> obs = co.observeOn(Schedulers.computation());
         for (int i = 0; i < 1000; i++) {
@@ -412,10 +414,91 @@ public class FlowablePublishTest {
                 Disposable s = co.connect();
 
                 for (TestSubscriber<Integer> ts : tss) {
-                    ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
-                    ts.assertTerminated();
-                    ts.assertNoErrors();
-                    assertEquals(1000, ts.valueCount());
+                    ts.awaitDone(5, TimeUnit.SECONDS)
+                    .assertSubscribed()
+                    .assertValueCount(1000)
+                    .assertNoErrors()
+                    .assertComplete();
+                }
+                s.dispose();
+            }
+        }
+    }
+
+    @Test
+    public void syncFusedObserveOn2() {
+        ConnectableFlowable<Integer> co = Flowable.range(0, 1000).publish();
+        Flowable<Integer> obs = co.observeOn(ImmediateThinScheduler.INSTANCE);
+        for (int i = 0; i < 1000; i++) {
+            for (int j = 1; j < 6; j++) {
+                List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
+                for (int k = 1; k < j; k++) {
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                    tss.add(ts);
+                    obs.subscribe(ts);
+                }
+
+                Disposable s = co.connect();
+
+                for (TestSubscriber<Integer> ts : tss) {
+                    ts.awaitDone(5, TimeUnit.SECONDS)
+                    .assertSubscribed()
+                    .assertValueCount(1000)
+                    .assertNoErrors()
+                    .assertComplete();
+                }
+                s.dispose();
+            }
+        }
+    }
+
+    @Test
+    public void asyncFusedObserveOn() {
+        ConnectableFlowable<Integer> co = Flowable.range(0, 1000).observeOn(ImmediateThinScheduler.INSTANCE).publish();
+        for (int i = 0; i < 1000; i++) {
+            for (int j = 1; j < 6; j++) {
+                List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
+                for (int k = 1; k < j; k++) {
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                    tss.add(ts);
+                    co.subscribe(ts);
+                }
+
+                Disposable s = co.connect();
+
+                for (TestSubscriber<Integer> ts : tss) {
+                    ts.awaitDone(5, TimeUnit.SECONDS)
+                    .assertSubscribed()
+                    .assertValueCount(1000)
+                    .assertNoErrors()
+                    .assertComplete();
+                }
+                s.dispose();
+            }
+        }
+    }
+
+    @Test
+    public void testObserveOn() {
+        ConnectableFlowable<Integer> co = Flowable.range(0, 1000).hide().publish();
+        Flowable<Integer> obs = co.observeOn(Schedulers.computation());
+        for (int i = 0; i < 1000; i++) {
+            for (int j = 1; j < 6; j++) {
+                List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
+                for (int k = 1; k < j; k++) {
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                    tss.add(ts);
+                    obs.subscribe(ts);
+                }
+
+                Disposable s = co.connect();
+
+                for (TestSubscriber<Integer> ts : tss) {
+                    ts.awaitDone(5, TimeUnit.SECONDS)
+                    .assertSubscribed()
+                    .assertValueCount(1000)
+                    .assertNoErrors()
+                    .assertComplete();
                 }
                 s.dispose();
             }
@@ -475,6 +558,13 @@ public class FlowablePublishTest {
     @Test
     public void disposeOnArrival() {
         ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
+
+        co.test(Long.MAX_VALUE, true).assertEmpty();
+    }
+
+    @Test
+    public void disposeOnArrival2() {
+        Flowable<Integer> co = Flowable.<Integer>never().publish().autoConnect();
 
         co.test(Long.MAX_VALUE, true).assertEmpty();
     }
@@ -722,5 +812,65 @@ public class FlowablePublishTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void pollThrows() {
+        Flowable.just(1)
+        .map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .publish()
+        .autoConnect()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void dryRunCrash() {
+        final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) {
+            @Override
+            public void onNext(Object t) {
+                super.onNext(t);
+                onComplete();
+                cancel();
+            }
+        };
+
+        Flowable.range(1, 10)
+        .map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception {
+                if (v == 2) {
+                    throw new TestException();
+                }
+                return v;
+            }
+        })
+        .publish()
+        .autoConnect()
+        .subscribe(ts);
+
+        ts
+        .assertResult(1);
+    }
+
+    @Test
+    public void overflowQueue() {
+        Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> s) throws Exception {
+                for (int i = 0; i < 10; i++) {
+                    s.onNext(i);
+                }
+            }
+        }, BackpressureStrategy.NONE)
+        .publish(8)
+        .autoConnect()
+        .test(0L)
+        .assertFailure(MissingBackpressureException.class);
     }
 }
