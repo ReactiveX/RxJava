@@ -349,9 +349,9 @@ public class FlowableDistinctUntilChangedTest {
     @Test
     public void mutableWithSelector() {
         Mutable m = new Mutable();
-        
+
         PublishProcessor<Mutable> pp = PublishProcessor.create();
-        
+
         TestSubscriber<Mutable> ts = pp.distinctUntilChanged(new Function<Mutable, Object>() {
             @Override
             public Object apply(Mutable m) throws Exception {

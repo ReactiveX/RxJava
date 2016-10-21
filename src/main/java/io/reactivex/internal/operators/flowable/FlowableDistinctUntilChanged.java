@@ -22,7 +22,7 @@ import io.reactivex.internal.subscribers.*;
 public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWithUpstream<T, T> {
 
     final Function<? super T, K> keySelector;
-    
+
     final BiPredicate<? super K, ? super K> comparer;
 
     public FlowableDistinctUntilChanged(Publisher<T> source, Function<? super T, K> keySelector, BiPredicate<? super K, ? super K> comparer) {
@@ -46,7 +46,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
 
 
         final Function<? super T, K> keySelector;
-        
+
         final BiPredicate<? super K, ? super K> comparer;
 
         K last;
@@ -79,7 +79,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
             }
 
             K key;
-            
+
             try {
                 key = keySelector.apply(t);
                 if (hasValue) {
@@ -96,7 +96,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                fail(ex);
                return true;
             }
-            
+
             actual.onNext(t);
             return true;
         }
@@ -136,7 +136,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
     static final class DistinctUntilChangedConditionalSubscriber<T, K> extends BasicFuseableConditionalSubscriber<T, T> {
 
         final Function<? super T, K> keySelector;
-        
+
         final BiPredicate<? super K, ? super K> comparer;
 
         K last;
@@ -168,7 +168,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
             }
 
             K key;
-            
+
             try {
                 key = keySelector.apply(t);
                 if (hasValue) {
@@ -185,7 +185,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                fail(ex);
                return true;
             }
-            
+
             actual.onNext(t);
             return true;
         }

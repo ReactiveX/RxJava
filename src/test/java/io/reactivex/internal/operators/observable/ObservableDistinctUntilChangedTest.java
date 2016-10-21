@@ -256,9 +256,9 @@ public class ObservableDistinctUntilChangedTest {
     @Test
     public void mutableWithSelector() {
         Mutable m = new Mutable();
-        
+
         PublishSubject<Mutable> pp = PublishSubject.create();
-        
+
         TestObserver<Mutable> ts = pp.distinctUntilChanged(new Function<Mutable, Object>() {
             @Override
             public Object apply(Mutable m) throws Exception {

@@ -1257,14 +1257,14 @@ public class ObservableNullTests {
         just1.distinctUntilChanged((BiPredicate<Object, Object>)null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void distinctUntilChangedFunctionReturnsNull() {
         Observable.range(1, 2).distinctUntilChanged(new Function<Integer, Object>() {
             @Override
             public Object apply(Integer v) {
                 return null;
             }
-        }).blockingSubscribe();
+        }).test().assertResult(1);
     }
 
     @Test(expected = NullPointerException.class)

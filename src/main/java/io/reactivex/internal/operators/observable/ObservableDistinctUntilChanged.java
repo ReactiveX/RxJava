@@ -20,7 +20,7 @@ import io.reactivex.internal.observers.BasicFuseableObserver;
 public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservableWithUpstream<T, T> {
 
     final Function<? super T, K> keySelector;
-    
+
     final BiPredicate<? super K, ? super K> comparer;
 
     public ObservableDistinctUntilChanged(ObservableSource<T> source, Function<? super T, K> keySelector, BiPredicate<? super K, ? super K> comparer) {
@@ -37,7 +37,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
     static final class DistinctUntilChangedObserver<T, K> extends BasicFuseableObserver<T, T> {
 
         final Function<? super T, K> keySelector;
-        
+
         final BiPredicate<? super K, ? super K> comparer;
 
         K last;
@@ -63,7 +63,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
             }
 
             K key;
-            
+
             try {
                 key = keySelector.apply(t);
                 if (hasValue) {
@@ -80,7 +80,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
                fail(ex);
                return;
             }
-            
+
             actual.onNext(t);
             return;
         }
