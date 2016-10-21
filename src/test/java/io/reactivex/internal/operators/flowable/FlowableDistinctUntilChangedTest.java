@@ -30,7 +30,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.processors.UnicastProcessor;
+import io.reactivex.processors.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableDistinctUntilChangedTest {
@@ -340,5 +340,31 @@ public class FlowableDistinctUntilChangedTest {
         } finally {
             RxJavaPlugins.reset();
         }
-   }
+    }
+
+    class Mutable {
+        int value;
+    }
+
+    @Test
+    public void mutableWithSelector() {
+        Mutable m = new Mutable();
+        
+        PublishProcessor<Mutable> pp = PublishProcessor.create();
+        
+        TestSubscriber<Mutable> ts = pp.distinctUntilChanged(new Function<Mutable, Object>() {
+            @Override
+            public Object apply(Mutable m) throws Exception {
+                return m.value;
+            }
+        })
+        .test();
+
+        pp.onNext(m);
+        m.value = 1;
+        pp.onNext(m);
+        pp.onComplete();
+
+        ts.assertResult(m, m);
+    }
 }

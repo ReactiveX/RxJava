@@ -15,16 +15,19 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.functions.BiPredicate;
+import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscribers.*;
 
-public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithUpstream<T, T> {
+public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWithUpstream<T, T> {
 
-    final BiPredicate<? super T, ? super T> comparer;
+    final Function<? super T, K> keySelector;
+    
+    final BiPredicate<? super K, ? super K> comparer;
 
-    public FlowableDistinctUntilChanged(Publisher<T> source, BiPredicate<? super T, ? super T> comparer) {
+    public FlowableDistinctUntilChanged(Publisher<T> source, Function<? super T, K> keySelector, BiPredicate<? super K, ? super K> comparer) {
         super(source);
+        this.keySelector = keySelector;
         this.comparer = comparer;
     }
 
@@ -32,24 +35,29 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
     protected void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
             ConditionalSubscriber<? super T> cs = (ConditionalSubscriber<? super T>) s;
-            source.subscribe(new DistinctUntilChangedConditionalSubscriber<T>(cs, comparer));
+            source.subscribe(new DistinctUntilChangedConditionalSubscriber<T, K>(cs, keySelector, comparer));
         } else {
-            source.subscribe(new DistinctUntilChangedSubscriber<T>(s, comparer));
+            source.subscribe(new DistinctUntilChangedSubscriber<T, K>(s, keySelector, comparer));
         }
     }
 
-    static final class DistinctUntilChangedSubscriber<T> extends BasicFuseableSubscriber<T, T>
+    static final class DistinctUntilChangedSubscriber<T, K> extends BasicFuseableSubscriber<T, T>
     implements ConditionalSubscriber<T> {
 
-        final BiPredicate<? super T, ? super T> comparer;
 
-        T last;
+        final Function<? super T, K> keySelector;
+        
+        final BiPredicate<? super K, ? super K> comparer;
+
+        K last;
 
         boolean hasValue;
 
         DistinctUntilChangedSubscriber(Subscriber<? super T> actual,
-                BiPredicate<? super T, ? super T> comparer) {
+                Function<? super T, K> keySelector,
+                BiPredicate<? super K, ? super K> comparer) {
             super(actual);
+            this.keySelector = keySelector;
             this.comparer = comparer;
         }
 
@@ -70,23 +78,25 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
                 return true;
             }
 
-            if (hasValue) {
-                boolean equal;
-                try {
-                    equal = comparer.test(last, t);
-                } catch (Throwable ex) {
-                    fail(ex);
-                    return false;
+            K key;
+            
+            try {
+                key = keySelector.apply(t);
+                if (hasValue) {
+                    boolean equal = comparer.test(last, key);
+                    last = key;
+                    if (equal) {
+                        return false;
+                    }
+                } else {
+                    hasValue = true;
+                    last = key;
                 }
-                last = t;
-                if (equal) {
-                    return false;
-                }
-                actual.onNext(t);
-                return true;
+            } catch (Throwable ex) {
+               fail(ex);
+               return true;
             }
-            hasValue = true;
-            last = t;
+            
             actual.onNext(t);
             return true;
         }
@@ -103,17 +113,18 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
                 if (v == null) {
                     return null;
                 }
+                K key = keySelector.apply(v);
                 if (!hasValue) {
                     hasValue = true;
-                    last = v;
+                    last = key;
                     return v;
                 }
 
-                if (!comparer.test(last, v)) {
-                    last = v;
+                if (!comparer.test(last, key)) {
+                    last = key;
                     return v;
                 }
-                last = v;
+                last = key;
                 if (sourceMode != SYNC) {
                     s.request(1);
                 }
@@ -122,17 +133,21 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
 
     }
 
-    static final class DistinctUntilChangedConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {
+    static final class DistinctUntilChangedConditionalSubscriber<T, K> extends BasicFuseableConditionalSubscriber<T, T> {
 
-        final BiPredicate<? super T, ? super T> comparer;
+        final Function<? super T, K> keySelector;
+        
+        final BiPredicate<? super K, ? super K> comparer;
 
-        T last;
+        K last;
 
         boolean hasValue;
 
         DistinctUntilChangedConditionalSubscriber(ConditionalSubscriber<? super T> actual,
-                BiPredicate<? super T, ? super T> comparer) {
+                Function<? super T, K> keySelector,
+                BiPredicate<? super K, ? super K> comparer) {
             super(actual);
+            this.keySelector = keySelector;
             this.comparer = comparer;
         }
 
@@ -152,20 +167,27 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
                 return actual.tryOnNext(t);
             }
 
-            if (hasValue) {
-                boolean equal;
-                try {
-                    equal = comparer.test(last, t);
-                } catch (Throwable ex) {
-                    fail(ex);
-                    return false;
+            K key;
+            
+            try {
+                key = keySelector.apply(t);
+                if (hasValue) {
+                    boolean equal = comparer.test(last, key);
+                    last = key;
+                    if (equal) {
+                        return false;
+                    }
+                } else {
+                    hasValue = true;
+                    last = key;
                 }
-                last = t;
-                return !equal && actual.tryOnNext(t);
+            } catch (Throwable ex) {
+               fail(ex);
+               return true;
             }
-            hasValue = true;
-            last = t;
-            return actual.tryOnNext(t);
+            
+            actual.onNext(t);
+            return true;
         }
 
         @Override
@@ -180,16 +202,18 @@ public final class FlowableDistinctUntilChanged<T> extends AbstractFlowableWithU
                 if (v == null) {
                     return null;
                 }
+                K key = keySelector.apply(v);
                 if (!hasValue) {
                     hasValue = true;
-                    last = v;
+                    last = key;
                     return v;
                 }
-                if (!comparer.test(last, v)) {
-                    last = v;
+
+                if (!comparer.test(last, key)) {
+                    last = key;
                     return v;
                 }
-                last = v;
+                last = key;
                 if (sourceMode != SYNC) {
                     s.request(1);
                 }
