@@ -72,14 +72,14 @@ implements Subscriber<T>, Subscription {
                 if (m == QueueSubscription.ASYNC) {
                     fusionMode = m;
                     queue = qs;
-                    QueueDrainHelper.request(get(), prefetch);
+                    QueueDrainHelper.request(s, prefetch);
                     return;
                 }
             }
 
             queue = QueueDrainHelper.createQueue(prefetch);
 
-            QueueDrainHelper.request(get(), prefetch);
+            QueueDrainHelper.request(s, prefetch);
         }
     }
 
@@ -104,22 +104,26 @@ implements Subscriber<T>, Subscription {
 
     @Override
     public void request(long n) {
-        long p = produced + n;
-        if (p >= limit) {
-            produced = 0L;
-            get().request(p);
-        } else {
-            produced = p;
+        if (fusionMode != QueueSubscription.SYNC) {
+            long p = produced + n;
+            if (p >= limit) {
+                produced = 0L;
+                get().request(p);
+            } else {
+                produced = p;
+            }
         }
     }
 
     public void requestOne() {
-        long p = produced + 1;
-        if (p == limit) {
-            produced = 0L;
-            get().request(p);
-        } else {
-            produced = p;
+        if (fusionMode != QueueSubscription.SYNC) {
+            long p = produced + 1;
+            if (p == limit) {
+                produced = 0L;
+                get().request(p);
+            } else {
+                produced = p;
+            }
         }
     }
 
