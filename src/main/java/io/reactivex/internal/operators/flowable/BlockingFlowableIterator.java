@@ -45,8 +45,6 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
     volatile boolean done;
     Throwable error;
 
-    volatile boolean cancelled;
-
     public BlockingFlowableIterator(int batchSize) {
         this.queue = new SpscLinkedArrayQueue<T>(batchSize);
         this.batchSize = batchSize;
@@ -58,9 +56,6 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
     @Override
     public boolean hasNext() {
         for (;;) {
-            if (cancelled) {
-                return false;
-            }
             boolean d = done;
             boolean empty = queue.isEmpty();
             if (d) {
@@ -75,7 +70,7 @@ implements Subscriber<T>, Iterator<T>, Runnable, Disposable {
             if (empty) {
                 lock.lock();
                 try {
-                    while (!cancelled && !done && queue.isEmpty()) {
+                    while (!done && queue.isEmpty()) {
                         condition.await();
                     }
                 } catch (InterruptedException ex) {

@@ -33,8 +33,6 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
     static final class FilterObserver<T> extends BasicFuseableObserver<T, T> {
         final Predicate<? super T> filter;
 
-        Disposable s;
-
         FilterObserver(Observer<? super T> actual, Predicate<? super T> filter) {
             super(actual);
             this.filter = filter;
