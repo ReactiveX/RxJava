@@ -60,10 +60,6 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
 
         final Function<? super T, K> keySelector;
 
-        Disposable d;
-
-        SimpleQueue<T> queue;
-
         DistinctSubscriber(Subscriber<? super T> actual, Function<? super T, K> keySelector, Collection<? super K> collection) {
             super(actual);
             this.keySelector = keySelector;

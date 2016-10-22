@@ -59,10 +59,6 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
 
         final Function<? super T, K> keySelector;
 
-        Disposable d;
-
-        SimpleQueue<T> queue;
-
         DistinctObserver(Observer<? super T> actual, Function<? super T, K> keySelector, Collection<? super K> collection) {
             super(actual);
             this.keySelector = keySelector;
