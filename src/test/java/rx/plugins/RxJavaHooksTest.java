@@ -23,8 +23,10 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
+import org.mockito.Mockito;
 import rx.*;
 import rx.Observable;
 import rx.Scheduler.Worker;
@@ -39,11 +41,26 @@ import rx.subscriptions.Subscriptions;
 
 public class RxJavaHooksTest {
 
+    public static class TestExceptionWithUnknownCause extends RuntimeException {
+        TestExceptionWithUnknownCause() {
+            super((Throwable) null);
+        }
+    }
+
     static Observable<Integer> createObservable() {
         return Observable.range(1, 5).map(new Func1<Integer, Integer>() {
             @Override
             public Integer call(Integer t) {
                 throw new TestException();
+            }
+        });
+    }
+
+    static Observable<Integer> createObservableThrowingUnknownCause() {
+        return Observable.range(1, 5).map(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer t) {
+                throw new TestExceptionWithUnknownCause();
             }
         });
     }
@@ -86,6 +103,31 @@ public class RxJavaHooksTest {
             assertNull(aste);
         } finally {
             RxJavaHooks.resetAssemblyTracking();
+        }
+    }
+
+    @Test
+    public void assemblyTrackingObservableUnknownCause() {
+        RxJavaHooks.enableAssemblyTracking();
+        try {
+            final AtomicReference<Throwable> onErrorThrowableRef = new AtomicReference<Throwable>();
+            RxJavaHooks.setOnError(new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    onErrorThrowableRef.set(throwable);
+                }
+            });
+            TestSubscriber<Integer> ts = TestSubscriber.create();
+
+            createObservableThrowingUnknownCause().subscribe(ts);
+
+            ts.assertError(TestExceptionWithUnknownCause.class);
+
+            Throwable receivedError = onErrorThrowableRef.get();
+            assertNotNull(receivedError);
+            assertTrue(receivedError.getMessage().contains("cause set to null"));
+        } finally {
+            RxJavaHooks.reset();
         }
     }
 
