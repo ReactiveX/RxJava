@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.observers.BasicFuseableObserver;
 

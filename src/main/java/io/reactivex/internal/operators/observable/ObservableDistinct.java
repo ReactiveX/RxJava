@@ -17,12 +17,10 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.observers.BasicFuseableObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 

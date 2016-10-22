@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.reactivestreams.*;
@@ -528,8 +528,15 @@ public class FlowableWindowWithTimeTest {
     }
 
     @Test
-    public void restartTimerMany() {
+    public void restartTimerMany() throws Exception {
+        final AtomicBoolean cancel1 = new AtomicBoolean();
         Flowable.intervalRange(1, 1000, 1, 1, TimeUnit.MILLISECONDS)
+        .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                cancel1.set(true);
+            }
+        })
         .window(1, TimeUnit.MILLISECONDS, Schedulers.single(), 2, true)
         .flatMap(Functions.<Flowable<Long>>identity())
         .take(500)
@@ -539,6 +546,13 @@ public class FlowableWindowWithTimeTest {
         .assertValueCount(500)
         .assertNoErrors()
         .assertComplete();
+
+        int timeout = 20;
+        while (timeout-- > 0 && !cancel1.get()) {
+            Thread.sleep(100);
+        }
+
+        assertTrue("intervalRange was not cancelled!", cancel1.get());
     }
 
     @Test

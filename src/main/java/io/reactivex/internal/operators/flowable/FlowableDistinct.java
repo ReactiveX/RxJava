@@ -18,11 +18,10 @@ import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.internal.subscribers.BasicFuseableSubscriber;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.plugins.RxJavaPlugins;
