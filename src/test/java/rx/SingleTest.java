@@ -504,6 +504,53 @@ public class SingleTest {
     }
 
     @Test
+    public void testCache() throws InterruptedException {
+        final AtomicInteger counter = new AtomicInteger();
+        Single<String> s = Single.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(final SingleSubscriber<? super String> observer) {
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        counter.incrementAndGet();
+                        observer.onSuccess("one");
+                    }
+                }).start();
+            }
+        }).cache();
+
+        // we then expect the following 2 subscriptions to get that same value
+        final CountDownLatch latch = new CountDownLatch(2);
+
+        // subscribe once
+        s.subscribe(new Action1<String>() {
+
+            @Override
+            public void call(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
+        });
+
+        // subscribe again
+        s.subscribe(new Action1<String>() {
+
+            @Override
+            public void call(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
+        });
+
+        if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
+            fail("subscriptions did not receive values");
+        }
+        assertEquals(1, counter.get());
+    }
+
+    @Test
     public void testCreateSuccess() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single.create(new OnSubscribe<String>() {
