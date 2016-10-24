@@ -81,9 +81,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
             long r = get();
             if (r != 0L) {
                 actual.onNext(t);
-                if (r != Long.MAX_VALUE) {
-                    decrementAndGet();
-                }
+                BackpressureHelper.produced(this, 1);
             } else {
                 try {
                     onDrop.accept(t);

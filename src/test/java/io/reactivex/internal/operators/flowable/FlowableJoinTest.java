@@ -25,7 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -445,5 +445,45 @@ public class FlowableJoinTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void backpressureOverflowRight() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Object> ts = pp1.join(pp2, Functions.justFunction(Flowable.never()), Functions.justFunction(Flowable.never()),
+                new BiFunction<Integer, Integer, Object>() {
+                    @Override
+                    public Object apply(Integer a, Integer b) throws Exception {
+                        return a + b;
+                    }
+                })
+        .test(0L);
+
+        pp1.onNext(1);
+        pp2.onNext(2);
+
+        ts.assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void backpressureOverflowLeft() {
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Object> ts = pp1.join(pp2, Functions.justFunction(Flowable.never()), Functions.justFunction(Flowable.never()),
+                new BiFunction<Integer, Integer, Object>() {
+                    @Override
+                    public Object apply(Integer a, Integer b) throws Exception {
+                        return a + b;
+                    }
+                })
+        .test(0L);
+
+        pp2.onNext(2);
+        pp1.onNext(1);
+
+        ts.assertFailure(MissingBackpressureException.class);
     }
 }

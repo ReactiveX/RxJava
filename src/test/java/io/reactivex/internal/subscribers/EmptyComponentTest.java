@@ -63,6 +63,8 @@ public class EmptyComponentTest {
 
             c.onError(new TestException());
 
+            c.onSuccess(2);
+
             c.cancel();
 
             TestHelper.assertError(errors, 0, TestException.class);

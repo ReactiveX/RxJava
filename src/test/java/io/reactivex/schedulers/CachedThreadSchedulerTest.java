@@ -13,13 +13,17 @@
 
 package io.reactivex.schedulers;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
+import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
+import io.reactivex.disposables.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.schedulers.IoScheduler;
 
 public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -81,4 +85,47 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
         }
     }
 
+    @Test
+    public void workerDisposed() {
+        Worker w = Schedulers.io().createWorker();
+
+        assertFalse(((Disposable)w).isDisposed());
+
+        w.dispose();
+
+        assertTrue(((Disposable)w).isDisposed());
+    }
+
+    @Test
+    public void shutdownRejects() {
+        final int[] calls = { 0 };
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                calls[0]++;
+            }
+        };
+
+        IoScheduler s = new IoScheduler();
+        s.shutdown();
+        s.shutdown();
+
+        s.scheduleDirect(r);
+
+        s.scheduleDirect(r, 1, TimeUnit.SECONDS);
+
+        s.schedulePeriodicallyDirect(r, 1, 1, TimeUnit.SECONDS);
+
+        Worker w = s.createWorker();
+        w.dispose();
+
+        assertEquals(Disposables.disposed(), w.schedule(r));
+
+        assertEquals(Disposables.disposed(), w.schedule(r, 1, TimeUnit.SECONDS));
+
+        assertEquals(Disposables.disposed(), w.schedulePeriodically(r, 1, 1, TimeUnit.SECONDS));
+
+        assertEquals(0, calls[0]);
+    }
 }

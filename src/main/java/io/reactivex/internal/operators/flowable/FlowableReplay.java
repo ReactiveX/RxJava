@@ -348,18 +348,14 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         static final InnerSubscription[] TERMINATED = new InnerSubscription[0];
 
         /** Tracks the subscribed InnerSubscriptions. */
-        final AtomicReference<InnerSubscription[]> subscribers;
+        final AtomicReference<InnerSubscription<T>[]> subscribers;
         /**
          * Atomically changed from false to true by connect to make sure the
          * connection is only performed by one thread.
          */
         final AtomicBoolean shouldConnect;
 
-        /** Guarded by this. */
-        boolean emitting;
-        /** Guarded by this. */
-        boolean missed;
-
+        final AtomicInteger management;
 
         /** Contains the maximum element index the child Subscribers requested so far. Accessed while emitting is true. */
         long maxChildRequested;
@@ -368,10 +364,11 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         /** The upstream producer. */
         volatile Subscription subscription;
 
+        @SuppressWarnings("unchecked")
         ReplaySubscriber(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
-
-            this.subscribers = new AtomicReference<InnerSubscription[]>(EMPTY);
+            this.management = new AtomicInteger();
+            this.subscribers = new AtomicReference<InnerSubscription<T>[]>(EMPTY);
             this.shouldConnect = new AtomicBoolean();
         }
 
@@ -380,6 +377,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             return subscribers.get() == TERMINATED;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void dispose() {
             subscribers.set(TERMINATED);
@@ -397,6 +395,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * @param producer the producer to add
          * @return true if succeeded, false otherwise
          */
+        @SuppressWarnings("unchecked")
         boolean add(InnerSubscription<T> producer) {
             if (producer == null) {
                 throw new NullPointerException();
@@ -404,7 +403,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
                 // get the current producer array
-                InnerSubscription[] c = subscribers.get();
+                InnerSubscription<T>[] c = subscribers.get();
                 // if this subscriber-to-source reached a terminal state by receiving
                 // an onError or onComplete, just refuse to add the new producer
                 if (c == TERMINATED) {
@@ -412,7 +411,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 }
                 // we perform a copy-on-write logic
                 int len = c.length;
-                InnerSubscription[] u = new InnerSubscription[len + 1];
+                InnerSubscription<T>[] u = new InnerSubscription[len + 1];
                 System.arraycopy(c, 0, u, 0, len);
                 u[len] = producer;
                 // try setting the subscribers array
@@ -428,19 +427,20 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * Atomically removes the given InnerSubscription from the subscribers array.
          * @param p the InnerSubscription to remove
          */
+        @SuppressWarnings("unchecked")
         void remove(InnerSubscription<T> p) {
             // the state can change so we do a CAS loop to achieve atomicity
             for (;;) {
                 // let's read the current subscribers array
-                InnerSubscription[] c = subscribers.get();
+                InnerSubscription<T>[] c = subscribers.get();
+                int len = c.length;
                 // if it is either empty or terminated, there is nothing to remove so we quit
-                if (c == EMPTY || c == TERMINATED) {
+                if (len == 0) {
                     return;
                 }
                 // let's find the supplied producer in the array
                 // although this is O(n), we don't expect too many child subscribers in general
                 int j = -1;
-                int len = c.length;
                 for (int i = 0; i < len; i++) {
                     if (c[i].equals(p)) {
                         j = i;
@@ -452,7 +452,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                     return;
                 }
                 // we do copy-on-write logic here
-                InnerSubscription[] u;
+                InnerSubscription<T>[] u;
                 // we don't create a new empty array if producer was the single inhabitant
                 // but rather reuse an empty array
                 if (len == 1) {
@@ -476,50 +476,50 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         public void onSubscribe(Subscription p) {
-            Subscription p0 = subscription;
-            if (p0 != null) {
-                RxJavaPlugins.onError(new IllegalStateException("Only a single producer can be set on a Subscriber."));
-                return;
+            if (SubscriptionHelper.validate(subscription, p)) {
+                subscription = p;
+                manageRequests();
+                for (InnerSubscription<T> rp : subscribers.get()) {
+                    buffer.replay(rp);
+                }
             }
-            subscription = p;
-            manageRequests();
-            replay();
         }
 
         @Override
         public void onNext(T t) {
             if (!done) {
                 buffer.next(t);
-                replay();
+                for (InnerSubscription<T> rp : subscribers.get()) {
+                    buffer.replay(rp);
+                }
             }
         }
+
+        @SuppressWarnings("unchecked")
         @Override
         public void onError(Throwable e) {
             // The observer front is accessed serially as required by spec so
             // no need to CAS in the terminal value
             if (!done) {
                 done = true;
-                try {
-                    buffer.error(e);
-                    replay();
-                } finally {
-                    dispose(); // expectation of testIssue2191
+                buffer.error(e);
+                for (InnerSubscription<T> rp : subscribers.getAndSet(TERMINATED)) {
+                    buffer.replay(rp);
                 }
             } else {
                 RxJavaPlugins.onError(e);
             }
         }
+        @SuppressWarnings("unchecked")
         @Override
         public void onComplete() {
             // The observer front is accessed serially as required by spec so
             // no need to CAS in the terminal value
             if (!done) {
                 done = true;
-                try {
-                    buffer.complete();
-                    replay();
-                } finally {
-                    dispose();
+                buffer.complete();
+                for (InnerSubscription<T> rp : subscribers.getAndSet(TERMINATED)) {
+                    buffer.replay(rp);
                 }
             }
         }
@@ -528,24 +528,16 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * Coordinates the request amounts of various child Subscribers.
          */
         void manageRequests() {
-            // if the upstream has completed, no more requesting is possible
-            if (isDisposed()) {
+            if (management.getAndIncrement() != 0) {
                 return;
             }
-            synchronized (this) {
-                if (emitting) {
-                    missed = true;
-                    return;
-                }
-                emitting = true;
-            }
+            int missed = 1;
             for (;;) {
                 // if the upstream has completed, no more requesting is possible
                 if (isDisposed()) {
                     return;
                 }
 
-                @SuppressWarnings("unchecked")
                 InnerSubscription<T>[] a = subscribers.get();
 
                 long ri = maxChildRequested;
@@ -584,24 +576,10 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                     p.request(ur);
                 }
 
-                synchronized (this) {
-                    if (!missed) {
-                        emitting = false;
-                        return;
-                    }
-                    missed = false;
+                missed = management.addAndGet(-missed);
+                if (missed == 0) {
+                    break;
                 }
-            }
-        }
-
-        /**
-         * Tries to replay the buffer contents to all known subscribers.
-         */
-        void replay() {
-            @SuppressWarnings("unchecked")
-            InnerSubscription<T>[] a = subscribers.get();
-            for (InnerSubscription<T> rp : a) {
-                buffer.replay(rp);
             }
         }
     }
@@ -648,39 +626,38 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         @Override
         public void request(long n) {
             // ignore negative requests
-            if (!SubscriptionHelper.validate(n)) {
-                return;
-            }
-            // In general, RxJava doesn't prevent concurrent requests (with each other or with
-            // a cancel) so we need a CAS-loop, but we need to handle
-            // request overflow and cancelled/not requested state as well.
-            for (;;) {
-                // get the current request amount
-                long r = get();
-                // if child called cancel() do nothing
-                if (r == CANCELLED) {
-                    return;
-                }
-                // ignore zero requests except any first that sets in zero
-                if (r >= 0L && n == 0) {
-                    return;
-                }
-                // otherwise, increase the request count
-                long u = BackpressureHelper.addCap(r, n);
+            if (SubscriptionHelper.validate(n)) {
+                // In general, RxJava doesn't prevent concurrent requests (with each other or with
+                // a cancel) so we need a CAS-loop, but we need to handle
+                // request overflow and cancelled/not requested state as well.
+                for (;;) {
+                    // get the current request amount
+                    long r = get();
+                    // if child called cancel() do nothing
+                    if (r == CANCELLED) {
+                        return;
+                    }
+                    // ignore zero requests except any first that sets in zero
+                    if (r >= 0L && n == 0) {
+                        return;
+                    }
+                    // otherwise, increase the request count
+                    long u = BackpressureHelper.addCap(r, n);
 
-                // try setting the new request value
-                if (compareAndSet(r, u)) {
-                    // increment the total request counter
-                    BackpressureHelper.add(totalRequested, n);
-                    // if successful, notify the parent dispatcher this child can receive more
-                    // elements
-                    parent.manageRequests();
+                    // try setting the new request value
+                    if (compareAndSet(r, u)) {
+                        // increment the total request counter
+                        BackpressureHelper.add(totalRequested, n);
+                        // if successful, notify the parent dispatcher this child can receive more
+                        // elements
+                        parent.manageRequests();
 
-                    parent.buffer.replay(this);
-                    return;
+                        parent.buffer.replay(this);
+                        return;
+                    }
+                    // otherwise, someone else changed the state (perhaps a concurrent
+                    // request or cancellation) so retry
                 }
-                // otherwise, someone else changed the state (perhaps a concurrent
-                // request or cancellation) so retry
             }
         }
 
@@ -690,30 +667,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * @return the updated request value (may indicate how much can be produced or a terminal state)
          */
         public long produced(long n) {
-            // we don't allow producing zero or less: it would be a bug in the operator
-            if (n <= 0) {
-                throw new IllegalArgumentException("Cant produce zero or less");
-            }
-            for (;;) {
-                // get the current request value
-                long r = get();
-                // if the child has cancelled, simply return and indicate this
-                if (r == CANCELLED) {
-                    return CANCELLED;
-                }
-                // reduce the requested amount
-                long u = r - n;
-                // if the new amount is less than zero, we have a bug in this operator
-                if (u < 0) {
-                    throw new IllegalStateException("More produced (" + n + ") than requested (" + r + ")");
-                }
-                // try updating the request value
-                if (compareAndSet(r, u)) {
-                    // and return the updated value
-                    return u;
-                }
-                // otherwise, some concurrent activity happened and we need to retry
-            }
+            return BackpressureHelper.producedCancel(this, n);
         }
 
         @Override
@@ -728,24 +682,14 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         public void dispose() {
-            long r = get();
-            // let's see if we are cancelled
-            if (r != CANCELLED) {
-                // if not, swap in the terminal state, this is idempotent
-                // because other methods using CAS won't overwrite this value,
-                // concurrent calls to dispose/cancel will atomically swap in the same
-                // terminal value
-                r = getAndSet(CANCELLED);
-                // and only one of them will see a non-terminated value before the swap
-                if (r != CANCELLED) {
-                    // remove this from the parent
-                    parent.remove(this);
-                    // After removal, we might have unblocked the other child subscribers:
-                    // let's assume this child had 0 requested before the cancellation while
-                    // the others had non-zero. By removing this 'blocking' child, the others
-                    // are now free to receive events
-                    parent.manageRequests();
-                }
+            if (getAndSet(CANCELLED) != CANCELLED) {
+                // remove this from the parent
+                parent.remove(this);
+                // After removal, we might have unblocked the other child subscribers:
+                // let's assume this child had 0 requested before the cancellation while
+                // the others had non-zero. By removing this 'blocking' child, the others
+                // are now free to receive events
+                parent.manageRequests();
             }
         }
         /**

@@ -13,12 +13,12 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.internal.subscriptions.*;
-import io.reactivex.subscribers.SerializedSubscriber;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.*;
 
 public final class FlowableTakeUntil<T, U> extends AbstractFlowableWithUpstream<T, T> {
     final Publisher<? extends U> other;
@@ -29,101 +29,98 @@ public final class FlowableTakeUntil<T, U> extends AbstractFlowableWithUpstream<
 
     @Override
     protected void subscribeActual(Subscriber<? super T> child) {
-        final SerializedSubscriber<T> serial = new SerializedSubscriber<T>(child);
+        TakeUntilMainSubscriber<T> parent = new TakeUntilMainSubscriber<T>(child);
+        child.onSubscribe(parent);
 
-        final ArrayCompositeSubscription frc = new ArrayCompositeSubscription(2);
+        other.subscribe(parent.other);
 
-        final TakeUntilSubscriber<T> tus = new TakeUntilSubscriber<T>(serial, frc);
-
-        other.subscribe(new Subscriber<U>() {
-            @Override
-            public void onSubscribe(Subscription s) {
-                if (frc.setResource(1, s)) {
-                    s.request(Long.MAX_VALUE);
-                }
-            }
-            @Override
-            public void onNext(U t) {
-                frc.dispose();
-                if (tus.compareAndSet(false, true)) {
-                    EmptySubscription.complete(serial);
-                } else {
-                    serial.onComplete();
-                }
-            }
-            @Override
-            public void onError(Throwable t) {
-                frc.dispose();
-                if (tus.compareAndSet(false, true)) {
-                    EmptySubscription.error(t, serial);
-                } else {
-                    serial.onError(t);
-                }
-            }
-            @Override
-            public void onComplete() {
-                frc.dispose();
-                if (tus.compareAndSet(false, true)) {
-                    EmptySubscription.complete(serial);
-                } else {
-                    serial.onComplete();
-                }
-            }
-        });
-
-        source.subscribe(tus);
+        source.subscribe(parent);
     }
 
-    static final class TakeUntilSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
+    static final class TakeUntilMainSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
 
-        private static final long serialVersionUID = 3451719290311127173L;
+        private static final long serialVersionUID = -4945480365982832967L;
+
         final Subscriber<? super T> actual;
-        final ArrayCompositeSubscription frc;
 
-        Subscription s;
+        final AtomicLong requested;
 
-        TakeUntilSubscriber(Subscriber<? super T> actual, ArrayCompositeSubscription frc) {
+        final AtomicReference<Subscription> s;
+
+        final AtomicThrowable error;
+
+        final OtherSubscriber other;
+
+        TakeUntilMainSubscriber(Subscriber<? super T> actual) {
             this.actual = actual;
-            this.frc = frc;
+            this.requested = new AtomicLong();
+            this.s = new AtomicReference<Subscription>();
+            this.other = new OtherSubscriber();
+            this.error = new AtomicThrowable();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                if (frc.setResource(0, s)) {
-                    if (compareAndSet(false, true)) {
-                        actual.onSubscribe(this);
-                    }
-                }
-            }
+            SubscriptionHelper.deferredSetOnce(this.s, requested, s);
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            HalfSerializer.onNext(actual, t, this, error);
         }
 
         @Override
         public void onError(Throwable t) {
-            frc.dispose();
-            actual.onError(t);
+            SubscriptionHelper.cancel(other);
+            HalfSerializer.onError(actual, t, this, error);
         }
 
         @Override
         public void onComplete() {
-            frc.dispose();
-            actual.onComplete();
+            SubscriptionHelper.cancel(other);
+            HalfSerializer.onComplete(actual, this, error);
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            SubscriptionHelper.deferredRequest(s, requested, n);
         }
 
         @Override
         public void cancel() {
-            frc.dispose();
+            SubscriptionHelper.cancel(s);
+            SubscriptionHelper.cancel(other);
+        }
+
+        final class OtherSubscriber extends AtomicReference<Subscription> implements Subscriber<Object> {
+
+            private static final long serialVersionUID = -3592821756711087922L;
+
+            @Override
+            public void onSubscribe(Subscription s) {
+                if (SubscriptionHelper.setOnce(this, s)) {
+                    s.request(Long.MAX_VALUE);
+                }
+            }
+
+            @Override
+            public void onNext(Object t) {
+                SubscriptionHelper.cancel(this);
+                onComplete();
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                SubscriptionHelper.cancel(s);
+                HalfSerializer.onError(actual, t, TakeUntilMainSubscriber.this, error);
+            }
+
+            @Override
+            public void onComplete() {
+                SubscriptionHelper.cancel(s);
+                HalfSerializer.onComplete(actual, TakeUntilMainSubscriber.this, error);
+            }
+
         }
     }
 }

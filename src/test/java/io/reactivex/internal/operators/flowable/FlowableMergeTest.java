@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Method;
@@ -26,12 +27,11 @@ import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -229,6 +229,8 @@ public class FlowableMergeTest {
         final AtomicInteger concurrentCounter = new AtomicInteger();
         final AtomicInteger totalCounter = new AtomicInteger();
 
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+
         Flowable<String> m = Flowable.merge(Flowable.unsafeCreate(o1), Flowable.unsafeCreate(o2));
         m.subscribe(new DefaultSubscriber<String>() {
 
@@ -239,7 +241,7 @@ public class FlowableMergeTest {
 
             @Override
             public void onError(Throwable e) {
-                throw new RuntimeException("failed", e);
+                error.set(e);
             }
 
             @Override
@@ -280,6 +282,10 @@ public class FlowableMergeTest {
         }
 
         try { // in try/finally so threads are released via latch countDown even if assertion fails
+            if (error.get() != null) {
+                throw ExceptionHelper.wrapOrThrow(error.get());
+            }
+
             assertEquals(1, concurrentCounter.get());
         } finally {
             // release so it can finish

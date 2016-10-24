@@ -446,4 +446,48 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
         assertTrue(s.isDisposed());
     }
+
+    @Test
+    public void disposeRace() {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        final Scheduler s = Schedulers.from(exec);
+        try {
+            for (int i = 0; i < 500; i++) {
+                final Worker w = s.createWorker();
+
+                final AtomicInteger c = new AtomicInteger(2);
+
+                w.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        c.decrementAndGet();
+                        while (c.get() != 0) { }
+                    }
+                });
+
+                c.decrementAndGet();
+                while (c.get() != 0) { }
+                w.dispose();
+            }
+        } finally {
+            exec.shutdownNow();
+        }
+    }
+
+    @Test
+    public void runnableDisposed() {
+        final Scheduler s = Schedulers.from(new Executor() {
+            @Override
+            public void execute(Runnable r) {
+                r.run();
+            }
+        });
+        Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
+
+        assertFalse(d.isDisposed());
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+    }
 }

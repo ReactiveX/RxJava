@@ -168,27 +168,25 @@ public final class TrampolineScheduler extends Scheduler {
 
         @Override
         public void run() {
-            if (worker.disposed) {
-                return;
-            }
-            long t = worker.now(TimeUnit.MILLISECONDS);
-            if (execTime > t) {
-                long delay = execTime - t;
-                if (delay > 0) {
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        RxJavaPlugins.onError(e);
-                        return;
+            if (!worker.disposed) {
+                long t = worker.now(TimeUnit.MILLISECONDS);
+                if (execTime > t) {
+                    long delay = execTime - t;
+                    if (delay > 0) {
+                        try {
+                            Thread.sleep(delay);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            RxJavaPlugins.onError(e);
+                            return;
+                        }
                     }
                 }
-            }
 
-            if (worker.disposed) {
-                return;
+                if (!worker.disposed) {
+                    run.run();
+                }
             }
-            run.run();
         }
     }
 }

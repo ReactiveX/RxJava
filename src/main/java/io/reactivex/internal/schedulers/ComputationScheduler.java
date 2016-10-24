@@ -47,15 +47,7 @@ public final class ComputationScheduler extends Scheduler {
     private static final String KEY_COMPUTATION_PRIORITY = "rx2.computation-priority";
 
     static {
-        int maxThreads = Integer.getInteger(KEY_MAX_THREADS, 0);
-        int cpuCount = Runtime.getRuntime().availableProcessors();
-        int max;
-        if (maxThreads <= 0 || maxThreads > cpuCount) {
-            max = cpuCount;
-        } else {
-            max = maxThreads;
-        }
-        MAX_THREADS = max;
+        MAX_THREADS = cap(Runtime.getRuntime().availableProcessors(), Integer.getInteger(KEY_MAX_THREADS, 0));
 
         SHUTDOWN_WORKER = new PoolWorker(new RxThreadFactory("RxComputationShutdown"));
         SHUTDOWN_WORKER.dispose();
@@ -64,6 +56,10 @@ public final class ComputationScheduler extends Scheduler {
                 Integer.getInteger(KEY_COMPUTATION_PRIORITY, Thread.NORM_PRIORITY)));
 
         THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority);
+    }
+
+    static int cap(int cpuCount, int paramThreads) {
+        return paramThreads <= 0 || paramThreads > cpuCount ? cpuCount : paramThreads;
     }
 
     static final class FixedSchedulerPool {

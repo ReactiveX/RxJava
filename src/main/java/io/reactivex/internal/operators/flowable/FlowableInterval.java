@@ -82,15 +82,10 @@ public final class FlowableInterval extends Flowable<Long> {
 
                 if (r != 0L) {
                     actual.onNext(count++);
-                    if (r != Long.MAX_VALUE) {
-                        decrementAndGet();
-                    }
+                    BackpressureHelper.produced(this, 1);
                 } else {
-                    try {
-                        actual.onError(new MissingBackpressureException("Can't deliver value " + count + " due to lack of requests"));
-                    } finally {
-                        DisposableHelper.dispose(resource);
-                    }
+                    actual.onError(new MissingBackpressureException("Can't deliver value " + count + " due to lack of requests"));
+                    DisposableHelper.dispose(resource);
                 }
             }
         }

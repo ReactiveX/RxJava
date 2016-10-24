@@ -68,7 +68,7 @@ public class FlowableTakeUntilTest {
 
         verify(result, times(1)).onNext("one");
         verify(result, times(1)).onNext("two");
-        verify(sSource, times(1)).cancel();
+        verify(sSource, never()).cancel();
         verify(sOther, times(1)).cancel();
 
     }
@@ -93,7 +93,7 @@ public class FlowableTakeUntilTest {
         verify(result, times(1)).onNext("two");
         verify(result, times(0)).onNext("three");
         verify(result, times(1)).onError(error);
-        verify(sSource, times(1)).cancel();
+        verify(sSource, never()).cancel();
         verify(sOther, times(1)).cancel();
 
     }
@@ -120,7 +120,7 @@ public class FlowableTakeUntilTest {
         verify(result, times(1)).onError(error);
         verify(result, times(0)).onComplete();
         verify(sSource, times(1)).cancel();
-        verify(sOther, times(1)).cancel();
+        verify(sOther, never()).cancel();
 
     }
 
@@ -147,7 +147,7 @@ public class FlowableTakeUntilTest {
         verify(result, times(0)).onNext("three");
         verify(result, times(1)).onComplete();
         verify(sSource, times(1)).cancel();
-        verify(sOther, times(1)).cancel(); // unsubscribed since SafeSubscriber unsubscribes after onComplete
+        verify(sOther, never()).cancel(); // unsubscribed since SafeSubscriber unsubscribes after onComplete
 
     }
 

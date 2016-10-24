@@ -55,8 +55,8 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
     @Override
     protected void subscribeActual(Subscriber<? super R> s) {
 
-        GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
-                new GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>(s, leftEnd, rightEnd, resultSelector);
+        JoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
+                new JoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>(s, leftEnd, rightEnd, resultSelector);
 
         s.onSubscribe(parent);
 
@@ -69,7 +69,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
         other.subscribe(right);
     }
 
-    static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
+    static final class JoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Subscription, JoinSupport {
 
 
@@ -111,7 +111,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
         static final Integer RIGHT_CLOSE = 4;
 
-        GroupJoinSubscription(Subscriber<? super R> actual, Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
+        JoinSubscription(Subscriber<? super R> actual, Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
                         BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {
             this.actual = actual;

@@ -56,8 +56,8 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
     @Override
     protected void subscribeActual(Observer<? super R> s) {
 
-        GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
-                new GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>(
+        JoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
+                new JoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>(
                         s, leftEnd, rightEnd, resultSelector);
 
         s.onSubscribe(parent);
@@ -71,7 +71,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
         other.subscribe(right);
     }
 
-    static final class GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>
+    static final class JoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Disposable, JoinSupport {
 
 
@@ -111,7 +111,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
 
         static final Integer RIGHT_CLOSE = 4;
 
-        GroupJoinDisposable(Observer<? super R> actual,
+        JoinDisposable(Observer<? super R> actual,
                 Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
                         BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {

@@ -18,16 +18,19 @@ package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
-import org.reactivestreams.Publisher;
+import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
-import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.*;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 
@@ -289,5 +292,171 @@ public class FlowablePublishFunctionTest {
         ts.assertResult(1, 2, 3, 4, 5);
 
         assertFalse("pp has Subscribers?!", pp.hasSubscribers());
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.publish(Functions.<Flowable<Integer>>identity());
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void frontOverflow() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                for (int i = 0; i < 9; i++) {
+                    s.onNext(i);
+                }
+            }
+        }
+        .publish(Functions.<Flowable<Integer>>identity(), 8)
+        .test(0)
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void errorResubscribe() {
+        Flowable.error(new TestException())
+        .publish(new Function<Flowable<Object>, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
+                return f.onErrorResumeNext(f);
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedInputCrash() {
+        Flowable.just(1)
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .publish(Functions.<Flowable<Integer>>identity())
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void error() {
+        new FlowablePublishMulticast<Integer, Integer>(Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException())),
+                Functions.<Flowable<Integer>>identity(), 16, true)
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void backpressuredEmpty() {
+        Flowable.<Integer>empty()
+        .publish(Functions.<Flowable<Integer>>identity())
+        .test(0L)
+        .assertResult();
+    }
+
+    @Test
+    public void oneByOne() {
+        Flowable.range(1, 10)
+        .publish(Functions.<Flowable<Integer>>identity())
+        .rebatchRequests(1)
+        .test()
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void completeCancelRaceNoRequest() {
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    cancel();
+                    onComplete();
+                }
+            }
+        };
+
+        pp.publish(Functions.<Flowable<Integer>>identity()).subscribe(ts);
+
+        pp.onNext(1);
+
+        assertFalse(pp.hasSubscribers());
+
+        ts.assertResult(1);
+    }
+
+    @Test
+    public void inputOutputSubscribeRace() {
+        Flowable<Integer> source = Flowable.just(1)
+                .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
+                        return f.subscribeOn(Schedulers.single());
+                    }
+                });
+
+        for (int i = 0; i < 500; i++) {
+            source.test()
+            .awaitDone(5, TimeUnit.MILLISECONDS)
+            .assertResult(1);
+        }
+    }
+
+    @Test
+    public void inputOutputSubscribeRace2() {
+        Flowable<Integer> source = Flowable.just(1).subscribeOn(Schedulers.single())
+                .publish(Functions.<Flowable<Integer>>identity());
+
+        for (int i = 0; i < 500; i++) {
+            source.test()
+            .awaitDone(5, TimeUnit.MILLISECONDS)
+            .assertResult(1);
+        }
+    }
+
+    @Test
+    public void sourceSubscriptionDelayed() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(0L);
+
+            Flowable.just(1)
+            .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                @Override
+                public Publisher<Integer> apply(final Flowable<Integer> f) throws Exception {
+                    Runnable r1 = new Runnable() {
+                        @Override
+                        public void run() {
+                            f.subscribe(ts1);
+                        }
+                    };
+
+                    Runnable r2 = new Runnable() {
+                        @Override
+                        public void run() {
+                            for (int j = 0; j < 100; j++) {
+                                ts1.request(1);
+                            }
+                        }
+                    };
+
+                    TestHelper.race(r1, r2);
+                    return f;
+                }
+            }).test()
+            .assertResult(1);
+
+            ts1.assertResult(1);
+        }
     }
 }

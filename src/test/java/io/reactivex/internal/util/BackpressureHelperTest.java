@@ -67,6 +67,21 @@ public class BackpressureHelperTest {
     }
 
     @Test
+    public void producedMoreCancel() {
+        List<Throwable> list = TestHelper.trackPluginErrors();
+
+        try {
+            AtomicLong requested = new AtomicLong(1);
+
+            assertEquals(0, BackpressureHelper.producedCancel(requested, 2));
+
+            TestHelper.assertError(list, 0, IllegalStateException.class, "More produced than requested: -1");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
     public void requestProduceRace() {
         final AtomicLong requested = new AtomicLong(1);
 
