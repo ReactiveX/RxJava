@@ -21,6 +21,7 @@ import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.util.*;
+import rx.observables.ConnectableObservable;
 import rx.observers.*;
 import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
@@ -1267,6 +1268,61 @@ public class Single<T> {
         @SuppressWarnings("rawtypes")
         Single[] iterableToArray = iterableToArray(singles);
         return SingleOperatorZip.zip(iterableToArray, zipFunction);
+    }
+
+    /**
+     * Returns a Single that subscribes to this Single lazily, caches its next event
+     * and replays it to all the downstream subscribers.
+     * <p>
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
+     * <p>
+     * This is useful when you want a Single to cache its response and you can't control the
+     * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
+     * <p>
+     * The operator subscribes only when the first downstream subscriber subscribes and maintains
+     * a single subscription towards this Single. In contrast, the operator family of {@link Observable#replay()}
+     * that return a {@link ConnectableObservable} require an explicit call to {@link ConnectableObservable#connect()}.
+     * <p>
+     * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
+     * Observer so be careful not to use this Observer on Observables that emit an infinite or very large number
+     * of items that will use up memory.
+     * A possible workaround is to apply `takeUntil` with a predicate or
+     * another source before (and perhaps after) the application of cache().
+     * <pre><code>
+     * AtomicBoolean shouldStop = new AtomicBoolean();
+     *
+     * source.takeUntil(v -&gt; shouldStop.get())
+     *       .cache()
+     *       .takeUntil(v -&gt; shouldStop.get())
+     *       .subscribe(...);
+     * </code></pre>
+     * Since the operator doesn't allow clearing the cached values either, the possible workaround is
+     * to forget all references to it via {@link Observable#onTerminateDetach()} applied along with the previous
+     * workaround:
+     * <pre><code>
+     * AtomicBoolean shouldStop = new AtomicBoolean();
+     *
+     * source.takeUntil(v -&gt; shouldStop.get())
+     *       .onTerminateDetach()
+     *       .cache()
+     *       .takeUntil(v -&gt; shouldStop.get())
+     *       .onTerminateDetach()
+     *       .subscribe(...);
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes this Single in an unbounded fashion but respects the backpressure
+     *  of each downstream Subscriber individually.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a Single that, when first subscribed to, caches its response for the
+     *         benefit of subsequent subscribers
+     * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     */
+    public final Single<T> cache() {
+        return toObservable().cacheWithInitialCapacity(1).toSingle();
     }
 
     /**
