@@ -23,7 +23,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -193,7 +193,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
         }
 
         void drainLoop() {
-            final SimpleQueue<Object> q = queue;
+            final SimplePlainQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             int missed = 1;
             UnicastProcessor<T> w = window;
@@ -202,16 +202,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
                 for (;;) {
                     boolean d = done;
 
-                    Object o;
-
-                    try {
-                        o = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        DisposableHelper.dispose(boundary);
-                        w.onError(ex);
-                        return;
-                    }
+                    Object o = q.poll();
 
                     boolean empty = o == null;
 
@@ -296,12 +287,6 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
             if (enter()) {
                 drainLoop();
             }
-        }
-
-        @Override
-        public boolean accept(Subscriber<? super Flowable<T>> a, Object v) {
-            // not used by this operator
-            return false;
         }
     }
 

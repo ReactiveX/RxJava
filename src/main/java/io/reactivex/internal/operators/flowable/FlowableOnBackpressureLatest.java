@@ -92,10 +92,10 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
+                s.cancel();
 
                 if (getAndIncrement() == 0) {
                     current.lazySet(null);
-                    s.cancel();
                 }
             }
         }
@@ -106,20 +106,18 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
             }
             final Subscriber<? super T> a = actual;
             int missed = 1;
+            final AtomicLong r = requested;
+            final AtomicReference<T> q = current;
+
             for (;;) {
+                long e = 0L;
 
-                if (checkTerminated(done, current.get() == null, a)) {
-                    return;
-                }
-
-                long r = requested.get();
-
-                while (r != 0L) {
+                while (e != r.get()) {
                     boolean d = done;
-                    T v = current.getAndSet(null);
+                    T v = q.getAndSet(null);
                     boolean empty = v == null;
 
-                    if (checkTerminated(d, empty, a)) {
+                    if (checkTerminated(d, empty, a, q)) {
                         return;
                     }
 
@@ -129,14 +127,15 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
 
                     a.onNext(v);
 
-                    if (r != Long.MAX_VALUE) {
-                        r--;
-                        requested.decrementAndGet();
-                    }
+                    e++;
                 }
 
-                if (checkTerminated(done, current.get() == null, a)) {
+                if (e == r.get() && checkTerminated(done, q.get() == null, a, q)) {
                     return;
+                }
+
+                if (e != 0L) {
+                    BackpressureHelper.produced(r, e);
                 }
 
                 missed = addAndGet(-missed);
@@ -146,17 +145,16 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
             }
         }
 
-        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a) {
+        boolean checkTerminated(boolean d, boolean empty, Subscriber<?> a, AtomicReference<T> q) {
             if (cancelled) {
-                current.lazySet(null);
-                s.cancel();
+                q.lazySet(null);
                 return true;
             }
 
             if (d) {
                 Throwable e = error;
                 if (e != null) {
-                    current.lazySet(null);
+                    q.lazySet(null);
                     a.onError(e);
                     return true;
                 } else

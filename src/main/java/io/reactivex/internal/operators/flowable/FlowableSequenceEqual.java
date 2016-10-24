@@ -47,7 +47,18 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
         parent.subscribe(first, second);
     }
 
-    static final class EqualCoordinator<T> extends DeferredScalarSubscription<Boolean> {
+    /**
+     * Provides callbacks for the EqualSubscribers.
+     */
+    interface EqualCoordinatorHelper {
+
+        void drain();
+
+        void innerError(Throwable ex);
+    }
+
+    static final class EqualCoordinator<T> extends DeferredScalarSubscription<Boolean>
+    implements EqualCoordinatorHelper {
 
         private static final long serialVersionUID = -6178010334400373240L;
 
@@ -97,7 +108,8 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
             second.clear();
         }
 
-        void drain() {
+        @Override
+        public void drain() {
             if (wip.getAndIncrement() != 0) {
                 return;
             }
@@ -219,6 +231,15 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                 }
             }
         }
+
+        @Override
+        public void innerError(Throwable t) {
+            if (error.addThrowable(t)) {
+                drain();
+            } else {
+                RxJavaPlugins.onError(t);
+            }
+        }
     }
 
     static final class EqualSubscriber<T>
@@ -227,7 +248,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         private static final long serialVersionUID = 4804128302091633067L;
 
-        final EqualCoordinator<T> parent;
+        final EqualCoordinatorHelper parent;
 
         final int prefetch;
 
@@ -241,7 +262,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         int sourceMode;
 
-        EqualSubscriber(EqualCoordinator<T> parent, int prefetch) {
+        EqualSubscriber(EqualCoordinatorHelper parent, int prefetch) {
             this.parent = parent;
             this.limit = prefetch - (prefetch >> 2);
             this.prefetch = prefetch;
@@ -289,12 +310,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
         @Override
         public void onError(Throwable t) {
-            EqualCoordinator<T> p = parent;
-            if (p.error.addThrowable(t)) {
-                p.drain();
-            } else {
-                RxJavaPlugins.onError(t);
-            }
+            parent.innerError(t);
         }
 
         @Override

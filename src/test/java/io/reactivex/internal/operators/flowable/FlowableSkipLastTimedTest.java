@@ -237,4 +237,16 @@ public class FlowableSkipLastTimedTest {
         .assertResult(1);
     }
 
+    @Test
+    public void observeOn() {
+        Flowable.range(1, 1000)
+        .skipLast(0, TimeUnit.SECONDS)
+        .observeOn(Schedulers.single(), false, 16)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertSubscribed()
+        .assertValueCount(1000)
+        .assertComplete()
+        .assertNoErrors();
+    }
 }

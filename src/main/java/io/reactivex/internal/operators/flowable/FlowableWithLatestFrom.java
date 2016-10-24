@@ -127,21 +127,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         }
 
         public boolean setOther(Subscription o) {
-            for (;;) {
-                Subscription current = other.get();
-                if (current == SubscriptionHelper.CANCELLED) {
-                    o.cancel();
-                    return false;
-                }
-                if (current != null) {
-                    RxJavaPlugins.onError(new IllegalStateException("Other subscription already set!"));
-                    o.cancel();
-                    return false;
-                }
-                if (other.compareAndSet(null, o)) {
-                    return true;
-                }
-            }
+            return SubscriptionHelper.setOnce(other, o);
         }
 
         public void otherError(Throwable e) {

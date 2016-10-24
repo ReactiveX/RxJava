@@ -1741,6 +1741,24 @@ public class FlowableBufferTest {
     @Test
     public void bufferSkipSupplierCrash2() {
         Flowable.range(1, 2)
+        .buffer(1, 2, new Callable<List<Integer>>() {
+            int calls;
+            @Override
+            public List<Integer> call() throws Exception {
+                if (++calls == 1) {
+                    throw new TestException();
+                }
+                return new ArrayList<Integer>();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferOverlapSupplierCrash2() {
+        Flowable.range(1, 2)
         .buffer(2, 1, new Callable<List<Integer>>() {
             int calls;
             @Override
@@ -1869,5 +1887,90 @@ public class FlowableBufferTest {
 
         to
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.buffer(1);
+            }
+        }, false, 1, 1, Arrays.asList(1));
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.buffer(1, 2);
+            }
+        }, false, 1, 1, Arrays.asList(1));
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.buffer(2, 1);
+            }
+        }, false, 1, 1, Arrays.asList(1));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
+            @Override
+            public Publisher<List<Object>> apply(Flowable<Object> f) throws Exception {
+                return f.buffer(1);
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
+            @Override
+            public Publisher<List<Object>> apply(Flowable<Object> f) throws Exception {
+                return f.buffer(1, 2);
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
+            @Override
+            public Publisher<List<Object>> apply(Flowable<Object> f) throws Exception {
+                return f.buffer(2, 1);
+            }
+        });
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(PublishProcessor.create().buffer(1));
+
+        TestHelper.assertBadRequestReported(PublishProcessor.create().buffer(1, 2));
+
+        TestHelper.assertBadRequestReported(PublishProcessor.create().buffer(2, 1));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void skipError() {
+        Flowable.error(new TestException())
+        .buffer(1, 2)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void skipSingleResult() {
+        Flowable.just(1)
+        .buffer(2, 3)
+        .test()
+        .assertResult(Arrays.asList(1));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void skipBackpressure() {
+        Flowable.range(1, 10)
+        .buffer(2, 3)
+        .rebatchRequests(1)
+        .test()
+        .assertResult(Arrays.asList(1, 2), Arrays.asList(4, 5), Arrays.asList(7, 8), Arrays.asList(10));
     }
 }

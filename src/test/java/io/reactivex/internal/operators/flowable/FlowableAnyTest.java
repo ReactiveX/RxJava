@@ -556,9 +556,10 @@ public class FlowableAnyTest {
     }
 
     @Test
-    @Ignore("RS Subscription no isCancelled")
     public void dispose() {
-        // TestHelper.checkDisposed(Flowable.just(1).any(Functions.alwaysTrue()).toFlowable());
+        TestHelper.checkDisposed(Flowable.just(1).any(Functions.alwaysTrue()).toFlowable());
+
+        TestHelper.checkDisposed(Flowable.just(1).any(Functions.alwaysTrue()));
     }
 
     @Test
@@ -567,6 +568,13 @@ public class FlowableAnyTest {
             @Override
             public Publisher<Boolean> apply(Flowable<Object> o) throws Exception {
                 return o.any(Functions.alwaysTrue()).toFlowable();
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<Boolean>>() {
+            @Override
+            public Single<Boolean> apply(Flowable<Object> o) throws Exception {
+                return o.any(Functions.alwaysTrue());
             }
         });
     }

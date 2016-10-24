@@ -12019,7 +12019,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
         return subscribe(Functions.emptyConsumer(), Functions.ERROR_CONSUMER,
-                Functions.EMPTY_ACTION, FlowableInternalHelper.requestMax());
+                Functions.EMPTY_ACTION, FlowableInternalHelper.RequestMax.INSTANCE);
     }
 
     /**
@@ -12046,7 +12046,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
         return subscribe(onNext, Functions.ERROR_CONSUMER,
-                Functions.EMPTY_ACTION, FlowableInternalHelper.requestMax());
+                Functions.EMPTY_ACTION, FlowableInternalHelper.RequestMax.INSTANCE);
     }
 
     /**
@@ -12075,7 +12075,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
-        return subscribe(onNext, onError, Functions.EMPTY_ACTION, FlowableInternalHelper.requestMax());
+        return subscribe(onNext, onError, Functions.EMPTY_ACTION, FlowableInternalHelper.RequestMax.INSTANCE);
     }
 
     /**
@@ -12109,7 +12109,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
             Action onComplete) {
-        return subscribe(onNext, onError, onComplete, FlowableInternalHelper.requestMax());
+        return subscribe(onNext, onError, onComplete, FlowableInternalHelper.RequestMax.INSTANCE);
     }
 
     /**

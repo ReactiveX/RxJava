@@ -13,16 +13,24 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.*;
+
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.TestSubscriber;
+import io.reactivex.subscribers.*;
 
 public class FlowableFlattenIterableTest {
 
@@ -582,5 +590,277 @@ public class FlowableFlattenIterableTest {
                 });
             }
         }, false, 1, 1, 10, 20);
+    }
+
+    @Test
+    public void callableThrows() {
+        Flowable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .flatMapIterable(Functions.justFunction(Arrays.asList(1, 2, 3)))
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusionMethods() {
+        Flowable.just(1, 2)
+        .flatMapIterable(Functions.justFunction(Arrays.asList(1, 2, 3)))
+        .subscribe(new Subscriber<Integer>() {
+            @Override
+            public void onSubscribe(Subscription s) {
+                @SuppressWarnings("unchecked")
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+
+                assertEquals(QueueSubscription.SYNC, qs.requestFusion(QueueSubscription.ANY));
+
+                try {
+                    assertFalse("Source reports being empty!", qs.isEmpty());
+
+                    assertEquals(1, qs.poll().intValue());
+
+                    assertFalse("Source reports being empty!", qs.isEmpty());
+
+                    assertEquals(2, qs.poll().intValue());
+
+                    assertFalse("Source reports being empty!", qs.isEmpty());
+
+                    qs.clear();
+
+                    assertTrue("Source reports not empty!", qs.isEmpty());
+
+                    assertNull(qs.poll());
+                } catch (Throwable ex) {
+                    throw ExceptionHelper.wrapOrThrow(ex);
+                }
+            }
+
+            @Override
+            public void onNext(Integer t) {
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+    }
+
+    @Test
+    public void smallPrefetch() {
+        Flowable.just(1, 2, 3)
+        .flatMapIterable(Functions.justFunction(Arrays.asList(1, 2, 3)), 1)
+        .test()
+        .assertResult(1, 2, 3, 1, 2, 3, 1, 2, 3);
+    }
+
+    @Test
+    public void smallPrefetch2() {
+        Flowable.just(1, 2, 3).hide()
+        .flatMapIterable(Functions.justFunction(Collections.emptyList()), 1)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void mixedInnerSource() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.just(1, 2, 3)
+        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer v) throws Exception {
+                if ((v & 1) == 0) {
+                    return Collections.emptyList();
+                }
+                return Arrays.asList(1, 2);
+            }
+        })
+        .subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.SYNC)
+        .assertResult(1, 2, 1, 2);
+    }
+
+    @Test
+    public void mixedInnerSource2() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.just(1, 2, 3)
+        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer v) throws Exception {
+                if ((v & 1) == 1) {
+                    return Collections.emptyList();
+                }
+                return Arrays.asList(1, 2);
+            }
+        })
+        .subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.SYNC)
+        .assertResult(1, 2);
+    }
+
+    @Test
+    public void fusionRejected() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.just(1, 2, 3).hide()
+        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer v) throws Exception {
+                return Arrays.asList(1, 2);
+            }
+        })
+        .subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE)
+        .assertResult(1, 2, 1, 2, 1, 2);
+    }
+
+    @Test
+    public void fusedIsEmptyWithEmptySource() {
+        Flowable.just(1, 2, 3)
+        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer v) throws Exception {
+                if ((v & 1) == 0) {
+                    return Collections.emptyList();
+                }
+                return Arrays.asList(v);
+            }
+        })
+        .subscribe(new Subscriber<Integer>() {
+            @Override
+            public void onSubscribe(Subscription s) {
+                @SuppressWarnings("unchecked")
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
+
+                assertEquals(QueueSubscription.SYNC, qs.requestFusion(QueueSubscription.ANY));
+
+                try {
+                    assertFalse("Source reports being empty!", qs.isEmpty());
+
+                    assertEquals(1, qs.poll().intValue());
+
+                    assertFalse("Source reports being empty!", qs.isEmpty());
+
+                    assertEquals(3, qs.poll().intValue());
+
+                    assertTrue("Source reports being non-empty!", qs.isEmpty());
+                } catch (Throwable ex) {
+                    throw ExceptionHelper.wrapOrThrow(ex);
+                }
+            }
+
+            @Override
+            public void onNext(Integer t) {
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+    }
+
+    @Test
+    public void fusedSourceCrash() {
+        Flowable.range(1, 3)
+        .map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })
+        .flatMapIterable(Functions.justFunction(Collections.emptyList()), 1)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void take() {
+        Flowable.range(1, 3)
+        .flatMapIterable(Functions.justFunction(Arrays.asList(1)), 1)
+        .take(1)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void overflowSource() {
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+                s.onNext(3);
+            }
+        }
+        .flatMapIterable(Functions.justFunction(Arrays.asList(1)), 1)
+        .test(0L)
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void oneByOne() {
+        Flowable.range(1, 3).hide()
+        .flatMapIterable(Functions.justFunction(Arrays.asList(1)), 1)
+        .rebatchRequests(1)
+        .test()
+        .assertResult(1, 1, 1);
+    }
+
+    @Test
+    public void cancelAfterHasNext() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        Flowable.range(1, 3).hide()
+        .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
+            @Override
+            public Iterable<Integer> apply(Integer v) throws Exception {
+                return new Iterable<Integer>() {
+                    int count;
+                    @Override
+                    public Iterator<Integer> iterator() {
+                        return new Iterator<Integer>() {
+
+                            @Override
+                            public boolean hasNext() {
+                                if (++count == 2) {
+                                    ts.cancel();
+                                    ts.onComplete();
+                                }
+                                return true;
+                            }
+
+                            @Override
+                            public Integer next() {
+                                return 1;
+                            }
+
+                            @Override
+                            public void remove() {
+                                throw new UnsupportedOperationException();
+                            }
+                        };
+                    }
+                };
+            }
+        })
+        .subscribe(ts);
+
+        ts.assertResult(1);
     }
 }

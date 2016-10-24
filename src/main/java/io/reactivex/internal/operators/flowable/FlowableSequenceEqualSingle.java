@@ -13,16 +13,16 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.operators.flowable.FlowableSequenceEqual.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.AtomicThrowable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -55,7 +55,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
 
     static final class EqualCoordinator<T>
     extends AtomicInteger
-    implements Disposable {
+    implements Disposable, EqualCoordinatorHelper {
 
         private static final long serialVersionUID = -6178010334400373240L;
 
@@ -108,7 +108,8 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
             second.clear();
         }
 
-        void drain() {
+        @Override
+        public void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
@@ -230,110 +231,13 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                 }
             }
         }
-    }
-
-    static final class EqualSubscriber<T>
-    extends AtomicReference<Subscription>
-    implements Subscriber<T> {
-
-        private static final long serialVersionUID = 4804128302091633067L;
-
-        final EqualCoordinator<T> parent;
-
-        final int prefetch;
-
-        final int limit;
-
-        long produced;
-
-        volatile SimpleQueue<T> queue;
-
-        volatile boolean done;
-
-        int sourceMode;
-
-        EqualSubscriber(EqualCoordinator<T> parent, int prefetch) {
-            this.parent = parent;
-            this.limit = prefetch - (prefetch >> 2);
-            this.prefetch = prefetch;
-        }
 
         @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this, s)) {
-                if (s instanceof QueueSubscription) {
-                    @SuppressWarnings("unchecked")
-                    QueueSubscription<T> qs = (QueueSubscription<T>) s;
-
-                    int m = qs.requestFusion(QueueSubscription.ANY);
-                    if (m == QueueSubscription.SYNC) {
-                        sourceMode = m;
-                        queue = qs;
-                        done = true;
-                        parent.drain();
-                        return;
-                    }
-                    if (m == QueueSubscription.ASYNC) {
-                        sourceMode = m;
-                        queue = qs;
-                        s.request(prefetch);
-                        return;
-                    }
-                }
-
-                queue = new SpscArrayQueue<T>(prefetch);
-
-                s.request(prefetch);
-            }
-        }
-
-        @Override
-        public void onNext(T t) {
-            if (sourceMode == QueueSubscription.NONE) {
-                if (!queue.offer(t)) {
-                    onError(new MissingBackpressureException());
-                    return;
-                }
-            }
-            parent.drain();
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            EqualCoordinator<T> p = parent;
-            if (p.error.addThrowable(t)) {
-                p.drain();
+        public void innerError(Throwable t) {
+            if (error.addThrowable(t)) {
+                drain();
             } else {
                 RxJavaPlugins.onError(t);
-            }
-        }
-
-        @Override
-        public void onComplete() {
-            done = true;
-            parent.drain();
-        }
-
-        public void request() {
-            if (sourceMode != QueueSubscription.SYNC) {
-                long p = produced + 1;
-                if (p >= limit) {
-                    produced = 0;
-                    get().request(p);
-                } else {
-                    produced = p;
-                }
-            }
-        }
-
-        public void cancel() {
-            SubscriptionHelper.cancel(this);
-        }
-
-        void clear() {
-            SimpleQueue<T> sq = queue;
-            if (sq != null) {
-                sq.clear();
             }
         }
     }

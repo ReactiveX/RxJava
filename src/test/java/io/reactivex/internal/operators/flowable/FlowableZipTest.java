@@ -31,6 +31,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
@@ -1615,4 +1616,155 @@ public class FlowableZipTest {
         }));
     }
 
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.zip(Flowable.just(1), Flowable.just(1), new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }));
+    }
+
+    @Test
+    public void multiError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            PublishProcessor<Object> pp = PublishProcessor.create();
+
+            @SuppressWarnings("rawtypes")
+            final Subscriber[] sub = { null };
+            TestSubscriber<Object> ts = Flowable.zip(pp, new Flowable<Object>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Object> s) {
+                    sub[0] = s;
+                }
+            }, new BiFunction<Object, Object, Object>() {
+                @Override
+                public Object apply(Object a, Object b) throws Exception {
+                    return a;
+                }
+            })
+            .test();
+
+            pp.onError(new TestException("First"));
+
+            ts
+            .assertFailureAndMessage(TestException.class, "First");
+
+            sub[0].onError(new TestException("Second"));
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void singleErrorDelayed() {
+        PublishProcessor<Object> pp1 = PublishProcessor.create();
+        PublishProcessor<Object> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Object> ts = Flowable.zip(pp1, pp2, new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        }, true)
+        .test();
+
+        pp1.onError(new TestException("First"));
+        pp2.onComplete();
+
+        ts
+        .assertFailureAndMessage(TestException.class, "First");
+    }
+
+    @Test
+    public void singleErrorDelayedBackpressured() {
+        PublishProcessor<Object> pp1 = PublishProcessor.create();
+        PublishProcessor<Object> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Object> ts = Flowable.zip(pp1, pp2, new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object a, Object b) throws Exception {
+                return a;
+            }
+        })
+        .test(0L);
+
+        pp1.onError(new TestException("First"));
+        pp2.onComplete();
+
+        ts
+        .assertFailureAndMessage(TestException.class, "First");
+    }
+
+    @Test
+    public void fusedInputThrows() {
+        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedInputThrowsDelayError() {
+        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }, true)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedInputThrowsBackpressured() {
+        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        })
+        .test(0L)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedInputThrowsDelayErrorBackpressured() {
+        Flowable.zip(Flowable.just(1).map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        }), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        }, true)
+        .test(0L)
+        .assertFailure(TestException.class);
+    }
 }

@@ -655,4 +655,30 @@ public class FlowableWithLatestFromTest {
         }
     }
 
+    @Test
+    public void otherErrors() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.just(1)
+            .withLatestFrom(new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onError(new TestException("First"));
+                    s.onError(new TestException("Second"));
+                }
+            }, new BiFunction<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer a, Integer b) throws Exception {
+                    return a + b;
+                }
+            })
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

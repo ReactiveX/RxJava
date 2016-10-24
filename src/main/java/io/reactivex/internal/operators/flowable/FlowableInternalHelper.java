@@ -25,8 +25,12 @@ import io.reactivex.internal.functions.Functions;
 /**
  * Helper utility class to support Flowable with inner classes.
  */
-public enum FlowableInternalHelper {
-    ;
+public final class FlowableInternalHelper {
+
+    /** Utility class. */
+    private FlowableInternalHelper() {
+        throw new IllegalStateException("No instances!");
+    }
 
     static final class SimpleGenerator<T, S> implements BiFunction<S, Emitter<T>, S> {
         final Consumer<Emitter<T>> consumer;
@@ -233,16 +237,12 @@ public enum FlowableInternalHelper {
         };
     }
 
-    enum RequestMax implements Consumer<Subscription> {
+    public enum RequestMax implements Consumer<Subscription> {
         INSTANCE;
         @Override
         public void accept(Subscription t) throws Exception {
             t.request(Long.MAX_VALUE);
         }
-    }
-
-    public static Consumer<Subscription> requestMax() {
-        return RequestMax.INSTANCE;
     }
 
     static final class ZipIterableFunction<T, R>

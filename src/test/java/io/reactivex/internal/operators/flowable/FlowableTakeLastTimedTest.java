@@ -19,10 +19,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
@@ -313,4 +314,26 @@ public class FlowableTakeLastTimedTest {
         }
     }
 
+    @Test
+    public void emptyDelayError() {
+        Flowable.empty()
+        .takeLast(1, TimeUnit.DAYS, true)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
+                return f.takeLast(1, TimeUnit.SECONDS);
+            }
+        });
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(PublishProcessor.create().takeLast(1, TimeUnit.SECONDS));
+    }
 }

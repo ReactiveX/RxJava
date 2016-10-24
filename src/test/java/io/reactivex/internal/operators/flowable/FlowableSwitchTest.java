@@ -574,7 +574,7 @@ public class FlowableSwitchTest {
                         .map(new Function<Long, Flowable<Long>>() {
                             @Override
                             public Flowable<Long> apply(Long t) {
-                                return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L));
+                                return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)).hide();
                             }
                         }).take(3)).subscribe(ts);
         ts.request(Long.MAX_VALUE - 1);
@@ -592,7 +592,7 @@ public class FlowableSwitchTest {
                         .map(new Function<Long, Flowable<Long>>() {
                             @Override
                             public Flowable<Long> apply(Long t) {
-                                return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L));
+                                return Flowable.fromIterable(Arrays.asList(1L, 2L, 3L)).hide();
                             }
                         }).take(3)).subscribe(ts);
         ts.request(1);
@@ -674,7 +674,7 @@ public class FlowableSwitchTest {
     public void switchOnNextPrefetch() {
         final List<Integer> list = new ArrayList<Integer>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
                 list.add(v);
@@ -691,7 +691,7 @@ public class FlowableSwitchTest {
     public void switchOnNextDelayError() {
         final List<Integer> list = new ArrayList<Integer>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
                 list.add(v);
@@ -708,7 +708,7 @@ public class FlowableSwitchTest {
     public void switchOnNextDelayErrorPrefetch() {
         final List<Integer> list = new ArrayList<Integer>();
 
-        Flowable<Integer> source = Flowable.range(1, 10).doOnNext(new Consumer<Integer>() {
+        Flowable<Integer> source = Flowable.range(1, 10).hide().doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
                 list.add(v);
@@ -1076,5 +1076,81 @@ public class FlowableSwitchTest {
         Flowable.switchOnNextDelayError(Flowable.just(Flowable.just(1)))
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void scalarXMap() {
+        Flowable.fromCallable(Functions.justCallable(1))
+        .switchMap(Functions.justFunction(Flowable.just(1)))
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.switchMap(Functions.justFunction(Flowable.just(1)));
+            }
+        }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void innerOverflow() {
+        Flowable.just(1).hide()
+        .switchMap(Functions.justFunction(new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                for (int i = 0; i < 10; i++) {
+                    s.onNext(i);
+                }
+            }
+        }), 8)
+        .test(1L)
+        .assertFailure(MissingBackpressureException.class, 0);
+    }
+
+    @Test
+    public void drainCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            Flowable.just(1).hide()
+            .switchMap(Functions.justFunction(pp))
+            .subscribe(ts);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void fusedInnerCrash() {
+        Flowable.just(1).hide()
+        .switchMap(Functions.justFunction(Flowable.just(1).map(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception {
+                throw new TestException();
+            }
+        })))
+        .test()
+        .assertFailure(TestException.class);
     }
 }

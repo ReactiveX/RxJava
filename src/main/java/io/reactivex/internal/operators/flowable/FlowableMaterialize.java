@@ -13,13 +13,10 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.reactivestreams.*;
 
 import io.reactivex.Notification;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.subscribers.SinglePostCompleteSubscriber;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T, Notification<T>> {
@@ -33,31 +30,12 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
         source.subscribe(new MaterializeSubscriber<T>(s));
     }
 
-    static final class MaterializeSubscriber<T> extends AtomicLong implements Subscriber<T>, Subscription {
+    static final class MaterializeSubscriber<T> extends SinglePostCompleteSubscriber<T, Notification<T>> {
 
         private static final long serialVersionUID = -3740826063558713822L;
 
-        final Subscriber<? super Notification<T>> actual;
-
-        Subscription s;
-
-        Notification<T> value;
-
-        long produced;
-
-        static final long COMPLETE_MASK = Long.MIN_VALUE;
-        static final long REQUEST_MASK = Long.MAX_VALUE;
-
         MaterializeSubscriber(Subscriber<? super Notification<T>> actual) {
-            this.actual = actual;
-        }
-
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
-            }
+            super(actual);
         }
 
         @Override
@@ -76,57 +54,11 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
             complete(Notification.<T>createOnComplete());
         }
 
-        void complete(Notification<T> n) {
-            long p = produced;
-            if (p != 0) {
-                BackpressureHelper.produced(this, p);
-            }
-
-            for (;;) {
-                long r = get();
-                if ((r & COMPLETE_MASK) != 0) {
-                    if (n.isOnError()) {
-                        RxJavaPlugins.onError(n.getError());
-                    }
-                    return;
-                }
-                if ((r & REQUEST_MASK) != 0) {
-                    lazySet(COMPLETE_MASK + 1);
-                    actual.onNext(n);
-                    actual.onComplete();
-                    return;
-                }
-                value = n;
-                if (compareAndSet(0, COMPLETE_MASK)) {
-                    return;
-                }
-            }
-        }
-
         @Override
-        public void request(long n) {
-            if (SubscriptionHelper.validate(n)) {
-                for (;;) {
-                    long r = get();
-                    if ((r & COMPLETE_MASK) != 0) {
-                        if (compareAndSet(COMPLETE_MASK, COMPLETE_MASK + 1)) {
-                            actual.onNext(value);
-                            actual.onComplete();
-                        }
-                        break;
-                    }
-                    long u = BackpressureHelper.addCap(r, n);
-                    if (compareAndSet(r, u)) {
-                        s.request(n);
-                        break;
-                    }
-                }
+        protected void onDrop(Notification<T> n) {
+            if (n.isOnError()) {
+                RxJavaPlugins.onError(n.getError());
             }
-        }
-
-        @Override
-        public void cancel() {
-            s.cancel();
         }
     }
 }

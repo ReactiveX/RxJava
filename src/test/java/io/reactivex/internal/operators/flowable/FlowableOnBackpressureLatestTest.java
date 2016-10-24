@@ -17,9 +17,11 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
+import org.reactivestreams.Publisher;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -127,5 +129,34 @@ public class FlowableOnBackpressureLatestTest {
         int n = ts.values().size();
         System.out.println("testAsynchronousDrop -> " + n);
         Assert.assertTrue("All events received?", n < m);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
+                return f.onBackpressureLatest();
+            }
+        });
+    }
+
+    @Test
+    public void take() {
+        Flowable.just(1, 2)
+        .onBackpressureLatest()
+        .take(1)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.never().onBackpressureLatest());
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().onBackpressureLatest());
     }
 }

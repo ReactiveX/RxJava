@@ -13,15 +13,12 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.subscribers.SinglePostCompleteSubscriber;
 
 public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super Throwable, ? extends T> valueSupplier;
@@ -35,34 +32,15 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
         source.subscribe(new OnErrorReturnSubscriber<T>(s, valueSupplier));
     }
 
-    static final class OnErrorReturnSubscriber<T> extends AtomicLong
-    implements Subscriber<T>, Subscription {
+    static final class OnErrorReturnSubscriber<T>
+    extends SinglePostCompleteSubscriber<T, T> {
 
         private static final long serialVersionUID = -3740826063558713822L;
-        final Subscriber<? super T> actual;
-
         final Function<? super Throwable, ? extends T> valueSupplier;
 
-        Subscription s;
-
-        T value;
-
-        long produced;
-
-        static final long COMPLETE_MASK = Long.MIN_VALUE;
-        static final long REQUEST_MASK = Long.MAX_VALUE;
-
         OnErrorReturnSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends T> valueSupplier) {
-            this.actual = actual;
+            super(actual);
             this.valueSupplier = valueSupplier;
-        }
-
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
-            }
         }
 
         @Override
@@ -87,56 +65,6 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
         @Override
         public void onComplete() {
             actual.onComplete();
-        }
-
-        void complete(T n) {
-            long p = produced;
-            if (p != 0L) {
-                BackpressureHelper.produced(this, p);
-            }
-
-            for (;;) {
-                long r = get();
-                if ((r & COMPLETE_MASK) != 0) {
-                    return;
-                }
-                if ((r & REQUEST_MASK) != 0) {
-                    lazySet(COMPLETE_MASK + 1);
-                    actual.onNext(n);
-                    actual.onComplete();
-                    return;
-                }
-                value = n;
-                if (compareAndSet(0, COMPLETE_MASK)) {
-                    return;
-                }
-            }
-        }
-
-        @Override
-        public void request(long n) {
-            if (SubscriptionHelper.validate(n)) {
-                for (;;) {
-                    long r = get();
-                    if ((r & COMPLETE_MASK) != 0) {
-                        if (compareAndSet(COMPLETE_MASK, COMPLETE_MASK + 1)) {
-                            actual.onNext(value);
-                            actual.onComplete();
-                        }
-                        break;
-                    }
-                    long u = BackpressureHelper.addCap(r, n);
-                    if (compareAndSet(r, u)) {
-                        s.request(n);
-                        break;
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void cancel() {
-            s.cancel();
         }
     }
 }

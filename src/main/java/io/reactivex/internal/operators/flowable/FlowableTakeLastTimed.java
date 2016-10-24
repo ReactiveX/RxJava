@@ -141,12 +141,12 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void cancel() {
-            if (cancelled) {
+            if (!cancelled) {
                 cancelled = true;
+                s.cancel();
 
                 if (getAndIncrement() == 0) {
                     queue.clear();
-                    s.cancel();
                 }
             }
         }
@@ -172,7 +172,6 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
                     }
 
                     long r = requested.get();
-                    boolean unbounded = r == Long.MAX_VALUE; // NOPMD
                     long e = 0L;
 
                     for (;;) {
@@ -183,29 +182,21 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
                             return;
                         }
 
-                        if (empty || r == 0L) {
+                        if (r == e) {
                             break;
                         }
 
                         q.poll();
                         @SuppressWarnings("unchecked")
                         T o = (T)q.poll();
-                        if (o == null) {
-                            s.cancel();
-                            a.onError(new IllegalStateException("Queue empty?!"));
-                            return;
-                        }
 
                         a.onNext(o);
 
-                        r--;
-                        e--;
+                        e++;
                     }
 
                     if (e != 0L) {
-                        if (!unbounded) {
-                            requested.addAndGet(e);
-                        }
+                        BackpressureHelper.produced(requested, e);
                     }
                 }
 
@@ -219,7 +210,6 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
         boolean checkTerminated(boolean empty, Subscriber<? super T> a, boolean delayError) {
             if (cancelled) {
                 queue.clear();
-                s.cancel();
                 return true;
             }
             if (delayError) {

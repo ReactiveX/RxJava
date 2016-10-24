@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,7 @@ import org.mockito.*;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.*;
@@ -286,5 +287,41 @@ public class FlowableTimerTest {
     @Test
     public void disposed() {
         TestHelper.checkDisposed(Flowable.timer(1, TimeUnit.DAYS));
+    }
+
+    @Test
+    public void backpressureNotReady() {
+        Flowable.timer(1, TimeUnit.MILLISECONDS)
+        .test(0L)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void timerCancelRace() {
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Long> ts = new TestSubscriber<Long>();
+
+            final TestScheduler scheduler = new TestScheduler();
+
+            Flowable.timer(1, TimeUnit.SECONDS, scheduler)
+            .subscribe(ts);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
     }
 }
