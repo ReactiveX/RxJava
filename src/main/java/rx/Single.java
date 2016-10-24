@@ -1321,6 +1321,7 @@ public class Single<T> {
      *         benefit of subsequent subscribers
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
+    @Experimental
     public final Single<T> cache() {
         return toObservable().cacheWithInitialCapacity(1).toSingle();
     }
