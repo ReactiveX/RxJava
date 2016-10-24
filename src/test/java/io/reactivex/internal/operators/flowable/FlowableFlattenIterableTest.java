@@ -849,6 +849,11 @@ public class FlowableFlattenIterableTest {
                             public Integer next() {
                                 return 1;
                             }
+
+                            @Override
+                            public void remove() {
+                                throw new UnsupportedOperationException();
+                            }
                         };
                     }
                 };
