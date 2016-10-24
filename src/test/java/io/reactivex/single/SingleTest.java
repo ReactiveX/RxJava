@@ -543,6 +543,11 @@ public class SingleTest {
         }).intValue());
     }
 
+    @Test(expected = NullPointerException.class)
+    public void fromObservableNull() {
+        Single.fromObservable(null);
+    }
+
     @Test
     public void fromObservableEmpty() {
         Single.fromObservable(Observable.empty())
