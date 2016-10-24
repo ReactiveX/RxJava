@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 
 import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -540,6 +541,41 @@ public class SingleTest {
                 return 1;
             }
         }).intValue());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void fromObservableNull() {
+        Single.fromObservable(null);
+    }
+
+    @Test
+    public void fromObservableEmpty() {
+        Single.fromObservable(Observable.empty())
+            .test()
+            .assertFailure(NoSuchElementException.class);
+    }
+
+    @Test
+    public void fromObservableMoreThan1Elements() {
+        Single.fromObservable(Observable.just(1, 2))
+            .test()
+            .assertFailure(IllegalArgumentException.class)
+            .assertErrorMessage("Sequence contains more than one element!");
+    }
+
+    @Test
+    public void fromObservableOneElement() {
+        Single.fromObservable(Observable.just(1))
+            .test()
+            .assertResult(1);
+    }
+
+    @Test
+    public void fromObservableError() {
+        Single.fromObservable(Observable.error(new RuntimeException("some error")))
+            .test()
+            .assertFailure(RuntimeException.class)
+            .assertErrorMessage("some error");
     }
 }
 
