@@ -1271,7 +1271,7 @@ public class Single<T> {
     }
 
     /**
-     * Returns a Single that subscribes to this Single lazily, caches its next event
+     * Returns a Single that subscribes to this Single lazily, caches its success or error event
      * and replays it to all the downstream subscribers.
      * <p>
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
