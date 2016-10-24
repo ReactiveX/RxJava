@@ -27,7 +27,7 @@ import io.reactivex.internal.observers.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.*;
-import io.reactivex.internal.operators.observable.ObservableConcatMap;
+import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.observers.TestObserver;
@@ -571,6 +571,27 @@ public abstract class Single<T> implements SingleSource<T> {
     public static <T> Single<T> fromPublisher(final Publisher<? extends T> publisher) {
         ObjectHelper.requireNonNull(publisher, "publisher is null");
         return RxJavaPlugins.onAssembly(new SingleFromPublisher<T>(publisher));
+    }
+
+    /**
+     * Wraps a specific ObservableSource into a Single and signals its single element or error.
+     * <p>If the ObservableSource is empty, a NoSuchElementException is signalled.
+     * If the source has more than one element, an IndexOutOfBoundsException is signalled.
+     * <p>
+     * <dl>
+     *   <dt><b>Scheduler:</b></dt>
+     *   <dd>{@code fromObservable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param observableSource the source Observable, not null
+     * @param <T>
+     *         the type of the item emitted by the {@link Single}.
+     * @return the new Single instance
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Single<T> fromObservable(ObservableSource<? extends T> observableSource) {
+        ObjectHelper.requireNonNull(observableSource, "observableSource is null");
+        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<T>(observableSource, null));
     }
 
     /**

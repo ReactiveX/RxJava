@@ -21,11 +21,11 @@ import java.util.NoSuchElementException;
 
 public final class ObservableSingleSingle<T> extends Single<T> {
 
-    final ObservableSource<T> source;
+    final ObservableSource<? extends T> source;
 
     final T defaultValue;
 
-    public ObservableSingleSingle(ObservableSource<T> source, T defaultValue) {
+    public ObservableSingleSingle(ObservableSource<? extends T> source, T defaultValue) {
         this.source = source;
         this.defaultValue = defaultValue;
     }
