@@ -16,15 +16,21 @@ package io.reactivex.internal.operators.flowable;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.BiPredicate;
+import io.reactivex.exceptions.*;
+import io.reactivex.functions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableSequenceEqualTest {
@@ -369,5 +375,212 @@ public class FlowableSequenceEqualTest {
         .toFlowable()
         .test()
         .assertResult(true);
+    }
+
+    @Test
+    public void longSequenceEqualsFlowable() {
+        Flowable<Integer> source = Flowable.range(1, Flowable.bufferSize() * 4).subscribeOn(Schedulers.computation());
+
+        Flowable.sequenceEqual(source, source)
+        .toFlowable()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(true);
+    }
+
+    @Test
+    public void syncFusedCrashFlowable() {
+        Flowable<Integer> source = Flowable.range(1, 10).map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception { throw new TestException(); }
+        });
+
+        Flowable.sequenceEqual(source, Flowable.range(1, 10).hide())
+        .toFlowable()
+        .test()
+        .assertFailure(TestException.class);
+
+        Flowable.sequenceEqual(Flowable.range(1, 10).hide(), source)
+        .toFlowable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void cancelAndDrainRaceFlowable() {
+        Flowable<Object> neverNever = new Flowable<Object>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Object> s) {
+            }
+        };
+
+        for (int i = 0; i < 500; i++) {
+            final TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>();
+
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            boolean swap = (i & 1) == 0;
+
+            Flowable.sequenceEqual(swap ? pp : neverNever, swap ? neverNever : pp)
+            .toFlowable()
+            .subscribe(ts);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertEmpty();
+        }
+    }
+
+    @Test
+    public void sourceOverflowsFlowable() {
+        Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Object> s) {
+                s.onSubscribe(new BooleanSubscription());
+                for (int i = 0; i < 10; i++) {
+                    s.onNext(i);
+                }
+            }
+        }, 8)
+        .toFlowable()
+        .test()
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void doubleErrorFlowable() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Object> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onError(new TestException("First"));
+                    s.onError(new TestException("Second"));
+                }
+            }, 8)
+            .toFlowable()
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+
+    @Test
+    public void longSequenceEquals() {
+        Flowable<Integer> source = Flowable.range(1, Flowable.bufferSize() * 4).subscribeOn(Schedulers.computation());
+
+        Flowable.sequenceEqual(source, source)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(true);
+    }
+
+    @Test
+    public void syncFusedCrash() {
+        Flowable<Integer> source = Flowable.range(1, 10).map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception { throw new TestException(); }
+        });
+
+        Flowable.sequenceEqual(source, Flowable.range(1, 10).hide())
+        .test()
+        .assertFailure(TestException.class);
+
+        Flowable.sequenceEqual(Flowable.range(1, 10).hide(), source)
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void cancelAndDrainRace() {
+        Flowable<Object> neverNever = new Flowable<Object>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Object> s) {
+            }
+        };
+
+        for (int i = 0; i < 500; i++) {
+            final TestObserver<Boolean> ts = new TestObserver<Boolean>();
+
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            boolean swap = (i & 1) == 0;
+
+            Flowable.sequenceEqual(swap ? pp : neverNever, swap ? neverNever : pp)
+            .subscribe(ts);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertEmpty();
+        }
+    }
+
+    @Test
+    public void sourceOverflows() {
+        Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Object> s) {
+                s.onSubscribe(new BooleanSubscription());
+                for (int i = 0; i < 10; i++) {
+                    s.onNext(i);
+                }
+            }
+        }, 8)
+        .test()
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void doubleError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.sequenceEqual(Flowable.never(), new Flowable<Object>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Object> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onError(new TestException("First"));
+                    s.onError(new TestException("Second"));
+                }
+            }, 8)
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

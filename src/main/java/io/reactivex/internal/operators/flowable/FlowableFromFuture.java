@@ -46,8 +46,6 @@ public final class FlowableFromFuture<T> extends Flowable<T> {
                 s.onError(ex);
             }
             return;
-        } finally {
-            future.cancel(true); // TODO ?? not sure about this
         }
         if (v == null) {
             s.onError(new NullPointerException("The future returned null"));

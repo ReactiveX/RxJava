@@ -128,6 +128,11 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
     }
 
     @Override
+    public boolean accept(Subscriber<? super V> a, U v) {
+        return false;
+    }
+
+    @Override
     public final Throwable error() {
         return error;
     }

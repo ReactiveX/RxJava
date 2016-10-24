@@ -22,7 +22,6 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -202,16 +201,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                     boolean d = done;
 
-                    Object o;
-
-                    try {
-                        o = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        disposeTimer();
-                        w.onError(ex);
-                        return;
-                    }
+                    Object o = q.poll();
 
                     if (d && (o == null || o == NEXT)) {
                         window = null;

@@ -24,7 +24,7 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -193,4 +193,11 @@ public class FlowableThrottleFirstTest {
         }
     }
 
+    @Test
+    public void backpressureNoRequest() {
+        Flowable.range(1, 3)
+        .throttleFirst(1, TimeUnit.MINUTES)
+        .test(0L)
+        .assertFailure(MissingBackpressureException.class);
+    }
 }

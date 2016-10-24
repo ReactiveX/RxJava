@@ -13,16 +13,14 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.subscribers.SinglePostCompleteSubscriber;
 
 public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUpstream<T, R> {
 
@@ -46,47 +44,22 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
         source.subscribe(new MapNotificationSubscriber<T, R>(s, onNextMapper, onErrorMapper, onCompleteSupplier));
     }
 
-    // FIXME needs post-complete drain management
     static final class MapNotificationSubscriber<T, R>
-    extends AtomicLong
-    implements Subscriber<T>, Subscription {
+    extends SinglePostCompleteSubscriber<T, R> {
 
         private static final long serialVersionUID = 2757120512858778108L;
-
-        final Subscriber<? super R> actual;
         final Function<? super T, ? extends R> onNextMapper;
         final Function<? super Throwable, ? extends R> onErrorMapper;
         final Callable<? extends R> onCompleteSupplier;
-
-        Subscription s;
-
-        R value;
-
-        volatile boolean done;
-
-        final AtomicInteger state = new AtomicInteger();
-
-        static final int NO_REQUEST_NO_VALUE = 0;
-        static final int NO_REQUEST_HAS_VALUE = 1;
-        static final int HAS_REQUEST_NO_VALUE = 2;
-        static final int HAS_REQUEST_HAS_VALUE = 3;
 
         MapNotificationSubscriber(Subscriber<? super R> actual,
                 Function<? super T, ? extends R> onNextMapper,
                 Function<? super Throwable, ? extends R> onErrorMapper,
                 Callable<? extends R> onCompleteSupplier) {
-            this.actual = actual;
+            super(actual);
             this.onNextMapper = onNextMapper;
             this.onErrorMapper = onErrorMapper;
             this.onCompleteSupplier = onCompleteSupplier;
-        }
-
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
-            }
         }
 
         @Override
@@ -101,12 +74,8 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
                 return;
             }
 
+            produced++;
             actual.onNext(p);
-
-            long r = get();
-            if (r != Long.MAX_VALUE) {
-                decrementAndGet();
-            }
         }
 
         @Override
@@ -121,7 +90,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
                 return;
             }
 
-            tryEmit(p);
+            complete(p);
         }
 
         @Override
@@ -136,75 +105,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
                 return;
             }
 
-            tryEmit(p);
-        }
-
-
-        void tryEmit(R p) {
-            long r = get();
-            if (r != 0L) {
-                actual.onNext(p);
-                actual.onComplete();
-            } else {
-                for (;;) {
-                    int s = state.get();
-                    if (s == HAS_REQUEST_NO_VALUE) {
-                        if (state.compareAndSet(HAS_REQUEST_NO_VALUE, HAS_REQUEST_HAS_VALUE)) {
-                            actual.onNext(p);
-                            actual.onComplete();
-                        }
-                        return;
-                    } else
-                    if (s == NO_REQUEST_NO_VALUE) {
-                        value = p;
-                        done = true;
-                        if (state.compareAndSet(NO_REQUEST_NO_VALUE, NO_REQUEST_HAS_VALUE)) {
-                            return;
-                        }
-                    } else
-                    if (s == NO_REQUEST_HAS_VALUE || s == HAS_REQUEST_HAS_VALUE) {
-                        return;
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void request(long n) {
-            if (!SubscriptionHelper.validate(n)) {
-                return;
-            }
-
-            BackpressureHelper.add(this, n);
-            if (done) {
-                for (;;) {
-                    int s = state.get();
-
-                    if (s == HAS_REQUEST_NO_VALUE || s == HAS_REQUEST_HAS_VALUE) {
-                        return;
-                    } else
-                    if (s == NO_REQUEST_HAS_VALUE) {
-                        if (state.compareAndSet(NO_REQUEST_HAS_VALUE, HAS_REQUEST_HAS_VALUE)) {
-                            R p = value;
-                            value = null;
-                            actual.onNext(p);
-                            actual.onComplete();
-                        }
-                        return;
-                    } else
-                    if (state.compareAndSet(NO_REQUEST_NO_VALUE, HAS_REQUEST_NO_VALUE)) {
-                        return;
-                    }
-                }
-            } else {
-                s.request(n);
-            }
-        }
-
-        @Override
-        public void cancel() {
-            state.lazySet(HAS_REQUEST_HAS_VALUE);
-            s.cancel();
+            complete(p);
         }
     }
 }

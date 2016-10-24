@@ -165,7 +165,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
             if (done) {
                 return;
             }
-            if (fusionMode != ASYNC && !queue.offer(t)) {
+            if (fusionMode == NONE && !queue.offer(t)) {
                 onError(new MissingBackpressureException("Queue is full?!"));
                 return;
             }
@@ -410,10 +410,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
         @Override
         public boolean isEmpty() {
             Iterator<? extends R> it = current;
-            if (it != null) {
-                return it.hasNext();
-            }
-            return queue.isEmpty(); // estimate
+            return (it != null && !it.hasNext()) || queue.isEmpty();
         }
 
         @Override
@@ -429,6 +426,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                     it = mapper.apply(v).iterator();
 
                     if (!it.hasNext()) {
+                        it = null;
                         continue;
                     }
                     current = it;

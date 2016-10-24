@@ -23,7 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableCollectTest {
@@ -329,4 +330,50 @@ public final class FlowableCollectTest {
         .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
     }
 
+    @Test
+    public void dispose() {
+        TestHelper.checkDisposed(Flowable.just(1, 2)
+            .collect(Functions.justCallable(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
+                @Override
+                public void accept(ArrayList<Integer> a, Integer b) throws Exception {
+                    a.add(b);
+                }
+            }));
+
+        TestHelper.checkDisposed(Flowable.just(1, 2)
+                .collect(Functions.justCallable(new ArrayList<Integer>()), new BiConsumer<ArrayList<Integer>, Integer>() {
+                    @Override
+                    public void accept(ArrayList<Integer> a, Integer b) throws Exception {
+                        a.add(b);
+                    }
+                }).toFlowable());
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Integer>, Flowable<ArrayList<Integer>>>() {
+            @Override
+            public Flowable<ArrayList<Integer>> apply(Flowable<Integer> f) throws Exception {
+                return f.collect(Functions.justCallable(new ArrayList<Integer>()),
+                        new BiConsumer<ArrayList<Integer>, Integer>() {
+                            @Override
+                            public void accept(ArrayList<Integer> a, Integer b) throws Exception {
+                                a.add(b);
+                            }
+                        }).toFlowable();
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Integer>, Single<ArrayList<Integer>>>() {
+            @Override
+            public Single<ArrayList<Integer>> apply(Flowable<Integer> f) throws Exception {
+                return f.collect(Functions.justCallable(new ArrayList<Integer>()),
+                        new BiConsumer<ArrayList<Integer>, Integer>() {
+                            @Override
+                            public void accept(ArrayList<Integer> a, Integer b) throws Exception {
+                                a.add(b);
+                            }
+                        });
+            }
+        });
+    }
 }

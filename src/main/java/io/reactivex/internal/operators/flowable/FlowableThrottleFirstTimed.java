@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
@@ -22,7 +22,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.MissingBackpressureException;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -59,16 +59,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
 
         Subscription s;
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
-
-        static final Disposable NEW_TIMER = new Disposable() {
-            @Override
-            public void dispose() { }
-
-            @Override public boolean isDisposed() {
-                return true;
-            }
-        };
+        final SequentialDisposable timer = new SequentialDisposable();
 
         volatile boolean gate;
 
@@ -101,9 +92,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                 long r = get();
                 if (r != 0L) {
                     actual.onNext(t);
-                    if (r != Long.MAX_VALUE) {
-                        decrementAndGet();
-                    }
+                    BackpressureHelper.produced(this, 1);
                 } else {
                     done = true;
                     cancel();
@@ -111,18 +100,12 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                     return;
                 }
 
-                // FIXME should this be a periodic blocking or a value-relative blocking?
                 Disposable d = timer.get();
                 if (d != null) {
                     d.dispose();
                 }
 
-                if (timer.compareAndSet(d, NEW_TIMER)) {
-                    d = worker.schedule(this, timeout, unit);
-                    if (!timer.compareAndSet(NEW_TIMER, d)) {
-                        d.dispose();
-                    }
-                }
+                timer.replace(worker.schedule(this, timeout, unit));
             }
 
 

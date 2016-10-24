@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.nio.channels.CancelledKeyException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,7 +24,7 @@ import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -78,15 +77,13 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
     static final class WindowExactUnboundedSubscriber<T>
             extends QueueDrainSubscriber<T, Object, Flowable<T>>
-            implements Subscriber<T>, Subscription, Disposable, Runnable {
+            implements Subscriber<T>, Subscription, Runnable {
         final long timespan;
         final TimeUnit unit;
         final Scheduler scheduler;
         final int bufferSize;
 
         Subscription s;
-
-        boolean selfCancel;
 
         UnicastProcessor<T> window;
 
@@ -193,22 +190,12 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             cancelled = true;
         }
 
-        @Override
         public void dispose() {
-            selfCancel = true;
             DisposableHelper.dispose(timer);
-        }
-
-        @Override public boolean isDisposed() {
-            return timer.get() == DisposableHelper.DISPOSED;
         }
 
         @Override
         public void run() {
-
-            if (selfCancel) {
-                throw new CancelledKeyException();
-            }
 
             if (cancelled) {
                 terminated = true;
@@ -223,7 +210,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
         void drainLoop() {
 
-            final SimpleQueue<Object> q = queue;
+            final SimplePlainQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             UnicastProcessor<T> w = window;
 
@@ -235,17 +222,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
                     boolean d = done;
 
-                    Object o;
-
-                    try {
-                        o = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        s.cancel();
-                        dispose();
-                        a.onError(ex);
-                        return;
-                    }
+                    Object o = q.poll();
 
                     if (d && (o == null || o == NEXT)) {
                         window = null;
@@ -299,25 +276,17 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 }
             }
         }
-
-        @Override
-        public boolean accept(Subscriber<? super Flowable<T>> a, Object v) {
-            // not used in this operator
-            return true;
-        }
     }
 
     static final class WindowExactBoundedSubscriber<T>
     extends QueueDrainSubscriber<T, Object, Flowable<T>>
-    implements Subscription, Disposable {
+    implements Subscription {
         final long timespan;
         final TimeUnit unit;
         final Scheduler scheduler;
         final int bufferSize;
         final boolean restartTimerOnMaxSize;
         final long maxSize;
-
-        boolean selfCancel;
 
         long count;
 
@@ -489,25 +458,12 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             cancelled = true;
         }
 
-        @Override
         public void dispose() {
-            selfCancel = true;
             DisposableHelper.dispose(timer);
         }
 
-        @Override
-        public boolean isDisposed() {
-            return timer.get() == DisposableHelper.DISPOSED;
-        }
-
-        @Override
-        public boolean accept(Subscriber<? super Flowable<T>> a, Object v) {
-            // not needed in this operator
-            return false;
-        }
-
         void drainLoop() {
-            final SimpleQueue<Object> q = queue;
+            final SimplePlainQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             UnicastProcessor<T> w = window;
 
@@ -524,17 +480,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
                     boolean d = done;
 
-                    Object o;
-
-                    try {
-                        o = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        s.cancel();
-                        dispose();
-                        a.onError(ex);
-                        return;
-                    }
+                    Object o = q.poll();
 
                     boolean empty = o == null;
                     boolean isHolder = o instanceof ConsumerIndexHolder;
@@ -640,9 +586,6 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             @Override
             public void run() {
                 WindowExactBoundedSubscriber<?> p = parent;
-                if (p.selfCancel) {
-                    throw new CancelledKeyException();
-                }
 
                 if (!p.cancelled) {
                     p.queue.offer(this);
@@ -659,7 +602,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
     static final class WindowSkipSubscriber<T>
     extends QueueDrainSubscriber<T, Object, Flowable<T>>
-    implements Subscription, Disposable, Runnable {
+    implements Subscription, Runnable {
         final long timespan;
         final long timeskip;
         final TimeUnit unit;
@@ -775,20 +718,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             cancelled = true;
         }
 
-        @Override
         public void dispose() {
             worker.dispose();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return worker.isDisposed();
-        }
-
-        @Override
-        public boolean accept(Subscriber<? super Flowable<T>> a, Object v) {
-            // not used by this operator
-            return false;
         }
 
         void complete(UnicastProcessor<T> w) {
@@ -800,7 +731,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
         @SuppressWarnings("unchecked")
         void drainLoop() {
-            final SimpleQueue<Object> q = queue;
+            final SimplePlainQueue<Object> q = queue;
             final Subscriber<? super Flowable<T>> a = actual;
             final List<UnicastProcessor<T>> ws = windows;
 
@@ -819,17 +750,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
                     boolean d = done;
 
-                    Object v;
-
-                    try {
-                        v = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        s.cancel();
-                        dispose();
-                        a.onError(ex);
-                        return;
-                    }
+                    Object v = q.poll();
 
                     boolean empty = v == null;
                     boolean sw = v instanceof SubjectWork;

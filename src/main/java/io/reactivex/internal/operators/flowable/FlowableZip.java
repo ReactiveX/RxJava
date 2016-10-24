@@ -390,9 +390,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         @Override
         public void onError(Throwable t) {
-            if (sourceMode != QueueSubscription.ASYNC) {
-                parent.error(this, t);
-            }
+            parent.error(this, t);
         }
 
         @Override

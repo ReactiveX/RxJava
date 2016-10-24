@@ -19,9 +19,8 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.MissingBackpressureException;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
@@ -55,7 +54,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
         final AtomicLong requested = new AtomicLong();
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
+        final SequentialDisposable timer = new SequentialDisposable();
 
         Subscription s;
 
@@ -71,14 +70,8 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
             if (SubscriptionHelper.validate(this.s, s)) {
                 this.s = s;
                 actual.onSubscribe(this);
-                if (timer.get() == null) {
-                    Disposable d = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
-                    if (!timer.compareAndSet(null, d)) {
-                        d.dispose();
-                        return;
-                    }
-                    s.request(Long.MAX_VALUE);
-                }
+                timer.replace(scheduler.schedulePeriodicallyDirect(this, period, period, unit));
+                s.request(Long.MAX_VALUE);
             }
         }
 
@@ -123,9 +116,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
                 long r = requested.get();
                 if (r != 0L) {
                     actual.onNext(value);
-                    if (r != Long.MAX_VALUE) {
-                        requested.decrementAndGet();
-                    }
+                    BackpressureHelper.produced(requested, 1);
                 } else {
                     cancel();
                     actual.onError(new MissingBackpressureException("Couldn't emit value due to lack of requests!"));

@@ -15,12 +15,11 @@ package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.exceptions.Exceptions;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableAmb<T> extends Flowable<T> {
@@ -106,17 +105,15 @@ public final class FlowableAmb<T> extends Flowable<T> {
 
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validate(n)) {
-                return;
-            }
-
-            int w = winner.get();
-            if (w > 0) {
-                subscribers[w - 1].request(n);
-            } else
-            if (w == 0) {
-                for (AmbInnerSubscriber<T> a : subscribers) {
-                    a.request(n);
+            if (SubscriptionHelper.validate(n)) {
+                int w = winner.get();
+                if (w > 0) {
+                    subscribers[w - 1].request(n);
+                } else
+                if (w == 0) {
+                    for (AmbInnerSubscriber<T> a : subscribers) {
+                        a.request(n);
+                    }
                 }
             }
         }
@@ -134,9 +131,8 @@ public final class FlowableAmb<T> extends Flowable<T> {
                     }
                     return true;
                 }
-                return false;
             }
-            return w == index;
+            return false;
         }
 
         @Override
@@ -170,29 +166,12 @@ public final class FlowableAmb<T> extends Flowable<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this, s)) {
-                long r = missedRequested.getAndSet(0L);
-                if (r != 0L) {
-                    s.request(r);
-                }
-            }
+            SubscriptionHelper.deferredSetOnce(this, missedRequested, s);
         }
 
         @Override
         public void request(long n) {
-            Subscription s = get();
-            if (s != null) {
-                s.request(n);
-            } else if (SubscriptionHelper.validate(n)) {
-                BackpressureHelper.add(missedRequested, n);
-                s = get();
-                if (s != null && s != SubscriptionHelper.CANCELLED) {
-                    long r = missedRequested.getAndSet(0L);
-                    if (r != 0L) {
-                        s.request(r);
-                    }
-                }
-            }
+            SubscriptionHelper.deferredRequest(this, missedRequested, n);
         }
 
         @Override

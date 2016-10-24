@@ -23,9 +23,9 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.processors.*;
 import io.reactivex.schedulers.TestScheduler;
 
 public class FlowableSampleTest {
@@ -291,5 +291,23 @@ public class FlowableSampleTest {
         .sample(1, TimeUnit.SECONDS)
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void backpressureOverflow() {
+        BehaviorProcessor.createDefault(1)
+        .sample(1, TimeUnit.MILLISECONDS)
+        .test(0L)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void backpressureOverflowWithOtherPublisher() {
+        BehaviorProcessor.createDefault(1)
+        .sample(Flowable.timer(1, TimeUnit.MILLISECONDS))
+        .test(0L)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(MissingBackpressureException.class);
     }
 }

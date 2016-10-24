@@ -27,6 +27,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -366,5 +367,122 @@ public class FlowableDistinctUntilChangedTest {
         pp.onComplete();
 
         ts.assertResult(m, m);
+    }
+
+    @Test
+    public void conditionalNormal() {
+        Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5)
+        .distinctUntilChanged()
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .test()
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void conditionalNormal2() {
+        Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5).hide()
+        .distinctUntilChanged()
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .test()
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void conditionalNormal3() {
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        TestSubscriber<Integer> ts = up.hide()
+        .distinctUntilChanged()
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .test();
+
+        TestHelper.emit(up, 1, 2, 1, 3, 3, 4, 3, 5, 5);
+
+        ts
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void conditionalSelectorCrash() {
+        Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5)
+        .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+            @Override
+            public boolean test(Integer a, Integer b) throws Exception {
+                throw new TestException();
+            }
+        })
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void conditionalFused() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5)
+        .distinctUntilChanged()
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.SYNC)
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void conditionalAsyncFused() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+
+        up
+        .distinctUntilChanged()
+        .filter(new Predicate<Integer>() {
+            @Override
+            public boolean test(Integer v) throws Exception {
+                return v % 2 == 0;
+            }
+        })
+        .subscribe(ts);
+
+
+        TestHelper.emit(up, 1, 2, 1, 3, 3, 4, 3, 5, 5);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.ASYNC)
+        .assertResult(2, 4);
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
+            @Override
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.distinctUntilChanged().filter(Functions.alwaysTrue());
+            }
+        }, false, 1, 1, 1);
     }
 }

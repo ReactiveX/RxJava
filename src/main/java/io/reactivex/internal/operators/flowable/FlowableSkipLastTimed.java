@@ -113,12 +113,12 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void cancel() {
-            if (cancelled) {
+            if (!cancelled) {
                 cancelled = true;
+                s.cancel();
 
                 if (getAndIncrement() == 0) {
                     queue.clear();
-                    s.cancel();
                 }
             }
         }
@@ -138,10 +138,6 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
             final long time = this.time;
 
             for (;;) {
-
-                if (checkTerminated(done, q.isEmpty(), a, delayError)) {
-                    return;
-                }
 
                 long r = requested.get();
                 long e = 0L;
@@ -171,20 +167,13 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
                     @SuppressWarnings("unchecked")
                     T v = (T)q.poll();
 
-                    if (ts > now - time) {
-                        // not old enough
-                        break;
-                    }
-
                     a.onNext(v);
 
                     e++;
                 }
 
                 if (e != 0L) {
-                    if (r != Long.MAX_VALUE) {
-                        requested.addAndGet(-e);
-                    }
+                    BackpressureHelper.produced(requested, e);
                 }
 
                 missed = addAndGet(-missed);
@@ -197,7 +186,6 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
         boolean checkTerminated(boolean d, boolean empty, Subscriber<? super T> a, boolean delayError) {
             if (cancelled) {
                 queue.clear();
-                s.cancel();
                 return true;
             }
             if (d) {

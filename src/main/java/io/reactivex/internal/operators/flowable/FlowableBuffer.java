@@ -175,7 +175,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
         boolean done;
 
-        long index;
+        int index;
 
         PublisherBufferSkipSubscriber(Subscriber<? super C> actual, int size, int skip,
                 Callable<C> bufferSupplier) {
@@ -187,16 +187,18 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
         @Override
         public void request(long n) {
-            if (get() == 0 && compareAndSet(0, 1)) {
-                // n full buffers
-                long u = BackpressureHelper.multiplyCap(n, size);
-                // + (n - 1) gaps
-                long v = BackpressureHelper.multiplyCap(skip - size, n - 1);
+            if (SubscriptionHelper.validate(n)) {
+                if (get() == 0 && compareAndSet(0, 1)) {
+                    // n full buffers
+                    long u = BackpressureHelper.multiplyCap(n, size);
+                    // + (n - 1) gaps
+                    long v = BackpressureHelper.multiplyCap(skip - size, n - 1);
 
-                s.request(BackpressureHelper.addCap(u, v));
-            } else {
-                // n full buffer + gap
-                s.request(BackpressureHelper.multiplyCap(skip, n));
+                    s.request(BackpressureHelper.addCap(u, v));
+                } else {
+                    // n full buffer + gap
+                    s.request(BackpressureHelper.multiplyCap(skip, n));
+                }
             }
         }
 
@@ -222,9 +224,9 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
             C b = buffer;
 
-            long i = index;
+            int i = index;
 
-            if (i % skip == 0L) { // FIXME no need for modulo
+            if (i++ == 0) {
                 try {
                     b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null buffer");
                 } catch (Throwable e) {
@@ -246,7 +248,10 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
                 }
             }
 
-            index = i + 1;
+            if (i == skip) {
+                i = 0;
+            }
+            index = i;
         }
 
         @Override
@@ -303,7 +308,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
         boolean done;
 
-        long index;
+        int index;
 
         volatile boolean cancelled;
 
@@ -326,26 +331,23 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
         @Override
         public void request(long n) {
+            if (SubscriptionHelper.validate(n)) {
+                if (QueueDrainHelper.postCompleteRequest(n, actual, buffers, this, this)) {
+                    return;
+                }
 
-            if (!SubscriptionHelper.validate(n)) {
-                return;
-            }
+                if (!once.get() && once.compareAndSet(false, true)) {
+                    // (n - 1) skips
+                    long u = BackpressureHelper.multiplyCap(skip, n - 1);
 
-            if (QueueDrainHelper.postCompleteRequest(n, actual, buffers, this, this)) {
-                return;
-            }
-
-            if (!once.get() && once.compareAndSet(false, true)) {
-                // (n - 1) skips
-                long u = BackpressureHelper.multiplyCap(skip, n - 1);
-
-                // + 1 full buffer
-                long r = BackpressureHelper.addCap(size, u);
-                s.request(r);
-            } else {
-                // n skips
-                long r = BackpressureHelper.multiplyCap(skip, n);
-                s.request(r);
+                    // + 1 full buffer
+                    long r = BackpressureHelper.addCap(size, u);
+                    s.request(r);
+                } else {
+                    // n skips
+                    long r = BackpressureHelper.multiplyCap(skip, n);
+                    s.request(r);
+                }
             }
         }
 
@@ -372,9 +374,9 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
             ArrayDeque<C> bs = buffers;
 
-            long i = index;
+            int i = index;
 
-            if (i % skip == 0L) { // FIXME no need for modulo
+            if (i++ == 0) {
                 C b;
 
                 try {
@@ -405,7 +407,10 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
                 b0.add(t);
             }
 
-            index = i + 1;
+            if (i == skip) {
+                i = 0;
+            }
+            index = i;
         }
 
         @Override

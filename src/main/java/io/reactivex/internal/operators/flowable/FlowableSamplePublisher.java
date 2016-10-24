@@ -87,13 +87,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         }
 
         boolean setOther(Subscription o) {
-            if (other.get() == null) {
-                if (other.compareAndSet(null, o)) {
-                    return true;
-                }
-                o.cancel();
-            }
-            return false;
+            return SubscriptionHelper.setOnce(other, o);
         }
 
         @Override
@@ -125,9 +119,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
                 long r = requested.get();
                 if (r != 0L) {
                     actual.onNext(value);
-                    if (r != Long.MAX_VALUE) {
-                        requested.decrementAndGet();
-                    }
+                    BackpressureHelper.produced(requested, 1);
                 } else {
                     cancel();
                     actual.onError(new MissingBackpressureException("Couldn't emit value due to lack of requests!"));
