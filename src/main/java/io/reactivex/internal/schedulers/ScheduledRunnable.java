@@ -46,7 +46,7 @@ implements Runnable, Callable<Object>, Disposable {
     }
 
     @Override
-    public Object call() throws Exception {
+    public Object call() {
         // Being Callable saves an allocation in ThreadPoolExecutor
         run();
         return null;
@@ -55,27 +55,21 @@ implements Runnable, Callable<Object>, Disposable {
     @Override
     public void run() {
         try {
-            actual.run();
-        } catch (Throwable e) {
-            // Exceptions.throwIfFatal(e); nowhere to go
-            RxJavaPlugins.onError(e);
+            try {
+                actual.run();
+            } catch (Throwable e) {
+                // Exceptions.throwIfFatal(e); nowhere to go
+                RxJavaPlugins.onError(e);
+            }
         } finally {
             Object o = get(PARENT_INDEX);
-            if (o != DISPOSED && o != null) {
-                // done races with dispose here
-                if (compareAndSet(PARENT_INDEX, o, DONE)) {
-                    ((DisposableContainer)o).delete(this);
-                }
+            if (o != DISPOSED && o != null && compareAndSet(PARENT_INDEX, o, DONE)) {
+                ((DisposableContainer)o).delete(this);
             }
 
             for (;;) {
                 o = get(FUTURE_INDEX);
-                if (o != DISPOSED) {
-                    // o is either null or a future
-                    if (compareAndSet(FUTURE_INDEX, o, DONE)) {
-                        break;
-                    }
-                } else {
+                if (o == DISPOSED || compareAndSet(FUTURE_INDEX, o, DONE)) {
                     break;
                 }
             }
@@ -116,7 +110,7 @@ implements Runnable, Callable<Object>, Disposable {
         for (;;) {
             Object o = get(PARENT_INDEX);
             if (o == DONE || o == DISPOSED || o == null) {
-                break;
+                return;
             }
             if (compareAndSet(PARENT_INDEX, o, DISPOSED)) {
                 ((DisposableContainer)o).delete(this);
@@ -127,6 +121,7 @@ implements Runnable, Callable<Object>, Disposable {
 
     @Override
     public boolean isDisposed() {
-        return get(FUTURE_INDEX) == DISPOSED;
+        Object o = get(FUTURE_INDEX);
+        return o == DISPOSED || o == DONE;
     }
 }

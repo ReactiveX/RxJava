@@ -16,13 +16,15 @@ package io.reactivex.schedulers;
 import static org.junit.Assert.*;
 
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.*;
 
 import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.*;
+import io.reactivex.internal.schedulers.ComputationScheduler;
 
 public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests {
 
@@ -161,5 +163,40 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         } finally {
             w.dispose();
         }
+    }
+
+    @Test
+    public void shutdownRejects() {
+        final int[] calls = { 0 };
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                calls[0]++;
+            }
+        };
+
+        Scheduler s = new ComputationScheduler();
+        s.shutdown();
+        s.shutdown();
+
+        assertEquals(Disposables.disposed(), s.scheduleDirect(r));
+
+        assertEquals(Disposables.disposed(), s.scheduleDirect(r, 1, TimeUnit.SECONDS));
+
+        assertEquals(Disposables.disposed(), s.schedulePeriodicallyDirect(r, 1, 1, TimeUnit.SECONDS));
+
+        Worker w = s.createWorker();
+        w.dispose();
+
+        assertTrue(w.isDisposed());
+
+        assertEquals(Disposables.disposed(), w.schedule(r));
+
+        assertEquals(Disposables.disposed(), w.schedule(r, 1, TimeUnit.SECONDS));
+
+        assertEquals(Disposables.disposed(), w.schedulePeriodically(r, 1, 1, TimeUnit.SECONDS));
+
+        assertEquals(0, calls[0]);
     }
 }

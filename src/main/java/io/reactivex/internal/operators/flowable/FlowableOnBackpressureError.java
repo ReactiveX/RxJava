@@ -65,9 +65,7 @@ public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUp
             long r = get();
             if (r != 0L) {
                 actual.onNext(t);
-                if (r != Long.MAX_VALUE) {
-                    decrementAndGet();
-                }
+                BackpressureHelper.produced(this, 1);
             } else {
                 onError(new MissingBackpressureException("could not emit value due to lack of requests"));
             }

@@ -25,8 +25,11 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Manages the creating of ScheduledExecutorServices and sets up purging.
  */
-public enum SchedulerPoolFactory {
-    ;
+public final class SchedulerPoolFactory {
+    /** Utility class. */
+    private SchedulerPoolFactory() {
+        throw new IllegalStateException("No instances!");
+    }
 
     static final String PURGE_ENABLED_KEY = "rx2.purge-enabled";
 

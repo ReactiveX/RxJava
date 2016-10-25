@@ -13,9 +13,16 @@
 
 package io.reactivex.schedulers;
 
+import static org.junit.Assert.*;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.*;
 
 import io.reactivex.Scheduler;
+import io.reactivex.Scheduler.Worker;
+import io.reactivex.disposables.*;
+import io.reactivex.internal.schedulers.NewThreadWorker;
 
 public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -74,4 +81,38 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 //            worker.dispose();
 //        }
 //    }
+
+    @Test
+    public void shutdownRejects() {
+        final int[] calls = { 0 };
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                calls[0]++;
+            }
+        };
+
+        Scheduler s = getScheduler();
+        Worker w = s.createWorker();
+        w.dispose();
+
+        assertTrue(w.isDisposed());
+
+        assertEquals(Disposables.disposed(), w.schedule(r));
+
+        assertEquals(Disposables.disposed(), w.schedule(r, 1, TimeUnit.SECONDS));
+
+        assertEquals(Disposables.disposed(), w.schedulePeriodically(r, 1, 1, TimeUnit.SECONDS));
+
+        NewThreadWorker actual = (NewThreadWorker)w;
+
+        CompositeDisposable cd = new CompositeDisposable();
+
+        actual.scheduleActual(r, 1, TimeUnit.SECONDS, cd);
+
+        assertEquals(0, cd.size());
+
+        assertEquals(0, calls[0]);
+    }
 }

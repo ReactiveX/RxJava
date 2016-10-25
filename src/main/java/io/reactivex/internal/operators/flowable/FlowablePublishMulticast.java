@@ -102,20 +102,14 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         @Override
         public void onError(Throwable t) {
-            try {
-                actual.onError(t);
-            } finally {
-                processor.dispose();
-            }
+            actual.onError(t);
+            processor.dispose();
         }
 
         @Override
         public void onComplete() {
-            try {
-                actual.onComplete();
-            } finally {
-                processor.dispose();
-            }
+            actual.onComplete();
+            processor.dispose();
         }
 
         @Override
@@ -214,12 +208,10 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             if (done) {
                 return;
             }
-            if (sourceMode == QueueSubscription.NONE) {
-                if (!queue.offer(t)) {
-                    SubscriptionHelper.cancel(s);
-                    onError(new MissingBackpressureException());
-                    return;
-                }
+            if (sourceMode == QueueSubscription.NONE && !queue.offer(t)) {
+                s.get().cancel();
+                onError(new MissingBackpressureException());
+                return;
             }
             drain();
         }
@@ -473,20 +465,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
-                for (;;) {
-                    long r = get();
-                    if (r == Long.MIN_VALUE) {
-                        return;
-                    }
-                    if (r != Long.MAX_VALUE) {
-                        long u = BackpressureHelper.addCap(r, n);
-                        if (compareAndSet(r, u)) {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
+                BackpressureHelper.addCancel(this, n);
                 parent.drain();
             }
         }

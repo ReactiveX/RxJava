@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Scheduler that creates and caches a set of thread pools and reuses them if possible.
@@ -59,7 +58,7 @@ public final class IoScheduler extends Scheduler {
         EVICTOR_THREAD_FACTORY = new RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX, priority);
     }
 
-    static final class CachedWorkerPool {
+    static final class CachedWorkerPool implements Runnable {
         private final long keepAliveTime;
         private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
         final CompositeDisposable allWorkers;
@@ -75,21 +74,16 @@ public final class IoScheduler extends Scheduler {
             Future<?> task = null;
             if (unit != null) {
                 evictor = Executors.newScheduledThreadPool(1, EVICTOR_THREAD_FACTORY);
-                try {
-                    task = evictor.scheduleWithFixedDelay(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    evictExpiredWorkers();
-                                }
-                            }, this.keepAliveTime, this.keepAliveTime, TimeUnit.NANOSECONDS
-                    );
-                } catch (RejectedExecutionException ex) {
-                    RxJavaPlugins.onError(ex);
-                }
+                task = evictor.scheduleWithFixedDelay(this, this.keepAliveTime, this.keepAliveTime, TimeUnit.NANOSECONDS
+                );
             }
             evictorService = evictor;
             evictorTask = task;
+        }
+
+        @Override
+        public void run() {
+            evictExpiredWorkers();
         }
 
         ThreadWorker get() {
@@ -139,15 +133,12 @@ public final class IoScheduler extends Scheduler {
         }
 
         void shutdown() {
-            try {
-                if (evictorTask != null) {
-                    evictorTask.cancel(true);
-                }
-                if (evictorService != null) {
-                    evictorService.shutdownNow();
-                }
-            } finally {
-                allWorkers.dispose();
+            allWorkers.dispose();
+            if (evictorTask != null) {
+                evictorTask.cancel(true);
+            }
+            if (evictorService != null) {
+                evictorService.shutdownNow();
             }
         }
     }

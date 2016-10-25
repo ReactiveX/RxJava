@@ -544,7 +544,7 @@ public class FlowableReplayTest {
         verifyObserverMock(spiedSubscriberBeforeConnect, 2, 4);
         verifyObserverMock(spiedSubscriberAfterConnect, 2, 4);
 
-        verify(sourceUnsubscribed, times(1)).run();
+        verify(sourceUnsubscribed, never()).run();
 
         verifyNoMoreInteractions(sourceNext);
         verifyNoMoreInteractions(sourceCompleted);
@@ -603,8 +603,8 @@ public class FlowableReplayTest {
         // FIXME not supported
 //        verify(spiedWorker, times(1)).isUnsubscribed();
         // FIXME publish calls cancel too
-        verify(spiedWorker, times(2)).dispose();
-        verify(sourceUnsubscribed, times(1)).run();
+        verify(spiedWorker, times(1)).dispose();
+        verify(sourceUnsubscribed, never()).run();
 
         verifyNoMoreInteractions(sourceNext);
         verifyNoMoreInteractions(sourceCompleted);
@@ -669,8 +669,8 @@ public class FlowableReplayTest {
         // FIXME no longer supported
 //        verify(spiedWorker, times(1)).isUnsubscribed();
         // FIXME publish also calls cancel
-        verify(spiedWorker, times(2)).dispose();
-        verify(sourceUnsubscribed, times(1)).run();
+        verify(spiedWorker, times(1)).dispose();
+        verify(sourceUnsubscribed, never()).run();
 
         verifyNoMoreInteractions(sourceNext);
         verifyNoMoreInteractions(sourceCompleted);

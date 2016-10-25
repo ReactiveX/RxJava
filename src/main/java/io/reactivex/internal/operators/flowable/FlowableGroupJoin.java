@@ -484,7 +484,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
         @Override
         public void onError(Throwable t) {
-            parent.innerError(t);
+            parent.innerCloseError(t);
         }
 
         @Override
