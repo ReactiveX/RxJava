@@ -72,7 +72,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
         final ErrorMode errorMode;
 
-        final AtomicReference<Throwable> error;
+        final AtomicThrowable errors;
 
         final AtomicLong requested;
 
@@ -95,7 +95,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
             this.prefetch = prefetch;
             this.errorMode = errorMode;
             this.subscribers = new SpscLinkedArrayQueue<InnerQueuedSubscriber<R>>(Math.min(prefetch, maxConcurrency));
-            this.error = new AtomicReference<Throwable>();
+            this.errors = new AtomicThrowable();
             this.requested = new AtomicLong();
         }
 
@@ -146,7 +146,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
         @Override
         public void onError(Throwable t) {
-            if (ExceptionHelper.addThrowable(error, t)) {
+            if (errors.addThrowable(t)) {
                 done = true;
                 drain();
             } else {
@@ -207,7 +207,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
         @Override
         public void innerError(InnerQueuedSubscriber<R> inner, Throwable e) {
-            if (ExceptionHelper.addThrowable(this.error, e)) {
+            if (errors.addThrowable(e)) {
                 inner.setDone();
                 if (errorMode != ErrorMode.END) {
                     s.cancel();
@@ -242,11 +242,11 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                 if (inner == null) {
 
                     if (em != ErrorMode.END) {
-                        Throwable ex = error.get();
+                        Throwable ex = errors.get();
                         if (ex != null) {
                             cancelAll();
 
-                            a.onError(ex);
+                            a.onError(errors.terminate());
                             return;
                         }
                     }
@@ -256,7 +256,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                     inner = subscribers.poll();
 
                     if (outerDone && inner == null) {
-                        Throwable ex = error.get();
+                        Throwable ex = errors.terminate();
                         if (ex != null) {
                             a.onError(ex);
                         } else {
@@ -282,13 +282,13 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                             }
 
                             if (em == ErrorMode.IMMEDIATE) {
-                                Throwable ex = error.get();
+                                Throwable ex = errors.get();
                                 if (ex != null) {
                                     current = null;
                                     inner.cancel();
                                     cancelAll();
 
-                                    a.onError(ex);
+                                    a.onError(errors.terminate());
                                     return;
                                 }
                             }
@@ -336,13 +336,13 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
                             }
 
                             if (em == ErrorMode.IMMEDIATE) {
-                                Throwable ex = error.get();
+                                Throwable ex = errors.get();
                                 if (ex != null) {
                                     current = null;
                                     inner.cancel();
                                     cancelAll();
 
-                                    a.onError(ex);
+                                    a.onError(errors.terminate());
                                     return;
                                 }
                             }

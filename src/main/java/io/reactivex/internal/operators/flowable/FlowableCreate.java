@@ -22,7 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Cancellable;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
@@ -91,7 +91,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         final AtomicThrowable error;
 
-        final SimpleQueue<T> queue;
+        final SimplePlainQueue<T> queue;
 
         volatile boolean done;
 
@@ -116,7 +116,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                     return;
                 }
             } else {
-                SimpleQueue<T> q = queue;
+                SimplePlainQueue<T> q = queue;
                 synchronized (q) {
                     q.offer(t);
                 }
@@ -161,7 +161,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         void drainLoop() {
             BaseEmitter<T> e = emitter;
-            SimpleQueue<T> q = queue;
+            SimplePlainQueue<T> q = queue;
             AtomicThrowable error = this.error;
             int missed = 1;
             for (;;) {
@@ -179,15 +179,8 @@ public final class FlowableCreate<T> extends Flowable<T> {
                     }
 
                     boolean d = done;
-                    T v;
 
-                    try {
-                        v = q.poll();
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        // should never happen
-                        v = null;
-                    }
+                    T v = q.poll();
 
                     boolean empty = v == null;
 

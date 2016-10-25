@@ -22,7 +22,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.MissingBackpressureException;
-import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -58,7 +58,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
 
         Subscription s;
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
+        final SequentialDisposable timer = new SequentialDisposable();
 
         volatile long index;
 
@@ -94,13 +94,11 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
             }
 
             DebounceEmitter<T> de = new DebounceEmitter<T>(t, idx, this);
-            if (!timer.compareAndSet(d, de)) {
-                return;
+            if (timer.replace(de)) {
+                d = worker.schedule(de, timeout, unit);
+
+                de.setResource(d);
             }
-
-            d = worker.schedule(de, timeout, unit);
-
-            de.setResource(d);
         }
 
         @Override
@@ -153,9 +151,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
                 long r = get();
                 if (r != 0L) {
                     actual.onNext(t);
-                    if (r != Long.MAX_VALUE) {
-                        decrementAndGet();
-                    }
+                    BackpressureHelper.produced(this, 1);
 
                     emitter.dispose();
                 } else {

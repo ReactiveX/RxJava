@@ -13,15 +13,20 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.*;
 
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.TestHelper;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservableForEachTest {
 
@@ -70,6 +75,87 @@ public class ObservableForEachTest {
         });
 
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 100), list);
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceObservable(new Function<Observable<Integer>, Object>() {
+            @Override
+            public Object apply(Observable<Integer> f) throws Exception {
+                return f.forEachWhile(Functions.alwaysTrue());
+            }
+        }, false, 1, 1, (Object[])null);
+    }
+
+    @Test
+    public void dispose() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        Disposable d = ps.forEachWhile(Functions.alwaysTrue());
+
+        assertFalse(d.isDisposed());
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void whilePredicateThrows() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Observable.just(1).forEachWhile(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    throw new TestException();
+                }
+            });
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void whileErrorThrows() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Observable.<Integer>error(new TestException("Outer"))
+            .forEachWhile(Functions.alwaysTrue(), new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable v) throws Exception {
+                    throw new TestException("Inner");
+                }
+            });
+
+            TestHelper.assertError(errors, 0, CompositeException.class);
+
+            List<Throwable> ce = TestHelper.compositeList(errors.get(0));
+
+            TestHelper.assertError(ce, 0, TestException.class, "Outer");
+            TestHelper.assertError(ce, 1, TestException.class, "Inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void whileCompleteThrows() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Observable.just(1).forEachWhile(Functions.alwaysTrue(), Functions.emptyConsumer(),
+                    new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            throw new TestException();
+                        }
+                    });
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
 }

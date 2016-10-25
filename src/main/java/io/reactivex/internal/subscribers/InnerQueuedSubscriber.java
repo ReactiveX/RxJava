@@ -143,8 +143,4 @@ implements Subscriber<T>, Subscription {
     public SimpleQueue<T> queue() {
         return queue;
     }
-
-    public int fusionMode() {
-        return fusionMode;
-    }
 }

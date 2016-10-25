@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class LambdaObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
@@ -47,42 +47,46 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
                 onSubscribe.accept(this);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                s.dispose();
-                RxJavaPlugins.onError(ex);
+                onError(ex);
             }
         }
     }
 
     @Override
     public void onNext(T t) {
-        try {
-            onNext.accept(t);
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            onError(e);
+        if (!isDisposed()) {
+            try {
+                onNext.accept(t);
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                onError(e);
+            }
         }
     }
 
     @Override
     public void onError(Throwable t) {
-        dispose();
-        try {
-            onError.accept(t);
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            RxJavaPlugins.onError(e);
-            RxJavaPlugins.onError(t);
+        if (!isDisposed()) {
+            dispose();
+            try {
+                onError.accept(t);
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                RxJavaPlugins.onError(new CompositeException(t, e));
+            }
         }
     }
 
     @Override
     public void onComplete() {
-        dispose();
-        try {
-            onComplete.run();
-        } catch (Throwable e) {
-            Exceptions.throwIfFatal(e);
-            RxJavaPlugins.onError(e);
+        if (!isDisposed()) {
+            dispose();
+            try {
+                onComplete.run();
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                RxJavaPlugins.onError(e);
+            }
         }
     }
 

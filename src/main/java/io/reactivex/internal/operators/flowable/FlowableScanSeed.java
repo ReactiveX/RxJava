@@ -12,17 +12,15 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
-import io.reactivex.internal.queue.SpscArrayQueue;
-import io.reactivex.internal.subscribers.QueueDrainSubscriber;
-import io.reactivex.internal.subscriptions.*;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.subscribers.SinglePostCompleteSubscriber;
+import io.reactivex.internal.subscriptions.EmptySubscription;
 
 public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T, R> {
     final BiFunction<R, ? super T, R> accumulator;
@@ -49,27 +47,15 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
         source.subscribe(new ScanSeedSubscriber<T, R>(s, accumulator, r));
     }
 
-    // FIXME update to a fresh Rsc algorithm
-    static final class ScanSeedSubscriber<T, R> extends QueueDrainSubscriber<T, R, R> implements Subscription {
+    static final class ScanSeedSubscriber<T, R> extends SinglePostCompleteSubscriber<T, R> {
+        private static final long serialVersionUID = -1776795561228106469L;
+
         final BiFunction<R, ? super T, R> accumulator;
 
-        R value;
-
-        Subscription s;
-
         ScanSeedSubscriber(Subscriber<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
-            super(actual, new SpscArrayQueue<R>(2));
+            super(actual);
             this.accumulator = accumulator;
             this.value = value;
-            queue.offer(value);
-        }
-
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
-            }
         }
 
         @Override
@@ -88,54 +74,19 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
             }
 
             value = u;
-
-            if (!queue.offer(u)) {
-                s.cancel();
-                onError(new IllegalStateException("Queue if full?!"));
-                return;
-            }
-            drain(false);
+            produced++;
+            actual.onNext(v);
         }
 
         @Override
         public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            error = t;
-            done = true;
-            drain(false);
+            value = null;
+            actual.onError(t);
         }
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            drain(false);
-        }
-
-        @Override
-        public void request(long n) {
-            requested(n);
-            s.request(n);
-            drain(false);
-        }
-
-        @Override
-        public void cancel() {
-            if (!cancelled) {
-                cancelled = true;
-                s.cancel();
-            }
-        }
-
-        @Override
-        public boolean accept(Subscriber<? super R> a, R v) {
-            a.onNext(v);
-            return true;
+            complete(value);
         }
     }
 }

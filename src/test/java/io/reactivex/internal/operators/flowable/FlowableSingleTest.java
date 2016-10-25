@@ -742,6 +742,13 @@ public class FlowableSingleTest {
                 return o.singleElement();
             }
         }, false, 1, 1, 1);
+
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+            @Override
+            public Object apply(Flowable<Object> o) throws Exception {
+                return o.singleOrError().toFlowable();
+            }
+        }, false, 1, 1, 1);
     }
 
     @Test
