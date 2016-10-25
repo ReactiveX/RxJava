@@ -11758,7 +11758,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
                 return o.onBackpressureDrop();
             case LATEST:
                 return o.onBackpressureLatest();
-            case NONE:
+            case MISSING:
                 return o;
             case ERROR:
                 return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<T>(o));

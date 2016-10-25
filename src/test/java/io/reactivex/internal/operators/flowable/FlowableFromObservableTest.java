@@ -21,13 +21,13 @@ import io.reactivex.exceptions.TestException;
 public class FlowableFromObservableTest {
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(Observable.just(1).toFlowable(BackpressureStrategy.NONE));
+        TestHelper.checkDisposed(Observable.just(1).toFlowable(BackpressureStrategy.MISSING));
     }
 
     @Test
     public void error() {
         Observable.error(new TestException())
-        .toFlowable(BackpressureStrategy.NONE)
+        .toFlowable(BackpressureStrategy.MISSING)
         .test()
         .assertFailure(TestException.class);
     }

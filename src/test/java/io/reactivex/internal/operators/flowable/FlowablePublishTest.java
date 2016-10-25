@@ -867,7 +867,7 @@ public class FlowablePublishTest {
                     s.onNext(i);
                 }
             }
-        }, BackpressureStrategy.NONE)
+        }, BackpressureStrategy.MISSING)
         .publish(8)
         .autoConnect()
         .test(0L)

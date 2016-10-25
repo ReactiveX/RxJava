@@ -96,8 +96,8 @@ public class FlowableFromSourceTest {
     }
 
     @Test
-    public void normalNone() {
-        Flowable.create(source, BackpressureStrategy.NONE).subscribe(ts);
+    public void normalMissing() {
+        Flowable.create(source, BackpressureStrategy.MISSING).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -109,8 +109,8 @@ public class FlowableFromSourceTest {
     }
 
     @Test
-    public void normalNoneRequested() {
-        Flowable.create(source, BackpressureStrategy.NONE).subscribe(ts);
+    public void normalMissingRequested() {
+        Flowable.create(source, BackpressureStrategy.MISSING).subscribe(ts);
         ts.request(2);
 
         source.onNext(1);
@@ -175,8 +175,8 @@ public class FlowableFromSourceTest {
     }
 
     @Test
-    public void errorNone() {
-        Flowable.create(source, BackpressureStrategy.NONE).subscribe(ts);
+    public void errorMissing() {
+        Flowable.create(source, BackpressureStrategy.MISSING).subscribe(ts);
 
         source.onNext(1);
         source.onNext(2);
@@ -254,8 +254,8 @@ public class FlowableFromSourceTest {
     }
 
     @Test
-    public void unsubscribedNone() {
-        Flowable.create(source, BackpressureStrategy.NONE).subscribe(ts);
+    public void unsubscribedMissing() {
+        Flowable.create(source, BackpressureStrategy.MISSING).subscribe(ts);
         ts.cancel();
 
         source.onNext(1);
@@ -334,8 +334,8 @@ public class FlowableFromSourceTest {
     }
 
     @Test
-    public void unsubscribedNoCancelNone() {
-        Flowable.create(sourceNoCancel, BackpressureStrategy.NONE).subscribe(ts);
+    public void unsubscribedNoCancelMissing() {
+        Flowable.create(sourceNoCancel, BackpressureStrategy.MISSING).subscribe(ts);
         ts.cancel();
 
         sourceNoCancel.onNext(1);

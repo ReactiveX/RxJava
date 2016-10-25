@@ -45,8 +45,8 @@ public final class FlowableCreate<T> extends Flowable<T> {
         BaseEmitter<T> emitter;
 
         switch (backpressure) {
-        case NONE: {
-            emitter = new NoneEmitter<T>(t);
+        case MISSING: {
+            emitter = new MissingEmitter<T>(t);
             break;
         }
         case ERROR: {
@@ -319,12 +319,12 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
     }
 
-    static final class NoneEmitter<T> extends BaseEmitter<T> {
+    static final class MissingEmitter<T> extends BaseEmitter<T> {
 
 
         private static final long serialVersionUID = 3776720187248809713L;
 
-        NoneEmitter(Subscriber<? super T> actual) {
+        MissingEmitter(Subscriber<? super T> actual) {
             super(actual);
         }
 
