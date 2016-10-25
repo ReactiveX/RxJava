@@ -246,7 +246,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                             }
                         }
                         // we only emit if requested > 0 and have all values available
-                        if (requested.get() > 0 && allHaveValues) {
+                        if (allHaveValues && requested.get() > 0) {
                             try {
                                 // all have something so emit
                                 child.onNext(zipFunction.call(vs));
